@@ -1,0 +1,435 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
+		EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */; };
+		EB5521D51A61B6A8008CE2D1 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* FirstViewController.m */; };
+		EB5521D81A61B6A8008CE2D1 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D71A61B6A8008CE2D1 /* SecondViewController.m */; };
+		EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB5521D91A61B6A8008CE2D1 /* Main.storyboard */; };
+		EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */; };
+		EB5521E01A61B6A8008CE2D1 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5521DE1A61B6A8008CE2D1 /* LaunchScreen.xib */; };
+		EB5521EC1A61B6A8008CE2D1 /* GMMobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521EB1A61B6A8008CE2D1 /* GMMobileTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EB5521E61A61B6A8008CE2D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB5521C11A61B6A8008CE2D1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EB5521C81A61B6A8008CE2D1;
+			remoteInfo = GMMobile;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EB5521C91A61B6A8008CE2D1 /* GMMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GMMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5521CD1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB5521CE1A61B6A8008CE2D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EB5521D01A61B6A8008CE2D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		EB5521D31A61B6A8008CE2D1 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
+		EB5521D41A61B6A8008CE2D1 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		EB5521D61A61B6A8008CE2D1 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		EB5521D71A61B6A8008CE2D1 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		EB5521DA1A61B6A8008CE2D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		EB5521DF1A61B6A8008CE2D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		EB5521E51A61B6A8008CE2D1 /* GMMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GMMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5521EA1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB5521EB1A61B6A8008CE2D1 /* GMMobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GMMobileTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EB5521C61A61B6A8008CE2D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB5521E21A61B6A8008CE2D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EB5521C01A61B6A8008CE2D1 = {
+			isa = PBXGroup;
+			children = (
+				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
+				EB5521E81A61B6A8008CE2D1 /* GMMobileTests */,
+				EB5521CA1A61B6A8008CE2D1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EB5521CA1A61B6A8008CE2D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB5521C91A61B6A8008CE2D1 /* GMMobile.app */,
+				EB5521E51A61B6A8008CE2D1 /* GMMobileTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
+			isa = PBXGroup;
+			children = (
+				EB5521D01A61B6A8008CE2D1 /* AppDelegate.h */,
+				EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */,
+				EB5521D31A61B6A8008CE2D1 /* FirstViewController.h */,
+				EB5521D41A61B6A8008CE2D1 /* FirstViewController.m */,
+				EB5521D61A61B6A8008CE2D1 /* SecondViewController.h */,
+				EB5521D71A61B6A8008CE2D1 /* SecondViewController.m */,
+				EB5521D91A61B6A8008CE2D1 /* Main.storyboard */,
+				EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */,
+				EB5521DE1A61B6A8008CE2D1 /* LaunchScreen.xib */,
+				EB5521CC1A61B6A8008CE2D1 /* Supporting Files */,
+			);
+			path = GMMobile;
+			sourceTree = "<group>";
+		};
+		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				EB5521CD1A61B6A8008CE2D1 /* Info.plist */,
+				EB5521CE1A61B6A8008CE2D1 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EB5521E81A61B6A8008CE2D1 /* GMMobileTests */ = {
+			isa = PBXGroup;
+			children = (
+				EB5521EB1A61B6A8008CE2D1 /* GMMobileTests.m */,
+				EB5521E91A61B6A8008CE2D1 /* Supporting Files */,
+			);
+			path = GMMobileTests;
+			sourceTree = "<group>";
+		};
+		EB5521E91A61B6A8008CE2D1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				EB5521EA1A61B6A8008CE2D1 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EB5521C81A61B6A8008CE2D1 /* GMMobile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "GMMobile" */;
+			buildPhases = (
+				EB5521C51A61B6A8008CE2D1 /* Sources */,
+				EB5521C61A61B6A8008CE2D1 /* Frameworks */,
+				EB5521C71A61B6A8008CE2D1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GMMobile;
+			productName = GMMobile;
+			productReference = EB5521C91A61B6A8008CE2D1 /* GMMobile.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EB5521E41A61B6A8008CE2D1 /* GMMobileTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB5521F21A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "GMMobileTests" */;
+			buildPhases = (
+				EB5521E11A61B6A8008CE2D1 /* Sources */,
+				EB5521E21A61B6A8008CE2D1 /* Frameworks */,
+				EB5521E31A61B6A8008CE2D1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB5521E71A61B6A8008CE2D1 /* PBXTargetDependency */,
+			);
+			name = GMMobileTests;
+			productName = GMMobileTests;
+			productReference = EB5521E51A61B6A8008CE2D1 /* GMMobileTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EB5521C11A61B6A8008CE2D1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = GSSi;
+				TargetAttributes = {
+					EB5521C81A61B6A8008CE2D1 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					EB5521E41A61B6A8008CE2D1 = {
+						CreatedOnToolsVersion = 6.1.1;
+						TestTargetID = EB5521C81A61B6A8008CE2D1;
+					};
+				};
+			};
+			buildConfigurationList = EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "GMMobile" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EB5521C01A61B6A8008CE2D1;
+			productRefGroup = EB5521CA1A61B6A8008CE2D1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EB5521C81A61B6A8008CE2D1 /* GMMobile */,
+				EB5521E41A61B6A8008CE2D1 /* GMMobileTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EB5521C71A61B6A8008CE2D1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
+				EB5521E01A61B6A8008CE2D1 /* LaunchScreen.xib in Resources */,
+				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB5521E31A61B6A8008CE2D1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EB5521C51A61B6A8008CE2D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB5521D81A61B6A8008CE2D1 /* SecondViewController.m in Sources */,
+				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
+				EB5521D51A61B6A8008CE2D1 /* FirstViewController.m in Sources */,
+				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB5521E11A61B6A8008CE2D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB5521EC1A61B6A8008CE2D1 /* GMMobileTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB5521E71A61B6A8008CE2D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EB5521C81A61B6A8008CE2D1 /* GMMobile */;
+			targetProxy = EB5521E61A61B6A8008CE2D1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		EB5521D91A61B6A8008CE2D1 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EB5521DA1A61B6A8008CE2D1 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		EB5521DE1A61B6A8008CE2D1 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EB5521DF1A61B6A8008CE2D1 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EB5521ED1A61B6A8008CE2D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EB5521EE1A61B6A8008CE2D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EB5521F01A61B6A8008CE2D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = GMMobile/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EB5521F11A61B6A8008CE2D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = GMMobile/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		EB5521F31A61B6A8008CE2D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = GMMobileTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GMMobile.app/GMMobile";
+			};
+			name = Debug;
+		};
+		EB5521F41A61B6A8008CE2D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = GMMobileTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GMMobile.app/GMMobile";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "GMMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5521ED1A61B6A8008CE2D1 /* Debug */,
+				EB5521EE1A61B6A8008CE2D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "GMMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5521F01A61B6A8008CE2D1 /* Debug */,
+				EB5521F11A61B6A8008CE2D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		EB5521F21A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "GMMobileTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5521F31A61B6A8008CE2D1 /* Debug */,
+				EB5521F41A61B6A8008CE2D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EB5521C11A61B6A8008CE2D1 /* Project object */;
+}
