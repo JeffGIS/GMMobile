@@ -1,0 +1,429 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EB5522021A62CF10008CE2D1 /* ShafeFileHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EB5522011A62CF10008CE2D1 /* ShafeFileHandler.h */; };
+		EB5522041A62CF10008CE2D1 /* ShafeFileHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522031A62CF10008CE2D1 /* ShafeFileHandler.m */; };
+		EB55220A1A62CF10008CE2D1 /* libShafeFileHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5521FE1A62CF10008CE2D1 /* libShafeFileHandler.a */; };
+		EB5522301A62D1BA008CE2D1 /* dbfadd.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522211A62D1BA008CE2D1 /* dbfadd.c */; };
+		EB5522311A62D1BA008CE2D1 /* dbfcreate.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522221A62D1BA008CE2D1 /* dbfcreate.c */; };
+		EB5522321A62D1BA008CE2D1 /* dbfdump.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522231A62D1BA008CE2D1 /* dbfdump.c */; };
+		EB5522331A62D1BA008CE2D1 /* dbfopen.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522241A62D1BA008CE2D1 /* dbfopen.c */; };
+		EB5522341A62D1BA008CE2D1 /* safileio.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522251A62D1BA008CE2D1 /* safileio.c */; };
+		EB5522351A62D1BA008CE2D1 /* shpadd.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522271A62D1BA008CE2D1 /* shpadd.c */; };
+		EB5522361A62D1BA008CE2D1 /* shpcreate.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522281A62D1BA008CE2D1 /* shpcreate.c */; };
+		EB5522371A62D1BA008CE2D1 /* shpdump.c in Sources */ = {isa = PBXBuildFile; fileRef = EB5522291A62D1BA008CE2D1 /* shpdump.c */; };
+		EB5522381A62D1BA008CE2D1 /* shpopen.c in Sources */ = {isa = PBXBuildFile; fileRef = EB55222A1A62D1BA008CE2D1 /* shpopen.c */; };
+		EB5522391A62D1BA008CE2D1 /* shprewind.c in Sources */ = {isa = PBXBuildFile; fileRef = EB55222B1A62D1BA008CE2D1 /* shprewind.c */; };
+		EB55223A1A62D1BA008CE2D1 /* shptest.c in Sources */ = {isa = PBXBuildFile; fileRef = EB55222C1A62D1BA008CE2D1 /* shptest.c */; };
+		EB55223B1A62D1BA008CE2D1 /* shptree.c in Sources */ = {isa = PBXBuildFile; fileRef = EB55222D1A62D1BA008CE2D1 /* shptree.c */; };
+		EB55223C1A62D1BA008CE2D1 /* shptreedump.c in Sources */ = {isa = PBXBuildFile; fileRef = EB55222E1A62D1BA008CE2D1 /* shptreedump.c */; };
+		EB55223D1A62D1BA008CE2D1 /* shputils.c in Sources */ = {isa = PBXBuildFile; fileRef = EB55222F1A62D1BA008CE2D1 /* shputils.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EB55220B1A62CF10008CE2D1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EB5521F61A62CF10008CE2D1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EB5521FD1A62CF10008CE2D1;
+			remoteInfo = ShafeFileHandler;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EB5521FC1A62CF10008CE2D1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				EB5522021A62CF10008CE2D1 /* ShafeFileHandler.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		EB5521FE1A62CF10008CE2D1 /* libShafeFileHandler.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShafeFileHandler.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5522011A62CF10008CE2D1 /* ShafeFileHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShafeFileHandler.h; sourceTree = "<group>"; };
+		EB5522031A62CF10008CE2D1 /* ShafeFileHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShafeFileHandler.m; sourceTree = "<group>"; };
+		EB5522091A62CF10008CE2D1 /* ShafeFileHandlerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShafeFileHandlerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB55220F1A62CF10008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB5522211A62D1BA008CE2D1 /* dbfadd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbfadd.c; sourceTree = "<group>"; };
+		EB5522221A62D1BA008CE2D1 /* dbfcreate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbfcreate.c; sourceTree = "<group>"; };
+		EB5522231A62D1BA008CE2D1 /* dbfdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbfdump.c; sourceTree = "<group>"; };
+		EB5522241A62D1BA008CE2D1 /* dbfopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbfopen.c; sourceTree = "<group>"; };
+		EB5522251A62D1BA008CE2D1 /* safileio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = safileio.c; sourceTree = "<group>"; };
+		EB5522261A62D1BA008CE2D1 /* shapefil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shapefil.h; sourceTree = "<group>"; };
+		EB5522271A62D1BA008CE2D1 /* shpadd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shpadd.c; sourceTree = "<group>"; };
+		EB5522281A62D1BA008CE2D1 /* shpcreate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shpcreate.c; sourceTree = "<group>"; };
+		EB5522291A62D1BA008CE2D1 /* shpdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shpdump.c; sourceTree = "<group>"; };
+		EB55222A1A62D1BA008CE2D1 /* shpopen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shpopen.c; sourceTree = "<group>"; };
+		EB55222B1A62D1BA008CE2D1 /* shprewind.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shprewind.c; sourceTree = "<group>"; };
+		EB55222C1A62D1BA008CE2D1 /* shptest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shptest.c; sourceTree = "<group>"; };
+		EB55222D1A62D1BA008CE2D1 /* shptree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shptree.c; sourceTree = "<group>"; };
+		EB55222E1A62D1BA008CE2D1 /* shptreedump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shptreedump.c; sourceTree = "<group>"; };
+		EB55222F1A62D1BA008CE2D1 /* shputils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = shputils.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EB5521FB1A62CF10008CE2D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB5522061A62CF10008CE2D1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB55220A1A62CF10008CE2D1 /* libShafeFileHandler.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EB5521F51A62CF10008CE2D1 = {
+			isa = PBXGroup;
+			children = (
+				EB5522211A62D1BA008CE2D1 /* dbfadd.c */,
+				EB5522221A62D1BA008CE2D1 /* dbfcreate.c */,
+				EB5522231A62D1BA008CE2D1 /* dbfdump.c */,
+				EB5522241A62D1BA008CE2D1 /* dbfopen.c */,
+				EB5522251A62D1BA008CE2D1 /* safileio.c */,
+				EB5522261A62D1BA008CE2D1 /* shapefil.h */,
+				EB5522271A62D1BA008CE2D1 /* shpadd.c */,
+				EB5522281A62D1BA008CE2D1 /* shpcreate.c */,
+				EB5522291A62D1BA008CE2D1 /* shpdump.c */,
+				EB55222A1A62D1BA008CE2D1 /* shpopen.c */,
+				EB55222B1A62D1BA008CE2D1 /* shprewind.c */,
+				EB55222C1A62D1BA008CE2D1 /* shptest.c */,
+				EB55222D1A62D1BA008CE2D1 /* shptree.c */,
+				EB55222E1A62D1BA008CE2D1 /* shptreedump.c */,
+				EB55222F1A62D1BA008CE2D1 /* shputils.c */,
+				EB5522001A62CF10008CE2D1 /* ShafeFileHandler */,
+				EB55220D1A62CF10008CE2D1 /* ShafeFileHandlerTests */,
+				EB5521FF1A62CF10008CE2D1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EB5521FF1A62CF10008CE2D1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB5521FE1A62CF10008CE2D1 /* libShafeFileHandler.a */,
+				EB5522091A62CF10008CE2D1 /* ShafeFileHandlerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EB5522001A62CF10008CE2D1 /* ShafeFileHandler */ = {
+			isa = PBXGroup;
+			children = (
+				EB5522011A62CF10008CE2D1 /* ShafeFileHandler.h */,
+				EB5522031A62CF10008CE2D1 /* ShafeFileHandler.m */,
+			);
+			path = ShafeFileHandler;
+			sourceTree = "<group>";
+		};
+		EB55220D1A62CF10008CE2D1 /* ShafeFileHandlerTests */ = {
+			isa = PBXGroup;
+			children = (
+				EB55220E1A62CF10008CE2D1 /* Supporting Files */,
+			);
+			path = ShafeFileHandlerTests;
+			sourceTree = "<group>";
+		};
+		EB55220E1A62CF10008CE2D1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				EB55220F1A62CF10008CE2D1 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EB5521FD1A62CF10008CE2D1 /* ShafeFileHandler */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB5522121A62CF10008CE2D1 /* Build configuration list for PBXNativeTarget "ShafeFileHandler" */;
+			buildPhases = (
+				EB5521FA1A62CF10008CE2D1 /* Sources */,
+				EB5521FB1A62CF10008CE2D1 /* Frameworks */,
+				EB5521FC1A62CF10008CE2D1 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShafeFileHandler;
+			productName = ShafeFileHandler;
+			productReference = EB5521FE1A62CF10008CE2D1 /* libShafeFileHandler.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		EB5522081A62CF10008CE2D1 /* ShafeFileHandlerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB5522151A62CF10008CE2D1 /* Build configuration list for PBXNativeTarget "ShafeFileHandlerTests" */;
+			buildPhases = (
+				EB5522051A62CF10008CE2D1 /* Sources */,
+				EB5522061A62CF10008CE2D1 /* Frameworks */,
+				EB5522071A62CF10008CE2D1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB55220C1A62CF10008CE2D1 /* PBXTargetDependency */,
+			);
+			name = ShafeFileHandlerTests;
+			productName = ShafeFileHandlerTests;
+			productReference = EB5522091A62CF10008CE2D1 /* ShafeFileHandlerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EB5521F61A62CF10008CE2D1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = GSSi;
+				TargetAttributes = {
+					EB5521FD1A62CF10008CE2D1 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					EB5522081A62CF10008CE2D1 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = EB5521F91A62CF10008CE2D1 /* Build configuration list for PBXProject "ShafeFileHandler" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EB5521F51A62CF10008CE2D1;
+			productRefGroup = EB5521FF1A62CF10008CE2D1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EB5521FD1A62CF10008CE2D1 /* ShafeFileHandler */,
+				EB5522081A62CF10008CE2D1 /* ShafeFileHandlerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EB5522071A62CF10008CE2D1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EB5521FA1A62CF10008CE2D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB5522351A62D1BA008CE2D1 /* shpadd.c in Sources */,
+				EB55223A1A62D1BA008CE2D1 /* shptest.c in Sources */,
+				EB5522371A62D1BA008CE2D1 /* shpdump.c in Sources */,
+				EB5522321A62D1BA008CE2D1 /* dbfdump.c in Sources */,
+				EB5522311A62D1BA008CE2D1 /* dbfcreate.c in Sources */,
+				EB55223D1A62D1BA008CE2D1 /* shputils.c in Sources */,
+				EB55223C1A62D1BA008CE2D1 /* shptreedump.c in Sources */,
+				EB55223B1A62D1BA008CE2D1 /* shptree.c in Sources */,
+				EB5522361A62D1BA008CE2D1 /* shpcreate.c in Sources */,
+				EB5522381A62D1BA008CE2D1 /* shpopen.c in Sources */,
+				EB5522301A62D1BA008CE2D1 /* dbfadd.c in Sources */,
+				EB5522341A62D1BA008CE2D1 /* safileio.c in Sources */,
+				EB5522391A62D1BA008CE2D1 /* shprewind.c in Sources */,
+				EB5522331A62D1BA008CE2D1 /* dbfopen.c in Sources */,
+				EB5522041A62CF10008CE2D1 /* ShafeFileHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB5522051A62CF10008CE2D1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB55220C1A62CF10008CE2D1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EB5521FD1A62CF10008CE2D1 /* ShafeFileHandler */;
+			targetProxy = EB55220B1A62CF10008CE2D1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		EB5522101A62CF10008CE2D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		EB5522111A62CF10008CE2D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EB5522131A62CF10008CE2D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		EB5522141A62CF10008CE2D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		EB5522161A62CF10008CE2D1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = ShafeFileHandlerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EB5522171A62CF10008CE2D1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = ShafeFileHandlerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EB5521F91A62CF10008CE2D1 /* Build configuration list for PBXProject "ShafeFileHandler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5522101A62CF10008CE2D1 /* Debug */,
+				EB5522111A62CF10008CE2D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EB5522121A62CF10008CE2D1 /* Build configuration list for PBXNativeTarget "ShafeFileHandler" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5522131A62CF10008CE2D1 /* Debug */,
+				EB5522141A62CF10008CE2D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		EB5522151A62CF10008CE2D1 /* Build configuration list for PBXNativeTarget "ShafeFileHandlerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB5522161A62CF10008CE2D1 /* Debug */,
+				EB5522171A62CF10008CE2D1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EB5521F61A62CF10008CE2D1 /* Project object */;
+}
