@@ -24,7 +24,7 @@
     _mapView.region = region;
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
-    NSString *gmm = @"http://www.thmgis.com/waypoint/CITYMPLS/MPLS/{z}/{y}/{x}.png";
+    NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     _osmOverlay = [[MKTileOverlay alloc] initWithURLTemplate:osm];
     _gmmOverlay = [[MKTileOverlay alloc] initWithURLTemplate:gmm];
     _osmOverlay.canReplaceMapContent = YES;
