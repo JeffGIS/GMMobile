@@ -5,7 +5,8 @@
 
 @interface MapViewController ()
 
-@property (nonatomic) MKTileOverlay *overlay;
+@property (nonatomic) MKTileOverlay *osmOverlay;
+@property (nonatomic) MKTileOverlay *gmmOverlay;
 
 @end
 
@@ -22,11 +23,17 @@
     MKCoordinateRegion region = {{44.97, -93.27}, {0.12, 0.12}};
     _mapView.region = region;
     
-    NSString *template = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
-    _overlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
-    _overlay.canReplaceMapContent = YES;
+    NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    NSString *gmm = @"http://www.thmgis.com/waypoint/CITYMPLS/MPLS/{z}/{y}/{x}.png";
+    _osmOverlay = [[MKTileOverlay alloc] initWithURLTemplate:osm];
+    _gmmOverlay = [[MKTileOverlay alloc] initWithURLTemplate:gmm];
+    _osmOverlay.canReplaceMapContent = YES;
+    _gmmOverlay.canReplaceMapContent = YES;
         
-    [_mapView addOverlay:_overlay
+    [_mapView addOverlay:_osmOverlay
+                   level:MKOverlayLevelAboveLabels];
+    
+    [_mapView addOverlay:_gmmOverlay
                    level:MKOverlayLevelAboveLabels];
 }
 
