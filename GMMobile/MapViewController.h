@@ -5,7 +5,7 @@
 #import <MapKit/MapKit.h>
 #import "GSSiTileOverlay.h"
 
-@interface MapViewController : UIViewController <MKMapViewDelegate, MKOverlay>
+@interface MapViewController : UIViewController <MKMapViewDelegate, GSSiOverlay>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
