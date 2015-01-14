@@ -5,8 +5,8 @@
 
 @interface MapViewController ()
 
-@property (nonatomic) MKTileOverlay *osmOverlay;
-@property (nonatomic) MKTileOverlay *gmmOverlay;
+@property (nonatomic) GSSiTileOverlay *osmOverlay;
+@property (nonatomic) GSSiTileOverlay *gmmOverlay;
 
 @end
 
@@ -24,14 +24,17 @@
     _mapView.region = region;
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
-    NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
-    _osmOverlay = [[MKTileOverlay alloc] initWithURLTemplate:osm];
-    _gmmOverlay = [[MKTileOverlay alloc] initWithURLTemplate:gmm];
+    _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
     _osmOverlay.canReplaceMapContent = YES;
-    _gmmOverlay.canReplaceMapContent = YES;
-        
+    _osmOverlay.type = OverlayTypeOSM;
+    
     [_mapView addOverlay:_osmOverlay
                    level:MKOverlayLevelAboveLabels];
+    
+    NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
+    _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
+    _gmmOverlay.canReplaceMapContent = YES;
+    _gmmOverlay.type = OverlayTypeGMM;
     
     [_mapView addOverlay:_gmmOverlay
                    level:MKOverlayLevelAboveLabels];
@@ -43,9 +46,9 @@
 }
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView
-            rendererForOverlay:(id <MKOverlay>)overlay
+            rendererForOverlay:(id <GSSiOverlay>)overlay
 {
-    if ([overlay isKindOfClass:MKTileOverlay.class])
+    if ([overlay isKindOfClass:GSSiTileOverlay.class])
         return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     
     return nil;

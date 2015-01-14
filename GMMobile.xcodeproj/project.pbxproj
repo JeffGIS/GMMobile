@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
 		EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */; };
@@ -29,6 +30,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlay.h; sourceTree = "<group>"; };
+		A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlay.m; sourceTree = "<group>"; };
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		EB5521C91A61B6A8008CE2D1 /* GMMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GMMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB5521CD1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -79,6 +82,8 @@
 			children = (
 				EB5521D01A61B6A8008CE2D1 /* AppDelegate.h */,
 				EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */,
+				A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */,
+				A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -267,6 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
+				A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */,
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
