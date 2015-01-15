@@ -9,4 +9,6 @@
 
 @interface GSSiTileOverlay : MKTileOverlay
 
+@property (nonatomic, copy) NSString *type;
+
 @end

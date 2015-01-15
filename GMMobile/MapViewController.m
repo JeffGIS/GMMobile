@@ -26,6 +26,7 @@
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
     _osmOverlay.canReplaceMapContent = YES;
+    _osmOverlay.type = @"OSM";
     
     [_mapView addOverlay:_osmOverlay
                    level:MKOverlayLevelAboveLabels];
@@ -33,6 +34,7 @@
     NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
     _gmmOverlay.canReplaceMapContent = YES;
+    _gmmOverlay.type = @"GMM";
     
     [_mapView addOverlay:_gmmOverlay
                    level:MKOverlayLevelAboveLabels];

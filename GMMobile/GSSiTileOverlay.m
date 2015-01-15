@@ -13,9 +13,13 @@
         return;
     }
     
-    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
-    NSString *key = [NSString stringWithFormat:@"%@", [self URLForTilePath:path]];
-    NSData *cachedData = [defaults objectForKey:key];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = paths.firstObject;
+    
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@/%li/%li/%li",
+                          documentsDirectory, _type, (long)path.z, (long)path.x, (long)path.y];
+    
+    NSData *cachedData = [NSData dataWithContentsOfFile:filePath];
     
     if (cachedData)
         result(cachedData, nil);
@@ -30,10 +34,8 @@
                                    
                                    if (data)
                                    {
-                                       [defaults setObject:data
-                                                    forKey:key];
-                                       
-                                       [defaults synchronize];
+                                       [data writeToFile:filePath
+                                              atomically:YES];
                                    }
                                    
                                        result(data, connectionError);
