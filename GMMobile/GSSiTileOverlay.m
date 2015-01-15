@@ -13,11 +13,11 @@
         return;
     }
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = paths.firstObject;
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cachesDirectory = paths.firstObject;
     
     NSString *filePath = [NSString stringWithFormat:@"%@/%@/%li/%li/%li",
-                          documentsDirectory, _type, (long)path.z, (long)path.x, (long)path.y];
+                          cachesDirectory, _type, (long)path.z, (long)path.x, (long)path.y];
     
     if ([NSFileManager.defaultManager fileExistsAtPath:filePath])
     {
