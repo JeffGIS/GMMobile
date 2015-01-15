@@ -26,7 +26,6 @@
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
     _osmOverlay.canReplaceMapContent = YES;
-    _osmOverlay.type = OverlayTypeOSM;
     
     [_mapView addOverlay:_osmOverlay
                    level:MKOverlayLevelAboveLabels];
@@ -34,7 +33,6 @@
     NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
     _gmmOverlay.canReplaceMapContent = YES;
-    _gmmOverlay.type = OverlayTypeGMM;
     
     [_mapView addOverlay:_gmmOverlay
                    level:MKOverlayLevelAboveLabels];
@@ -48,10 +46,8 @@
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView
             rendererForOverlay:(id <GSSiOverlay>)overlay
 {
-    if ([overlay isKindOfClass:GSSiTileOverlay.class])
-        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
-    
-    return nil;
+    MKOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    return renderer;
 }
 
 @end
