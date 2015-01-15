@@ -13,8 +13,9 @@
         return;
     }
     
-    NSCache *cache = [[NSCache alloc] init];
-    NSData *cachedData = [cache objectForKey:[self URLForTilePath:path]];
+    NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+    NSString *key = [NSString stringWithFormat:@"%@", [self URLForTilePath:path]];
+    NSData *cachedData = [defaults objectForKey:key];
     
     if (cachedData)
         result(cachedData, nil);
@@ -29,8 +30,10 @@
                                    
                                    if (data)
                                    {
-                                       [cache setObject:data
-                                                 forKey:[self URLForTilePath:path]];
+                                       [defaults setObject:data
+                                                    forKey:key];
+                                       
+                                       [defaults synchronize];
                                    }
                                    
                                        result(data, connectionError);
