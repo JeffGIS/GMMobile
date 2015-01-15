@@ -19,10 +19,11 @@
     NSString *filePath = [NSString stringWithFormat:@"%@/%@/%li/%li/%li",
                           documentsDirectory, _type, (long)path.z, (long)path.x, (long)path.y];
     
-    NSData *cachedData = [NSData dataWithContentsOfFile:filePath];
-    
-    if (cachedData)
+    if ([NSFileManager.defaultManager fileExistsAtPath:filePath])
+    {
+        NSData *cachedData = [NSData dataWithContentsOfFile:filePath];
         result(cachedData, nil);
+    }
     
     else
     {
