@@ -35,8 +35,13 @@
                                    
                                    if (data)
                                    {
-                                       [data writeToFile:filePath
-                                              atomically:YES];
+                                       [NSFileManager.defaultManager createDirectoryAtPath:[filePath stringByDeletingLastPathComponent]
+                                                               withIntermediateDirectories:YES
+                                                                                attributes:nil
+                                                                                     error:nil];
+                                       if (![data writeToFile:filePath
+                                              atomically:YES])
+                                           NSLog (@"Failed to cache file");
                                    }
                                    
                                        result(data, connectionError);
