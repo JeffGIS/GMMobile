@@ -45,10 +45,10 @@
     [super didReceiveMemoryWarning];
 }
 
-- (MKOverlayRenderer *)mapView:(MKMapView *)mapView
+- (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
             rendererForOverlay:(id <GSSiOverlay>)overlay
 {
-    MKOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
 }
 
