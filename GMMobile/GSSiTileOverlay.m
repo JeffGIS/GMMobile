@@ -9,7 +9,9 @@
                 result:(void (^)(NSData *data, NSError *error))result
 {
     if (!result)
+    {
         return;
+    }
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cachesDirectory = paths.firstObject;
@@ -20,9 +22,7 @@
     if ([NSFileManager.defaultManager fileExistsAtPath:filePath])
     {
         NSData *cachedData = [NSData dataWithContentsOfFile:filePath];
-        
-        if (cachedData)
-            result(cachedData, nil);
+        result(cachedData, nil);
     }
     
     else
@@ -33,21 +33,19 @@
                                            queue:NSOperationQueue.mainQueue
                                completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
                                    
-                                   if (!data)
-                                       return;
-
-                                    NSLog(@"Length:%lu", (unsigned long)data.length);
+                                   if (data)
+                                   {
+                                       [NSFileManager.defaultManager createDirectoryAtPath:filePath.stringByDeletingLastPathComponent
+                                                               withIntermediateDirectories:YES
+                                                                                attributes:nil
+                                                                                     error:nil];
                                        
-                                    [NSFileManager.defaultManager createDirectoryAtPath:filePath.stringByDeletingLastPathComponent
-                                                            withIntermediateDirectories:YES
-                                                                             attributes:nil
-                                                                                  error:nil];
-                                       
-                                    if (![data writeToFile:filePath
-                                                atomically:YES])
-                                    {
-                                        NSLog (@"Failed to cache file");
-                                    }
+                                       if (![data writeToFile:filePath
+                                                   atomically:YES])
+                                       {
+                                           NSLog (@"Failed to cache file");
+                                       }
+                                   }
                                    
                                    if (connectionError)
                                        NSLog(@"NSURL Connection Error:%@", connectionError.localizedDescription);

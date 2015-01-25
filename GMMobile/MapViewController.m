@@ -21,17 +21,18 @@
     
     _mapView.delegate = self;
     
-    [_mapView setCenterCoordinate:CLLocationCoordinate2DMake(44.97, -93.27)
-                        zoomLevel:13
-                         animated:NO];
+    MKCoordinateRegion region = {{44.97, -93.27}, {0.12, 0.12}};
+    _mapView.region = region;
     
-    //NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
-    //_osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
-    //_osmOverlay.canReplaceMapContent = YES;
-    //_osmOverlay.type = @"OSM";
+    NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
+    _osmOverlay.canReplaceMapContent = YES;
+    _osmOverlay.minimumZ = 0;
+    _osmOverlay.maximumZ = 19;
+    _osmOverlay.type = @"OSM";
     
-    //[_mapView addOverlay:_osmOverlay
-                   //level:MKOverlayLevelAboveLabels];
+    [_mapView addOverlay:_osmOverlay
+                   level:MKOverlayLevelAboveLabels];
     
     //NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     NSString *gmm = @"http://74.36.108.94/icons/MPLS/{z}/{y}/{x}.png";
