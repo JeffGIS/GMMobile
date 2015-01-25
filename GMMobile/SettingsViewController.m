@@ -58,4 +58,9 @@
     
 }
 
+-(void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    [_popover hide];
+}
+
 @end
