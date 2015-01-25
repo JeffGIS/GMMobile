@@ -3,10 +3,13 @@
 
 #import "PropertyData.h"
 
+@interface PropertyData ()
+
+@property (nonatomic) GSSiPopoverView *popover;
+
+@end
+
 @implementation PropertyData
-{
-    GSSiPopoverView *_popover;
-}
 
 static PropertyData *_database;
 
