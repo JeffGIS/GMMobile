@@ -20,16 +20,18 @@
     [super viewDidLoad];
     
     _mapView.delegate = self;
-    MKCoordinateRegion region = {{44.97, -93.27}, {0.12, 0.12}};
-    _mapView.region = region;
     
-    NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
-    _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
-    _osmOverlay.canReplaceMapContent = YES;
-    _osmOverlay.type = @"OSM";
+    [_mapView setCenterCoordinate:CLLocationCoordinate2DMake(44.97, -93.27)
+                        zoomLevel:13
+                         animated:NO];
     
-    [_mapView addOverlay:_osmOverlay
-                   level:MKOverlayLevelAboveLabels];
+    //NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
+    //_osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
+    //_osmOverlay.canReplaceMapContent = YES;
+    //_osmOverlay.type = @"OSM";
+    
+    //[_mapView addOverlay:_osmOverlay
+                   //level:MKOverlayLevelAboveLabels];
     
     NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
@@ -50,6 +52,12 @@
 {
     GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
+}
+
+- (void)mapView:(MKMapView *)mapView
+regionDidChangeAnimated:(BOOL)animated
+{
+    
 }
 
 @end

@@ -13,6 +13,9 @@
              zoomScale:zoomScale
              inContext:context];
     
+    //this is where we query the tiles table to add custom drawing
+    
+/*
     CGRect rect = [self rectForMapRect:mapRect];
     
     MKTileOverlayPath path;
@@ -34,6 +37,7 @@
                        NSForegroundColorAttributeName:UIColor.blueColor}];
     
     UIGraphicsPopContext();
+*/
 }
 
 @end

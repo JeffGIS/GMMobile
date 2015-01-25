@@ -2,10 +2,10 @@
 //  GMMobile
 
 #import <UIKit/UIKit.h>
-#import <MapKit/MapKit.h>
 #import "GSSiTileOverlay.h"
 #import "GSSiTileOverlayRenderer.h"
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "MKMapView+Zoom.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate, GSSiOverlay>
 

@@ -10,6 +10,7 @@
 		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
 		A98DFEA01A68C19B003F0880 /* GSSiTileOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
+		A9FBFF691A74BDB300635A72 /* MKMapView+Zoom.m in Sources */ = {isa = PBXBuildFile; fileRef = A9FBFF681A74BDB300635A72 /* MKMapView+Zoom.m */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
 		EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */; };
 		EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
@@ -36,6 +37,8 @@
 		A98DFE9E1A68C19B003F0880 /* GSSiTileOverlayRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlayRenderer.h; sourceTree = "<group>"; };
 		A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlayRenderer.m; sourceTree = "<group>"; };
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		A9FBFF671A74BDB300635A72 /* MKMapView+Zoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKMapView+Zoom.h"; sourceTree = "<group>"; };
+		A9FBFF681A74BDB300635A72 /* MKMapView+Zoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+Zoom.m"; sourceTree = "<group>"; };
 		EB5521C91A61B6A8008CE2D1 /* GMMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GMMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB5521CD1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB5521CE1A61B6A8008CE2D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -89,6 +92,8 @@
 				A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */,
 				A98DFE9E1A68C19B003F0880 /* GSSiTileOverlayRenderer.h */,
 				A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */,
+				A9FBFF671A74BDB300635A72 /* MKMapView+Zoom.h */,
+				A9FBFF681A74BDB300635A72 /* MKMapView+Zoom.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -279,6 +284,7 @@
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */,
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
+				A9FBFF691A74BDB300635A72 /* MKMapView+Zoom.m in Sources */,
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				A98DFEA01A68C19B003F0880 /* GSSiTileOverlayRenderer.m in Sources */,
