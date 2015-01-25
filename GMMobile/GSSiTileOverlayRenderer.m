@@ -33,7 +33,7 @@
                       (long)path.x,(long)path.y,(long)path.z];
     
     [text drawInRect:rect
-      withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:(20.0 / zoomScale)],
+      withAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:(40.0 / zoomScale)],
                        NSForegroundColorAttributeName:UIColor.blueColor}];
     
     UIGraphicsPopContext();
