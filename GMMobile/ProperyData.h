@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
+#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface ProperyData : NSObject
+@interface ProperyData : NSObject<FTPDataPullDelegate,GSSiPopoverViewDelegate>
+
 {
     sqlite3 *_database;
-   
 }
 
 

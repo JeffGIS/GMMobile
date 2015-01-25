@@ -120,10 +120,38 @@
             </objects>
             <point key="canvasLocation" x="-240" y="-260"/>
         </scene>
+        <!--FindPID View Controller-->
+        <scene sceneID="teP-Aj-9Jb">
+            <objects>
+                <viewController id="KrF-fK-Nqs" customClass="FindPIDViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="l7T-Cn-7lu"/>
+                        <viewControllerLayoutGuide type="bottom" id="HlQ-eY-E5F"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="hiB-jT-B1H">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WM0-wu-21u">
+                                <rect key="frame" x="140" y="109" width="314" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="pidEntry" destination="WM0-wu-21u" id="6Fb-IO-esp"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sId-XF-6dc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1327" y="465"/>
+        </scene>
         <!--Find-->
         <scene sceneID="WyH-zB-XQR">
             <objects>
-                <viewController id="T0p-0H-jNa" sceneMemberID="viewController">
+                <viewController id="T0p-0H-jNa" customClass="FindViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jf8-9B-NmO"/>
                         <viewControllerLayoutGuide type="bottom" id="Lax-ZZ-84B"/>
@@ -131,6 +159,49 @@
                     <view key="view" contentMode="scaleToFill" id="Q1j-fN-XJ5">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="779-gj-Rmk">
+                                <rect key="frame" x="142" y="68" width="352" height="36"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Parcel Number (PID)">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="findPID:" destination="T0p-0H-jNa" eventType="touchUpInside" id="DlZ-7Q-Qa6"/>
+                                    <segue destination="KrF-fK-Nqs" kind="presentation" id="e5A-qp-3sm"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I4U-TS-rgU">
+                                <rect key="frame" x="188" y="227" width="261" height="53"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Taxpayer">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="findTaxpayer:" destination="T0p-0H-jNa" eventType="touchUpInside" id="O4U-eH-kW3"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Q3-U8-roY">
+                                <rect key="frame" x="196" y="297" width="245" height="71"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Intersection">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="findIntersection:" destination="T0p-0H-jNa" eventType="touchUpInside" id="0fE-wD-C6A"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="81b-nQ-ofa">
+                                <rect key="frame" x="248" y="157" width="140" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Address">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="findAddress:" destination="T0p-0H-jNa" eventType="touchUpInside" id="7Cv-F8-7rE"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Find" id="Qdi-5K-Zt9"/>
