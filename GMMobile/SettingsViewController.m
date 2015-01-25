@@ -19,8 +19,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _popover = [[GSSiPopoverView alloc]init];
-    // Do any additional setup after loading the view.
+    _popover = [[GSSiPopoverView alloc] initWithView:self.view];
+    _popover.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -47,17 +47,21 @@
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    
+
+    [_popover showAfter:0.5
+                  withTitle:@"Get Property File"];
+
     [pull getFile:fileName
-    fromDirectory:@"GMMobile/Property"
+    fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:NO];
+     forceRefresh:YES];
 
 }
 - (void)FTPdidComplete:(int)status
               filePath:(NSString *)path
 {
+    [_popover hide];
     if (status == FTPStatusOK)
     {
     }
