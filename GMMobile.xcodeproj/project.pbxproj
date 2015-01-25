@@ -18,6 +18,13 @@
 		EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */; };
 		EB5521E01A61B6A8008CE2D1 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5521DE1A61B6A8008CE2D1 /* LaunchScreen.xib */; };
 		EB5521EC1A61B6A8008CE2D1 /* GMMobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521EB1A61B6A8008CE2D1 /* GMMobileTests.m */; };
+		EB5522681A75238C008CE2D1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5522671A75238C008CE2D1 /* SystemConfiguration.framework */; };
+		EB55226A1A75239F008CE2D1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5522691A75239F008CE2D1 /* CoreGraphics.framework */; };
+		EB55226C1A7523BC008CE2D1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226B1A7523BC008CE2D1 /* QuartzCore.framework */; };
+		EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226D1A7523D5008CE2D1 /* UIKit.framework */; };
+		EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226F1A7523E6008CE2D1 /* Foundation.framework */; };
+		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
+		EB5522771A7530A8008CE2D1 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +58,14 @@
 		EB5521E51A61B6A8008CE2D1 /* GMMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GMMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB5521EA1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB5521EB1A61B6A8008CE2D1 /* GMMobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GMMobileTests.m; sourceTree = "<group>"; };
+		EB5522671A75238C008CE2D1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		EB5522691A75239F008CE2D1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		EB55226B1A7523BC008CE2D1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		EB55226D1A7523D5008CE2D1 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		EB55226F1A7523E6008CE2D1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		EB5522731A752A7F008CE2D1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-fgolxuxlmydtvmcpdegvrhgmuvpk/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +73,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB5522771A7530A8008CE2D1 /* libCCodeLibrary.a in Frameworks */,
+				EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */,
+				EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */,
+				EB55226C1A7523BC008CE2D1 /* QuartzCore.framework in Frameworks */,
+				EB55226A1A75239F008CE2D1 /* CoreGraphics.framework in Frameworks */,
+				EB5522681A75238C008CE2D1 /* SystemConfiguration.framework in Frameworks */,
 				A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,6 +96,12 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */,
+				EB55226F1A7523E6008CE2D1 /* Foundation.framework */,
+				EB55226D1A7523D5008CE2D1 /* UIKit.framework */,
+				EB55226B1A7523BC008CE2D1 /* QuartzCore.framework */,
+				EB5522691A75239F008CE2D1 /* CoreGraphics.framework */,
+				EB5522671A75238C008CE2D1 /* SystemConfiguration.framework */,
 				A9C837271A65B23A005EC4FA /* MapKit.framework */,
 			);
 			name = Frameworks;
@@ -106,6 +133,8 @@
 		A9C8372C1A65B2E8005EC4FA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
+				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
 				EB5521D61A61B6A8008CE2D1 /* LayersViewController.h */,
@@ -282,6 +311,7 @@
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				A98DFEA01A68C19B003F0880 /* GSSiTileOverlayRenderer.m in Sources */,
+				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,7 +387,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -393,7 +423,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -406,9 +436,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = GMMobile/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/GeoMasterMobile-fgolxuxlmydtvmcpdegvrhgmuvpk/Build/Products/Debug-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -417,9 +452,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = GMMobile/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/GeoMasterMobile-fgolxuxlmydtvmcpdegvrhgmuvpk/Build/Products/Debug-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
