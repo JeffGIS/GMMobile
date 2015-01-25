@@ -1,34 +1,29 @@
-//
 //  FindPIDViewController.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 1/25/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "FindPIDViewController.h"
-#import "ProperyData.h"
+#import "PropertyData.h"
 
 @interface FindPIDViewController ()
-{
-    NSMutableArray *_pidList;
-    ProperyData *_propData;
-}
+
+@property (nonatomic) NSMutableArray *pidList;
+@property (nonatomic) PropertyData *propData;
 
 @end
 
 @implementation FindPIDViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    _propData = [[ProperyData alloc]init];
+    _propData = [[PropertyData alloc] init];
     _pidEntry.delegate = self;
     _pidEntry.keyboardType = UIKeyboardTypeNumberPad;
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

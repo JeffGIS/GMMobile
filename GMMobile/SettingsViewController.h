@@ -1,10 +1,9 @@
 //  SettingsViewController.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface SettingsViewController : UIViewController<FTPDataPullDelegate,GSSiPopoverViewDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate>
 
 - (IBAction)loadDatabase:(id)sender;
 - (IBAction)preloadTiles:(id)sender;
