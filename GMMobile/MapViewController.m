@@ -20,6 +20,7 @@
     [super viewDidLoad];
     
     _mapView.delegate = self;
+    
     MKCoordinateRegion region = {{44.97, -93.27}, {0.12, 0.12}};
     _mapView.region = region;
     
@@ -27,7 +28,7 @@
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
     _osmOverlay.canReplaceMapContent = YES;
     _osmOverlay.minimumZ = 0;
-    _osmOverlay.maximumZ = 13;
+    _osmOverlay.maximumZ = 19;
     _osmOverlay.type = @"OSM";
     
     [_mapView addOverlay:_osmOverlay
@@ -55,6 +56,12 @@
 {
     GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
+}
+
+- (void)mapView:(MKMapView *)mapView
+regionDidChangeAnimated:(BOOL)animated
+{
+    
 }
 
 @end

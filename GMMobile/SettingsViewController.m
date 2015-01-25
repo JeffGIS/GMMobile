@@ -1,10 +1,5 @@
-//
 //  SettingsViewController.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 1/25/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "SettingsViewController.h"
 
@@ -23,12 +18,20 @@
     _popover.delegate = self;
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
+<<<<<<< HEAD
     // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)loadDatabase:(id)sender {
+=======
+}
+
+- (IBAction)loadDatabase:(id)sender
+{
+>>>>>>> bb8336f7f303d7cdb4966aeb1ca8d40c50e48d26
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     
     NSString *fileName = @"Property.sqlite";
@@ -54,8 +57,17 @@
     [_popover hide];
     if (status == FTPStatusOK)
     {
+        
     }
 }
-- (IBAction)preloadTiles:(id)sender {
+- (IBAction)preloadTiles:(id)sender
+{
+    
 }
+
+-(void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    [_popover hide];
+}
+
 @end

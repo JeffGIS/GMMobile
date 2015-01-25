@@ -41,13 +41,16 @@
                                                                                      error:nil];
                                        
                                        if (![data writeToFile:filePath
-                                              atomically:YES])
+                                                   atomically:YES])
                                        {
                                            NSLog (@"Failed to cache file");
                                        }
                                    }
                                    
-                                       result(data, connectionError);
+                                   if (connectionError)
+                                       NSLog(@"NSURL Connection Error:%@", connectionError.localizedDescription);
+                                   
+                                   result(data, connectionError);
                                }];
     }
 }

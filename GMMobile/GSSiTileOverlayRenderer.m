@@ -13,6 +13,8 @@
              zoomScale:zoomScale
              inContext:context];
     
+    //this is where we query the tiles table to add custom drawing
+    
     CGRect rect = [self rectForMapRect:mapRect];
     
     MKTileOverlayPath path;
@@ -30,7 +32,7 @@
                       (long)path.x,(long)path.y,(long)path.z];
     
     [text drawInRect:rect
-      withAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:(40.0 / zoomScale)],
+      withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:(20.0 / zoomScale)],
                        NSForegroundColorAttributeName:UIColor.blueColor}];
     
     UIGraphicsPopContext();
