@@ -21,17 +21,11 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-<<<<<<< HEAD
     // Dispose of any resources that can be recreated.
-}
-
-- (IBAction)loadDatabase:(id)sender {
-=======
 }
 
 - (IBAction)loadDatabase:(id)sender
 {
->>>>>>> bb8336f7f303d7cdb4966aeb1ca8d40c50e48d26
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     
     NSString *fileName = @"Property.sqlite";
