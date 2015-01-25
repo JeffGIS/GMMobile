@@ -1,7 +1,7 @@
 //  AppDelegate.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

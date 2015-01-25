@@ -5,6 +5,7 @@
 #import <MapKit/MapKit.h>
 #import "GSSiTileOverlay.h"
 #import "GSSiTileOverlayRenderer.h"
+#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate, GSSiOverlay>
 
