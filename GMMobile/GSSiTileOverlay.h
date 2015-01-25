@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import <MapKit/MapKit.h>
+#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 @protocol GSSiOverlay <MKOverlay>
 
