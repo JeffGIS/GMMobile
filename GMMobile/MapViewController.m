@@ -8,6 +8,7 @@
 @property (nonatomic) GSSiTileOverlay *osmOverlay;
 @property (nonatomic) GSSiTileOverlay *gmmOverlay;
 @property (nonatomic) MKMapCamera *camera;
+@property (nonatomic) UITapGestureRecognizer *doubleTap;
 
 @end
 
@@ -20,14 +21,13 @@
 {
     [super viewDidLoad];
     
-    _mapView.delegate = self;
-    
     CLLocationCoordinate2D target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:target//camera target (center point)
                                          fromEyeCoordinate:target//camera position (affects pitch)
                                                eyeAltitude:20000.0];//meters above ground (inversely affects zoom)
     
+    _mapView.delegate = self;
     _mapView.camera = _camera;
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -50,6 +50,13 @@
     
     [_mapView addOverlay:_gmmOverlay
                    level:MKOverlayLevelAboveLabels];
+    
+    _doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                         action:@selector(didDoubleTapMap:)];
+    _doubleTap.numberOfTapsRequired = 2;
+    _doubleTap.numberOfTouchesRequired = 1;
+    _doubleTap.delegate = self;
+    [_mapView addGestureRecognizer:_doubleTap];
 }
 
 - (void)didReceiveMemoryWarning
@@ -67,14 +74,25 @@
 - (void)mapView:(MKMapView *)mapView
 regionDidChangeAnimated:(BOOL)animated
 {
-    if (mapView.camera.altitude < 550.0)
-    {
-       _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
-                                            fromEyeCoordinate:mapView.centerCoordinate
-                                                  eyeAltitude:550.0];
+    if (mapView.camera.altitude < 549.9)
+        {
+            _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
+                                                 fromEyeCoordinate:mapView.centerCoordinate
+                                                       eyeAltitude:550.0];
         
-        mapView.camera = _camera;
-    }
+            mapView.camera = _camera;
+        }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+- (void)didDoubleTapMap:(UIGestureRecognizer *)gesture
+{
+    NSLog(@"The map was double tapped");
 }
 
 @end

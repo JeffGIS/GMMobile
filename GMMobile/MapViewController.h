@@ -6,7 +6,7 @@
 #import "GSSiTileOverlayRenderer.h"
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface MapViewController : UIViewController <MKMapViewDelegate, GSSiOverlay>
+@interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
