@@ -12,11 +12,12 @@
 @property NSString *fileName;
 @property (nonatomic, copy) NSString *path;
 
-- (void) clear;
-- (BOOL) executeCmd:(char*) cmd;
-- (void)startTransaction;
-- (void)commitTransaction;
+- (void)            clear;
+- (BOOL)            executeCmd:(char*) cmd;
+- (void)            startTransaction;
+- (void)            commitTransaction;
 - (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar;
-- (LLPOINT) getPointForPID:(NSString*)PID;
+- (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber streetName:(NSString *)matchChar;
+- (LLPOINT)         getPointForPID:(NSString*)PID;
 
 @end

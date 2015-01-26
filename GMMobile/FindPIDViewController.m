@@ -31,8 +31,9 @@
     [textField resignFirstResponder];
     
     _pidList = [_propData getPIDsMatchingString:textField.text];
-    //NSString *pid = _pidList[0];
-    //LLPOINT pt = [_propData getPointForPID:pid];
+    NSString *pid = _pidList[0];
+    LLPOINT pt = [_propData getPointForPID:pid];
+    _pidList = [_propData getPIDsMatchingAddress:5144 streetName:@"30"];
     return NO;
 }
 

@@ -11,7 +11,7 @@
 
 @implementation PropertyData
 
-static PropertyData *_database;
+static PropertyData *_propData;
 
 - (id)init
 {
@@ -22,6 +22,7 @@ static PropertyData *_database;
         _documentsDirectory = UserDefaults.defaults.localFilePath;
         _fileName = @"Property.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+        _propData = (__bridge PropertyData *)((__bridge sqlite3 *)((PropertyData*)self));
     }
     
     return self;
@@ -77,13 +78,7 @@ static PropertyData *_database;
     sqlite3_stmt *statement;
     
     [self open];
-    int st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0);
-    
-    if (st != SQLITE_OK)
-    {
-        [self logError:st
-                method:"prepare"];
-    }
+    SQLOK (sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getPointForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -91,7 +86,7 @@ static PropertyData *_database;
         pt.lon = sqlite3_column_double(statement, 1);
     }
     
-    SQLOK(sqlite3_finalize(statement), "getPIDsMatchingString");
+    SQLOK(sqlite3_finalize(statement), "getPointforPID");
     
     [self close];
     return pt;
@@ -105,13 +100,7 @@ static PropertyData *_database;
     NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PARCELPOINT Where PID LIKE '%@%%'", matchChar];
     sqlite3_stmt *statement;
     
-    int st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0);
-    
-    if (st != SQLITE_OK)
-    {
-        [self logError:st
-                method:"prepare"];
-    }
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -121,6 +110,33 @@ static PropertyData *_database;
     }
     
     SQLOK(sqlite3_finalize(statement), "getPIDsMatchingString");
+    
+    [self close];
+    return array;
+}
+
+-(NSMutableArray *) getPIDsMatchingAddress:(int)houseNumber streetName:(NSString *)matchChar
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i", matchChar,houseNumber];
+    NSString *query2 = [NSString stringWithFormat:@"SELECT '%%HOUSE_NUM','%%STREET_NAME',UDIValue,AdditionalValue FROM ADDLOC"];
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingAddress");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int house = sqlite3_column_int(statement, 0);
+        LPSTR street = (LPSTR)sqlite3_column_text(statement, 1);
+        LPSTR pid = (LPSTR)sqlite3_column_text(statement, 2);
+        LPSTR additionalVal = (LPSTR)sqlite3_column_text(statement, 3);
+        NSString *out = [NSString stringWithFormat:@"%i\t%s\t%s\t%s",house,street,pid,additionalVal];
+        [array addObject:out];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getPIDsMatchingAddress");
     
     [self close];
     return array;
@@ -159,7 +175,7 @@ static PropertyData *_database;
     SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0),"End transaction");
 }
 
-- (void)logError:(int)sqlReturn
+/*- (void)logError:(int)sqlReturn
           method:(char *)method
 {
     NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
@@ -173,6 +189,23 @@ int SQLOK(int sqlReturn, char *method)
         NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
                       sqlReturn, method, sqlite3_errcode((__bridge sqlite3 *)(_database)),
                       sqlite3_errmsg((__bridge sqlite3 *)(_database))]);
+    }
+    
+    return sqlReturn;
+}*/
+- (void)logError:(int)sqlReturn
+          method:(char *)method
+{
+    NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
+                  sqlReturn, method, sqlite3_errcode(_database), sqlite3_errmsg(_database)]);
+}
+
+int SQLOK(int sqlReturn, char *method)
+{
+    if (sqlReturn != SQLITE_OK)
+    {
+        [_propData logError:sqlReturn
+                     method:method];
     }
     
     return sqlReturn;
