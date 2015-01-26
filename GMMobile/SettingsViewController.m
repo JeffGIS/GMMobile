@@ -2,18 +2,18 @@
 //  GMMobile
 
 #import "SettingsViewController.h"
-#import "ProperyData.h"
+#import "PropertyData.h"
 
 @interface SettingsViewController ()
-{
-    GSSiPopoverView *_popover;
-}
+
+@property (nonatomic) GSSiPopoverView *popover;
 
 @end
 
 @implementation SettingsViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
@@ -22,13 +22,11 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)loadDatabase:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    
     NSString *fileName = @"Property.sqltran";
     
     FTPDataPull *pull = FTPDataPull.pull;
@@ -50,22 +48,24 @@
               filePath:(NSString *)path
 {
     [_popover hide];
+    
     if (status == FTPStatusOK)
     {
-        FILE *fid=fopen (path.UTF8String,"rb");
-        LPSTR str=malloc(USHRT_MAX);
-        ProperyData *pd = [[ProperyData alloc]init];
+        FILE *fid = fopen (path.UTF8String, "rb");
+        LPSTR str = malloc(USHRT_MAX);
+        PropertyData *pd = [[PropertyData alloc] init];
         [pd clear];
         [pd startTransaction];
-        while (fgetstring(str,USHRT_MAX-2,fid))
-        {
+        
+        while (fgetstring(str, (USHRT_MAX - 2), fid))
             [pd executeCmd:str];
-        }
+        
         [pd commitTransaction];
-        fclose (fid);
-        free (str);
+        fclose(fid);
+        free(str);
     }
 }
+
 - (IBAction)preloadTiles:(id)sender
 {
     

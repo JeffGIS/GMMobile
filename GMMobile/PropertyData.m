@@ -16,12 +16,14 @@ static PropertyData *_database;
 - (id)init
 {
     self = [super init];
+    
     if (self)
     {
-        self.documentsDirectory = UserDefaults.defaults.localFilePath;
-        self.fileName = @"Property.sqlite";
-        self.path = [NSString stringWithFormat:@"%@/%@",self.documentsDirectory,_fileName];
+        _documentsDirectory = UserDefaults.defaults.localFilePath;
+        _fileName = @"Property.sqlite";
+        _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
     }
+    
     return self;
 }
 
@@ -46,15 +48,18 @@ static PropertyData *_database;
            toFile:_fileName
       toDirectory:_documentsDirectory
      forceRefresh:YES];
+    
     return YES;
 }
 
 -(void) clear
 {
     [self close];
+    
     [NSFileManager.defaultManager removeItemAtPath:_path
                                              error:nil];
 }
+
 - (void)FTPdidComplete:(int)status
               filePath:(NSString *)path
 {
@@ -64,16 +69,22 @@ static PropertyData *_database;
         
     }
 }
-- (LLPOINT) getPointForPID:(NSString*)PID
+
+- (LLPOINT) getPointForPID:(NSString *)PID
 {
-    LLPOINT pt={0};
-    NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %@",PID];
+    LLPOINT pt = {0};
+    NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %@", PID];
     sqlite3_stmt *statement;
     
     [self open];
     int st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0);
+    
     if (st != SQLITE_OK)
-        [self logError:st method:"prepare"];
+    {
+        [self logError:st
+                method:"prepare"];
+    }
+    
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         pt.lat = sqlite3_column_double(statement, 0);
@@ -85,12 +96,13 @@ static PropertyData *_database;
     [self close];
     return pt;
 }
--(NSMutableArray*) getPIDsMatchingString:(NSString*)matchChar
+
+-(NSMutableArray *) getPIDsMatchingString:(NSString *)matchChar
 {
-    NSMutableArray *array= [[NSMutableArray alloc] init];
+    NSMutableArray *array = [[NSMutableArray alloc] init];
     
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PARCELPOINT Where PID LIKE '%@%%'",matchChar];
+    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PARCELPOINT Where PID LIKE '%@%%'", matchChar];
     sqlite3_stmt *statement;
     
     int st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0);
@@ -104,7 +116,7 @@ static PropertyData *_database;
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
-        NSString * pid = [NSString stringWithUTF8String:cpid];
+        NSString *pid = [NSString stringWithUTF8String:cpid];
         [array addObject:pid];
     }
     
@@ -113,6 +125,7 @@ static PropertyData *_database;
     [self close];
     return array;
 }
+
 - (void)open
 {
     if (!_isOpen)
@@ -129,7 +142,7 @@ static PropertyData *_database;
     self.isOpen = NO;
 }
 
--(BOOL) executeCmd:(char*) cmd
+- (BOOL)executeCmd:(char *)cmd
 {
     BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0),"End transaction");
     return rtn;
