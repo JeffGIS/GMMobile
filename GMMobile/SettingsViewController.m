@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "SettingsViewController.h"
+#import "ProperyData.h"
 
 @interface SettingsViewController ()
 {
@@ -28,7 +29,7 @@
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     
-    NSString *fileName = @"Property.sqlite";
+    NSString *fileName = @"Property.sqltran";
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
@@ -51,7 +52,18 @@
     [_popover hide];
     if (status == FTPStatusOK)
     {
-        
+        FILE *fid=fopen (path.UTF8String,"rb");
+        LPSTR str=malloc(USHRT_MAX);
+        ProperyData *pd = [[ProperyData alloc]init];
+        [pd clear];
+        [pd startTransaction];
+        while (fgetstring(str,USHRT_MAX-2,fid))
+        {
+            [pd executeCmd:str];
+        }
+        [pd commitTransaction];
+        fclose (fid);
+        free (str);
     }
 }
 - (IBAction)preloadTiles:(id)sender

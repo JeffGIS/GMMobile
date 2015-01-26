@@ -16,27 +16,12 @@ static PropertyData *_database;
 - (id)init
 {
     self = [super init];
-    
     if (self)
     {
-        NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-        NSString *fileName = @"Property.sqlite";
-        _path = [NSString stringWithFormat:@"%@/%@",documentsDirectory,fileName];
-        FTPDataPull *pull = FTPDataPull.pull;
-        pull.delegate = self;
-        pull.popover = _popover;
-        pull.useOnlyPrimaryFTP = NO;
-        
-        [_popover showAfter:0.5
-                  withTitle:@"Get Property File"];
-        
-        [pull getFile:fileName
-        fromDirectory:@"GMMobile"
-               toFile:fileName
-          toDirectory:documentsDirectory
-         forceRefresh:YES];
-   }
-    
+        self.documentsDirectory = UserDefaults.defaults.localFilePath;
+        self.fileName = @"Property.sqlite";
+        self.path = [NSString stringWithFormat:@"%@/%@",self.documentsDirectory,_fileName];
+    }
     return self;
 }
 
@@ -46,6 +31,30 @@ static PropertyData *_database;
     NSLog(@"Property Database dealloc");
 }
 
+-(BOOL)load
+{
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Property File"];
+    
+    [pull getFile:_fileName
+    fromDirectory:@"GMMobile"
+           toFile:_fileName
+      toDirectory:_documentsDirectory
+     forceRefresh:YES];
+    return YES;
+}
+
+-(void) clear
+{
+    [self close];
+    [NSFileManager.defaultManager removeItemAtPath:_path
+                                             error:nil];
+}
 - (void)FTPdidComplete:(int)status
               filePath:(NSString *)path
 {
@@ -55,14 +64,33 @@ static PropertyData *_database;
         
     }
 }
-
-- (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar
+- (LLPOINT) getPointForPID:(NSString*)PID
+{
+    LLPOINT pt={0};
+    NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %@",PID];
+    sqlite3_stmt *statement;
+    
+    [self open];
+    int st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0);
+    if (st != SQLITE_OK)
+        [self logError:st method:"prepare"];
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        pt.lat = sqlite3_column_double(statement, 0);
+        pt.lon = sqlite3_column_double(statement, 1);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getPIDsMatchingString");
+    
+    [self close];
+    return pt;
+}
+-(NSMutableArray*) getPIDsMatchingString:(NSString*)matchChar
 {
     NSMutableArray *array= [[NSMutableArray alloc] init];
     
     [self open];
-    //NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PARCELPOINT Where PID LIKE '%@%%'",matchChar];
-    NSString *query = [NSString stringWithFormat:@"SELECT PIDx FROM PARCELPOINT"];
+    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PARCELPOINT Where PID LIKE '%@%%'",matchChar];
     sqlite3_stmt *statement;
     
     int st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0);
@@ -99,6 +127,12 @@ static PropertyData *_database;
     sqlite3_close(_database);
     NSLog(@"Property Database close");
     self.isOpen = NO;
+}
+
+-(BOOL) executeCmd:(char*) cmd
+{
+    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0),"End transaction");
+    return rtn;
 }
 
 - (void)startTransaction
