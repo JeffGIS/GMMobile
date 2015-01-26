@@ -9,6 +9,8 @@
 @property (nonatomic) GSSiTileOverlay *gmmOverlay;
 @property (nonatomic) MKMapCamera *camera;
 @property (nonatomic) UITapGestureRecognizer *doubleTap;
+@property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) UISegmentedControl *segmentedControl;
 
 @end
 
@@ -57,6 +59,13 @@
     _doubleTap.numberOfTouchesRequired = 1;
     _doubleTap.delegate = self;
     [_mapView addGestureRecognizer:_doubleTap];
+    
+    _locationManager = [[CLLocationManager alloc] init];
+    
+    if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+        [_locationManager requestWhenInUseAuthorization];
+    
+    [self setupSegmentedControl];
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,6 +102,50 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)didDoubleTapMap:(UIGestureRecognizer *)gesture
 {
     NSLog(@"The map was double tapped");
+}
+
+- (void)setupSegmentedControl
+{
+    CGFloat width = (self.view.frame.size.width / 3.8);
+    _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"My Location", @"Zoom to Extent"]];
+    
+    _segmentedControl.frame = CGRectMake((self.view.frame.size.width - width - 50.0), 26.0, width,
+                                         (self.view.frame.size.height / 25.6));
+    
+    _segmentedControl.backgroundColor = UIColor.whiteColor;
+    _segmentedControl.selectedSegmentIndex = 1;
+    [self.view addSubview:_segmentedControl];
+    
+    [_segmentedControl addTarget:self
+                          action:@selector(segmentedControlTapped:)
+                forControlEvents:UIControlEventValueChanged];
+}
+
+- (void)segmentedControlTapped:(UISegmentedControl *)segmentedControl
+{
+    CLLocationCoordinate2D target;
+    
+    switch (segmentedControl.selectedSegmentIndex)
+    {
+        case 0:
+            _mapView.userTrackingMode = MKUserTrackingModeFollowWithHeading;
+            _mapView.rotateEnabled = NO;
+            break;
+            
+        case 1:
+            _mapView.userTrackingMode = MKUserTrackingModeNone;
+            _mapView.rotateEnabled = YES;
+            
+            target = CLLocationCoordinate2DMake(44.97, -93.27);
+            
+            _camera = [MKMapCamera cameraLookingAtCenterCoordinate:target
+                                                 fromEyeCoordinate:target
+                                                       eyeAltitude:36000.0];
+            
+            [_mapView setCamera:_camera
+                       animated:YES];
+            break;
+    }
 }
 
 @end
