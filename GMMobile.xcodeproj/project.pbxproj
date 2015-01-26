@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A905063A1A75DF5A00288850 /* map.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506391A75DF5A00288850 /* map.png */; };
+		A90506451A75E12B00288850 /* find.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506431A75E12B00288850 /* find.png */; };
+		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
+		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
+		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
 		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
 		A98DFEA01A68C19B003F0880 /* GSSiTileOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
@@ -43,6 +48,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A90506391A75DF5A00288850 /* map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map.png; sourceTree = "<group>"; };
+		A90506431A75E12B00288850 /* find.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = find.png; sourceTree = "<group>"; };
+		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
+		A90506471A75E24100288850 /* layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = layers.png; sourceTree = "<group>"; };
+		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
 		A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlay.h; sourceTree = "<group>"; };
 		A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlay.m; sourceTree = "<group>"; };
 		A98DFE9E1A68C19B003F0880 /* GSSiTileOverlayRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlayRenderer.h; sourceTree = "<group>"; };
@@ -108,6 +118,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A90506341A75DCE300288850 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				A905064B1A75E28E00288850 /* themes.png */,
+				A90506471A75E24100288850 /* layers.png */,
+				A90506431A75E12B00288850 /* find.png */,
+				A90506441A75E12B00288850 /* settings.png */,
+				A90506391A75DF5A00288850 /* map.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,6 +221,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A90506341A75DCE300288850 /* Images */,
 				EB5521CD1A61B6A8008CE2D1 /* Info.plist */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
 			);
@@ -309,8 +332,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A90506461A75E12B00288850 /* settings.png in Resources */,
+				A905063A1A75DF5A00288850 /* map.png in Resources */,
+				A90506451A75E12B00288850 /* find.png in Resources */,
+				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
+				A90506491A75E24100288850 /* layers.png in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

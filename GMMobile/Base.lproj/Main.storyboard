@@ -30,7 +30,7 @@
                             <constraint firstItem="byd-oi-yEP" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leading" id="swR-TF-zQ1"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Map" image="first" id="acW-dT-cKf"/>
+                    <tabBarItem key="tabBarItem" title="Map" image="map.png" id="acW-dT-cKf"/>
                     <connections>
                         <outlet property="mapView" destination="byd-oi-yEP" id="O7e-9w-THD"/>
                     </connections>
@@ -52,7 +52,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Layers" image="second" id="cPa-gy-q4n"/>
+                    <tabBarItem key="tabBarItem" title="Layers" image="layers.png" id="cPa-gy-q4n"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>
@@ -93,11 +93,11 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Settings" id="lee-OE-7W2"/>
+                    <tabBarItem key="tabBarItem" title="Settings" image="settings.png" id="lee-OE-7W2"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CRA-4b-ixH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="218" y="538"/>
+            <point key="canvasLocation" x="134" y="495.75"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
@@ -147,7 +147,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sId-XF-6dc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1327" y="465"/>
+            <point key="canvasLocation" x="-1375" y="489"/>
         </scene>
         <!--Find-->
         <scene sceneID="WyH-zB-XQR">
@@ -166,11 +166,23 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="90" id="dMz-JW-Zz5"/>
+                                    <constraint firstAttribute="height" constant="90" id="gVM-VT-WMH"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="48"/>
                                 <state key="normal" title="Parcel Number (PID)">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="gVM-VT-WMH"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular">
+                                    <mask key="constraints">
+                                        <exclude reference="dMz-JW-Zz5"/>
+                                        <include reference="gVM-VT-WMH"/>
+                                    </mask>
+                                </variation>
                                 <connections>
                                     <action selector="findPID:" destination="T0p-0H-jNa" eventType="touchUpInside" id="DlZ-7Q-Qa6"/>
                                     <segue destination="KrF-fK-Nqs" kind="presentation" id="e5A-qp-3sm"/>
@@ -180,12 +192,24 @@
                                 <rect key="frame" x="16" y="300" width="568" height="90"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="LZX-tc-BiR"/>
                                     <constraint firstAttribute="height" constant="90" id="fQE-2t-cjl"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="48"/>
                                 <state key="normal" title="Taxpayer">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="LZX-tc-BiR"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular">
+                                    <mask key="constraints">
+                                        <include reference="LZX-tc-BiR"/>
+                                        <exclude reference="fQE-2t-cjl"/>
+                                    </mask>
+                                </variation>
                                 <connections>
                                     <action selector="findTaxpayer:" destination="T0p-0H-jNa" eventType="touchUpInside" id="O4U-eH-kW3"/>
                                 </connections>
@@ -194,12 +218,24 @@
                                 <rect key="frame" x="16" y="160" width="568" height="90"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstAttribute="height" constant="90" id="Ie1-J9-cWf"/>
                                     <constraint firstAttribute="height" constant="90" id="PmR-gF-qy4"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="48"/>
                                 <state key="normal" title="Address">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="Ie1-J9-cWf"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular">
+                                    <mask key="constraints">
+                                        <include reference="Ie1-J9-cWf"/>
+                                        <exclude reference="PmR-gF-qy4"/>
+                                    </mask>
+                                </variation>
                                 <connections>
                                     <action selector="findAddress:" destination="T0p-0H-jNa" eventType="touchUpInside" id="7Cv-F8-7rE"/>
                                 </connections>
@@ -209,11 +245,23 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="90" id="dxY-Ey-4NB"/>
+                                    <constraint firstAttribute="height" constant="90" id="qEa-Da-Ikl"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="48"/>
                                 <state key="normal" title="Intersection">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="qEa-Da-Ikl"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular">
+                                    <mask key="constraints">
+                                        <exclude reference="dxY-Ey-4NB"/>
+                                        <include reference="qEa-Da-Ikl"/>
+                                    </mask>
+                                </variation>
                                 <connections>
                                     <action selector="findIntersection:" destination="T0p-0H-jNa" eventType="touchUpInside" id="0fE-wD-C6A"/>
                                 </connections>
@@ -224,22 +272,78 @@
                             <constraint firstItem="81b-nQ-ofa" firstAttribute="leading" secondItem="779-gj-Rmk" secondAttribute="leading" id="0wt-g7-6ly"/>
                             <constraint firstItem="81b-nQ-ofa" firstAttribute="top" secondItem="779-gj-Rmk" secondAttribute="bottom" constant="50" id="16z-39-ITb"/>
                             <constraint firstItem="8Q3-U8-roY" firstAttribute="leading" secondItem="I4U-TS-rgU" secondAttribute="leading" id="2eK-o1-KCT"/>
+                            <constraint firstItem="I4U-TS-rgU" firstAttribute="leading" secondItem="81b-nQ-ofa" secondAttribute="leading" id="6jV-qM-xxx"/>
                             <constraint firstItem="I4U-TS-rgU" firstAttribute="leading" secondItem="81b-nQ-ofa" secondAttribute="leading" id="8is-Vm-VTX"/>
                             <constraint firstItem="I4U-TS-rgU" firstAttribute="trailing" secondItem="81b-nQ-ofa" secondAttribute="trailing" id="9V5-L8-RFK"/>
                             <constraint firstItem="8Q3-U8-roY" firstAttribute="trailing" secondItem="I4U-TS-rgU" secondAttribute="trailing" id="Bqa-Th-ZqX"/>
+                            <constraint firstItem="8Q3-U8-roY" firstAttribute="top" secondItem="I4U-TS-rgU" secondAttribute="bottom" constant="70" id="Brh-1B-6FS"/>
+                            <constraint firstItem="I4U-TS-rgU" firstAttribute="top" secondItem="81b-nQ-ofa" secondAttribute="bottom" constant="70" id="CR2-9d-aBt"/>
+                            <constraint firstItem="I4U-TS-rgU" firstAttribute="leading" secondItem="8Q3-U8-roY" secondAttribute="leading" id="Isf-z5-oeT"/>
+                            <constraint firstItem="8Q3-U8-roY" firstAttribute="leading" secondItem="Q1j-fN-XJ5" secondAttribute="leadingMargin" id="MwK-bO-oVz"/>
+                            <constraint firstItem="779-gj-Rmk" firstAttribute="trailing" secondItem="81b-nQ-ofa" secondAttribute="trailing" id="NtA-rE-uIb"/>
+                            <constraint firstItem="8Q3-U8-roY" firstAttribute="trailing" secondItem="Q1j-fN-XJ5" secondAttribute="trailingMargin" id="TEP-75-Hy6"/>
                             <constraint firstItem="8Q3-U8-roY" firstAttribute="top" secondItem="I4U-TS-rgU" secondAttribute="bottom" constant="50" id="VNZ-bS-kb7"/>
                             <constraint firstItem="779-gj-Rmk" firstAttribute="leading" secondItem="Q1j-fN-XJ5" secondAttribute="leadingMargin" id="WAi-RL-d8u"/>
                             <constraint firstItem="I4U-TS-rgU" firstAttribute="top" secondItem="81b-nQ-ofa" secondAttribute="bottom" constant="50" id="Xba-OV-uj7"/>
+                            <constraint firstItem="779-gj-Rmk" firstAttribute="leading" secondItem="81b-nQ-ofa" secondAttribute="leading" id="Y5k-Ub-RAB"/>
                             <constraint firstItem="779-gj-Rmk" firstAttribute="top" secondItem="jf8-9B-NmO" secondAttribute="bottom" id="clm-dX-cyg"/>
+                            <constraint firstItem="779-gj-Rmk" firstAttribute="top" secondItem="jf8-9B-NmO" secondAttribute="bottom" constant="20" id="dee-av-xf0"/>
                             <constraint firstItem="779-gj-Rmk" firstAttribute="trailing" secondItem="81b-nQ-ofa" secondAttribute="trailing" id="fxE-Mg-mqR"/>
+                            <constraint firstItem="I4U-TS-rgU" firstAttribute="trailing" secondItem="81b-nQ-ofa" secondAttribute="trailing" id="jcL-f7-dRK"/>
+                            <constraint firstItem="I4U-TS-rgU" firstAttribute="trailing" secondItem="8Q3-U8-roY" secondAttribute="trailing" id="kig-j1-5D3"/>
+                            <constraint firstItem="81b-nQ-ofa" firstAttribute="top" secondItem="779-gj-Rmk" secondAttribute="bottom" constant="70" id="s1E-Jn-YPv"/>
                             <constraint firstItem="I4U-TS-rgU" firstAttribute="trailing" secondItem="Q1j-fN-XJ5" secondAttribute="trailingMargin" id="vOG-ey-uXQ"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="NtA-rE-uIb"/>
+                                <exclude reference="Y5k-Ub-RAB"/>
+                                <exclude reference="dee-av-xf0"/>
+                                <exclude reference="s1E-Jn-YPv"/>
+                                <exclude reference="6jV-qM-xxx"/>
+                                <exclude reference="CR2-9d-aBt"/>
+                                <exclude reference="Isf-z5-oeT"/>
+                                <exclude reference="jcL-f7-dRK"/>
+                                <exclude reference="kig-j1-5D3"/>
+                                <exclude reference="Brh-1B-6FS"/>
+                                <exclude reference="MwK-bO-oVz"/>
+                                <exclude reference="TEP-75-Hy6"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular">
+                            <mask key="constraints">
+                                <include reference="NtA-rE-uIb"/>
+                                <exclude reference="WAi-RL-d8u"/>
+                                <include reference="Y5k-Ub-RAB"/>
+                                <exclude reference="clm-dX-cyg"/>
+                                <include reference="dee-av-xf0"/>
+                                <exclude reference="fxE-Mg-mqR"/>
+                                <exclude reference="0wt-g7-6ly"/>
+                                <exclude reference="16z-39-ITb"/>
+                                <include reference="s1E-Jn-YPv"/>
+                                <include reference="6jV-qM-xxx"/>
+                                <exclude reference="8is-Vm-VTX"/>
+                                <exclude reference="9V5-L8-RFK"/>
+                                <include reference="CR2-9d-aBt"/>
+                                <include reference="Isf-z5-oeT"/>
+                                <exclude reference="Xba-OV-uj7"/>
+                                <include reference="jcL-f7-dRK"/>
+                                <include reference="kig-j1-5D3"/>
+                                <exclude reference="vOG-ey-uXQ"/>
+                                <exclude reference="2eK-o1-KCT"/>
+                                <exclude reference="Bqa-Th-ZqX"/>
+                                <include reference="Brh-1B-6FS"/>
+                                <include reference="MwK-bO-oVz"/>
+                                <include reference="TEP-75-Hy6"/>
+                                <exclude reference="VNZ-bS-kb7"/>
+                            </mask>
+                        </variation>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Find" id="Qdi-5K-Zt9"/>
+                    <tabBarItem key="tabBarItem" title="Find" image="find.png" id="Qdi-5K-Zt9"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JPn-EO-hsI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-569" y="481"/>
+            <point key="canvasLocation" x="-569" y="480.75"/>
         </scene>
         <!--Themes-->
         <scene sceneID="FVq-oc-ude">
@@ -254,7 +358,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Themes" id="8bX-3Q-E00"/>
+                    <tabBarItem key="tabBarItem" title="Themes" image="themes.png" id="8bX-3Q-E00"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hix-lP-mlT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -262,7 +366,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="first" width="30" height="30"/>
-        <image name="second" width="30" height="30"/>
+        <image name="find.png" width="48" height="48"/>
+        <image name="layers.png" width="40" height="40"/>
+        <image name="map.png" width="40" height="40"/>
+        <image name="settings.png" width="32" height="32"/>
+        <image name="themes.png" width="40" height="40"/>
     </resources>
 </document>
