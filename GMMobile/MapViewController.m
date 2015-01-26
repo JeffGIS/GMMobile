@@ -109,8 +109,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     CGFloat width = (self.view.frame.size.width / 3.8);
     _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"My Location", @"Zoom to Extent"]];
     
-    _segmentedControl.frame = CGRectMake((self.view.frame.size.width - width - 50.0), 26.0, width,
-                                         (self.view.frame.size.height / 25.6));
+    _segmentedControl.frame = CGRectMake(10.0, 26.0, width, (self.view.frame.size.height / 25.6));
     
     _segmentedControl.backgroundColor = UIColor.whiteColor;
     _segmentedControl.selectedSegmentIndex = 1;
