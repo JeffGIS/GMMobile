@@ -36,7 +36,8 @@
     [textField resignFirstResponder];
     
     _pidList = [_propData getPIDsMatchingString:textField.text];
-    
+    NSString *pid = _pidList[0];
+    LLPOINT pt = [_propData getPointForPID:pid];
     return NO;
 }
 

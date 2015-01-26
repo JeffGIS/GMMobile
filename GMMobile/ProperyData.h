@@ -16,9 +16,15 @@
     sqlite3 *_database;
 }
 
-
+-(void) clear;
+-(void)startTransaction;
+-(void)commitTransaction;
+-(BOOL) executeCmd:(char*) cmd;
 -(NSMutableArray*) getPIDsMatchingString:(NSString*)matchChar;
+- (LLPOINT) getPointForPID:(NSString*)PID;
 
 @property BOOL isOpen;
+@property NSString *documentsDirectory;
+@property NSString *fileName;
 @property NSString *path;
 @end
