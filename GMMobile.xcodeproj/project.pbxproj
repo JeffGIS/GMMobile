@@ -28,7 +28,7 @@
 		EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226F1A7523E6008CE2D1 /* Foundation.framework */; };
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB5522771A7530A8008CE2D1 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */; };
-		EB55227A1A75576E008CE2D1 /* ProperyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* ProperyData.m */; };
+		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
 /* End PBXBuildFile section */
 
@@ -76,8 +76,8 @@
 		EB5522731A752A7F008CE2D1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-fgolxuxlmydtvmcpdegvrhgmuvpk/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
-		EB5522781A75576E008CE2D1 /* ProperyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProperyData.h; sourceTree = "<group>"; };
-		EB5522791A75576E008CE2D1 /* ProperyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProperyData.m; sourceTree = "<group>"; };
+		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
+		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
 		EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -133,8 +133,8 @@
 				A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */,
 				A98DFE9E1A68C19B003F0880 /* GSSiTileOverlayRenderer.h */,
 				A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */,
-				EB5522781A75576E008CE2D1 /* ProperyData.h */,
-				EB5522791A75576E008CE2D1 /* ProperyData.m */,
+				EB5522781A75576E008CE2D1 /* PropertyData.h */,
+				EB5522791A75576E008CE2D1 /* PropertyData.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -333,7 +333,7 @@
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */,
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
-				EB55227A1A75576E008CE2D1 /* ProperyData.m in Sources */,
+				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
