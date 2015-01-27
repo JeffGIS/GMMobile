@@ -22,7 +22,7 @@ static PropertyData *_propData;
         _documentsDirectory = UserDefaults.defaults.localFilePath;
         _fileName = @"Property.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        _propData = (__bridge PropertyData *)((__bridge sqlite3 *)((PropertyData*)self));
+        _propData = (__bridge PropertyData *)((__bridge sqlite3 *)((PropertyData *)self));
     }
     
     return self;
@@ -115,7 +115,8 @@ static PropertyData *_propData;
     return array;
 }
 
--(NSMutableArray *) getPIDsMatchingAddress:(int)houseNumber streetName:(NSString *)matchChar
+-(NSMutableArray *) getPIDsMatchingAddress:(int)houseNumber
+                                streetName:(NSString *)matchChar
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
@@ -215,7 +216,8 @@ static PropertyData *_propData;
     SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0),"End transaction");
 }
 
-/*- (void)logError:(int)sqlReturn
+/*
+- (void)logError:(int)sqlReturn
           method:(char *)method
 {
     NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
@@ -232,7 +234,9 @@ int SQLOK(int sqlReturn, char *method)
     }
     
     return sqlReturn;
-}*/
+}
+*/
+
 - (void)logError:(int)sqlReturn
           method:(char *)method
 {
