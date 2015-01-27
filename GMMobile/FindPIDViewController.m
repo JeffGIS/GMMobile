@@ -33,6 +33,7 @@
     _pidList = [_propData getPIDsMatchingString:textField.text];
     NSString *pid = _pidList[0];
     LLPOINT pt = [_propData getPointForPID:pid];
+    pid = [_propData pickPID:pt];
     _pidList = [_propData getPIDsMatchingAddress:5144 streetName:@"30"];
     return NO;
 }

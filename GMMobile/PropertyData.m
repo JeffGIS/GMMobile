@@ -142,6 +142,46 @@ static PropertyData *_propData;
     return array;
 }
 
+- (NSString*)       pickPID:(LLPOINT)pt
+{
+    NSString * minPID=[[NSString alloc]init];
+    dbounds bnds;
+    double d, mind = DBL_MAX;
+    double pickap = 0.001;
+    DPOINT p1, p2;
+    
+    p1.x = pt.lon;
+    p1.y = pt.lat;
+    bnds.xmn = p1.x - pickap;
+    bnds.xmx = p1.x + pickap;
+    bnds.ymn = p1.y - pickap;
+    bnds.ymx = p1.y + pickap;
+    [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT PID,LAT,LON FROM PARCELPOINT Where LAT > %f AND LAT < %f AND LON > %f AND LON < %f",bnds.ymn,bnds.ymx,bnds.xmn,bnds.xmx];
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"pickPID");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
+        double lat = sqlite3_column_double(statement, 1);
+        double lon = sqlite3_column_double(statement, 2);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1,p2);
+        if (d < mind)
+        {
+            mind = d;
+            minPID = [NSString stringWithUTF8String:cpid];
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "pickPID");
+    [self close];
+    return minPID;
+}
+
 - (void)open
 {
     if (!_isOpen)
