@@ -14,9 +14,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    self.navigationController.view.alpha = 1.0;
-    self.navigationController.view.opaque = YES;
-    
     [self setupButton:_pidButton];
     [self setupButton:_addressButton];
     [self setupButton:_taxpayerButton];

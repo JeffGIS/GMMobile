@@ -8,7 +8,6 @@
 @interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
-
 @property MKMapRect cityInnerBounds;
 
 @end

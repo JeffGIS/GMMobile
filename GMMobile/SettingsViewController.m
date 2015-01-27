@@ -59,11 +59,13 @@
         [pd clear];
         [pd startTransaction];
         _popover.title = @"Load Property File";
+        
         while (fgetstring(str, (USHRT_MAX - 2), fid))
         {
             [pd executeCmd:str];
             [_popover updateProgress:ftell(fid)/totLen];
         }
+        
         [pd commitTransaction];
         fclose(fid);
         free(str);

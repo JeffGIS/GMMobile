@@ -4,9 +4,6 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 @interface FindViewController : UIViewController
-{
-    
-}
 
 @property (weak, nonatomic) IBOutlet UIButton *pidButton;
 @property (weak, nonatomic) IBOutlet UIButton *addressButton;

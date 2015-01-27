@@ -30,7 +30,7 @@
     
     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:target//camera target (center point)
                                          fromEyeCoordinate:target//camera position (affects pitch)
-                                               eyeAltitude:20000.0];//meters above ground (inversely affects zoom)
+                                               eyeAltitude:22000.0];//meters above ground (inversely affects zoom)
     
     _mapView.delegate = self;
     _mapView.camera = _camera;
@@ -94,6 +94,7 @@ regionDidChangeAnimated:(BOOL)animated
         
             mapView.camera = _camera;
         }
+    
     MKMapRect rect = mapView.visibleMapRect;
     MKMapRect intRect = MKMapRectUnion(rect,_cityInnerBounds);
     
