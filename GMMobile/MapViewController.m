@@ -22,7 +22,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    _cityInnerBounds.origin.x = 64631097;
+    _cityInnerBounds.origin.y = 96565088;
+    _cityInnerBounds.size.width = 83010;
+    _cityInnerBounds.size.height = 103220;
     CLLocationCoordinate2D target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:target//camera target (center point)
@@ -91,6 +94,13 @@ regionDidChangeAnimated:(BOOL)animated
         
             mapView.camera = _camera;
         }
+    MKMapRect rect = mapView.visibleMapRect;
+    MKMapRect intRect = MKMapRectUnion(rect,_cityInnerBounds);
+    
+    if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
+        _osmOverlay.maximumZ = 12;
+    else
+        _osmOverlay.maximumZ = 19;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer

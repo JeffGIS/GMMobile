@@ -9,4 +9,6 @@
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
+@property MKMapRect cityInnerBounds;
+
 @end
