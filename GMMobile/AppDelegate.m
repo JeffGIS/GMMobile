@@ -13,6 +13,14 @@
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSString *defaultFTP = @"gssidata.com";
+    
+    [UserDefaults.defaults saveString:defaultFTP
+                               forKey:@"CurrentFtp"];
+    
+    [UserDefaults.defaults saveString:defaultFTP
+                               forKey:@"DefaultFtp"];
+    
     return YES;
 }
 
