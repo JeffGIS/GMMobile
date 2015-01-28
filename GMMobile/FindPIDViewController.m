@@ -7,7 +7,6 @@
 @interface FindPIDViewController ()
 
 @property (nonatomic) NSMutableArray *pidList;
-@property (nonatomic) PropertyData *propData;
 
 @end
 
@@ -16,7 +15,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _propData = [[PropertyData alloc] init];
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
     [self setupBackButton];
@@ -73,7 +71,9 @@
     
     else
     {
-        _pidList = [_propData getPIDsWithOwnerMatchingString:textField.text];
+        PropertyData *propData = [[PropertyData alloc] init];
+
+        _pidList = [propData getPIDsWithOwnerMatchingString:textField.text];
         [_tableView reloadData];
     }
 }
@@ -81,15 +81,16 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
-    
-    NSString *pid = _pidList[0];
+    return NO;
+   
+    /*NSString *pid = _pidList[0];
     LLPOINT pt = [_propData getPointForPID:pid];
     pid = [_propData pickPID:pt];
     
     _pidList = [_propData getPIDsMatchingAddress:5144
                                       streetName:@"30"];
 
-    return NO;
+    return NO;*/
 }
 
 - (IBAction)goBack:(id)sender
@@ -183,7 +184,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         [_delegate findPIDViewController:self
-                            didSelectPID:_pidList[indexPath.row]];
+                            didSelectPID:[UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]]];
     }
 }
 

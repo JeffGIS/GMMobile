@@ -12,7 +12,6 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) CLLocationCoordinate2D target;
-@property (nonatomic) PropertyData *propData;
 
 @end
 
@@ -24,7 +23,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _propData = [[PropertyData alloc] init];
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
@@ -89,7 +87,8 @@
         [_mapView setCamera:_camera
                    animated:NO];
         
-        LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
+        PropertyData *propData = [[PropertyData alloc] init];
+        LLPOINT pidPoint = [propData getPointForPID:CRAPI.sharedInstance.currentPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
