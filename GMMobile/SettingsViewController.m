@@ -35,7 +35,7 @@
     pull.useOnlyPrimaryFTP = NO;
 
     [_popover showAfter:0.5
-                  withTitle:@"Get Property File"];
+              withTitle:@"Get Property File"];
 
     [pull getFile:fileName
     fromDirectory:@"GMMobile"
@@ -57,13 +57,13 @@
         
         dispatch_async(overallQueue,
         ^{
-       
-           FILE *fid = fopen (path.UTF8String, "rb");
-           LPSTR str = malloc(USHRT_MAX);
-           fseek (fid,0,SEEK_END);
-           float totLen = ftell (fid);
-           fseek (fid,0,SEEK_SET);
-           [pd startTransaction];
+            FILE *fid = fopen (path.UTF8String, "rb");
+            LPSTR str = malloc(USHRT_MAX);
+            fseek(fid, 0, SEEK_END);
+            CGFloat totLen = ftell (fid);
+            fseek(fid, 0, SEEK_SET);
+            [pd startTransaction];
+            
             while (fgetstring(str, (USHRT_MAX - 2), fid))
             {
                 [pd executeCmd:str];
@@ -72,6 +72,7 @@
                     [_popover updateProgress:ftell(fid)/totLen];
                 });
             }
+            
             [pd commitTransaction];
             fclose(fid);
             free(str);
