@@ -196,6 +196,9 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [UserDefaults.defaults saveString:_pidEntry.text
+                               forKey:@"CurrentPIDSearchText"];
+    
     [self dismissTextField];
     
     if (_delegate)
