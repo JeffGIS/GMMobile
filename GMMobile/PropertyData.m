@@ -114,6 +114,7 @@ static PropertyData *_propData;
     [self close];
     return array;
 }
+
 - (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];

@@ -73,7 +73,7 @@
     
     else
     {
-        _pidList = [_propData getPIDsMatchingString:textField.text];
+        _pidList = [_propData getPIDsWithOwnerMatchingString:textField.text];
         [_tableView reloadData];
     }
 }
@@ -82,12 +82,12 @@
 {
     [textField resignFirstResponder];
     
-    //NSString *pid = _pidList[0];
-    //LLPOINT pt = [_propData getPointForPID:pid];
-    //pid = [_propData pickPID:pt];
+    NSString *pid = _pidList[0];
+    LLPOINT pt = [_propData getPointForPID:pid];
+    pid = [_propData pickPID:pt];
     
-    //_pidList = [_propData getPIDsMatchingAddress:5144
-                                      //streetName:@"30"];
+    _pidList = [_propData getPIDsMatchingAddress:5144
+                                      streetName:@"30"];
 
     return NO;
 }
@@ -133,7 +133,7 @@
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 48.0;
+    return 80.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -144,26 +144,34 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:@"Cell"];
     }
     
     if (_pidList.count != 0)
     {
-        cell.textLabel.text = _pidList[indexPath.row];
+        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]];
+        cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterTab:_pidList[indexPath.row]];
         cell.textLabel.textColor = UIColor.blackColor;
+        cell.detailTextLabel.textColor = UIColor.blackColor;
+        cell.userInteractionEnabled = YES;
     }
     
     else
     {
         cell.textLabel.text = @"No PIDs match current search text";
+        cell.detailTextLabel.text = @"No PIDs match current search text";
         cell.textLabel.textColor = UIColor.grayColor;
+        cell.detailTextLabel.textColor = UIColor.grayColor;
+        cell.userInteractionEnabled = NO;
     }
     
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.detailTextLabel.textAlignment = NSTextAlignmentCenter;
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:32];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:24];
     return cell;
 }
 
