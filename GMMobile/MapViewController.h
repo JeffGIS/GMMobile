@@ -4,10 +4,12 @@
 #import "GSSiTileOverlay.h"
 #import "GSSiTileOverlayRenderer.h"
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "FindViewController.h"
+#import "PropertyData.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
-@property MKMapRect cityInnerBounds;
+@property (nonatomic) MKMapRect cityInnerBounds;
 
 @end

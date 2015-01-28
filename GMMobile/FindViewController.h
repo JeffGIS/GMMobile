@@ -2,18 +2,14 @@
 //  GMMobile
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "FindPIDViewController.h"
 
-@interface FindViewController : UIViewController
+@interface FindViewController : UIViewController <FindPIDViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *pidButton;
 @property (weak, nonatomic) IBOutlet UIButton *addressButton;
 @property (weak, nonatomic) IBOutlet UIButton *taxpayerButton;
 @property (weak, nonatomic) IBOutlet UIButton *intersectionButton;
-
-
-- (IBAction)findPID:(id)sender;
-- (IBAction)findAddress:(id)sender;
-- (IBAction)findTaxpayer:(id)sender;
-- (IBAction)findIntersection:(id)sender;
+@property (nonatomic) FindPIDViewController *findPID;
 
 @end

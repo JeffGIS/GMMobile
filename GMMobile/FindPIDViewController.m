@@ -167,4 +167,16 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self dismissTextField];
+    
+    if (_delegate)
+    {
+        [_delegate findPIDViewController:self
+                            didSelectPID:_pidList[indexPath.row]];
+    }
+}
+
 @end

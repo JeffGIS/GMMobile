@@ -32,24 +32,25 @@
     button.layer.borderWidth = 4.0;
 }
 
-- (IBAction)findPID:(id)sender
+- (void)prepareForSegue:(UIStoryboardSegue *)segue
+sender:(id)sender
 {
-    
+    if ([segue.identifier isEqualToString:@"showFindPID"])
+    {
+        FindPIDViewController *findPID = segue.destinationViewController;
+        findPID.delegate = self;
+    }
 }
 
-- (IBAction)findAddress:(id)sender
+- (void)findPIDViewController:(FindPIDViewController *)findPID
+                 didSelectPID:(NSString *)PID
 {
+    [findPID dismissViewControllerAnimated:YES
+                                completion:nil];
     
-}
-
-- (IBAction)findTaxpayer:(id)sender
-{
-    
-}
-
-- (IBAction)findIntersection:(id)sender
-{
-    
+    CRAPI.sharedInstance.GMMSetting = GMMSettingPID;
+    CRAPI.sharedInstance.currentPID = PID;
+    self.tabBarController.selectedIndex = 0;
 }
 
 @end

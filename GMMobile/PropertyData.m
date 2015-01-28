@@ -71,14 +71,14 @@ static PropertyData *_propData;
     }
 }
 
-- (LLPOINT) getPointForPID:(NSString *)PID
+- (LLPOINT)getPointForPID:(NSString *)PID
 {
     LLPOINT pt = {0};
     NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %@", PID];
     sqlite3_stmt *statement;
     
     [self open];
-    SQLOK (sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getPointForPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getPointForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -92,7 +92,7 @@ static PropertyData *_propData;
     return pt;
 }
 
--(NSMutableArray *) getPIDsMatchingString:(NSString *)matchChar
+- (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
@@ -122,7 +122,7 @@ static PropertyData *_propData;
     
     [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i", matchChar,houseNumber];
-    NSString *query2 = [NSString stringWithFormat:@"SELECT '%%HOUSE_NUM','%%STREET_NAME',UDIValue,AdditionalValue FROM ADDLOC"];
+    //NSString *query2 = [NSString stringWithFormat:@"SELECT '%%HOUSE_NUM','%%STREET_NAME',UDIValue,AdditionalValue FROM ADDLOC"];
     sqlite3_stmt *statement;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingAddress");
@@ -143,9 +143,9 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSString*)       pickPID:(LLPOINT)pt
+- (NSString *)pickPID:(LLPOINT)pt
 {
-    NSString * minPID=[[NSString alloc]init];
+    NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
     double d, mind = DBL_MAX;
     double pickap = 0.001;

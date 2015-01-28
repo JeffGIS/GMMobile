@@ -290,8 +290,7 @@
                                     </mask>
                                 </variation>
                                 <connections>
-                                    <action selector="findPID:" destination="T0p-0H-jNa" eventType="touchUpInside" id="DlZ-7Q-Qa6"/>
-                                    <segue destination="KrF-fK-Nqs" kind="presentation" id="e5A-qp-3sm"/>
+                                    <segue destination="KrF-fK-Nqs" kind="presentation" identifier="showFindPID" id="Dce-de-aB9"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I4U-TS-rgU">
@@ -317,9 +316,6 @@
                                         <include reference="rMS-yL-URz"/>
                                     </mask>
                                 </variation>
-                                <connections>
-                                    <action selector="findTaxpayer:" destination="T0p-0H-jNa" eventType="touchUpInside" id="O4U-eH-kW3"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="81b-nQ-ofa">
                                 <rect key="frame" x="16" y="160" width="568" height="90"/>
@@ -344,9 +340,6 @@
                                         <include reference="fTK-Ke-vVX"/>
                                     </mask>
                                 </variation>
-                                <connections>
-                                    <action selector="findAddress:" destination="T0p-0H-jNa" eventType="touchUpInside" id="7Cv-F8-7rE"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Q3-U8-roY">
                                 <rect key="frame" x="16" y="440" width="568" height="90"/>
@@ -371,9 +364,6 @@
                                         <exclude reference="dxY-Ey-4NB"/>
                                     </mask>
                                 </variation>
-                                <connections>
-                                    <action selector="findIntersection:" destination="T0p-0H-jNa" eventType="touchUpInside" id="0fE-wD-C6A"/>
-                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>

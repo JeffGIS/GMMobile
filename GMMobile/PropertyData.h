@@ -21,7 +21,7 @@
 - (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
                                 streetName:(NSString *)matchChar;
 
-- (LLPOINT)getPointForPID:(NSString*)PID;
+- (LLPOINT)getPointForPID:(NSString *)PID;
 - (NSString *)pickPID:(LLPOINT)pt;
 
 @end

@@ -11,6 +11,8 @@
 @property (nonatomic) UITapGestureRecognizer *doubleTap;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) UISegmentedControl *segmentedControl;
+@property (nonatomic) CLLocationCoordinate2D target;
+@property (nonatomic) PropertyData *propData;
 
 @end
 
@@ -22,18 +24,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _propData = [[PropertyData alloc] init];
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
-    CLLocationCoordinate2D target = CLLocationCoordinate2DMake(44.97, -93.27);
+    _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
-    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:target//camera target (center point)
-                                         fromEyeCoordinate:target//camera position (affects pitch)
+    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target//camera target (center point)
+                                         fromEyeCoordinate:_target//camera position (affects pitch)
                                                eyeAltitude:22000.0];//meters above ground (inversely affects zoom)
     
     _mapView.delegate = self;
-    _mapView.camera = _camera;
+    
+    [_mapView setCamera:_camera
+               animated:NO];
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
@@ -69,6 +74,33 @@
         [_locationManager requestWhenInUseAuthorization];
     
     [self setupSegmentedControl];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
+    {
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
+                                             fromEyeCoordinate:_target
+                                                   eyeAltitude:36000.0];
+        
+        [_mapView setCamera:_camera
+                   animated:NO];
+        
+        LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
+        CLLocationCoordinate2D pidCoord;
+        pidCoord.latitude = pidPoint.lat;
+        pidCoord.longitude = pidPoint.lon;
+        
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
+                                             fromEyeCoordinate:pidCoord
+                                                   eyeAltitude:550.0];
+        
+        [_mapView setCamera:_camera
+                   animated:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -133,8 +165,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)segmentedControlTapped:(UISegmentedControl *)segmentedControl
 {
-    CLLocationCoordinate2D target;
-    
     switch (segmentedControl.selectedSegmentIndex)
     {
         case 0:
@@ -146,10 +176,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             _mapView.userTrackingMode = MKUserTrackingModeNone;
             _mapView.rotateEnabled = YES;
             
-            target = CLLocationCoordinate2DMake(44.97, -93.27);
-            
-            _camera = [MKMapCamera cameraLookingAtCenterCoordinate:target
-                                                 fromEyeCoordinate:target
+            _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
+                                                 fromEyeCoordinate:_target
                                                        eyeAltitude:36000.0];
             
             [_mapView setCamera:_camera
