@@ -17,6 +17,7 @@
 - (void)startTransaction;
 - (void)commitTransaction;
 - (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar;
+- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar;
 
 - (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
                                 streetName:(NSString *)matchChar;

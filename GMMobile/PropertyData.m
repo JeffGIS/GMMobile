@@ -97,7 +97,7 @@ static PropertyData *_propData;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PARCELPOINT Where PID LIKE '%@%%'", matchChar];
+    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PROPINFO Where PID LIKE '%@%%'", matchChar];
     sqlite3_stmt *statement;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
@@ -105,7 +105,30 @@ static PropertyData *_propData;
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
-        NSString *pid = [NSString stringWithUTF8String:cpid];
+        NSString *pid = [NSString stringWithFormat:@"%s",cpid];
+        [array addObject:pid];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getPIDsMatchingString");
+    
+    [self close];
+    return array;
+}
+- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT PID,\"Owner Name\" FROM PROPINFO Where PID LIKE '%@%%'", matchChar];
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
+        LPSTR owner = (LPSTR)sqlite3_column_text(statement, 1);
+        NSString *pid = [NSString stringWithFormat:@"%s\t%s",cpid,owner];
         [array addObject:pid];
     }
     
