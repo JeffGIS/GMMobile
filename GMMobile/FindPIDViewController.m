@@ -94,7 +94,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [textField resignFirstResponder];
+    [self dismissTextField];
     return NO;
    
     /*NSString *pid = _pidList[0];
@@ -109,9 +109,6 @@
 
 - (IBAction)goBack:(id)sender
 {
-    [UserDefaults.defaults saveString:_pidEntry.text
-                               forKey:@"CurrentPIDSearchText"];
-    
     [self dismissTextField];
     
     [self dismissViewControllerAnimated:YES
@@ -126,6 +123,9 @@
 
 - (void)dismissTextField
 {
+    [UserDefaults.defaults saveString:_pidEntry.text
+                               forKey:@"CurrentPIDSearchText"];
+    
     for (UIView *textField in self.view.subviews)
     {
         if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)
@@ -196,9 +196,6 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [UserDefaults.defaults saveString:_pidEntry.text
-                               forKey:@"CurrentPIDSearchText"];
-    
     [self dismissTextField];
     
     if (_delegate)
