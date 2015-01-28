@@ -74,7 +74,7 @@ static PropertyData *_propData;
 - (LLPOINT)getPointForPID:(NSString *)PID
 {
     LLPOINT pt = {0};
-    NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %@", PID];
+    NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = '%@'", PID];
     sqlite3_stmt *statement;
     
     [self open];
