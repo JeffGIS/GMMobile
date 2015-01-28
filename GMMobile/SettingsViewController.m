@@ -50,27 +50,34 @@
     
     if (status == FTPStatusOK)
     {
-        FILE *fid = fopen (path.UTF8String, "rb");
-        LPSTR str = malloc(USHRT_MAX);
         PropertyData *pd = [[PropertyData alloc] init];
-        fseek (fid,0,SEEK_END);
-        float totLen = ftell (fid);
-        fseek (fid,0,SEEK_SET);
         [pd clear];
-        [pd startTransaction];
         _popover.title = @"Load Property File";
+        dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
         
-        while (fgetstring(str, (USHRT_MAX - 2), fid))
-        {
-            [pd executeCmd:str];
-            [_popover updateProgress:ftell(fid)/totLen];
-        }
-        
-        [pd commitTransaction];
-        fclose(fid);
-        free(str);
+        dispatch_async(overallQueue,
+        ^{
+       
+           FILE *fid = fopen (path.UTF8String, "rb");
+           LPSTR str = malloc(USHRT_MAX);
+           fseek (fid,0,SEEK_END);
+           float totLen = ftell (fid);
+           fseek (fid,0,SEEK_SET);
+           [pd startTransaction];
+            while (fgetstring(str, (USHRT_MAX - 2), fid))
+            {
+                [pd executeCmd:str];
+                dispatch_async(dispatch_get_main_queue(),
+                ^{
+                    [_popover updateProgress:ftell(fid)/totLen];
+                });
+            }
+            [pd commitTransaction];
+            fclose(fid);
+            free(str);
+            [_popover hide];
+       });
     }
-    [_popover hide];
 }
 
 - (IBAction)preloadTiles:(id)sender

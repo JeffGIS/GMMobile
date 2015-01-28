@@ -57,7 +57,7 @@ static PropertyData *_propData;
 {
     [self close];
     
-    [NSFileManager.defaultManager removeItemAtPath:_path
+    BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
                                              error:nil];
 }
 
