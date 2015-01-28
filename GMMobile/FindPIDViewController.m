@@ -55,6 +55,20 @@
     _pidEntry.layer.borderWidth = 4.0;
     _pidEntry.layer.cornerRadius = 10.0;
     
+    NSString *pidSearchText = [UserDefaults.defaults stringForKey:@"CurrentPIDSearchText"];
+    
+    if (![pidSearchText isEqualToString:@""])
+    {
+        _pidEntry.text = pidSearchText;
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        _pidList = [propData getPIDsWithOwnerMatchingString:pidSearchText];
+        [_tableView reloadData];
+    }
+    
+    _pidEntry.text = pidSearchText;
+    
+    
     [_pidEntry addTarget:self
                   action:@selector(textFieldDidChange:)
         forControlEvents:UIControlEventEditingChanged];
@@ -95,6 +109,9 @@
 
 - (IBAction)goBack:(id)sender
 {
+    [UserDefaults.defaults saveString:_pidEntry.text
+                               forKey:@"CurrentPIDSearchText"];
+    
     [self dismissTextField];
     
     [self dismissViewControllerAnimated:YES
