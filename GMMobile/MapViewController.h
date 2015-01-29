@@ -11,5 +11,7 @@
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
 @property (nonatomic) MKMapRect cityInnerBounds;
+@property (weak, nonatomic) IBOutlet UIButton *userLocationButton;
+@property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;
 
 @end
