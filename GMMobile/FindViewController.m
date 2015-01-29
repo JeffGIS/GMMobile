@@ -30,6 +30,7 @@
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UserDefaults.defaults.green.CGColor;
     button.layer.borderWidth = 4.0;
+    button.titleLabel.adjustsFontSizeToFitWidth = YES;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue
