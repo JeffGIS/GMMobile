@@ -12,6 +12,7 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) CLLocationCoordinate2D target;
+@property (nonatomic) PropertyData *propData;
 
 @end
 
@@ -28,6 +29,7 @@
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
+    _propData = [[PropertyData alloc] init];
     
     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target//camera target (center point)
                                          fromEyeCoordinate:_target//camera position (affects pitch)
@@ -87,8 +89,7 @@
         [_mapView setCamera:_camera
                    animated:NO];
         
-        PropertyData *propData = [[PropertyData alloc] init];
-        LLPOINT pidPoint = [propData getPointForPID:CRAPI.sharedInstance.currentPID];
+        LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
@@ -131,6 +132,7 @@ regionDidChangeAnimated:(BOOL)animated
     
     if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
         _osmOverlay.maximumZ = 12;
+    
     else
         _osmOverlay.maximumZ = 19;
 }
@@ -143,7 +145,32 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didDoubleTapMap:(UIGestureRecognizer *)gesture
 {
-    NSLog(@"The map was double tapped");
+    CGPoint pointPicked = [gesture locationInView:_mapView];
+    
+    CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
+                                           toCoordinateFromView:_mapView];
+    
+    LLPOINT llp;
+    llp.lat = coordPicked.latitude;
+    llp.lon = coordPicked.longitude;
+    
+    NSString *PIDString = [_propData pickPID:llp];
+    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+    annotation.coordinate = coordPicked;
+    annotation.title = PIDString;
+    [_mapView addAnnotation:annotation];
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView
+            viewForAnnotation:(id <MKAnnotation>)annotation
+{
+    MKAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+                                                                       reuseIdentifier:@"loc"];
+    
+    annotationView.canShowCallout = YES;
+    annotationView.selected = YES;
+    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    return annotationView;
 }
 
 - (void)setupSegmentedControl
