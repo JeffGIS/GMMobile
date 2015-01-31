@@ -25,9 +25,6 @@
 {
     [super viewDidLoad];
     
-    [self setupButton:_zoomToExtentButton];
-    [self setupButton:_userLocationButton];
-    
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
@@ -74,6 +71,9 @@
     
     [self extentZoom:YES];
     [self setupOverlayView];
+    
+    [self setupButton:_zoomToExtentButton];
+    [self setupButton:_userLocationButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -123,6 +123,7 @@
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UIColor.blackColor.CGColor;
     button.layer.borderWidth = 2.0;
+    [self.view bringSubviewToFront:button];
 }
 
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
