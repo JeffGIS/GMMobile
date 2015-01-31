@@ -132,6 +132,11 @@
     return renderer;
 }
 
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
+{
+    [self clearOverlayView];
+}
+
 - (void)mapView:(MKMapView *)mapView
 regionDidChangeAnimated:(BOOL)animated
 {
@@ -158,6 +163,8 @@ regionDidChangeAnimated:(BOOL)animated
     
     else
         _osmOverlay.maximumZ = 19;
+
+    [self refreshOverlayView];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -214,9 +221,26 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self extentZoom:YES];
 }
 
--(void) mapViewWillStartLoadingMap:(MKMapView *)mapView
+- (void)clearOverlayView
 {
-    NSLog (@"Will start loading map");
+    _overlayView.alpha = 0.0;
+}
+- (void)refreshOverlayView
+{
+    _overlayView.alpha = 0.1;
+}
+- (void)setupOverlayView
+{
+    CGRect mapFrame = _mapView.frame;
+    
+    CGRect overlayFrame = CGRectMake(mapFrame.origin.x, mapFrame.origin.y, self.view.frame.size.width,
+                                     (self.view.frame.size.height - mapFrame.origin.y));
+    
+    _overlayView = [[UIView alloc] initWithFrame:overlayFrame];
+    _overlayView.userInteractionEnabled = NO;
+    _overlayView.backgroundColor = UIColor.yellowColor;
+    _overlayView.alpha = 0.1;
+    [self.view addSubview:_overlayView];
 }
 -(void) mapViewDidFinishLoadingMap:(MKMapView *)mapView
 {
