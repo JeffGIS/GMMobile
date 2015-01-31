@@ -12,7 +12,6 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) PropertyData *propData;
-@property (nonatomic) UIView *overlayView;
 @property (nonatomic) BOOL clearAnnotations;
 
 @end
@@ -215,13 +214,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)setupOverlayView
 {
-    CGRect mapFrame = _mapView.frame;
-    
-    CGRect overlayFrame = CGRectMake(mapFrame.origin.x, mapFrame.origin.y, self.view.frame.size.width,
-                                     (self.view.frame.size.height - mapFrame.origin.y));
-    
-    _overlayView = [[UIView alloc] initWithFrame:overlayFrame];
-    _overlayView.userInteractionEnabled = NO;
     _overlayView.backgroundColor = UIColor.yellowColor;
     _overlayView.alpha = 0.1;
     [self.view addSubview:_overlayView];

@@ -14,5 +14,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *userLocationButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;
 @property (weak, nonatomic) IBOutlet UISwitch *annotationSwitch;
+@property (weak, nonatomic) IBOutlet UIView *overlayView;
 
 @end
