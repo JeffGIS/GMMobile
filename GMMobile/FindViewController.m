@@ -31,12 +31,13 @@
     button.layer.borderColor = UserDefaults.defaults.green.CGColor;
     button.layer.borderWidth = 4.0;
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue
-sender:(id)sender
+                 sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"showFindPID"])
+    if ([segue.identifier isEqualToString:@"ShowFindPID"])
     {
         FindPIDViewController *findPID = segue.destinationViewController;
         findPID.delegate = self;
