@@ -100,6 +100,9 @@
         annotation.coordinate = pidCoord;
         annotation.title = CRAPI.sharedInstance.currentPID;
         [_mapView addAnnotation:annotation];
+        
+        [_mapView selectAnnotation:annotation
+                          animated:NO];
     }
 }
 
@@ -167,6 +170,8 @@ regionDidChangeAnimated:(BOOL)animated
     [self refreshOverlayView];
 }
 
+
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
@@ -188,7 +193,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
+    
     [_mapView addAnnotation:annotation];
+    
+    [_mapView selectAnnotation:annotation
+                      animated:NO];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
@@ -198,7 +207,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                        reuseIdentifier:@"loc"];
     
     annotationView.canShowCallout = YES;
-    annotationView.selected = YES;
     annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
     return annotationView;
 }
