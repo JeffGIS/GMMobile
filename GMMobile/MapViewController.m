@@ -12,6 +12,7 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) PropertyData *propData;
+@property (nonatomic) UIView *overlayView;
 
 @end
 
@@ -72,6 +73,7 @@
         [_locationManager requestWhenInUseAuthorization];
     
     [self extentZoom:YES];
+    [self setupOverlayView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -204,6 +206,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     _mapView.rotateEnabled = YES;
     
     [self extentZoom:YES];
+}
+
+- (void)setupOverlayView
+{
+    CGRect mapFrame = _mapView.frame;
+    
+    CGRect overlayFrame = CGRectMake(mapFrame.origin.x, mapFrame.origin.y, self.view.frame.size.width,
+                                     (self.view.frame.size.height - mapFrame.origin.y));
+    
+    _overlayView = [[UIView alloc] initWithFrame:overlayFrame];
+    _overlayView.userInteractionEnabled = NO;
+    _overlayView.backgroundColor = UIColor.yellowColor;
+    _overlayView.alpha = 0.1;
+    [self.view addSubview:_overlayView];
 }
 
 @end
