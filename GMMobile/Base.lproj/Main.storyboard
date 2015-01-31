@@ -51,10 +51,20 @@
                                     <action selector="userLocation:" destination="9pv-A4-QxB" eventType="touchUpInside" id="66L-Qd-ZWm"/>
                                 </connections>
                             </button>
+                            <switch opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NMB-Pr-k9S">
+                                <rect key="frame" x="120" y="36" width="51" height="31"/>
+                                <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="onTintColor" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <connections>
+                                    <action selector="toggleAnnotationState:" destination="9pv-A4-QxB" eventType="valueChanged" id="Msp-d9-UMi"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="NMB-Pr-k9S" secondAttribute="bottom" constant="-47" id="2nQ-8k-Q69"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-8" id="33Z-9M-k7x"/>
+                            <constraint firstItem="NMB-Pr-k9S" firstAttribute="centerY" secondItem="KAY-Pf-P3t" secondAttribute="centerY" constant="-0.5" id="FeW-VD-i5G"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="Hez-YA-rTn"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="8" id="Igb-CC-PUE"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="JzS-V6-Dwp"/>
@@ -63,6 +73,7 @@
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="trailing" constant="-60" id="bRb-lx-fmB"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="AEa-ny-Blc" secondAttribute="bottom" id="dZF-jo-99j"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="SBD-ai-nP6" secondAttribute="bottom" constant="-56" id="pww-1D-oQP"/>
+                            <constraint firstItem="NMB-Pr-k9S" firstAttribute="leading" secondItem="KAY-Pf-P3t" secondAttribute="trailing" constant="8" id="sd1-kY-oUq"/>
                             <constraint firstItem="KAY-Pf-P3t" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="trailing" constant="8" id="zwC-Ho-S9P"/>
                         </constraints>
                     </view>
@@ -70,6 +81,7 @@
                     <tabBarItem key="tabBarItem" title="Map" image="map.png" id="acW-dT-cKf"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
+                        <outlet property="annotationSwitch" destination="NMB-Pr-k9S" id="90f-xL-6Os"/>
                         <outlet property="mapView" destination="AEa-ny-Blc" id="SVf-2V-TZT"/>
                         <outlet property="userLocationButton" destination="SBD-ai-nP6" id="We4-pc-tmN"/>
                         <outlet property="zoomToExtentButton" destination="KAY-Pf-P3t" id="1oM-mO-lw9"/>

@@ -13,6 +13,7 @@
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) PropertyData *propData;
 @property (nonatomic) UIView *overlayView;
+@property (nonatomic) BOOL clearAnnotations;
 
 @end
 
@@ -99,10 +100,7 @@
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
         annotation.title = CRAPI.sharedInstance.currentPID;
-        [_mapView addAnnotation:annotation];
-        
-        [_mapView selectAnnotation:annotation
-                          animated:NO];
+        [self addAnnotation:annotation];
     }
 }
 
@@ -180,11 +178,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
-    
-    [_mapView addAnnotation:annotation];
-    
-    [_mapView selectAnnotation:annotation
-                      animated:NO];
+    [self addAnnotation:annotation];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
@@ -231,6 +225,32 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     _overlayView.backgroundColor = UIColor.yellowColor;
     _overlayView.alpha = 0.1;
     [self.view addSubview:_overlayView];
+}
+
+- (IBAction)toggleAnnotationState:(id)sender
+{
+    if (_annotationSwitch.on)
+        _clearAnnotations = NO;
+    
+    else
+        _clearAnnotations = YES;
+}
+
+- (void)addAnnotation:(id<MKAnnotation>)annotation
+{
+    if (_clearAnnotations)
+    {
+        for (id<MKAnnotation> annotation in _mapView.annotations)
+        {
+            if (![annotation isKindOfClass:MKUserLocation.class])
+                [_mapView removeAnnotation:annotation];
+        }
+    }
+    
+    [_mapView addAnnotation:annotation];
+    
+    [_mapView selectAnnotation:annotation
+                      animated:NO];
 }
 
 @end
