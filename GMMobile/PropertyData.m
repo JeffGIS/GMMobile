@@ -288,4 +288,15 @@ int SQLOK(int sqlReturn, char *method)
     [_popover hide];
 }
 
+-(BOOL) loadParcelPolygons:(NSString*)fromPath
+{
+    BOOL rtn=FALSE;
+    
+    [self open];
+    
+    NSString * cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY, maxY);";
+    [self executeCmd:cmd.UTF8String];
+    [self close];
+    return rtn;
+}
 @end

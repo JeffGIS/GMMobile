@@ -15,8 +15,8 @@
     
     //this is where we query the tiles table to add custom drawing
     
-/*
-    CGRect rect = [self rectForMapRect:mapRect];
+
+ /*   CGRect rect = [self rectForMapRect:mapRect];
     
     MKTileOverlayPath path;
     MKTileOverlay *tileOverlay = (MKTileOverlay *)self.overlay;
@@ -36,8 +36,8 @@
       withAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:(20.0 / zoomScale)],
                        NSForegroundColorAttributeName:UIColor.blueColor}];
     
-    UIGraphicsPopContext();
-*/
+    UIGraphicsPopContext();*/
+
 }
 
 @end

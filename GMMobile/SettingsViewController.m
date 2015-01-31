@@ -83,7 +83,9 @@
 
 - (IBAction)preloadTiles:(id)sender
 {
-    
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd loadParcelPolygons:@""];
+ 
 }
 
 -(void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView

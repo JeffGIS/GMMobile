@@ -25,4 +25,6 @@
 - (LLPOINT)getPointForPID:(NSString *)PID;
 - (NSString *)pickPID:(LLPOINT)pt;
 
+-(BOOL) loadParcelPolygons:(NSString*)fromPath;
+
 @end

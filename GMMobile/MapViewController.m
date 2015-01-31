@@ -129,14 +129,20 @@
 - (void)mapView:(MKMapView *)mapView
 regionDidChangeAnimated:(BOOL)animated
 {
-    if (mapView.camera.altitude < 549.9)
+    MKMapRect visRect = mapView.visibleMapRect;
+    CGRect mrect = [mapView convertRegion:mapView.region toRectToView:mapView.superview];
+    double xScale = visRect.size.width / mrect.size.width;
+    double yScale = visRect.size.height/ mrect.size.height;
+    CLLocationCoordinate2D latlon = [mapView convertPoint:mrect.origin toCoordinateFromView:mapView.superview];
+    double mapScale = GroundResolution(latlon.latitude, 19);
+ /*   if (mapView.camera.altitude < 299.0)
         {
             _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
                                                  fromEyeCoordinate:mapView.centerCoordinate
-                                                       eyeAltitude:550.0];
+                                                       eyeAltitude:300.0];
         
             mapView.camera = _camera;
-        }
+        }*/
     
     MKMapRect rect = mapView.visibleMapRect;
     MKMapRect intRect = MKMapRectUnion(rect,_cityInnerBounds);
@@ -202,4 +208,24 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self extentZoom:YES];
 }
 
+-(void) mapViewWillStartLoadingMap:(MKMapView *)mapView
+{
+    NSLog (@"Will start loading map");
+}
+-(void) mapViewDidFinishLoadingMap:(MKMapView *)mapView
+{
+    NSLog (@"Did finish loading map");
+}
+-(void) mapViewWillStartRenderingMap:(MKMapView *)mapView
+{
+    NSLog(@"Start rendering");
+}
+ -(void) mapViewDidFinishRenderingMap:(MKMapView *)mapView fullyRendered:(BOOL)fullyRendered
+{
+    NSLog(@"Stop rendering");
+    if (fullyRendered)
+    {
+        NSLog(@"Fully rendered");
+    }
+}
 @end
