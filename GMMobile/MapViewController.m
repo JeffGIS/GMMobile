@@ -12,6 +12,7 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) PropertyData *propData;
+@property (nonatomic) UIView *overlayView;
 
 @end
 
@@ -72,6 +73,7 @@
         [_locationManager requestWhenInUseAuthorization];
     
     [self extentZoom:YES];
+    [self setupOverlayView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -93,6 +95,11 @@
         
         [_mapView setCamera:_camera
                    animated:YES];
+        
+        MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+        annotation.coordinate = pidCoord;
+        annotation.title = CRAPI.sharedInstance.currentPID;
+        [_mapView addAnnotation:annotation];
     }
 }
 
@@ -116,7 +123,6 @@
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UIColor.blackColor.CGColor;
     button.layer.borderWidth = 2.0;
-    [self.view bringSubviewToFront:button];
 }
 
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
