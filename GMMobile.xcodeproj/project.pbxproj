@@ -14,6 +14,8 @@
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
 		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
 		A98DFEA01A68C19B003F0880 /* GSSiTileOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */; };
+		A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC11A7A8D9C0094562B /* userLocation.png */; };
+		A9C78BC41A7A8E590094562B /* zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC31A7A8E590094562B /* zoom.png */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */; };
@@ -57,6 +59,8 @@
 		A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlay.m; sourceTree = "<group>"; };
 		A98DFE9E1A68C19B003F0880 /* GSSiTileOverlayRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlayRenderer.h; sourceTree = "<group>"; };
 		A98DFE9F1A68C19B003F0880 /* GSSiTileOverlayRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlayRenderer.m; sourceTree = "<group>"; };
+		A9C78BC11A7A8D9C0094562B /* userLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = userLocation.png; sourceTree = "<group>"; };
+		A9C78BC31A7A8E590094562B /* zoom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoom.png; sourceTree = "<group>"; };
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bmomxcqdduclkngeclsnuwqvhudu/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 		A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
@@ -121,6 +125,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9C78BC31A7A8E590094562B /* zoom.png */,
+				A9C78BC11A7A8D9C0094562B /* userLocation.png */,
 				A905064B1A75E28E00288850 /* themes.png */,
 				A90506471A75E24100288850 /* layers.png */,
 				A90506431A75E12B00288850 /* find.png */,
@@ -337,6 +343,8 @@
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
+				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
+				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,

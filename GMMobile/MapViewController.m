@@ -10,7 +10,6 @@
 @property (nonatomic) MKMapCamera *camera;
 @property (nonatomic) UITapGestureRecognizer *doubleTap;
 @property (nonatomic) CLLocationManager *locationManager;
-@property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) PropertyData *propData;
 
@@ -24,21 +23,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self setupButton:_zoomToExtentButton];
+    [self setupButton:_userLocationButton];
+    
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
-    _target = CLLocationCoordinate2DMake(44.97, -93.27);
     _propData = [[PropertyData alloc] init];
-    
-    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target//camera target (center point)
-                                         fromEyeCoordinate:_target//camera position (affects pitch)
-                                               eyeAltitude:22000.0];//meters above ground (inversely affects zoom)
-    
     _mapView.delegate = self;
+    _mapView.showsUserLocation = YES;
+    _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
-    [_mapView setCamera:_camera
-               animated:NO];
+    [self extentZoom:NO];
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
@@ -73,7 +71,7 @@
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
         [_locationManager requestWhenInUseAuthorization];
     
-    [self setupSegmentedControl];
+    [self extentZoom:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -82,12 +80,7 @@
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
     {
-        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
-                                             fromEyeCoordinate:_target
-                                                   eyeAltitude:36000.0];
-        
-        [_mapView setCamera:_camera
-                   animated:NO];
+        [self extentZoom:NO];
         
         LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
         CLLocationCoordinate2D pidCoord;
@@ -106,6 +99,24 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)extentZoom:(BOOL)animated
+{
+    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
+                                         fromEyeCoordinate:_target
+                                               eyeAltitude:36000.0];
+    
+    [_mapView setCamera:_camera
+               animated:animated];
+}
+
+- (void)setupButton:(UIButton *)button
+{
+    button.layer.cornerRadius = 10.0;
+    button.layer.borderColor = UIColor.blackColor.CGColor;
+    button.layer.borderWidth = 2.0;
+    [self.view bringSubviewToFront:button];
 }
 
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
@@ -173,43 +184,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return annotationView;
 }
 
-- (void)setupSegmentedControl
+- (IBAction)userLocation:(id)sender
 {
-    CGFloat width = (self.view.frame.size.width / 3.8);
-    _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"My Location", @"Zoom to Extent"]];
-    
-    _segmentedControl.frame = CGRectMake(10.0, 26.0, width, (self.view.frame.size.height / 25.6));
-    
-    _segmentedControl.backgroundColor = UIColor.whiteColor;
-    _segmentedControl.selectedSegmentIndex = 1;
-    [self.view addSubview:_segmentedControl];
-    
-    [_segmentedControl addTarget:self
-                          action:@selector(segmentedControlTapped:)
-                forControlEvents:UIControlEventValueChanged];
+    [_mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading
+                         animated:YES];
+
+    _mapView.rotateEnabled = NO;
 }
 
-- (void)segmentedControlTapped:(UISegmentedControl *)segmentedControl
+- (IBAction)zoomToExtent:(id)sender
 {
-    switch (segmentedControl.selectedSegmentIndex)
-    {
-        case 0:
-            _mapView.userTrackingMode = MKUserTrackingModeFollowWithHeading;
-            _mapView.rotateEnabled = NO;
-            break;
-            
-        case 1:
-            _mapView.userTrackingMode = MKUserTrackingModeNone;
-            _mapView.rotateEnabled = YES;
-            
-            _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
-                                                 fromEyeCoordinate:_target
-                                                       eyeAltitude:36000.0];
-            
-            [_mapView setCamera:_camera
-                       animated:YES];
-            break;
-    }
+    [_mapView setUserTrackingMode:MKUserTrackingModeNone
+                         animated:NO];
+    
+    _mapView.rotateEnabled = YES;
+    
+    [self extentZoom:YES];
 }
 
 @end

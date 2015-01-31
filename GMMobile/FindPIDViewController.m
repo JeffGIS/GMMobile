@@ -43,6 +43,7 @@
 {
     _backButton.backgroundColor = UIColor.blackColor;
     _backButton.layer.cornerRadius = 10.0;
+    _backButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     
     [_backButton setTitleColor:UIColor.whiteColor
                       forState:UIControlStateNormal];
@@ -54,6 +55,7 @@
     _pidEntry.layer.borderColor = UIColor.blackColor.CGColor;
     _pidEntry.layer.borderWidth = 4.0;
     _pidEntry.layer.cornerRadius = 10.0;
+    _pidEntry.adjustsFontSizeToFitWidth = YES;
     
     NSString *pidSearchText = [UserDefaults.defaults stringForKey:@"CurrentPIDSearchText"];
     
@@ -190,12 +192,16 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
     cell.layer.borderWidth = 0.5;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:32];
     cell.detailTextLabel.font = [UIFont systemFontOfSize:24];
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"hello");
+    
     [self dismissTextField];
     
     if (_delegate)
