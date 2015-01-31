@@ -116,7 +116,6 @@
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UIColor.blackColor.CGColor;
     button.layer.borderWidth = 2.0;
-    [self.view bringSubviewToFront:button];
 }
 
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
