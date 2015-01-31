@@ -93,6 +93,11 @@
         
         [_mapView setCamera:_camera
                    animated:YES];
+        
+        MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+        annotation.coordinate = pidCoord;
+        annotation.title = CRAPI.sharedInstance.currentPID;
+        [_mapView addAnnotation:annotation];
     }
 }
 
