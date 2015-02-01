@@ -147,8 +147,19 @@ regionDidChangeAnimated:(BOOL)animated
     CGRect mrect = [mapView convertRegion:mapView.region toRectToView:mapView.superview];
     double xScale = visRect.size.width / mrect.size.width;
     double yScale = visRect.size.height/ mrect.size.height;
-    CLLocationCoordinate2D latlon = [mapView convertPoint:mrect.origin toCoordinateFromView:mapView.superview];
-    double mapScale = GroundResolution(latlon.latitude, 19);
+    CLLocationCoordinate2D latlon1 = [mapView convertPoint:mrect.origin toCoordinateFromView:mapView.superview];
+    CGPoint lrpoint;
+    lrpoint.x = mrect.origin.x + mrect.size.width;
+    lrpoint.y = mrect.origin.y;// + mrect.size.height;
+    CLLocationCoordinate2D latlon2 = [mapView convertPoint:lrpoint toCoordinateFromView:mapView.superview];
+    DPOINT p1,p2;
+    p1.x = latlon1.longitude;
+    p1.y = latlon1.latitude;
+    p2.x = latlon2.longitude;
+    p2.y = latlon2.latitude;
+    double d = ArcDistance(p1,p2);
+    xScale = d/mrect.size.width;
+    double mapScale = GroundResolution(latlon1.latitude, 19);
  /*   if (mapView.camera.altitude < 299.0)
         {
             _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
