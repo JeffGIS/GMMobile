@@ -251,20 +251,31 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     _overlayView.alpha = 0.1;
     [self.view addSubview:_overlayView];
 }
--(void) mapViewDidFinishLoadingMap:(MKMapView *)mapView
+
+- (IBAction)toggleAnnotationState:(id)sender
 {
-    NSLog (@"Did finish loading map");
+    if (_annotationSwitch.on)
+        _clearAnnotations = NO;
+    
+    else
+        _clearAnnotations = YES;
 }
--(void) mapViewWillStartRenderingMap:(MKMapView *)mapView
+
+- (void)addAnnotation:(id<MKAnnotation>)annotation
 {
-    NSLog(@"Start rendering");
-}
- -(void) mapViewDidFinishRenderingMap:(MKMapView *)mapView fullyRendered:(BOOL)fullyRendered
-{
-    NSLog(@"Stop rendering");
-    if (fullyRendered)
+    if (_clearAnnotations)
     {
-        NSLog(@"Fully rendered");
+        for (id<MKAnnotation> annotation in _mapView.annotations)
+        {
+            if (![annotation isKindOfClass:MKUserLocation.class])
+                [_mapView removeAnnotation:annotation];
+        }
     }
+    
+    [_mapView addAnnotation:annotation];
+    
+    [_mapView selectAnnotation:annotation
+                      animated:NO];
 }
+
 @end
