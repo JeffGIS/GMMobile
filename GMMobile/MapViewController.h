@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "GSSiTileOverlay.h"
-#import "GSSiTileOverlayRenderer.h"
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import "FindViewController.h"
 #import "PropertyData.h"

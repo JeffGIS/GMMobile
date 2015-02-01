@@ -53,12 +53,12 @@ static PropertyData *_propData;
     return YES;
 }
 
--(void)clear
+- (void)clear
 {
     [self close];
     
     BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
-                                             error:nil];
+                                                       error:nil];
 }
 
 - (void)FTPdidComplete:(int)status
@@ -283,19 +283,20 @@ int SQLOK(int sqlReturn, char *method)
     return sqlReturn;
 }
 
--(void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     [_popover hide];
 }
 
--(BOOL) loadParcelPolygons:(NSString*)fromPath
+- (BOOL)loadParcelPolygons:(NSString *)fromPath
 {
-    BOOL rtn=FALSE;
+    BOOL rtn = NO;
     
     [self open];
     
-    NSString * cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY, maxY);";
-    [self executeCmd:cmd.UTF8String];
+    NSString *cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY, maxY);";
+    
+    [self executeCmd:(char *)cmd.UTF8String];
     [self close];
     return rtn;
 }
