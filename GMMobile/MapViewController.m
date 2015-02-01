@@ -74,6 +74,7 @@
     
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
+    [self.view bringSubviewToFront:_annotationSwitch];
 }
 
 - (void)viewWillAppear:(BOOL)animated
