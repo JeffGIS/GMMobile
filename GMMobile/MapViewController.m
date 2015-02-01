@@ -46,8 +46,8 @@
     [_mapView addOverlay:_osmOverlay
                    level:MKOverlayLevelAboveLabels];
     
-    NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
-    //NSString *gmm = @"http://74.36.108.94/icons/MPLS/{z}/{y}/{x}.png";
+    //NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
+    NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
     _gmmOverlay.canReplaceMapContent = YES;
     _gmmOverlay.minimumZ = 12;
@@ -82,7 +82,7 @@
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
     {
-        [self extentZoom:NO];
+        //[self extentZoom:NO];
         
         LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
         CLLocationCoordinate2D pidCoord;
@@ -142,13 +142,12 @@
 regionDidChangeAnimated:(BOOL)animated
 {
     MKMapRect visRect = mapView.visibleMapRect;
-    CGRect mrect = [mapView convertRegion:mapView.region toRectToView:mapView.superview];
-    double xScale = visRect.size.width / mrect.size.width;
-    double yScale = visRect.size.height/ mrect.size.height;
+    MKCoordinateRegion region = mapView.region;
+    CGRect mrect = [mapView convertRegion:region toRectToView:mapView.superview];
     CLLocationCoordinate2D latlon1 = [mapView convertPoint:mrect.origin toCoordinateFromView:mapView.superview];
     CGPoint lrpoint;
     lrpoint.x = mrect.origin.x + mrect.size.width;
-    lrpoint.y = mrect.origin.y;// + mrect.size.height;
+    lrpoint.y = mrect.origin.y + mrect.size.height;
     CLLocationCoordinate2D latlon2 = [mapView convertPoint:lrpoint toCoordinateFromView:mapView.superview];
     DPOINT p1,p2;
     p1.x = latlon1.longitude;
@@ -156,8 +155,8 @@ regionDidChangeAnimated:(BOOL)animated
     p2.x = latlon2.longitude;
     p2.y = latlon2.latitude;
     double d = ArcDistance(p1,p2);
-    xScale = d/mrect.size.width;
-    double mapScale = GroundResolution(latlon1.latitude, 19);
+    double currentScale = d/LDIST(0,0,mrect.size.width,mrect.size.height);
+    double wantScale = GroundResolution(latlon1.latitude, 19);
  /*   if (mapView.camera.altitude < 299.0)
         {
             _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
@@ -166,9 +165,12 @@ regionDidChangeAnimated:(BOOL)animated
         
             mapView.camera = _camera;
         }*/
-    
-    MKMapRect rect = mapView.visibleMapRect;
-    MKMapRect intRect = MKMapRectUnion(rect,_cityInnerBounds);
+    _camera = mapView.camera;
+    region.span.latitudeDelta/=2;
+    region.span.longitudeDelta/=2;
+    //[mapView setRegion:region];
+    _camera = mapView.camera;
+    MKMapRect intRect = MKMapRectUnion(visRect,_cityInnerBounds);
     
     if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
         _osmOverlay.maximumZ = 12;
