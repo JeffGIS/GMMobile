@@ -294,7 +294,7 @@ int SQLOK(int sqlReturn, char *method)
     
     [self open];
     
-    NSString *cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY, maxY);";
+    NSString *cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY,maxY);";
     
     [self executeCmd:(char *)cmd.UTF8String];
     [self close];
