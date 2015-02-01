@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "FindAddressViewController.h"
+#import "PropertyData.h"
 
 @interface FindAddressViewController ()
 
@@ -22,6 +23,14 @@
     [self setupTextField:_streetTF];
     _houseLabel.textColor = UIColor.whiteColor;
     _streetLabel.textColor = UIColor.whiteColor;
+    
+    [_houseTF addTarget:self
+                 action:@selector(houseTFDidChange:)
+       forControlEvents:UIControlEventEditingChanged];
+    
+    [_streetTF addTarget:self
+                 action:@selector(streetTFDidChange:)
+       forControlEvents:UIControlEventEditingChanged];
 }
 
 - (void)didReceiveMemoryWarning
@@ -61,19 +70,30 @@
     textField.adjustsFontSizeToFitWidth = YES;
 }
 
+- (void)houseTFDidChange:(UITextField *)textField
+{
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _addressList = [propData getPIDsMatchingAddress:textField.text.intValue
+                                         streetName:_streetTF.text];
+    
+    [_tableView reloadData];
+}
+
+- (void)streetTFDidChange:(UITextField *)textField
+{
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _addressList = [propData getPIDsMatchingAddress:_houseTF.text.intValue
+                                         streetName:textField.text];
+    
+    [_tableView reloadData];
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self dismissTextField];
     return NO;
-    
-    /*NSString *pid = _pidList[0];
-     LLPOINT pt = [_propData getPointForPID:pid];
-     pid = [_propData pickPID:pt];
-     
-     _pidList = [_propData getPIDsMatchingAddress:5144
-     streetName:@"30"];
-     
-     return NO;*/
 }
 
 - (IBAction)goBack:(id)sender
@@ -134,8 +154,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (_addressList.count != 0)
     {
-        //cell.textLabel.text = [UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]];
-        //cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterTab:_pidList[indexPath.row]];
+        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]];
+        cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterLastTab:_addressList[indexPath.row]];
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;

@@ -71,7 +71,6 @@
     
     _pidEntry.text = pidSearchText;
     
-    
     [_pidEntry addTarget:self
                   action:@selector(textFieldDidChange:)
         forControlEvents:UIControlEventEditingChanged];
@@ -99,15 +98,6 @@
 {
     [self dismissTextField];
     return NO;
-   
-    /*NSString *pid = _pidList[0];
-    LLPOINT pt = [_propData getPointForPID:pid];
-    pid = [_propData pickPID:pt];
-    
-    _pidList = [_propData getPIDsMatchingAddress:5144
-                                      streetName:@"30"];
-
-    return NO;*/
 }
 
 - (IBAction)goBack:(id)sender
