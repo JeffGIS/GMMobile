@@ -176,6 +176,7 @@ regionDidChangeAnimated:(BOOL)animated
     _camera = mapView.camera;
     MKMapRect intRect = MKMapRectUnion(visRect,_cityInnerBounds);
     
+    
     if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
         _osmOverlay.maximumZ = 12;
     

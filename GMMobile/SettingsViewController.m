@@ -135,7 +135,8 @@
     _condition = [[NSCondition alloc]init];
     
     dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
-    
+    dispatch_queue_t tileQueue = dispatch_queue_create("tileQueue",NULL);
+  
     dispatch_async(overallQueue,
                    ^{
                        FILE *fid = fopen (fileList.UTF8String,"rb");
@@ -145,7 +146,6 @@
                        _keepGoing = YES;
                        while (_keepGoing && fgetstring(line,32, fid))
                        {
-                           dispatch_queue_t tileQueue = dispatch_queue_create("tileQueue",NULL);
                            MKTileOverlayPath top;
                            top.contentScaleFactor = 1;
                            [_condition lock];
@@ -173,7 +173,7 @@
                                                                  [popover updateProgress:(float)ftell(fid)/fileSize];
                                                              });
                                           });
-                       }
+                      }
                        fclose (fid);
                        [popover hide];
                    });
