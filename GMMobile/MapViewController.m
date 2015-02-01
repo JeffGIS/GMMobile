@@ -84,7 +84,8 @@
     {
         [self extentZoom:NO];
         
-        LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
+        NSString *currentPID = CRAPI.sharedInstance.currentPID;
+        LLPOINT pidPoint = [_propData getPointForPID:currentPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
@@ -98,7 +99,8 @@
         
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
-        annotation.title = CRAPI.sharedInstance.currentPID;
+        annotation.title = currentPID;
+        annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
         [self addAnnotation:annotation];
     }
 }
@@ -133,7 +135,8 @@
     return renderer;
 }
 
-- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
+- (void)mapView:(MKMapView *)mapView
+regionWillChangeAnimated:(BOOL)animated
 {
     [self clearOverlayView];
 }
@@ -212,6 +215,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
+    annotation.subtitle = [_propData getOwnerNameForPID:PIDString];
     [self addAnnotation:annotation];
 }
 
