@@ -74,6 +74,7 @@
     
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
+    [self.view bringSubviewToFront:_annotationSwitch];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -84,7 +85,8 @@
     {
         //[self extentZoom:NO];
         
-        LLPOINT pidPoint = [_propData getPointForPID:CRAPI.sharedInstance.currentPID];
+        NSString *currentPID = CRAPI.sharedInstance.currentPID;
+        LLPOINT pidPoint = [_propData getPointForPID:currentPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
@@ -98,7 +100,8 @@
         
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
-        annotation.title = CRAPI.sharedInstance.currentPID;
+        annotation.title = currentPID;
+        annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
         [self addAnnotation:annotation];
     }
 }
@@ -126,14 +129,15 @@
     [self.view bringSubviewToFront:button];
 }
 
-- (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
+- (MKTileOverlayRenderer *)mapView:(MKMapView *)mapView
             rendererForOverlay:(id <GSSiOverlay>)overlay
 {
-    GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    MKTileOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
 }
 
-- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
+- (void)mapView:(MKMapView *)mapView
+regionWillChangeAnimated:(BOOL)animated
 {
     [self clearOverlayView];
 }
@@ -204,6 +208,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
+    annotation.subtitle = [_propData getOwnerNameForPID:PIDString];
     [self addAnnotation:annotation];
 }
 
@@ -235,7 +240,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                          animated:NO];
     
     _mapView.rotateEnabled = YES;
-    
     [self extentZoom:YES];
 }
 
@@ -243,10 +247,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     _overlayView.alpha = 0.0;
 }
+
 - (void)refreshOverlayView
 {
     _overlayView.alpha = 0.1;
 }
+
 - (void)setupOverlayView
 {
     _overlayView.backgroundColor = UIColor.yellowColor;

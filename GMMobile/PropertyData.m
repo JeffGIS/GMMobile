@@ -53,12 +53,12 @@ static PropertyData *_propData;
     return YES;
 }
 
--(void)clear
+- (void)clear
 {
     [self close];
     
     BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
-                                             error:nil];
+                                                       error:nil];
 }
 
 - (void)FTPdidComplete:(int)status
@@ -74,10 +74,11 @@ static PropertyData *_propData;
 - (LLPOINT)getPointForPID:(NSString *)PID
 {
     LLPOINT pt = {0};
+    
+    [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = '%@'", PID];
     sqlite3_stmt *statement;
     
-    [self open];
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getPointForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
@@ -139,7 +140,7 @@ static PropertyData *_propData;
     return array;
 }
 
--(NSMutableArray *) getPIDsMatchingAddress:(int)houseNumber
+- (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
                                 streetName:(NSString *)matchChar
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
@@ -184,7 +185,7 @@ static PropertyData *_propData;
     [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT PID,LAT,LON FROM PARCELPOINT Where LAT > %f AND LAT < %f AND LON > %f AND LON < %f",
-                       bnds.ymn,bnds.ymx,bnds.xmn,bnds.xmx];
+                       bnds.ymn, bnds.ymx, bnds.xmn, bnds.xmx];
     
     sqlite3_stmt *statement;
     
@@ -209,6 +210,27 @@ static PropertyData *_propData;
     SQLOK(sqlite3_finalize(statement), "pickPID");
     [self close];
     return minPID;
+}
+
+- (NSString *)getOwnerNameForPID:(NSString *)PID
+{
+    NSString *ownerName = @"";
+    
+    [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT \"Owner Name\" FROM PROPINFO Where PID = '%@'", PID];
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getOwnerNameForPID");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR owner = (LPSTR)sqlite3_column_text(statement, 0);
+        ownerName = [NSString stringWithUTF8String:owner];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getOwnerNameForPID");
+    [self close];
+    return ownerName;
 }
 
 - (void)open
@@ -283,19 +305,20 @@ int SQLOK(int sqlReturn, char *method)
     return sqlReturn;
 }
 
--(void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     [_popover hide];
 }
 
--(BOOL) loadParcelPolygons:(NSString*)fromPath
+- (BOOL)loadParcelPolygons:(NSString *)fromPath
 {
-    BOOL rtn=FALSE;
+    BOOL rtn = NO;
     
     [self open];
     
-    NSString * cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY, maxY);";
-    [self executeCmd:cmd.UTF8String];
+    NSString *cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY,maxY);";
+    
+    [self executeCmd:(char *)cmd.UTF8String];
     [self close];
     return rtn;
 }
