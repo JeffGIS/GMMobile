@@ -5,6 +5,8 @@
 
 @interface AppDelegate ()
 
+@property CLLocationManager *locationManager;
+
 @end
 
 @implementation AppDelegate
@@ -20,6 +22,11 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [UserDefaults.defaults saveString:defaultFTP
                                forKey:@"DefaultFtp"];
+    
+    _locationManager = [[CLLocationManager alloc] init];
+    
+    if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+        [_locationManager requestWhenInUseAuthorization];
     
     return YES;
 }

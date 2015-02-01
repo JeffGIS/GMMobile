@@ -15,6 +15,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
     [self setupBackButton];

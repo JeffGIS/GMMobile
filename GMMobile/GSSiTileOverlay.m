@@ -56,7 +56,11 @@
                                }];
     }
 }
-- (void)cacheTileAtPath:(MKTileOverlayPath)path condition:(NSCondition *)condition complete:(int *)pComplete failed:(int *)pFailed
+
+- (void)cacheTileAtPath:(MKTileOverlayPath)path
+              condition:(NSCondition *)condition
+               complete:(int *)pComplete
+                 failed:(int *)pFailed
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cachesDirectory = paths.firstObject;
@@ -65,7 +69,7 @@
 
     if (![NSFileManager.defaultManager fileExistsAtPath:filePath])
     {
-         NSURL *url=[self URLForTilePath:path];
+         NSURL *url = [self URLForTilePath:path];
          NSURLRequest *request = [NSURLRequest requestWithURL:url];
          
          [NSURLConnection sendAsynchronousRequest:request
@@ -88,6 +92,7 @@
                  else
                      (*pComplete)++;
              }
+             
              [condition lock];
              [condition signal];
              [condition unlock];
@@ -105,7 +110,8 @@
         [condition unlock];
     }
 }
--(void)dealloc
+
+- (void)dealloc
 {
     //NSLog (@"Dealloc called");
 }
