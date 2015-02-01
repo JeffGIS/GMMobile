@@ -12,7 +12,7 @@
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) PropertyData *propData;
-@property (nonatomic) UIView *overlayView;
+@property (nonatomic) BOOL clearAnnotations;
 
 @end
 
@@ -24,9 +24,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [self setupButton:_zoomToExtentButton];
-    [self setupButton:_userLocationButton];
     
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
@@ -74,6 +71,9 @@
     
     [self extentZoom:YES];
     [self setupOverlayView];
+    
+    [self setupButton:_zoomToExtentButton];
+    [self setupButton:_userLocationButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -99,10 +99,7 @@
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
         annotation.title = CRAPI.sharedInstance.currentPID;
-        [_mapView addAnnotation:annotation];
-        
-        [_mapView selectAnnotation:annotation
-                          animated:NO];
+        [self addAnnotation:annotation];
     }
 }
 
@@ -126,6 +123,7 @@
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UIColor.blackColor.CGColor;
     button.layer.borderWidth = 2.0;
+    [self.view bringSubviewToFront:button];
 }
 
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
@@ -204,18 +202,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
-    
-    [_mapView addAnnotation:annotation];
-    
-    [_mapView selectAnnotation:annotation
-                      animated:NO];
+    [self addAnnotation:annotation];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
             viewForAnnotation:(id <MKAnnotation>)annotation
 {
+    if ([annotation isKindOfClass:MKUserLocation.class])
+        return nil;
+    
     MKAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
-                                                                       reuseIdentifier:@"loc"];
+                                                                       reuseIdentifier:@"pin"];
     
     annotationView.canShowCallout = YES;
     annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
@@ -250,13 +247,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 - (void)setupOverlayView
 {
-    CGRect mapFrame = _mapView.frame;
-    
-    CGRect overlayFrame = CGRectMake(mapFrame.origin.x, mapFrame.origin.y, self.view.frame.size.width,
-                                     (self.view.frame.size.height - mapFrame.origin.y));
-    
-    _overlayView = [[UIView alloc] initWithFrame:overlayFrame];
-    _overlayView.userInteractionEnabled = NO;
     _overlayView.backgroundColor = UIColor.yellowColor;
     _overlayView.alpha = 0.1;
     [self.view addSubview:_overlayView];
