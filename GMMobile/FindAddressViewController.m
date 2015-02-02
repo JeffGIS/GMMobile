@@ -31,6 +31,8 @@
     [_streetTF addTarget:self
                  action:@selector(streetTFDidChange:)
        forControlEvents:UIControlEventEditingChanged];
+    
+    [self setupTextFieldDefaults];
 }
 
 - (void)didReceiveMemoryWarning
@@ -69,6 +71,26 @@
     textField.layer.borderWidth = 4.0;
     textField.layer.cornerRadius = 10.0;
     textField.adjustsFontSizeToFitWidth = YES;
+}
+
+- (void)setupTextFieldDefaults
+{
+    NSString *houseSearchText = [UserDefaults.defaults stringForKey:@"CurrentHouseSearchText"];
+    NSString *streetSearchText = [UserDefaults.defaults stringForKey:@"CurrentStreetSearchText"];
+    
+    if (![streetSearchText isEqualToString:@""])
+        _streetTF.text = streetSearchText;
+    
+    if (![houseSearchText isEqualToString:@""])
+    {
+        _houseTF.text = houseSearchText;
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        _addressList = [propData getPIDsMatchingAddress:houseSearchText.intValue
+                                             streetName:streetSearchText];
+        
+        [_tableView reloadData];
+    }
 }
 
 - (void)houseTFDidChange:(UITextField *)textField
@@ -113,6 +135,12 @@
 
 - (void)dismissTextField
 {
+    [UserDefaults.defaults saveString:_houseTF.text
+                               forKey:@"CurrentHouseSearchText"];
+    
+    [UserDefaults.defaults saveString:_streetTF.text
+                               forKey:@"CurrentStreetSearchText"];
+    
     for (UIView *textField in self.view.subviews)
     {
         if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)

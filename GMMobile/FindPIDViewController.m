@@ -70,8 +70,6 @@
         [_tableView reloadData];
     }
     
-    _pidEntry.text = pidSearchText;
-    
     [_pidEntry addTarget:self
                   action:@selector(textFieldDidChange:)
         forControlEvents:UIControlEventEditingChanged];
