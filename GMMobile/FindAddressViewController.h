@@ -8,7 +8,8 @@
 @protocol FindAddressViewControllerDelegate <NSObject>
 
 - (void)findAddressViewController:(FindAddressViewController *)findAddress
-                 didSelectAddress:(NSString *)address;
+                 didSelectAddress:(NSString *)address
+                              PID:(NSString *)PID;
 
 @end
 
