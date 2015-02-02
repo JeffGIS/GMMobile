@@ -65,6 +65,7 @@
     
     [self extentZoom:YES];
     [self setupVectorView];
+    [self.view bringSubviewToFront:_vectorView];
     
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
@@ -264,7 +265,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     _vectorView.backgroundColor = UIColor.yellowColor;
     _vectorView.alpha = 0.1;
-    [self.view bringSubviewToFront:_vectorView];
 }
 
 - (IBAction)toggleAnnotationState:(id)sender
