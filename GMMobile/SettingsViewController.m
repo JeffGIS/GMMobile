@@ -49,6 +49,7 @@
      forceRefresh:YES];
 
 }
+
 - (void)FTPdidComplete:(int)option withStatus:(int)status
               filePath:(NSString *)path
 {
@@ -66,19 +67,20 @@
                 
                 dispatch_async(overallQueue,
                 ^{
-                    FILE *fid = fopen (path.UTF8String, "rb");
+                    FILE *fid = fopen(path.UTF8String, "rb");
                     LPSTR str = malloc(USHRT_MAX);
                     fseek(fid, 0, SEEK_END);
-                    CGFloat totLen = ftell (fid);
+                    CGFloat totLen = ftell(fid);
                     fseek(fid, 0, SEEK_SET);
                     [pd startTransaction];
                     
                     while (fgetstring(str, (USHRT_MAX - 2), fid))
                     {
                         [pd executeCmd:str];
+                        
                         dispatch_async(dispatch_get_main_queue(),
                         ^{
-                            [_popover updateProgress:ftell(fid)/totLen];
+                            [_popover updateProgress:ftell(fid) / totLen];
                         });
                     }
                     
@@ -87,8 +89,9 @@
                     free(str);
                     [_popover hide];
                 });
-                }
+            }
                 break;
+                
             case GET_TILES:
             {
                 [self loadTilesFromList:path updatePopover:_popover];
@@ -123,41 +126,47 @@
      forceRefresh:NO];
     
 }
--(BOOL)loadTilesFromList:(NSString*)fileList updatePopover:(GSSiPopoverView*)popover
+
+- (BOOL)loadTilesFromList:(NSString*)fileList
+           updatePopover:(GSSiPopoverView*)popover
 {
-    BOOL rtn=FALSE;
-    unsigned long long fileSize = [NSFileManager.defaultManager
-                                   attributesOfItemAtPath:fileList
-                                   error:nil].fileSize;
+    BOOL rtn = NO;
+    unsigned long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:fileList
+                                                                                 error:nil].fileSize;
+    
     _popover = popover;
     popover.delegate = self;
     popover.title = @"Load All Tiles";
-    _condition = [[NSCondition alloc]init];
+    _condition = [[NSCondition alloc] init];
     
-    dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
-    dispatch_queue_t tileQueue = dispatch_queue_create("tileQueue",NULL);
+    dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue", NULL);
+    dispatch_queue_t tileQueue = dispatch_queue_create("tileQueue", NULL);
   
     dispatch_async(overallQueue,
                    ^{
-                       FILE *fid = fopen (fileList.UTF8String,"rb");
+                       FILE *fid = fopen(fileList.UTF8String, "rb");
                        char line[34];
-                       char * ploc;
-                       int  numRequests=0;
+                       char *ploc;
+                       int  numRequests = 0;
                        _keepGoing = YES;
-                       while (_keepGoing && fgetstring(line,32, fid))
+                       
+                       while (_keepGoing && fgetstring(line, 32, fid))
                        {
                            MKTileOverlayPath top;
                            top.contentScaleFactor = 1;
                            [_condition lock];
+                           
                            while (numRequests > _nComplete + _nFailed + 4)
                                [_condition wait];
+                           
                            [_condition unlock];
-                           top.z = atoi (line);
-                           ploc = strchr (line,'\\')+1;
+                           top.z = atoi(line);
+                           ploc = strchr(line, '\\') + 1;
                            top.y = atoi(ploc);
-                           ploc = strchr (ploc,'\\')+1;
+                           ploc = strchr(ploc, '\\') + 1;
                            top.x = atoi(ploc);
                            numRequests++;
+                           
                            dispatch_async(tileQueue,
                                           ^{
                                               NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
@@ -166,25 +175,30 @@
                                               to.minimumZ = 12;
                                               to.maximumZ = 19;
                                               to.type = @"GMM";
-                                              [to cacheTileAtPath:top condition:_condition complete:&_nComplete failed:&_nFailed];
+                                              
+                                              [to cacheTileAtPath:top
+                                                        condition:_condition
+                                                         complete:&_nComplete
+                                                           failed:&_nFailed];
                            
                                               dispatch_async(dispatch_get_main_queue(),
                                                              ^{
-                                                                 [popover updateProgress:(float)ftell(fid)/fileSize];
+                                                                 [popover updateProgress:(CGFloat)ftell(fid) / fileSize];
                                                              });
                                           });
                       }
-                       fclose (fid);
+                       
+                       fclose(fid);
                        [popover hide];
                    });
     
     return rtn;
 }
--(void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     _keepGoing = NO;
     [_popover hide];
 }
-
 
 @end

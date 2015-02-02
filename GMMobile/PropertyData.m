@@ -61,10 +61,12 @@ static PropertyData *_propData;
                                                        error:nil];
 }
 
-- (void)FTPdidComplete:(int)status
+- (void)FTPdidComplete:(int)option
+            withStatus:(int)status
               filePath:(NSString *)path
 {
     [_popover hide];
+    
     if (status == FTPStatusOK)
     {
         
@@ -322,4 +324,5 @@ int SQLOK(int sqlReturn, char *method)
     [self close];
     return rtn;
 }
+
 @end
