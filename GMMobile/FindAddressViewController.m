@@ -49,6 +49,7 @@
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.layer.borderWidth = 4.0;
+    _tableView.rowHeight = 80.0;
 }
 
 - (void)setupBackButton
@@ -134,12 +135,6 @@
         return 1;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 80.0;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -154,7 +149,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (_addressList.count != 0)
     {
-        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]];
+        cell.textLabel.text = [[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                               stringByReplacingOccurrencesOfString:@"\t" withString:@" "];
+        
         cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterLastTab:_addressList[indexPath.row]];
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
@@ -189,7 +186,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         [_delegate findAddressViewController:self
-                            didSelectAddress:[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                            didSelectAddress:[[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                                              stringByReplacingOccurrencesOfString:@"\t" withString:@" "]
                                          PID:[UserDefaults.defaults includeTextBeforeLastTab:
                                               [UserDefaults.defaults includeTextAfterSecondTabFromEnd:_addressList[indexPath.row]]]];
     }

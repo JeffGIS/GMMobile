@@ -38,6 +38,7 @@
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.layer.borderWidth = 4.0;
+    _tableView.rowHeight = 80.0;
 }
 
 - (void)setupBackButton
@@ -139,12 +140,6 @@
     
     else
         return 1;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 80.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView

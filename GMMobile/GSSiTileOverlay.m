@@ -79,16 +79,17 @@
              if (data)
              {
                  [NSFileManager.defaultManager createDirectoryAtPath:filePath.stringByDeletingLastPathComponent
-                 withIntermediateDirectories:YES
-                 attributes:nil
-                 error:nil];
+                                         withIntermediateDirectories:YES
+                                                          attributes:nil
+                                                               error:nil];
                  
                  if (![data writeToFile:filePath
-                 atomically:YES])
+                             atomically:YES])
                  {
                      NSLog (@"Failed to cache file");
                      (*pFailed)++;
                  }
+                 
                  else
                      (*pComplete)++;
              }

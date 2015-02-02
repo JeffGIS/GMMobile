@@ -34,7 +34,7 @@ static PropertyData *_propData;
     NSLog(@"Property Database dealloc");
 }
 
--(BOOL)load
+- (BOOL)load
 {
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
