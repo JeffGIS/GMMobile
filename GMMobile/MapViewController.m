@@ -264,7 +264,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     _vectorView.backgroundColor = UIColor.yellowColor;
     _vectorView.alpha = 0.1;
-    [self.view addSubview:_vectorView];
+    [self.view bringSubviewToFront:_vectorView];
 }
 
 - (IBAction)toggleAnnotationState:(id)sender

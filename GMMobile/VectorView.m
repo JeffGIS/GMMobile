@@ -5,4 +5,11 @@
 
 @implementation VectorView
 
+/*
+- (void)drawRect:(CGRect)rect
+{
+    
+}
+*/
+
 @end

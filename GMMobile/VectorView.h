@@ -1,7 +1,7 @@
 //  VectorView.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 @interface VectorView : UIView
 
