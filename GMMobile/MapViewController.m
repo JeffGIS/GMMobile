@@ -75,7 +75,8 @@
 {
     [super viewWillAppear:animated];
     
-    if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
+    if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
+        CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
         //[self extentZoom:NO];
         
@@ -94,7 +95,13 @@
         
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
-        annotation.title = currentPID;
+        
+        if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
+            annotation.title = currentPID;
+        
+        else
+            annotation.title = CRAPI.sharedInstance.currentAddress;
+        
         annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
         [self addAnnotation:annotation];
     }

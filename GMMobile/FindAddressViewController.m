@@ -184,14 +184,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"hello");
-    
-    [self dismissTextField];
+   [self dismissTextField];
     
     if (_delegate)
     {
-        //[_delegate findPIDViewController:self
-                            //didSelectPID:[UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]]];
+        [_delegate findAddressViewController:self
+                            didSelectAddress:[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                                         PID:[UserDefaults.defaults includeTextBeforeLastTab:
+                                              [UserDefaults.defaults includeTextAfterSecondTabFromEnd:_addressList[indexPath.row]]]];
     }
 }
 

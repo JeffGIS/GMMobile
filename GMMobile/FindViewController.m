@@ -42,6 +42,12 @@
         FindPIDViewController *findPID = segue.destinationViewController;
         findPID.delegate = self;
     }
+    
+    else if ([segue.identifier isEqualToString:@"ShowFindAddress"])
+    {
+        FindAddressViewController *findAddress= segue.destinationViewController;
+        findAddress.delegate = self;
+    }
 }
 
 - (void)findPIDViewController:(FindPIDViewController *)findPID
@@ -52,6 +58,19 @@
     
     CRAPI.sharedInstance.GMMSetting = GMMSettingPID;
     CRAPI.sharedInstance.currentPID = PID;
+    self.tabBarController.selectedIndex = 0;
+}
+
+- (void)findAddressViewController:(FindAddressViewController *)findAddress
+                 didSelectAddress:(NSString *)address
+                              PID:(NSString *)PID
+{
+    [findAddress dismissViewControllerAnimated:YES
+                                    completion:nil];
+    
+    CRAPI.sharedInstance.GMMSetting = GMMSettingAddress;
+    CRAPI.sharedInstance.currentPID = PID;
+    CRAPI.sharedInstance.currentAddress = address;
     self.tabBarController.selectedIndex = 0;
 }
 

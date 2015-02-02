@@ -191,8 +191,6 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"hello");
-    
     [self dismissTextField];
     
     if (_delegate)

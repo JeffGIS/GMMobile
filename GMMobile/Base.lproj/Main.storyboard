@@ -663,15 +663,15 @@
                                 <exclude reference="MQ5-gI-Gbr"/>
                                 <exclude reference="PVD-S7-pmY"/>
                                 <exclude reference="mH1-3z-3lS"/>
-                                <exclude reference="6FO-qp-0ba"/>
-                                <exclude reference="J4s-Dh-qnf"/>
-                                <exclude reference="kTX-ce-fbk"/>
-                                <exclude reference="yaq-7u-we1"/>
                                 <exclude reference="f1L-iC-UcO"/>
                                 <exclude reference="pk6-M6-7Dg"/>
                                 <exclude reference="1mV-w9-dnm"/>
                                 <exclude reference="hli-bf-zGD"/>
                                 <exclude reference="ks8-kX-0zo"/>
+                                <exclude reference="6FO-qp-0ba"/>
+                                <exclude reference="J4s-Dh-qnf"/>
+                                <exclude reference="kTX-ce-fbk"/>
+                                <exclude reference="yaq-7u-we1"/>
                                 <exclude reference="Ap0-H4-EwD"/>
                             </mask>
                         </variation>
@@ -689,15 +689,15 @@
                                 <include reference="MQ5-gI-Gbr"/>
                                 <include reference="PVD-S7-pmY"/>
                                 <include reference="mH1-3z-3lS"/>
-                                <include reference="6FO-qp-0ba"/>
-                                <include reference="J4s-Dh-qnf"/>
-                                <include reference="kTX-ce-fbk"/>
-                                <include reference="yaq-7u-we1"/>
                                 <include reference="f1L-iC-UcO"/>
                                 <include reference="pk6-M6-7Dg"/>
                                 <include reference="1mV-w9-dnm"/>
                                 <include reference="hli-bf-zGD"/>
                                 <include reference="ks8-kX-0zo"/>
+                                <include reference="6FO-qp-0ba"/>
+                                <include reference="J4s-Dh-qnf"/>
+                                <include reference="kTX-ce-fbk"/>
+                                <include reference="yaq-7u-we1"/>
                                 <include reference="Ap0-H4-EwD"/>
                             </mask>
                         </variation>
