@@ -5,7 +5,6 @@
 
 @implementation GSSiTileOverlay
 
-
 - (void)loadTileAtPath:(MKTileOverlayPath)path
                 result:(void (^)(NSData *data, NSError *error))result
 {

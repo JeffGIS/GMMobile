@@ -64,7 +64,7 @@
     [_mapView addGestureRecognizer:_doubleTap];
     
     [self extentZoom:YES];
-    [self setupOverlayView];
+    [self setupVectorView];
     
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
@@ -138,7 +138,7 @@
 - (void)mapView:(MKMapView *)mapView
 regionWillChangeAnimated:(BOOL)animated
 {
-    [self clearOverlayView];
+    [self clearVectorView];
 }
 
 - (void)mapView:(MKMapView *)mapView
@@ -191,7 +191,7 @@ regionDidChangeAnimated:(BOOL)animated
     else
         _osmOverlay.maximumZ = 19;
 
-    [self refreshOverlayView];
+    [self refreshVectorView];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -250,21 +250,21 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self extentZoom:YES];
 }
 
-- (void)clearOverlayView
+- (void)clearVectorView
 {
-    _overlayView.alpha = 0.0;
+    _vectorView.alpha = 0.0;
 }
 
-- (void)refreshOverlayView
+- (void)refreshVectorView
 {
-    _overlayView.alpha = 0.1;
+    _vectorView.alpha = 0.1;
 }
 
-- (void)setupOverlayView
+- (void)setupVectorView
 {
-    _overlayView.backgroundColor = UIColor.yellowColor;
-    _overlayView.alpha = 0.1;
-    [self.view addSubview:_overlayView];
+    _vectorView.backgroundColor = UIColor.yellowColor;
+    _vectorView.alpha = 0.1;
+    [self.view addSubview:_vectorView];
 }
 
 - (IBAction)toggleAnnotationState:(id)sender
