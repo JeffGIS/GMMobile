@@ -8,10 +8,13 @@
 
 @end
 
-@interface GSSiTileOverlay : MKTileOverlay<GSSiPopoverViewDelegate>
+@interface GSSiTileOverlay : MKTileOverlay
 
 @property (nonatomic, copy) NSString *type;
 
-- (void)cacheTileAtPath:(MKTileOverlayPath)path condition:(NSCondition *)condition complete:(int *)pcomplete failed:(int *)pfailed;
+- (void)cacheTileAtPath:(MKTileOverlayPath)path
+              condition:(NSCondition *)condition
+               complete:(int *)pcomplete
+                 failed:(int *)pfailed;
 
 @end

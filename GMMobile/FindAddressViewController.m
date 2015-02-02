@@ -31,6 +31,8 @@
     [_streetTF addTarget:self
                  action:@selector(streetTFDidChange:)
        forControlEvents:UIControlEventEditingChanged];
+    
+    [self setupTextFieldDefaults];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,6 +51,7 @@
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.layer.borderWidth = 4.0;
+    _tableView.rowHeight = 80.0;
 }
 
 - (void)setupBackButton
@@ -68,6 +71,26 @@
     textField.layer.borderWidth = 4.0;
     textField.layer.cornerRadius = 10.0;
     textField.adjustsFontSizeToFitWidth = YES;
+}
+
+- (void)setupTextFieldDefaults
+{
+    NSString *houseSearchText = [UserDefaults.defaults stringForKey:@"CurrentHouseSearchText"];
+    NSString *streetSearchText = [UserDefaults.defaults stringForKey:@"CurrentStreetSearchText"];
+    
+    if (![streetSearchText isEqualToString:@""])
+        _streetTF.text = streetSearchText;
+    
+    if (![houseSearchText isEqualToString:@""])
+    {
+        _houseTF.text = houseSearchText;
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        _addressList = [propData getPIDsMatchingAddress:houseSearchText.intValue
+                                             streetName:streetSearchText];
+        
+        [_tableView reloadData];
+    }
 }
 
 - (void)houseTFDidChange:(UITextField *)textField
@@ -112,6 +135,12 @@
 
 - (void)dismissTextField
 {
+    [UserDefaults.defaults saveString:_houseTF.text
+                               forKey:@"CurrentHouseSearchText"];
+    
+    [UserDefaults.defaults saveString:_streetTF.text
+                               forKey:@"CurrentStreetSearchText"];
+    
     for (UIView *textField in self.view.subviews)
     {
         if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)
@@ -134,12 +163,6 @@
         return 1;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 80.0;
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -154,7 +177,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (_addressList.count != 0)
     {
-        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]];
+        cell.textLabel.text = [[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                               stringByReplacingOccurrencesOfString:@"\t" withString:@" "];
+        
         cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterLastTab:_addressList[indexPath.row]];
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
@@ -189,7 +214,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         [_delegate findAddressViewController:self
-                            didSelectAddress:[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                            didSelectAddress:[[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
+                                              stringByReplacingOccurrencesOfString:@"\t" withString:@" "]
                                          PID:[UserDefaults.defaults includeTextBeforeLastTab:
                                               [UserDefaults.defaults includeTextAfterSecondTabFromEnd:_addressList[indexPath.row]]]];
     }

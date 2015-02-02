@@ -5,7 +5,6 @@
 
 @implementation GSSiTileOverlay
 
-
 - (void)loadTileAtPath:(MKTileOverlayPath)path
                 result:(void (^)(NSData *data, NSError *error))result
 {
@@ -64,6 +63,7 @@
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *cachesDirectory = paths.firstObject;
+    
     NSString *filePath = [NSString stringWithFormat:@"%@/%@/%li/%li/%li",
                           cachesDirectory, _type, (long)path.z, (long)path.x, (long)path.y];
 
@@ -73,35 +73,36 @@
          NSURLRequest *request = [NSURLRequest requestWithURL:url];
          
          [NSURLConnection sendAsynchronousRequest:request
-         queue:NSOperationQueue.mainQueue
-         completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-         
-             if (data)
-             {
-                 [NSFileManager.defaultManager createDirectoryAtPath:filePath.stringByDeletingLastPathComponent
-                 withIntermediateDirectories:YES
-                 attributes:nil
-                 error:nil];
+                                            queue:NSOperationQueue.mainQueue
+                                completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                                    if (data)
+                                    {
+                                        [NSFileManager.defaultManager createDirectoryAtPath:filePath.stringByDeletingLastPathComponent
+                                                                withIntermediateDirectories:YES
+                                                                                 attributes:nil
+                                                                                      error:nil];
                  
-                 if (![data writeToFile:filePath
-                 atomically:YES])
-                 {
-                     NSLog (@"Failed to cache file");
-                     (*pFailed)++;
-                 }
-                 else
-                     (*pComplete)++;
-             }
+                                        if (![data writeToFile:filePath
+                                                    atomically:YES])
+                                        {
+                                            NSLog (@"Failed to cache file");
+                                            (*pFailed)++;
+                                        }
+                 
+                                        else
+                                            (*pComplete)++;
+                                    }
              
-             [condition lock];
-             [condition signal];
-             [condition unlock];
+                                    [condition lock];
+                                    [condition signal];
+                                    [condition unlock];
              
-             if (connectionError)
-                 NSLog(@"NSURL Connection Error:%@", connectionError.localizedDescription);
+                                    if (connectionError)
+                                        NSLog(@"NSURL Connection Error:%@", connectionError.localizedDescription);
              
-         }];
+                                }];
     }
+    
     else
     {
         (*pComplete)++;

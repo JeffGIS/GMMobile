@@ -12,6 +12,7 @@
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
+		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
 		A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC11A7A8D9C0094562B /* userLocation.png */; };
 		A9C78BC41A7A8E590094562B /* zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC31A7A8E590094562B /* zoom.png */; };
@@ -55,6 +56,8 @@
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		A90506471A75E24100288850 /* layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = layers.png; sourceTree = "<group>"; };
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
+		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
+		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlay.h; sourceTree = "<group>"; };
 		A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlay.m; sourceTree = "<group>"; };
 		A9C78BC11A7A8D9C0094562B /* userLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = userLocation.png; sourceTree = "<group>"; };
@@ -161,6 +164,8 @@
 				A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */,
 				EB5522781A75576E008CE2D1 /* PropertyData.h */,
 				EB5522791A75576E008CE2D1 /* PropertyData.m */,
+				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
+				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -366,6 +371,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
+				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */,
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,

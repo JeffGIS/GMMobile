@@ -5,6 +5,7 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import "FindViewController.h"
 #import "PropertyData.h"
+#import "VectorView.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate>
 
@@ -13,6 +14,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *userLocationButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;
 @property (weak, nonatomic) IBOutlet UISwitch *annotationSwitch;
-@property (weak, nonatomic) IBOutlet UIView *overlayView;
+@property (weak, nonatomic) IBOutlet VectorView *vectorView;
 
 @end
