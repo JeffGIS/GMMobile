@@ -132,7 +132,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAz-70-gmt">
-                                <rect key="frame" x="50" y="76" width="260" height="74"/>
+                                <rect key="frame" x="170" y="63" width="260" height="74"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                 <state key="normal" title="Load Database">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -142,7 +142,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xjH-HF-7c2">
-                                <rect key="frame" x="53" y="192" width="255" height="46"/>
+                                <rect key="frame" x="173" y="191" width="255" height="46"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
                                 <state key="normal" title="Preload Tiles">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -151,14 +151,14 @@
                                     <action selector="preloadTiles:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="j29-2H-hb8"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v6I-2S-2dH">
-                                <rect key="frame" x="78" y="304" width="204" height="74"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="avW-gX-lgx">
+                                <rect key="frame" x="146" y="296" width="308" height="68"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="35"/>
-                                <state key="normal" title="Load Parcels">
+                                <state key="normal" title="Load Parcel Areas">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="loadParcels:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="Bnr-e4-nWe"/>
+                                    <action selector="loadParcels:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="PBk-es-Q27"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -954,35 +954,6 @@
                                     <action selector="goBack:" destination="plb-F7-TBJ" eventType="touchUpInside" id="ji8-S7-Lht"/>
                                 </connections>
                             </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="iVl-5f-wBu">
-                                <rect key="frame" x="16" y="106" width="568" height="328"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="LDL-FY-ab0" detailTextLabel="kLc-c5-Tte" style="IBUITableViewCellStyleSubtitle" id="wmQ-ye-50T">
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wmQ-ye-50T" id="hri-7y-JtG">
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LDL-FY-ab0">
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kLc-c5-Tte">
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                                <variation key="heightClass=regular" ambiguous="YES">
-                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="0.0"/>
-                                </variation>
-                            </tableView>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="kQf-QS-Nvx">
                                 <rect key="frame" x="16" y="68" width="568" height="30"/>
                                 <constraints>
@@ -1022,7 +993,39 @@
                                     </mask>
                                 </variation>
                             </textField>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="WWd-wk-aBr">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="iVl-5f-wBu">
+                                <rect key="frame" x="16" y="106" width="568" height="328"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="LDL-FY-ab0" detailTextLabel="kLc-c5-Tte" style="IBUITableViewCellStyleSubtitle" id="wmQ-ye-50T">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wmQ-ye-50T" id="hri-7y-JtG">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LDL-FY-ab0">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kLc-c5-Tte">
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <variation key="heightClass=regular" ambiguous="YES">
+                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="0.0"/>
+                                </variation>
+                                <variation key="heightClass=compact-widthClass=regular" ambiguous="YES">
+                                    <rect key="frame" x="0.0" y="0.0" width="0.0" height="0.0"/>
+                                </variation>
+                            </tableView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsMultipleSelection="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="WWd-wk-aBr">
                                 <rect key="frame" x="16" y="442" width="568" height="150"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -1270,11 +1273,11 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
+                                        <exclude reference="1bK-HN-0Vo"/>
                                         <exclude reference="DxO-b7-pn3"/>
                                         <exclude reference="RXJ-BN-SOm"/>
                                         <exclude reference="Sg7-pa-UeY"/>
-                                        <exclude reference="uTu-b7-ZKE"/>
-                                        <exclude reference="z1s-Ed-sdW"/>
+                                        <exclude reference="bHI-6z-OZC"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact">
@@ -1380,8 +1383,9 @@
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="vF0-rp-tOY"/>
-                                        <exclude reference="vWT-or-H5Z"/>
+                                        <exclude reference="DhE-rH-ETB"/>
+                                        <exclude reference="a0Q-yT-eMN"/>
+                                        <exclude reference="uu8-x0-CUq"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact">
@@ -1444,15 +1448,8 @@
                                 <nil key="highlightedColor"/>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="a0Q-yT-eMN"/>
-                                        <exclude reference="s7R-Th-Sr5"/>
-                                        <exclude reference="uu8-x0-CUq"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=compact" ambiguous="YES" misplaced="YES">
-                                    <rect key="frame" x="206" y="76" width="378" height="40"/>
-                                    <mask key="constraints">
-                                        <include reference="s7R-Th-Sr5"/>
+                                        <exclude reference="QAX-xR-kbp"/>
+                                        <exclude reference="nCR-eB-ByI"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact">
@@ -1555,16 +1552,6 @@
                                 <exclude reference="YW7-x7-OKS"/>
                                 <exclude reference="pp1-0v-zh0"/>
                                 <exclude reference="yx2-kE-YG3"/>
-                                <exclude reference="6mo-Q8-thu"/>
-                                <exclude reference="F6e-mv-rgt"/>
-                                <exclude reference="OES-Ql-U3M"/>
-                                <exclude reference="VB9-bZ-pm0"/>
-                                <exclude reference="ZM5-kd-ROf"/>
-                                <exclude reference="iA4-xh-Bf4"/>
-                                <exclude reference="ieJ-VN-NUd"/>
-                                <exclude reference="jhq-qW-Wdr"/>
-                                <exclude reference="pgd-XO-t3Z"/>
-                                <exclude reference="yJv-vX-lnW"/>
                                 <exclude reference="1Vt-YB-PIQ"/>
                                 <exclude reference="6y3-ZP-ojn"/>
                                 <exclude reference="6yL-cZ-O43"/>
@@ -1616,6 +1603,16 @@
                                 <exclude reference="rBC-I8-p3w"/>
                                 <exclude reference="z0L-tk-hvg"/>
                                 <exclude reference="z30-PW-NGC"/>
+                                <exclude reference="6mo-Q8-thu"/>
+                                <exclude reference="F6e-mv-rgt"/>
+                                <exclude reference="OES-Ql-U3M"/>
+                                <exclude reference="VB9-bZ-pm0"/>
+                                <exclude reference="ZM5-kd-ROf"/>
+                                <exclude reference="iA4-xh-Bf4"/>
+                                <exclude reference="ieJ-VN-NUd"/>
+                                <exclude reference="jhq-qW-Wdr"/>
+                                <exclude reference="pgd-XO-t3Z"/>
+                                <exclude reference="yJv-vX-lnW"/>
                                 <exclude reference="c7T-DL-7ZF"/>
                                 <exclude reference="l7W-XC-xha"/>
                                 <exclude reference="zWQ-An-RVI"/>
@@ -1626,10 +1623,6 @@
                                 <include reference="8q3-Ra-Bfe"/>
                                 <include reference="GT7-P8-pvE"/>
                                 <include reference="pp1-0v-zh0"/>
-                                <include reference="F6e-mv-rgt"/>
-                                <include reference="OES-Ql-U3M"/>
-                                <include reference="jhq-qW-Wdr"/>
-                                <include reference="pgd-XO-t3Z"/>
                                 <include reference="1Vt-YB-PIQ"/>
                                 <include reference="7ss-3C-1tC"/>
                                 <include reference="Azs-a0-pHR"/>
@@ -1647,6 +1640,10 @@
                                 <include reference="Zs1-dc-Uhw"/>
                                 <include reference="bJI-nV-JCB"/>
                                 <include reference="gOI-Gn-oju"/>
+                                <include reference="F6e-mv-rgt"/>
+                                <include reference="OES-Ql-U3M"/>
+                                <include reference="jhq-qW-Wdr"/>
+                                <include reference="pgd-XO-t3Z"/>
                                 <include reference="zWQ-An-RVI"/>
                             </mask>
                         </variation>
@@ -1654,9 +1651,6 @@
                             <mask key="constraints">
                                 <include reference="NI3-L4-Mqb"/>
                                 <include reference="yx2-kE-YG3"/>
-                                <include reference="ZM5-kd-ROf"/>
-                                <include reference="iA4-xh-Bf4"/>
-                                <include reference="ieJ-VN-NUd"/>
                                 <include reference="6y3-ZP-ojn"/>
                                 <include reference="6yL-cZ-O43"/>
                                 <include reference="MSl-0m-Lfm"/>
@@ -1675,6 +1669,9 @@
                                 <include reference="mGV-Me-lf3"/>
                                 <include reference="z0L-tk-hvg"/>
                                 <include reference="z30-PW-NGC"/>
+                                <include reference="ZM5-kd-ROf"/>
+                                <include reference="iA4-xh-Bf4"/>
+                                <include reference="ieJ-VN-NUd"/>
                                 <include reference="c7T-DL-7ZF"/>
                             </mask>
                         </variation>
@@ -1682,9 +1679,6 @@
                             <mask key="constraints">
                                 <include reference="5rZ-9p-FWi"/>
                                 <include reference="YW7-x7-OKS"/>
-                                <include reference="6mo-Q8-thu"/>
-                                <include reference="VB9-bZ-pm0"/>
-                                <include reference="yJv-vX-lnW"/>
                                 <include reference="EQG-LX-hP2"/>
                                 <include reference="ZP9-sf-RSC"/>
                                 <include reference="hwL-cs-sOc"/>
@@ -1701,6 +1695,9 @@
                                 <include reference="Tr2-e0-iPk"/>
                                 <include reference="qfB-Ht-ec4"/>
                                 <include reference="rBC-I8-p3w"/>
+                                <include reference="6mo-Q8-thu"/>
+                                <include reference="VB9-bZ-pm0"/>
+                                <include reference="yJv-vX-lnW"/>
                                 <include reference="l7W-XC-xha"/>
                             </mask>
                         </variation>
