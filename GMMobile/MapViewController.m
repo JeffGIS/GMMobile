@@ -180,9 +180,6 @@ regionDidChangeAnimated:(BOOL)animated
         }*/
     
     _camera = mapView.camera;
-    region.span.latitudeDelta /= 2;
-    region.span.longitudeDelta /= 2;
-    //[mapView setRegion:region];
     _camera = mapView.camera;
     MKMapRect intRect = MKMapRectUnion(visRect,_cityInnerBounds);
     
@@ -192,7 +189,7 @@ regionDidChangeAnimated:(BOOL)animated
     else
         _osmOverlay.maximumZ = 19;
 
-    [self refreshVectorView];
+    [self refreshVectorView:region];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -253,18 +250,26 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)clearVectorView
 {
-    _vectorView.alpha = 0.0;
+    _vectorView.displayData = 0;
+    [_vectorView setNeedsDisplay];
 }
 
-- (void)refreshVectorView
+- (void)refreshVectorView:(MKCoordinateRegion) region
 {
-    _vectorView.alpha = 0.1;
+    MNMXCORD llBounds;
+    _vectorView.displayData = 1;
+    llBounds.xmn = region.center.longitude - region.span.longitudeDelta / 2;
+    llBounds.xmx = region.center.longitude + region.span.longitudeDelta / 2;
+    llBounds.ymn = region.center.latitude - region.span.latitudeDelta / 2;
+    llBounds.ymx = region.center.latitude + region.span.latitudeDelta / 2;
+    _vectorView.latlonBounds = llBounds;
+    [_vectorView setNeedsDisplay];
 }
 
 - (void)setupVectorView
 {
-    _vectorView.backgroundColor = UIColor.yellowColor;
-    _vectorView.alpha = 0.1;
+    //_vectorView.backgroundColor = UIColor.yellowColor;
+    //_vectorView.alpha = 0.05;
 }
 
 - (IBAction)toggleAnnotationState:(id)sender

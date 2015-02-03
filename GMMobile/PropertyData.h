@@ -11,7 +11,11 @@
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;
+@property LPTRANDATA pTranLLtoView;
+@property LPTRANDATA pTranViewtoLL;
 
+- (void)open;
+- (void)close;
 - (void)clear;
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
@@ -25,7 +29,8 @@
 - (LLPOINT)getPointForPID:(NSString *)PID;
 - (NSString *)pickPID:(LLPOINT)pt;
 
--( BOOL)loadParcelPolygons:(NSString*)fromPath;
+-( BOOL)loadParcelPolygons:(NSString*)fromPath updatePopover:(GSSiPopoverView*)popover;
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
+-(void) displayParcels:(CGContextRef) context LLBounds:(MNMXCORD*)platlonBounds viewBounds:(MNMXCORD*)pvbounds;
 
 @end

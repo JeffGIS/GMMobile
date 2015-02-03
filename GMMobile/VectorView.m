@@ -2,14 +2,38 @@
 //  GMMobile
 
 #import "VectorView.h"
+#import "PropertyData.h"
 
 @implementation VectorView
 
-/*
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        self.opaque = NO;
+        self.backgroundColor = UIColor.clearColor;
+    }
+    
+    return self;
+}
+
 - (void)drawRect:(CGRect)rect
 {
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    if (self.displayData)
+    {
+        PropertyData *pd = [[PropertyData alloc] init];
+        _viewBounds.xmn = self.bounds.origin.x;
+        _viewBounds.xmx = self.bounds.origin.x + self.bounds.size.width;
+        _viewBounds.ymn = self.bounds.origin.y + self.bounds.size.height;
+        _viewBounds.ymx = self.bounds.origin.y;
+        [pd displayParcels:context LLBounds:&_latlonBounds viewBounds:&_viewBounds];
+    }
+    //CGContextRelease(context);
     
 }
-*/
+
 
 @end

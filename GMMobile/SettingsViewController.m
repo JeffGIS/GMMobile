@@ -7,6 +7,7 @@
 
 #define GET_PROPERTY    1
 #define GET_TILES       2
+#define GET_PARCELS     3
 
 @interface SettingsViewController ()
 
@@ -28,28 +29,6 @@
     [super didReceiveMemoryWarning];
 }
 
-- (IBAction)loadDatabase:(id)sender
-{
-    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"Property.sqltran";
-    
-    FTPDataPull *pull = FTPDataPull.pull;
-    pull.delegate = self;
-    pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_PROPERTY;
-
-    [_popover showAfter:0.5
-              withTitle:@"Get Property File"];
-
-    [pull getFile:fileName
-    fromDirectory:@"GMMobile"
-           toFile:fileName
-      toDirectory:documentsDirectory
-     forceRefresh:YES];
-
-}
-
 - (void)FTPdidComplete:(int)option withStatus:(int)status
               filePath:(NSString *)path
 {
@@ -58,16 +37,34 @@
     {
         switch (option)
         {
+            case GET_PARCELS:
             case GET_PROPERTY:
             {
+                NSString * toDirectory = [path stringByDeletingLastPathComponent];
+                NSString * file;
+                if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
+                {
+                    break;
+                }
                 PropertyData *pd = [[PropertyData alloc] init];
-                [pd clear];
-                _popover.title = @"Load Property File";
+                [pd open];
+                if (option == GET_PARCELS)
+                {
+                    [pd executeCmd:"DROP TABLE IF EXISTS PARCELPOLY"];
+                    [pd executeCmd:"DROP TABLE IF EXISTS PARCELPOLY_index"];
+                    file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
+                     _popover.title = @"Load Parcel Tables";
+                }
+                else
+                {
+                    file = [NSString stringWithFormat:@"%@/Property.sqltran",toDirectory];
+                    _popover.title = @"Load Property Tables";
+                }
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
                 
                 dispatch_async(overallQueue,
                 ^{
-                    FILE *fid = fopen(path.UTF8String, "rb");
+                    FILE *fid = fopen(file.UTF8String, "rb");
                     LPSTR str = malloc(USHRT_MAX);
                     fseek(fid, 0, SEEK_END);
                     CGFloat totLen = ftell(fid);
@@ -85,11 +82,16 @@
                     }
                     
                     [pd commitTransaction];
+                    [pd close];
                     fclose(fid);
                     free(str);
-                    [_popover hide];
+                    dispatch_async(dispatch_get_main_queue(),
+                    ^{
+                          [_popover hide];
+                    });
                 });
-            }
+                }
+            
                 break;
                 
             case GET_TILES:
@@ -103,10 +105,6 @@
 
 - (IBAction)preloadTiles:(id)sender
 {
- //   PropertyData *pd = [[PropertyData alloc] init];
- //   [pd loadParcelPolygons:@""];
-    NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
-    MKTileOverlayPath path;
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"PropTileList.txt";
     
@@ -125,6 +123,48 @@
       toDirectory:documentsDirectory
      forceRefresh:NO];
     
+}
+- (IBAction)loadDatabase:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"propfiles.gcf";
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_PROPERTY;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Property File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+     forceRefresh:YES];
+    
+}
+
+- (IBAction)loadParcels:(id)sender {
+
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"Parcels.gcf";
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_PARCELS;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Parcel File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+     forceRefresh:YES];
 }
 
 - (BOOL)loadTilesFromList:(NSString*)fileList

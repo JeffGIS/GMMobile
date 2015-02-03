@@ -7,6 +7,7 @@
 
 - (IBAction)loadDatabase:(id)sender;
 - (IBAction)preloadTiles:(id)sender;
+- (IBAction)loadParcels:(id)sender;
 
 @property (atomic)  int nComplete;
 @property (atomic)  int nFailed;
