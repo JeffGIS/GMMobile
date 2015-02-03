@@ -131,6 +131,12 @@
 
 - (void)dismissTextField
 {
+    [UserDefaults.defaults saveString:_street1TF.text
+                               forKey:@"CurrentStreet1SearchText"];
+    
+    [UserDefaults.defaults saveString:_street2TF.text
+                               forKey:@"CurrentStreet2SearchText"];
+    
     for (UIView *textField in self.view.subviews)
     {
         if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)

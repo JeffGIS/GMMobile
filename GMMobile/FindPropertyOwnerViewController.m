@@ -117,6 +117,9 @@
 
 - (void)dismissTextField
 {
+    [UserDefaults.defaults saveString:_propOwnerTF.text
+                               forKey:@"CurrentPropOwnerSearchText"];
+    
     for (UIView *textField in self.view.subviews)
     {
         if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)
