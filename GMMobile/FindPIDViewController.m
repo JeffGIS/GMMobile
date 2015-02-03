@@ -174,10 +174,8 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.detailTextLabel.textAlignment = NSTextAlignmentLeft;
-    cell.layer.borderColor = UIColor.blackColor.CGColor;
-    cell.layer.borderWidth = 0.5;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.5)];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.3)];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.0)];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     return cell;
