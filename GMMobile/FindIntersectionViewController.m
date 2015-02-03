@@ -46,12 +46,14 @@
     _tableView.dataSource = self;
     _tableView.separatorInset = UIEdgeInsetsZero;
     _tableView.separatorColor = UIColor.blackColor;
-    _tableView.layer.cornerRadius = 24.0;
     _tableView.backgroundColor = UserDefaults.defaults.green;
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    _tableView.layer.borderWidth = 4.0;
-    _tableView.rowHeight = 80.0;
+    
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.8), 44.0);
+    _tableView.rowHeight = rowHeight;
+    _tableView.layer.borderWidth = (rowHeight / 20.0);
+    _tableView.layer.cornerRadius = 10.0;
 }
 
 - (void)setupBackButton
@@ -68,7 +70,7 @@
 {
     textField.delegate = self;
     textField.layer.borderColor = UIColor.blackColor.CGColor;
-    textField.layer.borderWidth = 4.0;
+    textField.layer.borderWidth = (_tableView.rowHeight / 20.0);
     textField.layer.cornerRadius = 10.0;
     textField.adjustsFontSizeToFitWidth = YES;
 }
@@ -181,12 +183,12 @@
         cell.userInteractionEnabled = NO;
     }
     
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    cell.detailTextLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
+    cell.detailTextLabel.textAlignment = NSTextAlignmentLeft;
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:32];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:24];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.5)];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.3)];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     return cell;
