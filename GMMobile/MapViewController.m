@@ -227,8 +227,33 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                        reuseIdentifier:@"pin"];
     
     annotationView.canShowCallout = YES;
-    annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    
+    CGFloat buttonSize = 40.0;
+    UIButton *rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
+    UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
+    
+    [rightButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"arrow"
+                                                                                         ofType:@"png"]]
+                 forState:UIControlStateNormal];
+    
+    [leftButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"list"
+                                                                                        ofType:@"png"]]
+                forState:UIControlStateNormal];
+    
+    annotationView.rightCalloutAccessoryView = rightButton;
+    annotationView.leftCalloutAccessoryView = leftButton;
     return annotationView;
+}
+
+- (void)mapView:(MKMapView *)mapView
+ annotationView:(MKAnnotationView *)view
+calloutAccessoryControlTapped:(UIControl *)control
+{
+    if (control == view.rightCalloutAccessoryView)
+        NSLog(@"right callout tapped");
+    
+    else if (control == view.leftCalloutAccessoryView)
+        NSLog(@"left callout tapped");
 }
 
 - (IBAction)userLocation:(id)sender

@@ -34,12 +34,14 @@
     tableView.dataSource = self;
     tableView.separatorInset = UIEdgeInsetsZero;
     tableView.separatorColor = UIColor.blackColor;
-    tableView.layer.cornerRadius = 24.0;
     tableView.backgroundColor = UserDefaults.defaults.green;
     tableView.bounces = NO;
     tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    tableView.layer.borderWidth = 4.0;
-    tableView.rowHeight = 80.0;
+    
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.8), 44.0);
+    tableView.rowHeight = rowHeight;
+    tableView.layer.borderWidth = (rowHeight / 20.0);
+    tableView.layer.cornerRadius = 10.0;
 }
 
 - (void)setupBackButton
@@ -56,7 +58,7 @@
 {
     _propOwnerTF.delegate = self;
     _propOwnerTF.layer.borderColor = UIColor.blackColor.CGColor;
-    _propOwnerTF.layer.borderWidth = 4.0;
+    _propOwnerTF.layer.borderWidth = (_topTableView.rowHeight / 20.0);
     _propOwnerTF.layer.cornerRadius = 10.0;
     _propOwnerTF.adjustsFontSizeToFitWidth = YES;
     
@@ -115,6 +117,9 @@
 
 - (void)dismissTextField
 {
+    [UserDefaults.defaults saveString:_propOwnerTF.text
+                               forKey:@"CurrentPropOwnerSearchText"];
+    
     for (UIView *textField in self.view.subviews)
     {
         if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)
@@ -187,12 +192,10 @@
         cell.userInteractionEnabled = NO;
     }
     
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    cell.detailTextLabel.textAlignment = NSTextAlignmentCenter;
-    cell.layer.borderColor = UIColor.blackColor.CGColor;
-    cell.layer.borderWidth = 0.5;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:32];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:24];
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
+    cell.detailTextLabel.textAlignment = NSTextAlignmentLeft;
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.0)];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     return cell;
