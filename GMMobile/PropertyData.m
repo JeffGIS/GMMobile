@@ -360,7 +360,7 @@ int SQLOK(int sqlReturn, char *method)
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
 {
-    CGContextSetLineWidth(context, 3);
+    CGContextSetLineWidth(context, 1);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
@@ -428,8 +428,9 @@ int SQLOK(int sqlReturn, char *method)
     LPSTR pid;
     DPOINT BasePt;
     int numPoints,numLoops, refno;
+    LPSTR homeStead,useCode,useDesc,taxExempt;
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id FROM PARCELPOLY, PARCELPOLY_index WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+    NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,HOMESTEAD,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"displayParcels");
@@ -437,7 +438,11 @@ int SQLOK(int sqlReturn, char *method)
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement,7);
-       
+        homeStead = (LPSTR)sqlite3_column_text(statement, 8);
+        useCode = (LPSTR)sqlite3_column_text(statement, 9);
+        useDesc = (LPSTR)sqlite3_column_text(statement, 10);
+        taxExempt = (LPSTR)sqlite3_column_text(statement, 11);
+        
         pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
@@ -466,7 +471,23 @@ int SQLOK(int sqlReturn, char *method)
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         if (CRAPI.sharedInstance.parcelShadingOption)
-            [self fillParcel:context nPoints:numPoints points:llpoints withColor:UIColor.yellowColor.CGColor];
+        {
+            float alpha = 0;
+            int opt = CRAPI.sharedInstance.parcelShadingOption;
+            switch (opt)
+            {
+                case 1://homestead
+                    if (*homeStead == 'H')
+                        alpha = 0.6;
+                    break;
+                case 5://tax_exempt
+                    if (*taxExempt == 'E')
+                        alpha = 0.6;
+                    break;
+            }
+            UIColor * color = [[UIColor alloc]initWithRed:1.0 green:1.0 blue:0.0 alpha:alpha];
+            [self fillParcel:context nPoints:numPoints points:llpoints withColor:color.CGColor];
+        }
         if (CRAPI.sharedInstance.showParcelBoundary)
             [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
         free (llpoints);

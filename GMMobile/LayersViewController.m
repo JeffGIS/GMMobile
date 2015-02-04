@@ -92,7 +92,7 @@
 
 - (IBAction)parcelShadingOption2:(id)sender {
     _parcelShadingOption.selectedSegmentIndex = -1;
-    CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption.selectedSegmentIndex+4;
+    CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption2.selectedSegmentIndex+4;
     [self setParcelLines];
 }
 - (IBAction)parcelBoundaryLines:(id)sender {
