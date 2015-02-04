@@ -79,6 +79,13 @@
 {
     [super viewWillAppear:animated];
     
+    if (_gmmOverlay)
+    {
+        [_mapView removeOverlay:_gmmOverlay];
+        if (CRAPI.sharedInstance.GMTilesVisible)
+            [_mapView addOverlay:_gmmOverlay
+                       level:MKOverlayLevelAboveLabels];
+    }
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
@@ -107,8 +114,11 @@
         annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
         [self addAnnotation:annotation];
     }
+    else
+    {
+        [_mapView setRegion:_mapView.region animated:NO];
+    }
 }
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -208,7 +218,7 @@ regionDidChangeAnimated:(BOOL)animated
         _osmOverlay.maximumZ = 19;
         _gmmOverlay.minimumZ = _gmmOverlay.maximumZ = 0;
     }
-    
+
     [self refreshVectorView:region
                      atZoom:currentZoom];
 }

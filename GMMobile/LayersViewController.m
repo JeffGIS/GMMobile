@@ -14,7 +14,7 @@
     [super viewDidLoad];
     _parcelZoomStepper.stepValue = 1.0;
     _parcelZoomStepper.minimumValue = 12.0;
-    _parcelZoomStepper.maximumValue = 19.0;
+    _parcelZoomStepper.maximumValue = 20.0;
     _parcelZoomStepper.continuous = NO;
     _parcelZoomStepper.value = CRAPI.sharedInstance.parcelsVisibleAtZoom;
     
@@ -36,7 +36,10 @@
 {
     CRAPI.sharedInstance.parcelsVisibleAtZoom = _parcelZoomStepper.value;
     
-    _parcelZoomLabel.text = [NSString stringWithFormat:@"Show Parcels at Zoom Level %i",
+    if (CRAPI.sharedInstance.parcelsVisibleAtZoom > 19)
+        _parcelZoomLabel.text = [NSString stringWithFormat:@"Never Show Parcels"];
+    else
+        _parcelZoomLabel.text = [NSString stringWithFormat:@"Show Parcels at Zoom Level %i",
                              (int)CRAPI.sharedInstance.parcelsVisibleAtZoom];
 }
 
@@ -59,4 +62,8 @@
     CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption.selectedSegmentIndex;
 }
 
+- (IBAction)displayTileInfo:(id)sender {
+    CRAPI.sharedInstance.showTileInfo = !CRAPI.sharedInstance.showTileInfo;
+
+}
 @end

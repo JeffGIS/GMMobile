@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GMMobile/GSSiTileOverlayRenderer.m"
-            timestampString = "443813078.890629"
+            timestampString = "444763162.359723"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "16"
-            endingLineNumber = "16"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
             landmarkName = "-drawMapRect:zoomScale:inContext:"
             landmarkType = "5">
          </BreakpointContent>
