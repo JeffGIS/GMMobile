@@ -5,18 +5,21 @@
 
 @implementation GSSiAnnotationView
 
-- (id)initWithCoord:(CLLocationCoordinate2D)coord
-            mapView:(MKMapView *)mapView
+- (id)initWithAnnotation:(GSSiAnnotation *)annotation
+                 mapView:(MKMapView *)mapView;
 {
-    CGPoint cPoint = [mapView convertCoordinate:coord
+    CGPoint cPoint = [mapView convertCoordinate:annotation.coordinate
                                   toPointToView:mapView];
     
-    self = [super initWithFrame:CGRectMake(cPoint.x, cPoint.y, 160.0, 60.0)];
+    CGFloat width = 160.0, height = 60.0;
+    
+    self = [super initWithFrame:CGRectMake((cPoint.x - width / 2.0), (cPoint.y - height), width, height)];
     
     if (self)
     {
         self.backgroundColor = UIColor.greenColor;
-        _coordinate = coord;
+        _annotation = annotation;
+        [CRAPI.sharedInstance.annotations addObject:_annotation];
     }
     
     return self;

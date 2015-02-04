@@ -173,10 +173,12 @@ regionDidChangeAnimated:(BOOL)animated
     CGFloat currentScale = (d / LDIST(0, 0, mrect.size.width, mrect.size.height));
     CGFloat wantScale = GroundResolution(latlon1.latitude, 19);
     int currentZoom = 0;
+    
     while (GroundResolution(latlon1.latitude, currentZoom) > currentScale)
     {
         currentZoom++;
     }
+    
  /*   if (mapView.camera.altitude < 299.0)
         {
             _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
@@ -188,25 +190,27 @@ regionDidChangeAnimated:(BOOL)animated
     
     _camera = mapView.camera;
     _camera = mapView.camera;
-    MKMapRect intRect = MKMapRectUnion(visRect,_cityInnerBounds);
+    MKMapRect intRect = MKMapRectUnion(visRect, _cityInnerBounds);
     
     if (CRAPI.sharedInstance.GMTilesVisible)
     {
         if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
             _osmOverlay.maximumZ = 12;
+        
         else
             _osmOverlay.maximumZ = 19;
         _gmmOverlay.minimumZ = 12;
         _gmmOverlay.maximumZ = 19;
     }
+    
     else
     {
         _osmOverlay.maximumZ = 19;
-
-    if (!_firstTime)
-        [self refreshVectorView:region];
+        _gmmOverlay.minimumZ = _gmmOverlay.maximumZ = 0;
+    }
     
-    NSLog(@"%@", _mapView.annotations);
+    [self refreshVectorView:region
+                     atZoom:currentZoom];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -227,16 +231,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     llp.lon = coordPicked.longitude;
     
     NSString *PIDString = [_propData pickPID:llp];
-    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+    GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
     annotation.subtitle = [_propData getOwnerNameForPID:PIDString];
-    [self addAnnotation:annotation];
+    //[self addAnnotation:annotation];
     
-    //GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithCoord:coordPicked
-                                                                     //mapView:_mapView];
+    GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithAnnotation:annotation
+                                                                          mapView:_mapView];
     
-    //[self.view addSubview:gssiView];
+    [self.view addSubview:gssiView];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView

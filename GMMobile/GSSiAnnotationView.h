@@ -2,14 +2,13 @@
 //  GMMobile
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "GSSiAnnotation.h"
 
 @interface GSSiAnnotationView : UIView
 
-@property (nonatomic) CLLocationCoordinate2D coordinate;
-@property (nonatomic) NSString *title;
-@property (nonatomic) NSString *subtitle;
+@property (nonatomic) GSSiAnnotation *annotation;
 
-- (id)initWithCoord:(CLLocationCoordinate2D)coords
-            mapView:(MKMapView *)mapView;
+- (id)initWithAnnotation:(GSSiAnnotation *)annotation
+                 mapView:(MKMapView *)mapView;
 
 @end

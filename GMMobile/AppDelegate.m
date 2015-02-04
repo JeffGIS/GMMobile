@@ -38,6 +38,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.parcelsVisibleAtZoom = 15;
     CRAPI.sharedInstance.sewerVisibleAtZoom = 15;
     CRAPI.sharedInstance.parcelShadingOption = 0;
+    CRAPI.sharedInstance.annotations = [[NSMutableArray alloc] init];
 
     return YES;
 }
