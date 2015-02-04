@@ -132,10 +132,10 @@
     [self.view bringSubviewToFront:button];
 }
 
-- (MKTileOverlayRenderer *)mapView:(MKMapView *)mapView
+- (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
             rendererForOverlay:(id <GSSiOverlay>)overlay
 {
-    MKTileOverlayRenderer *renderer = [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
+    GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
 }
 

@@ -15,6 +15,7 @@
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
 		A91565661A81F9F700119C21 /* GSSiAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565651A81F9F700119C21 /* GSSiAnnotationView.m */; };
 		A91565691A820FEF00119C21 /* GSSiAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565681A820FEF00119C21 /* GSSiAnnotation.m */; };
+		A915656C1A826D4D00119C21 /* GSSiTileOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A915656B1A826D4D00119C21 /* GSSiTileOverlayRenderer.m */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
@@ -69,6 +70,8 @@
 		A91565651A81F9F700119C21 /* GSSiAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiAnnotationView.m; sourceTree = "<group>"; };
 		A91565671A820FEF00119C21 /* GSSiAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiAnnotation.h; sourceTree = "<group>"; };
 		A91565681A820FEF00119C21 /* GSSiAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiAnnotation.m; sourceTree = "<group>"; };
+		A915656A1A826D4D00119C21 /* GSSiTileOverlayRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlayRenderer.h; sourceTree = "<group>"; };
+		A915656B1A826D4D00119C21 /* GSSiTileOverlayRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlayRenderer.m; sourceTree = "<group>"; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
 		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPropertyOwnerViewController.h; sourceTree = "<group>"; };
@@ -187,6 +190,8 @@
 				A91565651A81F9F700119C21 /* GSSiAnnotationView.m */,
 				A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */,
 				A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */,
+				A915656A1A826D4D00119C21 /* GSSiTileOverlayRenderer.h */,
+				A915656B1A826D4D00119C21 /* GSSiTileOverlayRenderer.m */,
 				EB5522781A75576E008CE2D1 /* PropertyData.h */,
 				EB5522791A75576E008CE2D1 /* PropertyData.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
@@ -414,6 +419,7 @@
 				A91565661A81F9F700119C21 /* GSSiAnnotationView.m in Sources */,
 				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
+				A915656C1A826D4D00119C21 /* GSSiTileOverlayRenderer.m in Sources */,
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				A91565691A820FEF00119C21 /* GSSiAnnotation.m in Sources */,
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
