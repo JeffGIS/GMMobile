@@ -231,16 +231,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     llp.lon = coordPicked.longitude;
     
     NSString *PIDString = [_propData pickPID:llp];
-    GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
+    
+    //GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
+    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+    
     annotation.coordinate = coordPicked;
     annotation.title = PIDString;
     annotation.subtitle = [_propData getOwnerNameForPID:PIDString];
-    //[self addAnnotation:annotation];
+    [self addAnnotation:annotation];
     
-    GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithAnnotation:annotation
-                                                                          mapView:_mapView];
+    //GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithAnnotation:annotation
+                                                                          //mapView:_mapView];
     
-    [self.view addSubview:gssiView];
+    //[self.view addSubview:gssiView];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
