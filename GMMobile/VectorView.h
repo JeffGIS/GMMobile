@@ -6,6 +6,7 @@
 @interface VectorView : UIView
 
 @property int displayData;
+@property int zoom;
 @property MNMXCORD latlonBounds;
 @property MNMXCORD viewBounds;
 

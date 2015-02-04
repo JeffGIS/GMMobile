@@ -418,16 +418,16 @@ int SQLOK(int sqlReturn, char *method)
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
-    sqlite3_stmt *statement;
-    LPSTR pid;
-    DPOINT BasePt;
-    int numPoints,numLoops, refno;
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
+    sqlite3_stmt *statement;
+    LPSTR pid;
+    DPOINT BasePt;
+    int numPoints,numLoops, refno;
     [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id FROM PARCELPOLY, PARCELPOLY_index WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -439,38 +439,25 @@ int SQLOK(int sqlReturn, char *method)
         refno = sqlite3_column_int(statement,7);
        
         pid = (LPSTR)sqlite3_column_text(statement, 0);
-        BasePt.x = sqlite3_column_double(statement, 1);
-        BasePt.y = sqlite3_column_double(statement, 2);
-        numPoints = sqlite3_column_int(statement, 3);
-        numLoops = sqlite3_column_int(statement, 4);
-        NSString *cpid = [NSString stringWithUTF8String:pid];
-        
-        int *polyPartLen = (int *)sqlite3_column_blob(statement, 5);
-        int nBlobBytes = sqlite3_column_bytes(statement, 5);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 6);
-        nBlobBytes = sqlite3_column_bytes(statement, 6);
-        LPDPOINT llpoints = malloc (numPoints * sizeof(DPOINT) + 4);
-        
-        for (int i=0; i<numPoints; i++)
+        BasePt.x = sqlite3_column_double(statement,1);
+        BasePt.y = sqlite3_column_double(statement,2);
+        numPoints = sqlite3_column_int(statement,3);
+        numLoops = sqlite3_column_int(statement,4);
+        int * polyPartLen = (int *)sqlite3_column_blob (statement,5);
+        int nBlobBytes = sqlite3_column_bytes (statement,5);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob (statement,6);
+        nBlobBytes = sqlite3_column_bytes (statement,6);
+        LPDPOINT llpoints = malloc (numPoints * sizeof(DPOINT)+4);
+        for (int i=0;i<numPoints;i++)
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / 1000000.0);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / 1000000.0);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
-        
-        [self fillParcel:context
-                 nPoints:numPoints
-                  points:llpoints
-               withColor:UIColor.yellowColor.CGColor];
-        
-        [self drawParcel:context
-                 nPoints:numPoints
-                  nLoops:numLoops
-                 partLen:polyPartLen
-                  points:llpoints
-               withColor:UIColor.redColor.CGColor];
-        
-        free(llpoints);
+        if (CRAPI.sharedInstance.parcelShadingOption)
+            [self fillParcel:context nPoints:numPoints points:llpoints withColor:UIColor.yellowColor.CGColor];
+        [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
+        free (llpoints);
     }
     
     SQLOK(sqlite3_finalize(statement), "getOwnerNameForPID");

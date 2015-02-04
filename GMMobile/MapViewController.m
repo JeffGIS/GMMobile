@@ -172,7 +172,11 @@ regionDidChangeAnimated:(BOOL)animated
     CGFloat d = ArcDistance(p1,p2);
     CGFloat currentScale = (d / LDIST(0, 0, mrect.size.width, mrect.size.height));
     CGFloat wantScale = GroundResolution(latlon1.latitude, 19);
-    
+    int currentZoom = 0;
+    while (GroundResolution(latlon1.latitude, currentZoom) > currentScale)
+    {
+        currentZoom++;
+    }
  /*   if (mapView.camera.altitude < 299.0)
         {
             _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
@@ -186,10 +190,17 @@ regionDidChangeAnimated:(BOOL)animated
     _camera = mapView.camera;
     MKMapRect intRect = MKMapRectUnion(visRect,_cityInnerBounds);
     
-    if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
-        _osmOverlay.maximumZ = 12;
-    
+    if (CRAPI.sharedInstance.GMTilesVisible)
+    {
+        if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
+            _osmOverlay.maximumZ = 12;
+        else
+            _osmOverlay.maximumZ = 19;
+        _gmmOverlay.minimumZ = 12;
+        _gmmOverlay.maximumZ = 19;
+    }
     else
+    {
         _osmOverlay.maximumZ = 19;
 
     if (!_firstTime)
@@ -290,7 +301,7 @@ calloutAccessoryControlTapped:(UIControl *)control
     [_vectorView setNeedsDisplay];
 }
 
-- (void)refreshVectorView:(MKCoordinateRegion) region
+- (void)refreshVectorView:(MKCoordinateRegion) region atZoom:(int)zoom
 {
     MNMXCORD llBounds;
     _vectorView.displayData = 1;
@@ -299,6 +310,7 @@ calloutAccessoryControlTapped:(UIControl *)control
     llBounds.ymn = (region.center.latitude - region.span.latitudeDelta / 2.0);
     llBounds.ymx = (region.center.latitude + region.span.latitudeDelta / 2.0);
     _vectorView.latlonBounds = llBounds;
+    _vectorView.zoom = zoom;
     [_vectorView setNeedsDisplay];
 }
 
