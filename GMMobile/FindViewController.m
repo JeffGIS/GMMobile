@@ -58,8 +58,14 @@
     
     else if ([segue.identifier isEqualToString:@"ShowFindIntersection"])
     {
-        FindAddressViewController *findInt= segue.destinationViewController;
+        FindAddressViewController *findInt = segue.destinationViewController;
         findInt.delegate = self;
+    }
+    
+    else if ([segue.identifier isEqualToString:@"ShowFindBoundaries"])
+    {
+        FindBoundariesViewController *findBounds = segue.destinationViewController;
+        findBounds.delegate = self;
     }
 }
 

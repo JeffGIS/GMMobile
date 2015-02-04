@@ -36,6 +36,9 @@
     _mapView.showsUserLocation = YES;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
+    _layersVC = [[LayersViewController alloc] init];
+    _layersVC.delegate = self;
+    
     [self extentZoom:NO];
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -342,6 +345,11 @@ calloutAccessoryControlTapped:(UIControl *)control
     
     [_mapView selectAnnotation:annotation
                       animated:NO];
+}
+
+- (void)GMTilesVisibleDidChange
+{
+    NSLog(@"I changed");
 }
 
 @end

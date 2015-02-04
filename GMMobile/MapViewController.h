@@ -7,6 +7,7 @@
 #import "PropertyData.h"
 #import "VectorView.h"
 #import "GSSiTileOverlayRenderer.h"
+#import "LayersViewController.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate>
 
