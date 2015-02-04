@@ -84,11 +84,23 @@
         [_mapView removeOverlay:_gmmOverlay];
         if (CRAPI.sharedInstance.GMTilesVisible)
             [_mapView addOverlay:_gmmOverlay
-                       level:MKOverlayLevelAboveLabels];
+                           level:MKOverlayLevelAboveLabels];
+    }
+    if (_osmOverlay)
+    {
+        [_mapView removeOverlay:_osmOverlay];
+        if (!CRAPI.sharedInstance.GMTilesVisible)
+        {
+            _osmOverlay.maximumZ = 19;
+            _osmOverlay.minimumZ = 0;
+            [_mapView addOverlay:_osmOverlay
+                           level:MKOverlayLevelAboveLabels];
+        }
     }
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
+        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
         NSString *currentPID = CRAPI.sharedInstance.currentPID;
         LLPOINT pidPoint = [_propData getPointForPID:currentPID];
         CLLocationCoordinate2D pidCoord;
