@@ -327,7 +327,10 @@ int SQLOK(int sqlReturn, char *method)
     return rtn;
 }
 
--(void)fillParcel:(CGContextRef) context nPoints:(int)np points:(LPDPOINT)pPoints withColor:(CGColorRef)color
+- (void)fillParcel:(CGContextRef)context
+           nPoints:(int)np
+            points:(LPDPOINT)pPoints
+         withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -336,10 +339,10 @@ int SQLOK(int sqlReturn, char *method)
     
     
     CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
-    for (int i=1;i<np;i++)
-    {
+    
+    for (int i = 1; i < np; i++)
         CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
-    }
+    
     CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
     
     if (!CGContextIsPathEmpty(context))
@@ -349,7 +352,13 @@ int SQLOK(int sqlReturn, char *method)
         CGContextDrawPath(context, kCGPathFill);
     }
 }
--(void)drawParcel:(CGContextRef) context nPoints:(int)np nLoops:(int)nLoops partLen:(int*)pPartLen points:(LPDPOINT)pPoints withColor:(CGColorRef)color
+
+- (void)drawParcel:(CGContextRef)context
+           nPoints:(int)np
+            nLoops:(int)nLoops
+           partLen:(int *)pPartLen
+            points:(LPDPOINT)pPoints
+         withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -360,33 +369,40 @@ int SQLOK(int sqlReturn, char *method)
     {
         int ip=0;
         int ii;
-        for (int loop=0;loop<nLoops;loop++)
+        for (int loop=0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
             ii = pPartLen[loop];
-            for (int i=1;i<pPartLen[loop];i++)
+            
+            for (int i = 1; i < pPartLen[loop]; i++)
             {
                 CGContextAddLineToPoint(context, pPoints[ip].x, pPoints[ip].y);
                 ip++;
             }
+            
             if (loop)
                 ip++;
+            
             if (!CGContextIsPathEmpty(context))
             {
                 CGContextSetStrokeColorWithColor(context,color);
                 CGContextDrawPath(context, kCGPathStroke);
             }
         }
+        
         ii = ip;
     }
+    
     else
     {
         CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
-        for (int i=1;i<np;i++)
+        
+        for (int i = 1; i < np; i++)
         {
             CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
         }
+        
         CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
         
         if (!CGContextIsPathEmpty(context))
@@ -398,20 +414,24 @@ int SQLOK(int sqlReturn, char *method)
 }
 
 
--(void) displayParcels:(CGContextRef) context LLBounds:(MNMXCORD*)platlonBounds viewBounds:(MNMXCORD*)pvbounds
+-(void) displayParcels:(CGContextRef)context
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
 {
     sqlite3_stmt *statement;
     LPSTR pid;
     DPOINT BasePt;
     int numPoints,numLoops, refno;
     
-    CloseTRANS2 (&_pTranLLtoView);
-    CloseTRANS2 (&_pTranViewtoLL);
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
     [self open];
-    NSString * query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id FROM PARCELPOLY, PARCELPOLY_index WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",platlonBounds->xmn,platlonBounds->xmx,platlonBounds->ymn,platlonBounds->ymx];
+    NSString *query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id FROM PARCELPOLY, PARCELPOLY_index WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"displayParcels");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -419,26 +439,38 @@ int SQLOK(int sqlReturn, char *method)
         refno = sqlite3_column_int(statement,7);
        
         pid = (LPSTR)sqlite3_column_text(statement, 0);
-        BasePt.x = sqlite3_column_double(statement,1);
-        BasePt.y = sqlite3_column_double(statement,2);
-        numPoints = sqlite3_column_int(statement,3);
-        numLoops = sqlite3_column_int(statement,4);
+        BasePt.x = sqlite3_column_double(statement, 1);
+        BasePt.y = sqlite3_column_double(statement, 2);
+        numPoints = sqlite3_column_int(statement, 3);
+        numLoops = sqlite3_column_int(statement, 4);
         NSString *cpid = [NSString stringWithUTF8String:pid];
         
-        int * polyPartLen = (int *)sqlite3_column_blob (statement,5);
-        int nBlobBytes = sqlite3_column_bytes (statement,5);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob (statement,6);
-        nBlobBytes = sqlite3_column_bytes (statement,6);
-        LPDPOINT llpoints = malloc (numPoints * sizeof(DPOINT)+4);
-        for (int i=0;i<numPoints;i++)
+        int *polyPartLen = (int *)sqlite3_column_blob(statement, 5);
+        int nBlobBytes = sqlite3_column_bytes(statement, 5);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 6);
+        nBlobBytes = sqlite3_column_bytes(statement, 6);
+        LPDPOINT llpoints = malloc (numPoints * sizeof(DPOINT) + 4);
+        
+        for (int i=0; i<numPoints; i++)
         {
-            llpoints[i].x = BasePt.x + offsetPoints[i].x/1000000.0;
-            llpoints[i].y = BasePt.y + offsetPoints[i].y/1000000.0;
-            llpoints[i] = TranDPOINT (&llpoints[i],_pTranLLtoView);
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / 1000000.0);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / 1000000.0);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
-        [self fillParcel:context nPoints:numPoints points:llpoints withColor:UIColor.yellowColor.CGColor];
-        [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
-        free (llpoints);
+        
+        [self fillParcel:context
+                 nPoints:numPoints
+                  points:llpoints
+               withColor:UIColor.yellowColor.CGColor];
+        
+        [self drawParcel:context
+                 nPoints:numPoints
+                  nLoops:numLoops
+                 partLen:polyPartLen
+                  points:llpoints
+               withColor:UIColor.redColor.CGColor];
+        
+        free(llpoints);
     }
     
     SQLOK(sqlite3_finalize(statement), "getOwnerNameForPID");

@@ -10,8 +10,9 @@
 @property (nonatomic) MKMapCamera *camera;
 @property (nonatomic) UITapGestureRecognizer *doubleTap;
 @property (nonatomic) CLLocationCoordinate2D target;
-@property (nonatomic) PropertyData *propData;
 @property (nonatomic) BOOL clearAnnotations;
+@property (nonatomic) PropertyData *propData;
+@property BOOL firstTime;
 
 @end
 
@@ -24,6 +25,7 @@
 {
     [super viewDidLoad];
     
+    _firstTime = YES;
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
@@ -63,8 +65,8 @@
     _doubleTap.delegate = self;
     [_mapView addGestureRecognizer:_doubleTap];
     
+    _firstTime = NO;
     [self extentZoom:YES];
-    [self setupVectorView];
     [self.view bringSubviewToFront:_vectorView];
     
     [self setupButton:_zoomToExtentButton];
@@ -189,7 +191,8 @@ regionDidChangeAnimated:(BOOL)animated
     else
         _osmOverlay.maximumZ = 19;
 
-    [self refreshVectorView:region];
+    if (!_firstTime)
+        [self refreshVectorView:region];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -283,18 +286,12 @@ calloutAccessoryControlTapped:(UIControl *)control
 {
     MNMXCORD llBounds;
     _vectorView.displayData = 1;
-    llBounds.xmn = region.center.longitude - region.span.longitudeDelta / 2;
-    llBounds.xmx = region.center.longitude + region.span.longitudeDelta / 2;
-    llBounds.ymn = region.center.latitude - region.span.latitudeDelta / 2;
-    llBounds.ymx = region.center.latitude + region.span.latitudeDelta / 2;
+    llBounds.xmn = (region.center.longitude - region.span.longitudeDelta / 2.0);
+    llBounds.xmx = (region.center.longitude + region.span.longitudeDelta / 2.0);
+    llBounds.ymn = (region.center.latitude - region.span.latitudeDelta / 2.0);
+    llBounds.ymx = (region.center.latitude + region.span.latitudeDelta / 2.0);
     _vectorView.latlonBounds = llBounds;
     [_vectorView setNeedsDisplay];
-}
-
-- (void)setupVectorView
-{
-    //_vectorView.backgroundColor = UIColor.yellowColor;
-    //_vectorView.alpha = 0.05;
 }
 
 - (IBAction)toggleAnnotationState:(id)sender

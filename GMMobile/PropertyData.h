@@ -29,8 +29,11 @@
 - (LLPOINT)getPointForPID:(NSString *)PID;
 - (NSString *)pickPID:(LLPOINT)pt;
 
--( BOOL)loadParcelPolygons:(NSString*)fromPath updatePopover:(GSSiPopoverView*)popover;
+- ( BOOL)loadParcelPolygons:(NSString*)fromPath updatePopover:(GSSiPopoverView*)popover;
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
--(void) displayParcels:(CGContextRef) context LLBounds:(MNMXCORD*)platlonBounds viewBounds:(MNMXCORD*)pvbounds;
+
+- (void) displayParcels:(CGContextRef)context
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds;
 
 @end

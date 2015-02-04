@@ -18,6 +18,7 @@
     [self setupButton:_addressButton];
     [self setupButton:_taxpayerButton];
     [self setupButton:_intersectionButton];
+    [self setupButton:_boundariesButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -45,8 +46,20 @@
     
     else if ([segue.identifier isEqualToString:@"ShowFindAddress"])
     {
-        FindAddressViewController *findAddress= segue.destinationViewController;
+        FindAddressViewController *findAddress = segue.destinationViewController;
         findAddress.delegate = self;
+    }
+    
+    else if ([segue.identifier isEqualToString:@"ShowFindPropertyOwner"])
+    {
+        FindAddressViewController *findPropOwner = segue.destinationViewController;
+        findPropOwner.delegate = self;
+    }
+    
+    else if ([segue.identifier isEqualToString:@"ShowFindIntersection"])
+    {
+        FindAddressViewController *findInt= segue.destinationViewController;
+        findInt.delegate = self;
     }
 }
 
@@ -72,6 +85,20 @@
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentAddress = address;
     self.tabBarController.selectedIndex = 0;
+}
+
+- (void)findIntersectionViewController:(FindIntersectionViewController *)findIntersection
+                 didSelectIntersection:(NSString *)intersection
+{
+    [findIntersection dismissViewControllerAnimated:YES
+                                         completion:nil];
+}
+
+- (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
+                      didSelectPIDs:(NSArray *)PIDs
+{
+    [findPropOwner dismissViewControllerAnimated:YES
+                                      completion:nil];
 }
 
 @end
