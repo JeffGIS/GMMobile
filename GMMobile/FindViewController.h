@@ -4,13 +4,16 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import "FindPIDViewController.h"
 #import "FindAddressViewController.h"
+#import "FindIntersectionViewController.h"
+#import "FindPropertyOwnerViewController.h"
 
-@interface FindViewController : UIViewController <FindPIDViewControllerDelegate,FindAddressViewControllerDelegate>
+@interface FindViewController : UIViewController <FindPIDViewControllerDelegate,FindAddressViewControllerDelegate,FindIntersectionViewControllerDelegate,FindPropOwnerViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *pidButton;
 @property (weak, nonatomic) IBOutlet UIButton *addressButton;
 @property (weak, nonatomic) IBOutlet UIButton *taxpayerButton;
 @property (weak, nonatomic) IBOutlet UIButton *intersectionButton;
+@property (weak, nonatomic) IBOutlet UIButton *boundariesButton;
 @property (nonatomic) FindPIDViewController *findPID;
 
 @end

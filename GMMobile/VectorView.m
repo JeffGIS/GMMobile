@@ -29,11 +29,13 @@
         _viewBounds.xmx = self.bounds.origin.x + self.bounds.size.width;
         _viewBounds.ymn = self.bounds.origin.y + self.bounds.size.height;
         _viewBounds.ymx = self.bounds.origin.y;
-        [pd displayParcels:context LLBounds:&_latlonBounds viewBounds:&_viewBounds];
+        
+        [pd displayParcels:context
+                  LLBounds:&_latlonBounds
+                viewBounds:&_viewBounds];
     }
-    //CGContextRelease(context);
     
+    //CGContextRelease(context);
 }
-
 
 @end
