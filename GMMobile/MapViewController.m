@@ -13,7 +13,6 @@
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) PropertyData *propData;
-@property BOOL firstTime;
 
 @end
 
@@ -26,7 +25,6 @@
 {
     [super viewDidLoad];
     
-    _firstTime = YES;
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
@@ -66,7 +64,6 @@
     _doubleTap.delegate = self;
     [_mapView addGestureRecognizer:_doubleTap];
     
-    _firstTime = NO;
     [self extentZoom:YES];
     [self.view bringSubviewToFront:_vectorView];
     
@@ -79,24 +76,31 @@
 {
     [super viewWillAppear:animated];
     
-    if (_gmmOverlay)
-    {
-        [_mapView removeOverlay:_gmmOverlay];
-        if (CRAPI.sharedInstance.GMTilesVisible)
-            [_mapView addOverlay:_gmmOverlay
-                           level:MKOverlayLevelAboveLabels];
-    }
     if (_osmOverlay)
     {
         [_mapView removeOverlay:_osmOverlay];
+        
         if (!CRAPI.sharedInstance.GMTilesVisible)
         {
             _osmOverlay.maximumZ = 19;
             _osmOverlay.minimumZ = 0;
-            [_mapView addOverlay:_osmOverlay
+        }
+        
+        [_mapView addOverlay:_osmOverlay
+                       level:MKOverlayLevelAboveLabels];
+    }
+    
+    if (_gmmOverlay)
+    {
+        [_mapView removeOverlay:_gmmOverlay];
+        
+        if (CRAPI.sharedInstance.GMTilesVisible)
+        {
+            [_mapView addOverlay:_gmmOverlay
                            level:MKOverlayLevelAboveLabels];
         }
     }
+    
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
@@ -126,6 +130,7 @@
         annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
         [self addAnnotation:annotation];
     }
+    
     else
     {
         MKCoordinateRegion region = _mapView.region;
@@ -227,8 +232,6 @@ regionDidChangeAnimated:(BOOL)animated
         
         else
             _osmOverlay.maximumZ = 19;
-        _gmmOverlay.minimumZ = 12;
-        _gmmOverlay.maximumZ = 19;
     }
     
     else
