@@ -447,11 +447,22 @@ int SQLOK(int sqlReturn, char *method)
         int nBlobBytes = sqlite3_column_bytes (statement,5);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob (statement,6);
         nBlobBytes = sqlite3_column_bytes (statement,6);
-        LPDPOINT llpoints = malloc (numPoints * sizeof(DPOINT)+4);
-        for (int i=0;i<numPoints;i++)
+        LPDPOINT llpoints = malloc (abs(numPoints) * sizeof(DPOINT)+4);
+        if (numPoints < 0)
         {
-            llpoints[i].x = (BasePt.x + offsetPoints[i].x / 1000000.0);
-            llpoints[i].y = (BasePt.y + offsetPoints[i].y / 1000000.0);
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            for (int i=0;i<numPoints;i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / 100000000.0);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / 100000000.0);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        else for (int i=0;i<numPoints;i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / 100000000.0);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / 100000000.0);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         if (CRAPI.sharedInstance.parcelShadingOption)
