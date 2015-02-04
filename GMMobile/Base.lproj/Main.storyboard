@@ -111,9 +111,77 @@
                     <view key="view" contentMode="scaleToFill" id="QS5-Rx-YEW">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="HAd-Aj-nhI">
+                                <rect key="frame" x="16" y="93" width="123" height="29"/>
+                                <segments>
+                                    <segment title="Yes"/>
+                                    <segment title="No"/>
+                                </segments>
+                                <connections>
+                                    <action selector="setGMTileZoom:" destination="8rJ-Kc-sve" eventType="valueChanged" id="cno-Jo-HAE"/>
+                                </connections>
+                            </segmentedControl>
+                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Px7-By-XkO">
+                                <rect key="frame" x="30" y="142" width="94" height="29"/>
+                                <connections>
+                                    <action selector="setParcelZoom:" destination="8rJ-Kc-sve" eventType="valueChanged" id="yjd-RN-Cdj"/>
+                                </connections>
+                            </stepper>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Show Parcels at Zoom Level 12" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgP-CV-wBy">
+                                <rect key="frame" x="148" y="142" width="363" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Display GeoMaster Tiles" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eVE-N9-WwW">
+                                <rect key="frame" x="147" y="96" width="306" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DE2-N2-eXZ">
+                                <rect key="frame" x="16" y="274" width="563" height="29"/>
+                                <segments>
+                                    <segment title="No Shading"/>
+                                    <segment title="Homestead"/>
+                                    <segment title="Res/Commercial"/>
+                                    <segment title="Sale in Last 5 yr"/>
+                                    <segment title="Total Tax"/>
+                                </segments>
+                                <connections>
+                                    <action selector="setParcelShading:" destination="8rJ-Kc-sve" eventType="valueChanged" id="B1O-iq-RBk"/>
+                                </connections>
+                            </segmentedControl>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Shade Parcels By" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bc7-2j-0PC">
+                                <rect key="frame" x="179" y="245" width="232" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="hRa-Jq-3cA">
+                                <rect key="frame" x="30" y="187" width="94" height="29"/>
+                                <connections>
+                                    <action selector="setSewerZoom:" destination="8rJ-Kc-sve" eventType="valueChanged" id="Gcf-AN-a8J"/>
+                                </connections>
+                            </stepper>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Show Sewer at Zoom Level 12" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7FE-Hk-Xy5">
+                                <rect key="frame" x="148" y="187" width="363" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Layers" image="layers.png" id="cPa-gy-q4n"/>
+                    <connections>
+                        <outlet property="parcelShadingOption" destination="DE2-N2-eXZ" id="krt-bp-YvU"/>
+                        <outlet property="parcelZoomLabel" destination="OgP-CV-wBy" id="rGL-l6-IWe"/>
+                        <outlet property="parcelZoomStepper" destination="Px7-By-XkO" id="6a8-MB-uBF"/>
+                        <outlet property="sewerZoomLabel" destination="7FE-Hk-Xy5" id="8sB-BZ-xbG"/>
+                        <outlet property="sewerZoomStepper" destination="hRa-Jq-3cA" id="zpF-hx-42P"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Nw-L8-lE0" sceneMemberID="firstResponder"/>
             </objects>

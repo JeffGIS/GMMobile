@@ -180,7 +180,6 @@
     _condition = [[NSCondition alloc] init];
     
     dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue", NULL);
-    dispatch_queue_t tileQueue = dispatch_queue_create("tileQueue", NULL);
   
     dispatch_async(overallQueue,
                    ^{
@@ -207,6 +206,7 @@
                            top.x = atoi(ploc);
                            numRequests++;
                            
+                           dispatch_queue_t tileQueue = dispatch_queue_create("tileQueue", DISPATCH_QUEUE_CONCURRENT);
                            dispatch_async(tileQueue,
                                           ^{
                                               NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
@@ -220,7 +220,7 @@
                                                         condition:_condition
                                                          complete:&_nComplete
                                                            failed:&_nFailed];
-                           
+                                              
                                               dispatch_async(dispatch_get_main_queue(),
                                                              ^{
                                                                  [popover updateProgress:(CGFloat)ftell(fid) / fileSize];

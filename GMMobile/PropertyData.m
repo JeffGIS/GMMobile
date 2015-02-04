@@ -400,16 +400,16 @@ int SQLOK(int sqlReturn, char *method)
 
 -(void) displayParcels:(CGContextRef) context LLBounds:(MNMXCORD*)platlonBounds viewBounds:(MNMXCORD*)pvbounds
 {
-    sqlite3_stmt *statement;
-    LPSTR pid;
-    DPOINT BasePt;
-    int numPoints,numLoops, refno;
     
     CloseTRANS2 (&_pTranLLtoView);
     CloseTRANS2 (&_pTranViewtoLL);
     
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
+    sqlite3_stmt *statement;
+    LPSTR pid;
+    DPOINT BasePt;
+    int numPoints,numLoops, refno;
     [self open];
     NSString * query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id FROM PARCELPOLY, PARCELPOLY_index WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",platlonBounds->xmn,platlonBounds->xmx,platlonBounds->ymn,platlonBounds->ymx];
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"displayParcels");
@@ -423,8 +423,6 @@ int SQLOK(int sqlReturn, char *method)
         BasePt.y = sqlite3_column_double(statement,2);
         numPoints = sqlite3_column_int(statement,3);
         numLoops = sqlite3_column_int(statement,4);
-        NSString *cpid = [NSString stringWithUTF8String:pid];
-        
         int * polyPartLen = (int *)sqlite3_column_blob (statement,5);
         int nBlobBytes = sqlite3_column_bytes (statement,5);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob (statement,6);
@@ -436,7 +434,8 @@ int SQLOK(int sqlReturn, char *method)
             llpoints[i].y = BasePt.y + offsetPoints[i].y/1000000.0;
             llpoints[i] = TranDPOINT (&llpoints[i],_pTranLLtoView);
         }
-        [self fillParcel:context nPoints:numPoints points:llpoints withColor:UIColor.yellowColor.CGColor];
+        if (CRAPI.sharedInstance.parcelShadingOption)
+            [self fillParcel:context nPoints:numPoints points:llpoints withColor:UIColor.yellowColor.CGColor];
         [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
         free (llpoints);
     }
