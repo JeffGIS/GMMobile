@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "MapViewController.h"
+#import "GSSiAnnotationView.h"
 
 @interface MapViewController ()
 
@@ -193,6 +194,8 @@ regionDidChangeAnimated:(BOOL)animated
 
     if (!_firstTime)
         [self refreshVectorView:region];
+    
+    NSLog(@"%@", _mapView.annotations);
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -218,6 +221,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     annotation.title = PIDString;
     annotation.subtitle = [_propData getOwnerNameForPID:PIDString];
     [self addAnnotation:annotation];
+    
+    //GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithCoord:coordPicked
+                                                                     //mapView:_mapView];
+    
+    //[self.view addSubview:gssiView];
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
@@ -303,11 +311,11 @@ calloutAccessoryControlTapped:(UIControl *)control
         _clearAnnotations = YES;
 }
 
-- (void)addAnnotation:(id<MKAnnotation>)annotation
+- (void)addAnnotation:(id <MKAnnotation>)annotation
 {
     if (_clearAnnotations)
     {
-        for (id<MKAnnotation> annotation in _mapView.annotations)
+        for (id <MKAnnotation> annotation in _mapView.annotations)
         {
             if (![annotation isKindOfClass:MKUserLocation.class])
                 [_mapView removeAnnotation:annotation];
