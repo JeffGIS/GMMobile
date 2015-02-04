@@ -35,6 +35,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [lagFreeField removeFromSuperview];
     
     CRAPI.sharedInstance.GMTilesVisible = YES;
+    CRAPI.sharedInstance.showParcelBoundary = YES;
     CRAPI.sharedInstance.parcelsVisibleAtZoom = 16;
     CRAPI.sharedInstance.sewerVisibleAtZoom = 16;
     CRAPI.sharedInstance.parcelShadingOption = 0;

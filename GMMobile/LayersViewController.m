@@ -23,9 +23,20 @@
     
     _sewerZoomLabel.text = [NSString stringWithFormat:@"Show Sewer at Zoom Level %i",
                             (int)CRAPI.sharedInstance.sewerVisibleAtZoom];
-    
-    _parcelShadingOption.selectedSegmentIndex = CRAPI.sharedInstance.parcelShadingOption;
-}
+
+    if (CRAPI.sharedInstance.parcelShadingOption > 3)
+    {
+        _parcelShadingOption2.selectedSegmentIndex = CRAPI.sharedInstance.parcelShadingOption-4;
+        _parcelShadingOption.selectedSegmentIndex = -1;
+    }
+    else
+    {
+        _parcelShadingOption.selectedSegmentIndex = CRAPI.sharedInstance.parcelShadingOption;
+        _parcelShadingOption2.selectedSegmentIndex = -1;
+    }
+    _parcelBoundaryLines.selectedSegmentIndex = CRAPI.sharedInstance.showParcelBoundary;
+    [self setParcelLines];
+    }
 
 - (void)didReceiveMemoryWarning
 {
@@ -56,14 +67,35 @@
                             (int)CRAPI.sharedInstance.sewerVisibleAtZoom];
     
 }
-
-- (IBAction)setParcelShading:(id)sender
-{
-    CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption.selectedSegmentIndex;
-}
-
 - (IBAction)displayTileInfo:(id)sender {
     CRAPI.sharedInstance.showTileInfo = !CRAPI.sharedInstance.showTileInfo;
+    
+}
 
+-(void)setParcelLines
+{
+    if (CRAPI.sharedInstance.parcelShadingOption)
+        _parcelBoundaryLines.enabled = YES;
+    else
+    {
+        _parcelBoundaryLines.selectedSegmentIndex = 1;
+        _parcelBoundaryLines.enabled = NO;
+        CRAPI.sharedInstance.showParcelBoundary = YES;
+    }
+}
+- (IBAction)parcelShadingOption:(id)sender
+{
+    CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption.selectedSegmentIndex;
+    _parcelShadingOption2.selectedSegmentIndex = -1;
+    [self setParcelLines];
+}
+
+- (IBAction)parcelShadingOption2:(id)sender {
+    _parcelShadingOption.selectedSegmentIndex = -1;
+    CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption.selectedSegmentIndex+4;
+    [self setParcelLines];
+}
+- (IBAction)parcelBoundaryLines:(id)sender {
+    CRAPI.sharedInstance.showParcelBoundary = !CRAPI.sharedInstance.showParcelBoundary;
 }
 @end

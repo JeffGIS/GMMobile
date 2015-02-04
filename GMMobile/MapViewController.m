@@ -128,7 +128,14 @@
     }
     else
     {
-        [_mapView setRegion:_mapView.region animated:NO];
+        MKCoordinateRegion region = _mapView.region;
+        MKCoordinateRegion saveRegion = _mapView.region;
+        
+        region.center.latitude = 0;
+        region.center.longitude = 0;
+        [_mapView setRegion:region animated:NO];
+        [_mapView setRegion:saveRegion animated:NO];
+
     }
 }
 - (void)didReceiveMemoryWarning
@@ -194,11 +201,10 @@ regionDidChangeAnimated:(BOOL)animated
     CGFloat d = ArcDistance(p1,p2);
     CGFloat currentScale = (d / LDIST(0, 0, mrect.size.width, mrect.size.height));
     CGFloat wantScale = GroundResolution(latlon1.latitude, 19);
-    int currentZoom = 0;
-    
-    while (GroundResolution(latlon1.latitude, currentZoom) > currentScale)
+    _currentZoom = 0;
+    while (GroundResolution(latlon1.latitude, _currentZoom) > currentScale)
     {
-        currentZoom++;
+        _currentZoom++;
     }
     
  /*   if (mapView.camera.altitude < 299.0)
@@ -232,7 +238,7 @@ regionDidChangeAnimated:(BOOL)animated
     }
 
     [self refreshVectorView:region
-                     atZoom:currentZoom];
+                     atZoom:_currentZoom];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer

@@ -11,5 +11,10 @@
 @property (weak, nonatomic) IBOutlet UIStepper *sewerZoomStepper;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelShadingOption;
 - (IBAction)displayTileInfo:(id)sender;
+- (IBAction)parcelShadingOption:(id)sender;
+- (IBAction)parcelShadingOption2:(id)sender;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *parcelShadingOption2;
+- (IBAction)parcelBoundaryLines:(id)sender;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *parcelBoundaryLines;
 
 @end

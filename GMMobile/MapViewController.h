@@ -17,5 +17,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;
 @property (weak, nonatomic) IBOutlet UISwitch *annotationSwitch;
 @property (weak, nonatomic) IBOutlet VectorView *vectorView;
+@property  int currentZoom;
 
 @end

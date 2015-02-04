@@ -467,7 +467,8 @@ int SQLOK(int sqlReturn, char *method)
         }
         if (CRAPI.sharedInstance.parcelShadingOption)
             [self fillParcel:context nPoints:numPoints points:llpoints withColor:UIColor.yellowColor.CGColor];
-        [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
+        if (CRAPI.sharedInstance.showParcelBoundary)
+            [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
         free (llpoints);
     }
     
