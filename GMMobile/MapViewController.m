@@ -527,6 +527,20 @@ viewForHeaderInSection:(NSInteger)section
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Property Report"])
+    {
+        _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        _tableView.allowsSelection = NO;
+        _tableView.delaysContentTouches = YES;
+        _tableView.rowHeight = _rowHeight;
+        _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
+        [_tableView reloadData];
+    }
+}
+
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
