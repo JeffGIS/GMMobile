@@ -98,6 +98,8 @@
         {
             [_mapView addOverlay:_gmmOverlay
                            level:MKOverlayLevelAboveLabels];
+            _gmmOverlay.minimumZ = 12;
+            _gmmOverlay.maximumZ = 19;
         }
     }
     

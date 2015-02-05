@@ -178,7 +178,7 @@
                                     <segment title="No Shading"/>
                                     <segment title="Homestead"/>
                                     <segment title="Res/Com"/>
-                                    <segment title="Sale Last 5 yr"/>
+                                    <segment title="Total Value"/>
                                 </segments>
                                 <connections>
                                     <action selector="parcelShadingOption:" destination="8rJ-Kc-sve" eventType="valueChanged" id="yfo-Jv-ezS"/>
@@ -210,7 +210,7 @@
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Shade Parcels By" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bc7-2j-0PC">
                                 <rect key="frame" x="100" y="280" width="232" height="21"/>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>

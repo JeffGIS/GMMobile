@@ -473,19 +473,24 @@ int SQLOK(int sqlReturn, char *method)
         if (CRAPI.sharedInstance.parcelShadingOption)
         {
             float alpha = 0;
+            UIColor * color;
             int opt = CRAPI.sharedInstance.parcelShadingOption;
             switch (opt)
             {
                 case 1://homestead
                     if (*homeStead == 'H')
                         alpha = 0.6;
+                    color = [[UIColor alloc]initWithRed:1.0 green:1.0 blue:0.0 alpha:alpha];
+                    break;
+                case 2://res-com
+                    color = [self resComColor:useCode];
                     break;
                 case 5://tax_exempt
                     if (*taxExempt == 'E')
                         alpha = 0.6;
+                    color = [[UIColor alloc]initWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
                     break;
             }
-            UIColor * color = [[UIColor alloc]initWithRed:1.0 green:1.0 blue:0.0 alpha:alpha];
             [self fillParcel:context nPoints:numPoints points:llpoints withColor:color.CGColor];
         }
         if (CRAPI.sharedInstance.showParcelBoundary)
@@ -497,4 +502,51 @@ int SQLOK(int sqlReturn, char *method)
     [self close];
 }
 
+                             
+-(UIColor*)resComColor:(char*)useCode
+{
+    UIColor* color=nil;
+    float alpha = 0.6;
+    switch ([self useCodeClass:useCode])
+    {
+        case 'N':
+            color = [[UIColor alloc]initWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
+            break;
+        case 'M':
+            color = [[UIColor alloc]initWithRed:1.0 green:1.0 blue:0.0 alpha:alpha];
+            break;
+        case 'R':
+            color = [[UIColor alloc]initWithRed:0.0 green:0.0 blue:1.0 alpha:alpha];
+            break;
+        case 'V':
+            color = [[UIColor alloc]initWithRed:0.0 green:1.0 blue:1.0 alpha:alpha];
+            break;
+    }
+    return color;
+}
+-(char)useCodeClass:(char*)useCode
+{
+    
+if (!strcasecmp(useCode,"CAUT")) return 'N';
+if (!strcasecmp(useCode,"CBRE")) return 'N';
+if (!strcasecmp(useCode,"CMXD")) return 'M';
+if (!strcasecmp(useCode,"COFF")) return 'N';
+if (!strcasecmp(useCode,"CRET")) return 'N';
+if (!strcasecmp(useCode,"CSCH")) return 'N';
+if (!strcasecmp(useCode,"CUTL")) return 'N';
+if (!strcasecmp(useCode,"CWKS")) return 'N';
+if (!strcasecmp(useCode,"GMRS")) return 'R';
+if (!strcasecmp(useCode,"GRES")) return 'R';
+if (!strcasecmp(useCode,"HMTL")) return 'N';
+if (!strcasecmp(useCode,"IWFW")) return 'N';
+if (!strcasecmp(useCode,"MFAP")) return 'R';
+if (!strcasecmp(useCode,"MFRS")) return 'R';
+if (!strcasecmp(useCode,"MISC")) return 'N';
+if (!strcasecmp(useCode,"RCMS")) return 'R';
+if (!strcasecmp(useCode,"SFAD")) return 'R';
+if (!strcasecmp(useCode,"SFDD")) return 'R';
+if (!strcasecmp(useCode,"SPRC")) return 'N';
+if (!strcasecmp(useCode,"VLND")) return 'V';
+return '?';
+}
 @end
