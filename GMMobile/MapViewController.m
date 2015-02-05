@@ -143,6 +143,8 @@
         
         annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
         [self addAnnotation:annotation];
+        
+        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
     else
@@ -152,11 +154,15 @@
         
         region.center.latitude = 0;
         region.center.longitude = 0;
-        [_mapView setRegion:region animated:NO];
-        [_mapView setRegion:saveRegion animated:NO];
-
+        
+        [_mapView setRegion:region
+                   animated:NO];
+        
+        [_mapView setRegion:saveRegion
+                   animated:NO];
     }
 }
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
