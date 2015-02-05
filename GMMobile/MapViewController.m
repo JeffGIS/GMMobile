@@ -18,6 +18,7 @@
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
+@property (nonatomic) BOOL clearWhenDeselected;
 
 @end
 
@@ -35,6 +36,7 @@
                                                  blue:0.3
                                                 alpha:1.0];
     
+    _clearWhenDeselected = YES;
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
@@ -345,6 +347,18 @@ calloutAccessoryControlTapped:(UIControl *)control
     }
 }
 
+- (void)mapView:(MKMapView *)mapView
+didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    if (!_clearWhenDeselected)
+    {
+        [_mapView selectAnnotation:view.annotation
+                          animated:NO];
+        
+        _clearWhenDeselected = YES;
+    }
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
@@ -519,14 +533,8 @@ viewForHeaderInSection:(NSInteger)section
     if (!_tableView.hidden)
     {
         _tableView.hidden = YES;
+        _clearWhenDeselected = NO;
     }
-}
-
-- (void)mapView:(MKMapView *)mapView
-didDeselectAnnotationView:(MKAnnotationView *)view
-{
-    [_mapView selectAnnotation:view.annotation
-                      animated:NO];
 }
 
 @end
