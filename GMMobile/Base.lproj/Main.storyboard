@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
@@ -63,27 +63,73 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="AEa-ny-Blc">
                                 <rect key="frame" x="-4" y="20" width="608" height="531"/>
                             </mapView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" bounces="NO" indicatorStyle="white" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="au5-Zd-FAS">
+                                <rect key="frame" x="150" y="148" width="300" height="276"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" id="PgF-oJ-P6A">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PgF-oJ-P6A" id="ZqU-iI-px1">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="NMB-Pr-k9S" secondAttribute="bottom" constant="-47" id="2nQ-8k-Q69"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-8" id="33Z-9M-k7x"/>
+                            <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="au5-Zd-FAS" secondAttribute="bottom" constant="85" id="5Dp-o8-QEf">
+                                <variation key="heightClass=regular-widthClass=regular" constant="120"/>
+                            </constraint>
                             <constraint firstItem="NMB-Pr-k9S" firstAttribute="centerY" secondItem="KAY-Pf-P3t" secondAttribute="centerY" constant="-0.5" id="FeW-VD-i5G"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="Hez-YA-rTn"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="8" id="Igb-CC-PUE"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="JzS-V6-Dwp"/>
                             <constraint firstAttribute="trailingMargin" secondItem="AEa-ny-Blc" secondAttribute="trailing" constant="-20" id="KbR-He-0pG"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="au5-Zd-FAS" secondAttribute="trailing" constant="180" id="LFJ-Is-r3Y">
+                                <variation key="heightClass=regular-widthClass=regular" constant="120"/>
+                            </constraint>
                             <constraint firstAttribute="trailingMargin" secondItem="TaK-PT-MPw" secondAttribute="trailing" constant="-20" id="PEY-DF-Aoc"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="TaK-PT-MPw" secondAttribute="bottom" id="QmM-7D-WUT"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="KAY-Pf-P3t" secondAttribute="bottom" constant="-56" id="T5O-TQ-adZ"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="centerX" secondItem="AEa-ny-Blc" secondAttribute="centerX" id="ToF-EH-hDI"/>
                             <constraint firstItem="TaK-PT-MPw" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="Zx6-fZ-Oh2"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="trailing" constant="-60" id="bRb-lx-fmB"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="AEa-ny-Blc" secondAttribute="bottom" id="dZF-jo-99j"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="centerY" secondItem="AEa-ny-Blc" secondAttribute="centerY" constant="22" id="fJe-nU-zip">
+                                <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
+                            </constraint>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="120" id="ibF-wt-ka7"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="180" id="n7M-f7-fbf">
+                                <variation key="heightClass=regular-widthClass=regular" constant="120"/>
+                            </constraint>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="SBD-ai-nP6" secondAttribute="bottom" constant="-56" id="pww-1D-oQP"/>
                             <constraint firstItem="TaK-PT-MPw" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="rXt-RA-Kn0"/>
                             <constraint firstItem="NMB-Pr-k9S" firstAttribute="leading" secondItem="KAY-Pf-P3t" secondAttribute="trailing" constant="8" id="sd1-kY-oUq"/>
                             <constraint firstItem="KAY-Pf-P3t" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="trailing" constant="8" id="zwC-Ho-S9P"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="LFJ-Is-r3Y"/>
+                                <exclude reference="ToF-EH-hDI"/>
+                                <exclude reference="fJe-nU-zip"/>
+                                <exclude reference="ibF-wt-ka7"/>
+                                <exclude reference="n7M-f7-fbf"/>
+                                <exclude reference="5Dp-o8-QEf"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=regular">
+                            <mask key="constraints">
+                                <include reference="LFJ-Is-r3Y"/>
+                                <include reference="ToF-EH-hDI"/>
+                                <include reference="fJe-nU-zip"/>
+                                <include reference="ibF-wt-ka7"/>
+                                <include reference="n7M-f7-fbf"/>
+                                <include reference="5Dp-o8-QEf"/>
+                            </mask>
+                        </variation>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Map" image="map.png" id="acW-dT-cKf"/>
@@ -91,6 +137,7 @@
                     <connections>
                         <outlet property="annotationSwitch" destination="NMB-Pr-k9S" id="90f-xL-6Os"/>
                         <outlet property="mapView" destination="AEa-ny-Blc" id="SVf-2V-TZT"/>
+                        <outlet property="tableView" destination="au5-Zd-FAS" id="fIa-1a-vEU"/>
                         <outlet property="userLocationButton" destination="SBD-ai-nP6" id="We4-pc-tmN"/>
                         <outlet property="vectorView" destination="TaK-PT-MPw" id="FOd-iK-X4c"/>
                         <outlet property="zoomToExtentButton" destination="KAY-Pf-P3t" id="1oM-mO-lw9"/>

@@ -9,14 +9,15 @@
 #import "GSSiTileOverlayRenderer.h"
 #import "LayersViewController.h"
 
-@interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate>
+@interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MKMapView *mapView;
-@property (nonatomic) MKMapRect cityInnerBounds;
 @property (weak, nonatomic) IBOutlet UIButton *userLocationButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;
 @property (weak, nonatomic) IBOutlet UISwitch *annotationSwitch;
 @property (weak, nonatomic) IBOutlet VectorView *vectorView;
-@property  int currentZoom;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic) MKMapRect cityInnerBounds;
+@property (nonatomic) int currentZoom;
 
 @end

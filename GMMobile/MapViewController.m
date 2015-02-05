@@ -70,6 +70,7 @@
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
     [self.view bringSubviewToFront:_annotationSwitch];
+    [self setupTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -312,10 +313,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 calloutAccessoryControlTapped:(UIControl *)control
 {
     if (control == view.rightCalloutAccessoryView)
-        NSLog(@"right callout tapped");
+    {
+        
+    }
     
     else if (control == view.leftCalloutAccessoryView)
-        NSLog(@"left callout tapped");
+    {
+        _tableView.hidden = NO;
+    }
 }
 
 - (IBAction)userLocation:(id)sender
@@ -380,9 +385,82 @@ calloutAccessoryControlTapped:(UIControl *)control
                       animated:NO];
 }
 
-- (void)GMTilesVisibleDidChange
+- (void)setupTableView
 {
-    NSLog(@"I changed");
+    _tableView.hidden = YES;
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    _tableView.separatorInset = UIEdgeInsetsZero;
+    _tableView.separatorColor = UIColor.whiteColor;
+    _tableView.backgroundColor = UIColor.blackColor;
+    _tableView.bounces = NO;
+    
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
+    _tableView.rowHeight = rowHeight;
+    _tableView.sectionHeaderHeight = (rowHeight * 1.2);
+    _tableView.layer.cornerRadius = (rowHeight / 4.0);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (UIView *)tableView:(UITableView *)tableView
+viewForHeaderInSection:(NSInteger)section
+{
+    UILabel *headerLabel = [[UILabel alloc] init];
+    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, tableView.sectionHeaderHeight);
+    headerLabel.font = [UIFont boldSystemFontOfSize:(tableView.sectionHeaderHeight / 2.8)];
+    headerLabel.textColor = UIColor.yellowColor;
+    headerLabel.numberOfLines = 0;
+    headerLabel.backgroundColor = UIColor.blackColor;
+    headerLabel.text = @"Property Report for\nTaxes Payable 2014";
+    headerLabel.textAlignment = NSTextAlignmentCenter;
+    return headerLabel;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
+{
+    return 26;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"
+                                                            forIndexPath:indexPath];
+    
+    if (!cell)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:@"Cell"];
+    }
+    
+    cell.backgroundColor = UIColor.blackColor;
+    cell.textLabel.text = [NSString stringWithFormat:@"TableViewRow%li", (long)indexPath.row];
+    cell.textLabel.textColor = UIColor.whiteColor;
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    return cell;
+}
+
+- (void)touchesBegan:(NSSet *)touches
+           withEvent:(UIEvent *)event
+{
+    if (!_tableView.hidden)
+    {
+        _tableView.hidden = YES;
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView
+didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    [_mapView selectAnnotation:view.annotation
+                      animated:NO];
 }
 
 @end
