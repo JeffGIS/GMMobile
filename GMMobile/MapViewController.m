@@ -13,6 +13,11 @@
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) PropertyData *propData;
+@property (nonatomic) NSArray *options;
+@property (nonatomic) NSMutableArray *propertyReport;
+@property (nonatomic) NSInteger tableViewSetting;
+@property (nonatomic) CGFloat rowHeight;
+@property (nonatomic) UIColor *tableViewBackgroundColor;
 
 @end
 
@@ -24,6 +29,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _tableViewBackgroundColor = [UIColor colorWithRed:0.0
+                                                green:0.0
+                                                 blue:0.3
+                                                alpha:1.0];
     
     _cityInnerBounds.origin.x = 64631097;
     _cityInnerBounds.origin.y = 96565088;
@@ -314,13 +324,32 @@ calloutAccessoryControlTapped:(UIControl *)control
 {
     if (control == view.rightCalloutAccessoryView)
     {
-        
+        _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        _tableView.allowsSelection = NO;
+        _tableView.delaysContentTouches = YES;
+        _tableView.rowHeight = _rowHeight;
+        _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
+        [_tableView reloadData];
+        _tableView.hidden = NO;
     }
     
     else if (control == view.leftCalloutAccessoryView)
     {
+        _tableViewSetting = PropertyTableViewSettingOptions;
+        _tableView.allowsSelection = YES;
+        _tableView.delaysContentTouches = NO;
+        _tableView.rowHeight = ((_tableView.frame.size.height - (_rowHeight * 1.4)) / _options.count);
+        _tableView.sectionHeaderHeight = (_rowHeight * 0.7);
+        [_tableView reloadData];
         _tableView.hidden = NO;
     }
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    if (_tableViewSetting == PropertyTableViewSettingOptions)
+        _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
 }
 
 - (IBAction)userLocation:(id)sender
@@ -387,18 +416,19 @@ calloutAccessoryControlTapped:(UIControl *)control
 
 - (void)setupTableView
 {
+    _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
+    
     _tableView.hidden = YES;
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorInset = UIEdgeInsetsZero;
     _tableView.separatorColor = UIColor.whiteColor;
-    _tableView.backgroundColor = UIColor.blackColor;
     _tableView.bounces = NO;
+    _tableView.backgroundColor = _tableViewBackgroundColor;
     
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
-    _tableView.rowHeight = rowHeight;
-    _tableView.sectionHeaderHeight = (rowHeight * 1.2);
-    _tableView.layer.cornerRadius = (rowHeight / 4.0);
+    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
+    _tableView.layer.cornerRadius = (_rowHeight / 4.0);
+    [self.view bringSubviewToFront:_tableView];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -410,20 +440,44 @@ calloutAccessoryControlTapped:(UIControl *)control
 viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = [[UILabel alloc] init];
-    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, tableView.sectionHeaderHeight);
-    headerLabel.font = [UIFont boldSystemFontOfSize:(tableView.sectionHeaderHeight / 2.8)];
+    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight);
+    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
     headerLabel.textColor = UIColor.yellowColor;
     headerLabel.numberOfLines = 0;
-    headerLabel.backgroundColor = UIColor.blackColor;
-    headerLabel.text = @"Property Report for\nTaxes Payable 2014";
+    headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
+    
+    switch (_tableViewSetting)
+    {
+        case PropertyTableViewSettingOptions:
+            headerLabel.text = @"Options";
+            break;
+            
+        case PropertyTableViewSettingPropertyReport:
+            headerLabel.text = @"Property Report for\nTaxes Payable 2014";
+            break;
+    }
+    
     return headerLabel;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return 26;
+    NSInteger numberOfRows = 0;
+    
+    switch (_tableViewSetting)
+    {
+        case PropertyTableViewSettingOptions:
+            numberOfRows = _options.count;
+            break;
+            
+        case PropertyTableViewSettingPropertyReport:
+            numberOfRows = _propertyReport.count;
+            break;
+    }
+    
+    return numberOfRows;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -438,12 +492,24 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
-    cell.backgroundColor = UIColor.blackColor;
-    cell.textLabel.text = [NSString stringWithFormat:@"TableViewRow%li", (long)indexPath.row];
+    cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
-    cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
+    cell.textLabel.textAlignment = NSTextAlignmentCenter;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    
+    switch (_tableViewSetting)
+    {
+        case PropertyTableViewSettingOptions:
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
+            cell.textLabel.text = _options[indexPath.row];
+            break;
+            
+        case PropertyTableViewSettingPropertyReport:
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.4)];
+            cell.textLabel.text = _propertyReport[indexPath.row];
+            break;
+    }
+    
     return cell;
 }
 

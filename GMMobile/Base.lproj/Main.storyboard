@@ -78,12 +78,20 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="au5-Zd-FAS" secondAttribute="trailing" constant="60" id="1QV-c5-fEQ">
+                                <variation key="heightClass=compact" constant="82"/>
+                            </constraint>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="centerY" secondItem="AEa-ny-Blc" secondAttribute="centerY" id="2Mq-TL-QDv"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="NMB-Pr-k9S" secondAttribute="bottom" constant="-47" id="2nQ-8k-Q69"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-8" id="33Z-9M-k7x"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="au5-Zd-FAS" secondAttribute="bottom" constant="85" id="5Dp-o8-QEf">
                                 <variation key="heightClass=regular-widthClass=regular" constant="120"/>
                             </constraint>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="centerX" secondItem="AEa-ny-Blc" secondAttribute="centerX" id="EEr-iG-wN4"/>
                             <constraint firstItem="NMB-Pr-k9S" firstAttribute="centerY" secondItem="KAY-Pf-P3t" secondAttribute="centerY" constant="-0.5" id="FeW-VD-i5G"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="176" id="GI4-bE-NGP">
+                                <variation key="heightClass=regular-widthClass=compact" constant="68"/>
+                            </constraint>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="Hez-YA-rTn"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="8" id="Igb-CC-PUE"/>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="JzS-V6-Dwp"/>
@@ -93,31 +101,85 @@
                             </constraint>
                             <constraint firstAttribute="trailingMargin" secondItem="TaK-PT-MPw" secondAttribute="trailing" constant="-20" id="PEY-DF-Aoc"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="TaK-PT-MPw" secondAttribute="bottom" id="QmM-7D-WUT"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="au5-Zd-FAS" secondAttribute="trailing" constant="20" id="RBd-kL-J8c">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                            </constraint>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="KAY-Pf-P3t" secondAttribute="bottom" constant="-56" id="T5O-TQ-adZ"/>
                             <constraint firstItem="au5-Zd-FAS" firstAttribute="centerX" secondItem="AEa-ny-Blc" secondAttribute="centerX" id="ToF-EH-hDI"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="60" id="X11-sk-ezW">
+                                <variation key="heightClass=compact" constant="82"/>
+                            </constraint>
+                            <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="au5-Zd-FAS" secondAttribute="bottom" constant="65" id="XuR-hm-oyO">
+                                <variation key="heightClass=compact" constant="4"/>
+                            </constraint>
                             <constraint firstItem="TaK-PT-MPw" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-20" id="Zx6-fZ-Oh2"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="66" id="b2H-7d-mAp">
+                                <variation key="heightClass=compact" constant="4"/>
+                            </constraint>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="trailing" constant="-60" id="bRb-lx-fmB"/>
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="AEa-ny-Blc" secondAttribute="bottom" id="dZF-jo-99j"/>
                             <constraint firstItem="au5-Zd-FAS" firstAttribute="centerY" secondItem="AEa-ny-Blc" secondAttribute="centerY" constant="22" id="fJe-nU-zip">
                                 <variation key="heightClass=regular-widthClass=regular" constant="0.0"/>
                             </constraint>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="centerX" secondItem="AEa-ny-Blc" secondAttribute="centerX" id="fTu-8a-02Y"/>
                             <constraint firstItem="au5-Zd-FAS" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" constant="120" id="ibF-wt-ka7"/>
+                            <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="au5-Zd-FAS" secondAttribute="bottom" constant="120" id="iuW-nw-IF5">
+                                <variation key="heightClass=regular-widthClass=compact" constant="68"/>
+                            </constraint>
                             <constraint firstItem="au5-Zd-FAS" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="180" id="n7M-f7-fbf">
                                 <variation key="heightClass=regular-widthClass=regular" constant="120"/>
+                            </constraint>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="20" id="p8P-kn-Cd5">
+                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
                             </constraint>
                             <constraint firstItem="AEa-ny-Blc" firstAttribute="top" secondItem="SBD-ai-nP6" secondAttribute="bottom" constant="-56" id="pww-1D-oQP"/>
                             <constraint firstItem="TaK-PT-MPw" firstAttribute="top" secondItem="Ia1-K6-d13" secondAttribute="bottom" id="rXt-RA-Kn0"/>
                             <constraint firstItem="NMB-Pr-k9S" firstAttribute="leading" secondItem="KAY-Pf-P3t" secondAttribute="trailing" constant="8" id="sd1-kY-oUq"/>
+                            <constraint firstItem="au5-Zd-FAS" firstAttribute="centerY" secondItem="AEa-ny-Blc" secondAttribute="centerY" constant="0.5" id="wHd-oE-AJv">
+                                <variation key="heightClass=compact" constant="0.0"/>
+                            </constraint>
                             <constraint firstItem="KAY-Pf-P3t" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="trailing" constant="8" id="zwC-Ho-S9P"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
+                                <exclude reference="1QV-c5-fEQ"/>
+                                <exclude reference="2Mq-TL-QDv"/>
+                                <exclude reference="EEr-iG-wN4"/>
+                                <exclude reference="GI4-bE-NGP"/>
                                 <exclude reference="LFJ-Is-r3Y"/>
+                                <exclude reference="RBd-kL-J8c"/>
                                 <exclude reference="ToF-EH-hDI"/>
+                                <exclude reference="X11-sk-ezW"/>
+                                <exclude reference="b2H-7d-mAp"/>
                                 <exclude reference="fJe-nU-zip"/>
+                                <exclude reference="fTu-8a-02Y"/>
                                 <exclude reference="ibF-wt-ka7"/>
                                 <exclude reference="n7M-f7-fbf"/>
+                                <exclude reference="p8P-kn-Cd5"/>
+                                <exclude reference="wHd-oE-AJv"/>
                                 <exclude reference="5Dp-o8-QEf"/>
+                                <exclude reference="XuR-hm-oyO"/>
+                                <exclude reference="iuW-nw-IF5"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=compact">
+                            <mask key="constraints">
+                                <include reference="1QV-c5-fEQ"/>
+                                <include reference="X11-sk-ezW"/>
+                                <include reference="b2H-7d-mAp"/>
+                                <include reference="fTu-8a-02Y"/>
+                                <include reference="wHd-oE-AJv"/>
+                                <include reference="XuR-hm-oyO"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="constraints">
+                                <include reference="2Mq-TL-QDv"/>
+                                <include reference="EEr-iG-wN4"/>
+                                <include reference="GI4-bE-NGP"/>
+                                <include reference="RBd-kL-J8c"/>
+                                <include reference="p8P-kn-Cd5"/>
+                                <include reference="iuW-nw-IF5"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
