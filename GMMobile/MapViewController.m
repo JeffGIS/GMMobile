@@ -119,7 +119,6 @@
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
-        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
         NSString *currentPID = CRAPI.sharedInstance.currentPID;
         LLPOINT pidPoint = [_propData getPointForPID:currentPID];
         CLLocationCoordinate2D pidCoord;
