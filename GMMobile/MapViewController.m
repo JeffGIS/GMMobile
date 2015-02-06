@@ -3,6 +3,7 @@
 
 #import "MapViewController.h"
 #import "GSSiAnnotationView.h"
+#import "WebKitViewController.h"
 
 @interface MapViewController ()
 
@@ -19,6 +20,8 @@
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearWhenDeselected;
+@property (nonatomic, copy) NSString *selectedPID;
+@property (nonatomic) CGFloat currentScreenHeight;
 
 @end
 
@@ -82,12 +85,27 @@
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
     [self.view bringSubviewToFront:_annotationSwitch];
+    
     [self setupTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if (_tableViewSetting == PropertyTableViewSettingHCWebsite)
+    {
+        if (_currentScreenHeight != self.view.frame.size.height)
+            _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+        
+        _tableViewSetting = PropertyTableViewSettingOptions;
+    }
+    
+    if (_tableView.indexPathForSelectedRow)
+    {
+        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                  animated:YES];
+    }
     
     if (_osmOverlay)
     {
@@ -111,6 +129,7 @@
         {
             [_mapView addOverlay:_gmmOverlay
                            level:MKOverlayLevelAboveLabels];
+            
             _gmmOverlay.minimumZ = 12;
             _gmmOverlay.maximumZ = 19;
         }
@@ -119,8 +138,8 @@
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
-        NSString *currentPID = CRAPI.sharedInstance.currentPID;
-        LLPOINT pidPoint = [_propData getPointForPID:currentPID];
+        _selectedPID = CRAPI.sharedInstance.currentPID;
+        LLPOINT pidPoint = [_propData getPointForPID:_selectedPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
@@ -136,12 +155,12 @@
         annotation.coordinate = pidCoord;
         
         if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
-            annotation.title = currentPID;
+            annotation.title = _selectedPID;
         
         else
             annotation.title = CRAPI.sharedInstance.currentAddress;
         
-        annotation.subtitle = [_propData getOwnerNameForPID:currentPID];
+        annotation.subtitle = [_propData getOwnerNameForPID:_selectedPID];
         [self addAnnotation:annotation];
         
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
@@ -161,6 +180,13 @@
         [_mapView setRegion:saveRegion
                    animated:NO];
     }
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    _currentScreenHeight = self.view.frame.size.height;
 }
 
 - (void)didReceiveMemoryWarning
@@ -281,14 +307,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     llp.lat = coordPicked.latitude;
     llp.lon = coordPicked.longitude;
     
-    NSString *PIDString = [_propData pickPID:llp];
+    _selectedPID = [_propData pickPID:llp];
     
     //GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     
     annotation.coordinate = coordPicked;
-    annotation.title = PIDString;
-    annotation.subtitle = [_propData getOwnerNameForPID:PIDString];
+    annotation.title = _selectedPID;
+    annotation.subtitle = [_propData getOwnerNameForPID:_selectedPID];
     [self addAnnotation:annotation];
     
     //GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithAnnotation:annotation
@@ -543,6 +569,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _tableView.rowHeight = _rowHeight;
         _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
         [_tableView reloadData];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
+    {
+        _tableViewSetting = PropertyTableViewSettingHCWebsite;
+        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:_selectedPID];
+        
+        [self presentViewController:wkvc
+                           animated:YES
+                         completion:nil];
     }
 }
 

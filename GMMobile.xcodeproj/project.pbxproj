@@ -26,6 +26,8 @@
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
+		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
+		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
@@ -43,7 +45,6 @@
 		EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226D1A7523D5008CE2D1 /* UIKit.framework */; };
 		EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226F1A7523E6008CE2D1 /* Foundation.framework */; };
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
-		EB5522771A7530A8008CE2D1 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
 /* End PBXBuildFile section */
@@ -87,6 +88,9 @@
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		A9E49B421A7ECADF002B2BA2 /* FindAddressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindAddressViewController.h; sourceTree = "<group>"; };
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
+		A9F56EBC1A847B47003522AE /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		A9F56EBE1A847CA8003522AE /* WebKitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitViewController.h; sourceTree = "<group>"; };
+		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
 		A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bmomxcqdduclkngeclsnuwqvhudu/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 		A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		EB4F25831A757F2000761FD5 /* FindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindViewController.h; sourceTree = "<group>"; };
@@ -114,7 +118,6 @@
 		EB55226F1A7523E6008CE2D1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EB5522731A752A7F008CE2D1 /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
-		EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-fgolxuxlmydtvmcpdegvrhgmuvpk/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
 		EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
@@ -125,8 +128,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */,
 				EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */,
-				EB5522771A7530A8008CE2D1 /* libCCodeLibrary.a in Frameworks */,
 				A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */,
 				EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */,
 				EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */,
@@ -168,7 +171,7 @@
 			children = (
 				EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */,
 				A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */,
-				EB5522761A7530A8008CE2D1 /* libCCodeLibrary.a */,
+				A9F56EBC1A847B47003522AE /* WebKit.framework */,
 				EB55226F1A7523E6008CE2D1 /* Foundation.framework */,
 				EB55226D1A7523D5008CE2D1 /* UIKit.framework */,
 				EB55226B1A7523BC008CE2D1 /* QuartzCore.framework */,
@@ -231,6 +234,8 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB4F25831A757F2000761FD5 /* FindViewController.h */,
 				EB4F25841A757F2000761FD5 /* FindViewController.m */,
+				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
+				A9F56EBF1A847CA8003522AE /* WebKitViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -424,6 +429,7 @@
 				A91565691A820FEF00119C21 /* GSSiAnnotation.m in Sources */,
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
+				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
