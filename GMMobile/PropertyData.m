@@ -683,11 +683,12 @@ int SQLOK(int sqlReturn, char *method)
         LPSTR dateOfQuery = (LPSTR)sqlite3_column_text(statement, 24);
 
         NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
-        [dollarFmt setNumberStyle:NSNumberFormatterCurrencyStyle];
-        [dollarFmt setGroupingSeparator:@"'"];
-        [dollarFmt setGroupingSize:3];
-        [dollarFmt setAlwaysShowsDecimalSeparator:NO];
-        [dollarFmt setUsesGroupingSeparator:YES];
+        dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
+        dollarFmt.groupingSeparator = @"'";
+        dollarFmt.groupingSize = 3;
+        dollarFmt.alwaysShowsDecimalSeparator = NO;
+        dollarFmt.usesGroupingSeparator = YES;
+        dollarFmt.maximumFractionDigits = 0;
         
         NSString *line;
         line = [NSString stringWithFormat:@"PID:%@", pid];
