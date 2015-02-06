@@ -9,6 +9,8 @@
 @property (nonatomic) WKWebView *webView;
 @property (nonatomic) UIButton *backButton;
 @property (nonatomic) UIInterfaceOrientation *orientation;
+@property (nonatomic) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) UIView *actIndView;
 
 @end
 
@@ -34,11 +36,33 @@
     
     [self setupWebView];
     [self setupBackButton];
+    [self setupActivityIndicatorView];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)setupActivityIndicatorView
+{
+    _actIndView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 120.0, 120.0)];
+    _actIndView.center = self.view.center;
+    
+    _actIndView.backgroundColor = [UIColor colorWithWhite:0.0
+                                                    alpha:0.5];
+    
+    _actIndView.layer.cornerRadius = 20.0;
+    [self.view addSubview:_actIndView];
+    
+    _activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    
+    _activityIndicator.frame = CGRectMake((_actIndView.frame.size.width / 2.0 - (_activityIndicator.frame.size.width / 2.0)),
+                                          (_actIndView.frame.size.height / 2.0 - (_activityIndicator.frame.size.height / 2.0)),
+                                          _activityIndicator.frame.size.width,
+                                          _activityIndicator.frame.size.height);
+    
+    [self startIndicator];
 }
 
 - (void)setupWebView
@@ -47,16 +71,18 @@
                                 self.view.frame.size.width,
                                 self.view.frame.size.height);
     
-    _webView = [[WKWebView alloc] initWithFrame:wvFrame];
-    [self.view addSubview:_webView];
-    _webView.allowsBackForwardNavigationGestures = YES;
-    
     NSURL *url = [NSURL URLWithString:
                   [NSString stringWithFormat:
                    @"http://www16.co.hennepin.mn.us/pins/pidresult.jsp?pid=%@", _PID]];
     
+    _webView = [[WKWebView alloc] initWithFrame:wvFrame];
+    
+    _webView.allowsBackForwardNavigationGestures = YES;
+    _webView.navigationDelegate = self;
+    
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     [_webView loadRequest:urlRequest];
+    [self.view addSubview:_webView];
 }
 
 - (void)setupBackButton
@@ -91,6 +117,32 @@
                                 self.view.frame.size.width);
     
     _webView.frame = wvFrame;
+}
+
+- (void)startIndicator
+{
+    [_actIndView addSubview:_activityIndicator];
+    [_activityIndicator startAnimating];
+}
+
+- (void)stopIndicator
+{
+    [_activityIndicator stopAnimating];
+    [_actIndView removeFromSuperview];
+}
+
+- (void)webView:(WKWebView *)webView
+didFinishNavigation:(WKNavigation *)navigation
+{
+    [self stopIndicator];
+}
+
+- (void)webView:(WKWebView *)webView
+didFailNavigation:(WKNavigation *)navigation
+        withError:(NSError *)error
+{
+    [self stopIndicator];
+    NSLog(@"webView ERROR:%@", error.localizedDescription);
 }
 
 @end
