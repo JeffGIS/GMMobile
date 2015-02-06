@@ -156,10 +156,9 @@ static PropertyData *_propData;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i",
-                       matchChar,houseNumber];
+    //NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC4 Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i",matchChar,houseNumber];
+    NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,STREET,PID,\"Owner Name\" FROM PROPINFO Where STREET LIKE '%@%%' AND HOUSENUM = %i", matchChar,houseNumber];
     
-    //NSString *query2 = [NSString stringWithFormat:@"SELECT '%%HOUSE_NUM','%%STREET_NAME',UDIValue,AdditionalValue FROM ADDLOC"];
     sqlite3_stmt *statement;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), "preparegetPIDsMatchingAddress");
