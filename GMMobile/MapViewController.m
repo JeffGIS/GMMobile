@@ -92,6 +92,7 @@
     [super viewWillAppear:animated];
     
     [self initTableView];
+    
     if (_osmOverlay)
     {
         [_mapView removeOverlay:_osmOverlay];
@@ -444,6 +445,11 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     
     [_mapView selectAnnotation:annotation
                       animated:NO];
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
 }
 
 - (void)setupTableView
@@ -462,26 +468,25 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     _tableView.layer.cornerRadius = (_rowHeight / 4.0);
     [self.view bringSubviewToFront:_tableView];
 }
+
 - (void)initTableView
 {
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingHCWebsite:
-        {
             if (_currentScreenHeight != self.view.frame.size.height)
                 _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
             
             _tableViewSetting = PropertyTableViewSettingOptions;
-        }
             break;
+            
+        case PropertyTableViewSettingOptions:
+        case PropertyTableViewSettingComputedValues:
         case PropertyTableViewSettingPropertyReport:
-        {
+        case PropertyTableViewSettingRankings:
             if (_currentScreenHeight != self.view.frame.size.height)
-                _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+                _tableView.rowHeight = ((_tableView.frame.size.height - (_rowHeight * 1.4)) / _options.count);
             
-            _tableViewSetting = PropertyTableViewSettingOptions;
-            
-        }
             break;
     }
     
@@ -517,8 +522,6 @@ viewForHeaderInSection:(NSInteger)section
             
         case PropertyTableViewSettingPropertyReport:
             headerLabel.text = @"Property Report for\nTaxes Payable 2014";
-            PropertyData *propData = [[PropertyData alloc] init];
-            _propertyReport = [propData getReport:PDSettingDefault forPID:_selectedPID];
             break;
     }
     
@@ -558,19 +561,20 @@ viewForHeaderInSection:(NSInteger)section
     
     cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
             cell.textLabel.text = _options[indexPath.row];
             break;
             
         case PropertyTableViewSettingPropertyReport:
+            cell.textLabel.textAlignment = NSTextAlignmentLeft;
             cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.4)];
-            cell.textLabel.text = _propertyReport[indexPath.row];
+            cell.textLabel.text = [UserDefaults.defaults addSpaceAfterColon:_propertyReport[indexPath.row]];
             break;
     }
     

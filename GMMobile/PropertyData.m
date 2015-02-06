@@ -83,7 +83,7 @@ static PropertyData *_propData;
     NSString *query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = '%@'", PID];
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getPointForPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getPointForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -102,15 +102,18 @@ static PropertyData *_propData;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PROPINFO Where PID LIKE '%@%%'", matchChar];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PROPINFO Where PID LIKE '%@%%'",
+                       matchChar];
+    
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparegetPIDsMatchingString");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
-        NSString *pid = [NSString stringWithFormat:@"%s",cpid];
+        NSString *pid = [NSString stringWithFormat:@"%s", cpid];
         [array addObject:pid];
     }
     
@@ -125,7 +128,10 @@ static PropertyData *_propData;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT PID,\"Owner Name\" FROM PROPINFO Where PID LIKE '%@%%'", matchChar];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT PID,\"Owner Name\" FROM PROPINFO Where PID LIKE '%@%%'",
+                       matchChar];
+    
     sqlite3_stmt *statement;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
@@ -134,7 +140,7 @@ static PropertyData *_propData;
     {
         LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
         LPSTR owner = (LPSTR)sqlite3_column_text(statement, 1);
-        NSString *pid = [NSString stringWithFormat:@"%s\t%s",cpid,owner];
+        NSString *pid = [NSString stringWithFormat:@"%s\t%s", cpid, owner];
         [array addObject:pid];
     }
     
@@ -150,11 +156,13 @@ static PropertyData *_propData;
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i", matchChar,houseNumber];
+    NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i",
+                       matchChar,houseNumber];
+    
     //NSString *query2 = [NSString stringWithFormat:@"SELECT '%%HOUSE_NUM','%%STREET_NAME',UDIValue,AdditionalValue FROM ADDLOC"];
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingAddress");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), "preparegetPIDsMatchingAddress");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -162,8 +170,11 @@ static PropertyData *_propData;
         LPSTR street = (LPSTR)sqlite3_column_text(statement, 1);
         LPSTR pid = (LPSTR)sqlite3_column_text(statement, 2);
         LPSTR additionalVal = (LPSTR)sqlite3_column_text(statement, 3);
-        NSString *out = [NSString stringWithFormat:@"%i\t%s\t%s\t%s",house,street,pid,additionalVal];
-        [array addObject:out];
+        
+        NSString *output = [NSString stringWithFormat:@"%i\t%s\t%s\t%s",
+                         house, street, pid, additionalVal];
+        
+        [array addObject:output];
     }
     
     SQLOK(sqlite3_finalize(statement), "getPIDsMatchingAddress");
@@ -193,7 +204,7 @@ static PropertyData *_propData;
     
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"pickPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "pickPID");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -224,7 +235,7 @@ static PropertyData *_propData;
     NSString *query = [NSString stringWithFormat:@"SELECT \"Owner Name\" FROM PROPINFO Where PID = '%@'", PID];
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getOwnerNameForPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwnerNameForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -255,19 +266,19 @@ static PropertyData *_propData;
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0),"Execute cmd");
+    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0), "Execute cmd");
     return rtn;
 }
 
 - (void)startTransaction
 {
     [self open];
-    SQLOK(sqlite3_exec(_database, "BEGIN", 0, 0, 0),"Start transaction");
+    SQLOK(sqlite3_exec(_database, "BEGIN", 0, 0, 0), "Start transaction");
 }
 
 - (void)commitTransaction
 {
-    SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0),"End transaction");
+    SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
 }
 
 /*
@@ -369,6 +380,7 @@ int SQLOK(int sqlReturn, char *method)
     {
         int ip=0;
         int ii;
+        
         for (int loop=0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
@@ -399,9 +411,7 @@ int SQLOK(int sqlReturn, char *method)
         CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
         
         for (int i = 1; i < np; i++)
-        {
             CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
-        }
         
         CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
         
@@ -418,7 +428,6 @@ int SQLOK(int sqlReturn, char *method)
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
-    
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -430,10 +439,11 @@ int SQLOK(int sqlReturn, char *method)
     int numPoints,numLoops, refno;
     LPSTR homeStead,useCode,useDesc,taxExempt;
     [self open];
+    
     NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,HOMESTEAD,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"displayParcels");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "displayParcels");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -442,59 +452,85 @@ int SQLOK(int sqlReturn, char *method)
         useCode = (LPSTR)sqlite3_column_text(statement, 9);
         useDesc = (LPSTR)sqlite3_column_text(statement, 10);
         taxExempt = (LPSTR)sqlite3_column_text(statement, 11);
-        
         pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         numPoints = sqlite3_column_int(statement,3);
         numLoops = sqlite3_column_int(statement,4);
-        int * polyPartLen = (int *)sqlite3_column_blob (statement,5);
-        int nBlobBytes = sqlite3_column_bytes (statement,5);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob (statement,6);
-        nBlobBytes = sqlite3_column_bytes (statement,6);
-        LPDPOINT llpoints = malloc (abs(numPoints) * sizeof(DPOINT)+4);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,5);
+        int nBlobBytes = sqlite3_column_bytes(statement,5);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,6);
+        nBlobBytes = sqlite3_column_bytes(statement,6);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         if (numPoints < 0)
         {
             numPoints = -numPoints;
             LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-            for (int i=0;i<numPoints;i++)
+            
+            for (int i = 0; i < numPoints; i++)
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / 100000000.0);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / 100000000.0);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
         }
-        else for (int i=0;i<numPoints;i++)
+        
+        else for (int i = 0; i < numPoints; i++)
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / 100000000.0);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / 100000000.0);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
+        
         if (CRAPI.sharedInstance.parcelShadingOption)
         {
-            float alpha = 0;
-            UIColor * color;
+            CGFloat alpha = 0;
+            UIColor *color;
             int opt = CRAPI.sharedInstance.parcelShadingOption;
+            
             switch (opt)
             {
                 case 1://homestead
                     if (*homeStead == 'H')
                         alpha = 0.6;
-                    color = [[UIColor alloc]initWithRed:1.0 green:1.0 blue:0.0 alpha:alpha];
+                    
+                    color = [[UIColor alloc]initWithRed:1.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
                     break;
+                    
                 case 2://res-com
                     color = [self resComColor:useCode];
                     break;
+                    
                 case 5://tax_exempt
                     if (*taxExempt == 'E')
                         alpha = 0.6;
-                    color = [[UIColor alloc]initWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
+                    
+                    color = [[UIColor alloc]initWithRed:0.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
                     break;
             }
-            [self fillParcel:context nPoints:numPoints points:llpoints withColor:color.CGColor];
+            
+            [self fillParcel:context
+                     nPoints:numPoints
+                      points:llpoints
+                   withColor:color.CGColor];
         }
+        
         if (CRAPI.sharedInstance.showParcelBoundary)
-            [self drawParcel:context nPoints:numPoints nLoops:numLoops partLen:polyPartLen points:llpoints withColor:UIColor.redColor.CGColor];
+        {
+            [self drawParcel:context
+                     nPoints:numPoints
+                      nLoops:numLoops
+                     partLen:polyPartLen
+                      points:llpoints
+                   withColor:UIColor.redColor.CGColor];
+        }
+        
         free (llpoints);
     }
     
@@ -503,128 +539,242 @@ int SQLOK(int sqlReturn, char *method)
 }
 
                              
--(UIColor*)resComColor:(char*)useCode
+- (UIColor *)resComColor:(char *)useCode
 {
-    UIColor* color=nil;
-    float alpha = 0.6;
+    UIColor *color = nil;
+    CGFloat alpha = 0.6;
+    
     switch ([self useCodeClass:useCode])
     {
         case 'N':
-            color = [[UIColor alloc]initWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
+            color = [[UIColor alloc]initWithRed:0.0
+                                          green:1.0
+                                           blue:0.0
+                                          alpha:alpha];
             break;
+            
         case 'M':
-            color = [[UIColor alloc]initWithRed:1.0 green:1.0 blue:0.0 alpha:alpha];
+            color = [[UIColor alloc]initWithRed:1.0
+                                          green:1.0
+                                           blue:0.0
+                                          alpha:alpha];
             break;
+            
         case 'R':
-            color = [[UIColor alloc]initWithRed:0.0 green:0.0 blue:1.0 alpha:alpha];
+            color = [[UIColor alloc]initWithRed:0.0
+                                          green:0.0
+                                           blue:1.0
+                                          alpha:alpha];
             break;
+            
         case 'V':
-            color = [[UIColor alloc]initWithRed:0.0 green:1.0 blue:1.0 alpha:alpha];
+            color = [[UIColor alloc]initWithRed:0.0
+                                          green:1.0
+                                           blue:1.0
+                                          alpha:alpha];
             break;
     }
+    
     return color;
 }
--(char)useCodeClass:(char*)useCode
+
+-(char)useCodeClass:(char *)useCode
 {
-  
-    if (!strcasecmp(useCode,"CAUT")) return 'N';
-    if (!strcasecmp(useCode,"CBRE")) return 'N';
-    if (!strcasecmp(useCode,"CMXD")) return 'M';
-    if (!strcasecmp(useCode,"COFF")) return 'N';
-    if (!strcasecmp(useCode,"CRET")) return 'N';
-    if (!strcasecmp(useCode,"CSCH")) return 'N';
-    if (!strcasecmp(useCode,"CUTL")) return 'N';
-    if (!strcasecmp(useCode,"CWKS")) return 'N';
-    if (!strcasecmp(useCode,"GMRS")) return 'R';
-    if (!strcasecmp(useCode,"GRES")) return 'R';
-    if (!strcasecmp(useCode,"HMTL")) return 'N';
-    if (!strcasecmp(useCode,"IWFW")) return 'N';
-    if (!strcasecmp(useCode,"MFAP")) return 'R';
-    if (!strcasecmp(useCode,"MFRS")) return 'R';
-    if (!strcasecmp(useCode,"MISC")) return 'N';
-    if (!strcasecmp(useCode,"RCMS")) return 'R';
-    if (!strcasecmp(useCode,"SFAD")) return 'R';
-    if (!strcasecmp(useCode,"SFDD")) return 'R';
-    if (!strcasecmp(useCode,"SPRC")) return 'N';
-    if (!strcasecmp(useCode,"VLND")) return 'V';
+    if (!strcasecmp(useCode, "CAUT"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "CBRE"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "CMXD"))
+        return 'M';
+    
+    if (!strcasecmp(useCode, "COFF"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "CRET"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "CSCH"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "CUTL"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "CWKS"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "GMRS"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "GRES"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "HMTL"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "IWFW"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "MFAP"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "MFRS"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "MISC"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "RCMS"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "SFAD"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "SFDD"))
+        return 'R';
+    
+    if (!strcasecmp(useCode, "SPRC"))
+        return 'N';
+    
+    if (!strcasecmp(useCode, "VLND"))
+        return 'V';
+    
     return '?';
 }
-- (NSMutableArray*) getReport:(PropDataOption)option forPID:(NSString*)pid
+
+- (NSMutableArray *) getReport:(PropDataOption)option
+                        forPID:(NSString*)pid
 {
-    NSMutableArray * report = [[NSMutableArray alloc]init];
+    NSMutableArray *report = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
     [self open];
+    
     NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,HOUSEFRACT,STREET,UNITNUM,ZIPCODE,\"OWNER NAME\",\"TAXPAYER NAME\",\"TAXPAYER ADDR1\",\"TAXPAYER ADDR2\",\"TAXPAYER ADDR3\",PARCEL_DEPTH,PARCEL_FRONTAGE,AREA_SQFT,USECODE,USE_DESC,TAX_EXEMPT,LAND_VALUE,BLDG_VALUE,TOTAL_VALUE,TOTAL_TAX,HOMESTEAD,WTRSHD,PARCELZONE.ZONETYPE,ASSESSMENT_YEAR,Date_of_Query FROM PROPINFO,PARCELZONE WHERE PROPINFO.PID='%s' AND PARCELZONE.PID='%s'",
                        pid.UTF8String,pid.UTF8String];
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getReportForPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getReportForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int house           = sqlite3_column_int(statement,0);
-        LPSTR houseFrac     = (LPSTR)sqlite3_column_text(statement, 1);
-        LPSTR street        = (LPSTR)sqlite3_column_text(statement, 2);
-        LPSTR unit          = (LPSTR)sqlite3_column_text(statement, 3);
-        LPSTR zipcode       = (LPSTR)sqlite3_column_text(statement, 4);
-        LPSTR ownerName     = (LPSTR)sqlite3_column_text(statement, 5);
-        LPSTR taxpayerName  = (LPSTR)sqlite3_column_text(statement, 6);
+        int house = sqlite3_column_int(statement,0);
+        LPSTR houseFrac = (LPSTR)sqlite3_column_text(statement, 1);
+        LPSTR street = (LPSTR)sqlite3_column_text(statement, 2);
+        LPSTR unit = (LPSTR)sqlite3_column_text(statement, 3);
+        LPSTR zipcode = (LPSTR)sqlite3_column_text(statement, 4);
+        LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 5);
+        LPSTR taxpayerName = (LPSTR)sqlite3_column_text(statement, 6);
         LPSTR taxpayerAddr1 = (LPSTR)sqlite3_column_text(statement, 7);
         LPSTR taxpayerAddr2 = (LPSTR)sqlite3_column_text(statement, 8);
         LPSTR taxpayerAddr3 = (LPSTR)sqlite3_column_text(statement, 9);
-        double depth        = sqlite3_column_double(statement, 10);
-        double frontage     = sqlite3_column_double(statement, 11);
-        double sqfeet       = sqlite3_column_double(statement, 12);
-        LPSTR useCode       = (LPSTR)sqlite3_column_text(statement, 13);
-        LPSTR useDesc       = (LPSTR)sqlite3_column_text(statement, 14);
-        LPSTR taxExempt     = (LPSTR)sqlite3_column_text(statement, 15);
-        double landValue    = sqlite3_column_double(statement, 16);
-        double bldgValue    = sqlite3_column_double(statement, 17);
-        double totalValue   = sqlite3_column_double(statement, 18);
-        double totalTax     = sqlite3_column_double(statement, 19);
-        LPSTR homeStead     = (LPSTR)sqlite3_column_text(statement, 20);
-        LPSTR waterShed     = (LPSTR)sqlite3_column_text(statement, 21);
-        LPSTR zoning        = (LPSTR)sqlite3_column_text(statement, 22);
-        LPSTR assessmentYr  = (LPSTR)sqlite3_column_text(statement, 23);
-        LPSTR dateOfQuery   = (LPSTR)sqlite3_column_text(statement, 24);
+        CGFloat depth = sqlite3_column_double(statement, 10);
+        CGFloat frontage = sqlite3_column_double(statement, 11);
+        CGFloat sqfeet = sqlite3_column_double(statement, 12);
+        LPSTR useCode = (LPSTR)sqlite3_column_text(statement, 13);
+        LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, 14);
+        LPSTR taxExempt = (LPSTR)sqlite3_column_text(statement, 15);
+        CGFloat landValue = sqlite3_column_double(statement, 16);
+        CGFloat bldgValue = sqlite3_column_double(statement, 17);
+        CGFloat totalValue = sqlite3_column_double(statement, 18);
+        CGFloat totalTax = sqlite3_column_double(statement, 19);
+        LPSTR homeStead = (LPSTR)sqlite3_column_text(statement, 20);
+        LPSTR waterShed = (LPSTR)sqlite3_column_text(statement, 21);
+        LPSTR zoning = (LPSTR)sqlite3_column_text(statement, 22);
+        LPSTR assessmentYr = (LPSTR)sqlite3_column_text(statement, 23);
+        LPSTR dateOfQuery = (LPSTR)sqlite3_column_text(statement, 24);
 
-        NSNumberFormatter* dollarFmt = [[NSNumberFormatter alloc]init];
+        NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
         [dollarFmt setNumberStyle:NSNumberFormatterCurrencyStyle];
         [dollarFmt setGroupingSeparator:@"'"];
         [dollarFmt setGroupingSize:3];
         [dollarFmt setAlwaysShowsDecimalSeparator:NO];
         [dollarFmt setUsesGroupingSeparator:YES];
-        NSString * line;
-        line = [NSString stringWithFormat:@"PID:%@",pid];[report addObject:line];
-        line = [NSString stringWithFormat:@"House Number:%i %s",house,houseFrac];[report addObject:line];
-        line = [NSString stringWithFormat:@"Street:%s",street];[report addObject:line];
-        line = [NSString stringWithFormat:@"Unit:%s",unit];[report addObject:line];
-        line = [NSString stringWithFormat:@"Zipcode:%s",zipcode];[report addObject:line];
-        line = [NSString stringWithFormat:@"Owner:%s",ownerName];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer:%s",taxpayerName];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer Addr1:%s",taxpayerAddr1];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer Addr2:%s",taxpayerAddr2];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer Addr3:%s",taxpayerAddr3];[report addObject:line];
-        line = [NSString stringWithFormat:@"Parcel Depth:%.0f",depth];[report addObject:line];
-        line = [NSString stringWithFormat:@"Parcel Width:%.0f",frontage];[report addObject:line];
-        line = [NSString stringWithFormat:@"Parcel Area Sqft:%.0f",sqfeet];[report addObject:line];
-        line = [NSString stringWithFormat:@"Use Code:%s",useCode];[report addObject:line];
-        line = [NSString stringWithFormat:@"Use Desc:%s",useDesc];[report addObject:line];
-        line = [NSString stringWithFormat:@"Tax Exempt Status:%s",taxExempt];[report addObject:line];
-        line = [NSString stringWithFormat:@"Land Value:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landValue]]];[report addObject:line];
-        line = [NSString stringWithFormat:@"Bldg Value:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)bldgValue]]];[report addObject:line];
-        line = [NSString stringWithFormat:@"Total Value:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalValue]]];[report addObject:line];
-        line = [NSString stringWithFormat:@"Total Tax:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalTax]]];[report addObject:line];
-        line = [NSString stringWithFormat:@"Homestead:%s",homeStead];[report addObject:line];
-        line = [NSString stringWithFormat:@"Watershed:%s",waterShed];[report addObject:line];
-        line = [NSString stringWithFormat:@"Zoning:%s",zoning];[report addObject:line];
-        line = [NSString stringWithFormat:@"Assessment Year:%s",assessmentYr];[report addObject:line];
-        LPSTR pSpace = strrchr (dateOfQuery,' ');
+        
+        NSString *line;
+        line = [NSString stringWithFormat:@"PID:%@", pid];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"House Number:%i %s", house, houseFrac];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Street:%s", street];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Unit:%s", unit];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Zipcode:%s", zipcode];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Owner:%s", ownerName];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Taxpayer:%s", taxpayerName];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Taxpayer Addr1:%s", taxpayerAddr1];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Taxpayer Addr2:%s", taxpayerAddr2];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Taxpayer Addr3:%s", taxpayerAddr3];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Parcel Depth:%.0f", depth];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Parcel Width:%.0f", frontage];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Parcel Area Sqft:%.0f", sqfeet];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Use Code:%s", useCode];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Use Desc:%s", useDesc];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Tax Exempt Status:%s", taxExempt];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Land Value:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landValue]]];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Bldg Value:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)bldgValue]]];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Total Value:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalValue]]];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Total Tax:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalTax]]];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Homestead:%s", homeStead];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Watershed:%s", waterShed];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Zoning:%s", zoning];
+        [report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Assessment Year:%s", assessmentYr];
+        [report addObject:line];
+        
+        LPSTR pSpace = strrchr(dateOfQuery,' ');
+        
         if (pSpace)
             *pSpace = 0;
-        line = [NSString stringWithFormat:@"Date of Query:%s",dateOfQuery];[report addObject:line];
+        
+        line = [NSString stringWithFormat:@"Date of Query:%s", dateOfQuery];
+        [report addObject:line];
     }
+    
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
     [self close];
     return report;
 }
+
 @end
