@@ -561,28 +561,67 @@ int SQLOK(int sqlReturn, char *method)
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int house       = sqlite3_column_int(statement,0);
-        LPSTR houseFrac = (LPSTR)sqlite3_column_text(statement, 1);
-        LPSTR street    = (LPSTR)sqlite3_column_text(statement, 2);
-        LPSTR unit      = (LPSTR)sqlite3_column_text(statement, 3);
-        LPSTR zipcode   = (LPSTR)sqlite3_column_text(statement, 4);
-        LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 5);
-        LPSTR taxpayerName = (LPSTR)sqlite3_column_text(statement, 6);
+        int house           = sqlite3_column_int(statement,0);
+        LPSTR houseFrac     = (LPSTR)sqlite3_column_text(statement, 1);
+        LPSTR street        = (LPSTR)sqlite3_column_text(statement, 2);
+        LPSTR unit          = (LPSTR)sqlite3_column_text(statement, 3);
+        LPSTR zipcode       = (LPSTR)sqlite3_column_text(statement, 4);
+        LPSTR ownerName     = (LPSTR)sqlite3_column_text(statement, 5);
+        LPSTR taxpayerName  = (LPSTR)sqlite3_column_text(statement, 6);
         LPSTR taxpayerAddr1 = (LPSTR)sqlite3_column_text(statement, 7);
         LPSTR taxpayerAddr2 = (LPSTR)sqlite3_column_text(statement, 8);
         LPSTR taxpayerAddr3 = (LPSTR)sqlite3_column_text(statement, 9);
-        
+        double depth        = sqlite3_column_double(statement, 10);
+        double frontage     = sqlite3_column_double(statement, 11);
+        double sqfeet       = sqlite3_column_double(statement, 12);
+        LPSTR useCode       = (LPSTR)sqlite3_column_text(statement, 13);
+        LPSTR useDesc       = (LPSTR)sqlite3_column_text(statement, 14);
+        LPSTR taxExempt     = (LPSTR)sqlite3_column_text(statement, 15);
+        double landValue    = sqlite3_column_double(statement, 16);
+        double bldgValue    = sqlite3_column_double(statement, 17);
+        double totalValue   = sqlite3_column_double(statement, 18);
+        double totalTax     = sqlite3_column_double(statement, 19);
+        LPSTR homeStead     = (LPSTR)sqlite3_column_text(statement, 20);
+        LPSTR waterShed     = (LPSTR)sqlite3_column_text(statement, 21);
+        LPSTR zoning        = (LPSTR)sqlite3_column_text(statement, 22);
+        LPSTR assessmentYr  = (LPSTR)sqlite3_column_text(statement, 23);
+        LPSTR dateOfQuery   = (LPSTR)sqlite3_column_text(statement, 24);
+
+        NSNumberFormatter* dollarFmt = [[NSNumberFormatter alloc]init];
+        [dollarFmt setNumberStyle:NSNumberFormatterCurrencyStyle];
+        [dollarFmt setGroupingSeparator:@"'"];
+        [dollarFmt setGroupingSize:3];
+        [dollarFmt setAlwaysShowsDecimalSeparator:NO];
+        [dollarFmt setUsesGroupingSeparator:YES];
         NSString * line;
-        line = [NSString stringWithFormat:@"PID\t%@",pid];[report addObject:line];
-        line = [NSString stringWithFormat:@"House Number\t%i %s",house,houseFrac];[report addObject:line];
-        line = [NSString stringWithFormat:@"Street\t%s",street];[report addObject:line];
-        line = [NSString stringWithFormat:@"Unit\t%s",unit];[report addObject:line];
-        line = [NSString stringWithFormat:@"Zipcode\t%s",zipcode];[report addObject:line];
-        line = [NSString stringWithFormat:@"Owner\t%s",ownerName];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer\t%s",taxpayerName];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer Addr1\t%s",taxpayerAddr1];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer Addr2\t%s",taxpayerAddr2];[report addObject:line];
-        line = [NSString stringWithFormat:@"Taxpayer Addr3\t%s",taxpayerAddr3];[report addObject:line];
+        line = [NSString stringWithFormat:@"PID:%@",pid];[report addObject:line];
+        line = [NSString stringWithFormat:@"House Number:%i %s",house,houseFrac];[report addObject:line];
+        line = [NSString stringWithFormat:@"Street:%s",street];[report addObject:line];
+        line = [NSString stringWithFormat:@"Unit:%s",unit];[report addObject:line];
+        line = [NSString stringWithFormat:@"Zipcode:%s",zipcode];[report addObject:line];
+        line = [NSString stringWithFormat:@"Owner:%s",ownerName];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer:%s",taxpayerName];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer Addr1:%s",taxpayerAddr1];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer Addr2:%s",taxpayerAddr2];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer Addr3:%s",taxpayerAddr3];[report addObject:line];
+        line = [NSString stringWithFormat:@"Parcel Depth:%.0f",depth];[report addObject:line];
+        line = [NSString stringWithFormat:@"Parcel Width:%.0f",frontage];[report addObject:line];
+        line = [NSString stringWithFormat:@"Parcel Area Sqft:%.0f",sqfeet];[report addObject:line];
+        line = [NSString stringWithFormat:@"Use Code:%s",useCode];[report addObject:line];
+        line = [NSString stringWithFormat:@"Use Desc:%s",useDesc];[report addObject:line];
+        line = [NSString stringWithFormat:@"Tax Exempt Status:%s",taxExempt];[report addObject:line];
+        line = [NSString stringWithFormat:@"Land Value:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landValue]]];[report addObject:line];
+        line = [NSString stringWithFormat:@"Bldg Value:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)bldgValue]]];[report addObject:line];
+        line = [NSString stringWithFormat:@"Total Value:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalValue]]];[report addObject:line];
+        line = [NSString stringWithFormat:@"Total Tax:%@",[dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalTax]]];[report addObject:line];
+        line = [NSString stringWithFormat:@"Homestead:%s",homeStead];[report addObject:line];
+        line = [NSString stringWithFormat:@"Watershed:%s",waterShed];[report addObject:line];
+        line = [NSString stringWithFormat:@"Zoning:%s",zoning];[report addObject:line];
+        line = [NSString stringWithFormat:@"Assessment Year:%s",assessmentYr];[report addObject:line];
+        LPSTR pSpace = strrchr (dateOfQuery,' ');
+        if (pSpace)
+            *pSpace = 0;
+        line = [NSString stringWithFormat:@"Date of Query:%s",dateOfQuery];[report addObject:line];
     }
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
     [self close];
