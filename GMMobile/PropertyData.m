@@ -526,27 +526,66 @@ int SQLOK(int sqlReturn, char *method)
 }
 -(char)useCodeClass:(char*)useCode
 {
+  
+    if (!strcasecmp(useCode,"CAUT")) return 'N';
+    if (!strcasecmp(useCode,"CBRE")) return 'N';
+    if (!strcasecmp(useCode,"CMXD")) return 'M';
+    if (!strcasecmp(useCode,"COFF")) return 'N';
+    if (!strcasecmp(useCode,"CRET")) return 'N';
+    if (!strcasecmp(useCode,"CSCH")) return 'N';
+    if (!strcasecmp(useCode,"CUTL")) return 'N';
+    if (!strcasecmp(useCode,"CWKS")) return 'N';
+    if (!strcasecmp(useCode,"GMRS")) return 'R';
+    if (!strcasecmp(useCode,"GRES")) return 'R';
+    if (!strcasecmp(useCode,"HMTL")) return 'N';
+    if (!strcasecmp(useCode,"IWFW")) return 'N';
+    if (!strcasecmp(useCode,"MFAP")) return 'R';
+    if (!strcasecmp(useCode,"MFRS")) return 'R';
+    if (!strcasecmp(useCode,"MISC")) return 'N';
+    if (!strcasecmp(useCode,"RCMS")) return 'R';
+    if (!strcasecmp(useCode,"SFAD")) return 'R';
+    if (!strcasecmp(useCode,"SFDD")) return 'R';
+    if (!strcasecmp(useCode,"SPRC")) return 'N';
+    if (!strcasecmp(useCode,"VLND")) return 'V';
+    return '?';
+}
+- (NSMutableArray*) getReport:(PropDataOption)option forPID:(NSString*)pid
+{
+    NSMutableArray * report = [[NSMutableArray alloc]init];
+    sqlite3_stmt *statement;
+    [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,HOUSEFRACT,STREET,UNITNUM,ZIPCODE,\"OWNER NAME\",\"TAXPAYER NAME\",\"TAXPAYER ADDR1\",\"TAXPAYER ADDR2\",\"TAXPAYER ADDR3\",PARCEL_DEPTH,PARCEL_FRONTAGE,AREA_SQFT,USECODE,USE_DESC,TAX_EXEMPT,LAND_VALUE,BLDG_VALUE,TOTAL_VALUE,TOTAL_TAX,HOMESTEAD,WTRSHD,PARCELZONE.ZONETYPE,ASSESSMENT_YEAR,Date_of_Query FROM PROPINFO,PARCELZONE WHERE PROPINFO.PID='%s' AND PARCELZONE.PID='%s'",
+                       pid.UTF8String,pid.UTF8String];
     
-if (!strcasecmp(useCode,"CAUT")) return 'N';
-if (!strcasecmp(useCode,"CBRE")) return 'N';
-if (!strcasecmp(useCode,"CMXD")) return 'M';
-if (!strcasecmp(useCode,"COFF")) return 'N';
-if (!strcasecmp(useCode,"CRET")) return 'N';
-if (!strcasecmp(useCode,"CSCH")) return 'N';
-if (!strcasecmp(useCode,"CUTL")) return 'N';
-if (!strcasecmp(useCode,"CWKS")) return 'N';
-if (!strcasecmp(useCode,"GMRS")) return 'R';
-if (!strcasecmp(useCode,"GRES")) return 'R';
-if (!strcasecmp(useCode,"HMTL")) return 'N';
-if (!strcasecmp(useCode,"IWFW")) return 'N';
-if (!strcasecmp(useCode,"MFAP")) return 'R';
-if (!strcasecmp(useCode,"MFRS")) return 'R';
-if (!strcasecmp(useCode,"MISC")) return 'N';
-if (!strcasecmp(useCode,"RCMS")) return 'R';
-if (!strcasecmp(useCode,"SFAD")) return 'R';
-if (!strcasecmp(useCode,"SFDD")) return 'R';
-if (!strcasecmp(useCode,"SPRC")) return 'N';
-if (!strcasecmp(useCode,"VLND")) return 'V';
-return '?';
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"getReportForPID");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int house       = sqlite3_column_int(statement,0);
+        LPSTR houseFrac = (LPSTR)sqlite3_column_text(statement, 1);
+        LPSTR street    = (LPSTR)sqlite3_column_text(statement, 2);
+        LPSTR unit      = (LPSTR)sqlite3_column_text(statement, 3);
+        LPSTR zipcode   = (LPSTR)sqlite3_column_text(statement, 4);
+        LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 5);
+        LPSTR taxpayerName = (LPSTR)sqlite3_column_text(statement, 6);
+        LPSTR taxpayerAddr1 = (LPSTR)sqlite3_column_text(statement, 7);
+        LPSTR taxpayerAddr2 = (LPSTR)sqlite3_column_text(statement, 8);
+        LPSTR taxpayerAddr3 = (LPSTR)sqlite3_column_text(statement, 9);
+        
+        NSString * line;
+        line = [NSString stringWithFormat:@"PID\t%@",pid];[report addObject:line];
+        line = [NSString stringWithFormat:@"House Number\t%i %s",house,houseFrac];[report addObject:line];
+        line = [NSString stringWithFormat:@"Street\t%s",street];[report addObject:line];
+        line = [NSString stringWithFormat:@"Unit\t%s",unit];[report addObject:line];
+        line = [NSString stringWithFormat:@"Zipcode\t%s",zipcode];[report addObject:line];
+        line = [NSString stringWithFormat:@"Owner\t%s",ownerName];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer\t%s",taxpayerName];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer Addr1\t%s",taxpayerAddr1];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer Addr2\t%s",taxpayerAddr2];[report addObject:line];
+        line = [NSString stringWithFormat:@"Taxpayer Addr3\t%s",taxpayerAddr3];[report addObject:line];
+    }
+    SQLOK(sqlite3_finalize(statement), "getReportForPID");
+    [self close];
+    return report;
 }
 @end

@@ -13,7 +13,6 @@
 @property (nonatomic) UITapGestureRecognizer *doubleTap;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) BOOL clearAnnotations;
-@property (nonatomic) PropertyData *propData;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport;
 @property (nonatomic) NSInteger tableViewSetting;
@@ -44,7 +43,6 @@
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
-    _propData = [[PropertyData alloc] init];
     _mapView.delegate = self;
     _mapView.showsUserLocation = YES;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
@@ -93,20 +91,7 @@
 {
     [super viewWillAppear:animated];
     
-    if (_tableViewSetting == PropertyTableViewSettingHCWebsite)
-    {
-        if (_currentScreenHeight != self.view.frame.size.height)
-            _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
-        
-        _tableViewSetting = PropertyTableViewSettingOptions;
-    }
-    
-    if (_tableView.indexPathForSelectedRow)
-    {
-        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                  animated:YES];
-    }
-    
+    [self initTableView];
     if (_osmOverlay)
     {
         [_mapView removeOverlay:_osmOverlay];
@@ -139,7 +124,8 @@
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
     {
         _selectedPID = CRAPI.sharedInstance.currentPID;
-        LLPOINT pidPoint = [_propData getPointForPID:_selectedPID];
+        PropertyData *propData = [[PropertyData alloc] init];
+        LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
@@ -159,8 +145,8 @@
         
         else
             annotation.title = CRAPI.sharedInstance.currentAddress;
-        
-        annotation.subtitle = [_propData getOwnerNameForPID:_selectedPID];
+
+        annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
         [self addAnnotation:annotation];
         
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
@@ -307,14 +293,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     llp.lat = coordPicked.latitude;
     llp.lon = coordPicked.longitude;
     
-    _selectedPID = [_propData pickPID:llp];
+    PropertyData *propData = [[PropertyData alloc] init];
+    _selectedPID = [propData pickPID:llp];
     
     //GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     
     annotation.coordinate = coordPicked;
     annotation.title = _selectedPID;
-    annotation.subtitle = [_propData getOwnerNameForPID:_selectedPID];
+    annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
     [self addAnnotation:annotation];
     
     //GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithAnnotation:annotation
@@ -475,6 +462,36 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     _tableView.layer.cornerRadius = (_rowHeight / 4.0);
     [self.view bringSubviewToFront:_tableView];
 }
+- (void)initTableView
+{
+    switch (_tableViewSetting)
+    {
+        case PropertyTableViewSettingHCWebsite:
+        {
+            if (_currentScreenHeight != self.view.frame.size.height)
+                _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+            
+            _tableViewSetting = PropertyTableViewSettingOptions;
+        }
+            break;
+        case PropertyTableViewSettingPropertyReport:
+        {
+            if (_currentScreenHeight != self.view.frame.size.height)
+                _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+            
+            _tableViewSetting = PropertyTableViewSettingOptions;
+            
+        }
+            break;
+    }
+    
+    if (_tableView.indexPathForSelectedRow)
+    {
+        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                  animated:YES];
+    }
+    
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -500,6 +517,8 @@ viewForHeaderInSection:(NSInteger)section
             
         case PropertyTableViewSettingPropertyReport:
             headerLabel.text = @"Property Report for\nTaxes Payable 2014";
+            PropertyData *propData = [[PropertyData alloc] init];
+            _propertyReport = [propData getReport:PDSettingDefault forPID:_selectedPID];
             break;
     }
     

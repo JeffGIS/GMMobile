@@ -4,6 +4,13 @@
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
+typedef NS_ENUM(NSInteger, PropDataOption)
+{
+    PDSettingDefault,
+    PDSettingRank,
+    PDSettingComputed,
+};
+
 @interface PropertyData : NSObject <FTPDataPullDelegate,GSSiPopoverViewDelegate>
 
 @property sqlite3 *database;
@@ -35,5 +42,6 @@
 - (void) displayParcels:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
+- (NSMutableArray *) getReport:(PropDataOption)option forPID:(NSString*)pid;
 
 @end
