@@ -11,11 +11,9 @@
 
 @interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate>
 
-@property (weak, nonatomic) IBOutlet MKMapView *mapView;
 @property (weak, nonatomic) IBOutlet UIButton *userLocationButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;
 @property (weak, nonatomic) IBOutlet UISwitch *annotationSwitch;
-@property (weak, nonatomic) IBOutlet VectorView *vectorView;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property (nonatomic) int currentZoom;

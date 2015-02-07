@@ -23,6 +23,9 @@
 @property (nonatomic) CGFloat currentScreenHeight;
 @property (nonatomic) UILabel *detailTitleLabel;
 @property (nonatomic) BOOL splitScreen;
+@property (nonatomic) MKMapView *mapView;
+@property (nonatomic) VectorView *vectorView;
+
 @end
 
 @implementation MapViewController
@@ -44,10 +47,24 @@
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
+    
+    _mapView = [[MKMapView alloc] init];
+    _vectorView = [[VectorView alloc] init];
+    
+    CGRect mapViewFrame = CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                     self.view.frame.size.width,
+                                     (self.tabBarController.tabBar.frame.origin.y -
+                                      UIApplication.sharedApplication.statusBarFrame.size.height));
+    
+    _vectorView.frame = _mapView.frame = mapViewFrame;
+    _vectorView.userInteractionEnabled = NO;
+    
+    [self.view addSubview:_mapView];
+    [self.view addSubview:_vectorView];
+    
     _mapView.delegate = self;
     _mapView.showsUserLocation = YES;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
-    
     [self extentZoom:NO];
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -405,10 +422,26 @@ didDeselectAnnotationView:(MKAnnotationView *)view
 {
     if (_splitScreen)
     {
-        _mapView.frame = _vectorView.frame = CGRectMake(_mapView.frame.origin.x,
-                                                        _mapView.frame.origin.y,
-                                                        _mapView.frame.size.width,
-                                                        (_mapView.frame.size.height / 2.0));
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _mapView.frame = _vectorView.frame =
+                             CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                        self.view.frame.size.width,
+                                        ((self.tabBarController.tabBar.frame.origin.y -
+                                          UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                         }];
+    }
+    
+    else
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _mapView.frame = _vectorView.frame =
+                             CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                        self.view.frame.size.width,
+                                        (self.tabBarController.tabBar.frame.origin.y -
+                                         UIApplication.sharedApplication.statusBarFrame.size.height));
+                         }];
     }
 }
 
@@ -667,20 +700,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!_splitScreen)
     {
-        _mapView.frame = _vectorView.frame = CGRectMake(_mapView.frame.origin.x,
-                                                        _mapView.frame.origin.y,
-                                                        _mapView.frame.size.width,
-                                                        (_mapView.frame.size.height / 2.0));
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _mapView.frame = _vectorView.frame =
+                             CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                        self.view.frame.size.width,
+                                        ((self.tabBarController.tabBar.frame.origin.y -
+                                          UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                         }];
         
         _splitScreen = YES;
     }
     
     else
     {
-        _mapView.frame = _vectorView.frame = CGRectMake(_mapView.frame.origin.x,
-                                                        _mapView.frame.origin.y,
-                                                        _mapView.frame.size.width,
-                                                        (_mapView.frame.size.height * 2.0));
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _mapView.frame = _vectorView.frame =
+                             CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                        self.view.frame.size.width,
+                                        (self.tabBarController.tabBar.frame.origin.y -
+                                         UIApplication.sharedApplication.statusBarFrame.size.height));
+                         }];
 
         _splitScreen = NO;
     }

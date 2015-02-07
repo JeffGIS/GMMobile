@@ -22,6 +22,7 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
+    
     if (self.displayData && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
     {
         PropertyData *pd = [[PropertyData alloc] init];
