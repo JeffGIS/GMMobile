@@ -347,17 +347,23 @@ calloutAccessoryControlTapped:(UIControl *)control
     if (control == view.rightCalloutAccessoryView)
     {
         _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.allowsSelection = NO;
         _tableView.delaysContentTouches = YES;
         _tableView.rowHeight = _rowHeight;
         _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
         [_tableView reloadData];
+        
+        [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+                               animated:NO];
+        
         _tableView.hidden = NO;
     }
     
     else if (control == view.leftCalloutAccessoryView)
     {
         _tableViewSetting = PropertyTableViewSettingOptions;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.allowsSelection = YES;
         _tableView.delaysContentTouches = NO;
         _tableView.rowHeight = ((_tableView.frame.size.height - (_rowHeight * 1.4)) / _options.count);
@@ -469,7 +475,6 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.separatorInset = UIEdgeInsetsZero;
-    _tableView.separatorColor = UIColor.whiteColor;
     _tableView.bounces = NO;
     _tableView.backgroundColor = _tableViewBackgroundColor;
     
@@ -505,7 +510,6 @@ didDeselectAnnotationView:(MKAnnotationView *)view
         [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
                                   animated:YES];
     }
-    
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -612,11 +616,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Property Report"])
     {
         _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.allowsSelection = NO;
         _tableView.delaysContentTouches = YES;
         _tableView.rowHeight = _rowHeight;
         _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
         [_tableView reloadData];
+        
+        [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+                               animated:NO];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
