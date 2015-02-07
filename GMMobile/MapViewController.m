@@ -579,21 +579,25 @@ viewForHeaderInSection:(NSInteger)section
     cell.textLabel.textColor = UIColor.whiteColor;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.numberOfLines = 2;
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
     
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
             cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
+            cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.text = _options[indexPath.row];
             cell.accessoryView = nil;
             break;
             
         case PropertyTableViewSettingPropertyReport:
             cell.textLabel.font = [UIFont systemFontOfSize:(_rowHeight / 3.6)];
-            cell.textLabel.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
             
-            _detailTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, (cell.frame.size.width * 0.7),
+            cell.textLabel.attributedText = [UserDefaults.defaults addLineBreakToLastSpace:
+                                             [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]]];
+                                   
+            cell.textLabel.textAlignment = NSTextAlignmentRight;
+            
+            _detailTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, (cell.frame.size.width * 0.6),
                                                                           cell.frame.size.height)];
             
             _detailTitleLabel.text = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
