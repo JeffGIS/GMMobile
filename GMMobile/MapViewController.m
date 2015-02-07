@@ -23,8 +23,6 @@
 @property (nonatomic) CGFloat currentScreenHeight;
 @property (nonatomic) UILabel *detailTitleLabel;
 @property (nonatomic) BOOL splitScreen;
-@property (nonatomic) CGFloat splitScreenHeightPortrait, splitScreenHeightLandscape;
-
 @end
 
 @implementation MapViewController
@@ -403,6 +401,17 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     }
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (_splitScreen)
+    {
+        _mapView.frame = _vectorView.frame = CGRectMake(_mapView.frame.origin.x,
+                                                        _mapView.frame.origin.y,
+                                                        _mapView.frame.size.width,
+                                                        (_mapView.frame.size.height / 2.0));
+    }
+}
+
 - (IBAction)userLocation:(id)sender
 {
     [_mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading
@@ -656,7 +665,25 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (IBAction)splitScreen:(id)sender
 {
+    if (!_splitScreen)
+    {
+        _mapView.frame = _vectorView.frame = CGRectMake(_mapView.frame.origin.x,
+                                                        _mapView.frame.origin.y,
+                                                        _mapView.frame.size.width,
+                                                        (_mapView.frame.size.height / 2.0));
+        
+        _splitScreen = YES;
+    }
+    
+    else
+    {
+        _mapView.frame = _vectorView.frame = CGRectMake(_mapView.frame.origin.x,
+                                                        _mapView.frame.origin.y,
+                                                        _mapView.frame.size.width,
+                                                        (_mapView.frame.size.height * 2.0));
 
+        _splitScreen = NO;
+    }
 }
 
 @end

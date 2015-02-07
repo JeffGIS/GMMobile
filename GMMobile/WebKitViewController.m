@@ -117,6 +117,9 @@
                                 self.view.frame.size.width);
     
     _webView.frame = wvFrame;
+    
+    if ([self.view.subviews containsObject:_actIndView])
+        _actIndView.center = CGPointMake(self.view.center.y, self.view.center.x);
 }
 
 - (void)startIndicator
