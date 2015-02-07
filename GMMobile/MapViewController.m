@@ -21,6 +21,7 @@
 @property (nonatomic) BOOL clearWhenDeselected;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic) CGFloat currentScreenHeight;
+@property (nonatomic) UILabel *detailTitleLabel;
 
 @end
 
@@ -381,8 +382,16 @@ didDeselectAnnotationView:(MKAnnotationView *)view
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    if (_tableViewSetting == PropertyTableViewSettingOptions)
-        _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+    switch (_tableViewSetting)
+    {
+        case PropertyTableViewSettingOptions:
+            _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+            break;
+            
+        case PropertyTableViewSettingPropertyReport:
+            [_tableView reloadData];
+            break;
+    }
 }
 
 - (IBAction)userLocation:(id)sender
@@ -479,13 +488,14 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             
             _tableViewSetting = PropertyTableViewSettingOptions;
             break;
-            
+
         case PropertyTableViewSettingOptions:
-        case PropertyTableViewSettingComputedValues:
-        case PropertyTableViewSettingPropertyReport:
-        case PropertyTableViewSettingRankings:
             if (_currentScreenHeight != self.view.frame.size.height)
                 _tableView.rowHeight = ((_tableView.frame.size.height - (_rowHeight * 1.4)) / _options.count);
+            
+        case PropertyTableViewSettingPropertyReport:
+            if (_currentScreenHeight != self.view.frame.size.height)
+                [_tableView reloadData];
             
             break;
     }
@@ -550,18 +560,21 @@ viewForHeaderInSection:(NSInteger)section
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"
+    static NSString *identifier = @"Cell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier
                                                             forIndexPath:indexPath];
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:@"Cell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                      reuseIdentifier:identifier];
     }
     
     cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    cell.textLabel.numberOfLines = 2;
     
     switch (_tableViewSetting)
     {
@@ -569,12 +582,24 @@ viewForHeaderInSection:(NSInteger)section
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
             cell.textLabel.text = _options[indexPath.row];
+            cell.accessoryView = nil;
             break;
             
         case PropertyTableViewSettingPropertyReport:
-            cell.textLabel.textAlignment = NSTextAlignmentLeft;
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.4)];
-            cell.textLabel.text = [UserDefaults.defaults addSpaceAfterColon:_propertyReport[indexPath.row]];
+            cell.textLabel.textAlignment = NSTextAlignmentRight;
+            cell.textLabel.font = [UIFont systemFontOfSize:(_rowHeight / 3.6)];
+            cell.textLabel.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
+            
+            _detailTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, (cell.frame.size.width * 0.7),
+                                                                          cell.frame.size.height)];
+            
+            _detailTitleLabel.text = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
+            _detailTitleLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.4)];
+            _detailTitleLabel.textAlignment = NSTextAlignmentLeft;
+            _detailTitleLabel.textColor = UIColor.whiteColor;
+            _detailTitleLabel.adjustsFontSizeToFitWidth = YES;
+            _detailTitleLabel.numberOfLines = 2;
+            cell.accessoryView = _detailTitleLabel;
             break;
     }
     
