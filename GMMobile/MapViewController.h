@@ -19,5 +19,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property (nonatomic) int currentZoom;
+@property (weak, nonatomic) IBOutlet UIButton *splitScreenButton;
 
 @end

@@ -22,6 +22,8 @@
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic) CGFloat currentScreenHeight;
 @property (nonatomic) UILabel *detailTitleLabel;
+@property (nonatomic) BOOL splitScreen;
+@property (nonatomic) CGFloat splitScreenHeightPortrait, splitScreenHeightLandscape;
 
 @end
 
@@ -83,6 +85,7 @@
     
     [self setupButton:_zoomToExtentButton];
     [self setupButton:_userLocationButton];
+    [self setupButton:_splitScreenButton];
     [self.view bringSubviewToFront:_annotationSwitch];
     
     [self setupTableView];
@@ -478,7 +481,7 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     _tableView.bounces = NO;
     _tableView.backgroundColor = _tableViewBackgroundColor;
     
-    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
+    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 18.0), 44.0);
     _tableView.layer.cornerRadius = (_rowHeight / 4.0);
     [self.view bringSubviewToFront:_tableView];
 }
@@ -649,6 +652,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _tableView.hidden = YES;
         _clearWhenDeselected = NO;
     }
+}
+
+- (IBAction)splitScreen:(id)sender
+{
+
 }
 
 @end
