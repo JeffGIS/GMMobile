@@ -53,10 +53,13 @@
     _mapView = [[MKMapView alloc] init];
     _vectorView = [[VectorView alloc] init];
     
-    CGRect mapViewFrame = CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    
+    CGRect mapViewFrame = CGRectMake(0.0,
+                                     statusBarHeight,
                                      self.view.frame.size.width,
-                                     (self.tabBarController.tabBar.frame.origin.y -
-                                      UIApplication.sharedApplication.statusBarFrame.size.height));
+                                     (tabBarTop - statusBarHeight));
     
     _vectorView.frame = _mapView.frame = mapViewFrame;
     _vectorView.userInteractionEnabled = NO;
@@ -67,8 +70,10 @@
     _firstImageView = [[UIImageView alloc] init];
     _secondImageView = [[UIImageView alloc] init];
     
-    _firstImageView.frame = _secondImageView.frame = CGRectMake(0.0, self.tabBarController.tabBar.frame.origin.y - 1.0,
-                                                                self.view.frame.size.width, 0.0);
+    _firstImageView.frame = _secondImageView.frame = CGRectMake(0.0,
+                                                                tabBarTop,
+                                                                self.view.frame.size.width,
+                                                                0.0);
     
     _firstImageView.backgroundColor = [UIColor colorWithRed:0.7
                                                       green:0.85
@@ -445,10 +450,10 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             [_tableView reloadData];
             break;
     }
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
+    
+    CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
+    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+    
     switch (_screenSetting)
     {
         case MapViewScreenSettingFullscreen:
@@ -456,18 +461,11 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
+                                 
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
-                                            self.view.frame.size.width,
-                                            (self.tabBarController.tabBar.frame.origin.y -
-                                             UIApplication.sharedApplication.statusBarFrame.size.height));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _firstImageView.frame = _secondImageView.frame =
-                                 CGRectMake(0.0, self.tabBarController.tabBar.frame.origin.y - 1.0,
-                                            self.view.frame.size.width, 0.0);
+                                 CGRectMake(0.0, statusBarHeight,
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            (self.view.frame.size.width - tabBarHeight - statusBarHeight));
                              }];
         }
             break;
@@ -477,22 +475,21 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
+                                 
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
-                                            self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                 CGRectMake(0.0, statusBarHeight,
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0)),
-                                            self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                 
+                                 CGRectMake(0.0, statusBarHeight +
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
                              }];
         }
             break;
@@ -502,32 +499,27 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
-                                            self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0));
+                                 CGRectMake(0.0, statusBarHeight,
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0)),
-                                            self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0));
+                                 CGRectMake(0.0, statusBarHeight +
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0),
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 1.5)),
-                                            self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0));
+                                 CGRectMake(0.0, statusBarHeight +
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5),
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
                              }];
         }
             break;
@@ -537,33 +529,27 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
-                                            self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                 CGRectMake(0.0, statusBarHeight,
+                                            (self.view.frame.size.height + tabBarHeight),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0)),
-                                            (self.view.frame.size.width / 2.0),
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                 CGRectMake(0.0, statusBarHeight +
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
+                                            ((self.view.frame.size.height + tabBarHeight) / 2.0),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
-                                 CGRectMake((self.view.frame.size.width / 2.0),
-                                            (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                             ((self.tabBarController.tabBar.frame.origin.y -
-                                               UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0)),
-                                            (self.view.frame.size.width / 2.0),
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                 CGRectMake(((self.view.frame.size.height + tabBarHeight) / 2.0),
+                                            statusBarHeight + ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
+                                            ((self.view.frame.size.height + tabBarHeight) / 2.0),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
                              }];
         }
             break;
@@ -823,6 +809,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (IBAction)splitScreen:(id)sender
 {
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    
     switch (_screenSetting)
     {
         case MapViewScreenSettingFullscreen:
@@ -830,22 +819,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
+                                 
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
                                             self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0)),
+                                 CGRectMake(0.0,
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
                                             self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 2.0));
                              }];
             
             _screenSetting = MapViewScreenSettingSplitScreen;
@@ -857,32 +845,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
                                             self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0));
+                                            ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0)),
+                                 CGRectMake(0.0,
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
                                             self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0));
+                                            ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 1.5)),
+                                 CGRectMake(0.0,
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 3.0));
+                                            ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
             _screenSetting = MapViewScreenSettingTriScreen;
@@ -894,33 +878,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
                                             self.view.frame.size.width,
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 CGRectMake(0.0, (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                                  ((self.tabBarController.tabBar.frame.origin.y -
-                                                    UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0)),
+                                 CGRectMake(0.0,
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
                                             (self.view.frame.size.width / 2.0),
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake((self.view.frame.size.width / 2.0),
-                                            (UIApplication.sharedApplication.statusBarFrame.size.height +
-                                             ((self.tabBarController.tabBar.frame.origin.y -
-                                               UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0)),
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
                                             (self.view.frame.size.width / 2.0),
-                                            ((self.tabBarController.tabBar.frame.origin.y -
-                                              UIApplication.sharedApplication.statusBarFrame.size.height) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 2.0));
                              }];
             
             _screenSetting = MapViewScreenSettingSplitBottomScreen;
@@ -932,17 +911,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
+                                 
                                  _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, UIApplication.sharedApplication.statusBarFrame.size.height,
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
                                             self.view.frame.size.width,
-                                            (self.tabBarController.tabBar.frame.origin.y -
-                                             UIApplication.sharedApplication.statusBarFrame.size.height));
+                                            (tabBarTop - statusBarHeight));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame = _secondImageView.frame =
-                                 CGRectMake(0.0, self.tabBarController.tabBar.frame.origin.y - 1.0,
+                                 CGRectMake(0.0,
+                                            tabBarTop,
                                             self.view.frame.size.width, 0.0);
                              }];
             
@@ -950,6 +931,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
             break;
     }
+}
+
+- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
+{
+    NSLog(@"%ld", orientation);
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        if (orientation == UIDeviceOrientationLandscapeLeft ||
+            orientation == UIDeviceOrientationLandscapeRight)
+        {
+            return 0.0;
+        }
+    }
+    
+    return 20.0;
 }
 
 @end

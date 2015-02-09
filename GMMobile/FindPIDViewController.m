@@ -68,7 +68,9 @@
         _pidEntry.text = pidSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
         
-        _pidList = [propData getPIDsWithOwnerMatchingString:pidSearchText limitOf:50];
+        _pidList = [propData getPIDsWithOwnerMatchingString:pidSearchText
+                                                    limitOf:50];
+        
         [_tableView reloadData];
     }
     
@@ -91,7 +93,8 @@
         if (textField.text.length == 4)
         {
             char txt[6];
-            strcpy (txt,textField.text.UTF8String);
+            strcpy (txt, textField.text.UTF8String);
+            
             if (txt[3] != '-')
             {
                 txt[4] = txt[3];
@@ -100,9 +103,12 @@
                 textField.text = [NSString stringWithUTF8String:txt];
             }
         }
+        
         PropertyData *propData = [[PropertyData alloc] init];
         
-        _pidList = [propData getPIDsWithOwnerMatchingString:textField.text limitOf:50];
+        _pidList = [propData getPIDsWithOwnerMatchingString:textField.text
+                                                    limitOf:50];
+        
         [_tableView reloadData];
     }
 }
