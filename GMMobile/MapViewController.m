@@ -443,7 +443,12 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
-            _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
+                             }];
+        }
             break;
             
         case PropertyTableViewSettingPropertyReport:
@@ -531,25 +536,25 @@ didDeselectAnnotationView:(MKAnnotationView *)view
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5),
                                             ((self.view.frame.size.height + tabBarHeight) / 2.0),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake(((self.view.frame.size.height + tabBarHeight) / 2.0),
-                                            statusBarHeight + ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
+                                            statusBarHeight + ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5),
                                             ((self.view.frame.size.height + tabBarHeight) / 2.0),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
+                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
                              }];
         }
             break;
@@ -678,19 +683,20 @@ viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = [[UILabel alloc] init];
     headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight);
-    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
+    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 1.8)];
     headerLabel.textColor = UIColor.yellowColor;
-    headerLabel.numberOfLines = 0;
     headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
     
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
+            headerLabel.numberOfLines = 1;
             headerLabel.text = @"Options";
             break;
             
         case PropertyTableViewSettingPropertyReport:
+            headerLabel.numberOfLines = 2;
             headerLabel.text = @"Property Report for\nTaxes Payable 2014";
             break;
     }
@@ -739,7 +745,7 @@ viewForHeaderInSection:(NSInteger)section
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 1.6)];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.text = _options[indexPath.row];
             cell.accessoryView = nil;
@@ -881,25 +887,25 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  CGRectMake(0.0,
                                             statusBarHeight,
                                             self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 1.5));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
                                  CGRectMake(0.0,
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             (self.view.frame.size.width / 2.0),
-                                            ((tabBarTop - statusBarHeight) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake((self.view.frame.size.width / 2.0),
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             (self.view.frame.size.width / 2.0),
-                                            ((tabBarTop - statusBarHeight) / 2.0));
+                                            ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
             _screenSetting = MapViewScreenSettingSplitBottomScreen;
@@ -935,8 +941,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
 {
-    NSLog(@"%ld", orientation);
-    
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         if (orientation == UIDeviceOrientationLandscapeLeft ||
