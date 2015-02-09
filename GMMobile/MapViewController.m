@@ -740,7 +740,7 @@ viewForHeaderInSection:(NSInteger)section
     cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    cell.textLabel.numberOfLines = 2;
+    cell.textLabel.numberOfLines = 0;
     
     switch (_tableViewSetting)
     {
@@ -767,7 +767,7 @@ viewForHeaderInSection:(NSInteger)section
             _detailTitleLabel.textAlignment = NSTextAlignmentLeft;
             _detailTitleLabel.textColor = UIColor.whiteColor;
             _detailTitleLabel.adjustsFontSizeToFitWidth = YES;
-            _detailTitleLabel.numberOfLines = 2;
+            _detailTitleLabel.numberOfLines = 0;
             cell.accessoryView = _detailTitleLabel;
             break;
     }
