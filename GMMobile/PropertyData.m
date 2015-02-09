@@ -25,6 +25,7 @@ static PropertyData *_propData;
         _fileName = @"Property.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _propData = (__bridge PropertyData *)((__bridge sqlite3 *)((PropertyData *)self));
+
     }
     
     return self;
@@ -215,7 +216,7 @@ static PropertyData *_propData;
     NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
     CGFloat d, mind = DBL_MAX;
-    CGFloat pickap = 0.0005;
+    CGFloat pickap = 0.005;
     DPOINT p1, p2, minpt;
     
     p1.x = pt->lon;
@@ -288,6 +289,10 @@ static PropertyData *_propData;
     {
         self.isOpen = !SQLOK(sqlite3_open(self.path.UTF8String, &_database), "open(Property)");
         NSLog(@"Property Database open");
+        _fileSize = [NSFileManager.defaultManager
+                     attributesOfItemAtPath:_path
+                     error:nil].fileSize;
+
     }
 }
 

@@ -22,7 +22,19 @@
     [super viewDidLoad];
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld",pd.fileSize];
+    [pd close];
+
 }
+
+- (IBAction)deleteDatabase:(id)sender {
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd clear];
+    
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -46,8 +58,6 @@
                 {
                     break;
                 }
-                PropertyData *pd = [[PropertyData alloc] init];
-                [pd open];
                 if (option == GET_PARCELS)
                 {
                     file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
@@ -64,29 +74,41 @@
                 ^{
                     FILE *fid = fopen(file.UTF8String, "rb");
                     LPSTR str = malloc(USHRT_MAX*8);
-                    fseek(fid, 0, SEEK_END);
-                    CGFloat totLen = ftell(fid);
-                    fseek(fid, 0, SEEK_SET);
-                    [pd startTransaction];
-                    
-                    while (fgetstring(str, (USHRT_MAX*8 - 2), fid))
+                    if (!str)
                     {
-                        [pd executeCmd:str];
-                        
                         dispatch_async(dispatch_get_main_queue(),
-                        ^{
-                            [_popover updateProgress:ftell(fid) / totLen];
-                        });
+                                       ^{
+                                           _popover.title = @"Failed to get memory. Hit cancel to continue";
+                                       });
                     }
-                    
-                    [pd commitTransaction];
-                    [pd close];
-                    fclose(fid);
-                    free(str);
-                    dispatch_async(dispatch_get_main_queue(),
-                    ^{
-                          [_popover hide];
-                    });
+                    else
+                    {
+                        PropertyData *pd = [[PropertyData alloc] init];
+                        [pd open];
+                        fseek(fid, 0, SEEK_END);
+                        CGFloat totLen = ftell(fid);
+                        fseek(fid, 0, SEEK_SET);
+                        [pd startTransaction];
+                        
+                        while (fgetstring(str, (USHRT_MAX*8 - 2), fid))
+                        {
+                            [pd executeCmd:str];
+                            
+                            dispatch_async(dispatch_get_main_queue(),
+                                           ^{
+                                               [_popover updateProgress:ftell(fid) / totLen];
+                                           });
+                        }
+                        
+                        [pd commitTransaction];
+                        [pd close];
+                        fclose(fid);
+                        free(str);
+                        dispatch_async(dispatch_get_main_queue(),
+                                       ^{
+                                           [_popover hide];
+                                       });
+                    }
                 });
                 }
             

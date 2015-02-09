@@ -20,6 +20,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property (nonatomic, copy) NSString *path;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
+@property long long fileSize;
 
 - (void)open;
 - (void)close;
