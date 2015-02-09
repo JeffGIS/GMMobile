@@ -297,6 +297,9 @@
                                 <exclude reference="YRp-8P-mM5"/>
                                 <exclude reference="bmA-7k-k04"/>
                                 <exclude reference="cpv-fj-mD3"/>
+                                <exclude reference="Sif-iH-vQV"/>
+                                <exclude reference="Smf-y3-Ycd"/>
+                                <exclude reference="i26-Ly-h4B"/>
                                 <exclude reference="1QV-c5-fEQ"/>
                                 <exclude reference="PvE-EH-Zhz"/>
                                 <exclude reference="Q1I-jt-fJe"/>
@@ -306,9 +309,6 @@
                                 <exclude reference="b2H-7d-mAp"/>
                                 <exclude reference="qHb-t6-oxJ"/>
                                 <exclude reference="sgy-uV-Jbq"/>
-                                <exclude reference="Sif-iH-vQV"/>
-                                <exclude reference="Smf-y3-Ycd"/>
-                                <exclude reference="i26-Ly-h4B"/>
                                 <exclude reference="XuR-hm-oyO"/>
                                 <exclude reference="aP0-2Q-G9y"/>
                                 <exclude reference="oQM-ZR-P0q"/>
@@ -337,12 +337,12 @@
                                 <include reference="6aM-U2-82H"/>
                                 <include reference="GGJ-Wz-Duu"/>
                                 <include reference="YRp-8P-mM5"/>
-                                <include reference="PvE-EH-Zhz"/>
-                                <include reference="Q1I-jt-fJe"/>
-                                <include reference="sgy-uV-Jbq"/>
                                 <exclude reference="FeW-VD-i5G"/>
                                 <include reference="i26-Ly-h4B"/>
                                 <exclude reference="sd1-kY-oUq"/>
+                                <include reference="PvE-EH-Zhz"/>
+                                <include reference="Q1I-jt-fJe"/>
+                                <include reference="sgy-uV-Jbq"/>
                                 <include reference="oQM-ZR-P0q"/>
                             </mask>
                         </variation>
@@ -357,13 +357,13 @@
                                 <exclude reference="zwC-Ho-S9P"/>
                                 <include reference="Vh9-FV-Z1r"/>
                                 <include reference="bmA-7k-k04"/>
-                                <include reference="WFn-LY-a3X"/>
-                                <include reference="YC7-lR-ArX"/>
-                                <include reference="qHb-t6-oxJ"/>
                                 <exclude reference="FeW-VD-i5G"/>
                                 <include reference="Sif-iH-vQV"/>
                                 <include reference="Smf-y3-Ycd"/>
                                 <exclude reference="sd1-kY-oUq"/>
+                                <include reference="WFn-LY-a3X"/>
+                                <include reference="YC7-lR-ArX"/>
+                                <include reference="qHb-t6-oxJ"/>
                                 <include reference="aP0-2Q-G9y"/>
                             </mask>
                         </variation>
