@@ -118,7 +118,7 @@ static PropertyData *_propData;
     
     [self open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT PID FROM PROPINFO Where PID LIKE '%@%%'",
+    NSString *query = [NSString stringWithFormat:@"SELECT PIN FROM PROPINFO Where PIN LIKE '%@%%'",
                        matchChar];
     
     sqlite3_stmt *statement;
@@ -169,11 +169,23 @@ static PropertyData *_propData;
                                 streetName:(NSString *)matchChar
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
-    
+    NSString *query;
     [self open];
     //NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC4 Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i",matchChar,houseNumber];
-    NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,STREET,PID,\"Owner Name\" FROM PROPINFO Where STREET LIKE '%@%%' AND HOUSENUM = %i", matchChar,houseNumber];
-    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_MPLS:
+        {
+            query = [NSString stringWithFormat:@"SELECT HOUSENUM,STREET,PID,\"Owner Name\" FROM PROPINFO Where STREET LIKE '%@%%' AND HOUSENUM = %i", matchChar,houseNumber];
+        }
+            break;
+        case PROJECT_METROGIS:
+        {
+            query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME LIKE '%@%%' AND BLDG_NUM = %i", matchChar,houseNumber];
+           
+        }
+            break;
+    }
     sqlite3_stmt *statement;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), "preparegetPIDsMatchingAddress");
