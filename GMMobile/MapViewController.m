@@ -342,8 +342,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     llp.lon = coordPicked.longitude;
     
     PropertyData *propData = [[PropertyData alloc] init];
-    _selectedPID = [propData pickPID:llp];
-    
+    _selectedPID = [propData pickPID:&llp];
+    coordPicked.latitude = llp.lat;
+    coordPicked.longitude = llp.lon;
     //GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     

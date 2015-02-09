@@ -138,9 +138,10 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
+- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar limitOf:(int)lim
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
+    int n=0;
     
     [self open];
     
@@ -151,7 +152,7 @@ static PropertyData *_propData;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while (n++ < lim && sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
         LPSTR owner = (LPSTR)sqlite3_column_text(statement, 1);
@@ -209,16 +210,17 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSString *)pickPID:(LLPOINT)pt
+- (NSString *)pickPID:(LLPOINT*)pt
 {
     NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
     CGFloat d, mind = DBL_MAX;
-    CGFloat pickap = 0.0001;
-    DPOINT p1, p2;
+    CGFloat pickap = 0.0005;
+    DPOINT p1, p2, minpt;
     
-    p1.x = pt.lon;
-    p1.y = pt.lat;
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
     bnds.xmn = p1.x - pickap;
     bnds.xmx = p1.x + pickap;
     bnds.ymn = p1.y - pickap;
@@ -247,12 +249,15 @@ static PropertyData *_propData;
         if (d < mind)
         {
             mind = d;
+            minpt = p2;
             minPID = [NSString stringWithUTF8String:cpid];
         }
     }
     
     SQLOK(sqlite3_finalize(statement), "pickPID");
     [self close];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
     return minPID;
 }
 
