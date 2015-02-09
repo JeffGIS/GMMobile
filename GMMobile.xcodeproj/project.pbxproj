@@ -16,6 +16,7 @@
 		A91565661A81F9F700119C21 /* GSSiAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565651A81F9F700119C21 /* GSSiAnnotationView.m */; };
 		A91565691A820FEF00119C21 /* GSSiAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565681A820FEF00119C21 /* GSSiAnnotation.m */; };
 		A915656C1A826D4D00119C21 /* GSSiTileOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A915656B1A826D4D00119C21 /* GSSiTileOverlayRenderer.m */; };
+		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
@@ -30,6 +31,7 @@
 		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */; };
+		A9FD3FAE1A8735FB004FB96D /* crosshairs160.png in Resources */ = {isa = PBXBuildFile; fileRef = A9FD3FAD1A8735FB004FB96D /* crosshairs160.png */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
 		EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
@@ -73,6 +75,7 @@
 		A91565681A820FEF00119C21 /* GSSiAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiAnnotation.m; sourceTree = "<group>"; };
 		A915656A1A826D4D00119C21 /* GSSiTileOverlayRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlayRenderer.h; sourceTree = "<group>"; };
 		A915656B1A826D4D00119C21 /* GSSiTileOverlayRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlayRenderer.m; sourceTree = "<group>"; };
+		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
 		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPropertyOwnerViewController.h; sourceTree = "<group>"; };
@@ -93,6 +96,7 @@
 		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
 		A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bmomxcqdduclkngeclsnuwqvhudu/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 		A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		A9FD3FAD1A8735FB004FB96D /* crosshairs160.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = crosshairs160.png; sourceTree = "<group>"; };
 		EB4F25831A757F2000761FD5 /* FindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindViewController.h; sourceTree = "<group>"; };
 		EB4F25841A757F2000761FD5 /* FindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindViewController.m; sourceTree = "<group>"; };
 		EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPIDViewController.h; sourceTree = "<group>"; };
@@ -153,6 +157,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A94656211A85E04A00163525 /* split.png */,
+				A9FD3FAD1A8735FB004FB96D /* crosshairs160.png */,
 				A9CBF2101A8156C7006AC88E /* list.png */,
 				A9CBF20C1A81558C006AC88E /* arrow.png */,
 				A9C78BC31A7A8E590094562B /* zoom.png */,
@@ -388,6 +394,7 @@
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
+				A9FD3FAE1A8735FB004FB96D /* crosshairs160.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
@@ -396,6 +403,7 @@
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
+				A94656221A85E04A00163525 /* split.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
