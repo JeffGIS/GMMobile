@@ -831,8 +831,8 @@ int SQLOK(int sqlReturn, char *method)
             break;
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE FROM PROPINFO,PARCELZONE WHERE PROPINFO.PIN='%s'",
-                               pid.UTF8String,pid.UTF8String];
+            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+                               pid.UTF8String];
             
             SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getReportForPID");
 /*
@@ -860,7 +860,13 @@ int SQLOK(int sqlReturn, char *method)
                 LPSTR landMark = (LPSTR)sqlite3_column_text(statement, 17);
                 LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 18);
                 LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, 19);
-                
+                CGFloat landEMV = sqlite3_column_double(statement, 20);
+                CGFloat bldgEMV = sqlite3_column_double(statement, 21);
+                CGFloat totalEMV = sqlite3_column_double(statement, 22);
+                CGFloat taxCapac = sqlite3_column_double(statement, 23);
+                CGFloat totalTax = sqlite3_column_double(statement, 24);
+                CGFloat specAsses = sqlite3_column_double(statement, 25);
+            
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
                 dollarFmt.groupingSeparator = @"'";
@@ -883,6 +889,24 @@ int SQLOK(int sqlReturn, char *method)
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"City:%s", city];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Owner:%s", ownerName];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Owner more:%s", ownerMore];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
+                [report addObject:line];
+ 
+                line = [NSString stringWithFormat:@"Building EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)bldgEMV]]];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Total EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalEMV]]];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Total Tax:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalTax]]];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"City USPS:%s", cityUSPS];
@@ -924,11 +948,6 @@ int SQLOK(int sqlReturn, char *method)
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Owner:%s", ownerName];
-                [report addObject:line];
-                
-                line = [NSString stringWithFormat:@"Owner more:%s", ownerMore];
-                [report addObject:line];
             }
             
         }
