@@ -34,6 +34,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [lagFreeField resignFirstResponder];
     [lagFreeField removeFromSuperview];
     
+    CRAPI.sharedInstance.project = PROJECT_METROGIS;
     CRAPI.sharedInstance.GMTilesVisible = YES;
     CRAPI.sharedInstance.showParcelBoundary = YES;
     CRAPI.sharedInstance.parcelsVisibleAtZoom = 16;

@@ -50,14 +50,12 @@
                 [pd open];
                 if (option == GET_PARCELS)
                 {
-                    [pd executeCmd:"DROP TABLE IF EXISTS PARCELPOLY"];
-                    [pd executeCmd:"DROP TABLE IF EXISTS PARCELPOLY_index"];
                     file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
                      _popover.title = @"Load Parcel Tables";
                 }
                 else
                 {
-                    file = [NSString stringWithFormat:@"%@/Property.sqltran",toDirectory];
+                    file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
                     _popover.title = @"Load Property Tables";
                 }
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
@@ -65,13 +63,13 @@
                 dispatch_async(overallQueue,
                 ^{
                     FILE *fid = fopen(file.UTF8String, "rb");
-                    LPSTR str = malloc(USHRT_MAX);
+                    LPSTR str = malloc(USHRT_MAX*8);
                     fseek(fid, 0, SEEK_END);
                     CGFloat totLen = ftell(fid);
                     fseek(fid, 0, SEEK_SET);
                     [pd startTransaction];
                     
-                    while (fgetstring(str, (USHRT_MAX - 2), fid))
+                    while (fgetstring(str, (USHRT_MAX*8 - 2), fid))
                     {
                         [pd executeCmd:str];
                         
@@ -100,6 +98,17 @@
             }
                 break;
         }
+    }
+    else
+    {
+        [_popover hide];
+        UIAlertView *getError = [[UIAlertView alloc] initWithTitle:@"Error getting parcel file"
+                                                           message:@"Network communication error"
+                                                          delegate:nil
+                                                 cancelButtonTitle:@"Continue"
+                                                 otherButtonTitles:nil];
+        [getError show];
+        
     }
 }
 
@@ -149,7 +158,7 @@
 - (IBAction)loadParcels:(id)sender {
 
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"Parcels.gcf";
+    NSString *fileName = @"parcels.gcf";
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
@@ -164,7 +173,7 @@
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+     forceRefresh:NO];
 }
 
 - (BOOL)loadTilesFromList:(NSString*)fileList

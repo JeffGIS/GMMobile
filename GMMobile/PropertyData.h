@@ -28,13 +28,13 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 - (void)startTransaction;
 - (void)commitTransaction;
 - (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar;
-- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar;
+- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar    limitOf:(int)lim;
 
 - (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
                                 streetName:(NSString *)matchChar;
 
 - (LLPOINT)getPointForPID:(NSString *)PID;
-- (NSString *)pickPID:(LLPOINT)pt;
+- (NSString *)pickPID:(LLPOINT*)pt;
 
 - ( BOOL)loadParcelPolygons:(NSString*)fromPath updatePopover:(GSSiPopoverView*)popover;
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
