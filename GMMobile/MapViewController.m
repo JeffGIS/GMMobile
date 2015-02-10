@@ -18,7 +18,7 @@
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property (nonatomic) BOOL clearWhenDeselected;
+@property (nonatomic) BOOL clearWhenDeselected, firstTime;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth;
 @property (nonatomic) MKMapView *mapView;
@@ -47,6 +47,7 @@
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
+    _firstTime = YES;
     
     _screenSetting = MapViewScreenSettingFullscreen;
     _mapView = [[MKMapView alloc] init];
@@ -64,7 +65,7 @@
     _vectorView.userInteractionEnabled = NO;
     
     [self.view addSubview:_mapView];
-    [self.view addSubview:_vectorView];
+    //[self.view addSubview:_vectorView];
     
     _firstImageView = [[UIImageView alloc] init];
     _secondImageView = [[UIImageView alloc] init];
@@ -101,24 +102,30 @@
     
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
-    _osmOverlay.canReplaceMapContent = YES;
+    _osmOverlay.canReplaceMapContent = NO;
     _osmOverlay.minimumZ = 0;
     _osmOverlay.maximumZ = 19;
     _osmOverlay.type = @"OSM";
     
-    [_mapView addOverlay:_osmOverlay
-                   level:MKOverlayLevelAboveLabels];
+    if (CRAPI.sharedInstance.basemap == BasemapSettingOSM)
+    {
+        [_mapView addOverlay:_osmOverlay
+                       level:MKOverlayLevelAboveLabels];
+    }
     
     NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     //NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
-    _gmmOverlay.canReplaceMapContent = YES;
+    _gmmOverlay.canReplaceMapContent = NO;
     _gmmOverlay.minimumZ = 12;
     _gmmOverlay.maximumZ = 19;
     _gmmOverlay.type = @"GMM";
     
-    [_mapView addOverlay:_gmmOverlay
-                   level:MKOverlayLevelAboveLabels];
+    if (CRAPI.sharedInstance.GMTilesVisible)
+    {
+        [_mapView addOverlay:_gmmOverlay
+                       level:MKOverlayLevelAboveLabels];
+    }
     
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                action:@selector(didLongPressMap:)];
@@ -141,35 +148,44 @@
 {
     [super viewWillAppear:animated];
     
-    [self initTableView];
-    
-    if (_osmOverlay)
+    if (!_firstTime)
     {
-        [_mapView removeOverlay:_osmOverlay];
+        [self initTableView];
         
-        if (!CRAPI.sharedInstance.GMTilesVisible)
+        if (_osmOverlay)
         {
-            _osmOverlay.maximumZ = 19;
-            _osmOverlay.minimumZ = 0;
-        }
-        
-        [_mapView addOverlay:_osmOverlay
-                       level:MKOverlayLevelAboveLabels];
-    }
-    
-    if (_gmmOverlay)
-    {
-        [_mapView removeOverlay:_gmmOverlay];
-        
-        if (CRAPI.sharedInstance.GMTilesVisible)
-        {
-            [_mapView addOverlay:_gmmOverlay
-                           level:MKOverlayLevelAboveLabels];
+            [_mapView removeOverlay:_osmOverlay];
             
-            _gmmOverlay.minimumZ = 12;
-            _gmmOverlay.maximumZ = 19;
+            if (!CRAPI.sharedInstance.GMTilesVisible)
+            {
+                _osmOverlay.maximumZ = 19;
+                _osmOverlay.minimumZ = 0;
+            }
+            
+            if (CRAPI.sharedInstance.basemap == BasemapSettingOSM)
+            {
+                [_mapView addOverlay:_osmOverlay
+                               level:MKOverlayLevelAboveLabels];
+            }
+        }
+        
+        if (_gmmOverlay)
+        {
+            [_mapView removeOverlay:_gmmOverlay];
+            
+            if (CRAPI.sharedInstance.GMTilesVisible)
+            {
+                [_mapView addOverlay:_gmmOverlay
+                               level:MKOverlayLevelAboveLabels];
+                
+                _gmmOverlay.minimumZ = 12;
+                _gmmOverlay.maximumZ = 19;
+            }
         }
     }
+    
+    else
+        _firstTime = NO;
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)

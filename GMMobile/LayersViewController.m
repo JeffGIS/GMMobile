@@ -98,4 +98,19 @@
 - (IBAction)parcelBoundaryLines:(id)sender {
     CRAPI.sharedInstance.showParcelBoundary = !CRAPI.sharedInstance.showParcelBoundary;
 }
+
+- (IBAction)toggleBasemap:(UISegmentedControl *)sender
+{
+    switch (sender.selectedSegmentIndex)
+    {
+        case 0:
+            CRAPI.sharedInstance.basemap = BasemapSettingApple;
+            break;
+            
+        case 1:
+            CRAPI.sharedInstance.basemap = BasemapSettingOSM;
+            break;
+    }
+}
+
 @end

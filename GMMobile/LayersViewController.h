@@ -16,5 +16,6 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelShadingOption2;
 - (IBAction)parcelBoundaryLines:(id)sender;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelBoundaryLines;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *basemapSC;
 
 @end
