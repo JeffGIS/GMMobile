@@ -469,6 +469,9 @@
                                     <segment title="Year Built"/>
                                     <segment title="Total Tax"/>
                                 </segments>
+                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
+                                    <rect key="frame" x="16" y="467" width="392" height="29"/>
+                                </variation>
                                 <connections>
                                     <action selector="parcelShadingOption2:" destination="8rJ-Kc-sve" eventType="valueChanged" id="NFA-w8-MhA"/>
                                 </connections>
@@ -496,6 +499,9 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
+                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
+                                    <rect key="frame" x="148" y="503" width="119" height="28"/>
+                                </variation>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="z7Y-An-Lh5">
                                 <rect key="frame" x="16" y="303" width="123" height="29"/>
@@ -503,6 +509,9 @@
                                     <segment title="Apple"/>
                                     <segment title="OSM"/>
                                 </segments>
+                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
+                                    <rect key="frame" x="16" y="503" width="123" height="29"/>
+                                </variation>
                                 <connections>
                                     <action selector="toggleBasemap:" destination="8rJ-Kc-sve" eventType="valueChanged" id="i02-FB-Tew"/>
                                 </connections>

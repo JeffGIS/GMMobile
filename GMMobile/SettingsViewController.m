@@ -114,6 +114,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             {
                 NSString *toDirectory = [path stringByDeletingLastPathComponent];
                 NSString *file;
+                
                 if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
                     break;
                 
@@ -166,6 +167,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         [pd close];
                         fclose(fid);
                         free(str);
+                        
                         dispatch_async(dispatch_get_main_queue(),
                                        ^{
                                            [_popover hide];
@@ -178,7 +180,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 
             case GET_TILES:
             {
-                [self loadTilesFromList:path updatePopover:_popover];
+                [self loadTilesFromList:path
+                          updatePopover:_popover];
             }
                 break;
         }
