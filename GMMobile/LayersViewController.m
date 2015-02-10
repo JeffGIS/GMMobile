@@ -67,9 +67,10 @@
                             (int)CRAPI.sharedInstance.sewerVisibleAtZoom];
     
 }
-- (IBAction)displayTileInfo:(id)sender {
+
+- (IBAction)displayTileInfo:(id)sender
+{
     CRAPI.sharedInstance.showTileInfo = !CRAPI.sharedInstance.showTileInfo;
-    
 }
 
 -(void)setParcelLines
@@ -83,6 +84,7 @@
         CRAPI.sharedInstance.showParcelBoundary = YES;
     }
 }
+
 - (IBAction)parcelShadingOption:(id)sender
 {
     CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption.selectedSegmentIndex;
@@ -90,12 +92,15 @@
     [self setParcelLines];
 }
 
-- (IBAction)parcelShadingOption2:(id)sender {
+- (IBAction)parcelShadingOption2:(id)sender
+{
     _parcelShadingOption.selectedSegmentIndex = -1;
     CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption2.selectedSegmentIndex+4;
     [self setParcelLines];
 }
-- (IBAction)parcelBoundaryLines:(id)sender {
+
+- (IBAction)parcelBoundaryLines:(id)sender
+{
     CRAPI.sharedInstance.showParcelBoundary = !CRAPI.sharedInstance.showParcelBoundary;
 }
 
