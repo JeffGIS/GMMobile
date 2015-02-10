@@ -65,7 +65,7 @@
     _vectorView.userInteractionEnabled = NO;
     
     [self.view addSubview:_mapView];
-    //[self.view addSubview:_vectorView];
+    [self.view addSubview:_vectorView];
     
     _firstImageView = [[UIImageView alloc] init];
     _secondImageView = [[UIImageView alloc] init];
