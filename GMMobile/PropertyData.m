@@ -1068,11 +1068,12 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     int     PartLen[MAXPARTS];
     LPSTR   PartLoc[MAXPARTS];
     int     Trigger = 3;
-    int		nHits;
+    int		nHits=0;
     int     nowner;
     BOOL	GetNext = TRUE;
     char	Name[66];
     LPINT   Hits = malloc (MAXHITS * sizeof(int));
+    sqlite3_stmt *statement;
 
     NSString * string = [INstring uppercaseString];
     strncpy (Name,string.UTF8String,64);
@@ -1087,24 +1088,28 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
         
         if (PartLen[ipart] >= Trigger)
         {
-            sqlite3_stmt *statement;
+            char endWord[12]={0};
             [self open];
             
-            NSString *query = [NSString stringWithFormat:@"SELECT NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word ='%s'",
-                               PartLoc[ipart]];
-            
+            strncpy (endWord,PartLoc[ipart],8);
+            for (int i=(int)strlen(PartLoc[ipart]);i<11;i++)
+                endWord[i] = 'Z';
+            endWord[11] = 0;
+            NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
+                               PartLoc[ipart],endWord];
             SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
-                int nOffsets = sqlite3_column_int(statement,0);
-                LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 1);
+                LPSTR word = sqlite3_column_text(statement, 0);
+                int nOffsets = sqlite3_column_int(statement,1);
+                LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
                 
                 
                 if (nPartOffsets[ipart] + nOffsets >= MAXOFFSETS)
                     GetNext = FALSE;
                 else
                 {
-                    partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets*sizeof(int)));
+                    partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*sizeof(int));
                     partoff = partOffsets[ipart] + nPartOffsets[ipart];
                     memmove (partoff,pOffsets,nOffsets*sizeof(int));
                     nPartOffsets[ipart] += nOffsets;
@@ -1118,7 +1123,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             nPartOffsets[ipart] = INT_MAX;
     }
     
-    if (GetNext)
+    if (GetNext && nParts > 1)
         nHits = GetWIHits (Hits,nParts,nPartOffsets,partOffsets,MAXHITS);
 
     for (ipart=0;ipart<nParts;ipart++)
@@ -1126,7 +1131,30 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
         if (partOffsets[ipart])
             free (partOffsets[ipart]);
     }
-    
+    if (nHits)
+    {
+        NSString * inList=[[NSString alloc]init];
+        char delim = 0;
+        for (int i=0;i<nHits;i++)
+        {
+            inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i",delim,Hits[i]]];
+            delim = ',';
+        }
+        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY FROM PROPINFO WHERE id IN(%@)",
+                           inList];
+        SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
+            LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
+            LPSTR house = (LPSTR)sqlite3_column_text(statement,2);
+            LPSTR street = (LPSTR)sqlite3_column_text(statement,3);
+            LPSTR city = (LPSTR)sqlite3_column_text(statement,4);
+            NSString * output = [NSString stringWithFormat:@"%s\t%s\%s %s\t%s",owner,pin,house,street,city];
+            [ownerArray addObject:output];
+        }
+        SQLOK(sqlite3_finalize(statement), "getReportForPID");
+    }
     /*
 GSSiGlobFree (&hPartOffsets[ipart]);
 GlobalUnlock (FilePtrNameIndex->FileHandle);
