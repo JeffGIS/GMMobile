@@ -21,7 +21,6 @@
 @property (nonatomic) BOOL clearWhenDeselected;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth;
-@property (nonatomic) UILabel *detailTitleLabel;
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *firstImageView, *secondImageView;
@@ -741,10 +740,13 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:identifier];
     }
     
+    for (UILabel *label in cell.contentView.subviews)
+        [label removeFromSuperview];
+    
     cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
-    cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.numberOfLines = 0;
+    cell.indentationLevel = 1;
     
     switch (_tableViewSetting)
     {
@@ -752,27 +754,24 @@ viewForHeaderInSection:(NSInteger)section
             cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 1.6)];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.text = _options[indexPath.row];
-            cell.accessoryView = nil;
+            cell.indentationWidth = 0.0;
             break;
             
         case PropertyTableViewSettingPropertyReport:
-            cell.textLabel.font = [UIFont systemFontOfSize:(_rowHeight / 3.6)];
+            cell.textLabel.font = [UIFont systemFontOfSize:(_rowHeight / 2.4)];
+            cell.textLabel.text = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
+            cell.textLabel.textAlignment = NSTextAlignmentLeft;
+            cell.indentationWidth = (cell.frame.size.width * 0.3);
             
-            cell.textLabel.attributedText = [UserDefaults.defaults addLineBreakToLastSpace:
-                                             [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]]];
-                                   
-            cell.textLabel.textAlignment = NSTextAlignmentRight;
+            UILabel *rowHeader = [[UILabel alloc] initWithFrame:CGRectMake(4.0, 0.0, (cell.indentationWidth - 4.0), cell.frame.size.height)];
+            rowHeader.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
+            rowHeader.font = [UIFont boldSystemFontOfSize:(_rowHeight / 3.2)];
+            rowHeader.textAlignment = NSTextAlignmentRight;
+            rowHeader.textColor = UIColor.whiteColor;
+            rowHeader.adjustsFontSizeToFitWidth = YES;
+            rowHeader.numberOfLines = 0;
             
-            _detailTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, (cell.frame.size.width * 0.6),
-                                                                          cell.frame.size.height)];
-            
-            _detailTitleLabel.text = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
-            _detailTitleLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.4)];
-            _detailTitleLabel.textAlignment = NSTextAlignmentLeft;
-            _detailTitleLabel.textColor = UIColor.whiteColor;
-            _detailTitleLabel.adjustsFontSizeToFitWidth = YES;
-            _detailTitleLabel.numberOfLines = 0;
-            cell.accessoryView = _detailTitleLabel;
+            [cell.contentView addSubview:rowHeader];
             break;
     }
     
