@@ -3,7 +3,7 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,UIAlertViewDelegate>
 
 - (IBAction)loadDatabase:(id)sender;
 - (IBAction)preloadTiles:(id)sender;

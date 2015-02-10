@@ -30,16 +30,72 @@
     [super viewWillAppear:animated];
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
-    _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld",pd.fileSize];
+    _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld", pd.fileSize];
     [pd close];
 }
 
-- (IBAction)deleteDatabase:(id)sender {
-    PropertyData *pd = [[PropertyData alloc] init];
-    [pd clear];
+- (IBAction)deleteDatabase:(id)sender
+{
+    NSString *title = @"Delete Property Records Database";
     
+    if (UIAlertController.class)
+    {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+                                                                       message:nil
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                               style:UIAlertActionStyleCancel
+                                                             handler:^(UIAlertAction *action){
+                                                                 
+                                                                 [alert dismissViewControllerAnimated:YES
+                                                                                           completion:nil];
+                                                             }];
+        
+        UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"Delete Database"
+                                                                style:UIAlertActionStyleDestructive
+                                                              handler:^(UIAlertAction *action){
+                                                                  
+                                                                  [alert dismissViewControllerAnimated:YES
+                                                                                            completion:nil];
+                                                                  
+                                                                  [self databaseDeletion];
+                                                              }];
+        
+        [alert addAction:cancelAction];
+        [alert addAction:defaultAction];
+        
+        [self presentViewController:alert
+                           animated:YES
+                         completion:nil];
+    }
+    
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                            message:nil
+                                                           delegate:self
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:@"DeleteDatabase", nil];
+        
+        [alertView show];
+    }
 }
 
+- (void)alertView:(UIAlertView *)alertView
+clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1)
+    {
+        [self databaseDeletion];
+    }
+}
+
+- (void)databaseDeletion
+{
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd clear];
+}
 
 - (void)didReceiveMemoryWarning
 {
@@ -49,7 +105,6 @@
 - (void)FTPdidComplete:(int)option withStatus:(int)status
               filePath:(NSString *)path
 {
-    
     if (status == FTPStatusOK)
     {
         switch (option)
@@ -57,28 +112,31 @@
             case GET_PARCELS:
             case GET_PROPERTY:
             {
-                NSString * toDirectory = [path stringByDeletingLastPathComponent];
-                NSString * file;
+                NSString *toDirectory = [path stringByDeletingLastPathComponent];
+                NSString *file;
+                
                 if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
-                {
                     break;
-                }
+                
                 if (option == GET_PARCELS)
                 {
                     file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
                      _popover.title = @"Load Parcel Tables";
                 }
+                
                 else
                 {
                     file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
                     _popover.title = @"Load Property Tables";
                 }
+                
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
                 
                 dispatch_async(overallQueue,
                 ^{
                     FILE *fid = fopen(file.UTF8String, "rb");
-                    LPSTR str = malloc(USHRT_MAX*8);
+                    LPSTR str = malloc(USHRT_MAX * 8);
+                    
                     if (!str)
                     {
                         dispatch_async(dispatch_get_main_queue(),
@@ -109,6 +167,7 @@
                         [pd close];
                         fclose(fid);
                         free(str);
+                        
                         dispatch_async(dispatch_get_main_queue(),
                                        ^{
                                            [_popover hide];
@@ -121,7 +180,8 @@
                 
             case GET_TILES:
             {
-                [self loadTilesFromList:path updatePopover:_popover];
+                [self loadTilesFromList:path
+                          updatePopover:_popover];
             }
                 break;
         }
@@ -129,6 +189,7 @@
     else
     {
         [_popover hide];
+        
         UIAlertView *getError = [[UIAlertView alloc] initWithTitle:@"Error getting parcel file"
                                                            message:@"Network communication error"
                                                           delegate:nil
@@ -160,6 +221,7 @@
      forceRefresh:NO];
     
 }
+
 - (IBAction)loadDatabase:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
@@ -167,6 +229,7 @@
     
     if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
         fileName = @"MetroGIS_propfiles.gcf";
+    
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
@@ -184,13 +247,14 @@
     
 }
 
-- (IBAction)loadParcels:(id)sender {
-
+- (IBAction)loadParcels:(id)sender
+{
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_parcels.gcf";
     
     if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
         fileName = @"MetroGIS_parcels.gcf";
+    
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;

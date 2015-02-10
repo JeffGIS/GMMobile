@@ -40,7 +40,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.parcelsVisibleAtZoom = 16;
     CRAPI.sharedInstance.sewerVisibleAtZoom = 16;
     CRAPI.sharedInstance.parcelShadingOption = 0;
-    CRAPI.sharedInstance.annotations = [[NSMutableArray alloc] init];
+    CRAPI.sharedInstance.basemap = BasemapSettingApple;
 
     return YES;
 }
