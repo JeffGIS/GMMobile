@@ -3,7 +3,7 @@
 
 #import "PropertyData.h"
 
-#define COORDINATE_FACTOR 100000000.0
+#define COORDINATE_FACTOR 10000000.0
 
 @interface PropertyData ()
 
@@ -146,7 +146,7 @@ static PropertyData *_propData;
     
     [self open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT PIN,\"Owner_Name\" FROM PROPINFO Where PIN LIKE '%@%%'",
+    NSString *query = [NSString stringWithFormat:@"SELECT PIN,\"Owner_Name\" FROM PROPINFO Where PIN >= '%@'",
                        matchChar];
     
     sqlite3_stmt *statement;
@@ -156,6 +156,8 @@ static PropertyData *_propData;
     while (n++ < lim && sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
+        if (strncasecmp(cpid, matchChar.UTF8String,matchChar.length))
+            break;
         LPSTR owner = (LPSTR)sqlite3_column_text(statement, 1);
         NSString *pid = [NSString stringWithFormat:@"%s\t%s", cpid, owner];
         [array addObject:pid];
@@ -183,7 +185,7 @@ static PropertyData *_propData;
             break;
         case PROJECT_METROGIS:
         {
-            query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME LIKE '%@%%' AND BLDG_NUM = %i", matchChar,houseNumber];
+            query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,PIN,\"Owner_Name\" FROM PROPINFO Where STREETNAME LIKE '%%%@%%' AND BLDG_NUM = %i", matchChar,houseNumber];
            
         }
             break;
@@ -479,7 +481,7 @@ int SQLOK(int sqlReturn, char *method)
     LPSTR pid;
     DPOINT BasePt;
     int numPoints,numLoops, refno;
-    CGFloat emvTotal;
+    CGFloat emvTotal, specAssmt;
     LPSTR homeStead,useCode,useDesc,taxExempt;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
@@ -494,7 +496,7 @@ int SQLOK(int sqlReturn, char *method)
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
    
@@ -508,6 +510,7 @@ int SQLOK(int sqlReturn, char *method)
         useDesc = (LPSTR)sqlite3_column_text(statement, 10);
         taxExempt = (LPSTR)sqlite3_column_text(statement, 11);
         emvTotal = (CGFloat)sqlite3_column_double(statement, 12);
+        specAssmt = (CGFloat)sqlite3_column_double(statement, 13);
         pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
@@ -558,6 +561,16 @@ int SQLOK(int sqlReturn, char *method)
                     
                 case 2://res-com
                     color = [self resComColor:useCode];
+                    break;
+                    
+                case 4://Special Assessment
+                    if (specAssmt > 0)
+                        alpha = 0.6;
+                    
+                    color = [[UIColor alloc]initWithRed:1.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
                     break;
                     
                 case 5://tax_exempt
@@ -831,6 +844,7 @@ int SQLOK(int sqlReturn, char *method)
                 
                 line = [NSString stringWithFormat:@"Date of Query:%s", dateOfQuery];
                 [report addObject:line];
+                SQLOK(sqlite3_finalize(statement), "getReportForPID");
             }
         }
             break;
@@ -914,15 +928,21 @@ int SQLOK(int sqlReturn, char *method)
                 line = [NSString stringWithFormat:@"Total Tax:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)totalTax]]];
                 [report addObject:line];
                 
+                line = [NSString stringWithFormat:@"Special Assessment:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)specAsses]]];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Tax Capacity:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)taxCapac]]];
+                [report addObject:line];
+                
                 line = [NSString stringWithFormat:@"City USPS:%s", cityUSPS];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Zipcode:%s", zipcode];
+                if (*zip4)
+                    line = [NSString stringWithFormat:@"Zipcode:%s-%s", zipcode,zip4];
+                else
+                    line = [NSString stringWithFormat:@"Zipcode:%s", zipcode];
                 [report addObject:line];
-                
-                line = [NSString stringWithFormat:@"Zip4:%s", zip4];
-                [report addObject:line];
-                
+           
                 line = [NSString stringWithFormat:@"Plat:%s", platName];
                 [report addObject:line];
                 
@@ -932,7 +952,7 @@ int SQLOK(int sqlReturn, char *method)
                 line = [NSString stringWithFormat:@"Lot:%s", lot];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Acres:%.1f", acresDeed];
+                line = [NSString stringWithFormat:@"Acres:%.2f (deed) %.2f (map)", acresDeed,acresPoly];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Use Desc1:%s", UseDesc1];
@@ -952,18 +972,463 @@ int SQLOK(int sqlReturn, char *method)
                 
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
+                SQLOK(sqlite3_finalize(statement), "getReportForPID");
                 
             }
             
         }
     }
    
-    SQLOK(sqlite3_finalize(statement), "getReportForPID");
     [self close];
     return report;
 }
-/*MENUITEM "Taxpayer Name",		"[%NAMEINDEXDB]=[%DL]attribut\[PROPDATE]\taxpayernameindex.gmd;[%NAMEDB]=[%DL]attribut\[PROPDATE]\propinfo.gmd;[%PROPERTYDB]=[%DL]attribut\[PROPDATE]\propinfo.gmd;[%NAMEDISPLAY]=$STR(IF([Taxpayer Addr3]>''){[Taxpayer Name] [Taxpayer Addr1]$CHR(1)[Taxpayer Addr2][Taxpayer Addr3]}ELSE{[Taxpayer Name]$CHR(1)[Taxpayer Addr1][Taxpayer Addr2]};$CHR(1)[PID]);[%PROPERTYPREFIX]=PINCA;[%PROPERTYDISPLAY]=$STR([PID]$CHR(1)[Housenum] [HouseFract] [Street] [UnitNum] [Address] [Zipcode]$CHR(1)[Area_SqFt]sqft$CHR(1)@$$RND([Total_Value],0,T)$CHR(1)[PID]);[%PROPERTYKEYFIELD]=PID;[%PROPERTYINDEXFIELD]=PID;[%C]=$OWNERLOC(MPLS);"
 
+#define MAXHITS		4096
+#define MAXOFFSETS	262136L
+#define	MAXWIOFFSETS	100
+#define MAXPARTS    32
+
+typedef struct	{char Word[8];
+    short Seq;
+    short nOffsets;
+    long Offsets[MAXWIOFFSETS];} WORDINDEX;
+typedef WORDINDEX	*LPWORDINDEX;
+
+/*
+int GetWIHits (LPINT Hits,UINT nParts,LPINT nPartOffsets,LPHANDLE hPartOffsets,int MaxHits,HWND hwndCtl)
+{
+    int	nHits = 0;
+    int	Order[32];
+    UINT	i,j,k,ihit, ipart, nValidParts=0,ii;
+    LPLONG	pOff1, pOff2;
+    BOOL	HaveHit;
+    MSG		msg;
+    
+    Order[0] = 0;
+    for (ipart=1;ipart<nParts;ipart++)
+    {
+        for (i=0;i<ipart;i++)
+        {
+            if (nPartOffsets[ipart] < nPartOffsets[Order[i]])
+            {
+                for (j=ipart;j>i;j--)
+                    Order[j] = Order[j-1];
+                Order[i] = ipart;
+                goto Inserted;
+            }
+        }
+        Order[ipart] = ipart;
+    Inserted:;
+    }
+    
+    for (ipart=0;ipart<nParts;ipart++)
+        if (nPartOffsets[ipart] < LONG_MAX)
+            nValidParts++;
+    
+    if (!nValidParts)
+        return 0;
+    pOff1 = GlobalLock (hPartOffsets[Order[0]]);
+    for (i=0;i<nPartOffsets[Order[0]];i++)
+    {
+        HaveHit = TRUE;
+        for (j=1;j<nValidParts;j++)
+        {
+            pOff2 = GlobalLock (hPartOffsets[Order[j]]);
+            for (k=0;k<nPartOffsets[Order[j]];k++)
+                if (*pOff1 == *pOff2++)
+                    goto Next;
+            HaveHit = FALSE;
+        Next:
+            GlobalUnlock (hPartOffsets[Order[j]]);
+            if (!HaveHit)
+                goto NextOff;
+        }
+        if (nHits >= MaxHits)
+            break;
+        for (ihit =0;ihit<nHits;ihit++)
+            if (Hits[ihit] == *pOff1)
+                goto NextOff;
+        Hits[nHits++] = *pOff1;
+        if (!*pOff1)
+            ii=1;
+    NextOff:
+        pOff1++;
+        if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
+            break;	                                                             
+    }
+    GlobalUnlock (hPartOffsets[Order[0]]);
+    return nHits;
+}
+*/
+- (NSMutableArray *) getOwnersMatchingString:(NSString*)string
+{
+    NSMutableArray * ownerArray = [[NSMutableArray alloc]init];
+    int	nParts, ipart,iparttest, nOwners;
+    LPWORDINDEX	pRec;
+    WORDINDEX	Rec;
+    int*    partOffsets[MAXPARTS];
+    int		nPartOffsets[MAXPARTS];
+    int     PartLen[MAXPARTS];
+    LPSTR   PartLoc[MAXPARTS];
+    int     Trigger = 3;
+    int		nHits;
+    BOOL	GetNext = TRUE;
+    char	Name[66];
+/*
+SetDlgItemText (hWndDlg,IDC_NUMOWNERS,"Searching...");
+GetGlobalCVal ("[%NAMEINDEXDB]",str,"[%DL]attribut\\nameindex.gmd");
+OpenDataFile (str, "",BT_READ, &hDBNameIndex);
+SQLPtrNameIndex = (LPOPENSQLDATA) GlobalLock (hDBNameIndex);
+FilePtrNameIndex = (LPOPENFILEDATA) GlobalLock (SQLPtrNameIndex->OFHandle);
+lpGWDHeadNameIndex = (LPGWDHEADER)GlobalLock (FilePtrNameIndex->FileHandle);
+pRec = (LPWORDINDEX)&lpGWDHeadNameIndex->GWDData;
+SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_RESETCONTENT,0,0);
+SendDlgItemMessage (hWndDlg,IDC_PROPERTYLIST,LB_RESETCONTENT,0,0);
+GetDlgItemText (hWndDlg,IDC_OWNERNAMEWC,Name,64);
+nParts = GetNameParts (Name,PartLoc,PartLen,MAXPARTS);
+
+for (ipart=0;ipart<nParts;ipart++)
+{
+    nPartOffsets[ipart] = 0;
+    partOffsets[ipart] = 0;
+}
+for (ipart=0;ipart<nParts;ipart++)
+{
+//    short	pos=BT_FIRST, cond=BT_GE;
+    int		nOffsets, nSeqRec;
+    
+    if (PartLen[ipart] >= Trigger)
+    {
+        sqlite3_stmt *statement;
+        [self open];
+        
+        strncpy (Rec.Word,PartLoc[ipart],8);
+        Rec.Seq = SHRT_MIN;
+        NSString *query = [NSString stringWithFormat:@"SELECT SEQUENCE,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word ='%s'",
+                           PartLoc[ipart]];
+        
+        SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            int sequence = sqlite3_column_int(statement,0);
+            int nOffsets = sqlite3_column_int(statement,1);
+            LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
+            SQLOK(sqlite3_finalize(statement), "getReportForPID");
+            
+
+ /*       while (GetNext && !BT_FIND (lpGWDHeadNameIndex->BTHandle[0],(LPSTR)&Rec,pos,cond,(LPSTR)&Offset))
+        {
+            LPLONG	pOffsets;
+            
+            pos = BT_NEXT;
+            cond = BT_ANY;
+            
+            FillGWDData (lpGWDHeadNameIndex,Offset);
+            if (strnicmp (pRec->Word,PartLoc[ipart],min(8,PartLen[ipart])))
+                break;
+            nSeqRec = -(sequence + 1);
+            nOffsets = nSeqRec * 100 + nOffsets;
+            if (!nPartOffsets[ipart])
+                pOffsets[ipart] = (int)malloc(MAXOFFSETS * sizeof(int));
+            if (nPartOffsets[ipart] + pRec->nOffsets >= MAXOFFSETS)
+                GetNext = FALSE;
+            else
+            {
+                pOffsets += nPartOffsets[ipart];
+                memmove (pOffsets,pRec->Offsets,pRec->nOffsets*sizeof(long));
+                pOffsets += pRec->nOffsets;
+                nPartOffsets[ipart] += pRec->nOffsets;
+                while (GetNext && nSeqRec--)
+                {
+                    BT_FIND (lpGWDHeadNameIndex->BTHandle[0],(LPSTR)pRec,pos,cond,(LPSTR)&Offset);
+                    FillGWDData (lpGWDHeadNameIndex,Offset);
+                    if (nPartOffsets[ipart] + pRec->nOffsets >= MAXOFFSETS)
+                        GetNext = FALSE;
+                    else
+                    {
+                        memmove (pOffsets,pRec->Offsets,pRec->nOffsets*sizeof(long));
+                        pOffsets += pRec->nOffsets;
+                        nPartOffsets[ipart] += pRec->nOffsets;
+                    }
+                }
+            }
+            GlobalUnlock (hPartOffsets[ipart]);
+            if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
+                GetNext = FALSE;
+        }
+        if (!nPartOffsets[ipart])
+            GetNext = FALSE;
+    }
+    else
+        nPartOffsets[ipart] = INT_MAX;
+}
+
+if (GetNext)
+nHits = GetWIHits (Hits,nParts,nPartOffsets,hPartOffsets,MAXHITS,hwndCtl);
+for (ipart=0;ipart<nParts;ipart++)
+GSSiGlobFree (&hPartOffsets[ipart]);
+GlobalUnlock (FilePtrNameIndex->FileHandle);
+GlobalUnlock (SQLPtrNameIndex->OFHandle);
+GlobalUnlock (hDBNameIndex);
+CloseDataFile (TRUE,&hDBNameIndex);
+GetGlobalCVal ("[%NAMEDB]",str,"[%DL]attribut\\name.gmd");
+OpenDataFile (str, "",BT_READ, &hDBName);
+SQLPtrName = (LPOPENSQLDATA) GlobalLock (hDBName);
+FilePtrName = (LPOPENFILEDATA) GlobalLock (SQLPtrName->OFHandle);
+lpGWDHeadName = (LPGWDHEADER)GlobalLock (FilePtrName->FileHandle);
+nowner = 0;
+while (GetNext && nHits--)
+{
+    BOOL	ShowThisOwner = TRUE;
+    
+    if (Hits[nHits] <= sizeof (GWDHEADER16))
+        continue;
+    FillGWDData (lpGWDHeadName,Hits[nHits]);
+    SQLPtrName->st = 0;
+    SQLPtrName->Offset = Hits[nHits];
+    SQLPtrName->lastreadtime = ULONG_MAX;
+    if (ShowThisOwner)
+    {
+        if (nowner == 81)
+            idx = 0;
+        GetGlobalCVal ("[%NAMEDISPLAY]",str,"[NAMETAXPAYER]$CHR(1)[NAMEADDR1] [NAMEADDR2] [NAMECITY],[NAMESTATE]$CHR(1)[NAMEACCTOWNER]");
+        ExpandText (str);
+        OneSpace (str);
+        ReplaceChar (str,0x01,0x09);
+        strcpy (teststr,str);
+        if ((pTab = strchr (teststr,'\t')))
+            *pTab = 0;
+        nPartsTest = GetNameParts (teststr,PartLocTest,PartLenTest,MAXPARTS);
+        for (ipart = 0;ipart < nParts;ipart++)
+        {
+            for (iparttest=0;iparttest<nPartsTest;iparttest++)
+            {
+                if (!strnicmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
+                {
+                    *PartLocTest[iparttest] = 0;
+                    goto FoundPart;
+                }
+            }
+            ShowThisOwner = FALSE;
+            break;
+        FoundPart:							;
+        }
+        if (ShowThisOwner)
+        {
+            nowner++;
+            strcpy (lastowner,str);
+            if ((idx=SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_ADDSTRING,0,(LPARAM)str)) ==
+                LB_ERRSPACE)
+                GetNext = FALSE;
+        }
+    }
+    if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
+        GetNext = FALSE;
+}
+GlobalUnlock (FilePtrName->FileHandle);
+GlobalUnlock (SQLPtrName->OFHandle);
+GlobalUnlock (hDBName);
+CloseDataFile (TRUE,&hDBName);
+if (GetNext)
+{
+    nOwners=SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETCOUNT,0,0);
+    sprintf (str,"%ld selected",nOwners);
+}
+else
+strcpy (str,"Search cancelled");
+SetDlgItemText (hWndDlg,IDC_NUMOWNERS,str);
+}
+if (First && SaveProperty >= 0)
+PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
+First = FALSE;
+*/
+    return ownerArray;
+}
+
+void TRAN (void *source, void *dest, size_t count)
+{
+    memmove(dest,source,count);
+    return;
+}
+
+LPSTR REPLAC (LPSTR STRING, LPSTR OLD, LPSTR NEW, int MAXLEN)
+{
+    LPSTR   IBEG, loc, new;
+    
+    short  STRLEN, CURLEN, OLDLEN, NEWLEN, IDIFF;
+    long  MOVELEN;
+    
+    OLDLEN = strlen (OLD);
+    NEWLEN = strlen (NEW);
+    STRLEN = strlen (STRING);
+    IBEG   = STRING;
+    IDIFF  = NEWLEN - OLDLEN;
+    while (*IBEG)
+    {
+        IBEG    = strstr(IBEG,OLD);
+        if (!IBEG) goto Exit;
+        if (!IDIFF)
+        {
+            new = NEW;
+            while (*new) *IBEG++ = *new++;
+        }
+        else if (IDIFF < 0)
+        {
+            loc = IBEG + OLDLEN;
+            new = NEW;
+            while (*new) *IBEG++ = *new++;
+            new = IBEG;
+            while (*loc) *new++ = *loc++;
+            *new = 0;
+            STRLEN += IDIFF;
+        }
+        else
+        {
+            CURLEN = IBEG - STRING;
+            MOVELEN = STRLEN - CURLEN;
+            STRLEN += IDIFF;
+            if (STRLEN > MAXLEN)
+            {
+                STRLEN = MAXLEN;
+                goto Exit;
+            }
+            TRAN (IBEG+OLDLEN,IBEG+NEWLEN,(size_t) MOVELEN);
+            new = NEW;
+            while (*new) *IBEG++ = *new++;
+        }
+    }
+Exit:
+    loc = STRING + STRLEN;
+    *loc = '\0';
+    {
+        return (STRING);
+    }
+}
+
+LPSTR ReplaceChar (LPSTR str, char from, char to)
+{
+    LPSTR Instr;
+    
+    Instr = str;
+    while (*str)
+    {
+        if (*str == from) *str = to;
+        str++;
+    }
+    {
+        return Instr;
+    }
+}
+
+LPSTR OneSpace (LPSTR Arg1)
+{
+    BOOL LastWasBlank, HaveNonBlank=FALSE;
+    LPSTR   OutLoc, SaveArg1, SaveOutLoc;
+    long    l;
+    
+    Truncate (Arg1);
+    SaveArg1 = Arg1;
+    l=strlen(Arg1);
+    if (!l)
+        return (Arg1);
+    OutLoc = malloc(l+1);
+    SaveOutLoc = OutLoc;
+    LastWasBlank = FALSE;
+    while (*Arg1)
+    {
+        if (*Arg1 == '\t') *Arg1 = ' ';
+        if (*Arg1 != ' ')
+        {
+            if (LastWasBlank && HaveNonBlank)
+                *OutLoc++ = ' ';
+            LastWasBlank = FALSE;
+            HaveNonBlank=TRUE;
+            *OutLoc++ = *Arg1;
+        }
+        else
+            LastWasBlank = TRUE;
+        Arg1++;
+    }
+    *OutLoc = 0;
+    strcpy (SaveArg1,SaveOutLoc);
+    return (Arg1);
+}
+
+LPSTR Truncate(LPSTR Text)
+{
+    LPSTR rtn, EndChar;
+    
+    rtn = Text;
+    EndChar = strchr (Text,0);
+    while (EndChar > Text)
+    {
+        EndChar--;
+        if (*EndChar != ' ')
+            goto Exit;
+        *EndChar = 0;
+    }
+Exit:
+    return (rtn);
+}
+
+int GetNameParts (LPSTR Field,LPSTR *pLoc,LPINT pLen,int MaxParts)
+{
+    int	nParts=0;
+    LPSTR	pWord = Field, pEnd;
+    
+    strdup(Field);
+    ReplaceChar (Field,'-',' ');
+    ReplaceChar (Field,'/',' ');
+    ReplaceChar (Field,'(',' ');
+    ReplaceChar (Field,')',' ');
+    ReplaceChar (Field,'&',' ');
+    ReplaceChar (Field,',',' ');
+    ReplaceChar (Field,'\'',' ');
+    ReplaceChar (Field,'#',' ');
+    ReplaceChar (Field,'"',' ');
+    ReplaceChar (Field,'.',' ');
+    OneSpace (Field);
+    while (*pWord && nParts < MaxParts)
+    {
+        if (*pWord == ' ')
+            pWord++;
+        if ((pEnd = strchr (pWord,' ')))
+            *pEnd++ = 0;
+        else
+            pEnd = strchr (pWord,0);
+        *(pLoc + nParts) = pWord;
+        *(pLen + nParts++) = strlen (pWord);
+        pWord = pEnd;
+    }
+    return nParts;
+}
+
+/*MENUITEM "Taxpayer Name",		"[%NAMEINDEXDB]=[%DL]attribut\[PROPDATE]\taxpayernameindex.gmd;[%NAMEDB]=[%DL]attribut\[PROPDATE]\propinfo.gmd;[%PROPERTYDB]=[%DL]attribut\[PROPDATE]\propinfo.gmd;[%NAMEDISPLAY]=$STR(IF([Taxpayer Addr3]>''){[Taxpayer Name] [Taxpayer Addr1]$CHR(1)[Taxpayer Addr2][Taxpayer Addr3]}ELSE{[Taxpayer Name]$CHR(1)[Taxpayer Addr1][Taxpayer Addr2]};$CHR(1)[PID]);[%PROPERTYPREFIX]=PINCA;[%PROPERTYDISPLAY]=$STR([PID]$CHR(1)[Housenum] [HouseFract] [Street] [UnitNum] [Address] [Zipcode]$CHR(1)[Area_SqFt]sqft$CHR(1)@$$RND([Total_Value],0,T)$CHR(1)[PID]);[%PROPERTYKEYFIELD]=PID;[%PROPERTYINDEXFIELD]=PID;[%C]=$OWNERLOC(MPLS);"
+ LPSTR ReplaceChar (LPSTR str, char from, char to)
+ #if ENABLETRACE
+ {GSSiEnterProg (231);
+ #endif
+ {
+ LPSTR Instr;
+ 
+ Instr = str;
+ while (*str)
+ {
+ if (*str == from) *str = to;
+ str++;
+ }
+ {
+ #if ENABLETRACE
+ GSSiExitProg (231);
+ #endif
+ return Instr;
+ }
+ #if ENABLETRACE
+ }
+ #endif
+ }
+ 
+ 
 
 BOOL  OWNERLOCMsgProc2(HWND hWndDlg, int Message, WPARAM wParam, LPARAM lParam)
 { 	int		st, choice, n,idx,ifile,i;

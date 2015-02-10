@@ -90,7 +90,7 @@
     {
         PropertyData *propData = [[PropertyData alloc] init];
         
-        //_propOwnerList = [propData someMethod];
+        _propOwnerList = [propData getOwnersMatchingString:textField.text];
         [_topTableView reloadData];
     }
 }

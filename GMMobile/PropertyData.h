@@ -44,5 +44,6 @@ typedef NS_ENUM(NSInteger, PropDataOption)
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 - (NSMutableArray *) getReport:(PropDataOption)option forPID:(NSString*)pid;
+- (NSMutableArray *) getOwnersMatchingString:(NSString*)string;
 
 @end

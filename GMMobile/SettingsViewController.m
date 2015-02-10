@@ -22,11 +22,16 @@
     [super viewDidLoad];
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
+
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld",pd.fileSize];
     [pd close];
-
 }
 
 - (IBAction)deleteDatabase:(id)sender {
@@ -158,8 +163,10 @@
 - (IBAction)loadDatabase:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"propfiles.gcf";
+    NSString *fileName = @"MPLS_propfiles.gcf";
     
+    if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
+        fileName = @"MetroGIS_propfiles.gcf";
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
@@ -180,8 +187,10 @@
 - (IBAction)loadParcels:(id)sender {
 
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"parcels.gcf";
+    NSString *fileName = @"MPLS_parcels.gcf";
     
+    if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
+        fileName = @"MetroGIS_parcels.gcf";
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;

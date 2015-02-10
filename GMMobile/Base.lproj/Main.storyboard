@@ -470,7 +470,7 @@
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="aIu-gI-kFF">
                                 <rect key="frame" x="16" y="330" width="392" height="29"/>
                                 <segments>
-                                    <segment title="Random"/>
+                                    <segment title="Special Asmt"/>
                                     <segment title="Tax Exempt"/>
                                     <segment title="Year Built"/>
                                     <segment title="Total Tax"/>
