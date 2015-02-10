@@ -360,6 +360,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         coordPicked.latitude = llp.lat;
         coordPicked.longitude = llp.lon;
         
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:coordPicked
+                                             fromEyeCoordinate:coordPicked
+                                                   eyeAltitude:550.0];
+        
+        [_mapView setCamera:_camera
+                   animated:YES];
+        
         _clearWhenDeselected = NO;
         annotation.coordinate = coordPicked;
         annotation.title = _selectedPID;
