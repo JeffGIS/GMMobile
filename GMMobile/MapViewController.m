@@ -10,7 +10,7 @@
 @property (nonatomic) GSSiTileOverlay *osmOverlay;
 @property (nonatomic) GSSiTileOverlay *gmmOverlay;
 @property (nonatomic) MKMapCamera *camera;
-@property (nonatomic) UITapGestureRecognizer *doubleTap;
+@property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) CLLocationCoordinate2D target;
 @property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) NSArray *options;
@@ -121,12 +121,11 @@
     [_mapView addOverlay:_gmmOverlay
                    level:MKOverlayLevelAboveLabels];
     
-    _doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                         action:@selector(didDoubleTapMap:)];
-    _doubleTap.numberOfTapsRequired = 2;
-    _doubleTap.numberOfTouchesRequired = 1;
-    _doubleTap.delegate = self;
-    [_mapView addGestureRecognizer:_doubleTap];
+    _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                               action:@selector(didLongPressMap:)];
+    _longPress.delegate = self;
+    _longPress.minimumPressDuration = 0.25;
+    [_mapView addGestureRecognizer:_longPress];
     
     [self extentZoom:YES];
     [self.view bringSubviewToFront:_vectorView];
@@ -335,33 +334,45 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return YES;
 }
 
-- (void)didDoubleTapMap:(UIGestureRecognizer *)gesture
+- (void)didLongPressMap:(UIGestureRecognizer *)gesture
 {
-    CGPoint pointPicked = [gesture locationInView:_mapView];
-    
-    CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
-                                           toCoordinateFromView:_mapView];
-    
-    LLPOINT llp;
-    llp.lat = coordPicked.latitude;
-    llp.lon = coordPicked.longitude;
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    _selectedPID = [propData pickPID:&llp];
-    coordPicked.latitude = llp.lat;
-    coordPicked.longitude = llp.lon;
-    //GSSiAnnotation *annotation = [[GSSiAnnotation alloc] init];
     MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     
-    annotation.coordinate = coordPicked;
-    annotation.title = _selectedPID;
-    annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
-    [self addAnnotation:annotation];
-    
-    //GSSiAnnotationView *gssiView = [[GSSiAnnotationView alloc] initWithAnnotation:annotation
-                                                                          //mapView:_mapView];
-    
-    //[self.view addSubview:gssiView];
+    if (gesture.state == UIGestureRecognizerStateBegan)
+    {
+        for (MKPointAnnotation *selAnnotation in _mapView.selectedAnnotations)
+        {
+            [_mapView deselectAnnotation:selAnnotation
+                                animated:NO];
+        }
+        
+        CGPoint pointPicked = [gesture locationInView:_mapView];
+        
+        CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
+                                               toCoordinateFromView:_mapView];
+        
+        LLPOINT llp;
+        llp.lat = coordPicked.latitude;
+        llp.lon = coordPicked.longitude;
+        
+        PropertyData *propData = [[PropertyData alloc] init];
+        _selectedPID = [propData pickPID:&llp];
+        coordPicked.latitude = llp.lat;
+        coordPicked.longitude = llp.lon;
+        
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:coordPicked
+                                             fromEyeCoordinate:coordPicked
+                                                   eyeAltitude:550.0];
+        
+        [_mapView setCamera:_camera
+                   animated:YES];
+        
+        _clearWhenDeselected = NO;
+        annotation.coordinate = coordPicked;
+        annotation.title = _selectedPID;
+        annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+        [self addAnnotation:annotation];
+    }
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView
@@ -428,13 +439,44 @@ calloutAccessoryControlTapped:(UIControl *)control
 - (void)mapView:(MKMapView *)mapView
 didDeselectAnnotationView:(MKAnnotationView *)view
 {
-    if (!_clearWhenDeselected)
+    if (_clearWhenDeselected == NO)
     {
         [_mapView selectAnnotation:view.annotation
                           animated:NO];
         
         _clearWhenDeselected = YES;
     }
+}
+
+- (IBAction)toggleAnnotationState:(id)sender
+{
+    if (_annotationSwitch.on)
+        _clearAnnotations = NO;
+    
+    else
+        _clearAnnotations = YES;
+}
+
+- (void)addAnnotation:(id <MKAnnotation>)annotation
+{
+    if (_clearAnnotations)
+    {
+        for (id <MKAnnotation> annotation in _mapView.annotations)
+        {
+            if (![annotation isKindOfClass:MKUserLocation.class])
+                [_mapView removeAnnotation:annotation];
+        }
+    }
+    
+    [_mapView addAnnotation:annotation];
+    
+    [_mapView selectAnnotation:annotation
+                      animated:YES];
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -597,37 +639,6 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     [_vectorView setNeedsDisplay];
 }
 
-- (IBAction)toggleAnnotationState:(id)sender
-{
-    if (_annotationSwitch.on)
-        _clearAnnotations = NO;
-    
-    else
-        _clearAnnotations = YES;
-}
-
-- (void)addAnnotation:(id <MKAnnotation>)annotation
-{
-    if (_clearAnnotations)
-    {
-        for (id <MKAnnotation> annotation in _mapView.annotations)
-        {
-            if (![annotation isKindOfClass:MKUserLocation.class])
-                [_mapView removeAnnotation:annotation];
-        }
-    }
-    
-    [_mapView addAnnotation:annotation];
-    
-    [_mapView selectAnnotation:annotation
-                      animated:NO];
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-}
-
 - (void)setupTableView
 {
     _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
@@ -740,7 +751,7 @@ viewForHeaderInSection:(NSInteger)section
     cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    cell.textLabel.numberOfLines = 2;
+    cell.textLabel.numberOfLines = 0;
     
     switch (_tableViewSetting)
     {
@@ -767,7 +778,7 @@ viewForHeaderInSection:(NSInteger)section
             _detailTitleLabel.textAlignment = NSTextAlignmentLeft;
             _detailTitleLabel.textColor = UIColor.whiteColor;
             _detailTitleLabel.adjustsFontSizeToFitWidth = YES;
-            _detailTitleLabel.numberOfLines = 2;
+            _detailTitleLabel.numberOfLines = 0;
             cell.accessoryView = _detailTitleLabel;
             break;
     }
