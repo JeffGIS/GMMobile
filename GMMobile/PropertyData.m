@@ -1065,8 +1065,8 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     WORDINDEX	Rec;
     LPINT   partOffsets[MAXPARTS], partoff;
     int		nPartOffsets[MAXPARTS];
-    int     PartLen[MAXPARTS];
-    LPSTR   PartLoc[MAXPARTS];
+    int     PartLen[MAXPARTS], PartLenTest[MAXPARTS];
+    LPSTR   PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
     int     Trigger = 3;
     int		nHits=0;
     int     nowner;
@@ -1140,7 +1140,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i",delim,Hits[i]]];
             delim = ',';
         }
-        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY FROM PROPINFO WHERE id IN(%@)",
+        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
         while (sqlite3_step(statement) == SQLITE_ROW)
@@ -1150,8 +1150,29 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             LPSTR house = (LPSTR)sqlite3_column_text(statement,2);
             LPSTR street = (LPSTR)sqlite3_column_text(statement,3);
             LPSTR city = (LPSTR)sqlite3_column_text(statement,4);
-            NSString * output = [NSString stringWithFormat:@"%s\t%s\%s %s\t%s",owner,pin,house,street,city];
-            [ownerArray addObject:output];
+            char testName[256];
+            strcpy (testName,owner);
+            int   nPartsTest = GetNameParts (testName,PartLocTest,PartLenTest,MAXPARTS);
+            BOOL  ShowThisOwner=TRUE;
+            for (ipart = 0;ipart < nParts;ipart++)
+            {
+                for (iparttest=0;iparttest<nPartsTest;iparttest++)
+                {
+                    if (!strncasecmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
+                    {
+                        *PartLocTest[iparttest] = 0;
+                        goto FoundPart;
+                    }
+                }
+                ShowThisOwner = FALSE;
+                break;
+            FoundPart:							;
+            }
+            if (ShowThisOwner)
+            {
+                NSString * output = [NSString stringWithFormat:@"%s\t%s\%s %s\t%s",owner,pin,house,street,city];
+                [ownerArray addObject:output];
+            }
         }
         SQLOK(sqlite3_finalize(statement), "getReportForPID");
     }
