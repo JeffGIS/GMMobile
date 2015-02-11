@@ -273,7 +273,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:NO];
+     forceRefresh:YES];
 }
 
 - (BOOL)loadTilesFromList:(NSString*)fileList
