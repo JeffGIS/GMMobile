@@ -831,7 +831,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
     {
-        _tableViewSetting = PropertyTableViewSettingHCWebsite;
         WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:_selectedPID];
         
         [self presentViewController:wkvc
