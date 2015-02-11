@@ -101,10 +101,16 @@
 }
 
 - (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
-                      didSelectPIDs:(NSArray *)PIDs
+                 didSelectPropOwner:(NSString *)propOwner
+                                PID:(NSString *)PID
 {
     [findPropOwner dismissViewControllerAnimated:YES
                                       completion:nil];
+    
+    CRAPI.sharedInstance.GMMSetting = GMMSettingPropOwner;
+    CRAPI.sharedInstance.currentPID = PID;
+    CRAPI.sharedInstance.currentPropOwner = propOwner;
+    self.tabBarController.selectedIndex = 0;
 }
 
 @end

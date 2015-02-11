@@ -17,8 +17,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    [self setupTableView:_topTableView];
-    [self setupTableView:_bottomTableView];
+    [self setupTableView];
     [self setupBackButton];
     [self setupTextField];
 }
@@ -28,20 +27,20 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)setupTableView:(UITableView *)tableView
+- (void)setupTableView
 {
-    tableView.delegate = self;
-    tableView.dataSource = self;
-    tableView.separatorInset = UIEdgeInsetsZero;
-    tableView.separatorColor = UIColor.blackColor;
-    tableView.backgroundColor = UserDefaults.defaults.green;
-    tableView.bounces = NO;
-    tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    _tableView.separatorInset = UIEdgeInsetsZero;
+    _tableView.separatorColor = UIColor.blackColor;
+    _tableView.backgroundColor = UserDefaults.defaults.green;
+    _tableView.bounces = NO;
+    _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     
     CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.8), 44.0);
-    tableView.rowHeight = rowHeight;
-    tableView.layer.borderWidth = (rowHeight / 20.0);
-    tableView.layer.cornerRadius = 10.0;
+    _tableView.rowHeight = rowHeight;
+    _tableView.layer.borderWidth = (rowHeight / 20.0);
+    _tableView.layer.cornerRadius = 10.0;
 }
 
 - (void)setupBackButton
@@ -58,7 +57,7 @@
 {
     _propOwnerTF.delegate = self;
     _propOwnerTF.layer.borderColor = UIColor.blackColor.CGColor;
-    _propOwnerTF.layer.borderWidth = (_topTableView.rowHeight / 20.0);
+    _propOwnerTF.layer.borderWidth = (_tableView.rowHeight / 20.0);
     _propOwnerTF.layer.cornerRadius = 10.0;
     _propOwnerTF.adjustsFontSizeToFitWidth = YES;
     
@@ -69,8 +68,8 @@
         _propOwnerTF.text = propOwnerSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
         
-        //_propOwnerList = [propData someMethod];
-        [_topTableView reloadData];
+        _propOwnerList = [propData getOwnersMatchingString:propOwnerSearchText];
+        [_tableView reloadData];
     }
     
     [_propOwnerTF addTarget:self
@@ -83,7 +82,7 @@
     if ([textField.text isEqualToString:@""])
     {
         _propOwnerList = nil;
-        [_topTableView reloadData];
+        [_tableView reloadData];
     }
     
     else
@@ -91,7 +90,7 @@
         PropertyData *propData = [[PropertyData alloc] init];
         
         _propOwnerList = [propData getOwnersMatchingString:textField.text];
-        [_topTableView reloadData];
+        [_tableView reloadData];
     }
 }
 
@@ -156,18 +155,8 @@
     
     if (_propOwnerList.count != 0)
     {
-        if ([tableView isEqual:_topTableView])
-        {
-            cell.textLabel.text = _propOwnerList[indexPath.row];
-            cell.detailTextLabel.text = _propOwnerList[indexPath.row];
-        }
-        
-        else
-        {
-            //cell.textLabel.text = newArray[indexPath.row];
-            //cell.detailTextLabel.text = newArray[indexPath.row];
-        }
-        
+        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeTab:_propOwnerList[indexPath.row]];
+        cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterLastTab:_propOwnerList[indexPath.row]];
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
@@ -175,18 +164,8 @@
     
     else
     {
-        if ([tableView isEqual:_topTableView])
-        {
-            cell.textLabel.text = @"No Property Owners match current search text";
-            cell.detailTextLabel.text = @"No Property Owners match current search text";
-        }
-        
-        else
-        {
-            cell.textLabel.text = @"No Properties selected";
-            cell.detailTextLabel.text = @"No Properties selected";
-        }
-
+        cell.textLabel.text = @"No Property Owners match current search text";
+        cell.detailTextLabel.text = @"No Property Owners match current search text";
         cell.textLabel.textColor = UIColor.grayColor;
         cell.detailTextLabel.textColor = UIColor.grayColor;
         cell.userInteractionEnabled = NO;
@@ -206,7 +185,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissTextField];
     
-    //this is where we populate bottomTableView array and reload
+    if (_delegate)
+    {
+        [_delegate findPropOwnerViewController:self
+                            didSelectPropOwner:[UserDefaults.defaults includeTextBeforeTab:_propOwnerList[indexPath.row]]
+                                           PID:[UserDefaults.defaults includeTextBeforeTab:
+                                                [UserDefaults.defaults includeTextAfterTab:_propOwnerList[indexPath.row]]]];
+    }
 }
 
 @end

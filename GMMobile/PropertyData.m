@@ -124,7 +124,7 @@ static PropertyData *_propData;
     
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparegetPIDsMatchingString");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetPIDsMatchingString");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -151,7 +151,7 @@ static PropertyData *_propData;
     
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"preparegetPIDsMatchingString");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0),"prepareGetPIDsMatchingString");
     
     while (n++ < lim && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -192,7 +192,7 @@ static PropertyData *_propData;
     }
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), "preparegetPIDsMatchingAddress");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), "prepareGetPIDsMatchingAddress");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -238,7 +238,7 @@ static PropertyData *_propData;
     
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "pickPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPID");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -272,7 +272,7 @@ static PropertyData *_propData;
     NSString *query = [NSString stringWithFormat:@"SELECT \"Owner_Name\" FROM PROPINFO Where PIN = '%@'", PID];
     sqlite3_stmt *statement;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwnerNameForPID");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetOwnerNameForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -500,7 +500,7 @@ int SQLOK(int sqlReturn, char *method)
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
    
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "displayParcels");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -603,7 +603,7 @@ int SQLOK(int sqlReturn, char *method)
         free (llpoints);
     }
     
-    SQLOK(sqlite3_finalize(statement), "getOwnerNameForPID");
+    SQLOK(sqlite3_finalize(statement), "displayParcels");
     [self close];
 }
 
@@ -712,8 +712,8 @@ int SQLOK(int sqlReturn, char *method)
     return '?';
 }
 
-- (NSMutableArray *) getReport:(PropDataOption)option
-                        forPID:(NSString*)pid
+- (NSMutableArray *)getReport:(PropDataOption)option
+                       forPID:(NSString *)pid
 {
     NSMutableArray *report = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
@@ -726,7 +726,7 @@ int SQLOK(int sqlReturn, char *method)
             NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,HOUSEFRACT,STREET,UNITNUM,ZIPCODE,\"OWNER NAME\",\"TAXPAYER NAME\",\"TAXPAYER ADDR1\",\"TAXPAYER ADDR2\",\"TAXPAYER ADDR3\",PARCEL_DEPTH,PARCEL_FRONTAGE,AREA_SQFT,USECODE,USE_DESC,TAX_EXEMPT,LAND_VALUE,BLDG_VALUE,TOTAL_VALUE,TOTAL_TAX,HOMESTEAD,WTRSHD,PARCELZONE.ZONETYPE,ASSESSMENT_YEAR,Date_of_Query FROM PROPINFO,PARCELZONE WHERE PROPINFO.PID='%s' AND PARCELZONE.PID='%s'",
                        pid.UTF8String,pid.UTF8String];
     
-            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getReportForPID");
+            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetReportForPID");
             
             if (sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -973,9 +973,7 @@ int SQLOK(int sqlReturn, char *method)
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
                 SQLOK(sqlite3_finalize(statement), "getReportForPID");
-                
             }
-            
         }
     }
    
@@ -1057,7 +1055,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     return nHits;
 }
 
-- (NSMutableArray *) getOwnersMatchingString:(NSString*)INstring
+- (NSMutableArray *)getOwnersMatchingString:(NSString *)INstring
 {
     NSMutableArray * ownerArray = [[NSMutableArray alloc]init];
     int	nParts, ipart,iparttest, nOwners;
@@ -1068,45 +1066,49 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     int     PartLen[MAXPARTS], PartLenTest[MAXPARTS];
     LPSTR   PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
     int     Trigger = 3;
-    int		nHits=0;
+    int		nHits = 0;
     int     nowner;
     BOOL	GetNext = TRUE;
     char	Name[66];
     LPINT   Hits = malloc (MAXHITS * sizeof(int));
     sqlite3_stmt *statement;
 
-    NSString * string = [INstring uppercaseString];
-    strncpy (Name,string.UTF8String,64);
-    nParts = GetNameParts (Name,PartLoc,PartLen,MAXPARTS);
-    for (ipart=0;ipart<nParts;ipart++)
+    NSString *string = INstring.uppercaseString;
+    strncpy(Name, string.UTF8String,64);
+    nParts = GetNameParts(Name, PartLoc, PartLen, MAXPARTS);
+    
+    for (ipart = 0; ipart < nParts; ipart++)
     {
         nPartOffsets[ipart] = 0;
         partOffsets[ipart] = 0;
     }
-    for (ipart=0;ipart<nParts;ipart++)
+    
+    for (ipart=0; ipart < nParts; ipart++)
     {
-        
         if (PartLen[ipart] >= Trigger)
         {
-            char endWord[12]={0};
+            char endWord[12] = {0};
             [self open];
             
-            strncpy (endWord,PartLoc[ipart],8);
-            for (int i=(int)strlen(PartLoc[ipart]);i<11;i++)
+            strncpy (endWord, PartLoc[ipart], 8);
+            
+            for (int i= (int)strlen(PartLoc[ipart]); i < 11; i++)
                 endWord[i] = 'Z';
+            
             endWord[11] = 0;
             NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
                                PartLoc[ipart],endWord];
-            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
+            
+            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetOwners");
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
                 LPSTR word = sqlite3_column_text(statement, 0);
                 int nOffsets = sqlite3_column_int(statement,1);
                 LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
                 
-                
                 if (nPartOffsets[ipart] + nOffsets >= MAXOFFSETS)
                     GetNext = FALSE;
+                
                 else
                 {
                     partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*sizeof(int));
@@ -1115,7 +1117,9 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
                     nPartOffsets[ipart] += nOffsets;
                 }
             }
-            SQLOK(sqlite3_finalize(statement), "getReportForPID");
+            
+            SQLOK(sqlite3_finalize(statement), "getOwners");
+            
             if (!nPartOffsets[ipart])
                 GetNext = FALSE;
         }
@@ -1133,16 +1137,18 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     }
     if (nHits)
     {
-        NSString * inList=[[NSString alloc]init];
+        NSString *inList=[[NSString alloc] init];
         char delim = 0;
-        for (int i=0;i<nHits;i++)
+        
+        for (int i =0; i < nHits; i++)
         {
-            inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i",delim,Hits[i]]];
+            inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i", delim, Hits[i]]];
             delim = ',';
         }
         NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
+        
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
             LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
@@ -1168,9 +1174,12 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
                 break;
             FoundPart:							;
             }
+            
             if (ShowThisOwner)
             {
-                NSString * output = [NSString stringWithFormat:@"%s\t%s\%s %s\t%s",owner,pin,house,street,city];
+                NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %s",
+                                    owner, pin, house, street, city];
+                
                 [ownerArray addObject:output];
             }
         }
@@ -1323,6 +1332,7 @@ LPSTR ReplaceChar (LPSTR str, char from, char to)
     LPSTR Instr;
     
     Instr = str;
+    
     while (*str)
     {
         if (*str == from) *str = to;
@@ -1335,25 +1345,30 @@ LPSTR ReplaceChar (LPSTR str, char from, char to)
 
 LPSTR OneSpace (LPSTR Arg1)
 {
-    BOOL LastWasBlank, HaveNonBlank=FALSE;
-    LPSTR   OutLoc, SaveArg1, SaveOutLoc;
-    long    l;
+    BOOL LastWasBlank, HaveNonBlank = FALSE;
+    LPSTR OutLoc, SaveArg1, SaveOutLoc;
+    long l;
     
-    Truncate (Arg1);
+    Truncate(Arg1);
     SaveArg1 = Arg1;
-    l=strlen(Arg1);
+    l = strlen(Arg1);
+    
     if (!l)
         return (Arg1);
+    
     OutLoc = malloc(l+1);
     SaveOutLoc = OutLoc;
     LastWasBlank = FALSE;
     while (*Arg1)
     {
-        if (*Arg1 == '\t') *Arg1 = ' ';
+        if (*Arg1 == '\t')
+            *Arg1 = ' ';
+        
         if (*Arg1 != ' ')
         {
             if (LastWasBlank && HaveNonBlank)
                 *OutLoc++ = ' ';
+            
             LastWasBlank = FALSE;
             HaveNonBlank=TRUE;
             *OutLoc++ = *Arg1;
@@ -1362,8 +1377,9 @@ LPSTR OneSpace (LPSTR Arg1)
             LastWasBlank = TRUE;
         Arg1++;
     }
+    
     *OutLoc = 0;
-    strcpy (SaveArg1,SaveOutLoc);
+    strcpy(SaveArg1,SaveOutLoc);
     return (Arg1);
 }
 
@@ -1372,47 +1388,56 @@ LPSTR Truncate(LPSTR Text)
     LPSTR rtn, EndChar;
     
     rtn = Text;
-    EndChar = strchr (Text,0);
+    EndChar = strchr(Text, 0);
+    
     while (EndChar > Text)
     {
         EndChar--;
+        
         if (*EndChar != ' ')
             goto Exit;
+        
         *EndChar = 0;
     }
+    
 Exit:
     return (rtn);
 }
 
-int GetNameParts (LPSTR Field,LPSTR *pLoc,LPINT pLen,int MaxParts)
+int GetNameParts (LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)
 {
-    int	nParts=0;
-    LPSTR	pWord, pEnd;
+    int	nParts = 0;
+    LPSTR pWord, pEnd;
 
     pWord = Field;
-    ReplaceChar (Field,'-',' ');
-    ReplaceChar (Field,'/',' ');
-    ReplaceChar (Field,'(',' ');
-    ReplaceChar (Field,')',' ');
-    ReplaceChar (Field,'&',' ');
-    ReplaceChar (Field,',',' ');
-    ReplaceChar (Field,'\'',' ');
-    ReplaceChar (Field,'#',' ');
-    ReplaceChar (Field,'"',' ');
-    ReplaceChar (Field,'.',' ');
-    OneSpace (Field);
+    ReplaceChar(Field,'-',' ');
+    ReplaceChar(Field,'/',' ');
+    ReplaceChar(Field,'(',' ');
+    ReplaceChar(Field,')',' ');
+    ReplaceChar(Field,'&',' ');
+    ReplaceChar(Field,',',' ');
+    ReplaceChar(Field,'\'',' ');
+    ReplaceChar(Field,'#',' ');
+    ReplaceChar(Field,'"',' ');
+    ReplaceChar(Field,'.',' ');
+    OneSpace(Field);
+    
     while (*pWord && nParts < MaxParts)
     {
         if (*pWord == ' ')
             pWord++;
+        
         if ((pEnd = strchr (pWord,' ')))
             *pEnd++ = 0;
+        
         else
             pEnd = strchr (pWord,0);
+        
         *(pLoc + nParts) = pWord;
-        *(pLen + nParts++) = (int)strlen (pWord);
+        *(pLen + nParts++) = (int)strlen(pWord);
         pWord = pEnd;
     }
+    
     return nParts;
 }
 
