@@ -101,6 +101,19 @@
     CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption2.selectedSegmentIndex+4;
     [self setParcelLines];
 }
+- (IBAction)parcelTextOption:(id)sender
+{
+    CRAPI.sharedInstance.parcelTextOption = (int)_parcelTextOption.selectedSegmentIndex;
+    _parcelTextOption2.selectedSegmentIndex = -1;
+    [self setParcelLines];
+}
+
+- (IBAction)parcelTextOption2:(id)sender
+{
+    _parcelTextOption.selectedSegmentIndex = -1;
+    CRAPI.sharedInstance.parcelTextOption = (int)_parcelTextOption2.selectedSegmentIndex+4;
+    [self setParcelLines];
+}
 
 - (IBAction)parcelBoundaryLines:(id)sender
 {

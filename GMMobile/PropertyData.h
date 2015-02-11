@@ -49,6 +49,10 @@ typedef NS_ENUM(NSInteger, PropDataOption)
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
+-(void) displayParcelText:(CGContextRef)context
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds;
+
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid;
 

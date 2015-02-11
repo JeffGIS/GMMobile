@@ -752,6 +752,136 @@ int SQLOK(int sqlReturn, char *method)
     return '?';
 }
 
+- (BOOL) displayText:(NSString*)text
+     usingContext:(CGContextRef)context
+          atPoint:(LPDPOINT)pviewPoint
+          maxPixels:(double)maxPixels
+{
+    BOOL rtn=FALSE; //true if text large enough to display
+    
+    return rtn;
+}
+
+-(void) displayParcelText:(CGContextRef)context
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
+{
+    if (!CRAPI.sharedInstance.parcelTextOption)
+        return;
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    
+    DPOINT p1, p2;
+    double boundsWidthInMeters, boundsHeightInMeters;
+    p1.x = platlonBounds->xmn;
+    p1.y = platlonBounds->ymn;
+    p2.x = platlonBounds->xmn;
+    p2.y = platlonBounds->ymx;
+    boundsHeightInMeters = ArcDistance(p1, p2);
+    p2.x = platlonBounds->xmx;
+    p2.y = platlonBounds->ymn;
+    boundsWidthInMeters = ArcDistance(p1, p2);
+    double boundsInAcres = boundsWidthInMeters * boundsHeightInMeters * ACRES_PER_SQMETER;
+    double boundsInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
+    double acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
+    NSString *query;
+    sqlite3_stmt *statement;
+    LPSTR pid;
+    DPOINT BasePt, viewPoint;
+    CGFloat emvTotal, specAssmt, acres;
+    LPSTR homeStead,useCode,useDesc,taxExempt;
+    char homeSteadCode = 'H';
+    char taxExemptCode = 'E';
+    NSString *text=@"Test Text\nLine 2";
+    double area;
+    [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_MPLS:
+            query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            break;
+        case PROJECT_METROGIS:
+            homeSteadCode = 'Y';
+            taxExemptCode = 'Y';
+            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        pid = (LPSTR)sqlite3_column_text(statement, 0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        BasePt.x = sqlite3_column_double(statement,2);
+        acres = (CGFloat)sqlite3_column_double(statement, 3);
+        homeStead = (LPSTR)sqlite3_column_text(statement, 4);
+        useCode = (LPSTR)sqlite3_column_text(statement, 5);
+        useDesc = (LPSTR)sqlite3_column_text(statement, 6);
+        taxExempt = (LPSTR)sqlite3_column_text(statement, 7);
+        emvTotal = (CGFloat)sqlite3_column_double(statement, 8);
+        specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
+        //if (CRAPI.sharedInstance.parcelTextOption)
+        {
+            CGFloat alpha = 0;
+            UIColor *color;
+            int opt = CRAPI.sharedInstance.parcelTextOption;
+            
+            /*switch (opt)
+            {
+                case 1://homestead
+                    if (*homeStead == homeSteadCode)
+                        alpha = 0.6;
+                    
+                    color = [[UIColor alloc]initWithRed:1.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
+                    break;
+                    
+                case 2://res-com
+                    color = [self resComColor:useCode];
+                    break;
+                    
+                case 4://Special Assessment
+                    if (specAssmt > 0)
+                        alpha = 0.6;
+                    
+                    color = [[UIColor alloc]initWithRed:1.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
+                    break;
+                    
+                case 5://tax_exempt
+                    if (*taxExempt == taxExemptCode)
+                        alpha = 0.6;
+                    
+                    color = [[UIColor alloc]initWithRed:0.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
+                    break;
+            }*/
+            viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
+           
+            [self displayText:text
+                 usingContext:context
+                      atPoint:&viewPoint
+                      maxPixels:acres * acresToPixelsFactor];
+        }
+        
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "displayParcelText");
+    [self close];
+}
+
+
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
 {

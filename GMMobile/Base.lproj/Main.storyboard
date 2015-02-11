@@ -520,7 +520,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="uyn-xx-P4J">
-                                <rect key="frame" x="16" y="174" width="123" height="30"/>
+                                <rect key="frame" x="16" y="174" width="123" height="29"/>
                                 <segments>
                                     <segment title="No"/>
                                     <segment title="Yes"/>
@@ -611,12 +611,45 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="3SG-BF-GTP">
+                                <rect key="frame" x="16" y="327" width="392" height="29"/>
+                                <segments>
+                                    <segment title="No Text"/>
+                                    <segment title="Owner/Tot EMV"/>
+                                    <segment title="Res/Com"/>
+                                    <segment title="Total Value"/>
+                                </segments>
+                                <connections>
+                                    <action selector="parcelTextOption:" destination="8rJ-Kc-sve" eventType="valueChanged" id="6og-XI-npK"/>
+                                </connections>
+                            </segmentedControl>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Text on Parcel" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1YG-jp-tZr">
+                                <rect key="frame" x="16" y="303" width="392" height="21"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Display GeoMaster Tiles" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eVE-N9-WwW">
                                 <rect key="frame" x="148" y="64" width="250" height="28"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="83O-oZ-tUD">
+                                <rect key="frame" x="16" y="355" width="392" height="29"/>
+                                <segments>
+                                    <segment title="Special Asmt"/>
+                                    <segment title="Tax Exempt"/>
+                                    <segment title="Year Built"/>
+                                    <segment title="Total Tax"/>
+                                </segments>
+                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
+                                    <rect key="frame" x="16" y="467" width="392" height="29"/>
+                                </variation>
+                                <connections>
+                                    <action selector="parcelTextOption2:" destination="8rJ-Kc-sve" eventType="valueChanged" id="wbc-w4-6w0"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -625,6 +658,8 @@
                         <outlet property="parcelBoundaryLines" destination="uyn-xx-P4J" id="M9h-wI-2vv"/>
                         <outlet property="parcelShadingOption" destination="DE2-N2-eXZ" id="krt-bp-YvU"/>
                         <outlet property="parcelShadingOption2" destination="aIu-gI-kFF" id="NCt-Bh-2kv"/>
+                        <outlet property="parcelTextOption" destination="3SG-BF-GTP" id="1de-Ck-Xvb"/>
+                        <outlet property="parcelTextOption2" destination="83O-oZ-tUD" id="lo8-xg-Ah5"/>
                         <outlet property="parcelZoomLabel" destination="OgP-CV-wBy" id="rGL-l6-IWe"/>
                         <outlet property="parcelZoomStepper" destination="Px7-By-XkO" id="6a8-MB-uBF"/>
                         <outlet property="sewerZoomLabel" destination="7FE-Hk-Xy5" id="8sB-BZ-xbG"/>
@@ -1602,15 +1637,6 @@
                                 <exclude reference="ftg-xE-cCj"/>
                                 <exclude reference="l5r-wd-iPZ"/>
                                 <exclude reference="yoj-JR-6rW"/>
-                                <exclude reference="FAw-W9-Pxo"/>
-                                <exclude reference="Iif-Pd-ktr"/>
-                                <exclude reference="L0U-XI-zcx"/>
-                                <exclude reference="St3-4f-CQt"/>
-                                <exclude reference="X3Z-Nj-9bU"/>
-                                <exclude reference="hMx-aQ-ACn"/>
-                                <exclude reference="mPc-Uh-xK2"/>
-                                <exclude reference="rfj-hR-xTG"/>
-                                <exclude reference="xkj-rD-lvT"/>
                                 <exclude reference="0HB-gv-H6c"/>
                                 <exclude reference="Jml-uR-E1Q"/>
                                 <exclude reference="ODi-zR-ftr"/>
@@ -1622,6 +1648,15 @@
                                 <exclude reference="qlc-cL-FYS"/>
                                 <exclude reference="vff-5q-rwr"/>
                                 <exclude reference="yUW-Zt-o1y"/>
+                                <exclude reference="FAw-W9-Pxo"/>
+                                <exclude reference="Iif-Pd-ktr"/>
+                                <exclude reference="L0U-XI-zcx"/>
+                                <exclude reference="St3-4f-CQt"/>
+                                <exclude reference="X3Z-Nj-9bU"/>
+                                <exclude reference="hMx-aQ-ACn"/>
+                                <exclude reference="mPc-Uh-xK2"/>
+                                <exclude reference="rfj-hR-xTG"/>
+                                <exclude reference="xkj-rD-lvT"/>
                                 <exclude reference="3fz-tN-RbQ"/>
                                 <exclude reference="f0o-6M-XgS"/>
                                 <exclude reference="wZS-mI-Ed6"/>
@@ -1631,14 +1666,14 @@
                             <mask key="constraints">
                                 <include reference="ftg-xE-cCj"/>
                                 <include reference="l5r-wd-iPZ"/>
-                                <include reference="L0U-XI-zcx"/>
-                                <include reference="mPc-Uh-xK2"/>
-                                <include reference="rfj-hR-xTG"/>
                                 <include reference="ODi-zR-ftr"/>
                                 <include reference="P7d-2J-CLr"/>
                                 <include reference="eJG-2z-zK5"/>
                                 <include reference="g6U-kY-b2B"/>
                                 <include reference="yUW-Zt-o1y"/>
+                                <include reference="L0U-XI-zcx"/>
+                                <include reference="mPc-Uh-xK2"/>
+                                <include reference="rfj-hR-xTG"/>
                                 <include reference="3fz-tN-RbQ"/>
                             </mask>
                         </variation>
@@ -1646,12 +1681,12 @@
                             <mask key="constraints">
                                 <include reference="728-2p-jf1"/>
                                 <include reference="Hlx-7n-bO3"/>
-                                <include reference="Iif-Pd-ktr"/>
-                                <include reference="hMx-aQ-ACn"/>
-                                <include reference="xkj-rD-lvT"/>
                                 <include reference="0HB-gv-H6c"/>
                                 <include reference="bEr-0U-qMH"/>
                                 <include reference="lwz-Z5-Ufm"/>
+                                <include reference="Iif-Pd-ktr"/>
+                                <include reference="hMx-aQ-ACn"/>
+                                <include reference="xkj-rD-lvT"/>
                                 <include reference="wZS-mI-Ed6"/>
                             </mask>
                         </variation>
@@ -1659,12 +1694,12 @@
                             <mask key="constraints">
                                 <include reference="EI7-wo-qPP"/>
                                 <include reference="yoj-JR-6rW"/>
-                                <include reference="FAw-W9-Pxo"/>
-                                <include reference="St3-4f-CQt"/>
-                                <include reference="X3Z-Nj-9bU"/>
                                 <include reference="Jml-uR-E1Q"/>
                                 <include reference="qlc-cL-FYS"/>
                                 <include reference="vff-5q-rwr"/>
+                                <include reference="FAw-W9-Pxo"/>
+                                <include reference="St3-4f-CQt"/>
+                                <include reference="X3Z-Nj-9bU"/>
                                 <include reference="f0o-6M-XgS"/>
                             </mask>
                         </variation>
