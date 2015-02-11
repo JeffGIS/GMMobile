@@ -192,8 +192,11 @@
         _firstTime = NO;
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
-        CRAPI.sharedInstance.GMMSetting == GMMSettingAddress)
+        CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
+        CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
     {
+        _tableView.hidden = YES;
+        
         _selectedPID = CRAPI.sharedInstance.currentPID;
         PropertyData *propData = [[PropertyData alloc] init];
         LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
@@ -212,13 +215,24 @@
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
         
-        if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID)
-            annotation.title = _selectedPID;
-        
-        else
-            annotation.title = CRAPI.sharedInstance.currentAddress;
+        switch (CRAPI.sharedInstance.GMMSetting)
+        {
+            case GMMSettingPID:
+                annotation.title = _selectedPID;
+                annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+                break;
+                
+            case GMMSettingAddress:
+                annotation.title = CRAPI.sharedInstance.currentAddress;
+                annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+                break;
+                
+            case GMMSettingPropOwner:
+                annotation.title = CRAPI.sharedInstance.currentPropOwner;
+                annotation.subtitle = _selectedPID;
+                break;
+        }
 
-        annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
         [self addAnnotation:annotation];
         
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
@@ -989,6 +1003,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     return 20.0;
 }
+
 - (IBAction)toggleMapType:(UISegmentedControl *)segmentedControl
 {
     switch (segmentedControl.selectedSegmentIndex)
