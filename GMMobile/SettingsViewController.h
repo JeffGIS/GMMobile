@@ -12,8 +12,8 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 
-@property (atomic)  int nComplete;
-@property (atomic)  int nFailed;
+@property (atomic) int nComplete;
+@property (atomic) int nFailed;
 @property NSCondition *condition;
 @property (atomic) BOOL keepGoing;
 

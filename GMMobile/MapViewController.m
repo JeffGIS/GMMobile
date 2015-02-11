@@ -7,7 +7,7 @@
 
 @interface MapViewController ()
 
-@property (nonatomic) GSSiTileOverlay *osmOverlay;
+//@property (nonatomic) GSSiTileOverlay *osmOverlay;
 @property (nonatomic) GSSiTileOverlay *gmmOverlay;
 @property (nonatomic) MKMapCamera *camera;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
@@ -99,7 +99,7 @@
     _mapView.showsUserLocation = YES;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     [self extentZoom:NO];
-    
+/*
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
     _osmOverlay.canReplaceMapContent = NO;
@@ -112,7 +112,7 @@
         [_mapView addOverlay:_osmOverlay
                        level:MKOverlayLevelAboveLabels];
     }
-    
+*/
     NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
     //NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
@@ -151,7 +151,7 @@
     if (!_firstTime)
     {
         [self initTableView];
-        
+/*
         if (_osmOverlay)
         {
             [_mapView removeOverlay:_osmOverlay];
@@ -168,7 +168,7 @@
                                level:MKOverlayLevelAboveLabels];
             }
         }
-        
+*/
         if (_gmmOverlay)
         {
             [_mapView removeOverlay:_gmmOverlay];
@@ -281,7 +281,7 @@ regionWillChangeAnimated:(BOOL)animated
 - (void)mapView:(MKMapView *)mapView
 regionDidChangeAnimated:(BOOL)animated
 {
-    MKMapRect visRect = mapView.visibleMapRect;
+    //MKMapRect visRect = mapView.visibleMapRect;
     MKCoordinateRegion region = mapView.region;
     
     CGRect mrect = [mapView convertRegion:region
@@ -304,38 +304,28 @@ regionDidChangeAnimated:(BOOL)animated
     p2.y = latlon2.latitude;
     CGFloat d = ArcDistance(p1,p2);
     CGFloat currentScale = (d / LDIST(0, 0, mrect.size.width, mrect.size.height));
-    CGFloat wantScale = GroundResolution(latlon1.latitude, 19);
+    //CGFloat wantScale = GroundResolution(latlon1.latitude, 19);
     _currentZoom = 0;
+    
     while (GroundResolution(latlon1.latitude, _currentZoom) > currentScale)
-    {
         _currentZoom++;
-    }
-    
- /*   if (mapView.camera.altitude < 299.0)
-        {
-            _camera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.centerCoordinate
-                                                 fromEyeCoordinate:mapView.centerCoordinate
-                                                       eyeAltitude:300.0];
-        
-            mapView.camera = _camera;
-        }*/
     
     _camera = mapView.camera;
     _camera = mapView.camera;
-    MKMapRect intRect = MKMapRectUnion(visRect, _cityInnerBounds);
+    //MKMapRect intRect = MKMapRectUnion(visRect, _cityInnerBounds);
     
     if (CRAPI.sharedInstance.GMTilesVisible)
     {
-        if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
+        /*if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
             _osmOverlay.maximumZ = 12;
         
         else
-            _osmOverlay.maximumZ = 19;
+            _osmOverlay.maximumZ = 19;*/
     }
     
     else
     {
-        _osmOverlay.maximumZ = 19;
+        //_osmOverlay.maximumZ = 19;
         _gmmOverlay.minimumZ = _gmmOverlay.maximumZ = 0;
     }
 

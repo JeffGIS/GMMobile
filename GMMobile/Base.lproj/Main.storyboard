@@ -423,6 +423,9 @@
                                     <segment title="No"/>
                                     <segment title="Yes"/>
                                 </segments>
+                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
+                                    <rect key="frame" x="16" y="174" width="123" height="29"/>
+                                </variation>
                                 <connections>
                                     <action selector="parcelBoundaryLines:" destination="8rJ-Kc-sve" eventType="valueChanged" id="fFF-yp-fqE"/>
                                 </connections>
@@ -494,28 +497,6 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Basemap" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kiO-Oa-5mj">
-                                <rect key="frame" x="148" y="303" width="119" height="28"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="148" y="503" width="119" height="28"/>
-                                </variation>
-                            </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="z7Y-An-Lh5">
-                                <rect key="frame" x="16" y="303" width="123" height="29"/>
-                                <segments>
-                                    <segment title="Apple"/>
-                                    <segment title="OSM"/>
-                                </segments>
-                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="16" y="503" width="123" height="29"/>
-                                </variation>
-                                <connections>
-                                    <action selector="toggleBasemap:" destination="8rJ-Kc-sve" eventType="valueChanged" id="i02-FB-Tew"/>
-                                </connections>
-                            </segmentedControl>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Display GeoMaster Tiles" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eVE-N9-WwW">
                                 <rect key="frame" x="148" y="64" width="250" height="28"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -527,7 +508,6 @@
                     </view>
                     <tabBarItem key="tabBarItem" title="Layers" image="layers.png" id="cPa-gy-q4n"/>
                     <connections>
-                        <outlet property="basemapSC" destination="z7Y-An-Lh5" id="b11-aW-zZ4"/>
                         <outlet property="parcelBoundaryLines" destination="uyn-xx-P4J" id="M9h-wI-2vv"/>
                         <outlet property="parcelShadingOption" destination="DE2-N2-eXZ" id="krt-bp-YvU"/>
                         <outlet property="parcelShadingOption2" destination="aIu-gI-kFF" id="NCt-Bh-2kv"/>
