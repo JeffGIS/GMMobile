@@ -195,6 +195,8 @@
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
     {
+        _tableView.hidden = YES;
+        
         _selectedPID = CRAPI.sharedInstance.currentPID;
         PropertyData *propData = [[PropertyData alloc] init];
         LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
