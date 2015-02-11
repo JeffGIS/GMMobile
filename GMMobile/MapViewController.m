@@ -16,7 +16,7 @@
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport;
 @property (nonatomic) NSInteger tableViewSetting;
-@property (nonatomic) CGFloat rowHeight;
+@property (nonatomic) CGFloat maxScreenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearWhenDeselected, firstTime;
 @property (nonatomic, copy) NSString *selectedPID;
@@ -421,8 +421,6 @@ calloutAccessoryControlTapped:(UIControl *)control
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.allowsSelection = NO;
         _tableView.delaysContentTouches = YES;
-        _tableView.rowHeight = _rowHeight;
-        _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
         [_tableView reloadData];
         
         [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
@@ -437,8 +435,6 @@ calloutAccessoryControlTapped:(UIControl *)control
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.allowsSelection = YES;
         _tableView.delaysContentTouches = NO;
-        _tableView.rowHeight = ((_tableView.frame.size.height - (_rowHeight * 1.4)) / _options.count);
-        _tableView.sectionHeaderHeight = (_rowHeight * 0.7);
         [_tableView reloadData];
         _tableView.hidden = NO;
     }
@@ -490,21 +486,8 @@ didDeselectAnnotationView:(MKAnnotationView *)view
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    switch (_tableViewSetting)
-    {
-        case PropertyTableViewSettingOptions:
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
-                             }];
-        }
-            break;
-            
-        case PropertyTableViewSettingPropertyReport:
-            [_tableView reloadData];
-            break;
-    }
+    if (_tableView)
+        [_tableView reloadData];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
@@ -658,37 +641,23 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     _tableView.bounces = NO;
     _tableView.backgroundColor = _tableViewBackgroundColor;
     
-    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 18.0), 44.0);
-    _tableView.layer.cornerRadius = (_rowHeight / 4.0);
+    _maxScreenSize = MAX(self.view.frame.size.width, self.view.bounds.size.height);
+    _tableView.layer.cornerRadius = (_maxScreenSize / 64.0);
     [self.view bringSubviewToFront:_tableView];
 }
 
 - (void)initTableView
 {
-    switch (_tableViewSetting)
+    if (_tableView)
     {
-        case PropertyTableViewSettingHCWebsite:
-            if (_currentScreenHeight != self.view.frame.size.height)
-                _tableView.rowHeight = ((_tableView.frame.size.width - (_rowHeight * 1.4)) / _options.count);
-            
-            _tableViewSetting = PropertyTableViewSettingOptions;
-            break;
-
-        case PropertyTableViewSettingOptions:
-            if (_currentScreenHeight != self.view.frame.size.height)
-                _tableView.rowHeight = ((_tableView.frame.size.height - (_rowHeight * 1.4)) / _options.count);
-            
-        case PropertyTableViewSettingPropertyReport:
-            if (_currentScreenHeight != self.view.frame.size.height)
-                [_tableView reloadData];
-            
-            break;
-    }
-    
-    if (_tableView.indexPathForSelectedRow)
-    {
-        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                  animated:YES];
+        if (_currentScreenHeight != self.view.frame.size.height)
+            [_tableView reloadData];
+        
+        if (_tableView.indexPathForSelectedRow)
+        {
+            [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                      animated:YES];
+        }
     }
 }
 
@@ -701,8 +670,8 @@ didDeselectAnnotationView:(MKAnnotationView *)view
 viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = [[UILabel alloc] init];
-    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight);
-    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 1.8)];
+    headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, [self getHeaderHeight]);
+    headerLabel.font = [UIFont boldSystemFontOfSize:(_maxScreenSize / 28.0)];
     headerLabel.textColor = UIColor.yellowColor;
     headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
@@ -742,6 +711,50 @@ viewForHeaderInSection:(NSInteger)section
     return numberOfRows;
 }
 
+- (CGFloat)getHeaderHeight
+{
+    CGFloat headerHeight = 44.0;
+    
+    if (_tableViewSetting == PropertyTableViewSettingPropertyReport)
+        headerHeight = 88.0;
+    
+    return headerHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView
+heightForHeaderInSection:(NSInteger)section
+{
+    return [self getHeaderHeight];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat rowHeight = 36.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        rowHeight = 30.0;
+    
+    if (_tableViewSetting == PropertyTableViewSettingOptions)
+        rowHeight = ((_tableView.frame.size.height - [self getHeaderHeight]) / _options.count);
+    
+    else
+    {
+        NSString *textLabelText = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
+        
+        CGSize textSize = [textLabelText sizeWithAttributes:@{NSFontAttributeName:
+                                                                  [UIFont systemFontOfSize:
+                                                                   MAX((_maxScreenSize / 38.0), 18.0)]}];
+        
+        CGFloat textToCellFit = (textSize.width / (tableView.frame.size.width * 0.6));
+        
+        if (textToCellFit > 1.0)
+            rowHeight *= 1.9;
+    }
+    
+    return rowHeight;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -761,31 +774,43 @@ viewForHeaderInSection:(NSInteger)section
     
     cell.backgroundColor = UIColor.clearColor;
     cell.textLabel.textColor = UIColor.whiteColor;
-    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.numberOfLines = 2;
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.indentationLevel = 1;
     
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 1.6)];
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_maxScreenSize / 28.0)];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.text = _options[indexPath.row];
             cell.indentationWidth = 0.0;
             break;
             
         case PropertyTableViewSettingPropertyReport:
-            cell.textLabel.font = [UIFont systemFontOfSize:(_rowHeight / 2.4)];
-            cell.textLabel.text = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
+            cell.textLabel.font = [UIFont systemFontOfSize:MAX((_maxScreenSize / 38.0), 18.0)];
+            
+            cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
+                                   [UserDefaults.defaults includeTextAfterFirstColon:
+                                    _propertyReport[indexPath.row]]];
+            
             cell.textLabel.textAlignment = NSTextAlignmentLeft;
             cell.indentationWidth = (cell.frame.size.width * 0.3);
             
-            UILabel *rowHeader = [[UILabel alloc] initWithFrame:CGRectMake(4.0, 0.0, (cell.indentationWidth - 4.0), cell.frame.size.height)];
+            UILabel *rowHeader = [[UILabel alloc] initWithFrame:CGRectMake(4.0, 0.0,
+                                                                           (cell.indentationWidth - 4.0),
+                                                                           cell.frame.size.height)];
+            
             rowHeader.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
-            rowHeader.font = [UIFont boldSystemFontOfSize:(_rowHeight / 3.2)];
+            rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_maxScreenSize / 64.0), 12.0)];
             rowHeader.textAlignment = NSTextAlignmentRight;
-            rowHeader.textColor = UIColor.whiteColor;
-            rowHeader.adjustsFontSizeToFitWidth = YES;
-            rowHeader.numberOfLines = 0;
+            
+            rowHeader.textColor = [UIColor colorWithRed:0.7
+                                                  green:0.85
+                                                   blue:1.0
+                                                  alpha:1.0];
+            rowHeader.numberOfLines = 2;
+            cell.textLabel.adjustsFontSizeToFitWidth = YES;
             
             [cell.contentView addSubview:rowHeader];
             break;
@@ -800,15 +825,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Property Report"])
     {
         _tableViewSetting = PropertyTableViewSettingPropertyReport;
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.allowsSelection = NO;
-        _tableView.delaysContentTouches = YES;
-        _tableView.rowHeight = _rowHeight;
-        _tableView.sectionHeaderHeight = (_rowHeight * 1.4);
-        [_tableView reloadData];
+        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        tableView.allowsSelection = NO;
+        tableView.delaysContentTouches = YES;
         
-        [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                               animated:NO];
+        [tableView reloadData];
+        
+        [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+                              animated:NO];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
