@@ -97,6 +97,7 @@
     
     _mapView.delegate = self;
     _mapView.showsUserLocation = YES;
+    _mapView.mapType = MKMapTypeStandard;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     [self extentZoom:NO];
 /*
@@ -140,6 +141,9 @@
     [self setupButton:_userLocationButton];
     [self setupButton:_splitScreenButton];
     [self.view bringSubviewToFront:_annotationSwitch];
+    _mapTypeSC.layer.cornerRadius = 4.0;
+    _mapTypeSC.layer.masksToBounds = YES;
+    [self.view bringSubviewToFront:_mapTypeSC];
     
     [self setupTableView];
 }
@@ -984,6 +988,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     return 20.0;
+}
+- (IBAction)toggleMapType:(UISegmentedControl *)segmentedControl
+{
+    switch (segmentedControl.selectedSegmentIndex)
+    {
+        case 0:
+            _mapView.mapType = MKMapTypeStandard;
+            break;
+            
+        case 1:
+            _mapView.mapType = MKMapTypeHybrid;
+            break;
+    }
 }
 
 @end

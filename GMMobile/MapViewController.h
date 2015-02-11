@@ -18,5 +18,6 @@
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property (nonatomic) int currentZoom;
 @property (weak, nonatomic) IBOutlet UIButton *splitScreenButton;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *mapTypeSC;
 
 @end
