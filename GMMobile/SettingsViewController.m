@@ -5,9 +5,9 @@
 #import "PropertyData.h"
 #import "GSSiTileOverlay.h"
 
-#define GET_PROPERTY    1
-#define GET_TILES       2
-#define GET_PARCELS     3
+#define GET_PROPERTY 1
+#define GET_TILES 2
+#define GET_PARCELS 3
 
 @interface SettingsViewController ()
 
@@ -32,12 +32,12 @@
     [pd open];
     _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld", pd.fileSize];
     [pd close];
-    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+    [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+    [UIApplication.sharedApplication setIdleTimerDisabled:NO];
 }
 - (IBAction)deleteDatabase:(id)sender
 {

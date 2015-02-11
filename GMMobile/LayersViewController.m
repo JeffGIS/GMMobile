@@ -34,6 +34,7 @@
         _parcelShadingOption.selectedSegmentIndex = CRAPI.sharedInstance.parcelShadingOption;
         _parcelShadingOption2.selectedSegmentIndex = -1;
     }
+    
     _parcelBoundaryLines.selectedSegmentIndex = CRAPI.sharedInstance.showParcelBoundary;
     [self setParcelLines];
     }
@@ -49,6 +50,7 @@
     
     if (CRAPI.sharedInstance.parcelsVisibleAtZoom > 19)
         _parcelZoomLabel.text = [NSString stringWithFormat:@"Never Show Parcels"];
+    
     else
         _parcelZoomLabel.text = [NSString stringWithFormat:@"Show Parcels at Zoom Level %i",
                              (int)CRAPI.sharedInstance.parcelsVisibleAtZoom];
@@ -77,6 +79,7 @@
 {
     if (CRAPI.sharedInstance.parcelShadingOption)
         _parcelBoundaryLines.enabled = YES;
+    
     else
     {
         _parcelBoundaryLines.selectedSegmentIndex = 1;
@@ -103,7 +106,7 @@
 {
     CRAPI.sharedInstance.showParcelBoundary = !CRAPI.sharedInstance.showParcelBoundary;
 }
-
+/*
 - (IBAction)toggleBasemap:(UISegmentedControl *)sender
 {
     switch (sender.selectedSegmentIndex)
@@ -117,5 +120,5 @@
             break;
     }
 }
-
+*/
 @end
