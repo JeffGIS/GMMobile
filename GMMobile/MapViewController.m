@@ -802,6 +802,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
                                    [UserDefaults.defaults includeTextAfterFirstColon:
                                     _propertyReport[indexPath.row]]];
+           
             
             cell.textLabel.textAlignment = NSTextAlignmentLeft;
             cell.indentationWidth = (cell.frame.size.width * 0.3);

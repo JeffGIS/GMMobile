@@ -40,6 +40,9 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
 - (NSString *)pickPID:(LLPOINT*)pt;
 
+- (BOOL)loadParcelPolygons:(NSString *)fromPath
+              updatePopover:(GSSiPopoverView *)popover;
+
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 
 - (void)displayParcels:(CGContextRef)context
