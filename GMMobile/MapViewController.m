@@ -197,6 +197,7 @@
         _selectedPID = CRAPI.sharedInstance.currentPID;
         PropertyData *propData = [[PropertyData alloc] init];
         LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
+        MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;

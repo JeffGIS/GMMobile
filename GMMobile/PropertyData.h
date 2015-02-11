@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
                                 streetName:(NSString *)matchChar;
 
 - (LLPOINT)getPointForPID:(NSString *)PID;
+- (MNMXCORD) getBoundsForPID:(NSString*)PID;
 - (NSString *)pickPID:(LLPOINT*)pt;
 
 - ( BOOL)loadParcelPolygons:(NSString*)fromPath updatePopover:(GSSiPopoverView*)popover;
