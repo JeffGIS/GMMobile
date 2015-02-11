@@ -32,8 +32,13 @@
     [pd open];
     _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld", pd.fileSize];
     [pd close];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
 }
-
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
+}
 - (IBAction)deleteDatabase:(id)sender
 {
     NSString *title = @"Delete Property Records Database";

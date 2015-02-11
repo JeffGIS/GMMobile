@@ -994,15 +994,14 @@ typedef struct	{char Word[8];
     long Offsets[MAXWIOFFSETS];} WORDINDEX;
 typedef WORDINDEX	*LPWORDINDEX;
 
-/*
-int GetWIHits (LPINT Hits,UINT nParts,LPINT nPartOffsets,LPHANDLE hPartOffsets,int MaxHits,HWND hwndCtl)
+
+int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int MaxHits)
 {
     int	nHits = 0;
     int	Order[32];
-    UINT	i,j,k,ihit, ipart, nValidParts=0,ii;
-    LPLONG	pOff1, pOff2;
+    int	i,j,k,ihit, ipart, nValidParts=0,ii;
+    LPINT	pOff1, pOff2;
     BOOL	HaveHit;
-    MSG		msg;
     
     Order[0] = 0;
     for (ipart=1;ipart<nParts;ipart++)
@@ -1022,24 +1021,23 @@ int GetWIHits (LPINT Hits,UINT nParts,LPINT nPartOffsets,LPHANDLE hPartOffsets,i
     }
     
     for (ipart=0;ipart<nParts;ipart++)
-        if (nPartOffsets[ipart] < LONG_MAX)
+        if (nPartOffsets[ipart] < INT_MAX)
             nValidParts++;
     
     if (!nValidParts)
         return 0;
-    pOff1 = GlobalLock (hPartOffsets[Order[0]]);
+    pOff1 = pPartOffsets[Order[0]];
     for (i=0;i<nPartOffsets[Order[0]];i++)
     {
         HaveHit = TRUE;
         for (j=1;j<nValidParts;j++)
         {
-            pOff2 = GlobalLock (hPartOffsets[Order[j]]);
+            pOff2 = pPartOffsets[Order[j]];
             for (k=0;k<nPartOffsets[Order[j]];k++)
                 if (*pOff1 == *pOff2++)
                     goto Next;
             HaveHit = FALSE;
         Next:
-            GlobalUnlock (hPartOffsets[Order[j]]);
             if (!HaveHit)
                 goto NextOff;
         }
@@ -1053,119 +1051,111 @@ int GetWIHits (LPINT Hits,UINT nParts,LPINT nPartOffsets,LPHANDLE hPartOffsets,i
             ii=1;
     NextOff:
         pOff1++;
-        if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-            break;	                                                             
+       // if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
+       //     break;
     }
-    GlobalUnlock (hPartOffsets[Order[0]]);
     return nHits;
 }
-*/
-- (NSMutableArray *) getOwnersMatchingString:(NSString*)string
+
+- (NSMutableArray *) getOwnersMatchingString:(NSString*)INstring
 {
     NSMutableArray * ownerArray = [[NSMutableArray alloc]init];
     int	nParts, ipart,iparttest, nOwners;
     LPWORDINDEX	pRec;
     WORDINDEX	Rec;
-    int*    partOffsets[MAXPARTS];
+    LPINT   partOffsets[MAXPARTS], partoff;
     int		nPartOffsets[MAXPARTS];
     int     PartLen[MAXPARTS];
     LPSTR   PartLoc[MAXPARTS];
     int     Trigger = 3;
-    int		nHits;
+    int		nHits=0;
+    int     nowner;
     BOOL	GetNext = TRUE;
     char	Name[66];
-/*
-SetDlgItemText (hWndDlg,IDC_NUMOWNERS,"Searching...");
-GetGlobalCVal ("[%NAMEINDEXDB]",str,"[%DL]attribut\\nameindex.gmd");
-OpenDataFile (str, "",BT_READ, &hDBNameIndex);
-SQLPtrNameIndex = (LPOPENSQLDATA) GlobalLock (hDBNameIndex);
-FilePtrNameIndex = (LPOPENFILEDATA) GlobalLock (SQLPtrNameIndex->OFHandle);
-lpGWDHeadNameIndex = (LPGWDHEADER)GlobalLock (FilePtrNameIndex->FileHandle);
-pRec = (LPWORDINDEX)&lpGWDHeadNameIndex->GWDData;
-SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_RESETCONTENT,0,0);
-SendDlgItemMessage (hWndDlg,IDC_PROPERTYLIST,LB_RESETCONTENT,0,0);
-GetDlgItemText (hWndDlg,IDC_OWNERNAMEWC,Name,64);
-nParts = GetNameParts (Name,PartLoc,PartLen,MAXPARTS);
+    LPINT   Hits = malloc (MAXHITS * sizeof(int));
+    sqlite3_stmt *statement;
 
-for (ipart=0;ipart<nParts;ipart++)
-{
-    nPartOffsets[ipart] = 0;
-    partOffsets[ipart] = 0;
-}
-for (ipart=0;ipart<nParts;ipart++)
-{
-//    short	pos=BT_FIRST, cond=BT_GE;
-    int		nOffsets, nSeqRec;
-    
-    if (PartLen[ipart] >= Trigger)
+    NSString * string = [INstring uppercaseString];
+    strncpy (Name,string.UTF8String,64);
+    nParts = GetNameParts (Name,PartLoc,PartLen,MAXPARTS);
+    for (ipart=0;ipart<nParts;ipart++)
     {
-        sqlite3_stmt *statement;
-        [self open];
+        nPartOffsets[ipart] = 0;
+        partOffsets[ipart] = 0;
+    }
+    for (ipart=0;ipart<nParts;ipart++)
+    {
         
-        strncpy (Rec.Word,PartLoc[ipart],8);
-        Rec.Seq = SHRT_MIN;
-        NSString *query = [NSString stringWithFormat:@"SELECT SEQUENCE,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word ='%s'",
-                           PartLoc[ipart]];
-        
+        if (PartLen[ipart] >= Trigger)
+        {
+            char endWord[12]={0};
+            [self open];
+            
+            strncpy (endWord,PartLoc[ipart],8);
+            for (int i=(int)strlen(PartLoc[ipart]);i<11;i++)
+                endWord[i] = 'Z';
+            endWord[11] = 0;
+            NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
+                               PartLoc[ipart],endWord];
+            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                LPSTR word = sqlite3_column_text(statement, 0);
+                int nOffsets = sqlite3_column_int(statement,1);
+                LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
+                
+                
+                if (nPartOffsets[ipart] + nOffsets >= MAXOFFSETS)
+                    GetNext = FALSE;
+                else
+                {
+                    partOffsets[ipart] = realloc(partOffsets[ipart], (nPartOffsets[ipart]+nOffsets)*sizeof(int));
+                    partoff = partOffsets[ipart] + nPartOffsets[ipart];
+                    memmove (partoff,pOffsets,nOffsets*sizeof(int));
+                    nPartOffsets[ipart] += nOffsets;
+                }
+            }
+            SQLOK(sqlite3_finalize(statement), "getReportForPID");
+            if (!nPartOffsets[ipart])
+                GetNext = FALSE;
+        }
+        else
+            nPartOffsets[ipart] = INT_MAX;
+    }
+    
+    if (GetNext && nParts > 1)
+        nHits = GetWIHits (Hits,nParts,nPartOffsets,partOffsets,MAXHITS);
+
+    for (ipart=0;ipart<nParts;ipart++)
+    {
+        if (partOffsets[ipart])
+            free (partOffsets[ipart]);
+    }
+    if (nHits)
+    {
+        NSString * inList=[[NSString alloc]init];
+        char delim = 0;
+        for (int i=0;i<nHits;i++)
+        {
+            inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i",delim,Hits[i]]];
+            delim = ',';
+        }
+        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY FROM PROPINFO WHERE id IN(%@)",
+                           inList];
         SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
-            int sequence = sqlite3_column_int(statement,0);
-            int nOffsets = sqlite3_column_int(statement,1);
-            LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
-            SQLOK(sqlite3_finalize(statement), "getReportForPID");
-            
-
- /*       while (GetNext && !BT_FIND (lpGWDHeadNameIndex->BTHandle[0],(LPSTR)&Rec,pos,cond,(LPSTR)&Offset))
-        {
-            LPLONG	pOffsets;
-            
-            pos = BT_NEXT;
-            cond = BT_ANY;
-            
-            FillGWDData (lpGWDHeadNameIndex,Offset);
-            if (strnicmp (pRec->Word,PartLoc[ipart],min(8,PartLen[ipart])))
-                break;
-            nSeqRec = -(sequence + 1);
-            nOffsets = nSeqRec * 100 + nOffsets;
-            if (!nPartOffsets[ipart])
-                pOffsets[ipart] = (int)malloc(MAXOFFSETS * sizeof(int));
-            if (nPartOffsets[ipart] + pRec->nOffsets >= MAXOFFSETS)
-                GetNext = FALSE;
-            else
-            {
-                pOffsets += nPartOffsets[ipart];
-                memmove (pOffsets,pRec->Offsets,pRec->nOffsets*sizeof(long));
-                pOffsets += pRec->nOffsets;
-                nPartOffsets[ipart] += pRec->nOffsets;
-                while (GetNext && nSeqRec--)
-                {
-                    BT_FIND (lpGWDHeadNameIndex->BTHandle[0],(LPSTR)pRec,pos,cond,(LPSTR)&Offset);
-                    FillGWDData (lpGWDHeadNameIndex,Offset);
-                    if (nPartOffsets[ipart] + pRec->nOffsets >= MAXOFFSETS)
-                        GetNext = FALSE;
-                    else
-                    {
-                        memmove (pOffsets,pRec->Offsets,pRec->nOffsets*sizeof(long));
-                        pOffsets += pRec->nOffsets;
-                        nPartOffsets[ipart] += pRec->nOffsets;
-                    }
-                }
-            }
-            GlobalUnlock (hPartOffsets[ipart]);
-            if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-                GetNext = FALSE;
+            LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
+            LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
+            LPSTR house = (LPSTR)sqlite3_column_text(statement,2);
+            LPSTR street = (LPSTR)sqlite3_column_text(statement,3);
+            LPSTR city = (LPSTR)sqlite3_column_text(statement,4);
+            NSString * output = [NSString stringWithFormat:@"%s\t%s\%s %s\t%s",owner,pin,house,street,city];
+            [ownerArray addObject:output];
         }
-        if (!nPartOffsets[ipart])
-            GetNext = FALSE;
+        SQLOK(sqlite3_finalize(statement), "getReportForPID");
     }
-    else
-        nPartOffsets[ipart] = INT_MAX;
-}
-
-if (GetNext)
-nHits = GetWIHits (Hits,nParts,nPartOffsets,hPartOffsets,MAXHITS,hwndCtl);
-for (ipart=0;ipart<nParts;ipart++)
+    /*
 GSSiGlobFree (&hPartOffsets[ipart]);
 GlobalUnlock (FilePtrNameIndex->FileHandle);
 GlobalUnlock (SQLPtrNameIndex->OFHandle);
@@ -1176,7 +1166,7 @@ OpenDataFile (str, "",BT_READ, &hDBName);
 SQLPtrName = (LPOPENSQLDATA) GlobalLock (hDBName);
 FilePtrName = (LPOPENFILEDATA) GlobalLock (SQLPtrName->OFHandle);
 lpGWDHeadName = (LPGWDHEADER)GlobalLock (FilePtrName->FileHandle);
-nowner = 0;
+    nowner = 0;
 while (GetNext && nHits--)
 {
     BOOL	ShowThisOwner = TRUE;
@@ -1242,6 +1232,8 @@ if (First && SaveProperty >= 0)
 PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
 First = FALSE;
 */
+    free (Hits);
+    [self close];
     return ownerArray;
 }
 
@@ -1374,9 +1366,9 @@ Exit:
 int GetNameParts (LPSTR Field,LPSTR *pLoc,LPINT pLen,int MaxParts)
 {
     int	nParts=0;
-    LPSTR	pWord = Field, pEnd;
-    
-    strdup(Field);
+    LPSTR	pWord, pEnd;
+
+    pWord = Field;
     ReplaceChar (Field,'-',' ');
     ReplaceChar (Field,'/',' ');
     ReplaceChar (Field,'(',' ');
@@ -1397,7 +1389,7 @@ int GetNameParts (LPSTR Field,LPSTR *pLoc,LPINT pLen,int MaxParts)
         else
             pEnd = strchr (pWord,0);
         *(pLoc + nParts) = pWord;
-        *(pLen + nParts++) = strlen (pWord);
+        *(pLen + nParts++) = (int)strlen (pWord);
         pWord = pEnd;
     }
     return nParts;
