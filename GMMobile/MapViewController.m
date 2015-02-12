@@ -16,7 +16,7 @@
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport;
 @property (nonatomic) NSInteger tableViewSetting;
-@property (nonatomic) CGFloat maxScreenSize;
+@property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearWhenDeselected, firstTime;
 @property (nonatomic, copy) NSString *selectedPID;
@@ -656,8 +656,8 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     _tableView.bounces = NO;
     _tableView.backgroundColor = _tableViewBackgroundColor;
     
-    _maxScreenSize = MAX(self.view.frame.size.width, self.view.bounds.size.height);
-    _tableView.layer.cornerRadius = (_maxScreenSize / 64.0);
+    _screenSize = MIN(self.view.frame.size.width, self.view.bounds.size.height);
+    _tableView.layer.cornerRadius = (_screenSize / 48.0);
     [self.view bringSubviewToFront:_tableView];
 }
 
@@ -686,7 +686,7 @@ viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = [[UILabel alloc] init];
     headerLabel.frame = CGRectMake(0.0, 0.0, tableView.frame.size.width, [self getHeaderHeight]);
-    headerLabel.font = [UIFont boldSystemFontOfSize:(_maxScreenSize / 28.0)];
+    headerLabel.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 21.0), 21.0)];
     headerLabel.textColor = UIColor.yellowColor;
     headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
@@ -728,13 +728,10 @@ viewForHeaderInSection:(NSInteger)section
 
 - (CGFloat)getHeaderHeight
 {
-    CGFloat headerHeight = 44.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        headerHeight = 30.0;
+    CGFloat headerHeight = MAX((_screenSize / 16.0), 30.0);
     
     if (_tableViewSetting == PropertyTableViewSettingPropertyReport)
-        headerHeight *= 2.0;
+        headerHeight *= 1.9;
     
     return headerHeight;
 }
@@ -748,10 +745,7 @@ heightForHeaderInSection:(NSInteger)section
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGFloat rowHeight = 36.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        rowHeight = 30.0;
+    CGFloat rowHeight = MAX((_screenSize / 16.0), 30.0);
     
     if (_tableViewSetting == PropertyTableViewSettingOptions)
         rowHeight = ((_tableView.frame.size.height - [self getHeaderHeight]) / _options.count);
@@ -762,7 +756,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
         
         CGSize textSize = [textLabelText sizeWithAttributes:@{NSFontAttributeName:
                                                                   [UIFont systemFontOfSize:
-                                                                   MAX((_maxScreenSize / 38.0), 18.0)]}];
+                                                                   MAX((_screenSize / 28.0), 18.0)]}];
         
         CGFloat textToCellFit = (textSize.width / (tableView.frame.size.width * 0.6));
         
@@ -799,14 +793,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     switch (_tableViewSetting)
     {
         case PropertyTableViewSettingOptions:
-            cell.textLabel.font = [UIFont boldSystemFontOfSize:(_maxScreenSize / 28.0)];
+            cell.textLabel.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 21.0), 21.0)];
             cell.textLabel.textAlignment = NSTextAlignmentCenter;
             cell.textLabel.text = _options[indexPath.row];
             cell.indentationWidth = 0.0;
             break;
             
         case PropertyTableViewSettingPropertyReport:
-            cell.textLabel.font = [UIFont systemFontOfSize:MAX((_maxScreenSize / 38.0), 18.0)];
+            cell.textLabel.font = [UIFont systemFontOfSize:MAX((_screenSize / 28.0), 18.0)];
             
             cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
                                    [UserDefaults.defaults includeTextAfterFirstColon:
@@ -821,7 +815,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
                                                                            cell.frame.size.height)];
             
             rowHeader.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
-            rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_maxScreenSize / 64.0), 12.0)];
+            rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 48.0), 12.0)];
             rowHeader.textAlignment = NSTextAlignmentRight;
             
             rowHeader.textColor = [UIColor colorWithRed:0.7
