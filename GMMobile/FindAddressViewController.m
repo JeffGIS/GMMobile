@@ -115,6 +115,35 @@
     [_tableView reloadData];
 }
 
+- (BOOL)textField:(UITextField *)textField
+shouldChangeCharactersInRange:(NSRange)range
+replacementString:(NSString *)string
+{
+    if (textField == _houseTF)
+    {
+        NSCharacterSet *numberSet = NSCharacterSet.decimalDigitCharacterSet;
+        NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
+        NSCharacterSet *stringSet = [NSCharacterSet characterSetWithCharactersInString:string];
+        
+        if ([numberSet isSupersetOfSet:stringSet])
+            return YES;
+        
+        else
+        {
+            [_houseTF resignFirstResponder];
+            [_streetTF becomeFirstResponder];
+            
+            if (![whitespaceSet isSupersetOfSet:stringSet])
+                _streetTF.text = string;
+            
+            return NO;
+        }
+    }
+    
+    else
+        return YES;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self dismissTextField];
