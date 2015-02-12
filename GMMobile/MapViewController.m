@@ -1033,4 +1033,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+       shouldReceiveTouch:(UITouch *)touch
+{
+    if (gestureRecognizer == _longPress && (!_tableView.hidden))
+        return NO;
+    
+    else
+        return YES;
+}
+
 @end
