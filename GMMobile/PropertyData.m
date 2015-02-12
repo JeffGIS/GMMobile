@@ -1020,7 +1020,7 @@ int SQLOK(int sqlReturn, char *method)
             break;
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
             SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getReportForPID");
@@ -1055,6 +1055,8 @@ int SQLOK(int sqlReturn, char *method)
                 CGFloat taxCapac = sqlite3_column_double(statement, 23);
                 CGFloat totalTax = sqlite3_column_double(statement, 24);
                 CGFloat specAsses = sqlite3_column_double(statement, 25);
+                LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 26);
+                CGFloat saleValue = sqlite3_column_double(statement, 27);
             
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
@@ -1088,7 +1090,13 @@ int SQLOK(int sqlReturn, char *method)
                 
                 line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
                 [report addObject:line];
- 
+                
+                line = [NSString stringWithFormat:@"Last Sale Date:%s", saleDate];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Sale Value:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)saleValue]]];
+                [report addObject:line];
+                
                 line = [NSString stringWithFormat:@"Building EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)bldgEMV]]];
                 [report addObject:line];
                 
