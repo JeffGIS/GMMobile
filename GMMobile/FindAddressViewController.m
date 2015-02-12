@@ -80,10 +80,10 @@
     NSString *houseSearchText = [UserDefaults.defaults stringForKey:@"CurrentHouseSearchText"];
     NSString *streetSearchText = [UserDefaults.defaults stringForKey:@"CurrentStreetSearchText"];
     
-    if (![streetSearchText isEqualToString:@""])
+    if ((streetSearchText) && ![streetSearchText isEqualToString:@""])
         _streetTF.text = streetSearchText;
     
-    if (![houseSearchText isEqualToString:@""])
+    if ((houseSearchText) && ![houseSearchText isEqualToString:@""])
     {
         _houseTF.text = houseSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
@@ -97,6 +97,12 @@
 
 - (void)houseTFDidChange:(UITextField *)textField
 {
+    if ([textField.text isEqualToString:@""])
+    {
+        [_addressList removeAllObjects];
+        [_tableView reloadData];
+    }
+    
     PropertyData *propData = [[PropertyData alloc] init];
     
     _addressList = [propData getPIDsMatchingAddress:textField.text.intValue

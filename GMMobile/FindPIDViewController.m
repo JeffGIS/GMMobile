@@ -63,7 +63,7 @@
     
     NSString *pidSearchText = [UserDefaults.defaults stringForKey:@"CurrentPIDSearchText"];
     
-    if (![pidSearchText isEqualToString:@""])
+    if ((pidSearchText) && ![pidSearchText isEqualToString:@""])
     {
         _pidEntry.text = pidSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
@@ -79,12 +79,11 @@
         forControlEvents:UIControlEventEditingChanged];
 }
 
-
 - (void)textFieldDidChange:(UITextField *)textField
 {
     if ([textField.text isEqualToString:@""])
     {
-        _pidList = nil;
+        [_pidList removeAllObjects];
         [_tableView reloadData];
     }
     
@@ -208,6 +207,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [_delegate findPIDViewController:self
                             didSelectPID:[UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]]];
+        
     }
 }
 

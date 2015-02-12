@@ -1245,16 +1245,13 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     int	nParts, ipart, iparttest, nOwners;
     LPWORDINDEX	pRec;
     WORDINDEX	Rec;
-    LPINT   partOffsets[MAXPARTS], partoff;
-    int		nPartOffsets[MAXPARTS];
-    int     PartLen[MAXPARTS], PartLenTest[MAXPARTS];
-    LPSTR   PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-    int     Trigger = 3;
-    int		nHits = 0;
-    int     nowner;
-    BOOL	GetNext = TRUE;
-    char	Name[66];
-    LPINT   Hits = malloc (MAXHITS * sizeof(int));
+    LPINT partOffsets[MAXPARTS], partoff;
+    int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
+    LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
+    int Trigger = 3, nHits = 0, nowner;
+    BOOL GetNext = TRUE;
+    char Name[66];
+    LPINT Hits = malloc(MAXHITS * sizeof(int));
     sqlite3_stmt *statement;
 
     NSString *string = INstring.uppercaseString;
@@ -1280,10 +1277,12 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
                 endWord[i] = 'Z';
             
             endWord[11] = 0;
+            
             NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
                                PartLoc[ipart],endWord];
             
             SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetOwners");
+            
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
                 LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
@@ -1313,23 +1312,25 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
     }
     
     if (GetNext && nParts > 1)
-        nHits = GetWIHits (Hits,nParts,nPartOffsets,partOffsets,MAXHITS);
+        nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
 
-    for (ipart=0;ipart<nParts;ipart++)
+    for (ipart = 0; ipart < nParts; ipart++)
     {
         if (partOffsets[ipart])
             free (partOffsets[ipart]);
     }
+    
     if (nHits)
     {
         NSString *inList=[[NSString alloc] init];
         char delim = 0;
         
-        for (int i =0; i < nHits; i++)
+        for (int i = 0; i < nHits; i++)
         {
             inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i", delim, Hits[i]]];
             delim = ',';
         }
+        
         NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
@@ -1342,14 +1343,15 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             LPSTR street = (LPSTR)sqlite3_column_text(statement,3);
             LPSTR city = (LPSTR)sqlite3_column_text(statement,4);
             char testName[256];
-            strcpy (testName,owner);
-            int   nPartsTest = GetNameParts (testName,PartLocTest,PartLenTest,MAXPARTS);
-            BOOL  ShowThisOwner=TRUE;
-            for (ipart = 0;ipart < nParts;ipart++)
+            strcpy(testName,owner);
+            int nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
+            BOOL  ShowThisOwner = TRUE;
+            
+            for (ipart = 0; ipart < nParts; ipart++)
             {
-                for (iparttest=0;iparttest<nPartsTest;iparttest++)
+                for (iparttest = 0; iparttest <nPartsTest; iparttest++)
                 {
-                    if (!strncasecmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
+                    if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
                     {
                         *PartLocTest[iparttest] = 0;
                         goto FoundPart;
@@ -1357,6 +1359,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
                 }
                 ShowThisOwner = FALSE;
                 break;
+                
             FoundPart:							;
             }
             
