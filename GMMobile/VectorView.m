@@ -34,9 +34,10 @@
         [pd displayParcels:context
                   LLBounds:&_latlonBounds
                 viewBounds:&_viewBounds];
+        
         [pd displayParcelText:context
-                  LLBounds:&_latlonBounds
-                viewBounds:&_viewBounds];
+                     LLBounds:&_latlonBounds
+                   viewBounds:&_viewBounds];
     }
     
     //CGContextRelease(context);

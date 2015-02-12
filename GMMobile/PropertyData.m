@@ -179,7 +179,8 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar limitOf:(int)lim
+- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
+                                           limitOf:(int)lim
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
     int n=0;
@@ -254,7 +255,7 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSString *)pickPID:(LLPOINT*)pt
+- (NSString *)pickPID:(LLPOINT *)pt
 {
     NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
@@ -335,7 +336,6 @@ static PropertyData *_propData;
         _fileSize = [NSFileManager.defaultManager
                      attributesOfItemAtPath:_path
                      error:nil].fileSize;
-
     }
 }
 
@@ -508,21 +508,22 @@ int SQLOK(int sqlReturn, char *method)
  CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
  */
 
--(void) displayParcels:(CGContextRef)context
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+-(void)displayParcels:(CGContextRef)context
+             LLBounds:(MNMXCORD *)platlonBounds
+           viewBounds:(MNMXCORD *)pvbounds
 {
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
-    NSString *query;    sqlite3_stmt *statement;
+    NSString *query;
+    sqlite3_stmt *statement;
     LPSTR pid;
     DPOINT BasePt;
     int numPoints,numLoops, refno;
     CGFloat emvTotal, specAssmt;
-    LPSTR homeStead,useCode,useDesc,taxExempt;
+    LPSTR homeStead, useCode, useDesc, taxExempt;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
     [self open];
@@ -561,6 +562,7 @@ int SQLOK(int sqlReturn, char *method)
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,6);
         nBlobBytes = sqlite3_column_bytes(statement,6);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -752,22 +754,23 @@ int SQLOK(int sqlReturn, char *method)
     return '?';
 }
 
-- (BOOL) displayText:(NSString*)text
-     usingContext:(CGContextRef)context
-          atPoint:(LPDPOINT)pviewPoint
+- (BOOL)displayText:(NSString *)text
+       usingContext:(CGContextRef)context
+            atPoint:(LPDPOINT)pviewPoint
           maxPixels:(double)maxPixels
 {
-    BOOL rtn=FALSE; //true if text large enough to display
+    BOOL rtn = FALSE; //true if text large enough to display
     
     return rtn;
 }
 
--(void) displayParcelText:(CGContextRef)context
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+-(void)displayParcelText:(CGContextRef)context
+                LLBounds:(MNMXCORD *)platlonBounds
+              viewBounds:(MNMXCORD *)pvbounds
 {
     if (!CRAPI.sharedInstance.parcelTextOption)
         return;
+    
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -867,20 +870,19 @@ int SQLOK(int sqlReturn, char *method)
                                                   alpha:alpha];
                     break;
             }*/
+            
             viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-           
+            
             [self displayText:text
                  usingContext:context
                       atPoint:&viewPoint
-                      maxPixels:acres * acresToPixelsFactor];
+                    maxPixels:acres *acresToPixelsFactor];
         }
-        
     }
     
     SQLOK(sqlite3_finalize(statement), "displayParcelText");
     [self close];
 }
-
 
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
@@ -1230,6 +1232,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
        // if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
        //     break;
     }
+    
     return nHits;
 }
 
@@ -1301,6 +1304,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             if (!nPartOffsets[ipart])
                 GetNext = FALSE;
         }
+        
         else
             nPartOffsets[ipart] = INT_MAX;
     }
