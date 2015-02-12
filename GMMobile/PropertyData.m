@@ -1238,8 +1238,11 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
 
 - (NSMutableArray *)getOwnersMatchingString:(NSString *)INstring
 {
-    NSMutableArray * ownerArray = [[NSMutableArray alloc]init];
-    int	nParts, ipart,iparttest, nOwners;
+    if (!INstring)
+        return nil;
+    
+    NSMutableArray *ownerArray = [[NSMutableArray alloc] init];
+    int	nParts, ipart, iparttest, nOwners;
     LPWORDINDEX	pRec;
     WORDINDEX	Rec;
     LPINT   partOffsets[MAXPARTS], partoff;

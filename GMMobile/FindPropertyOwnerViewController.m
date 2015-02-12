@@ -63,7 +63,7 @@
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     
-    if (![propOwnerSearchText isEqualToString:@""])
+    if (!(propOwnerSearchText))
     {
         _propOwnerTF.text = propOwnerSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
