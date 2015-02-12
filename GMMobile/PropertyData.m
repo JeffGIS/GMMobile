@@ -881,6 +881,14 @@ int SQLOK(int sqlReturn, char *method)
     [self close];
 }
 
+- (void)computeStability:(double*)stability openSpace:(double*)openSpacePCT commercialPCT:(double*)pctCommercial totEMVRank:(double*)rankTotEMV inCensusArea:(LPSTR)cenBlock
+{
+    *stability = 8.3;
+    *openSpacePCT = 18.4;
+    *pctCommercial = 21.2;
+    *rankTotEMV = 43.5;
+}
+
 
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
@@ -1020,7 +1028,7 @@ int SQLOK(int sqlReturn, char *method)
             break;
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
             SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getReportForPID");
@@ -1057,7 +1065,8 @@ int SQLOK(int sqlReturn, char *method)
                 CGFloat specAsses = sqlite3_column_double(statement, 25);
                 LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 26);
                 CGFloat saleValue = sqlite3_column_double(statement, 27);
-            
+                LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement,28);
+
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
                 dollarFmt.groupingSeparator = @"'";
@@ -1151,7 +1160,23 @@ int SQLOK(int sqlReturn, char *method)
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
                 SQLOK(sqlite3_finalize(statement), "getReportForPID");
+                double stability, openSpacePCT, pctCommercial, rankTotEMV;
+                [self computeStability:&stability openSpace:&openSpacePCT commercialPCT:&pctCommercial totEMVRank:&rankTotEMV inCensusArea:cenBlock];
+                line = [NSString stringWithFormat:@"Stability:%.1f years", stability];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Open Space:%.1f%%", openSpacePCT];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Percent Commercial:%.1f%%", pctCommercial];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"EMV Rank:%.1f%%", rankTotEMV];
+                [report addObject:line];
+                
             }
+            else
+                SQLOK(sqlite3_finalize(statement), "getReportForPID");
         }
     }
    
