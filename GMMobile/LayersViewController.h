@@ -13,13 +13,14 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelShadingOption2;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelTextOption;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelTextOption2;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *parcelBoundaryLines;
+//@property (weak, nonatomic) IBOutlet UISegmentedControl *basemapSC;
+
 - (IBAction)displayTileInfo:(id)sender;
 - (IBAction)parcelShadingOption:(id)sender;
 - (IBAction)parcelShadingOption2:(id)sender;
 - (IBAction)parcelTextOption:(id)sender;
 - (IBAction)parcelTextOption2:(id)sender;
 - (IBAction)parcelBoundaryLines:(id)sender;
-@property (weak, nonatomic) IBOutlet UISegmentedControl *parcelBoundaryLines;
-//@property (weak, nonatomic) IBOutlet UISegmentedControl *basemapSC;
 
 @end

@@ -101,6 +101,7 @@
     CRAPI.sharedInstance.parcelShadingOption = (int)_parcelShadingOption2.selectedSegmentIndex+4;
     [self setParcelLines];
 }
+
 - (IBAction)parcelTextOption:(id)sender
 {
     CRAPI.sharedInstance.parcelTextOption = (int)_parcelTextOption.selectedSegmentIndex;
