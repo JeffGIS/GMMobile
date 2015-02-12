@@ -446,7 +446,7 @@ calloutAccessoryControlTapped:(UIControl *)control
     }
     
     CGRect frame = _tableView.frame;
-    _tableView.frame = CGRectMake(view.center.x, view.center.y, 0.0, 0.0);
+    _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
     _tableView.hidden = NO;
     
     [UIView animateWithDuration:0.25
@@ -748,7 +748,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     CGFloat rowHeight = MAX((_screenSize / 20.0), 28.0);
     
     if (_tableViewSetting == PropertyTableViewSettingOptions)
-        rowHeight = ((_tableView.frame.size.height - [self getHeaderHeight]) / _options.count);
+        rowHeight = MAX(((_tableView.frame.size.height - [self getHeaderHeight]) / _options.count), 1.0);
     
     else
     {
@@ -863,8 +863,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!_tableView.hidden)
     {
-        _tableView.hidden = YES;
-        _clearWhenDeselected = NO;
+        CGRect frame = _tableView.frame;
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _tableView.frame = CGRectMake(self.view.center.x,
+                                                           self.view.center.y,
+                                                           0.0, 0.0);
+                         }
+                         completion:^(BOOL finished){
+                             _tableView.hidden = YES;
+                             _tableView.frame = frame;
+                             _clearWhenDeselected = NO;
+                         }];
     }
 }
 
