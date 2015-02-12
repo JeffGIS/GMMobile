@@ -745,7 +745,7 @@ heightForHeaderInSection:(NSInteger)section
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGFloat rowHeight = MAX((_screenSize / 16.0), 30.0);
+    CGFloat rowHeight = MAX((_screenSize / 20.0), 28.0);
     
     if (_tableViewSetting == PropertyTableViewSettingOptions)
         rowHeight = ((_tableView.frame.size.height - [self getHeaderHeight]) / _options.count);
@@ -815,7 +815,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
                                                                            cell.frame.size.height)];
             
             rowHeader.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
-            rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 48.0), 12.0)];
+            rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 48.0), 11.5)];
             rowHeader.textAlignment = NSTextAlignmentRight;
             
             rowHeader.textColor = [UIColor colorWithRed:0.7
