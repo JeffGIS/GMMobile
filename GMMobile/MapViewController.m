@@ -434,8 +434,6 @@ calloutAccessoryControlTapped:(UIControl *)control
         
         [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
                                animated:NO];
-        
-        _tableView.hidden = NO;
     }
     
     else if (control == view.leftCalloutAccessoryView)
@@ -445,8 +443,16 @@ calloutAccessoryControlTapped:(UIControl *)control
         _tableView.allowsSelection = YES;
         _tableView.delaysContentTouches = NO;
         [_tableView reloadData];
-        _tableView.hidden = NO;
     }
+    
+    CGRect frame = _tableView.frame;
+    _tableView.frame = CGRectMake(view.center.x, view.center.y, 0.0, 0.0);
+    _tableView.hidden = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _tableView.frame = frame;
+                     }];
 }
 
 - (void)mapView:(MKMapView *)mapView
@@ -532,7 +538,6 @@ didDeselectAnnotationView:(MKAnnotationView *)view
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
-                                 
                                  CGRectMake(0.0, statusBarHeight +
                                             ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
                                             (self.view.frame.size.height + tabBarHeight),
@@ -626,7 +631,8 @@ didDeselectAnnotationView:(MKAnnotationView *)view
     [_vectorView setNeedsDisplay];
 }
 
-- (void)refreshVectorView:(MKCoordinateRegion) region atZoom:(int)zoom
+- (void)refreshVectorView:(MKCoordinateRegion)region
+                   atZoom:(int)zoom
 {
     MNMXCORD llBounds;
     _vectorView.displayData = 1;
@@ -724,8 +730,11 @@ viewForHeaderInSection:(NSInteger)section
 {
     CGFloat headerHeight = 44.0;
     
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        headerHeight = 30.0;
+    
     if (_tableViewSetting == PropertyTableViewSettingPropertyReport)
-        headerHeight = 88.0;
+        headerHeight *= 2.0;
     
     return headerHeight;
 }
