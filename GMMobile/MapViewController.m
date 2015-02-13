@@ -543,6 +543,17 @@ didSelectAnnotationView:(MKAnnotationView *)view
 {
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
+    if (!_streetView.hidden)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _streetView.frame =
+                             CGRectMake((((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
+                                        ((self.view.frame.size.width - _screenSize) / 2.0),
+                                        _screenSize, _screenSize);
+                         }];
+    }
+    
     switch (_screenSetting)
     {
         case MapViewScreenSettingFullscreen:
@@ -914,8 +925,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          animations:^{
                              _streetView.frame =
                              CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
-                                        (((self.view.frame.size.height +
-                                           self.tabBarController.tabBar.frame.size.height) - _screenSize) / 2.0),
+                                        (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
                                         _screenSize, _screenSize);
                          }];
     }
