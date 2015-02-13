@@ -883,10 +883,43 @@ int SQLOK(int sqlReturn, char *method)
 
 - (void)computeStability:(double*)stability openSpace:(double*)openSpacePCT commercialPCT:(double*)pctCommercial totEMVRank:(double*)rankTotEMV inCensusArea:(LPSTR)cenBlock
 {
-    *stability = 8.3;
-    *openSpacePCT = 18.4;
-    *pctCommercial = 21.2;
-    *rankTotEMV = 43.5;
+    sqlite3_stmt *statement;
+    double sumEMV=0;
+    double sumAcres=0;
+    int numIncluded=0;
+    double pctAveEMV, aveEMV;
+    double myTotEMV = *rankTotEMV;
+    
+    return;
+    *stability = 0;
+    *openSpacePCT = 0;
+    *pctCommercial = 0;
+    *rankTotEMV = 0;
+    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD FROM PROPINFO WHERE CENBLOCK='%s'",
+                       cenBlock];
+    
+    [self open];
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        double acres = sqlite3_column_double(statement,0);
+        LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, 1);
+        LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 2);
+        double totEMV = sqlite3_column_double(statement, 3);
+        double totTax = sqlite3_column_double(statement, 4);
+        LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 5);
+        
+        if (*homestead == 'Y')
+        {
+            sumAcres += acres;
+            sumEMV += totEMV;
+            numIncluded++;
+        }
+    }
+    aveEMV = sumEMV / numIncluded;
+    pctAveEMV = (myTotEMV / aveEMV) * 100;
+    //*rankTotEMV =
+    SQLOK(sqlite3_finalize(statement), "getReportForPID");
 }
 
 
