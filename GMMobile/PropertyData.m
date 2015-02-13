@@ -689,7 +689,7 @@ int SQLOK(int sqlReturn, char *method)
     return color;
 }
 
--(char)useCodeClass:(char *)useCode
+- (char)useCodeClass:(char *)useCode
 {
     if (!strcasecmp(useCode, "CAUT"))
         return 'N';
@@ -754,15 +754,28 @@ int SQLOK(int sqlReturn, char *method)
     return '?';
 }
 
-- (BOOL)displayText:(NSString *)text
-       usingContext:(CGContextRef)context
+- (void)displayText:(NSString *)text
             atPoint:(LPDPOINT)pviewPoint
-          maxPixels:(double)maxPixels
+          maxPixels:(CGFloat)maxPixels
 {
+    CGPoint textPoint;
+    textPoint.x = pviewPoint->x;
+    textPoint.y = pviewPoint->y;
     
-    BOOL rtn = FALSE; //true if text large enough to display
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [UIFont systemFontOfSize:12.0], NSFontAttributeName,
+                                UIColor.blackColor, NSForegroundColorAttributeName,
+                                nil];
     
-    return rtn;
+    CGSize textSize = [text sizeWithAttributes:attributes];
+    textPoint.x -= (textSize.width / 2.0);
+    textPoint.y -= (textSize.height / 2.0);
+    
+    if (textSize.width < sqrtf(maxPixels))
+    {
+        [text drawAtPoint:textPoint
+           withAttributes:attributes];
+    }
 }
 
 - (void)displayParcelText:(CGContextRef)context
@@ -778,7 +791,7 @@ int SQLOK(int sqlReturn, char *method)
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
     DPOINT p1, p2;
-    double boundsWidthInMeters, boundsHeightInMeters;
+    CGFloat boundsWidthInMeters, boundsHeightInMeters;
     p1.x = platlonBounds->xmn;
     p1.y = platlonBounds->ymn;
     p2.x = platlonBounds->xmn;
@@ -787,9 +800,9 @@ int SQLOK(int sqlReturn, char *method)
     p2.x = platlonBounds->xmx;
     p2.y = platlonBounds->ymn;
     boundsWidthInMeters = ArcDistance(p1, p2);
-    double boundsInAcres = boundsWidthInMeters * boundsHeightInMeters * ACRES_PER_SQMETER;
-    double boundsInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
-    double acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
+    CGFloat boundsInAcres = boundsWidthInMeters * boundsHeightInMeters * ACRES_PER_SQMETER;
+    CGFloat boundsInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
+    CGFloat acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
     NSString *query;
     sqlite3_stmt *statement;
     LPSTR pid;
@@ -798,8 +811,8 @@ int SQLOK(int sqlReturn, char *method)
     LPSTR homeStead,useCode,useDesc,taxExempt;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
-    NSString *text=@"Test Text\nLine 2";
-    double area;
+    NSString *text = @"Test Text\nLine 2";
+    CGFloat area;
     [self open];
     
     switch (CRAPI.sharedInstance.project)
@@ -808,6 +821,7 @@ int SQLOK(int sqlReturn, char *method)
             query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             break;
+            
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
@@ -831,7 +845,7 @@ int SQLOK(int sqlReturn, char *method)
         specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
         //if (CRAPI.sharedInstance.parcelTextOption)
         {
-            CGFloat alpha = 0;
+            CGFloat alpha = 0.0;
             UIColor *color;
             int opt = CRAPI.sharedInstance.parcelTextOption;
             
@@ -875,7 +889,6 @@ int SQLOK(int sqlReturn, char *method)
             viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
             
             [self displayText:text
-                 usingContext:context
                       atPoint:&viewPoint
                     maxPixels:acres *acresToPixelsFactor];
         }
