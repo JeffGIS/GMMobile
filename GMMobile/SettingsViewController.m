@@ -169,6 +169,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         }
                         
                         [pd commitTransaction];
+                        if (option == GET_PARCELS)
+                        {
+                            dispatch_async(dispatch_get_main_queue(),
+                                           ^{
+                                               _popover.title = @"Load Parcel Tables";
+                                           });
+                            [pd startTransaction];
+                            [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
+                            [pd commitTransaction];
+                        }
                         [pd close];
                         fclose(fid);
                         free(str);
