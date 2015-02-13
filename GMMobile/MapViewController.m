@@ -11,7 +11,7 @@
 @property (nonatomic) GSSiTileOverlay *gmmOverlay;
 @property (nonatomic) MKMapCamera *camera;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
-@property (nonatomic) CLLocationCoordinate2D target;
+@property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport;
@@ -23,7 +23,7 @@
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth;
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
-@property (nonatomic) UIImageView *firstImageView, *secondImageView;
+@property (nonatomic) UIImageView *firstImageView, *secondImageView, *streetView;
 @property (nonatomic) NSInteger screenSetting;
 
 @end
@@ -36,6 +36,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = UIColor.whiteColor;
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0
                                                 green:0.0
@@ -69,6 +71,8 @@
     
     _firstImageView = [[UIImageView alloc] init];
     _secondImageView = [[UIImageView alloc] init];
+    _streetView = [[UIImageView alloc] init];
+    _streetView.hidden = YES;
     
     _firstImageView.frame = _secondImageView.frame = CGRectMake(0.0,
                                                                 tabBarTop,
@@ -94,6 +98,7 @@
     
     [self.view addSubview:_firstImageView];
     [self.view addSubview:_secondImageView];
+    [self.view addSubview:_streetView];
     
     _mapView.delegate = self;
     _mapView.showsUserLocation = YES;
@@ -249,7 +254,7 @@
         [_mapView setRegion:newRegion
                    animated:YES];
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-        annotation.coordinate = pidCoord;
+        annotation.coordinate = _selectedPIDCoords = pidCoord;
         
         switch (CRAPI.sharedInstance.GMMSetting)
         {
@@ -420,7 +425,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         coordPicked.longitude = llp.lon;
         
         _clearWhenDeselected = NO;
-        annotation.coordinate = coordPicked;
+        annotation.coordinate = _selectedPIDCoords = coordPicked;
         annotation.title = _selectedPID;
         annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
         [self addAnnotation:annotation];
@@ -474,10 +479,10 @@ calloutAccessoryControlTapped:(UIControl *)control
     else if (control == view.leftCalloutAccessoryView)
     {
         if ([self isHennepinCountyPID:view.annotation.title])
-            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
+            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View"];
         
         else
-            _options = @[@"Property Report", @"Rankings", @"Computed Values"];
+            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View"];
         
         _tableViewSetting = PropertyTableViewSettingOptions;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -512,7 +517,6 @@ didDeselectAnnotationView:(MKAnnotationView *)view
 didSelectAnnotationView:(MKAnnotationView *)view
 {
     _selectedPID = view.annotation.title;
-    
     PropertyData *propData = [[PropertyData alloc] init];
     
     _propertyReport = [propData getReport:PDSettingDefault
@@ -907,12 +911,65 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                            animated:YES
                          completion:nil];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Display Street View"])
+    {
+        _streetView.frame = _tableView.frame;
+        
+        
+        
+        NSString *svUrl = [NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f", _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+        
+        NSURL *mapUrl = [NSURL URLWithString:[svUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
+        _streetView.image = image;
+        [self.view bringSubviewToFront:_streetView];
+        self.view.backgroundColor = UIColor.blackColor;
+        
+        for (UIView *view in self.view.subviews)
+            view.hidden = YES;
+        
+        self.tabBarController.tabBar.hidden = YES;
+        _streetView.hidden = NO;
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _streetView.frame =
+                             CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
+                                        (((self.view.frame.size.height +
+                                           self.tabBarController.tabBar.frame.size.height) - _screenSize) / 2.0),
+                                        _screenSize, _screenSize);
+                         }];
+    }
 }
 
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
-    if (!_tableView.hidden)
+    if (!_streetView.hidden)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _streetView.frame = _tableView.frame;
+                             self.view.backgroundColor = UIColor.whiteColor;
+                             self.tabBarController.tabBar.hidden = NO;
+                             
+                             for (UIView *view in self.view.subviews)
+                                 view.hidden = NO;
+                         }
+                         completion:^(BOOL finished){
+                             [self.view sendSubviewToBack:_streetView];
+                             _streetView.hidden = YES;
+                             
+                             if (_tableView.indexPathForSelectedRow)
+                             {
+                                 [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                                           animated:YES];
+                             }
+                         }];
+    }
+    
+    else if (!_tableView.hidden)
     {
         CGRect frame = _tableView.frame;
         

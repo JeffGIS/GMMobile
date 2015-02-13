@@ -761,7 +761,10 @@ int SQLOK(int sqlReturn, char *method)
     CGPoint textPoint;
     textPoint.x = pviewPoint->x;
     textPoint.y = pviewPoint->y;
-    text = [text stringByReplacingOccurrencesOfString:@"&" withString:@"\n&\n"];
+    
+    text = [text stringByReplacingOccurrencesOfString:@"&"
+                                           withString:@"\n&\n"];
+    
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [UIFont systemFontOfSize:12.0], NSFontAttributeName,
                                 UIColor.blackColor, NSForegroundColorAttributeName,
@@ -859,9 +862,9 @@ int SQLOK(int sqlReturn, char *method)
             switch (CRAPI.sharedInstance.parcelTextOption)
             {
                 case 1://homestead
-                    num = [[NSNumber alloc]initWithDouble:emvTotal];
-                    text = [NSString stringWithFormat:@"%s\n%@",owner,[dollarFmt stringFromNumber:num]];
-                break;
+                    num = [[NSNumber alloc] initWithDouble:emvTotal];
+                    text = [NSString stringWithFormat:@"%s\n%@", owner, [dollarFmt stringFromNumber:num]];
+                    break;
                     
                 default:
                     break;
