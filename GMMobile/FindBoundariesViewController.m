@@ -64,7 +64,7 @@
     
     NSString *boundsSearchText = [UserDefaults.defaults stringForKey:@"CurrentBoundsSearchText"];
     
-    if (![boundsSearchText isEqualToString:@""])
+    if ((boundsSearchText) && ![boundsSearchText isEqualToString:@""])
     {
         _boundariesTF.text = boundsSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
@@ -82,7 +82,7 @@
 {
     if ([textField.text isEqualToString:@""])
     {
-        _boundaryList = nil;
+        [_boundaryList removeAllObjects];
         [_topTableView reloadData];
     }
     

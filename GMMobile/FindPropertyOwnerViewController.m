@@ -63,7 +63,7 @@
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     
-    if (![propOwnerSearchText isEqualToString:@""])
+    if ((propOwnerSearchText) || [propOwnerSearchText isEqualToString:@""])
     {
         _propOwnerTF.text = propOwnerSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
@@ -81,7 +81,7 @@
 {
     if ([textField.text isEqualToString:@""])
     {
-        _propOwnerList = nil;
+        [_propOwnerList removeAllObjects];
         [_tableView reloadData];
     }
     

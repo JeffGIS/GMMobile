@@ -23,20 +23,21 @@
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    if (self.displayData && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
+    if (_displayData && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
     {
         PropertyData *pd = [[PropertyData alloc] init];
         _viewBounds.xmn = self.bounds.origin.x;
-        _viewBounds.xmx = self.bounds.origin.x + self.bounds.size.width;
-        _viewBounds.ymn = self.bounds.origin.y + self.bounds.size.height;
+        _viewBounds.xmx = (self.bounds.origin.x + self.bounds.size.width);
+        _viewBounds.ymn = (self.bounds.origin.y + self.bounds.size.height);
         _viewBounds.ymx = self.bounds.origin.y;
         
         [pd displayParcels:context
                   LLBounds:&_latlonBounds
                 viewBounds:&_viewBounds];
+        
         [pd displayParcelText:context
-                  LLBounds:&_latlonBounds
-                viewBounds:&_viewBounds];
+                     LLBounds:&_latlonBounds
+                   viewBounds:&_viewBounds];
     }
     
     //CGContextRelease(context);

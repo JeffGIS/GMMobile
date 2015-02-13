@@ -80,10 +80,10 @@
     NSString *street1SearchText = [UserDefaults.defaults stringForKey:@"CurrentStreet1SearchText"];
     NSString *street2SearchText = [UserDefaults.defaults stringForKey:@"CurrentStreet2SearchText"];
     
-    if (![street1SearchText isEqualToString:@""])
+    if ((street1SearchText) && ![street1SearchText isEqualToString:@""])
         _street1TF.text = street1SearchText;
     
-    if (![street2SearchText isEqualToString:@""])
+    if ((street2SearchText) && ![street2SearchText isEqualToString:@""])
     {
         _street2TF.text = street2SearchText;
         PropertyData *propData = [[PropertyData alloc] init];
@@ -95,18 +95,36 @@
 
 - (void)street1TFDidChange:(UITextField *)textField
 {
-    PropertyData *propData = [[PropertyData alloc] init];
+    if ([textField.text isEqualToString:@""])
+    {
+        [_intersectionList removeAllObjects];
+        [_tableView reloadData];
+    }
     
-    //_intersectionList = [propData someMethod];
-    [_tableView reloadData];
+    else
+    {
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        //_intersectionList = [propData someMethod];
+        [_tableView reloadData];
+    }
 }
 
 - (void)street2TFDidChange:(UITextField *)textField
 {
-    PropertyData *propData = [[PropertyData alloc] init];
+    if ([textField.text isEqualToString:@""])
+    {
+        [_intersectionList removeAllObjects];
+        [_tableView reloadData];
+    }
     
-    //_intersectionList = [propData someMethod];
-    [_tableView reloadData];
+    else
+    {
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        //_intersectionList = [propData someMethod];
+        [_tableView reloadData];
+    }
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

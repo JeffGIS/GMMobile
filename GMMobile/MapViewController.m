@@ -208,9 +208,19 @@
         _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
                                              fromEyeCoordinate:pidCoord
                                                    eyeAltitude:550.0];
-        
+       
         [_mapView setCamera:_camera
                    animated:YES];
+        
+        MKCoordinateSpan pidSpan = {fabs((fabs(bounds.ymn)) - (fabs(bounds.ymx))),
+                                    fabs((fabs(bounds.xmn)) - (fabs(bounds.xmx)))};
+        
+        if (_mapView.region.span.longitudeDelta < pidSpan.longitudeDelta ||
+            _mapView.region.span.latitudeDelta < pidSpan.latitudeDelta)
+        {
+            [_mapView setRegion:MKCoordinateRegionMake(pidCoord, pidSpan)
+                       animated:YES];
+        }
         
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
@@ -223,13 +233,13 @@
                 break;
                 
             case GMMSettingAddress:
-                annotation.title = CRAPI.sharedInstance.currentAddress;
-                annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+                annotation.title = _selectedPID;
+                annotation.subtitle = CRAPI.sharedInstance.currentAddress;
                 break;
                 
             case GMMSettingPropOwner:
-                annotation.title = CRAPI.sharedInstance.currentPropOwner;
-                annotation.subtitle = _selectedPID;
+                annotation.title = _selectedPID;
+                annotation.subtitle = CRAPI.sharedInstance.currentPropOwner;
                 break;
         }
 
@@ -438,6 +448,12 @@ calloutAccessoryControlTapped:(UIControl *)control
     
     else if (control == view.leftCalloutAccessoryView)
     {
+        if ([self isHennepinCountyPID:view.annotation.title])
+            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
+        
+        else
+            _options = @[@"Property Report", @"Rankings", @"Computed Values"];
+        
         _tableViewSetting = PropertyTableViewSettingOptions;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.allowsSelection = YES;
@@ -465,6 +481,17 @@ didDeselectAnnotationView:(MKAnnotationView *)view
         
         _clearWhenDeselected = YES;
     }
+}
+
+- (void)mapView:(MKMapView *)mapView
+didSelectAnnotationView:(MKAnnotationView *)view
+{
+    _selectedPID = view.annotation.title;
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
 }
 
 - (IBAction)toggleAnnotationState:(id)sender
@@ -647,8 +674,6 @@ didDeselectAnnotationView:(MKAnnotationView *)view
 
 - (void)setupTableView
 {
-    _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
-    
     _tableView.hidden = YES;
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -850,7 +875,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
     {
-        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:_selectedPID];
+        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
+                                      [UserDefaults.defaults removePIDPrefix:_selectedPID]];
         
         [self presentViewController:wkvc
                            animated:YES
@@ -1041,6 +1067,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
         return YES;
+}
+
+- (BOOL)isHennepinCountyPID:(NSString *)PID
+{
+    if ([PID containsString:@"053-"])
+        return YES;
+    
+    else
+        return NO;
 }
 
 @end

@@ -179,7 +179,8 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar limitOf:(int)lim
+- (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
+                                           limitOf:(int)lim
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
     int n=0;
@@ -254,7 +255,7 @@ static PropertyData *_propData;
     return array;
 }
 
-- (NSString *)pickPID:(LLPOINT*)pt
+- (NSString *)pickPID:(LLPOINT *)pt
 {
     NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
@@ -335,7 +336,6 @@ static PropertyData *_propData;
         _fileSize = [NSFileManager.defaultManager
                      attributesOfItemAtPath:_path
                      error:nil].fileSize;
-
     }
 }
 
@@ -508,21 +508,22 @@ int SQLOK(int sqlReturn, char *method)
  CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
  */
 
--(void) displayParcels:(CGContextRef)context
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+-(void)displayParcels:(CGContextRef)context
+             LLBounds:(MNMXCORD *)platlonBounds
+           viewBounds:(MNMXCORD *)pvbounds
 {
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
-    NSString *query;    sqlite3_stmt *statement;
+    NSString *query;
+    sqlite3_stmt *statement;
     LPSTR pid;
     DPOINT BasePt;
     int numPoints,numLoops, refno;
     CGFloat emvTotal, specAssmt;
-    LPSTR homeStead,useCode,useDesc,taxExempt;
+    LPSTR homeStead, useCode, useDesc, taxExempt;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
     [self open];
@@ -561,6 +562,7 @@ int SQLOK(int sqlReturn, char *method)
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,6);
         nBlobBytes = sqlite3_column_bytes(statement,6);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -687,7 +689,7 @@ int SQLOK(int sqlReturn, char *method)
     return color;
 }
 
--(char)useCodeClass:(char *)useCode
+- (char)useCodeClass:(char *)useCode
 {
     if (!strcasecmp(useCode, "CAUT"))
         return 'N';
@@ -752,29 +754,44 @@ int SQLOK(int sqlReturn, char *method)
     return '?';
 }
 
-- (BOOL) displayText:(NSString*)text
-     usingContext:(CGContextRef)context
-          atPoint:(LPDPOINT)pviewPoint
-          maxPixels:(double)maxPixels
+- (void)displayText:(NSString *)text
+            atPoint:(LPDPOINT)pviewPoint
+          maxPixels:(CGFloat)maxPixels
 {
-    BOOL rtn=FALSE; //true if text large enough to display
+    CGPoint textPoint;
+    textPoint.x = pviewPoint->x;
+    textPoint.y = pviewPoint->y;
     
-    return rtn;
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [UIFont systemFontOfSize:12.0], NSFontAttributeName,
+                                UIColor.blackColor, NSForegroundColorAttributeName,
+                                nil];
+    
+    CGSize textSize = [text sizeWithAttributes:attributes];
+    textPoint.x -= (textSize.width / 2.0);
+    textPoint.y -= (textSize.height / 2.0);
+    
+    if (textSize.width < sqrtf(maxPixels))
+    {
+        [text drawAtPoint:textPoint
+           withAttributes:attributes];
+    }
 }
 
--(void) displayParcelText:(CGContextRef)context
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+- (void)displayParcelText:(CGContextRef)context
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds
 {
     if (!CRAPI.sharedInstance.parcelTextOption)
         return;
+    
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
     
     DPOINT p1, p2;
-    double boundsWidthInMeters, boundsHeightInMeters;
+    CGFloat boundsWidthInMeters, boundsHeightInMeters;
     p1.x = platlonBounds->xmn;
     p1.y = platlonBounds->ymn;
     p2.x = platlonBounds->xmn;
@@ -783,9 +800,9 @@ int SQLOK(int sqlReturn, char *method)
     p2.x = platlonBounds->xmx;
     p2.y = platlonBounds->ymn;
     boundsWidthInMeters = ArcDistance(p1, p2);
-    double boundsInAcres = boundsWidthInMeters * boundsHeightInMeters * ACRES_PER_SQMETER;
-    double boundsInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
-    double acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
+    CGFloat boundsInAcres = boundsWidthInMeters * boundsHeightInMeters * ACRES_PER_SQMETER;
+    CGFloat boundsInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
+    CGFloat acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
     NSString *query;
     sqlite3_stmt *statement;
     LPSTR pid;
@@ -794,8 +811,8 @@ int SQLOK(int sqlReturn, char *method)
     LPSTR homeStead,useCode,useDesc,taxExempt;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
-    NSString *text=@"Test Text\nLine 2";
-    double area;
+    NSString *text = @"Test Text\nLine 2";
+    CGFloat area;
     [self open];
     
     switch (CRAPI.sharedInstance.project)
@@ -804,6 +821,7 @@ int SQLOK(int sqlReturn, char *method)
             query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             break;
+            
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
@@ -827,7 +845,7 @@ int SQLOK(int sqlReturn, char *method)
         specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
         //if (CRAPI.sharedInstance.parcelTextOption)
         {
-            CGFloat alpha = 0;
+            CGFloat alpha = 0.0;
             UIColor *color;
             int opt = CRAPI.sharedInstance.parcelTextOption;
             
@@ -867,14 +885,13 @@ int SQLOK(int sqlReturn, char *method)
                                                   alpha:alpha];
                     break;
             }*/
+            
             viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-           
+            
             [self displayText:text
-                 usingContext:context
                       atPoint:&viewPoint
-                      maxPixels:acres * acresToPixelsFactor];
+                    maxPixels:acres *acresToPixelsFactor];
         }
-        
     }
     
     SQLOK(sqlite3_finalize(statement), "displayParcelText");
@@ -1288,25 +1305,26 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
        // if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
        //     break;
     }
+    
     return nHits;
 }
 
 - (NSMutableArray *)getOwnersMatchingString:(NSString *)INstring
 {
-    NSMutableArray * ownerArray = [[NSMutableArray alloc]init];
-    int	nParts, ipart,iparttest, nOwners;
+    if (!INstring)
+        return nil;
+    
+    NSMutableArray *ownerArray = [[NSMutableArray alloc] init];
+    int	nParts, ipart, iparttest, nOwners;
     LPWORDINDEX	pRec;
     WORDINDEX	Rec;
-    LPINT   partOffsets[MAXPARTS], partoff;
-    int		nPartOffsets[MAXPARTS];
-    int     PartLen[MAXPARTS], PartLenTest[MAXPARTS];
-    LPSTR   PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-    int     Trigger = 3;
-    int		nHits = 0;
-    int     nowner;
-    BOOL	GetNext = TRUE;
-    char	Name[66];
-    LPINT   Hits = malloc (MAXHITS * sizeof(int));
+    LPINT partOffsets[MAXPARTS], partoff;
+    int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
+    LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
+    int Trigger = 3, nHits = 0, nowner;
+    BOOL GetNext = TRUE;
+    char Name[66];
+    LPINT Hits = malloc(MAXHITS * sizeof(int));
     sqlite3_stmt *statement;
 
     NSString *string = INstring.uppercaseString;
@@ -1332,10 +1350,12 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
                 endWord[i] = 'Z';
             
             endWord[11] = 0;
+            
             NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
                                PartLoc[ipart],endWord];
             
             SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetOwners");
+            
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
                 LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
@@ -1359,28 +1379,31 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             if (!nPartOffsets[ipart])
                 GetNext = FALSE;
         }
+        
         else
             nPartOffsets[ipart] = INT_MAX;
     }
     
     if (GetNext && nParts > 1)
-        nHits = GetWIHits (Hits,nParts,nPartOffsets,partOffsets,MAXHITS);
+        nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
 
-    for (ipart=0;ipart<nParts;ipart++)
+    for (ipart = 0; ipart < nParts; ipart++)
     {
         if (partOffsets[ipart])
             free (partOffsets[ipart]);
     }
+    
     if (nHits)
     {
         NSString *inList=[[NSString alloc] init];
         char delim = 0;
         
-        for (int i =0; i < nHits; i++)
+        for (int i = 0; i < nHits; i++)
         {
             inList = [inList stringByAppendingString:[NSString stringWithFormat:@"%c%i", delim, Hits[i]]];
             delim = ',';
         }
+        
         NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getOwners");
@@ -1393,14 +1416,15 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
             LPSTR street = (LPSTR)sqlite3_column_text(statement,3);
             LPSTR city = (LPSTR)sqlite3_column_text(statement,4);
             char testName[256];
-            strcpy (testName,owner);
-            int   nPartsTest = GetNameParts (testName,PartLocTest,PartLenTest,MAXPARTS);
-            BOOL  ShowThisOwner=TRUE;
-            for (ipart = 0;ipart < nParts;ipart++)
+            strcpy(testName,owner);
+            int nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
+            BOOL  ShowThisOwner = TRUE;
+            
+            for (ipart = 0; ipart < nParts; ipart++)
             {
-                for (iparttest=0;iparttest<nPartsTest;iparttest++)
+                for (iparttest = 0; iparttest <nPartsTest; iparttest++)
                 {
-                    if (!strncasecmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
+                    if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
                     {
                         *PartLocTest[iparttest] = 0;
                         goto FoundPart;
@@ -1408,6 +1432,7 @@ int GetWIHits (LPINT Hits,int nParts,LPINT nPartOffsets,LPINT *pPartOffsets,int 
                 }
                 ShowThisOwner = FALSE;
                 break;
+                
             FoundPart:							;
             }
             
