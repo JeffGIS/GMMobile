@@ -948,8 +948,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
                                                            animated:YES];
                              }
-                             
-                             [_tableView reloadData];
                          }];
     }
     
