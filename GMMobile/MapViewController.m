@@ -438,6 +438,12 @@ calloutAccessoryControlTapped:(UIControl *)control
     
     else if (control == view.leftCalloutAccessoryView)
     {
+        if ([self isHennepinCountyPID:view.annotation.title])
+            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
+        
+        else
+            _options = @[@"Property Report", @"Rankings", @"Computed Values"];
+        
         _tableViewSetting = PropertyTableViewSettingOptions;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _tableView.allowsSelection = YES;
@@ -658,8 +664,6 @@ didSelectAnnotationView:(MKAnnotationView *)view
 
 - (void)setupTableView
 {
-    _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values"];
-    
     _tableView.hidden = YES;
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -861,7 +865,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
     {
-        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:_selectedPID];
+        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
+                                      [UserDefaults.defaults removePIDPrefix:_selectedPID]];
         
         [self presentViewController:wkvc
                            animated:YES
@@ -1052,6 +1057,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
         return YES;
+}
+
+- (BOOL)isHennepinCountyPID:(NSString *)PID
+{
+    if ([PID containsString:@"053-"])
+        return YES;
+    
+    else
+        return NO;
 }
 
 @end
