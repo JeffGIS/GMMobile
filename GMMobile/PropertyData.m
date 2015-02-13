@@ -761,7 +761,7 @@ int SQLOK(int sqlReturn, char *method)
     CGPoint textPoint;
     textPoint.x = pviewPoint->x;
     textPoint.y = pviewPoint->y;
-    
+    text = [text stringByReplacingOccurrencesOfString:@"&" withString:@"\n&\n"];
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [UIFont systemFontOfSize:12.0], NSFontAttributeName,
                                 UIColor.blackColor, NSForegroundColorAttributeName,
@@ -808,11 +808,17 @@ int SQLOK(int sqlReturn, char *method)
     LPSTR pid;
     DPOINT BasePt, viewPoint;
     CGFloat emvTotal, specAssmt, acres;
-    LPSTR homeStead,useCode,useDesc,taxExempt;
+    LPSTR homeStead,useCode,useDesc,taxExempt,owner;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
     NSString *text = @"Test Text\nLine 2";
-    CGFloat area;
+    NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
+    dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
+    dollarFmt.groupingSeparator = @"'";
+    dollarFmt.groupingSize = 3;
+    dollarFmt.alwaysShowsDecimalSeparator = NO;
+    dollarFmt.usesGroupingSeparator = YES;
+    dollarFmt.maximumFractionDigits = 0;
     [self open];
     
     switch (CRAPI.sharedInstance.project)
@@ -825,7 +831,7 @@ int SQLOK(int sqlReturn, char *method)
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
@@ -843,48 +849,23 @@ int SQLOK(int sqlReturn, char *method)
         taxExempt = (LPSTR)sqlite3_column_text(statement, 7);
         emvTotal = (CGFloat)sqlite3_column_double(statement, 8);
         specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
-        //if (CRAPI.sharedInstance.parcelTextOption)
+        owner = (LPSTR)sqlite3_column_text(statement, 10);
         {
             CGFloat alpha = 0.0;
             UIColor *color;
             int opt = CRAPI.sharedInstance.parcelTextOption;
+            NSNumber * num;
             
-            /*switch (opt)
+            switch (CRAPI.sharedInstance.parcelTextOption)
             {
                 case 1://homestead
-                    if (*homeStead == homeSteadCode)
-                        alpha = 0.6;
+                    num = [[NSNumber alloc]initWithDouble:emvTotal];
+                    text = [NSString stringWithFormat:@"%s\n%@",owner,[dollarFmt stringFromNumber:num]];
+                break;
                     
-                    color = [[UIColor alloc]initWithRed:1.0
-                                                  green:1.0
-                                                   blue:0.0
-                                                  alpha:alpha];
+                default:
                     break;
-                    
-                case 2://res-com
-                    color = [self resComColor:useCode];
-                    break;
-                    
-                case 4://Special Assessment
-                    if (specAssmt > 0)
-                        alpha = 0.6;
-                    
-                    color = [[UIColor alloc]initWithRed:1.0
-                                                  green:1.0
-                                                   blue:0.0
-                                                  alpha:alpha];
-                    break;
-                    
-                case 5://tax_exempt
-                    if (*taxExempt == taxExemptCode)
-                        alpha = 0.6;
-                    
-                    color = [[UIColor alloc]initWithRed:0.0
-                                                  green:1.0
-                                                   blue:0.0
-                                                  alpha:alpha];
-                    break;
-            }*/
+            }
             
             viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
             
