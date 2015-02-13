@@ -208,9 +208,19 @@
         _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
                                              fromEyeCoordinate:pidCoord
                                                    eyeAltitude:550.0];
-        
+       
         [_mapView setCamera:_camera
                    animated:YES];
+        
+        MKCoordinateSpan pidSpan = {fabs((fabs(bounds.ymn)) - (fabs(bounds.ymx))),
+                                    fabs((fabs(bounds.xmn)) - (fabs(bounds.xmx)))};
+        
+        if (_mapView.region.span.longitudeDelta < pidSpan.longitudeDelta ||
+            _mapView.region.span.latitudeDelta < pidSpan.latitudeDelta)
+        {
+            [_mapView setRegion:MKCoordinateRegionMake(pidCoord, pidSpan)
+                       animated:YES];
+        }
         
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = pidCoord;
