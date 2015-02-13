@@ -223,13 +223,13 @@
                 break;
                 
             case GMMSettingAddress:
-                annotation.title = CRAPI.sharedInstance.currentAddress;
-                annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+                annotation.title = _selectedPID;
+                annotation.subtitle = CRAPI.sharedInstance.currentAddress;
                 break;
                 
             case GMMSettingPropOwner:
-                annotation.title = CRAPI.sharedInstance.currentPropOwner;
-                annotation.subtitle = _selectedPID;
+                annotation.title = _selectedPID;
+                annotation.subtitle = CRAPI.sharedInstance.currentPropOwner;
                 break;
         }
 
@@ -465,6 +465,17 @@ didDeselectAnnotationView:(MKAnnotationView *)view
         
         _clearWhenDeselected = YES;
     }
+}
+
+- (void)mapView:(MKMapView *)mapView
+didSelectAnnotationView:(MKAnnotationView *)view
+{
+    _selectedPID = view.annotation.title;
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
 }
 
 - (IBAction)toggleAnnotationState:(id)sender

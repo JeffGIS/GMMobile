@@ -759,14 +759,15 @@ int SQLOK(int sqlReturn, char *method)
             atPoint:(LPDPOINT)pviewPoint
           maxPixels:(double)maxPixels
 {
+    
     BOOL rtn = FALSE; //true if text large enough to display
     
     return rtn;
 }
 
--(void)displayParcelText:(CGContextRef)context
-                LLBounds:(MNMXCORD *)platlonBounds
-              viewBounds:(MNMXCORD *)pvbounds
+- (void)displayParcelText:(CGContextRef)context
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds
 {
     if (!CRAPI.sharedInstance.parcelTextOption)
         return;
