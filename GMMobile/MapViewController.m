@@ -20,7 +20,7 @@
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearWhenDeselected, firstTime;
 @property (nonatomic, copy) NSString *selectedPID;
-@property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth;
+@property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *firstImageView, *secondImageView, *streetView;
@@ -49,6 +49,7 @@
     _cityInnerBounds.origin.y = 96565088;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
+    _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     _firstTime = YES;
     
     _screenSetting = MapViewScreenSettingFullscreen;
@@ -554,14 +555,29 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                    forPID:_selectedPID];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (_tableView)
+    {
+        [_tableView reloadData];
+    }
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    if (_tableView)
-        [_tableView reloadData];
-    
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
-    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+    
+    if (!_streetView.hidden)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _streetView.frame =
+                             CGRectMake((((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
+                                        ((self.view.frame.size.width - _screenSize) / 2.0),
+                                        _screenSize, _screenSize);
+                         }];
+    }
     
     switch (_screenSetting)
     {
@@ -573,8 +589,8 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                  
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            (self.view.frame.size.width - tabBarHeight - statusBarHeight));
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            (self.view.frame.size.width - _tabBarHeight - statusBarHeight));
                              }];
         }
             break;
@@ -587,17 +603,17 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                  
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0),
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 2.0));
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
                              }];
         }
             break;
@@ -608,26 +624,26 @@ didSelectAnnotationView:(MKAnnotationView *)view
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0),
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0),
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5),
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
         }
             break;
@@ -638,26 +654,26 @@ didSelectAnnotationView:(MKAnnotationView *)view
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
-                                            (self.view.frame.size.height + tabBarHeight),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5));
+                                            (self.view.frame.size.height + _tabBarHeight),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5),
-                                            ((self.view.frame.size.height + tabBarHeight) / 2.0),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
+                                            ((self.view.frame.size.height + _tabBarHeight) / 2.0),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame =
-                                 CGRectMake(((self.view.frame.size.height + tabBarHeight) / 2.0),
-                                            statusBarHeight + ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 1.5),
-                                            ((self.view.frame.size.height + tabBarHeight) / 2.0),
-                                            ((self.view.frame.size.width - tabBarHeight - statusBarHeight) / 3.0));
+                                 CGRectMake(((self.view.frame.size.height + _tabBarHeight) / 2.0),
+                                            statusBarHeight + ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
+                                            ((self.view.frame.size.height + _tabBarHeight) / 2.0),
+                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
         }
             break;
@@ -916,8 +932,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _streetView.frame = _tableView.frame;
         
-        
-        
         NSString *svUrl = [NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f", _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
         
         NSURL *mapUrl = [NSURL URLWithString:[svUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -929,15 +943,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (UIView *view in self.view.subviews)
             view.hidden = YES;
         
-        self.tabBarController.tabBar.hidden = YES;
+        self.tabBarController.tabBar.alpha = 0.0;
         _streetView.hidden = NO;
         
         [UIView animateWithDuration:0.25
                          animations:^{
                              _streetView.frame =
                              CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
-                                        (((self.view.frame.size.height +
-                                           self.tabBarController.tabBar.frame.size.height) - _screenSize) / 2.0),
+                                        (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
                                         _screenSize, _screenSize);
                          }];
     }
@@ -950,9 +963,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [UIView animateWithDuration:0.25
                          animations:^{
-                             _streetView.frame = _tableView.frame;
+                             _streetView.frame = CGRectMake(_tableView.frame.origin.x,
+                                                            _tableView.frame.origin.y,
+                                                            _tableView.frame.size.width,
+                                                            _tableView.frame.size.height);
+                             
                              self.view.backgroundColor = UIColor.whiteColor;
-                             self.tabBarController.tabBar.hidden = NO;
+                             self.tabBarController.tabBar.alpha = 1.0;
                              
                              for (UIView *view in self.view.subviews)
                                  view.hidden = NO;

@@ -804,14 +804,17 @@ int SQLOK(int sqlReturn, char *method)
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"\n&\n"];
     
+    NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+    style.alignment = NSTextAlignmentCenter;
+    
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [UIFont systemFontOfSize:12.0], NSFontAttributeName,
                                 UIColor.blackColor, NSForegroundColorAttributeName,
+                                style, NSParagraphStyleAttributeName,
                                 nil];
     
     CGSize textSize = [text sizeWithAttributes:attributes];
-    textPoint.x -= (textSize.width / 2.0);
-    textPoint.y -= (textSize.height / 2.0);
+    //CGRect textFrame = CGRectMake((textPoint.x - (textSize / 2.0)), (textPoint.y - (textSize / 2.0)), textSize.width, textSize.height);
     
     if (textSize.width < sqrtf(maxPixels))
     {
