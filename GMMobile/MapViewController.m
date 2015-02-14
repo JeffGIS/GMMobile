@@ -124,7 +124,7 @@
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
     _gmmOverlay.canReplaceMapContent = NO;
     _gmmOverlay.minimumZ = 12;
-    _gmmOverlay.maximumZ = 21;
+    _gmmOverlay.maximumZ = 19;
     _gmmOverlay.type = @"GMM";
     
     if (CRAPI.sharedInstance.GMTilesVisible)
@@ -209,7 +209,7 @@
                                level:MKOverlayLevelAboveLabels];
                 
                 _gmmOverlay.minimumZ = 12;
-                _gmmOverlay.maximumZ = 21;
+                _gmmOverlay.maximumZ = 19;
             }
         }
     }
