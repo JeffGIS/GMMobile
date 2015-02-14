@@ -648,7 +648,6 @@ int SQLOK(int sqlReturn, char *method)
     SQLOK(sqlite3_finalize(statement), "displayParcels");
     [self close];
 }
-
                              
 - (UIColor *)resComColor:(char *)useCode
 {
@@ -758,6 +757,14 @@ int SQLOK(int sqlReturn, char *method)
             atPoint:(LPDPOINT)pviewPoint
           maxPixels:(CGFloat)maxPixels
 {
+    CGFloat fontSize;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        fontSize = 10.0;
+    
+    else
+        fontSize = 12.0;
+    
     CGPoint textPoint;
     textPoint.x = pviewPoint->x;
     textPoint.y = pviewPoint->y;
@@ -769,18 +776,21 @@ int SQLOK(int sqlReturn, char *method)
     style.alignment = NSTextAlignmentCenter;
     
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [UIFont systemFontOfSize:12.0], NSFontAttributeName,
+                                [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
                                 UIColor.blackColor, NSForegroundColorAttributeName,
                                 style, NSParagraphStyleAttributeName,
                                 nil];
     
     CGSize textSize = [text sizeWithAttributes:attributes];
-    //CGRect textFrame = CGRectMake((textPoint.x - (textSize / 2.0)), (textPoint.y - (textSize / 2.0)), textSize.width, textSize.height);
+    
+    CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
+                                  (textPoint.y - (textSize.height / 2.0)),
+                                  textSize.width, textSize.height);
     
     if (textSize.width < sqrtf(maxPixels))
     {
-        [text drawAtPoint:textPoint
-           withAttributes:attributes];
+        [text drawInRect:textFrame
+          withAttributes:attributes];
     }
 }
 
