@@ -929,9 +929,8 @@ int SQLOK(int sqlReturn, char *method)
     sqlite3_stmt *statement;
     double sumEMV=0;
     double sumAcres=0;
-    int numIncluded=0;
-    double pctAveEMV, aveEMV;
-    double myTotEMV = *rankTotEMV;
+    double pctAveEMV, pctMedEMV, aveEMV;
+    int myTotEMV = *rankTotEMV;
     
     *stability = 0;
     *openSpacePCT = 0;
@@ -941,26 +940,66 @@ int SQLOK(int sqlReturn, char *method)
                        cenBlock];
     
     [self open];
+    NSMutableArray * array=[[NSMutableArray alloc]init];
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         double acres = sqlite3_column_double(statement,0);
         LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, 1);
         LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 2);
-        double totEMV = sqlite3_column_double(statement, 3);
+        int totEMV = (int)sqlite3_column_double(statement, 3);
         double totTax = sqlite3_column_double(statement, 4);
         LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 5);
         
         if (*homestead == 'Y')
         {
+            NSNumber * emv = [NSNumber numberWithInteger:totEMV];
+            [array addObject:emv];
             sumAcres += acres;
             sumEMV += totEMV;
-            numIncluded++;
         }
     }
-    aveEMV = sumEMV / numIncluded;
-    pctAveEMV = (myTotEMV / aveEMV) * 100;
-    *rankTotEMV = pctAveEMV;
+    [array sortUsingComparator: ^(id obj1, id obj2)
+     {
+         NSNumber *v1 = obj1;
+         NSNumber *v2 = obj2;
+         
+         if (v1 > v2)
+             return (NSComparisonResult)NSOrderedDescending;
+         
+         if (v1 < v2)
+             return (NSComparisonResult)NSOrderedAscending;
+         
+         return (NSComparisonResult)NSOrderedSame;
+     }];
+    if ([array count])
+    {
+        int n=1;
+        int myStartRank=-1, myEndRank=-1;
+        int medianN = (int)array.count / 2;
+        int medianM = array.count % 2;
+        int medianEMV = 0;
+        NSNumber * minEMV = array[0];
+        NSNumber * maxEMV = array[array.count-1];
+        for (NSNumber * EMVvalue in array)
+        {
+            if (n == medianN)
+                medianEMV = EMVvalue.intValue;
+            if (n == medianN + medianM)
+                medianEMV = (medianEMV + EMVvalue.intValue) / 2;
+            if (EMVvalue.integerValue == myTotEMV)
+            {
+                if (myStartRank < 0)
+                    myStartRank = n;
+                myEndRank = n;
+            }
+            n++;
+        }
+        aveEMV = sumEMV / [array count];
+        pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
+        pctMedEMV = ((double)myTotEMV / medianEMV) * 100;
+        *rankTotEMV = pctAveEMV;
+    }
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
 }
 
