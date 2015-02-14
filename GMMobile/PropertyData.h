@@ -57,6 +57,6 @@ typedef NS_ENUM(NSInteger, PropDataOption)
                        forPID:(NSString *)pid;
 
 - (NSMutableArray *)getOwnersMatchingString:(NSString *)string;
-- (BOOL) getDistinctUseCodes:(NSString*)outFile;
+- (BOOL)getDistinctUseCodes:(NSString *)outFile;
 
 @end
