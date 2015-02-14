@@ -125,7 +125,7 @@
     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
     _gmmOverlay.canReplaceMapContent = NO;
     _gmmOverlay.minimumZ = 12;
-    _gmmOverlay.maximumZ = 19;
+    _gmmOverlay.maximumZ = 21;
     _gmmOverlay.type = @"GMM";
     
     if (CRAPI.sharedInstance.GMTilesVisible)
@@ -154,22 +154,24 @@
     [self setupTableView];
 }
 
-- (MKCoordinateRegion) getRegionForPoint:(LLPOINT)pidCoord atZoom:(int)zoom inRect:(CGRect)rect
+- (MKCoordinateRegion)getRegionForPoint:(LLPOINT)pidCoord
+                                 atZoom:(int)zoom
+                                 inRect:(CGRect)rect
 {
     MKCoordinateRegion region;
     int px,py;
     
     region.center.latitude = pidCoord.lat;
     region.center.longitude = pidCoord.lon;
-    double lat,lon;
-    double lat1,lon1,lat2,lon2;
+    CGFloat lat,lon;
+    CGFloat lat1, lon1, lat2, lon2;
     
     LatLongToPixelXY(pidCoord.lat, pidCoord.lon, zoom, &px,&py);
     PixelXYToLatLong(px+rect.size.width, py, zoom, &lat, &lon);
     region.span.longitudeDelta = lon - pidCoord.lon;
-    PixelXYToLatLong(px, py-rect.size.height/2,zoom, &lat1, &lon1);
-    PixelXYToLatLong(px, py+rect.size.height/2,zoom, &lat2, &lon2);
-    region.span.latitudeDelta = lat2 - lat1;
+    PixelXYToLatLong(px, (py - rect.size.height / 2.0), zoom, &lat1, &lon1);
+    PixelXYToLatLong(px, (py + rect.size.height / 2.0), zoom, &lat2, &lon2);
+    region.span.latitudeDelta = (lat2 - lat1);
     return region;
 }
 
@@ -208,7 +210,7 @@
                                level:MKOverlayLevelAboveLabels];
                 
                 _gmmOverlay.minimumZ = 12;
-                _gmmOverlay.maximumZ = 19;
+                _gmmOverlay.maximumZ = 21;
             }
         }
     }
@@ -238,22 +240,29 @@
        
         [_mapView setCamera:_camera
                    animated:NO];*/
+        
         CGRect rect = [_mapView convertRegion:_mapView.region
                                  toRectToView:nil];
 
-        MKCoordinateSpan pidSpan = {fabs(bounds.ymx - bounds.ymn)*1.5,
-                                    fabs(bounds.xmx - bounds.xmn)*1.5};
-        mapRegion = [self getRegionForPoint:pidPoint atZoom:21 inRect:rect];
+        MKCoordinateSpan pidSpan = {fabs(bounds.ymx - bounds.ymn) * 1.5,
+                                    fabs(bounds.xmx - bounds.xmn) * 1.5};
+        
+        mapRegion = [self getRegionForPoint:pidPoint
+                                     atZoom:21
+                                     inRect:rect];
+        
         if (mapRegion.span.longitudeDelta < pidSpan.longitudeDelta ||
             mapRegion.span.latitudeDelta < pidSpan.latitudeDelta)
         {
             newRegion = MKCoordinateRegionMake(pidCoord, pidSpan);
         }
+        
         else
             newRegion = _mapView.region;
         
         [_mapView setRegion:newRegion
                    animated:YES];
+        
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = _selectedPIDCoords = pidCoord;
         

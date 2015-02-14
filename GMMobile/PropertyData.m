@@ -807,14 +807,6 @@ int SQLOK(int sqlReturn, char *method)
             atPoint:(LPDPOINT)pviewPoint
           maxPixels:(CGFloat)maxPixels
 {
-    CGFloat fontSize;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        fontSize = 10.0;
-    
-    else
-        fontSize = 12.0;
-    
     CGPoint textPoint;
     textPoint.x = pviewPoint->x;
     textPoint.y = pviewPoint->y;
@@ -824,6 +816,8 @@ int SQLOK(int sqlReturn, char *method)
     
     NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
     style.alignment = NSTextAlignmentCenter;
+    
+    CGFloat fontSize = 12.0;
     
     NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
@@ -841,6 +835,75 @@ int SQLOK(int sqlReturn, char *method)
     {
         [text drawInRect:textFrame
           withAttributes:attributes];
+    }
+    
+    else
+    {
+        CGFloat fontSize = 10.0;
+        
+        NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
+                                    UIColor.blackColor, NSForegroundColorAttributeName,
+                                    style, NSParagraphStyleAttributeName,
+                                    nil];
+        
+        CGSize textSize = [text sizeWithAttributes:attributes];
+        
+        CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
+                                      (textPoint.y - (textSize.height / 2.0)),
+                                      textSize.width, textSize.height);
+        
+        if (textSize.width < sqrtf(maxPixels))
+        {
+            [text drawInRect:textFrame
+              withAttributes:attributes];
+        }
+        
+        else
+        {
+            CGFloat fontSize = 8.0;
+            
+            NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
+                                        UIColor.blackColor, NSForegroundColorAttributeName,
+                                        style, NSParagraphStyleAttributeName,
+                                        nil];
+            
+            CGSize textSize = [text sizeWithAttributes:attributes];
+            
+            CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
+                                          (textPoint.y - (textSize.height / 2.0)),
+                                          textSize.width, textSize.height);
+            
+            if (textSize.width < sqrtf(maxPixels))
+            {
+                [text drawInRect:textFrame
+                  withAttributes:attributes];
+            }
+            
+            else
+            {
+                CGFloat fontSize = 6.0;
+                
+                NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                            [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
+                                            UIColor.blackColor, NSForegroundColorAttributeName,
+                                            style, NSParagraphStyleAttributeName,
+                                            nil];
+                
+                CGSize textSize = [text sizeWithAttributes:attributes];
+                
+                CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
+                                              (textPoint.y - (textSize.height / 2.0)),
+                                              textSize.width, textSize.height);
+                
+                if (textSize.width < sqrtf(maxPixels))
+                {
+                    [text drawInRect:textFrame
+                      withAttributes:attributes];
+                }
+            }
+        }
     }
 }
 
