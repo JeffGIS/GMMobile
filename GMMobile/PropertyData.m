@@ -78,6 +78,36 @@ static PropertyData *_propData;
     }
 }
 
+- (BOOL) getDistinctUseCodes:(NSString*)outFile
+{
+    BOOL rtn;
+    sqlite3_stmt *statement;
+    NSString *query = [[NSString alloc]init];
+    NSString *outString = @"Distinct Use Codes";
+    
+    [self open];
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+        {
+            query = @"SELECT DISTINCT XUSE1_DESC FROM PROPINFO";
+        }
+            break;
+    }
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getPointForPID");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR useCode = (LPSTR)sqlite3_column_text(statement, 0);
+        outString = [outString stringByAppendingString:[NSString stringWithFormat:@"\r\n%s",useCode]];
+    }
+    SQLOK(sqlite3_finalize(statement), "");
+    
+    [self close];
+    rtn = [outString writeToFile:outFile atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    return rtn;
+}
+
 - (LLPOINT)getPointForPID:(NSString *)PID
 {
     LLPOINT pt = {0};
@@ -523,7 +553,7 @@ int SQLOK(int sqlReturn, char *method)
     DPOINT BasePt;
     int numPoints,numLoops, refno;
     CGFloat emvTotal, specAssmt;
-    LPSTR homeStead, useCode, useDesc, taxExempt;
+    LPSTR homeStead, useCode, useDesc, taxExempt, owner;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
     [self open];
@@ -537,7 +567,7 @@ int SQLOK(int sqlReturn, char *method)
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
    
@@ -552,6 +582,7 @@ int SQLOK(int sqlReturn, char *method)
         taxExempt = (LPSTR)sqlite3_column_text(statement, 11);
         emvTotal = (CGFloat)sqlite3_column_double(statement, 12);
         specAssmt = (CGFloat)sqlite3_column_double(statement, 13);
+        owner = (LPSTR)sqlite3_column_text(statement, 14);
         pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
@@ -622,6 +653,14 @@ int SQLOK(int sqlReturn, char *method)
                     color = [[UIColor alloc]initWithRed:0.0
                                                   green:1.0
                                                    blue:0.0
+                                                  alpha:alpha];
+                case 6://tax_forfeit
+                    if (!strcasecmp (owner,"HENNEPIN FORFEITED LAND"))
+                        alpha = 0.8;
+                    
+                    color = [[UIColor alloc]initWithRed:0.0
+                                                  green:1.0
+                                                   blue:1.0
                                                   alpha:alpha];
                     break;
             }
@@ -891,7 +930,6 @@ int SQLOK(int sqlReturn, char *method)
     double pctAveEMV, aveEMV;
     double myTotEMV = *rankTotEMV;
     
-    return;
     *stability = 0;
     *openSpacePCT = 0;
     *pctCommercial = 0;
@@ -919,7 +957,7 @@ int SQLOK(int sqlReturn, char *method)
     }
     aveEMV = sumEMV / numIncluded;
     pctAveEMV = (myTotEMV / aveEMV) * 100;
-    //*rankTotEMV =
+    *rankTotEMV = pctAveEMV;
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
 }
 
@@ -929,6 +967,7 @@ int SQLOK(int sqlReturn, char *method)
 {
     NSMutableArray *report = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
+    char censusBlock[32];
     [self open];
     
     switch (CRAPI.sharedInstance.project)
@@ -1100,7 +1139,7 @@ int SQLOK(int sqlReturn, char *method)
                 LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 26);
                 CGFloat saleValue = sqlite3_column_double(statement, 27);
                 LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement,28);
-
+                strcpy (censusBlock,cenBlock);
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
                 dollarFmt.groupingSeparator = @"'";
@@ -1195,7 +1234,8 @@ int SQLOK(int sqlReturn, char *method)
                 [report addObject:line];
                 SQLOK(sqlite3_finalize(statement), "getReportForPID");
                 double stability, openSpacePCT, pctCommercial, rankTotEMV;
-                [self computeStability:&stability openSpace:&openSpacePCT commercialPCT:&pctCommercial totEMVRank:&rankTotEMV inCensusArea:cenBlock];
+                rankTotEMV = totalEMV;
+                [self computeStability:&stability openSpace:&openSpacePCT commercialPCT:&pctCommercial totEMVRank:&rankTotEMV inCensusArea:censusBlock];
                 line = [NSString stringWithFormat:@"Stability:%.1f years", stability];
                 [report addObject:line];
                 
@@ -1207,6 +1247,10 @@ int SQLOK(int sqlReturn, char *method)
                 
                 line = [NSString stringWithFormat:@"EMV Rank:%.1f%%", rankTotEMV];
                 [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Census Block:%s", cenBlock];
+                [report addObject:line];
+                
                 
             }
             else
