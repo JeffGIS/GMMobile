@@ -105,7 +105,6 @@
     _mapView.showsUserLocation = YES;
     _mapView.mapType = MKMapTypeStandard;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
-    [self extentZoom:NO];
 /*
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
@@ -140,7 +139,7 @@
     _longPress.minimumPressDuration = 0.25;
     [_mapView addGestureRecognizer:_longPress];
     
-    [self extentZoom:YES];
+    [self extentZoom:NO];
     [self.view bringSubviewToFront:_vectorView];
     
     [self setupButton:_zoomToExtentButton];
@@ -154,22 +153,24 @@
     [self setupTableView];
 }
 
-- (MKCoordinateRegion) getRegionForPoint:(LLPOINT)pidCoord atZoom:(int)zoom inRect:(CGRect)rect
+- (MKCoordinateRegion)getRegionForPoint:(LLPOINT)pidCoord
+                                 atZoom:(int)zoom
+                                 inRect:(CGRect)rect
 {
     MKCoordinateRegion region;
     int px,py;
     
     region.center.latitude = pidCoord.lat;
     region.center.longitude = pidCoord.lon;
-    double lat,lon;
-    double lat1,lon1,lat2,lon2;
+    CGFloat lat,lon;
+    CGFloat lat1, lon1, lat2, lon2;
     
     LatLongToPixelXY(pidCoord.lat, pidCoord.lon, zoom, &px,&py);
     PixelXYToLatLong(px+rect.size.width, py, zoom, &lat, &lon);
     region.span.longitudeDelta = lon - pidCoord.lon;
-    PixelXYToLatLong(px, py-rect.size.height/2,zoom, &lat1, &lon1);
-    PixelXYToLatLong(px, py+rect.size.height/2,zoom, &lat2, &lon2);
-    region.span.latitudeDelta = lat2 - lat1;
+    PixelXYToLatLong(px, (py - rect.size.height / 2.0), zoom, &lat1, &lon1);
+    PixelXYToLatLong(px, (py + rect.size.height / 2.0), zoom, &lat2, &lon2);
+    region.span.latitudeDelta = (lat2 - lat1);
     return region;
 }
 
@@ -232,28 +233,32 @@
         MKCoordinateRegion mapRegion;
         MKCoordinateRegion newRegion;
         
-       /* _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
-                                             fromEyeCoordinate:pidCoord
-                                                   eyeAltitude:330.0];
-       
-        [_mapView setCamera:_camera
-                   animated:NO];*/
         CGRect rect = [_mapView convertRegion:_mapView.region
                                  toRectToView:nil];
 
-        MKCoordinateSpan pidSpan = {fabs(bounds.ymx - bounds.ymn)*1.5,
-                                    fabs(bounds.xmx - bounds.xmn)*1.5};
-        mapRegion = [self getRegionForPoint:pidPoint atZoom:21 inRect:rect];
+        MKCoordinateSpan pidSpan = MKCoordinateSpanMake(fabs(bounds.ymx - bounds.ymn) * 1.5,
+                                                        fabs(bounds.xmx - bounds.xmn) * 1.5);
+        
+        mapRegion = [self getRegionForPoint:pidPoint
+                                     atZoom:21
+                                     inRect:rect];
+        
         if (mapRegion.span.longitudeDelta < pidSpan.longitudeDelta ||
             mapRegion.span.latitudeDelta < pidSpan.latitudeDelta)
         {
             newRegion = MKCoordinateRegionMake(pidCoord, pidSpan);
         }
-        else
-            newRegion = _mapView.region;
         
-        [_mapView setRegion:newRegion
+        else
+            newRegion = mapRegion;
+        
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
+                                             fromEyeCoordinate:pidCoord
+                                                   eyeAltitude:(newRegion.span.latitudeDelta * 207360.0)];
+        
+        [_mapView setCamera:_camera
                    animated:YES];
+        
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = _selectedPIDCoords = pidCoord;
         
@@ -282,7 +287,7 @@
     
     else
     {
-        MKCoordinateRegion region = _mapView.region;
+        /*MKCoordinateRegion region = _mapView.region;
         MKCoordinateRegion saveRegion = _mapView.region;
         
         region.center.latitude = 0;
@@ -292,8 +297,11 @@
                    animated:NO];
         
         [_mapView setRegion:saveRegion
-                   animated:NO];
+                   animated:NO];*/
     }
+    
+    [self refreshVectorView:_mapView.region
+                     atZoom:_currentZoom];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -301,6 +309,7 @@
     [super viewWillDisappear:animated];
     
     _currentScreenHeight = self.view.frame.size.height;
+    [self clearVectorView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -391,6 +400,9 @@ regionDidChangeAnimated:(BOOL)animated
 
     [self refreshVectorView:region
                      atZoom:_currentZoom];
+    
+    NSLog(@"%f", _mapView.camera.altitude);
+    NSLog(@"%f,%f", _mapView.region.span.latitudeDelta, _mapView.region.span.longitudeDelta);
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
