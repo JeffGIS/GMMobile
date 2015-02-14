@@ -1,14 +1,16 @@
 //  SettingsViewController.h
 //  GMMobile
+#import <MessageUI/MessageUI.h>
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,UIAlertViewDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,UIAlertViewDelegate,MFMailComposeViewControllerDelegate>
 
 - (IBAction)loadDatabase:(id)sender;
 - (IBAction)preloadTiles:(id)sender;
 - (IBAction)loadParcels:(id)sender;
 - (IBAction)deleteDatabase:(id)sender;
+- (IBAction)showEmail:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 

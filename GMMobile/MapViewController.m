@@ -154,6 +154,25 @@
     [self setupTableView];
 }
 
+- (MKCoordinateRegion) getRegionForPoint:(LLPOINT)pidCoord atZoom:(int)zoom inRect:(CGRect)rect
+{
+    MKCoordinateRegion region;
+    int px,py;
+    
+    region.center.latitude = pidCoord.lat;
+    region.center.longitude = pidCoord.lon;
+    double lat,lon;
+    double lat1,lon1,lat2,lon2;
+    
+    LatLongToPixelXY(pidCoord.lat, pidCoord.lon, zoom, &px,&py);
+    PixelXYToLatLong(px+rect.size.width, py, zoom, &lat, &lon);
+    region.span.longitudeDelta = lon - pidCoord.lon;
+    PixelXYToLatLong(px, py-rect.size.height/2,zoom, &lat1, &lon1);
+    PixelXYToLatLong(px, py+rect.size.height/2,zoom, &lat2, &lon2);
+    region.span.latitudeDelta = lat2 - lat1;
+    return region;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -210,24 +229,31 @@
         CLLocationCoordinate2D pidCoord;
         pidCoord.latitude = pidPoint.lat;
         pidCoord.longitude = pidPoint.lon;
+        MKCoordinateRegion mapRegion;
+        MKCoordinateRegion newRegion;
         
-        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
+       /* _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
                                              fromEyeCoordinate:pidCoord
-                                                   eyeAltitude:550.0];
+                                                   eyeAltitude:330.0];
        
         [_mapView setCamera:_camera
-                   animated:YES];
-        
-        MKCoordinateSpan pidSpan = {fabs((fabs(bounds.ymn)) - (fabs(bounds.ymx))),
-                                    fabs((fabs(bounds.xmn)) - (fabs(bounds.xmx)))};
-        
-        if (_mapView.region.span.longitudeDelta < pidSpan.longitudeDelta ||
-            _mapView.region.span.latitudeDelta < pidSpan.latitudeDelta)
+                   animated:NO];*/
+        CGRect rect = [_mapView convertRegion:_mapView.region
+                                 toRectToView:nil];
+
+        MKCoordinateSpan pidSpan = {fabs(bounds.ymx - bounds.ymn)*1.5,
+                                    fabs(bounds.xmx - bounds.xmn)*1.5};
+        mapRegion = [self getRegionForPoint:pidPoint atZoom:21 inRect:rect];
+        if (mapRegion.span.longitudeDelta < pidSpan.longitudeDelta ||
+            mapRegion.span.latitudeDelta < pidSpan.latitudeDelta)
         {
-            [_mapView setRegion:MKCoordinateRegionMake(pidCoord, pidSpan)
-                       animated:YES];
+            newRegion = MKCoordinateRegionMake(pidCoord, pidSpan);
         }
+        else
+            newRegion = _mapView.region;
         
+        [_mapView setRegion:newRegion
+                   animated:YES];
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
         annotation.coordinate = _selectedPIDCoords = pidCoord;
         
@@ -345,7 +371,6 @@ regionDidChangeAnimated:(BOOL)animated
     while (GroundResolution(latlon1.latitude, _currentZoom) > currentScale)
         _currentZoom++;
     
-    _camera = mapView.camera;
     _camera = mapView.camera;
     //MKMapRect intRect = MKMapRectUnion(visRect, _cityInnerBounds);
     

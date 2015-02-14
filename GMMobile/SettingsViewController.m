@@ -169,6 +169,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         }
                         
                         [pd commitTransaction];
+                        if (option == GET_PARCELS)
+                        {
+                            dispatch_async(dispatch_get_main_queue(),
+                                           ^{
+                                               _popover.title = @"Load Parcel Tables";
+                                           });
+                            [pd startTransaction];
+                            [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
+                            [pd commitTransaction];
+                        }
                         [pd close];
                         fclose(fid);
                         free(str);
@@ -348,6 +358,58 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _keepGoing = NO;
     [_popover hide];
+}
+
+- (IBAction)showEmail:(id)sender {
+    NSString* fileName1, *fileName2;
+    // Email Subject
+    NSString *emailTitle = @"Data extract file from NewVision Mobile";
+    // Email Content
+    NSString *messageBody = @"iOS programming is so fun!";
+    // To address
+    NSArray *toRecipents = [NSArray arrayWithObject:@"jeffgis@aol.com"];
+    
+    MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+    mc.mailComposeDelegate = self;
+    
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    
+    fileName1 = [NSString stringWithFormat:@"%@/UseCodeExtract.csv",documentsDirectory];
+    PropertyData *pd = [[PropertyData alloc]init];
+                 [pd getDistinctUseCodes:fileName1];
+    NSData * data = [NSData dataWithContentsOfFile:fileName1];
+
+    [mc setSubject:emailTitle];
+    [mc setMessageBody:messageBody isHTML:NO];
+    [mc setToRecipients:toRecipents];
+    [mc addAttachmentData:data mimeType:@"text/csv" fileName:[fileName1 lastPathComponent]];
+    
+    // Present mail view controller on screen
+    [self presentViewController:mc animated:YES completion:NULL];
+    
+}
+- (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            NSLog(@"Mail cancelled");
+            break;
+        case MFMailComposeResultSaved:
+            NSLog(@"Mail saved");
+            break;
+        case MFMailComposeResultSent:
+            NSLog(@"Mail sent");
+            break;
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail sent failure: %@", [error localizedDescription]);
+            break;
+        default:
+            break;
+    }
+    
+    // Close the Mail Interface
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end
