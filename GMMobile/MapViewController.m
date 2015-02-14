@@ -236,8 +236,8 @@
         CGRect rect = [_mapView convertRegion:_mapView.region
                                  toRectToView:nil];
 
-        MKCoordinateSpan pidSpan = {fabs(bounds.ymx - bounds.ymn) * 1.5,
-                                    fabs(bounds.xmx - bounds.xmn) * 1.5};
+        MKCoordinateSpan pidSpan = MKCoordinateSpanMake(fabs(bounds.ymx - bounds.ymn) * 1.5,
+                                                        fabs(bounds.xmx - bounds.xmn) * 1.5);
         
         mapRegion = [self getRegionForPoint:pidPoint
                                      atZoom:21
@@ -299,6 +299,9 @@
         [_mapView setRegion:saveRegion
                    animated:NO];*/
     }
+    
+    [self refreshVectorView:_mapView.region
+                     atZoom:_currentZoom];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -306,6 +309,7 @@
     [super viewWillDisappear:animated];
     
     _currentScreenHeight = self.view.frame.size.height;
+    [self clearVectorView];
 }
 
 - (void)didReceiveMemoryWarning
