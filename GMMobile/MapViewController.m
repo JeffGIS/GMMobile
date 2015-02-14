@@ -105,7 +105,6 @@
     _mapView.showsUserLocation = YES;
     _mapView.mapType = MKMapTypeStandard;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
-    [self extentZoom:NO];
 /*
     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
@@ -140,7 +139,7 @@
     _longPress.minimumPressDuration = 0.25;
     [_mapView addGestureRecognizer:_longPress];
     
-    [self extentZoom:YES];
+    [self extentZoom:NO];
     [self.view bringSubviewToFront:_vectorView];
     
     [self setupButton:_zoomToExtentButton];
@@ -234,13 +233,6 @@
         MKCoordinateRegion mapRegion;
         MKCoordinateRegion newRegion;
         
-       /* _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
-                                             fromEyeCoordinate:pidCoord
-                                                   eyeAltitude:330.0];
-       
-        [_mapView setCamera:_camera
-                   animated:NO];*/
-        
         CGRect rect = [_mapView convertRegion:_mapView.region
                                  toRectToView:nil];
 
@@ -258,9 +250,13 @@
         }
         
         else
-            newRegion = _mapView.region;
+            newRegion = mapRegion;
         
-        [_mapView setRegion:newRegion
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
+                                             fromEyeCoordinate:pidCoord
+                                                   eyeAltitude:(newRegion.span.latitudeDelta * 207360.0)];
+        
+        [_mapView setCamera:_camera
                    animated:YES];
         
         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
@@ -291,7 +287,7 @@
     
     else
     {
-        MKCoordinateRegion region = _mapView.region;
+        /*MKCoordinateRegion region = _mapView.region;
         MKCoordinateRegion saveRegion = _mapView.region;
         
         region.center.latitude = 0;
@@ -301,7 +297,7 @@
                    animated:NO];
         
         [_mapView setRegion:saveRegion
-                   animated:NO];
+                   animated:NO];*/
     }
 }
 
@@ -400,6 +396,9 @@ regionDidChangeAnimated:(BOOL)animated
 
     [self refreshVectorView:region
                      atZoom:_currentZoom];
+    
+    NSLog(@"%f", _mapView.camera.altitude);
+    NSLog(@"%f,%f", _mapView.region.span.latitudeDelta, _mapView.region.span.longitudeDelta);
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
