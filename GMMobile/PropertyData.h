@@ -11,6 +11,11 @@ typedef NS_ENUM(NSInteger, PropDataOption)
     PDSettingComputed,
 };
 
+@interface BoundaryAreaData : NSObject
+@property NSString* name;
+@property int refno;
+@end
+
 @interface PropertyData : NSObject <FTPDataPullDelegate,GSSiPopoverViewDelegate>
 
 @property sqlite3 *database;
@@ -40,9 +45,6 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
 - (NSString *)pickPID:(LLPOINT*)pt;
 
-- (BOOL)loadParcelPolygons:(NSString *)fromPath
-              updatePopover:(GSSiPopoverView *)popover;
-
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 
 - (void)displayParcels:(CGContextRef)context
@@ -58,5 +60,9 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (NSMutableArray *)getOwnersMatchingString:(NSString *)string;
 - (BOOL)getDistinctUseCodes:(NSString *)outFile;
+
+- (NSMutableArray *)getBoundaryAreaTypes;
+- (NSMutableArray *)getBoundaryAreaDataForType:(NSString*)type;
+- (MNMXCORD) getBoundaryAreaBounds:(int)refno;
 
 @end

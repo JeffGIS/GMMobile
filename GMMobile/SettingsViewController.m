@@ -8,6 +8,7 @@
 #define GET_PROPERTY 1
 #define GET_TILES 2
 #define GET_PARCELS 3
+#define GET_AREAS 4
 
 @interface SettingsViewController ()
 
@@ -116,6 +117,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         {
             case GET_PARCELS:
             case GET_PROPERTY:
+            case GET_AREAS:
             {
                 NSString *toDirectory = [path stringByDeletingLastPathComponent];
                 NSString *file;
@@ -123,18 +125,29 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
                     break;
                 
-                if (option == GET_PARCELS)
+                switch (option)
                 {
-                    file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
-                     _popover.title = @"Load Parcel Tables";
+                    case GET_PARCELS:
+                    {
+                        file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
+                        _popover.title = @"Load Parcel Tables";
+                    }
+                        break;
+                        
+                    case GET_AREAS:
+                    {
+                        file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
+                        _popover.title = @"Load Area Tables";
+                    }
+                        break;
+                        
+                    case GET_PROPERTY:
+                    {
+                        file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
+                        _popover.title = @"Load Property Tables";
+                    }
+                        break;
                 }
-                
-                else
-                {
-                    file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
-                    _popover.title = @"Load Property Tables";
-                }
-                
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
                 
                 dispatch_async(overallQueue,
@@ -286,6 +299,30 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      forceRefresh:YES];
 }
 
+- (IBAction)loadAreas:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"MPLS_areas.gcf";
+    
+    if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
+        fileName = @"MetroGIS_areas.gcf";
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_AREAS;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Area File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+     forceRefresh:YES];
+}
+
 - (BOOL)loadTilesFromList:(NSString*)fileList
            updatePopover:(GSSiPopoverView*)popover
 {
@@ -397,6 +434,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                      completion:NULL];
     
 }
+
 - (void) mailComposeController:(MFMailComposeViewController *)controller
            didFinishWithResult:(MFMailComposeResult)result
                          error:(NSError *)error

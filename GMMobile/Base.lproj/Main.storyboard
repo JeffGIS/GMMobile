@@ -701,7 +701,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="avW-gX-lgx">
-                                <rect key="frame" x="32" y="164" width="308" height="68"/>
+                                <rect key="frame" x="32" y="164" width="308" height="39"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="28"/>
                                 <state key="normal" title="Load Parcel Areas">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -734,6 +734,16 @@
                                 </state>
                                 <connections>
                                     <action selector="showEmail:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="F4q-G6-qCI"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qrs-hK-Mgq">
+                                <rect key="frame" x="32" y="202" width="308" height="39"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                <state key="normal" title="Load Other Areas">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="loadAreas:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="uq4-LE-AWM"/>
                                 </connections>
                             </button>
                         </subviews>

@@ -11,6 +11,7 @@
 - (IBAction)loadParcels:(id)sender;
 - (IBAction)deleteDatabase:(id)sender;
 - (IBAction)showEmail:(id)sender;
+- (IBAction)loadAreas:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 

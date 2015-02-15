@@ -11,6 +11,8 @@
 
 @end
 
+@implementation BoundaryAreaData
+@end
 @implementation PropertyData
 
 static PropertyData *_propData;
@@ -187,6 +189,78 @@ static PropertyData *_propData;
     SQLOK(sqlite3_finalize(statement), "getBoundsforPID");
     
     [self close];
+    return bounds;
+}
+
+- (NSMutableArray *)getBoundaryAreaTypes
+{
+    NSMutableArray * types=[[NSMutableArray alloc]init];
+    sqlite3_stmt *statement;
+    NSString *query = [[NSString alloc] init];
+    
+    [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREAS";
+            break;
+    }
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundaryAreas");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR type = (LPSTR)sqlite3_column_text(statement, 0);
+        NSString * outString = [NSString stringWithFormat:@"%s",type];
+        [types addObject:outString];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getBoundaryAreas");
+    
+    [self close];
+    
+    return types;
+}
+
+- (NSMutableArray *)getBoundaryAreaDataForType:(NSString*)type
+{
+    NSMutableArray * data = [[NSMutableArray alloc]init];
+    sqlite3_stmt *statement;
+    NSString *query = [[NSString alloc] init];
+    
+    [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT id,NAME FROM BOUNDARYAREAS WHERE TYPE='%@'",type];
+            break;
+    }
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundaryAreas");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, 1);
+        BoundaryAreaData * baData = [[BoundaryAreaData alloc]init];
+        baData.refno = refno;
+        baData.name = [NSString stringWithUTF8String:name];
+        [data addObject:baData];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getBoundaryAreas");
+    
+    [self close];
+   
+    return data;
+}
+
+- (MNMXCORD) getBoundaryAreaBounds:(int)refno
+{
+    MNMXCORD bounds;
+    
     return bounds;
 }
 
@@ -1903,544 +1977,4 @@ int GetNameParts(LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)
     return nParts;
 }
 
-/*MENUITEM "Taxpayer Name",		"[%NAMEINDEXDB]=[%DL]attribut\[PROPDATE]\taxpayernameindex.gmd;[%NAMEDB]=[%DL]attribut\[PROPDATE]\propinfo.gmd;[%PROPERTYDB]=[%DL]attribut\[PROPDATE]\propinfo.gmd;[%NAMEDISPLAY]=$STR(IF([Taxpayer Addr3]>''){[Taxpayer Name] [Taxpayer Addr1]$CHR(1)[Taxpayer Addr2][Taxpayer Addr3]}ELSE{[Taxpayer Name]$CHR(1)[Taxpayer Addr1][Taxpayer Addr2]};$CHR(1)[PID]);[%PROPERTYPREFIX]=PINCA;[%PROPERTYDISPLAY]=$STR([PID]$CHR(1)[Housenum] [HouseFract] [Street] [UnitNum] [Address] [Zipcode]$CHR(1)[Area_SqFt]sqft$CHR(1)@$$RND([Total_Value],0,T)$CHR(1)[PID]);[%PROPERTYKEYFIELD]=PID;[%PROPERTYINDEXFIELD]=PID;[%C]=$OWNERLOC(MPLS);"
- LPSTR ReplaceChar (LPSTR str, char from, char to)
- #if ENABLETRACE
- {GSSiEnterProg (231);
- #endif
- {
- LPSTR Instr;
- 
- Instr = str;
- while (*str)
- {
- if (*str == from) *str = to;
- str++;
- }
- {
- #if ENABLETRACE
- GSSiExitProg (231);
- #endif
- return Instr;
- }
- #if ENABLETRACE
- }
- #endif
- }
- 
- 
-
-BOOL  OWNERLOCMsgProc2(HWND hWndDlg, int Message, WPARAM wParam, LPARAM lParam)
-{ 	int		st, choice, n,idx,ifile,i;
-    int		Trigger=3;
-    BOOL	HaveWildcard;
-    char	str[1024], teststr[1024],lastowner[4096];
-    static	char Wildcard[128]="";
-    static	char WantStr[128]="";
-    char	WantStr2[128],propkeyfld[64];
-    LPGWDHEADER lpGWDHeadNameIndex, lpGWDHeadName, lpGWDHeadProperty;
-    LPOPENFILEDATA  FilePtrNameIndex, FilePtrName, FilePtrProperty;
-    LPOPENSQLDATA   SQLPtrNameIndex, SQLPtrName, SQLPtrProperty;
-    long	Offset;
-    int		nParts, nPartsTest, PartLen[MAXPARTS], PartLenTest[MAXPARTS];
-    LPSTR	PartLoc[MAXPARTS], PartLocTest[MAXPARTS], pTab;
-    static	HANDLE	hDBNameIndex=0, hDBName=0, hDBProperty=0;
-    static	HANDLE	hSaveBM=0;
-    static	BOOL	First;
-    static	short	iOwner=-1, SaveProperty=-1;
-    short	Item;
-    char	propprefix[32];
-    TAGKEY TAGKey;
-    LPSTR	pTAB;
-    HWND	hwndCtl;
-    int		nowner;
-    static	char	NameDelim;
-    UINT	nPrompts=4;
-    UINT	PrmtDat[4*3] = {
-        IDC_OWNERNAMEWC,PRMT_IDC_OWNERNAMEWC,0,
-        IDC_OWNERNAME, PRMT_IDC_OWNERNAME,0,
-        IDC_OWNERLIST, PRMT_IDC_OWNERLIST,0,
-        IDC_PROPERTYLIST, PRMT_IDC_PROPERTYLIST,0
-    };
-    
-    
-    int	BRtn;
-    if (Message==WM_INITDIALOG)
-    {
-        UINT	pw=0, pn=1, pm=2;
-        HWND	hwnd;
-        short	ii;
-        
-        InitDlgPrompts (hWndDlg);
-        while (nPrompts--)
-        {
-            hwnd = GetDlgItem(hWndDlg,PrmtDat[pw]);
-            if (!hwnd)
-                ii=1;
-            SetDlgPrompt (hwnd,PrmtDat[pn],PrmtDat[pm]);
-            pw+=3;
-            pn+=3;
-            pm+=3;
-        }
-    }
-    if ((BRtn = DIALOGSTYLEMsgProc (hWndDlg,Message, wParam, lParam)))
-        return (BRtn);
-    switch(Message)
-    {
-        case WM_DESTROY:
-            InitDlgPrompts (0);
-            break;
-        case WM_INITDIALOG:
-        {
-            int	nTabs;
-            HANDLE	hList;
-            LPINT	pTabs;
-            
-            ClearDlgPrompts ();
-            //hSaveBM = EnterBlockingWindow (hWndDlg);
-            First = TRUE;
-            SendDlgItemMessage (hWndDlg,IDC_AUTOHIGHLIGHT,BM_SETCHECK,AutoHighlight,0L);
-            GetGlobalCVal ("[%OWNERTABS]",str,"250 2000");
-            nTabs = GetIntsFromList (str,&hList);
-            if (nTabs)
-            {
-                pTabs = (LPINT)GlobalLock (hList);
-                SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_SETTABSTOPS,nTabs,(LPARAM)pTabs);
-                GSSiGlobUlFree (&hList);
-            }
-            GetGlobalCVal ("[%PROPERTYTABS]",str,"80 200 250 2000");
-            nTabs = GetIntsFromList (str,&hList);
-            if (nTabs)
-            {
-                pTabs = (LPINT)GlobalLock (hList);
-                SendDlgItemMessage (hWndDlg,IDC_PROPERTYLIST,LB_SETTABSTOPS,nTabs,(LPARAM)pTabs);
-                GSSiGlobUlFree (&hList);
-            }
-            cwCenter(hWndDlg, 0);
-            GetGlobalCVal ("[%NAMEINDEXDB]",str,"[%DL]attribut\\nameindex.gmd");
-            if (!OpenDataFile (str, "",BT_READ, &hDBNameIndex))
-            {
-                MessageBox( GetFocus(), str,"Cannot open name index database", MB_OK);
-                PostMessage(hWndDlg, WM_COMMAND, IDCANCEL, 0L);
-                return FALSE;
-            }
-            CloseDataFile (TRUE,&hDBNameIndex);
-            GetGlobalCVal ("[%NAMEDB]",str,"[%DL]attribut\\name.gmd");
-            if (!OpenDataFile (str, "",BT_READ, &hDBName))
-            {
-                MessageBox( GetFocus(), str,"Cannot open name database", MB_OK);
-                PostMessage(hWndDlg, WM_COMMAND, IDCANCEL, 0L);
-                return FALSE;
-            }
-            CloseDataFile (TRUE,&hDBName);
-            GetGlobalCVal ("[%PROPERTYDB]",str,"[%DL]attribut\\master.gmd");
-            if (!OpenDataFile (str, "",BT_READ, &hDBProperty))
-            {
-                MessageBox( GetFocus(), str,"Cannot open property database", MB_OK);
-                PostMessage(hWndDlg, WM_COMMAND, IDCANCEL, 0L);
-                return FALSE;
-            }
-            CloseDataFile (TRUE,&hDBProperty);
-            SetDlgItemText (hWndDlg,IDC_OWNERNAMEWC,Wildcard);
-            PostMessage(GetDlgItem(hWndDlg,IDC_OWNERLIST), LB_SETCURSEL,iOwner,0);
-            PostMessage(hWndDlg, WM_COMMAND, IDC_SETPROPLIST, 0L);
-            PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
-        }
-            
-            break;
-        case WM_CLOSE:
-            PostMessage(hWndDlg, WM_COMMAND, IDCANCEL, 0L);
-            break;
-        case WM_COMMAND:
-            switch(LOWORD(wParam))
-        {
-            case IDC_OWNERNAMEWC:
-                SetDlgItemText (hWndDlg,IDC_PROPMESSAGE,"");
-                hwndCtl = (HWND) LOWORD(lParam);
-                switch (HIWORD(wParam))
-            {	case EN_CHANGE:
-                {
-                    int	nParts, ipart,iparttest, nOwners;
-                    LPWORDINDEX	pRec;
-                    WORDINDEX	Rec;
-                    HANDLE	hPartOffsets[MAXPARTS];
-                    int		nPartOffsets[MAXPARTS];
-                    int		nHits;
-                    BOOL	GetNext = TRUE;
-                    MSG     msg;
-                    char	Name[66];
-                    
-                    SetDlgItemText (hWndDlg,IDC_NUMOWNERS,"Searching...");
-                    GetGlobalCVal ("[%NAMEINDEXDB]",str,"[%DL]attribut\\nameindex.gmd");
-                    OpenDataFile (str, "",BT_READ, &hDBNameIndex);
-                    SQLPtrNameIndex = (LPOPENSQLDATA) GlobalLock (hDBNameIndex);
-                    FilePtrNameIndex = (LPOPENFILEDATA) GlobalLock (SQLPtrNameIndex->OFHandle);
-                    lpGWDHeadNameIndex = (LPGWDHEADER)GlobalLock (FilePtrNameIndex->FileHandle);
-                    pRec = (LPWORDINDEX)&lpGWDHeadNameIndex->GWDData;
-                    SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_RESETCONTENT,0,0);
-                    SendDlgItemMessage (hWndDlg,IDC_PROPERTYLIST,LB_RESETCONTENT,0,0);
-           		      	GetDlgItemText (hWndDlg,IDC_OWNERNAMEWC,Name,64);
-                    nParts = GetNameParts (Name,PartLoc,PartLen,MAXPARTS);
-           		      	
-                    for (ipart=0;ipart<nParts;ipart++)
-                    {
-                        nPartOffsets[ipart] = 0;
-                        hPartOffsets[ipart] = 0;
-                    }
-                    for (ipart=0;ipart<nParts;ipart++)
-           		      	{
-                            short	pos=BT_FIRST, cond=BT_GE;
-                            int		nOffsets, nSeqRec;
-                            
-                            if (PartLen[ipart] >= Trigger)
-                            {
-                                strncpy (Rec.Word,PartLoc[ipart],8);
-                                Rec.Seq = SHRT_MIN;
-                                while (GetNext && !BT_FIND (lpGWDHeadNameIndex->BTHandle[0],(LPSTR)&Rec,pos,cond,(LPSTR)&Offset))
-                                {
-                                    LPLONG	pOffsets;
-                                    
-                                    pos = BT_NEXT;
-                                    cond = BT_ANY;
-                                    
-                                    FillGWDData (lpGWDHeadNameIndex,Offset);
-                                    if (strnicmp (pRec->Word,PartLoc[ipart],min(8,PartLen[ipart])))
-                                        break;
-                                    nSeqRec = -(pRec->Seq + 1);
-                                    nOffsets = nSeqRec * 100 + pRec->nOffsets;
-                                    if (!nPartOffsets[ipart])
-                                        hPartOffsets[ipart] = GSSiGlobAlloc (0,GMEM_MOVEABLE,MAXOFFSETS * sizeof(int));
-                                    pOffsets = (LPLONG)GlobalLock (hPartOffsets[ipart]);
-                                    if (nPartOffsets[ipart] + pRec->nOffsets >= MAXOFFSETS)
-                                        GetNext = FALSE;
-                                    else
-                                    {
-                                        pOffsets += nPartOffsets[ipart];
-                                        memmove (pOffsets,pRec->Offsets,pRec->nOffsets*sizeof(long));
-                                        pOffsets += pRec->nOffsets;
-                                        nPartOffsets[ipart] += pRec->nOffsets;
-                                        while (GetNext && nSeqRec--)
-                                        {
-                                            BT_FIND (lpGWDHeadNameIndex->BTHandle[0],(LPSTR)pRec,pos,cond,(LPSTR)&Offset);
-                                            FillGWDData (lpGWDHeadNameIndex,Offset);
-                                            if (nPartOffsets[ipart] + pRec->nOffsets >= MAXOFFSETS)
-                                                GetNext = FALSE;
-                                            else
-                                            {
-                                                memmove (pOffsets,pRec->Offsets,pRec->nOffsets*sizeof(long));
-                                                pOffsets += pRec->nOffsets;
-                                                nPartOffsets[ipart] += pRec->nOffsets;
-                                            }
-                                        }
-                                    }
-                                    GlobalUnlock (hPartOffsets[ipart]);
-                                    if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-                                        GetNext = FALSE;
-                                }
-                                if (!nPartOffsets[ipart])
-                                    GetNext = FALSE;
-                            }
-                            else
-                                nPartOffsets[ipart] = INT_MAX;
-                        }
-                    
-                    if (GetNext)
-                        nHits = GetWIHits (Hits,nParts,nPartOffsets,hPartOffsets,MAXHITS,hwndCtl);
-                    for (ipart=0;ipart<nParts;ipart++)
-                        GSSiGlobFree (&hPartOffsets[ipart]);
-                    GlobalUnlock (FilePtrNameIndex->FileHandle);
-                    GlobalUnlock (SQLPtrNameIndex->OFHandle);
-                    GlobalUnlock (hDBNameIndex);
-                    CloseDataFile (TRUE,&hDBNameIndex);
-                    GetGlobalCVal ("[%NAMEDB]",str,"[%DL]attribut\\name.gmd");
-                    OpenDataFile (str, "",BT_READ, &hDBName);
-                    SQLPtrName = (LPOPENSQLDATA) GlobalLock (hDBName);
-                    FilePtrName = (LPOPENFILEDATA) GlobalLock (SQLPtrName->OFHandle);
-                    lpGWDHeadName = (LPGWDHEADER)GlobalLock (FilePtrName->FileHandle);
-                    nowner = 0;
-                    while (GetNext && nHits--)
-                    {
-                        BOOL	ShowThisOwner = TRUE;
-                        
-                        if (Hits[nHits] <= sizeof (GWDHEADER16))
-                            continue;
-                        FillGWDData (lpGWDHeadName,Hits[nHits]);
-                        SQLPtrName->st = 0;
-                        SQLPtrName->Offset = Hits[nHits];
-                        SQLPtrName->lastreadtime = ULONG_MAX;
-                        if (ShowThisOwner)
-                        {
-                            if (nowner == 81)
-                                idx = 0;
-                            GetGlobalCVal ("[%NAMEDISPLAY]",str,"[NAMETAXPAYER]$CHR(1)[NAMEADDR1] [NAMEADDR2] [NAMECITY],[NAMESTATE]$CHR(1)[NAMEACCTOWNER]");
-                            ExpandText (str);
-                            OneSpace (str);
-                            ReplaceChar (str,0x01,0x09);
-                            strcpy (teststr,str);
-                            if ((pTab = strchr (teststr,'\t')))
-                                *pTab = 0;
-                            nPartsTest = GetNameParts (teststr,PartLocTest,PartLenTest,MAXPARTS);
-                            for (ipart = 0;ipart < nParts;ipart++)
-                            {
-                                for (iparttest=0;iparttest<nPartsTest;iparttest++)
-                                {
-                                    if (!strnicmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
-                                    {
-                                        *PartLocTest[iparttest] = 0;
-                                        goto FoundPart;
-                                    }
-                                }
-                                ShowThisOwner = FALSE;
-                                break;
-                            FoundPart:							;
-                            }
-                            if (ShowThisOwner)
-                            {
-                                nowner++;
-                                strcpy (lastowner,str);
-                                if ((idx=SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_ADDSTRING,0,(LPARAM)str)) ==
-                                    LB_ERRSPACE)
-                                    GetNext = FALSE;
-                            }
-                        }
-                        if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-                            GetNext = FALSE;
-                    }
-                    GlobalUnlock (FilePtrName->FileHandle);
-                    GlobalUnlock (SQLPtrName->OFHandle);
-                    GlobalUnlock (hDBName);
-                    CloseDataFile (TRUE,&hDBName);
-                    if (GetNext)
-                    {
-                        nOwners=SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETCOUNT,0,0);
-                        sprintf (str,"%ld selected",nOwners);
-                    }
-                    else
-                        strcpy (str,"Search cancelled");
-                    SetDlgItemText (hWndDlg,IDC_NUMOWNERS,str);
-                }
-                    if (First && SaveProperty >= 0)
-                        PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
-                    First = FALSE;
-            }
-                break;
-                
-            case IDC_PROPERTYLIST:
-                switch(HIWORD(wParam))
-            {
-                case LBN_SELCHANGE:
-                {
-                    HANDLE	hItems;
-                    int n=GetLBSelectedItems (hWndDlg,IDC_PROPERTYLIST,&hItems);
-                    LPINT	pItem;
-                    
-                    SetDlgItemText (hWndDlg,IDC_PROPMESSAGE,"");
-                    EnableWindow (GetDlgItem(hWndDlg,IDOK),FALSE);
-                    if (n>0)
-                    {
-                        pItem=(LPINT)GlobalLock (hItems);
-                        //if (n==1)
-                        {
-                            short	DoZoom=0;
-                            
-                            GetGlobalCVal ("[%PROPERTYPREFIX]",propprefix,"PINA");
-                            
-                            ClearHighlightList(FALSE);
-                            while (n--)
-                            {
-                                SendDlgItemMessage(hWndDlg,IDC_PROPERTYLIST,LB_GETTEXT,*pItem++,(DWORD)str);
-                                pTAB = _fstrrchr (str,'\t');
-                                pTAB++;
-                                Strip (pTAB,' ');
-                                if (PickByRefno (0,propprefix,pTAB,-1))
-                                {
-                                    if (PickList[0].IsDeleted)
-                                        DoZoom = -1;
-                                    else
-                                    {
-                                        AddToHighlightList (PickList[0].Refno,&PickList[0],TRUE);
-                                        DoZoom=1;
-                                    }
-                                }
-                            }
-                            if (DoZoom>0)
-                            {
-                                EnableWindow (GetDlgItem(hWndDlg,IDOK),TRUE);
-                                PostMessage(hWndMain, WM_COMMAND, IDM_Z_HLTLIMITS, 0L);
-                            }
-                            else if (DoZoom < 0)
-                                SetDlgItemText (hWndDlg,IDC_PROPMESSAGE,"Property is marked deleted");
-                            else
-                                SetDlgItemText (hWndDlg,IDC_PROPMESSAGE,"Property not found");
-                        }
-                        GSSiGlobUlFree (&hItems);
-                    }
-                }
-                    break;
-                    
-                case LBN_DBLCLK:
-                    PostMessage(hWndDlg, WM_COMMAND, IDOK, 0L);
-                    IgnoreLbutton = TRUE;
-                    break;
-            }
-                break;
-                
-            case IDC_OWNERLIST:
-                switch(HIWORD(wParam))
-            {
-                case LBN_SELCHANGE:
-                    SetDlgItemText (hWndDlg,IDC_PROPMESSAGE,"");
-                    PostMessage(hWndDlg, WM_COMMAND, IDC_SETPROPLIST, 0L);
-            }
-                break;
-                
-            case IDC_SETPROPLIST:
-            {
-                GetGlobalCVal ("[%PROPERTYDB]",str,"[%DL]attribut\\master.gmd");
-                if (!OpenDataFile (str, "",BT_READ, &hDBProperty))
-                {
-                    MessageBox( GetFocus(), str,"Cannot open property database", MB_OK);
-                }
-                else
-                {
-                    HANDLE	hItems=0;
-                    int	 n=GetLBSelectedItems (hWndDlg,IDC_OWNERLIST,&hItems);
-                    LPINT	pItem;
-                    
-                    SendDlgItemMessage (hWndDlg,IDC_PROPERTYLIST,LB_RESETCONTENT,0,0);
-                    if (n)
-                    {
-                        pItem = (LPINT)GlobalLock (hItems);
-                        while (n--)
-                        {    
-                            
-                            Item = *pItem++;
-                            SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETTEXT,Item,(DWORD)str);
-                            if ((pTAB = _fstrrchr (str,'\t')))
-                            {
-                                *pTAB++ = 0;   
-                                _fstrcpy (WantStr2,pTAB);
-                                ReplaceChar (str,'\t','-');
-                                //SetDlgItemText (hWndDlg,IDC_OWNERNAME,str); 
-                                {               
-                                    short	IDIndex=GetGlobalLVal2 ("[%PROPERTYINDEX]",0), IDLen=0; 
-                                    short	pos=BT_FIRST, cond=BT_GE;
-                                    BOOL	GetNext=TRUE;
-                                    char	propindexfld[66];
-                                    
-                                    SQLPtrProperty = (LPOPENSQLDATA) GlobalLock (hDBProperty);
-                                    FilePtrProperty = (LPOPENFILEDATA) GlobalLock (SQLPtrProperty->OFHandle);
-                                    lpGWDHeadProperty = (LPGWDHEADER)GlobalLock (FilePtrProperty->FileHandle);                             
-                                    //for (i=0;i<abs(lpGWDHeadProperty->NumIndexFields[IDIndex]);i++)
-                                    //	IDLen += lpGWDHeadProperty->pFldInfo[lpGWDHeadProperty->IndexFields[IDIndex][i]].Len;
-                                    //_fstrncpy (lpGWDHeadProperty->pKeys[IDIndex],WantStr2,IDLen);
-                                    GetGlobalCVal ("[%PROPERTYINDEXFIELD]",propindexfld,"[PID]");
-                                    SetFieldValFromCharAndName(lpGWDHeadProperty,propindexfld,(LPSTR)WantStr2,FALSE);
-                                    GWDFormKey(lpGWDHeadProperty,IDIndex,TRUE,0,0);
-                                    
-                                    while (GetNext && !BT_FIND (lpGWDHeadProperty->BTHandle[IDIndex],lpGWDHeadProperty->pKeys[IDIndex],pos,cond,(LPSTR)&Offset))
-                                    {
-                                        char	CharKeyVal[128];
-                                        
-                                        pos = BT_NEXT;
-                                        cond = BT_ANY;
-                                        
-                                        //lpGWDHeadProperty->pKeys[IDIndex][IDLen]=0;   
-                                        //Truncate (lpGWDHeadProperty->pKeys[IDIndex]);
-                                        GMDGetCharKeyVal (lpGWDHeadProperty,IDIndex,0,CharKeyVal); 
-                                        if (!_fstricmp (WantStr2,CharKeyVal))
-                                        {
-                                            FillGWDData (lpGWDHeadProperty,Offset); 
-                                            SQLPtrProperty->st = 0;  
-                                            SQLPtrProperty->Offset = Offset; 
-                                            SQLPtrProperty->lastreadtime = ULONG_MAX;
-                                            GetGlobalCVal ("[%PROPERTYDISPLAY]",str,"[GEOACCT]$CHR(1)[PROPADDR] [STREET] [DIRECTION] [SFX]$CHR(1)[DEEDVOLUME]/[DEEDPAGE]$CHR(1)[ACRES]");
-                                            ExpandText (str); 
-                                            OneSpace (str); 
-                                            //GetGlobalCVal ("[%PROPERTYKEYFIELD]",propkeyfld,"[GEOACCT]");
-                                            ReplaceChar (str,0x01,0x09); 
-                                            //sprintf (_fstrchr(str,0),"\t%s",propkeyfld);
-                                            //ExpandText (str);
-                                            if ((idx=SendDlgItemMessage (hWndDlg,IDC_PROPERTYLIST,LB_ADDSTRING,0,(LPARAM)str)) ==
-                                                LB_ERRSPACE) 
-                                                GetNext = FALSE; 
-                                        } 
-                                        else
-                                            GetNext = FALSE;
-                                    }
-                                    GlobalUnlock (FilePtrProperty->FileHandle); 
-                                    GlobalUnlock (SQLPtrProperty->OFHandle);
-                                    GlobalUnlock (hDBProperty); 
-                                }
-                            }
-                        }
-                    }
-                    CloseDataFile (TRUE,&hDBProperty); 
-                    GSSiGlobUlFree (&hItems);
-                }  
-            }
-                break; 
-                
-            case IDOK:
-            {   
-                HANDLE	hItems; 
-                int	 n=GetLBSelectedItems (hWndDlg,IDC_PROPERTYLIST,&hItems);
-                LPINT	pItem=(LPINT)GlobalLock (hItems);  
-                LPSTR	pTAB; 
-                BOOL	Err=TRUE;
-                
-                if (n == 1)
-                    SaveProperty = *pItem;
-                else
-                    SaveProperty = -1;
-                iOwner = SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETCURSEL,0,0);
-                SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETTEXT,iOwner,(DWORD)str); 
-                if ((pTAB = _fstrchr (str,'\t')))
-                    *pTAB = 0;
-                SetGlobalValue ("%SELECTEDOWNER",str);
-                ClearHighlightList(FALSE); 
-                AutoHighlight=SendDlgItemMessage(hWndDlg,IDC_AUTOHIGHLIGHT,BM_GETCHECK,0,0); 
-                while (n--)
-                {   
-                    SendDlgItemMessage(hWndDlg,IDC_PROPERTYLIST,LB_GETTEXT,*pItem++,(DWORD)str);
-                    pTAB = _fstrrchr (str,'\t');
-                    pTAB++; 
-                    Strip (pTAB,' ');
-                    GetGlobalCVal ("[%PROPERTYPREFIX]",propprefix,"PINA");
-                    if (PickByRefno (0,propprefix,pTAB,-1))
-                    {
-                        if (PickList[0].Type != 6 && AutoHighlight) 
-                            AddToHighlightList (PickList[0].Refno,&PickList[0],TRUE); 
-                        Err=FALSE;
-                    }
-                    else 
-                    {
-                        SetDlgItemText (hWndDlg,IDC_PROPMESSAGE,"Property not found"); 
-                    }
-                } 
-                GSSiGlobUlFree (&hItems);
-                if (Err)
-                    break; 
-                GetDlgItemText (hWndDlg,IDC_OWNERNAME,WantStr,sizeof(WantStr)-1); 
-                GetDlgItemText (hWndDlg,IDC_OWNERNAMEWC,Wildcard,sizeof(Wildcard)-1);            
-                GSSiEndDialog(hWndDlg, 2,hSaveBM); 
-                ExpandBounds (&HLTBounds, LocationOffset);
-                ZoomToRect(HLTBounds,FALSE);  
-                //			    PostMessage(hWndMain, WM_COMMAND, IDM_Z_HLTLIMITS, 0L);
-                
-            }
-                break;   
-                
-            case IDCANCEL:
-                CloseDataFile (TRUE,&hDBName);
-                GSSiEndDialog(hWndDlg, FALSE,hSaveBM);
-                break;
-        }
-            break;              
-        default:
-            return FALSE;
-    }
-    return TRUE;
-}      
-*/
 @end
