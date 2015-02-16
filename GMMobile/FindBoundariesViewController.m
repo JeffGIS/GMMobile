@@ -8,6 +8,7 @@
 
 @property (nonatomic) NSMutableArray *boundaryList;
 @property (nonatomic) NSMutableArray *boundaryDataList;
+@property (nonatomic) NSString *selectedType;
 
 @end
 
@@ -71,11 +72,23 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    if (_boundaryList.count != 0)
-        return _boundaryList.count;
+    if ([tableView isEqual:_topTableView])
+    {
+        if (_boundaryList.count != 0)
+            return _boundaryList.count;
+        
+        else
+            return 1;
+    }
     
     else
-        return 1;
+    {
+        if (_boundaryDataList.count != 0)
+            return _boundaryDataList.count;
+        
+        else
+            return 1;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -93,47 +106,46 @@
     if (_boundaryList.count != 0)
     {
         if ([tableView isEqual:_topTableView])
-            cell.textLabel.text = _boundaryList[indexPath.row];
-        
-        else
         {
-            BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
-            baData = _boundaryDataList[indexPath.row];
+            if (_boundaryList.count != 0)
+            {
+                cell.textLabel.text = _boundaryList[indexPath.row];
+                cell.textLabel.textColor = UIColor.blackColor;
+                cell.userInteractionEnabled = YES;
+            }
             
-            cell.textLabel.text = _boundaryDataList[indexPath.row];
-            cell.detailTextLabel.text = _boundaryDataList[indexPath.row];
-        }
-        
-        cell.textLabel.textColor = UIColor.blackColor;
-        cell.detailTextLabel.textColor = UIColor.blackColor;
-        cell.userInteractionEnabled = YES;
-    }
-    
-    else
-    {
-        if ([tableView isEqual:_topTableView])
-        {
-            cell.textLabel.text = @"No Boundaries Type match current search text";
-            cell.detailTextLabel.text = @"No Boundaries Type match current search text";
+            else
+            {
+                cell.textLabel.text = @"No Boundaries Types available";
+                cell.textLabel.textColor = UIColor.grayColor;
+                cell.userInteractionEnabled = NO;
+            }
         }
         
         else
         {
-            cell.textLabel.text = @"No Boundaries selected";
-            cell.detailTextLabel.text = @"No Boundaries selected";
+            if (_boundaryDataList.count != 0)
+            {
+                BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+                baData = _boundaryDataList[indexPath.row];
+                
+                cell.textLabel.text = baData.name;
+                cell.textLabel.textColor = UIColor.blackColor;
+                cell.userInteractionEnabled = YES;
+            }
+            
+            else
+            {
+                cell.textLabel.text = @"No Boundaries available";
+                cell.textLabel.textColor = UIColor.grayColor;
+                cell.userInteractionEnabled = NO;
+            }
         }
-        
-        cell.textLabel.textColor = UIColor.grayColor;
-        cell.detailTextLabel.textColor = UIColor.grayColor;
-        cell.userInteractionEnabled = NO;
     }
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.detailTextLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
-    cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.0)];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     return cell;
 }
 
@@ -144,13 +156,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         PropertyData *propData = [[PropertyData alloc] init];
         
-        _boundaryDataList = [propData getBoundaryAreaDataForType:[tableView cellForRowAtIndexPath:indexPath].textLabel.text];
+        _selectedType = _boundaryList[indexPath.row];
+        _boundaryDataList = [propData getBoundaryAreaDataForType:_selectedType];
+        
         [_bottomTableView reloadData];
     }
     
     else
     {
-        
+        if (_delegate)
+        {
+            BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+            baData = _boundaryDataList[indexPath.row];
+            
+            [_delegate findBoundsViewController:self
+                                didSelectBounds:baData.name
+                                           type:_selectedType
+                                          refno:baData.refno];
+        }
     }
 }
 

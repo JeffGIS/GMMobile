@@ -7,7 +7,10 @@
 
 @protocol FindBoundsViewControllerDelegate <NSObject>
 
-//delegate method goes here
+- (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
+                 didSelectBounds:(NSString *)bounds
+                            type:(NSString *)type
+                           refno:(int)refno;
 
 @end
 
