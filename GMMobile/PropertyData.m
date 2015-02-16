@@ -194,7 +194,7 @@ static PropertyData *_propData;
 
 - (NSMutableArray *)getBoundaryAreaTypes
 {
-    NSMutableArray * types=[[NSMutableArray alloc]init];
+    NSMutableArray * types=[[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
     NSString *query = [[NSString alloc] init];
     
@@ -207,16 +207,16 @@ static PropertyData *_propData;
             break;
     }
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundaryAreas");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundaryAreaTypes");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR type = (LPSTR)sqlite3_column_text(statement, 0);
-        NSString * outString = [NSString stringWithFormat:@"%s",type];
+        NSString *outString = [NSString stringWithFormat:@"%s", type];
         [types addObject:outString];
     }
     
-    SQLOK(sqlite3_finalize(statement), "getBoundaryAreas");
+    SQLOK(sqlite3_finalize(statement), "getBoundaryAreaTypes");
     
     [self close];
     

@@ -69,7 +69,7 @@
         _boundariesTF.text = boundsSearchText;
         PropertyData *propData = [[PropertyData alloc] init];
         
-        //_propOwnerList = [propData someMethod];
+        _boundaryList = [propData getBoundaryAreaTypes];
         [_topTableView reloadData];
     }
     
@@ -90,7 +90,7 @@
     {
         PropertyData *propData = [[PropertyData alloc] init];
         
-        //_boundaryList = [propData someMethod];
+        _boundaryList = [propData getBoundaryAreaTypes];
         [_topTableView reloadData];
     }
 }
