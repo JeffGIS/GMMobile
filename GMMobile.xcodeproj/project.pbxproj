@@ -21,6 +21,8 @@
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
 		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
+		A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */; };
+		A9BC27F11A927D2B00FA89D8 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BC27F01A927D2B00FA89D8 /* help.png */; };
 		A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC11A7A8D9C0094562B /* userLocation.png */; };
 		A9C78BC41A7A8E590094562B /* zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC31A7A8E590094562B /* zoom.png */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
@@ -86,6 +88,9 @@
 		A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindIntersectionViewController.m; sourceTree = "<group>"; };
 		A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlay.h; sourceTree = "<group>"; };
 		A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlay.m; sourceTree = "<group>"; };
+		A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemesViewController.h; sourceTree = "<group>"; };
+		A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemesViewController.m; sourceTree = "<group>"; };
+		A9BC27F01A927D2B00FA89D8 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
 		A9C78BC11A7A8D9C0094562B /* userLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = userLocation.png; sourceTree = "<group>"; };
 		A9C78BC31A7A8E590094562B /* zoom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoom.png; sourceTree = "<group>"; };
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -163,6 +168,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9BC27F01A927D2B00FA89D8 /* help.png */,
 				A94656211A85E04A00163525 /* split.png */,
 				A9FD3FAD1A8735FB004FB96D /* crosshairs160.png */,
 				A9CBF2101A8156C7006AC88E /* list.png */,
@@ -242,14 +248,16 @@
 				EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */,
 				A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */,
 				A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */,
-				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
-				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
-				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
-				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
-				EB5521D61A61B6A8008CE2D1 /* LayersViewController.h */,
-				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB4F25831A757F2000761FD5 /* FindViewController.h */,
 				EB4F25841A757F2000761FD5 /* FindViewController.m */,
+				EB5521D61A61B6A8008CE2D1 /* LayersViewController.h */,
+				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
+				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
+				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
+				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
+				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
+				A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */,
+				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
 				A9F56EBF1A847CA8003522AE /* WebKitViewController.m */,
 			);
@@ -413,6 +421,7 @@
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
+				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -433,6 +442,7 @@
 			files = (
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */,
+				A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */,
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */,
