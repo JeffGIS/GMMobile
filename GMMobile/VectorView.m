@@ -40,7 +40,6 @@
                    viewBounds:&_viewBounds];
     }
     
-    //CGContextRelease(context);
 }
 
 @end
