@@ -226,7 +226,7 @@ int SQLOK(int sqlReturn, char *method)
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREAS";
+            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREA";
             break;
     }
     
@@ -257,7 +257,7 @@ int SQLOK(int sqlReturn, char *method)
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT id,NAME FROM BOUNDARYAREAS WHERE TYPE='%@'",type];
+            query = [NSString stringWithFormat:@"SELECT id,NAME FROM BOUNDARYAREA WHERE TYPE='%@'",type];
             break;
     }
     
