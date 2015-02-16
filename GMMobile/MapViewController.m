@@ -20,6 +20,8 @@
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearWhenDeselected, firstTime;
 @property (nonatomic, copy) NSString *selectedPID;
+@property (nonatomic, copy) NSString *selectedPlat;
+@property int selectedPlatRefno;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
@@ -428,12 +430,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
                                                toCoordinateFromView:_mapView];
         
-        LLPOINT llp;
+        LLPOINT llp, llpSewer;
         llp.lat = coordPicked.latitude;
         llp.lon = coordPicked.longitude;
+        llpSewer = llp;
         
         PropertyData *propData = [[PropertyData alloc] init];
         _selectedPID = [propData pickPID:&llp];
+        SewerData *sewerData = [[SewerData alloc] init];
+        _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
         coordPicked.latitude = llp.lat;
         coordPicked.longitude = llp.lon;
         

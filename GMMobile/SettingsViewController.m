@@ -3,12 +3,14 @@
 
 #import "SettingsViewController.h"
 #import "PropertyData.h"
+#import "SewerData.h"
 #import "GSSiTileOverlay.h"
 
 #define GET_PROPERTY 1
 #define GET_TILES 2
 #define GET_PARCELS 3
 #define GET_AREAS 4
+#define GET_SEWER 5
 
 @interface SettingsViewController ()
 
@@ -17,6 +19,10 @@
 @end
 
 @implementation SettingsViewController
+{
+    NSMutableArray* _allPlats;
+    int _nextPlat;
+}
 
 - (void)viewDidLoad
 {
@@ -115,9 +121,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     {
         switch (option)
         {
+            case GET_SANPLAT:
+                self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
+                                                              target:self
+                                                            selector:@selector(getNextPlat)                                                            userInfo:nil
+                                                             repeats:NO];
+                break;
             case GET_PARCELS:
             case GET_PROPERTY:
             case GET_AREAS:
+            case GET_SEWER:
             {
                 NSString *toDirectory = [path stringByDeletingLastPathComponent];
                 NSString *file;
@@ -138,6 +151,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     {
                         file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
                         _popover.title = @"Load Area Tables";
+                    }
+                        break;
+                        
+                    case GET_SEWER:
+                    {
+                        file = [NSString stringWithFormat:@"%@/sewerdata.sqltran",toDirectory];
+                        _popover.title = @"Load Sewer Tables";
                     }
                         break;
                         
@@ -164,16 +184,33 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     }
                     else
                     {
-                        PropertyData *pd = [[PropertyData alloc] init];
-                        [pd open];
+                        PropertyData *pd;
+                        SewerData *sd;
+                        
+                        if (option == GET_SEWER)
+                        {
+                            sd = [[SewerData alloc]init];
+                            [sd open];
+                        }
+                        else
+                        {
+                            pd = [[PropertyData alloc] init];
+                            [pd open];
+                        }
                         fseek(fid, 0, SEEK_END);
                         CGFloat totLen = ftell(fid);
                         fseek(fid, 0, SEEK_SET);
-                        [pd startTransaction];
+                        if (option == GET_SEWER)
+                            [sd startTransaction];
+                        else
+                            [pd startTransaction];
                         
                         while (fgetstring(str, (USHRT_MAX*8 - 2), fid))
                         {
-                            [pd executeCmd:str];
+                            if (option == GET_SEWER)
+                                [sd executeCmd:str];
+                            else
+                                [pd executeCmd:str];
                             
                             dispatch_async(dispatch_get_main_queue(),
                                            ^{
@@ -181,7 +218,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                            });
                         }
                         
-                        [pd commitTransaction];
+                        if (option == GET_SEWER)
+                            [sd commitTransaction];
+                        else
+                            [pd commitTransaction];
                         if (option == GET_PARCELS)
                         {
                             dispatch_async(dispatch_get_main_queue(),
@@ -192,7 +232,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
                             [pd commitTransaction];
                         }
-                        [pd close];
+                        if (option == GET_SEWER)
+                            [sd close];
+                        else
+                            [pd close];
                         fclose(fid);
                         free(str);
                         
@@ -216,14 +259,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
     else
     {
-        [_popover hide];
-        
-        UIAlertView *getError = [[UIAlertView alloc] initWithTitle:@"Error getting parcel file"
-                                                           message:@"Network communication error"
-                                                          delegate:nil
-                                                 cancelButtonTitle:@"Continue"
-                                                 otherButtonTitles:nil];
-        [getError show];
+        if (option == GET_SANPLAT)
+            [self getNextPlat];
+        else
+        {
+            [_popover hide];
+            
+            UIAlertView *getError = [[UIAlertView alloc] initWithTitle:@"Error getting parcel file"
+                                                               message:@"Network communication error"
+                                                              delegate:nil
+                                                     cancelButtonTitle:@"Continue"
+                                                     otherButtonTitles:nil];
+            [getError show];
+        }
         
     }
 }
@@ -321,6 +369,43 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
            toFile:fileName
       toDirectory:documentsDirectory
      forceRefresh:YES];
+}
+
+- (IBAction)loadSewer:(id)sender {
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"MPLS_sewers.gcf";
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_SEWER;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Area File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+     forceRefresh:YES];
+}
+
+- (BOOL) getNextPlat
+{
+    if (_nextPlat >= [_allPlats count])
+        return FALSE;
+    NSString *platID = _allPlats[_nextPlat++];
+    SewerData* sd = [[SewerData alloc]init];
+    [sd loadPlat:platID usingPopover:_popover andDelegate:self];
+    return TRUE;
+}
+
+- (IBAction)loadPlats:(id)sender {
+    SewerData* sd = [[SewerData alloc]init];
+    _allPlats = [sd getAllSanPlats];
+    _nextPlat = 0;
+    [self getNextPlat];
 }
 
 - (BOOL)loadTilesFromList:(NSString*)fileList

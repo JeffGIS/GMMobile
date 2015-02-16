@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property int refno;
 @end
 
-@interface PropertyData : NSObject <FTPDataPullDelegate,GSSiPopoverViewDelegate>
+@interface PropertyData : NSObject 
 
 @property sqlite3 *database;
 @property (nonatomic) BOOL isOpen;
