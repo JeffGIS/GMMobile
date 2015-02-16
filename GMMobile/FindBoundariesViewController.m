@@ -7,6 +7,7 @@
 @interface FindBoundariesViewController ()
 
 @property (nonatomic) NSMutableArray *boundaryList;
+@property (nonatomic) NSMutableArray *boundaryDataList;
 
 @end
 
@@ -20,7 +21,9 @@
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
     [self setupBackButton];
-    [self setupTextField];
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    _boundaryList = [propData getBoundaryAreaTypes];
 }
 
 - (void)didReceiveMemoryWarning
@@ -54,77 +57,10 @@
                       forState:UIControlStateNormal];
 }
 
-- (void)setupTextField
-{
-    _boundariesTF.delegate = self;
-    _boundariesTF.layer.borderColor = UIColor.blackColor.CGColor;
-    _boundariesTF.layer.borderWidth = (_topTableView.rowHeight / 20.0);
-    _boundariesTF.layer.cornerRadius = 10.0;
-    _boundariesTF.adjustsFontSizeToFitWidth = YES;
-    
-    NSString *boundsSearchText = [UserDefaults.defaults stringForKey:@"CurrentBoundsSearchText"];
-    
-    if ((boundsSearchText) && ![boundsSearchText isEqualToString:@""])
-    {
-        _boundariesTF.text = boundsSearchText;
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        _boundaryList = [propData getBoundaryAreaTypes];
-        [_topTableView reloadData];
-    }
-    
-    [_boundariesTF addTarget:self
-                      action:@selector(textFieldDidChange:)
-            forControlEvents:UIControlEventEditingChanged];
-}
-
-- (void)textFieldDidChange:(UITextField *)textField
-{
-    if ([textField.text isEqualToString:@""])
-    {
-        [_boundaryList removeAllObjects];
-        [_topTableView reloadData];
-    }
-    
-    else
-    {
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        _boundaryList = [propData getBoundaryAreaTypes];
-        [_topTableView reloadData];
-    }
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [self dismissTextField];
-    return NO;
-}
-
 - (IBAction)goBack:(id)sender
 {
-    [self dismissTextField];
-    
     [self dismissViewControllerAnimated:YES
                              completion:nil];
-}
-
-- (void)touchesBegan:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
-    [self dismissTextField];
-}
-
-- (void)dismissTextField
-{
-    [UserDefaults.defaults saveString:_boundariesTF.text
-                               forKey:@"CurrentBoundsSearchText"];
-    
-    for (UIView *textField in self.view.subviews)
-    {
-        if ([textField isKindOfClass:UITextField.class] && textField.isFirstResponder)
-            [textField resignFirstResponder];
-    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -157,15 +93,15 @@
     if (_boundaryList.count != 0)
     {
         if ([tableView isEqual:_topTableView])
-        {
             cell.textLabel.text = _boundaryList[indexPath.row];
-            cell.detailTextLabel.text = _boundaryList[indexPath.row];
-        }
         
         else
         {
-            //cell.textLabel.text = newArray[indexPath.row];
-            //cell.detailTextLabel.text = newArray[indexPath.row];
+            BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+            baData = _boundaryDataList[indexPath.row];
+            
+            cell.textLabel.text = _boundaryDataList[indexPath.row];
+            cell.detailTextLabel.text = _boundaryDataList[indexPath.row];
         }
         
         cell.textLabel.textColor = UIColor.blackColor;
@@ -204,9 +140,18 @@
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self dismissTextField];
+    if ([tableView isEqual:_topTableView])
+    {
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        _boundaryDataList = [propData getBoundaryAreaDataForType:[tableView cellForRowAtIndexPath:indexPath].textLabel.text];
+        [_bottomTableView reloadData];
+    }
     
-    //this is where we populate bottomTableView array and reload
+    else
+    {
+        
+    }
 }
 
 @end
