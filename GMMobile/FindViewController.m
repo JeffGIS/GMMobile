@@ -121,6 +121,7 @@
     [findBounds dismissViewControllerAnimated:YES
                                    completion:nil];
     
+    CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
     CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
     CRAPI.sharedInstance.currentOverallBoundaryType = type;
     CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
