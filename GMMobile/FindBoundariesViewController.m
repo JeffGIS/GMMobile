@@ -159,6 +159,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _selectedType = _boundaryList[indexPath.row];
         _boundaryDataList = [propData getBoundaryAreaDataForType:_selectedType];
         
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"name"
+                                                               ascending:YES];
+        
+        [_boundaryDataList sortUsingDescriptors:[NSArray arrayWithObject:sort]];
+        
         [_bottomTableView reloadData];
     }
     

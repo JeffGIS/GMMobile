@@ -289,22 +289,7 @@
     
     else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
     {
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        MNMXCORD bounds = [propData getBoundaryAreaBounds:
-                           CRAPI.sharedInstance.currentOverallBoundaryRefno];
-        
-        CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
-                                                                        ((bounds.xmx + bounds.xmn) / 2.0));
-        
-        CGFloat latDelta = fabs(bounds.ymx - bounds.ymn) * 1.1;
-        
-        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
-                                             fromEyeCoordinate:boundsCoord
-                                                   eyeAltitude:(latDelta * 207360.0)];
-        
-        [_mapView setCamera:_camera
-                   animated:YES];
+        [self extentZoom:YES];
     }
     
     else
@@ -341,12 +326,35 @@
 
 - (void)extentZoom:(BOOL)animated
 {
-    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
-                                         fromEyeCoordinate:_target
-                                               eyeAltitude:36000.0];
+    if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+    {
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        MNMXCORD bounds = [propData getBoundaryAreaBounds:
+                           CRAPI.sharedInstance.currentOverallBoundaryRefno];
+        
+        CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
+                                                                        ((bounds.xmx + bounds.xmn) / 2.0));
+        
+        CGFloat latDelta = fabs(bounds.ymx - bounds.ymn) * 1.1;
+        
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
+                                             fromEyeCoordinate:boundsCoord
+                                                   eyeAltitude:(latDelta * 207360.0)];
+        
+        [_mapView setCamera:_camera
+                   animated:YES];
+    }
     
-    [_mapView setCamera:_camera
-               animated:animated];
+    else
+    {
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
+                                             fromEyeCoordinate:_target
+                                                   eyeAltitude:36000.0];
+        
+        [_mapView setCamera:_camera
+                   animated:animated];
+    }
 }
 
 - (void)setupButton:(UIButton *)button
