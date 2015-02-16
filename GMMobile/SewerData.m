@@ -255,6 +255,8 @@ int SQLOKswr(int sqlReturn, char *method)
     [self close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
+    NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg",_documentsDirectory,minPlatID];
+    CRAPI.sharedInstance.currentPlatImagePath = platFile;
     return minRef;
 }
 - (NSMutableArray*) getAllSanPlats

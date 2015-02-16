@@ -9,31 +9,79 @@
 #import "PlatView.h"
 
 @implementation PlatView
+{
+    CGImageRef _image;
+}
+
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        self.opaque = YES;
+        self.backgroundColor = UIColor.clearColor;
+    }
+    
+    return self;
+}
+
+-(CGImageRef)image
+{
+    if (_image == NULL)
+    {
+        NSString * imagePath = CRAPI.sharedInstance.currentPlatImagePath;
+        UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
+        _image = CGImageRetain(img.CGImage);
+    }
+    return _image;
+}
 
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGImageRef image;
+    CGRect imageRect;
+    imageRect.origin = CGPointMake(8.0, 8.0);
+    imageRect.size = CGSizeMake(64.0, 64.0);
     
- /*   if (_displayData && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
-    {
-        PropertyData *pd = [[PropertyData alloc] init];
-        _viewBounds.xmn = self.bounds.origin.x;
-        _viewBounds.xmx = (self.bounds.origin.x + self.bounds.size.width);
-        _viewBounds.ymn = (self.bounds.origin.y + self.bounds.size.height);
-        _viewBounds.ymx = self.bounds.origin.y;
-        
-        [pd displayParcels:context
-                  LLBounds:&_latlonBounds
-                viewBounds:&_viewBounds];
-        
-        [pd displayParcelText:context
-                     LLBounds:&_latlonBounds
-                   viewBounds:&_viewBounds];
-    }*/
-    CGContextDrawImage(context, rect, image);
+    // Note: The images are actually drawn upside down because Quartz image drawing expects
+    // the coordinate system to have the origin in the lower-left corner, but a UIView
+    // puts the origin in the upper-left corner. For the sake of brevity (and because
+    // it likely would go unnoticed for the image used) this is not addressed here.
+    // For the demonstration of PDF drawing however, it is addressed, as it would definately
+    // be noticed, and one method of addressing it is shown there.
     
+    // Draw the image in the upper left corner (0,0) with size 64x64
+    CGContextDrawImage(context, imageRect, self.image);
+    
+    // Tile the same image across the bottom of the view
+    // CGContextDrawTiledImage() will fill the entire clipping area with the image, so to avoid
+    // filling the entire view, we'll clip the view to the rect below. This rect extends
+    // past the region of the view, but since the view's rectangle has already been applied as a clip
+    // to our drawing area, it will be intersected with this rect to form the final clipping area
+    CGContextClipToRect(context, CGRectMake(0.0, 80.0, self.bounds.size.width, self.bounds.size.height));
+    
+    // The origin of the image rect works similarly to the phase parameter for SetLineDash and
+    // SetPatternPhase and specifies where in the coordinate system the "first" image is drawn.
+    // The size (previously set to 64x64) specifies the size the image is scaled to before being tiled.
+    imageRect.origin = CGPointMake(32.0, 112.0);
+    CGContextDrawTiledImage(context, imageRect, self.image);
+    
+    // Highlight the "first" image from the DrawTiledImage call.
+    CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 0.5);
+    CGContextFillRect(context, imageRect);
+    // And stroke the clipped area
+    CGContextSetLineWidth(context, 3.0);
+    CGContextSetRGBStrokeColor(context, 1.0, 0.0, 0.0, 1.0);
+    CGContextStrokeRect(context, CGContextGetClipBoundingBox(context));
 }
+
+
+-(void)dealloc
+{
+    CGImageRelease(_image);
+}
+
 
 
 @end
