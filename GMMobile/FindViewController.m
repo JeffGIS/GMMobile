@@ -113,4 +113,19 @@
     self.tabBarController.selectedIndex = 0;
 }
 
+- (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
+                 didSelectBounds:(NSString *)bounds
+                            type:(NSString *)type
+                           refno:(int)refno
+{
+    [findBounds dismissViewControllerAnimated:YES
+                                   completion:nil];
+    
+    CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+    CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
+    CRAPI.sharedInstance.currentOverallBoundaryType = type;
+    CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+    self.tabBarController.selectedIndex = 0;
+}
+
 @end

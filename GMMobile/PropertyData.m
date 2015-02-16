@@ -279,7 +279,7 @@ int SQLOK(int sqlReturn, char *method)
     return data;
 }
 
-- (MNMXCORD) getBoundaryAreaBounds:(int)refno
+- (MNMXCORD)getBoundaryAreaBounds:(int)refno
 {
     MNMXCORD bounds;
     

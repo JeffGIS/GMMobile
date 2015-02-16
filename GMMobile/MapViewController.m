@@ -287,6 +287,26 @@
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
+    else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
+    {
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        MNMXCORD bounds = [propData getBoundaryAreaBounds:
+                           CRAPI.sharedInstance.currentOverallBoundaryRefno];
+        
+        CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
+                                                                        ((bounds.xmx + bounds.xmn) / 2.0));
+        
+        CGFloat latDelta = fabs(bounds.ymx - bounds.ymn) * 1.1;
+        
+        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
+                                             fromEyeCoordinate:boundsCoord
+                                                   eyeAltitude:(latDelta * 207360.0)];
+        
+        [_mapView setCamera:_camera
+                   animated:YES];
+    }
+    
     else
     {
         /*MKCoordinateRegion region = _mapView.region;
