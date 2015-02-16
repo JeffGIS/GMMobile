@@ -8,6 +8,7 @@
 #import "SewerData.h"
 #define COORDINATE_FACTOR 10000000.0
 
+static BOOL createDirectory = YES;
 @interface SewerData ()
 
 @property (nonatomic) GSSiPopoverView *popover;
@@ -118,7 +119,7 @@ int SQLOKswr(int sqlReturn, char *method)
 
 - (BOOL)loadPlat:(NSString *)platID usingPopover:(GSSiPopoverView*)popover andDelegate:(id)delegate
 {
-    BOOL fileExists;
+    BOOL fileExists = NO;
     NSString *actualPlatID = [self getActualPlatFileName:platID];
     NSString *toDir = [NSString stringWithFormat:@"%@/SanPlats",_documentsDirectory];
     NSString *fileName = [NSString stringWithFormat:@"%@.jpg",actualPlatID];
@@ -135,15 +136,16 @@ int SQLOKswr(int sqlReturn, char *method)
     pull.usernameOveride = @"GMMobile";
     pull.passwordOveride = @"GeoMaster";
     pull.portOveride = @"21";
-    pull.createDirectory = YES;
+    pull.createDirectory = createDirectory;
     pull.returnIfExists = NO;
     if ([pull getFile:fileName
     fromDirectory:@"Sewer/Sanitary/Plats"
            toFile:fileName
       toDirectory:toDir
      forceRefresh:NO] == FTPStatusFileExists)
-        return YES;
-    return NO;
+        fileExists = YES;
+    createDirectory = NO;
+    return fileExists;
 }
 
 - (void)FTPdidComplete:(int)option
@@ -157,6 +159,46 @@ int SQLOKswr(int sqlReturn, char *method)
         
     }
 }
+/*- (MNMXCORD)getBoundsForSanPlat:(int)refno
+{
+    MNMXCORD bounds;
+    
+    sqlite3_stmt *statement;
+    NSString *query = [[NSString alloc] init];
+    
+    [self open];
+    [self startTransaction];
+    [self executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
+    [self commitTransaction];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_MPLS:
+            query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = '%@'",
+                     PID];
+            break;
+            
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT PARCELPOLY.id,minX,maxX,minY,maxY FROM PARCELPOLY,PARCELPOLY_index WHERE PARCELPOLY.PID='%@' AND PARCELPOLY_index.id=PARCELPOLY.id",
+                     PID];
+            break;
+    }
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundsForPID");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        bounds.xmn = sqlite3_column_double(statement, 1);
+        bounds.xmx = sqlite3_column_double(statement, 2);
+        bounds.ymn = sqlite3_column_double(statement, 3);
+        bounds.ymx = sqlite3_column_double(statement, 4);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getBoundsforPID");
+    
+    [self close];
+    return bounds;
+}*/
 
 - (NSString*) getSanPlatIDFromRefno:(int)refno
 {
