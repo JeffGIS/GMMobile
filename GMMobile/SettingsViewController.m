@@ -122,7 +122,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         switch (option)
         {
             case GET_SANPLAT:
-                self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
+                self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                               target:self
                                                             selector:@selector(getNextPlat)                                                            userInfo:nil
                                                              repeats:NO];
@@ -260,7 +260,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     else
     {
         if (option == GET_SANPLAT)
-            [self getNextPlat];
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
+                                                          target:self
+                                                        selector:@selector(getNextPlat)                                                            userInfo:nil
+                                                         repeats:NO];
         else
         {
             [_popover hide];
@@ -394,7 +397,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (BOOL) getNextPlat
 {
     if (_nextPlat >= [_allPlats count])
+    {
+        [_popover hide];
         return FALSE;
+    }
     NSString *platID = _allPlats[_nextPlat++];
     SewerData* sd = [[SewerData alloc]init];
     [sd loadPlat:platID usingPopover:_popover andDelegate:self];

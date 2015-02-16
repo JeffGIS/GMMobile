@@ -282,6 +282,38 @@ int SQLOK(int sqlReturn, char *method)
 - (MNMXCORD) getBoundaryAreaBounds:(int)refno
 {
     MNMXCORD bounds;
+    
+    sqlite3_stmt *statement;
+    NSString *query = [[NSString alloc] init];
+    
+    [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_MPLS:
+            query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %i",
+                     refno];
+            break;
+            
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%i AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+                     refno];
+            break;
+    }
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundsForBoundary");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        bounds.xmn = sqlite3_column_double(statement, 1);
+        bounds.xmx = sqlite3_column_double(statement, 2);
+        bounds.ymn = sqlite3_column_double(statement, 3);
+        bounds.ymx = sqlite3_column_double(statement, 4);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "getBoundsforBoundary");
+    
+    [self close];
     return bounds;
 }
 

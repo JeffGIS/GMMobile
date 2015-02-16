@@ -10,7 +10,7 @@
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface SewerData : NSObject<FTPDataPullDelegate,GSSiPopoverViewDelegate>
+@interface SewerData : NSObject<FTPDataPullDelegate>
 
 @property sqlite3 *database;
 @property (nonatomic) BOOL isOpen;
