@@ -70,7 +70,7 @@
         cell.textLabel.text = _themesList[indexPath.row];
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         
         UIButton *helpButton = [[UIButton alloc] initWithFrame:CGRectMake((cell.frame.size.height * 0.15),
                                                                           (cell.frame.size.height * 0.15),
@@ -108,7 +108,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *theme = _themesList[indexPath.row];
     
-    NSLog(@"Detail disclosure selected for %@", theme);
+    NSLog(@"Cell selected for %@", theme);
 }
 
 - (void)helpForTheme:(UIButton *)button
@@ -116,6 +116,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSString *theme = _themesList[button.tag];
     
     NSLog(@"Help requested for %@", theme);
+}
+
+- (void)tableView:(UITableView *)tableView
+accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *theme = _themesList[indexPath.row];
+    
+    NSLog(@"Detail Disclosure requested for %@", theme);
 }
 
 @end
