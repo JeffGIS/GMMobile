@@ -12,8 +12,10 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 };
 
 @interface BoundaryAreaData : NSObject
-@property NSString* name;
+
+@property NSString *name;
 @property int refno;
+
 @end
 
 @interface PropertyData : NSObject 

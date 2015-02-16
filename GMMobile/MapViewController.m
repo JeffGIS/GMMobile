@@ -402,9 +402,6 @@ regionDidChangeAnimated:(BOOL)animated
 
     [self refreshVectorView:region
                      atZoom:_currentZoom];
-    
-    NSLog(@"%f", _mapView.camera.altitude);
-    NSLog(@"%f,%f", _mapView.region.span.latitudeDelta, _mapView.region.span.longitudeDelta);
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
