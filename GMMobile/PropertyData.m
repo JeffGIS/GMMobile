@@ -223,9 +223,9 @@ static PropertyData *_propData;
     return types;
 }
 
-- (NSMutableArray *)getBoundaryAreaDataForType:(NSString*)type
+- (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type
 {
-    NSMutableArray * data = [[NSMutableArray alloc]init];
+    NSMutableArray * data = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
     NSString *query = [[NSString alloc] init];
     
@@ -238,29 +238,27 @@ static PropertyData *_propData;
             break;
     }
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundaryAreas");
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundaryAreaData");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         int refno = sqlite3_column_int(statement, 0);
         LPSTR name = (LPSTR)sqlite3_column_text(statement, 1);
-        BoundaryAreaData * baData = [[BoundaryAreaData alloc]init];
+        BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
         baData.refno = refno;
         baData.name = [NSString stringWithUTF8String:name];
         [data addObject:baData];
     }
     
-    SQLOK(sqlite3_finalize(statement), "getBoundaryAreas");
+    SQLOK(sqlite3_finalize(statement), "getBoundaryAreaData");
     
     [self close];
-   
     return data;
 }
 
 - (MNMXCORD) getBoundaryAreaBounds:(int)refno
 {
     MNMXCORD bounds;
-    
     return bounds;
 }
 
@@ -891,29 +889,9 @@ int SQLOK(int sqlReturn, char *method)
     NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
     style.alignment = NSTextAlignmentCenter;
     
-    CGFloat fontSize = 12.0;
-    
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
-                                UIColor.blackColor, NSForegroundColorAttributeName,
-                                style, NSParagraphStyleAttributeName,
-                                nil];
-    
-    CGSize textSize = [text sizeWithAttributes:attributes];
-    
-    CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
-                                  (textPoint.y - (textSize.height / 2.0)),
-                                  textSize.width, textSize.height);
-    
-    if (textSize.width < sqrtf(maxPixels))
+    for (int i = 14; i > 6; i--)
     {
-        [text drawInRect:textFrame
-          withAttributes:attributes];
-    }
-    
-    else
-    {
-        CGFloat fontSize = 10.0;
+        CGFloat fontSize = (CGFloat)i;
         
         NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
@@ -931,52 +909,7 @@ int SQLOK(int sqlReturn, char *method)
         {
             [text drawInRect:textFrame
               withAttributes:attributes];
-        }
-        
-        else
-        {
-            CGFloat fontSize = 8.0;
-            
-            NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                        [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
-                                        UIColor.blackColor, NSForegroundColorAttributeName,
-                                        style, NSParagraphStyleAttributeName,
-                                        nil];
-            
-            CGSize textSize = [text sizeWithAttributes:attributes];
-            
-            CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
-                                          (textPoint.y - (textSize.height / 2.0)),
-                                          textSize.width, textSize.height);
-            
-            if (textSize.width < sqrtf(maxPixels))
-            {
-                [text drawInRect:textFrame
-                  withAttributes:attributes];
-            }
-            
-            else
-            {
-                CGFloat fontSize = 6.0;
-                
-                NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                            [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
-                                            UIColor.blackColor, NSForegroundColorAttributeName,
-                                            style, NSParagraphStyleAttributeName,
-                                            nil];
-                
-                CGSize textSize = [text sizeWithAttributes:attributes];
-                
-                CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
-                                              (textPoint.y - (textSize.height / 2.0)),
-                                              textSize.width, textSize.height);
-                
-                if (textSize.width < sqrtf(maxPixels))
-                {
-                    [text drawInRect:textFrame
-                      withAttributes:attributes];
-                }
-            }
+            break;
         }
     }
 }
@@ -1786,7 +1719,7 @@ First = FALSE;
 
 void TRAN (void *source, void *dest, size_t count)
 {
-    memmove(dest,source,count);
+    memmove(dest, source, count);
     return;
 }
 
@@ -1805,7 +1738,7 @@ LPSTR REPLAC(LPSTR STRING, LPSTR OLD, LPSTR NEW, int MAXLEN)
     
     while (*IBEG)
     {
-        IBEG = strstr(IBEG,OLD);
+        IBEG = strstr(IBEG, OLD);
         
         if (!IBEG)
             goto Exit;
