@@ -12,6 +12,8 @@
 - (IBAction)deleteDatabase:(id)sender;
 - (IBAction)showEmail:(id)sender;
 - (IBAction)loadAreas:(id)sender;
+- (IBAction)loadSewer:(id)sender;
+- (IBAction)loadPlats:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 
@@ -19,5 +21,7 @@
 @property (atomic) int nFailed;
 @property NSCondition *condition;
 @property (atomic) BOOL keepGoing;
+@property (nonatomic) NSTimer *timer;
+
 
 @end

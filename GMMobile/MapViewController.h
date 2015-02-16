@@ -5,6 +5,7 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import "FindViewController.h"
 #import "PropertyData.h"
+#import "SewerData.h"
 #import "VectorView.h"
 #import "GSSiTileOverlayRenderer.h"
 #import "LayersViewController.h"

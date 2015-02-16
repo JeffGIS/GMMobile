@@ -5,6 +5,7 @@
 
 #define COORDINATE_FACTOR 10000000.0
 
+
 @interface PropertyData ()
 
 @property (nonatomic) GSSiPopoverView *popover;
@@ -16,6 +17,24 @@
 @implementation PropertyData
 
 static PropertyData *_propData;
+
+int SQLOK(int sqlReturn, char *method)
+{
+    if (sqlReturn != SQLITE_OK)
+    {
+        [_propData logError:sqlReturn
+                     method:method];
+    }
+    
+    return sqlReturn;
+}
+- (void)logError:(int)sqlReturn
+          method:(char *)method
+{
+    NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
+                  sqlReturn, method, sqlite3_errcode(_database), sqlite3_errmsg(_database)]);
+}
+
 
 - (id)init
 {
@@ -40,24 +59,23 @@ static PropertyData *_propData;
     sqlite3_close(_database);
     NSLog(@"Property Database dealloc");
 }
-
-- (BOOL)load
+- (void)open
 {
-    FTPDataPull *pull = FTPDataPull.pull;
-    pull.delegate = self;
-    pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
-    
-    [_popover showAfter:0.5
-              withTitle:@"Get Property File"];
-    
-    [pull getFile:_fileName
-    fromDirectory:@"GMMobile"
-           toFile:_fileName
-      toDirectory:_documentsDirectory
-     forceRefresh:YES];
-    
-    return YES;
+    if (!_isOpen)
+    {
+        self.isOpen = !SQLOK(sqlite3_open(self.path.UTF8String, &_database), "open(Property)");
+        NSLog(@"Property Database open");
+        
+        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
+                                                                   error:nil].fileSize;
+    }
+}
+
+- (void)close
+{
+    SQLOK(sqlite3_close(_database),"Close");
+    NSLog(@"Property Database close");
+    self.isOpen = NO;
 }
 
 - (void)clear
@@ -68,16 +86,21 @@ static PropertyData *_propData;
                                                        error:nil];
 }
 
-- (void)FTPdidComplete:(int)option
-            withStatus:(int)status
-              filePath:(NSString *)path
+- (BOOL)executeCmd:(char *)cmd
 {
-    [_popover hide];
-    
-    if (status == FTPStatusOK)
-    {
-        
-    }
+    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0), "Execute cmd");
+    return rtn;
+}
+
+- (void)startTransaction
+{
+    [self open];
+    SQLOK(sqlite3_exec(_database, "BEGIN", 0, 0, 0), "Start transaction");
+}
+
+- (void)commitTransaction
+{
+    SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
 }
 
 - (BOOL)getDistinctUseCodes:(NSString *)outFile
@@ -203,7 +226,7 @@ static PropertyData *_propData;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREAS";
+            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREA";
             break;
     }
     
@@ -234,7 +257,7 @@ static PropertyData *_propData;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT id,NAME FROM BOUNDARYAREAS WHERE TYPE='%@'",type];
+            query = [NSString stringWithFormat:@"SELECT id,NAME FROM BOUNDARYAREA WHERE TYPE='%@'",type];
             break;
     }
     
@@ -440,42 +463,6 @@ static PropertyData *_propData;
     return ownerName;
 }
 
-- (void)open
-{
-    if (!_isOpen)
-    {
-        self.isOpen = !SQLOK(sqlite3_open(self.path.UTF8String, &_database), "open(Property)");
-        NSLog(@"Property Database open");
-        
-        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
-                                                                   error:nil].fileSize;
-    }
-}
-
-- (void)close
-{
-    sqlite3_close(_database);
-    NSLog(@"Property Database close");
-    self.isOpen = NO;
-}
-
-- (BOOL)executeCmd:(char *)cmd
-{
-    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0), "Execute cmd");
-    return rtn;
-}
-
-- (void)startTransaction
-{
-    [self open];
-    SQLOK(sqlite3_exec(_database, "BEGIN", 0, 0, 0), "Start transaction");
-}
-
-- (void)commitTransaction
-{
-    SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
-}
-
 /*
 - (void)logError:(int)sqlReturn
           method:(char *)method
@@ -497,23 +484,6 @@ int SQLOK(int sqlReturn, char *method)
 }
 */
 
-- (void)logError:(int)sqlReturn
-          method:(char *)method
-{
-    NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
-                  sqlReturn, method, sqlite3_errcode(_database), sqlite3_errmsg(_database)]);
-}
-
-int SQLOK(int sqlReturn, char *method)
-{
-    if (sqlReturn != SQLITE_OK)
-    {
-        [_propData logError:sqlReturn
-                     method:method];
-    }
-    
-    return sqlReturn;
-}
 
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
