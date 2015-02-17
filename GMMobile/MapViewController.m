@@ -23,10 +23,13 @@
 @property (nonatomic, copy) NSString *selectedPlat;
 @property int selectedPlatRefno;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
+@property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *firstImageView, *secondImageView, *streetView;
 @property (nonatomic) NSInteger screenSetting;
+@property (nonatomic) UIImageView *imageTarget;
+@property (nonatomic) CGPoint newTarget;
 
 @end
 
@@ -76,6 +79,7 @@
     _secondImageView = [[UIImageView alloc] init];
     _streetView = [[UIImageView alloc] init];
     _streetView.hidden = YES;
+    _streetView.userInteractionEnabled = YES;
     
     _firstImageView.frame = _secondImageView.frame = CGRectMake(0.0,
                                                                 tabBarTop,
@@ -91,6 +95,14 @@
                                                        green:1.0
                                                         blue:0.7
                                                        alpha:1.0];
+    
+    _imageTarget = [[UIImageView alloc] initWithImage:UserDefaults.defaults.imageTarget];
+    _imageTarget.userInteractionEnabled = YES;
+    
+    UIPanGestureRecognizer *gesture =[[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                             action:@selector(targetDragged:)];
+    
+    [_imageTarget addGestureRecognizer:gesture];
     
     _splitScreenBorderWidth = 2.0;
     
@@ -947,7 +959,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Property Report"])
+    if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+         isEqualToString:@"Property Report"])
     {
         _tableViewSetting = PropertyTableViewSettingPropertyReport;
         tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -960,7 +973,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                               animated:NO];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Hennepin County Website"])
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Hennepin County Website"])
     {
         WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
                                       [UserDefaults.defaults removePIDPrefix:_selectedPID]];
@@ -970,22 +984,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          completion:nil];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text isEqualToString:@"Display Street View"])
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Display Street View"])
     {
         _streetView.frame = _tableView.frame;
         
-        NSString *svUrl = [NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f", _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+        NSString *svUrl = [NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f",
+                           _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
         
         NSURL *mapUrl = [NSURL URLWithString:[svUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
         _streetView.image = image;
         [self.view bringSubviewToFront:_streetView];
-        self.view.backgroundColor = UIColor.blackColor;
         
         for (UIView *view in self.view.subviews)
             view.hidden = YES;
         
-        self.tabBarController.tabBar.alpha = 0.0;
         _streetView.hidden = NO;
         
         [UIView animateWithDuration:0.25
@@ -994,41 +1008,106 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                              CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
                                         (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
                                         _screenSize, _screenSize);
-                         }];
+                             self.view.backgroundColor = UIColor.blackColor;
+                             self.tabBarController.tabBar.alpha = 0.0;
+                             [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleLightContent];
+                             _exitStreetView.hidden = NO;
+                         }
+                         completion:^(BOOL finished){
+                             _imageTarget.frame = CGRectMake(_streetView.frame.size.width * 0.4,
+                                                             _streetView.frame.size.height * 0.4,
+                                                             _streetView.frame.size.width * 0.2,
+                                                             _streetView.frame.size.height * 0.2);
+                             
+                             [_streetView addSubview:_imageTarget];
+         }];
     }
+}
+
+- (IBAction)dismissStreetView:(id)sender
+{
+    [_imageTarget removeFromSuperview];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _streetView.frame = CGRectMake(_tableView.frame.origin.x,
+                                                        _tableView.frame.origin.y,
+                                                        _tableView.frame.size.width,
+                                                        _tableView.frame.size.height);
+                         
+                         self.view.backgroundColor = UIColor.whiteColor;
+                         self.tabBarController.tabBar.alpha = 1.0;
+                         [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
+                         
+                         for (UIView *view in self.view.subviews)
+                             view.hidden = NO;
+                         
+                         _exitStreetView.hidden = YES;
+                     }
+                     completion:^(BOOL finished){
+                         [self.view sendSubviewToBack:_streetView];
+                         _streetView.hidden = YES;
+                         
+                         if (_tableView.indexPathForSelectedRow)
+                         {
+                             [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                                       animated:YES];
+                         }
+                     }];
+}
+
+- (void)targetDragged:(UIPanGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        /*CGFloat dxPct = ((_newTarget.x - _streetView.center.x) / _streetView.frame.size.width);
+        CGFloat dyPct = ((_streetView.center.y - _newTarget.y) / _streetView.frame.size.height);
+        _heading = (_heading + (dxPct * _fov));
+        _pitch = (_pitch + (dyPct * _fov));
+        
+        _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                     heading:_heading
+                                                       pitch:_pitch
+                                                         fov:_fov];*/
+    }
+    
+    else
+    {
+        UIImageView *target = (UIImageView *)gesture.view;
+        CGPoint translation = [gesture translationInView:target];
+        
+        CGPoint newTarget = CGPointMake((target.center.x + translation.x),
+                                        (target.center.y + translation.y));
+        
+        if (newTarget.x > 0.0 && newTarget.y > 0.0 &&
+            newTarget.x < _streetView.frame.size.width &&
+            newTarget.y < _streetView.frame.size.height)
+        {
+            _newTarget = newTarget;
+            target.center = _newTarget;
+        
+            [gesture setTranslation:CGPointZero
+                             inView:target];
+        }
+    }
+}
+
+- (UIImage *)getStreetViewImageAtCoords:(CLLocationCoordinate2D)coord
+                                heading:(CGFloat)heading
+                                  pitch:(CGFloat)pitch
+                                    fov:(CGFloat)fov
+{
+    NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f&fov=%f&heading=%f&pitch=%f", coord.latitude, coord.longitude, fov, heading, pitch];
+    
+    NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
+    return image;
 }
 
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
-    if (!_streetView.hidden)
-    {
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             _streetView.frame = CGRectMake(_tableView.frame.origin.x,
-                                                            _tableView.frame.origin.y,
-                                                            _tableView.frame.size.width,
-                                                            _tableView.frame.size.height);
-                             
-                             self.view.backgroundColor = UIColor.whiteColor;
-                             self.tabBarController.tabBar.alpha = 1.0;
-                             
-                             for (UIView *view in self.view.subviews)
-                                 view.hidden = NO;
-                         }
-                         completion:^(BOOL finished){
-                             [self.view sendSubviewToBack:_streetView];
-                             _streetView.hidden = YES;
-                             
-                             if (_tableView.indexPathForSelectedRow)
-                             {
-                                 [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                                           animated:YES];
-                             }
-                         }];
-    }
-    
-    else if (!_tableView.hidden)
+    if (!_tableView.hidden)
     {
         CGRect frame = _tableView.frame;
         
