@@ -27,7 +27,8 @@
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *secondImageView, *streetView;
-@property (nonatomic) PlatView *firstImageView;
+@property (nonatomic) UIView *firstView;
+@property (nonatomic) PlatView *platView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) UIImageView *imageTarget;
 @property (nonatomic) CGPoint newTarget;
@@ -76,21 +77,20 @@
     [self.view addSubview:_mapView];
     [self.view addSubview:_vectorView];
     
-    _firstImageView = [[PlatView alloc] init];
+    _platView = [[PlatView alloc] init];
+    _platView.delegate = self;
+    _firstView = [[UIView alloc] init];
+    _firstView.clipsToBounds = YES;
+    
     _secondImageView = [[UIImageView alloc] init];
     _streetView = [[UIImageView alloc] init];
     _streetView.hidden = YES;
     _streetView.userInteractionEnabled = YES;
     
-    _firstImageView.frame = _secondImageView.frame = CGRectMake(0.0,
-                                                                tabBarTop,
-                                                                self.view.frame.size.width,
-                                                                0.0);
-    
-    _firstImageView.backgroundColor = [UIColor colorWithRed:0.7
-                                                      green:0.85
-                                                       blue:1.0
-                                                      alpha:1.0];
+    _firstView.frame = _secondImageView.frame = CGRectMake(0.0,
+                                                           tabBarTop,
+                                                           self.view.frame.size.width,
+                                                           0.0);
     
     _secondImageView.backgroundColor = [UIColor colorWithRed:0.7
                                                        green:1.0
@@ -107,12 +107,12 @@
     
     _splitScreenBorderWidth = 2.0;
     
-    _firstImageView.layer.borderColor = _secondImageView.layer.borderColor =
+    _firstView.layer.borderColor = _secondImageView.layer.borderColor =
     _mapView.layer.borderColor = UIColor.darkGrayColor.CGColor;
     
-    _firstImageView.layer.borderWidth = _secondImageView.layer.borderWidth = _splitScreenBorderWidth;
+    _firstView.layer.borderWidth = _secondImageView.layer.borderWidth = _splitScreenBorderWidth;
     
-    [self.view addSubview:_firstImageView];
+    [self.view addSubview:_firstView];
     [self.view addSubview:_secondImageView];
     [self.view addSubview:_streetView];
     
@@ -665,7 +665,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame =
+                                 _firstView.frame =
                                  CGRectMake(0.0, statusBarHeight +
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
                                             (self.view.frame.size.height + _tabBarHeight),
@@ -686,7 +686,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame =
+                                 _firstView.frame =
                                  CGRectMake(0.0, statusBarHeight +
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0),
                                             (self.view.frame.size.height + _tabBarHeight),
@@ -716,7 +716,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame =
+                                 _firstView.frame =
                                  CGRectMake(0.0, statusBarHeight +
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
                                             ((self.view.frame.size.height + _tabBarHeight) / 2.0),
@@ -1013,7 +1013,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                         _screenSize, _screenSize);
                              self.view.backgroundColor = UIColor.blackColor;
                              self.tabBarController.tabBar.alpha = 0.0;
-                             [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleLightContent];
+                             UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
                              _exitStreetView.hidden = NO;
                          }
                          completion:^(BOOL finished){
@@ -1040,7 +1040,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          
                          self.view.backgroundColor = UIColor.whiteColor;
                          self.tabBarController.tabBar.alpha = 1.0;
-                         [UIApplication.sharedApplication setStatusBarStyle:UIStatusBarStyleDefault];
+                         UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleDefault;
                          
                          for (UIView *view in self.view.subviews)
                              view.hidden = NO;
@@ -1150,7 +1150,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame =
+                                 _firstView.frame =
                                  CGRectMake(0.0,
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
                                             self.view.frame.size.width,
@@ -1174,7 +1174,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame =
+                                 _firstView.frame =
                                  CGRectMake(0.0,
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
                                             self.view.frame.size.width,
@@ -1207,7 +1207,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame =
+                                 _firstView.frame =
                                  CGRectMake(0.0,
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             (self.view.frame.size.width / 2.0),
@@ -1242,7 +1242,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstImageView.frame = _secondImageView.frame =
+                                 _firstView.frame = _secondImageView.frame =
                                  CGRectMake(0.0,
                                             tabBarTop,
                                             self.view.frame.size.width, 0.0);
@@ -1252,8 +1252,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
             break;
     }
-    [_firstImageView setNeedsDisplay];
-
+    
+    _platView.frame = CGRectMake(0.0, 0.0,
+                                 _firstView.frame.size.width * _platView.currentScale,
+                                 _firstView.frame.size.height * _platView.currentScale);
+    
+    _platView.center = CGPointMake(_platView.center.x + _platView.currentTransX,
+                                   _platView.center.y + _platView.currentTransY);
+    
+    if (![_firstView.subviews containsObject:_platView])
+        [_firstView addSubview:_platView];
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
@@ -1301,6 +1309,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
         return NO;
+}
+
+- (void)platViewDidTranslate:(CGPoint)translation
+{
+    NSLog(@"CURRENT transX=%f, transY=%f", _platView.currentTransX, _platView.currentTransY);
+}
+
+- (void)platViewDidTransformScale:(CGFloat)transformationScale
+{
+    NSLog(@"CURRENT scale=%f", _platView.currentScale);
 }
 
 @end

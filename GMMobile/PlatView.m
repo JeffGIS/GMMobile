@@ -1,18 +1,17 @@
-//
 //  PlatView.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/16/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "PlatView.h"
 
-#define TESTMODE FALSE
+#define TESTMODE YES
+
+@interface PlatView ()
+
+@property (nonatomic) CGImageRef image;
+
+@end
+
 @implementation PlatView
-{
-    CGImageRef _image;
-}
 
 - (id)init
 {
@@ -22,30 +21,35 @@
     {
         self.opaque = YES;
         self.backgroundColor = UIColor.clearColor;
+        _currentScale = 1.0;
     }
     
     return self;
 }
 
--(CGImageRef)getImage
+- (CGImageRef)getImage
 {
-    if (_image == NULL)
+    if (!_image)
     {
         if (TESTMODE)
         {
-            NSString *imagePath = [[NSBundle mainBundle] pathForResource:@"S-2A-10" ofType:@"jpg"];
+            NSString *imagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
+                                                                ofType:@"jpg"];
+            
             UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
 
         }
+        
         else
         {
-            NSString * imagePath = CRAPI.sharedInstance.currentPlatImagePath;
-            UIImage * img;
+            NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
+            UIImage *img;
             img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
         }
     }
+    
     return _image;
 }
 
@@ -54,16 +58,16 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGRect imageRect = rect;
     
-    if (CGRectIsNull(rect))
-        return;
-    if (CGRectIsEmpty(rect))
-        return;
-    if (CGRectIsInfinite(rect))
+    if (CGRectIsNull(rect) || CGRectIsEmpty(rect) || CGRectIsInfinite(rect))
         return;
     
     [self getImage];
+    
     if (!_image)
         return;
+    
+    [self addGesturesToView];
+    
     //self.transform = CGAffineTransformMakeRotation(M_PI);
     CGContextScaleCTM(context, 1, -1);
     imageRect.origin.y = -imageRect.size.height;
@@ -105,12 +109,80 @@
     _image = NULL;
 }
 
+- (void)addGesturesToView
+{
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(handlePanGesture:)];
+    
+    panGesture.delegate = self;
+    [self addGestureRecognizer:panGesture];
+    
+    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self
+                                                                                       action:@selector(handlePinchGesture:)];
+    
+    pinchGesture.delegate = self;
+    [self addGestureRecognizer:pinchGesture];
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
+{
+    CGPoint translation = [panGesture translationInView:panGesture.view.superview];
+    
+    if (panGesture.state == UIGestureRecognizerStateBegan ||
+        panGesture.state == UIGestureRecognizerStateChanged)
+    {
+        panGesture.view.center = CGPointMake(panGesture.view.center.x + translation.x,
+                                             panGesture.view.center.y + translation.y);
+        
+        _currentTransX += translation.x;
+        _currentTransY += translation.y;
+        
+        [panGesture setTranslation:CGPointZero
+                            inView:self];
+        
+        if (_delegate)
+            [_delegate platViewDidTranslate:translation];
+    }
+}
+
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)pinchGesture
+{
+    
+    if (pinchGesture.state == UIGestureRecognizerStateBegan ||
+        pinchGesture.state == UIGestureRecognizerStateChanged)
+    {
+        
+        CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
+        
+        CGFloat minScale = 0.25;
+        CGFloat maxScale = 10.0;
+        CGFloat zoomSpeed = 0.5;
+        
+        CGFloat deltaScale = pinchGesture.scale;
+        deltaScale = (((deltaScale - 1.0) * zoomSpeed) + 1.0);
+        deltaScale = MIN(deltaScale, (maxScale / currentScale));
+        deltaScale = MAX(deltaScale, (minScale / currentScale));
+        
+        _currentScale += (deltaScale - 1.0);
+        
+        CGAffineTransform transformation = CGAffineTransformScale(pinchGesture.view.transform, deltaScale, deltaScale);
+        pinchGesture.view.transform = transformation;
+        pinchGesture.scale = 1.0;
+        
+        if (_delegate)
+            [_delegate platViewDidTransformScale:deltaScale];
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
 
 -(void)dealloc
 {
     CGImageRelease(_image);
 }
-
-
 
 @end

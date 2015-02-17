@@ -1,13 +1,20 @@
-//
 //  PlatView.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/16/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface PlatView : UIView
+@class PlatView;
+
+@protocol PlatViewDelegate <NSObject>
+
+- (void)platViewDidTranslate:(CGPoint)translation;
+- (void)platViewDidTransformScale:(CGFloat)transformationScale;
+
+@end
+
+@interface PlatView : UIView <UIGestureRecognizerDelegate>
+
+@property (nonatomic, weak) id <PlatViewDelegate> delegate;
+@property (nonatomic) CGFloat currentScale, currentTransX, currentTransY;
 
 @end

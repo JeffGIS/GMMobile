@@ -1,10 +1,5 @@
-//
 //  BoundaryData.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/17/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #define COORDINATE_FACTOR 10000000.0
 

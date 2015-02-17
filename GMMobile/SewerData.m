@@ -1,10 +1,6 @@
-//
 //  SewerData.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/15/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
+
 #import "SewerData.h"
 #define COORDINATE_FACTOR 10000000.0
 
@@ -200,7 +196,7 @@ int SQLOKswr(int sqlReturn, char *method)
     return bounds;
 }*/
 
-- (NSString*) getSanPlatIDFromRefno:(int)refno
+- (NSString*)getSanPlatIDFromRefno:(int)refno
 {
     NSString* platID = [[NSString alloc]init];
     
@@ -259,7 +255,8 @@ int SQLOKswr(int sqlReturn, char *method)
     CRAPI.sharedInstance.currentPlatImagePath = platFile;
     return minRef;
 }
-- (NSMutableArray*) getAllSanPlats
+
+- (NSMutableArray*)getAllSanPlats
 {
     NSMutableArray * list=[[NSMutableArray alloc]init];
     [self open];

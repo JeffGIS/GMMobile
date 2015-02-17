@@ -1,10 +1,6 @@
-//
 //  SewerData.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/15/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
+
 #define GET_SANPLAT 11
 
 #import <sqlite3.h>
