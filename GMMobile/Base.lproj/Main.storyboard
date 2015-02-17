@@ -289,7 +289,9 @@
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="axM-Ah-k2R">
                                 <rect key="frame" x="8" y="28" width="160" height="48"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="120" id="A7L-uJ-xfT"/>
+                                    <constraint firstAttribute="width" constant="120" id="A7L-uJ-xfT">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="100"/>
+                                    </constraint>
                                     <constraint firstAttribute="height" constant="40" id="B50-1W-cxo"/>
                                     <constraint firstAttribute="height" constant="46" id="QRC-G1-U20">
                                         <variation key="heightClass=regular-widthClass=regular" constant="48"/>
@@ -298,7 +300,9 @@
                                         <variation key="heightClass=regular-widthClass=regular" constant="120"/>
                                     </constraint>
                                     <constraint firstAttribute="height" constant="40" id="Wf0-tc-PFX"/>
-                                    <constraint firstAttribute="width" constant="120" id="XKH-xp-1vH"/>
+                                    <constraint firstAttribute="width" constant="120" id="XKH-xp-1vH">
+                                        <variation key="heightClass=compact" constant="100"/>
+                                    </constraint>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
                                 <state key="normal" title="&lt; Return">
@@ -408,7 +412,7 @@
                             <constraint firstItem="KAY-Pf-P3t" firstAttribute="centerY" secondItem="xD1-AX-6dy" secondAttribute="centerY" id="d6b-IG-i4S"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="centerY" secondItem="KAY-Pf-P3t" secondAttribute="centerY" id="e6E-Us-lTN"/>
                             <constraint firstItem="axM-Ah-k2R" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-8" id="eWb-aS-heJ">
-                                <variation key="heightClass=regular-widthClass=compact" constant="0.0"/>
+                                <variation key="heightClass=regular-widthClass=compact" constant="-12"/>
                             </constraint>
                             <constraint firstItem="NMB-Pr-k9S" firstAttribute="leading" secondItem="SBD-ai-nP6" secondAttribute="leading" id="fqu-EK-KCp"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" id="gI7-fj-EGq">
@@ -420,7 +424,7 @@
                             <constraint firstItem="4ug-Mw-9AY" firstAttribute="top" secondItem="au5-Zd-FAS" secondAttribute="bottom" constant="68" id="oQM-ZR-P0q"/>
                             <constraint firstItem="SBD-ai-nP6" firstAttribute="centerY" secondItem="KAY-Pf-P3t" secondAttribute="centerY" id="pEX-QY-niE"/>
                             <constraint firstItem="axM-Ah-k2R" firstAttribute="leading" secondItem="tsR-hK-woN" secondAttribute="leadingMargin" constant="-8" id="pui-Xx-wnl">
-                                <variation key="heightClass=compact" constant="0.0"/>
+                                <variation key="heightClass=compact" constant="-12"/>
                             </constraint>
                             <constraint firstAttribute="trailingMargin" secondItem="au5-Zd-FAS" secondAttribute="trailing" constant="120" id="qHb-t6-oxJ">
                                 <variation key="heightClass=regular-widthClass=regular" constant="100"/>
