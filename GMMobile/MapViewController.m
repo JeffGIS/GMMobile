@@ -340,18 +340,25 @@
 
 - (void)extentZoom:(BOOL)animated
 {
+    MKCoordinateRegion region, newRegion;
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
     {
         PropertyData *propData = [[PropertyData alloc] init];
         
         MNMXCORD bounds = [propData getBoundaryAreaBounds:
                            CRAPI.sharedInstance.currentOverallBoundaryRefno];
-        
+        region.center.latitude = (bounds.ymx + bounds.ymn) / 2.0;
+        region.center.longitude = (bounds.xmx + bounds.xmn) / 2.0;
+        region.span.latitudeDelta = bounds.ymx - bounds.ymn;
+        region.span.longitudeDelta = bounds.xmx - bounds.xmn;
+        [_mapView setRegion:region
+                   animated:NO];
+        newRegion = _mapView.region;
         CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
                                                                         ((bounds.xmx + bounds.xmn) / 2.0));
         
-        CGFloat latDelta = fabs(bounds.ymx - bounds.ymn) * 1.1;
-        
+        CGFloat latDelta = newRegion.span.latitudeDelta * 1.05;// fabs(bounds.ymx - bounds.ymn) * 1.1;
+
         _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
                                              fromEyeCoordinate:boundsCoord
                                                    eyeAltitude:(latDelta * 207360.0)];
