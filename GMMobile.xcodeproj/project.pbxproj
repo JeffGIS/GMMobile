@@ -54,6 +54,7 @@
 		EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C201A91301F003F7FB8 /* SewerData.m */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
+		EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +140,7 @@
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
 		EBCA6C251A934D15003F7FB8 /* BoundaryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoundaryData.h; sourceTree = "<group>"; };
 		EBCA6C261A934D15003F7FB8 /* BoundaryData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoundaryData.m; sourceTree = "<group>"; };
+		EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-2A-10.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +173,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */,
 				A9BC27F01A927D2B00FA89D8 /* help.png */,
 				A94656211A85E04A00163525 /* split.png */,
 				A9FD3FAD1A8735FB004FB96D /* crosshairs160.png */,
@@ -424,6 +427,7 @@
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
+				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,

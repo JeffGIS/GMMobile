@@ -8,6 +8,7 @@
 
 #import "PlatView.h"
 
+#define TESTMODE FALSE
 @implementation PlatView
 {
     CGImageRef _image;
@@ -30,10 +31,20 @@
 {
     if (_image == NULL)
     {
-        NSString * imagePath = CRAPI.sharedInstance.currentPlatImagePath;
-        UIImage * img;
-        img = [UIImage imageWithContentsOfFile:imagePath];
-        _image = CGImageRetain(img.CGImage);
+        if (TESTMODE)
+        {
+            NSString *imagePath = [[NSBundle mainBundle] pathForResource:@"S-2A-10" ofType:@"jpg"];
+            UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
+            _image = CGImageRetain(img.CGImage);
+
+        }
+        else
+        {
+            NSString * imagePath = CRAPI.sharedInstance.currentPlatImagePath;
+            UIImage * img;
+            img = [UIImage imageWithContentsOfFile:imagePath];
+            _image = CGImageRetain(img.CGImage);
+        }
     }
     return _image;
 }
