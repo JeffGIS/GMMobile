@@ -7,6 +7,7 @@
 #import "PropertyData.h"
 #import "SewerData.h"
 #import "VectorView.h"
+#import "PlatView.h"
 #import "GSSiTileOverlayRenderer.h"
 #import "LayersViewController.h"
 

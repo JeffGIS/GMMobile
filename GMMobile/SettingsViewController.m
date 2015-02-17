@@ -226,7 +226,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         {
                             dispatch_async(dispatch_get_main_queue(),
                                            ^{
-                                               _popover.title = @"Load Parcel Tables";
+                                               _popover.title = @"Create Parcel Index";
                                            });
                             [pd startTransaction];
                             [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];

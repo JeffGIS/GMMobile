@@ -26,7 +26,8 @@
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
-@property (nonatomic) UIImageView *firstImageView, *secondImageView, *streetView;
+@property (nonatomic) UIImageView *secondImageView, *streetView;
+@property (nonatomic) PlatView *firstImageView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) UIImageView *imageTarget;
 @property (nonatomic) CGPoint newTarget;
@@ -75,7 +76,7 @@
     [self.view addSubview:_mapView];
     [self.view addSubview:_vectorView];
     
-    _firstImageView = [[UIImageView alloc] init];
+    _firstImageView = [[PlatView alloc] init];
     _secondImageView = [[UIImageView alloc] init];
     _streetView = [[UIImageView alloc] init];
     _streetView.hidden = YES;
@@ -302,6 +303,7 @@
     else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
     {
         [self extentZoom:YES];
+        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
     else
@@ -769,6 +771,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
     _vectorView.latlonBounds = llBounds;
     _vectorView.zoom = zoom;
     [_vectorView setNeedsDisplay];
+    
 }
 
 - (void)setupTableView
@@ -1249,6 +1252,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
             break;
     }
+    [_firstImageView setNeedsDisplay];
+
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation

@@ -26,12 +26,13 @@
     return self;
 }
 
--(CGImageRef)image
+-(CGImageRef)getImage
 {
     if (_image == NULL)
     {
         NSString * imagePath = CRAPI.sharedInstance.currentPlatImagePath;
-        UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
+        UIImage * img;
+        img = [UIImage imageWithContentsOfFile:imagePath];
         _image = CGImageRetain(img.CGImage);
     }
     return _image;
@@ -40,9 +41,24 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect imageRect;
-    imageRect.origin = CGPointMake(8.0, 8.0);
-    imageRect.size = CGSizeMake(64.0, 64.0);
+    CGRect imageRect = rect;
+    
+    if (CGRectIsNull(rect))
+        return;
+    if (CGRectIsEmpty(rect))
+        return;
+    if (CGRectIsInfinite(rect))
+        return;
+    
+    [self getImage];
+    if (!_image)
+        return;
+    //self.transform = CGAffineTransformMakeRotation(M_PI);
+    CGContextScaleCTM(context, 1, -1);
+    imageRect.origin.y = -imageRect.size.height;
+    //CGContextRotateCTM(context, M_PI);
+    //imageRect.origin = CGPointMake(8.0, 8.0);
+    //imageRect.size = CGSizeMake(64.0, 64.0);
     
     // Note: The images are actually drawn upside down because Quartz image drawing expects
     // the coordinate system to have the origin in the lower-left corner, but a UIView
@@ -52,8 +68,8 @@
     // be noticed, and one method of addressing it is shown there.
     
     // Draw the image in the upper left corner (0,0) with size 64x64
-    CGContextDrawImage(context, imageRect, self.image);
-    
+    CGContextDrawImage(context, imageRect, _image);
+/*
     // Tile the same image across the bottom of the view
     // CGContextDrawTiledImage() will fill the entire clipping area with the image, so to avoid
     // filling the entire view, we'll clip the view to the rect below. This rect extends
@@ -66,7 +82,6 @@
     // The size (previously set to 64x64) specifies the size the image is scaled to before being tiled.
     imageRect.origin = CGPointMake(32.0, 112.0);
     CGContextDrawTiledImage(context, imageRect, self.image);
-    
     // Highlight the "first" image from the DrawTiledImage call.
     CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 0.5);
     CGContextFillRect(context, imageRect);
@@ -74,6 +89,9 @@
     CGContextSetLineWidth(context, 3.0);
     CGContextSetRGBStrokeColor(context, 1.0, 0.0, 0.0, 1.0);
     CGContextStrokeRect(context, CGContextGetClipBoundingBox(context));
+ */
+    CGImageRelease(_image);
+    _image = NULL;
 }
 
 
