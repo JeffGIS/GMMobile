@@ -21,7 +21,6 @@
     {
         self.opaque = YES;
         self.backgroundColor = UIColor.clearColor;
-        _currentScale = 1.0;
     }
     
     return self;
@@ -134,9 +133,6 @@
         panGesture.view.center = CGPointMake(panGesture.view.center.x + translation.x,
                                              panGesture.view.center.y + translation.y);
         
-        _currentTransX += translation.x;
-        _currentTransY += translation.y;
-        
         [panGesture setTranslation:CGPointZero
                             inView:self];
         
@@ -147,10 +143,10 @@
 
 - (void)handlePinchGesture:(UIPinchGestureRecognizer *)pinchGesture
 {
-    
     if (pinchGesture.state == UIGestureRecognizerStateBegan ||
         pinchGesture.state == UIGestureRecognizerStateChanged)
     {
+        
         CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
         
         CGFloat minScale = 0.25;
@@ -161,8 +157,6 @@
         deltaScale = (((deltaScale - 1.0) * zoomSpeed) + 1.0);
         deltaScale = MIN(deltaScale, (maxScale / currentScale));
         deltaScale = MAX(deltaScale, (minScale / currentScale));
-        
-        _currentScale += (deltaScale - 1.0);
         
         CGAffineTransform transformation = CGAffineTransformScale(pinchGesture.view.transform, deltaScale, deltaScale);
         pinchGesture.view.transform = transformation;

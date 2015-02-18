@@ -15,6 +15,5 @@
 @interface PlatView : UIView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <PlatViewDelegate> delegate;
-@property (nonatomic) CGFloat currentScale, currentTransX, currentTransY;
 
 @end
