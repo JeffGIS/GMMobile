@@ -62,7 +62,7 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     if (!_isOpen)
     {
-        self.isOpen = !SQLOKswr(sqlite3_open(self.path.UTF8String, &_database), "open(Sewer)");
+        _isOpen = !SQLOKswr(sqlite3_open(self.path.UTF8String, &_database), "open(Sewer)");
         NSLog(@"Sewer Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
@@ -74,7 +74,7 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     SQLOKswr(sqlite3_close(_database),"Close");
     NSLog(@"Sewer Database close");
-    self.isOpen = NO;
+    _isOpen = NO;
 }
 
 - (void)clear
@@ -101,24 +101,29 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     SQLOKswr(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
 }
-- (NSString*) getActualPlatFileName:(NSString*)platID
+
+- (NSString *)getActualPlatFileName:(NSString *)platID
 {
-    NSString * outName;
+    NSString *outName;
     char name[128];
-    strncpy (name,platID.UTF8String,126);
-    LPSTR pU = strrchr (name,'_');
+    strncpy (name, platID.UTF8String, 126);
+    LPSTR pU = strrchr(name,'_');
+    
     if (pU)
         *pU = 0;
+    
     outName = [NSString stringWithUTF8String:name];
     return outName;
 }
 
-- (BOOL)loadPlat:(NSString *)platID usingPopover:(GSSiPopoverView*)popover andDelegate:(id)delegate
+- (BOOL)loadPlat:(NSString *)platID
+    usingPopover:(GSSiPopoverView*)popover
+     andDelegate:(id)delegate
 {
     BOOL fileExists = NO;
     NSString *actualPlatID = [self getActualPlatFileName:platID];
-    NSString *toDir = [NSString stringWithFormat:@"%@/SanPlats",_documentsDirectory];
-    NSString *fileName = [NSString stringWithFormat:@"%@.jpg",actualPlatID];
+    NSString *toDir = [NSString stringWithFormat:@"%@/SanPlats", _documentsDirectory];
+    NSString *fileName = [NSString stringWithFormat:@"%@.jpg", actualPlatID];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
     pull.popover = _popover;
@@ -127,19 +132,24 @@ int SQLOKswr(int sqlReturn, char *method)
     //pull.ipAddress = http://74.42.137.128/icons/MPLS/;
     
     [popover showAfter:0.5
-              withTitle:[NSString stringWithFormat:@"Get Sanitary Plat %@",actualPlatID]];
+              withTitle:[NSString stringWithFormat:@"Get Sanitary Plat %@", actualPlatID]];
+    
     pull.ftpSiteOveride = @"74.42.137.128";
     pull.usernameOveride = @"GMMobile";
     pull.passwordOveride = @"GeoMaster";
     pull.portOveride = @"21";
     pull.createDirectory = createDirectory;
     pull.returnIfExists = NO;
+    
     if ([pull getFile:fileName
     fromDirectory:@"Sewer/Sanitary/Plats"
            toFile:fileName
       toDirectory:toDir
      forceRefresh:NO] == FTPStatusFileExists)
+    {
         fileExists = YES;
+    }
+    
     createDirectory = NO;
     return fileExists;
 }
@@ -196,10 +206,9 @@ int SQLOKswr(int sqlReturn, char *method)
     return bounds;
 }*/
 
-- (NSString*)getSanPlatIDFromRefno:(int)refno
+- (NSString *)getSanPlatIDFromRefno:(int)refno
 {
-    NSString* platID = [[NSString alloc]init];
-    
+    NSString *platID = [[NSString alloc] init];
     return platID;
 }
 
@@ -251,12 +260,12 @@ int SQLOKswr(int sqlReturn, char *method)
     [self close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
-    NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg",_documentsDirectory,minPlatID];
+    NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg", _documentsDirectory, minPlatID];
     CRAPI.sharedInstance.currentPlatImagePath = platFile;
     return minRef;
 }
 
-- (NSMutableArray*)getAllSanPlats
+- (NSMutableArray *)getAllSanPlats
 {
     NSMutableArray * list=[[NSMutableArray alloc]init];
     [self open];
@@ -265,7 +274,7 @@ int SQLOKswr(int sqlReturn, char *method)
     
     sqlite3_stmt *statement;
     
-    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "getAllSanPlats");
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetAllSanPlats");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -274,7 +283,7 @@ int SQLOKswr(int sqlReturn, char *method)
         [list addObject:plat];
     }
     
-    SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
+    SQLOKswr(sqlite3_finalize(statement), "getAllSanPlats");
     [self close];
     return list;
 }
