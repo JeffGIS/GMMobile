@@ -9,6 +9,7 @@
 
 - (void)platViewDidTranslate:(CGPoint)translation;
 - (void)platViewDidTransformScale:(CGFloat)transformationScale;
+- (void)platViewDidDoubleTap;
 
 @end
 

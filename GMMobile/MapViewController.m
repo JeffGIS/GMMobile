@@ -652,7 +652,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
     
     if (!_streetView.hidden)
     {
-        [UIView animateWithDuration:0.25
+        [UIView animateWithDuration:duration
                          animations:^{
                              _streetView.frame =
                              CGRectMake((((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
@@ -665,7 +665,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
     {
         case MapViewScreenSettingFullscreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
                                  
@@ -679,7 +679,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
         case MapViewScreenSettingSplitScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
                                  
@@ -689,7 +689,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame1;
                              }];
@@ -698,7 +698,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
         case MapViewScreenSettingTriScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
@@ -706,12 +706,12 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame2;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
@@ -724,7 +724,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
         case MapViewScreenSettingSplitBottomScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
@@ -732,12 +732,12 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame3;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake(((self.view.frame.size.height + _tabBarHeight) / 2.0),
@@ -1391,6 +1391,36 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [_mapView setCamera:_camera
                animated:NO];
+}
+
+- (void)platViewDidDoubleTap
+{
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _mapView.layer.borderWidth = 0.0;
+                         
+                         _mapView.frame = _vectorView.frame =
+                         CGRectMake(0.0,
+                                    statusBarHeight,
+                                    self.view.frame.size.width,
+                                    (tabBarTop - statusBarHeight));
+                     }];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _firstView.frame = _secondImageView.frame =
+                         CGRectMake(0.0,
+                                    tabBarTop,
+                                    self.view.frame.size.width, 0.0);
+                     }
+                     completion:^(BOOL finished){
+                         [_platView removeFromSuperview];
+                     }];
+    
+    _screenSetting = MapViewScreenSettingFullscreen;
 }
 
 @end
