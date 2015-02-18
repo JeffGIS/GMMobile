@@ -341,18 +341,22 @@
 - (void)extentZoom:(BOOL)animated
 {
     MKCoordinateRegion region, newRegion;
+    
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
     {
         PropertyData *propData = [[PropertyData alloc] init];
         
         MNMXCORD bounds = [propData getBoundaryAreaBounds:
                            CRAPI.sharedInstance.currentOverallBoundaryRefno];
+        
         region.center.latitude = (bounds.ymx + bounds.ymn) / 2.0;
         region.center.longitude = (bounds.xmx + bounds.xmn) / 2.0;
-        region.span.latitudeDelta = bounds.ymx - bounds.ymn;
-        region.span.longitudeDelta = bounds.xmx - bounds.xmn;
+        region.span.latitudeDelta = (bounds.ymx - bounds.ymn);
+        region.span.longitudeDelta = (bounds.xmx - bounds.xmn);
+        
         [_mapView setRegion:region
                    animated:NO];
+        
         newRegion = _mapView.region;
         CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
                                                                         ((bounds.xmx + bounds.xmn) / 2.0));
@@ -631,6 +635,21 @@ didSelectAnnotationView:(MKAnnotationView *)view
 {
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
+    CGRect frame1 = CGRectMake(0.0, statusBarHeight +
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
+                               (self.view.frame.size.height + _tabBarHeight),
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
+    
+    CGRect frame2 = CGRectMake(0.0, statusBarHeight +
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0),
+                               (self.view.frame.size.height + _tabBarHeight),
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+    
+    CGRect frame3 = CGRectMake(0.0, statusBarHeight +
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
+                               ((self.view.frame.size.height + _tabBarHeight) / 2.0),
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+    
     if (!_streetView.hidden)
     {
         [UIView animateWithDuration:0.25
@@ -672,11 +691,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
-                                            (self.view.frame.size.height + _tabBarHeight),
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
+                                 _firstView.frame = frame1;
                              }];
         }
             break;
@@ -693,11 +708,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0),
-                                            (self.view.frame.size.height + _tabBarHeight),
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+                                 _firstView.frame = frame2;
                              }];
             
             [UIView animateWithDuration:0.25
@@ -723,11 +734,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0, statusBarHeight +
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
-                                            ((self.view.frame.size.height + _tabBarHeight) / 2.0),
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+                                 _firstView.frame = frame3;
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1139,6 +1146,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    CGPoint platViewCenter = _platView.center;
+    
+    CGRect frame1 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
+                               self.view.frame.size.width,
+                               ((tabBarTop - statusBarHeight) / 2.0));
+    
+    CGRect frame2 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
+                               self.view.frame.size.width,
+                               ((tabBarTop - statusBarHeight) / 3.0));
+    
+    CGRect frame3 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                               (self.view.frame.size.width / 2.0),
+                               ((tabBarTop - statusBarHeight) / 3.0));
     
     switch (_screenSetting)
     {
@@ -1157,11 +1180,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0,
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 2.0));
+                                 _firstView.frame = frame1;
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 [self platViewPosition:platViewCenter
+                                             fromFrame1:frame3
+                                               toFrame2:frame1];
                              }];
             
             _screenSetting = MapViewScreenSettingSplitScreen;
@@ -1181,11 +1207,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0,
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 3.0));
+                                 _firstView.frame = frame2;
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1195,6 +1217,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 3.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 [self platViewPosition:platViewCenter
+                                             fromFrame1:frame1
+                                               toFrame2:frame2];
                              }];
             
             _screenSetting = MapViewScreenSettingTriScreen;
@@ -1214,11 +1243,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0,
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
-                                            (self.view.frame.size.width / 2.0),
-                                            ((tabBarTop - statusBarHeight) / 3.0));
+                                 _firstView.frame = frame3;
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1228,6 +1253,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             (self.view.frame.size.width / 2.0),
                                             ((tabBarTop - statusBarHeight) / 3.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 [self platViewPosition:platViewCenter
+                                             fromFrame1:frame2
+                                               toFrame2:frame3];
                              }];
             
             _screenSetting = MapViewScreenSettingSplitBottomScreen;
@@ -1260,15 +1292,26 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             break;
     }
     
-    _platView.frame = CGRectMake(0.0, 0.0,
-                                 _firstView.frame.size.width * _platView.currentScale,
-                                 _firstView.frame.size.height * _platView.currentScale);
-    
-    _platView.center = CGPointMake(_platView.center.x + _platView.currentTransX,
-                                   _platView.center.y + _platView.currentTransY);
-    
     if (![_firstView.subviews containsObject:_platView])
         [_firstView addSubview:_platView];
+}
+
+- (void)platViewPosition:(CGPoint)center
+               fromFrame1:(CGRect)frame1
+                 toFrame2:(CGRect)frame2
+{
+    if (![_firstView.subviews containsObject:_platView])
+    {
+        _platView.frame =  CGRectMake(0.0, 0.0,
+                                      _firstView.frame.size.width,
+                                      _firstView.frame.size.height);
+    }
+    
+    else
+    {
+        _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
+                                       center.y - ((frame1.size.height - frame2.size.height) / 2.0));
+    }
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
@@ -1320,12 +1363,34 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)platViewDidTranslate:(CGPoint)translation
 {
-    NSLog(@"CURRENT transX=%f, transY=%f", _platView.currentTransX, _platView.currentTransY);
+    CGPoint coordPoint = [_mapView convertCoordinate:_camera.centerCoordinate
+                                       toPointToView:_mapView];
+    
+    CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
+                                   coordPoint.y - translation.y);
+    
+    CLLocationCoordinate2D newCoord = [_mapView convertPoint:newPoint
+                                        toCoordinateFromView:_mapView];
+    
+    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:newCoord
+                                         fromEyeCoordinate:newCoord
+                                               eyeAltitude:_camera.altitude];
+    
+    [_mapView setCamera:_camera
+               animated:NO];
 }
 
 - (void)platViewDidTransformScale:(CGFloat)transformationScale
 {
-    NSLog(@"CURRENT scale=%f", _platView.currentScale);
+    CLLocationCoordinate2D coord = _camera.centerCoordinate;
+    CGFloat latDelta = (_mapView.region.span.latitudeDelta * (1.0 / transformationScale));
+    
+    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:coord
+                                         fromEyeCoordinate:coord
+                                               eyeAltitude:(latDelta * 207360.0)];
+    
+    [_mapView setCamera:_camera
+               animated:NO];
 }
 
 @end

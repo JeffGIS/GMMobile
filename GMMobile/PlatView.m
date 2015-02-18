@@ -151,7 +151,6 @@
     if (pinchGesture.state == UIGestureRecognizerStateBegan ||
         pinchGesture.state == UIGestureRecognizerStateChanged)
     {
-        
         CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
         
         CGFloat minScale = 0.25;
