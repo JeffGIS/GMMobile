@@ -231,8 +231,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         if (_delegate)
         {
+            NSNumber *begin = _sectionBegins[indexPath.section];
             BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
-            baData = _boundaryDataList[indexPath.row];
+            baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
             
             [_delegate findBoundsViewController:self
                                 didSelectBounds:baData.name
