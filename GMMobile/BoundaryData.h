@@ -10,5 +10,8 @@
              inContext:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
+-(void)displayLandUse:(CGContextRef)context
+             LLBounds:(MNMXCORD *)platlonBounds
+           viewBounds:(MNMXCORD *)pvbounds;
 
 @end

@@ -12,6 +12,8 @@
 #define GET_AREAS 4
 #define GET_SEWER 5
 
+#define INPUTBUFSIZE USHRT_MAX * 32
+
 @interface SettingsViewController ()
 
 @property (nonatomic) GSSiPopoverView *popover;
@@ -173,7 +175,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 dispatch_async(overallQueue,
                 ^{
                     FILE *fid = fopen(file.UTF8String, "rb");
-                    LPSTR str = malloc(USHRT_MAX * 8);
+                    LPSTR str = malloc(INPUTBUFSIZE);
                     
                     if (!str)
                     {
@@ -205,7 +207,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         else
                             [pd startTransaction];
                         
-                        while (fgetstring(str, (USHRT_MAX*8 - 2), fid))
+                        while (fgetstring(str, (INPUTBUFSIZE - 2), fid))
                         {
                             if (option == GET_SEWER)
                                 [sd executeCmd:str];
