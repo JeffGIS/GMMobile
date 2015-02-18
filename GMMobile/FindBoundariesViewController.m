@@ -112,6 +112,7 @@
                 cell.textLabel.text = _boundaryList[indexPath.row];
                 cell.textLabel.textColor = UIColor.blackColor;
                 cell.userInteractionEnabled = YES;
+                cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
             else
@@ -132,6 +133,7 @@
                 cell.textLabel.text = baData.name;
                 cell.textLabel.textColor = UIColor.blackColor;
                 cell.userInteractionEnabled = YES;
+                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
             }
             
             else
@@ -180,6 +182,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                           refno:baData.refno];
         }
     }
+}
+
+- (void)tableView:(UITableView *)tableView
+accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+    baData = _boundaryDataList[indexPath.row];
+    
+    NSLog(@"Detail Disclosure requested for %@", baData.name);
 }
 
 @end
