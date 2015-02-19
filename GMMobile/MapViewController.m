@@ -565,7 +565,7 @@ calloutAccessoryControlTapped:(UIControl *)control
     else if (control == view.leftCalloutAccessoryView)
     {
         if ([self isHennepinCountyPID:view.annotation.title])
-            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View"];
+            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
         
         else
             _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View"];
