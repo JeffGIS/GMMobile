@@ -30,8 +30,6 @@
 @property (nonatomic) UIView *firstView;
 @property (nonatomic) PlatView *platView;
 @property (nonatomic) NSInteger screenSetting;
-@property (nonatomic) UIImageView *imageTarget;
-@property (nonatomic) CGPoint newTarget;
 
 @end
 
@@ -87,6 +85,34 @@
     _streetView.hidden = YES;
     _streetView.userInteractionEnabled = YES;
     
+    UISwipeGestureRecognizer *upSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                  action:@selector(svUpSwiped:)];
+    
+    upSwipe.direction = UISwipeGestureRecognizerDirectionUp;
+    upSwipe.delegate = self;
+    [_streetView addGestureRecognizer:upSwipe];
+    
+    UISwipeGestureRecognizer *downSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(svDownSwiped:)];
+    
+    downSwipe.direction = UISwipeGestureRecognizerDirectionDown;
+    downSwipe.delegate = self;
+    [_streetView addGestureRecognizer:downSwipe];
+    
+    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(svDoubleTapped:)];
+    
+    doubleTap.numberOfTapsRequired = 2;
+    doubleTap.delegate = self;
+    [_streetView addGestureRecognizer:doubleTap];
+    
+    UITapGestureRecognizer *twoFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                   action:@selector(svTwoFingerTapped:)];
+    
+    twoFingerTap.numberOfTouchesRequired = 2;
+    twoFingerTap.delegate = self;
+    [_streetView addGestureRecognizer:twoFingerTap];
+    
     _firstView.frame = _secondImageView.frame = CGRectMake(0.0,
                                                            tabBarTop,
                                                            self.view.frame.size.width,
@@ -96,14 +122,6 @@
                                                        green:1.0
                                                         blue:0.7
                                                        alpha:1.0];
-    
-    _imageTarget = [[UIImageView alloc] initWithImage:UserDefaults.defaults.imageTarget];
-    _imageTarget.userInteractionEnabled = YES;
-    
-    UIPanGestureRecognizer *gesture =[[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                                             action:@selector(targetDragged:)];
-    
-    [_imageTarget addGestureRecognizer:gesture];
     
     _splitScreenBorderWidth = 2.0;
     
@@ -547,7 +565,7 @@ calloutAccessoryControlTapped:(UIControl *)control
     else if (control == view.leftCalloutAccessoryView)
     {
         if ([self isHennepinCountyPID:view.annotation.title])
-            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View"];
+            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
         
         else
             _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View"];
@@ -652,7 +670,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
     
     if (!_streetView.hidden)
     {
-        [UIView animateWithDuration:0.25
+        [UIView animateWithDuration:duration
                          animations:^{
                              _streetView.frame =
                              CGRectMake((((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
@@ -665,7 +683,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
     {
         case MapViewScreenSettingFullscreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
                                  
@@ -679,7 +697,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
         case MapViewScreenSettingSplitScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
                                  
@@ -689,7 +707,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame1;
                              }];
@@ -698,7 +716,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
         case MapViewScreenSettingTriScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
@@ -706,12 +724,12 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame2;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake(0.0, statusBarHeight +
@@ -724,7 +742,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
             
         case MapViewScreenSettingSplitBottomScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
@@ -732,12 +750,12 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame3;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondImageView.frame =
                                  CGRectMake(((self.view.frame.size.height + _tabBarHeight) / 2.0),
@@ -1005,13 +1023,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Display Street View"])
     {
         _streetView.frame = _tableView.frame;
+        _fov = 90.0, _pitch = 0.0;
         
-        NSString *svUrl = [NSString stringWithFormat:@"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f",
-                           _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+        _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                       pitch:_pitch
+                                                         fov:_fov];
         
-        NSURL *mapUrl = [NSURL URLWithString:[svUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
-        _streetView.image = image;
         [self.view bringSubviewToFront:_streetView];
         
         for (UIView *view in self.view.subviews)
@@ -1029,22 +1046,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                              self.tabBarController.tabBar.alpha = 0.0;
                              UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
                              _exitStreetView.hidden = NO;
-                         }
-                         completion:^(BOOL finished){
-                             _imageTarget.frame = CGRectMake(_streetView.frame.size.width * 0.4,
-                                                             _streetView.frame.size.height * 0.4,
-                                                             _streetView.frame.size.width * 0.2,
-                                                             _streetView.frame.size.height * 0.2);
-                             
-                             [_streetView addSubview:_imageTarget];
-         }];
+                         }];
     }
 }
 
 - (IBAction)dismissStreetView:(id)sender
 {
-    [_imageTarget removeFromSuperview];
-    
     [UIView animateWithDuration:0.25
                      animations:^{
                          _streetView.frame = CGRectMake(_tableView.frame.origin.x,
@@ -1073,48 +1080,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      }];
 }
 
-- (void)targetDragged:(UIPanGestureRecognizer *)gesture
-{
-    if (gesture.state == UIGestureRecognizerStateEnded)
-    {
-        /*CGFloat dxPct = ((_newTarget.x - _streetView.center.x) / _streetView.frame.size.width);
-        CGFloat dyPct = ((_streetView.center.y - _newTarget.y) / _streetView.frame.size.height);
-        _heading = (_heading + (dxPct * _fov));
-        _pitch = (_pitch + (dyPct * _fov));
-        
-        _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                     heading:_heading
-                                                       pitch:_pitch
-                                                         fov:_fov];*/
-    }
-    
-    else
-    {
-        UIImageView *target = (UIImageView *)gesture.view;
-        CGPoint translation = [gesture translationInView:target];
-        
-        CGPoint newTarget = CGPointMake((target.center.x + translation.x),
-                                        (target.center.y + translation.y));
-        
-        if (newTarget.x > 0.0 && newTarget.y > 0.0 &&
-            newTarget.x < _streetView.frame.size.width &&
-            newTarget.y < _streetView.frame.size.height)
-        {
-            _newTarget = newTarget;
-            target.center = _newTarget;
-        
-            [gesture setTranslation:CGPointZero
-                             inView:target];
-        }
-    }
-}
-
 - (UIImage *)getStreetViewImageAtCoords:(CLLocationCoordinate2D)coord
-                                heading:(CGFloat)heading
                                   pitch:(CGFloat)pitch
                                     fov:(CGFloat)fov
 {
-    NSString *staticMapUrl = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f&fov=%f&heading=%f&pitch=%f", coord.latitude, coord.longitude, fov, heading, pitch];
+    NSString *staticMapUrl = [NSString stringWithFormat:
+                              @"http://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f&fov=%f&pitch=%f",
+                              coord.latitude, coord.longitude, fov, pitch];
     
     NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
@@ -1391,6 +1363,72 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [_mapView setCamera:_camera
                animated:NO];
+}
+
+- (void)platViewDidDoubleTap
+{
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _mapView.layer.borderWidth = 0.0;
+                         
+                         _mapView.frame = _vectorView.frame =
+                         CGRectMake(0.0,
+                                    statusBarHeight,
+                                    self.view.frame.size.width,
+                                    (tabBarTop - statusBarHeight));
+                     }];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _firstView.frame = _secondImageView.frame =
+                         CGRectMake(0.0,
+                                    tabBarTop,
+                                    self.view.frame.size.width, 0.0);
+                     }
+                     completion:^(BOOL finished){
+                         [_platView removeFromSuperview];
+                     }];
+    
+    _screenSetting = MapViewScreenSettingFullscreen;
+}
+
+- (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
+{
+    _pitch -= 10.0;
+    
+    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                   pitch:_pitch
+                                                     fov:_fov];
+}
+
+- (void)svDownSwiped:(UISwipeGestureRecognizer *)gesture
+{
+    _pitch += 10.0;
+    
+    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                   pitch:_pitch
+                                                     fov:_fov];
+}
+
+- (void)svDoubleTapped:(UITapGestureRecognizer *)gesture
+{
+    _fov -= 10.0;
+    
+    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                   pitch:_pitch
+                                                     fov:_fov];
+}
+
+- (void)svTwoFingerTapped:(UITapGestureRecognizer *)gesture
+{
+    _fov += 10.0;
+    
+    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                   pitch:_pitch
+                                                     fov:_fov];
 }
 
 @end
