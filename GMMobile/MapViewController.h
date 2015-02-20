@@ -11,7 +11,7 @@
 #import "GSSiTileOverlayRenderer.h"
 #import "LayersViewController.h"
 
-@interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,PlatViewDelegate>
+@interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,PlatViewDelegate,GSSiAlertDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *userLocationButton;
 @property (weak, nonatomic) IBOutlet UIButton *zoomToExtentButton;

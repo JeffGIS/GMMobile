@@ -30,6 +30,7 @@
 @property (nonatomic) UIView *firstView;
 @property (nonatomic) PlatView *platView;
 @property (nonatomic) NSInteger screenSetting;
+@property (nonatomic) GSSiAlertController *gssiAlert;
 
 @end
 
@@ -43,6 +44,9 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UIColor.whiteColor;
+    
+    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
+    _gssiAlert.delegate = self;
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0
                                                 green:0.0
@@ -326,21 +330,9 @@
     
     else
     {
-        /*MKCoordinateRegion region = _mapView.region;
-        MKCoordinateRegion saveRegion = _mapView.region;
-        
-        region.center.latitude = 0;
-        region.center.longitude = 0;
-        
-        [_mapView setRegion:region
-                   animated:NO];
-        
-        [_mapView setRegion:saveRegion
-                   animated:NO];*/
+        [self refreshVectorView:_mapView.region
+                         atZoom:_currentZoom];
     }
-    
-    [self refreshVectorView:_mapView.region
-                     atZoom:_currentZoom];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -376,10 +368,11 @@
                    animated:NO];
         
         newRegion = _mapView.region;
+        
         CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
                                                                         ((bounds.xmx + bounds.xmn) / 2.0));
         
-        CGFloat latDelta = newRegion.span.latitudeDelta * 1.05;// fabs(bounds.ymx - bounds.ymn) * 1.1;
+        CGFloat latDelta = region.span.latitudeDelta * 1.05;
 
         _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
                                              fromEyeCoordinate:boundsCoord
@@ -568,7 +561,7 @@ calloutAccessoryControlTapped:(UIControl *)control
             _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
         
         else
-            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View"];
+            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
         
         _tableViewSetting = PropertyTableViewSettingOptions;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -1048,6 +1041,47 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                              _exitStreetView.hidden = NO;
                          }];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Zoom to Census Area"])
+    {
+        [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
+                               message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
+                     cancelButtonTitle:@"Cancel"
+                     otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
+             destructiveButtonPosition:0];
+    }
+}
+
+- (void)gssiAlert:(GSSiAlertController *)gssiAlert
+clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex)
+    {
+        case CensusZoomSettingCancel:
+            if (_tableView.indexPathForSelectedRow)
+            {
+                [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                          animated:YES];
+            }
+            
+            break;
+        
+        case CensusZoomSettingBlock:
+            [self dismissTableView];
+            //implement zoom to block here
+            break;
+            
+        case CensusZoomSettingBlockGroup:
+            [self dismissTableView];
+            //implement zoom to block group here
+            break;
+            
+        case CensusZoomSettingTract:
+            [self dismissTableView];
+            //implement zoom to tract here
+            break;
+    }
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -1095,6 +1129,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
+{
+    [self dismissTableView];
+}
+
+- (void)dismissTableView
 {
     if (!_tableView.hidden)
     {
@@ -1326,7 +1365,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (BOOL)isHennepinCountyPID:(NSString *)PID
 {
-    if ([PID containsString:@"053-"])
+    if (!([PID rangeOfString:@"053-"].location == NSNotFound))
         return YES;
     
     else
