@@ -14,6 +14,7 @@
 - (IBAction)loadAreas:(id)sender;
 - (IBAction)loadSewer:(id)sender;
 - (IBAction)loadPlats:(id)sender;
+- (IBAction)loadPlan:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 

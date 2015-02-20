@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
@@ -437,6 +437,15 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
+                                <exclude reference="1QV-c5-fEQ"/>
+                                <exclude reference="PvE-EH-Zhz"/>
+                                <exclude reference="Q1I-jt-fJe"/>
+                                <exclude reference="WFn-LY-a3X"/>
+                                <exclude reference="X11-sk-ezW"/>
+                                <exclude reference="YC7-lR-ArX"/>
+                                <exclude reference="b2H-7d-mAp"/>
+                                <exclude reference="qHb-t6-oxJ"/>
+                                <exclude reference="sgy-uV-Jbq"/>
                                 <exclude reference="9q8-33-NqP"/>
                                 <exclude reference="Rb8-EW-XqG"/>
                                 <exclude reference="Ssy-3G-vYf"/>
@@ -453,56 +462,50 @@
                                 <exclude reference="DVD-yc-YQq"/>
                                 <exclude reference="d6b-IG-i4S"/>
                                 <exclude reference="nG7-Ot-qF3"/>
+                                <exclude reference="6aM-U2-82H"/>
+                                <exclude reference="UGK-jh-th0"/>
+                                <exclude reference="Vh9-FV-Z1r"/>
+                                <exclude reference="YRp-8P-mM5"/>
+                                <exclude reference="bmA-7k-k04"/>
                                 <exclude reference="Sif-iH-vQV"/>
                                 <exclude reference="Smf-y3-Ycd"/>
                                 <exclude reference="fqu-EK-KCp"/>
                                 <exclude reference="lIL-lR-0bd"/>
                                 <exclude reference="nyP-CB-tK1"/>
                                 <exclude reference="ssC-e0-xPB"/>
-                                <exclude reference="1QV-c5-fEQ"/>
-                                <exclude reference="PvE-EH-Zhz"/>
-                                <exclude reference="Q1I-jt-fJe"/>
-                                <exclude reference="WFn-LY-a3X"/>
-                                <exclude reference="X11-sk-ezW"/>
-                                <exclude reference="YC7-lR-ArX"/>
-                                <exclude reference="b2H-7d-mAp"/>
-                                <exclude reference="qHb-t6-oxJ"/>
-                                <exclude reference="sgy-uV-Jbq"/>
-                                <exclude reference="6aM-U2-82H"/>
-                                <exclude reference="UGK-jh-th0"/>
-                                <exclude reference="Vh9-FV-Z1r"/>
-                                <exclude reference="YRp-8P-mM5"/>
-                                <exclude reference="bmA-7k-k04"/>
-                                <exclude reference="XuR-hm-oyO"/>
-                                <exclude reference="aP0-2Q-G9y"/>
-                                <exclude reference="oQM-ZR-P0q"/>
                                 <exclude reference="9Gi-UN-fre"/>
                                 <exclude reference="JAf-sc-ndg"/>
                                 <exclude reference="ML0-KM-Dxc"/>
                                 <exclude reference="N0p-rr-hmI"/>
                                 <exclude reference="Oum-0O-b9M"/>
                                 <exclude reference="tdI-2R-wWV"/>
+                                <exclude reference="XuR-hm-oyO"/>
+                                <exclude reference="aP0-2Q-G9y"/>
+                                <exclude reference="oQM-ZR-P0q"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact">
                             <mask key="constraints">
+                                <include reference="1QV-c5-fEQ"/>
+                                <include reference="X11-sk-ezW"/>
+                                <include reference="b2H-7d-mAp"/>
                                 <include reference="usO-NV-an9"/>
                                 <include reference="cJl-Oa-tSS"/>
                                 <include reference="pui-Xx-wnl"/>
                                 <include reference="d6b-IG-i4S"/>
+                                <include reference="UGK-jh-th0"/>
                                 <include reference="fqu-EK-KCp"/>
                                 <include reference="nyP-CB-tK1"/>
-                                <include reference="1QV-c5-fEQ"/>
-                                <include reference="X11-sk-ezW"/>
-                                <include reference="b2H-7d-mAp"/>
-                                <include reference="UGK-jh-th0"/>
-                                <include reference="XuR-hm-oyO"/>
                                 <include reference="JAf-sc-ndg"/>
                                 <include reference="Oum-0O-b9M"/>
+                                <include reference="XuR-hm-oyO"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="constraints">
+                                <include reference="PvE-EH-Zhz"/>
+                                <include reference="Q1I-jt-fJe"/>
+                                <include reference="sgy-uV-Jbq"/>
                                 <exclude reference="33Z-9M-k7x"/>
                                 <exclude reference="Igb-CC-PUE"/>
                                 <include reference="Rb8-EW-XqG"/>
@@ -512,20 +515,20 @@
                                 <include reference="eWb-aS-heJ"/>
                                 <include reference="nG7-Ot-qF3"/>
                                 <exclude reference="zwC-Ho-S9P"/>
-                                <include reference="lIL-lR-0bd"/>
-                                <include reference="ssC-e0-xPB"/>
-                                <include reference="PvE-EH-Zhz"/>
-                                <include reference="Q1I-jt-fJe"/>
-                                <include reference="sgy-uV-Jbq"/>
                                 <include reference="6aM-U2-82H"/>
                                 <include reference="YRp-8P-mM5"/>
-                                <include reference="oQM-ZR-P0q"/>
+                                <include reference="lIL-lR-0bd"/>
+                                <include reference="ssC-e0-xPB"/>
                                 <include reference="ML0-KM-Dxc"/>
                                 <include reference="tdI-2R-wWV"/>
+                                <include reference="oQM-ZR-P0q"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
                             <mask key="constraints">
+                                <include reference="WFn-LY-a3X"/>
+                                <include reference="YC7-lR-ArX"/>
+                                <include reference="qHb-t6-oxJ"/>
                                 <exclude reference="33Z-9M-k7x"/>
                                 <include reference="9q8-33-NqP"/>
                                 <exclude reference="Igb-CC-PUE"/>
@@ -535,16 +538,13 @@
                                 <include reference="NZs-J8-wx4"/>
                                 <include reference="DVD-yc-YQq"/>
                                 <exclude reference="zwC-Ho-S9P"/>
-                                <include reference="Sif-iH-vQV"/>
-                                <include reference="Smf-y3-Ycd"/>
-                                <include reference="WFn-LY-a3X"/>
-                                <include reference="YC7-lR-ArX"/>
-                                <include reference="qHb-t6-oxJ"/>
                                 <include reference="Vh9-FV-Z1r"/>
                                 <include reference="bmA-7k-k04"/>
-                                <include reference="aP0-2Q-G9y"/>
+                                <include reference="Sif-iH-vQV"/>
+                                <include reference="Smf-y3-Ycd"/>
                                 <include reference="9Gi-UN-fre"/>
                                 <include reference="N0p-rr-hmI"/>
+                                <include reference="aP0-2Q-G9y"/>
                             </mask>
                         </variation>
                     </view>
@@ -846,6 +846,16 @@
                                 </state>
                                 <connections>
                                     <action selector="loadPlats:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="bfy-uz-OTJ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="chy-gs-Wrv">
+                                <rect key="frame" x="289" y="202" width="223" height="39"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="28"/>
+                                <state key="normal" title="Load Planimetric">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="loadPlan:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="OJt-Bi-VYb"/>
                                 </connections>
                             </button>
                         </subviews>

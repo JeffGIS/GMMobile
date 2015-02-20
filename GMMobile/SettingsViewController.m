@@ -11,6 +11,7 @@
 #define GET_PARCELS 3
 #define GET_AREAS 4
 #define GET_SEWER 5
+#define GET_PLAN 6
 
 #define INPUTBUFSIZE USHRT_MAX * 32
 
@@ -133,6 +134,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case GET_PROPERTY:
             case GET_AREAS:
             case GET_SEWER:
+            case GET_PLAN:
             {
                 NSString *toDirectory = [path stringByDeletingLastPathComponent];
                 NSString *file;
@@ -153,6 +155,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     {
                         file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
                         _popover.title = @"Load Area Tables";
+                    }
+                        break;
+                        
+                    case GET_PLAN:
+                    {
+                        file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
+                        _popover.title = @"Load Planimetric Tables";
                     }
                         break;
                         
@@ -368,6 +377,28 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+     forceRefresh:YES];
+}
+
+- (IBAction)loadPlan:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"MPLS_PlanimetricData.gcf";
+    
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_PLAN;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Planimetric File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"

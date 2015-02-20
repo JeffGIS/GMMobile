@@ -3,6 +3,7 @@
 
 #import "VectorView.h"
 #import "BoundaryData.h"
+#import "PlanimetricData.h"
 #import "PropertyData.h"
 
 @implementation VectorView
@@ -57,6 +58,20 @@
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
         }*/
+        if (_zoom > 16)
+        {
+            PlanimetricData *pd = [[PlanimetricData alloc]init];
+            [pd displayPlanArea:context
+                       LLBounds:&_latlonBounds
+                     viewBounds:&_viewBounds];
+            [pd displayPlanLine:context
+                       LLBounds:&_latlonBounds
+                     viewBounds:&_viewBounds];
+            [pd displayPlanPoint:context
+                       LLBounds:&_latlonBounds
+                     viewBounds:&_viewBounds];
+        }
+
     }
     
 }
