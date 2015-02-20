@@ -30,6 +30,7 @@
 @property (nonatomic) UIView *firstView;
 @property (nonatomic) PlatView *platView;
 @property (nonatomic) NSInteger screenSetting;
+@property (nonatomic) GSSiAlertController *gssiAlert;
 
 @end
 
@@ -43,6 +44,9 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UIColor.whiteColor;
+    
+    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
+    _gssiAlert.delegate = self;
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0
                                                 green:0.0
@@ -568,7 +572,7 @@ calloutAccessoryControlTapped:(UIControl *)control
             _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
         
         else
-            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View"];
+            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
         
         _tableViewSetting = PropertyTableViewSettingOptions;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
@@ -1048,6 +1052,47 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                              _exitStreetView.hidden = NO;
                          }];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Zoom to Census Area"])
+    {
+        [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
+                               message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
+                     cancelButtonTitle:@"Cancel"
+                     otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
+             destructiveButtonPosition:0];
+    }
+}
+
+- (void)gssiAlert:(GSSiAlertController *)gssiAlert
+clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex)
+    {
+        case CensusZoomSettingCancel:
+            if (_tableView.indexPathForSelectedRow)
+            {
+                [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                          animated:YES];
+            }
+            
+            break;
+        
+        case CensusZoomSettingBlock:
+            [self dismissTableView];
+            //implement zoom to block here
+            break;
+            
+        case CensusZoomSettingBlockGroup:
+            [self dismissTableView];
+            //implement zoom to block group here
+            break;
+            
+        case CensusZoomSettingTract:
+            [self dismissTableView];
+            //implement zoom to tract here
+            break;
+    }
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -1095,6 +1140,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
+{
+    [self dismissTableView];
+}
+
+- (void)dismissTableView
 {
     if (!_tableView.hidden)
     {
@@ -1326,7 +1376,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (BOOL)isHennepinCountyPID:(NSString *)PID
 {
-    if ([PID containsString:@"053-"])
+    if (!([PID rangeOfString:@"053-"].location == NSNotFound))
         return YES;
     
     else

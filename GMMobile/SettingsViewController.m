@@ -31,6 +31,8 @@
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
 
+    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
+    _gssiAlert.delegate = self;
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -51,9 +53,6 @@
 
 - (IBAction)deleteDatabase:(id)sender
 {
-    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
-    _gssiAlert.delegate = self;
-    
     [_gssiAlert showAlertWithTitle:@"Delete Property Records Database"
                            message:nil
                  cancelButtonTitle:@"Cancel"
@@ -225,22 +224,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     else
     {
         if (option == GET_SANPLAT)
+        {
             self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
                                                           target:self
-                                                        selector:@selector(getNextPlat)                                                            userInfo:nil
+                                                        selector:@selector(getNextPlat)
+                                                        userInfo:nil
                                                          repeats:NO];
+        }
+        
         else
         {
             [_popover hide];
             
-            UIAlertView *getError = [[UIAlertView alloc] initWithTitle:@"Error getting parcel file"
-                                                               message:@"Network communication error"
-                                                              delegate:nil
-                                                     cancelButtonTitle:@"Continue"
-                                                     otherButtonTitles:nil];
-            [getError show];
+            [_gssiAlert showAlertWithTitle:@"Error getting parcel file"
+                                   message:@"Network communication error"
+                         cancelButtonTitle:@"Continue"
+                         otherButtonTitles:nil
+                 destructiveButtonPosition:0];
         }
-        
     }
 }
 
