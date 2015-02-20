@@ -330,21 +330,9 @@
     
     else
     {
-        /*MKCoordinateRegion region = _mapView.region;
-        MKCoordinateRegion saveRegion = _mapView.region;
-        
-        region.center.latitude = 0;
-        region.center.longitude = 0;
-        
-        [_mapView setRegion:region
-                   animated:NO];
-        
-        [_mapView setRegion:saveRegion
-                   animated:NO];*/
+        [self refreshVectorView:_mapView.region
+                         atZoom:_currentZoom];
     }
-    
-    [self refreshVectorView:_mapView.region
-                     atZoom:_currentZoom];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -380,10 +368,11 @@
                    animated:NO];
         
         newRegion = _mapView.region;
+        
         CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
                                                                         ((bounds.xmx + bounds.xmn) / 2.0));
         
-        CGFloat latDelta = newRegion.span.latitudeDelta * 1.05;// fabs(bounds.ymx - bounds.ymn) * 1.1;
+        CGFloat latDelta = region.span.latitudeDelta * 1.05;
 
         _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
                                              fromEyeCoordinate:boundsCoord
