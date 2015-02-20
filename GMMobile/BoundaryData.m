@@ -36,8 +36,9 @@
             query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             break;
+            
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,BOUNDARYAREA.id  FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i",
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i",
                      refno];
     }
     
@@ -225,7 +226,7 @@
     
     if (nLoops > 1)
     {
-        int ip=0;
+        int ip = 0;
         int ii;
         
         for (int loop=0; loop < nLoops; loop++)
@@ -269,6 +270,5 @@
         }
     }
 }
-
 
 @end

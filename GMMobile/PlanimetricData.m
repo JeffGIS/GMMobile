@@ -1,10 +1,7 @@
-//
+
 //  PlanimetricData.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/19/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
+
 #define COORDINATE_FACTOR 10000000.0
 
 #import "PlanimetricData.h"
@@ -14,19 +11,18 @@
 {
     LPTRANDATA _pTranLLtoView;
     LPTRANDATA _pTranViewtoLL;
-
 }
 
 -(void)displayPlanArea:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query,*querys;
+    NSString *query, *querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
     int numPoints,numLoops;
     LPSTR symName;
-    PropertyData * pd = [[PropertyData alloc]init];
+    PropertyData *pd = [[PropertyData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -40,6 +36,7 @@
         case PROJECT_METROGIS:
             query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM PLAN_AREA,PLAN_AREA_index WHERE PLAN_AREA.id=PLAN_AREA_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            
             querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
@@ -90,9 +87,9 @@
     [pd close];
 }
 - (void)fillPlanArea:(CGContextRef)context
-           nPoints:(int)np
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+             nPoints:(int)np
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -116,11 +113,11 @@
 }
 
 - (void)drawPlanArea:(CGContextRef)context
-           nPoints:(int)np
-            nLoops:(int)nLoops
-           partLen:(int *)pPartLen
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+             nPoints:(int)np
+              nLoops:(int)nLoops
+             partLen:(int *)pPartLen
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 1);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -184,7 +181,7 @@
         DPOINT BasePt;
         int numPoints,numLoops;
         LPSTR symName;
-        PropertyData * pd = [[PropertyData alloc]init];
+        PropertyData *pd = [[PropertyData alloc] init];
         
         CloseTRANS2(&_pTranLLtoView);
         CloseTRANS2(&_pTranViewtoLL);
@@ -198,6 +195,7 @@
             case PROJECT_METROGIS:
                 query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM PLAN_LINE,PLAN_LINE_index WHERE PLAN_LINE.id=PLAN_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+                
                 querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
         }
         
@@ -249,11 +247,11 @@
     }
 
 - (void)drawPlanLine:(CGContextRef)context
-            nPoints:(int)np
-             nLoops:(int)nLoops
-            partLen:(int *)pPartLen
-             points:(LPDPOINT)pPoints
-          withColor:(CGColorRef)color
+             nPoints:(int)np
+              nLoops:(int)nLoops
+             partLen:(int *)pPartLen
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 2);
     
@@ -308,12 +306,12 @@
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query,*querys;
+    NSString *query, *querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints,numLoops;
+    int numPoints, numLoops;
     LPSTR symName;
-    PropertyData * pd = [[PropertyData alloc]init];
+    PropertyData *pd = [[PropertyData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -368,7 +366,7 @@
     sqlite3_stmt *statement;
     DPOINT BasePt;
     LPSTR symName;
-    PropertyData * pd = [[PropertyData alloc]init];
+    PropertyData *pd = [[PropertyData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -414,8 +412,6 @@
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
-    
 }
-
 
 @end

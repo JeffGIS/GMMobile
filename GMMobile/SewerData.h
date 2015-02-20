@@ -25,8 +25,11 @@
 - (void)commitTransaction;
 
 - (int)pickSanPlat:(LLPOINT *)pt;
-- (NSString*) getSanPlatIDFromRefno:(int)refno;
-- (NSMutableArray*) getAllSanPlats;
-- (BOOL)loadPlat:(NSString *)platID usingPopover:(GSSiPopoverView*)popover andDelegate:(id)delegate;
+- (NSString *)getSanPlatIDFromRefno:(int)refno;
+- (NSMutableArray *)getAllSanPlats;
+
+- (BOOL)loadPlat:(NSString *)platID
+    usingPopover:(GSSiPopoverView *)popover
+     andDelegate:(id)delegate;
 
 @end

@@ -142,10 +142,10 @@ int SQLOKswr(int sqlReturn, char *method)
     pull.returnIfExists = NO;
     
     if ([pull getFile:fileName
-    fromDirectory:@"Sewer/Sanitary/Plats"
-           toFile:fileName
-      toDirectory:toDir
-     forceRefresh:NO] == FTPStatusFileExists)
+        fromDirectory:@"Sewer/Sanitary/Plats"
+               toFile:fileName
+          toDirectory:toDir
+         forceRefresh:NO] == FTPStatusFileExists)
     {
         fileExists = YES;
     }
@@ -214,12 +214,12 @@ int SQLOKswr(int sqlReturn, char *method)
 
 - (int)pickSanPlat:(LLPOINT *)pt
 {
-    int minRef=0;
+    int minRef = 0;
     dbounds bnds;
     CGFloat d, mind = DBL_MAX;
     CGFloat pickap = 0.005;
     DPOINT p1, p2, minpt;
-    NSString * minPlatID=[[NSString alloc]init];;
+    NSString *minPlatID=[[NSString alloc] init];
     
     p1.x = pt->lon;
     p1.y = pt->lat;
@@ -267,7 +267,7 @@ int SQLOKswr(int sqlReturn, char *method)
 
 - (NSMutableArray *)getAllSanPlats
 {
-    NSMutableArray * list=[[NSMutableArray alloc]init];
+    NSMutableArray *list = [[NSMutableArray alloc] init];
     [self open];
     
     NSString *query = @"SELECT PLAT FROM SANPLATAREAS";

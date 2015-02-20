@@ -31,6 +31,7 @@
         _viewBounds.xmx = (self.bounds.origin.x + self.bounds.size.width);
         _viewBounds.ymn = (self.bounds.origin.y + self.bounds.size.height);
         _viewBounds.ymx = self.bounds.origin.y;
+        
         if (_zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
         {
             PropertyData *pd = [[PropertyData alloc] init];
@@ -46,8 +47,10 @@
         }
         if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
         {
-            BoundaryData *bd = [[BoundaryData alloc]init];
-            [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno inContext:context
+            BoundaryData *bd = [[BoundaryData alloc] init];
+            
+            [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                      inContext:context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
         }
@@ -60,23 +63,25 @@
         }*/
         if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
         {
-            PlanimetricData *pd = [[PlanimetricData alloc]init];
+            PlanimetricData *pd = [[PlanimetricData alloc] init];
+            
             [pd displayPlanArea:context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
+            
             [pd displayPlanLine:context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
+            
             [pd displayPlanPoint:context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
+            
             [pd displayWallPoint:context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
         }
-
     }
-    
 }
 
 @end
