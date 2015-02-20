@@ -3,7 +3,7 @@
 
 #import "PlatView.h"
 
-#define TESTMODE YES
+#define TESTMODE NO
 
 @interface PlatView ()
 

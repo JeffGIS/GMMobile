@@ -58,7 +58,7 @@
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
         }*/
-        if (_zoom > 16)
+        if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
         {
             PlanimetricData *pd = [[PlanimetricData alloc]init];
             [pd displayPlanArea:context
@@ -68,8 +68,11 @@
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
             [pd displayPlanPoint:context
-                       LLBounds:&_latlonBounds
-                     viewBounds:&_viewBounds];
+                        LLBounds:&_latlonBounds
+                      viewBounds:&_viewBounds];
+            [pd displayWallPoint:context
+                        LLBounds:&_latlonBounds
+                      viewBounds:&_viewBounds];
         }
 
     }

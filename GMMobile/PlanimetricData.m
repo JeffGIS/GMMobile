@@ -360,5 +360,62 @@
     //CGContextFillPath(context);
     
 }
+-(void)displayWallPoint:(CGContextRef)context
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds
+{
+    NSString *query;
+    sqlite3_stmt *statement;
+    DPOINT BasePt;
+    LPSTR symName;
+    PropertyData * pd = [[PropertyData alloc]init];
+    
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    
+    [pd open];
+    //CREATE TABLE ALLEYWALLS ('id' INT,'Wall ID' CHAR(8),'Hse No' INT,'STREET' CHAR(64),'City' CHAR(4),'Length' REAL,'Max Hght' REAL,'Offset' REAL,'Gar/Struc' CHAR(12),' COST' CHAR(12),'Type Const' CHAR(32),'InspDate' CHAR(12),'InspBy' CHAR(8),'Rating' CHAR(16),'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
+
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM ALLEYWALLS,ALLEYWALLS_index WHERE ALLEYWALLS.id=ALLEYWALLS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+
+        DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        [self drawWallPoint:context
+                    atPoint:&llpoint
+                  withColor:UIColor.greenColor.CGColor];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    [pd close];
+    
+}
+
+- (void) drawWallPoint:(CGContextRef)context
+               atPoint:(DPOINT*)pPoint
+             withColor:(CGColorRef)color
+
+{
+    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 15, 15);
+    
+    CGContextSetFillColorWithColor(context,color);
+    CGContextFillEllipseInRect(context, pointRect);
+    //CGContextStrokeEllipseInRect(context, pointRect);
+    //CGContextFillPath(context);
+    
+}
+
 
 @end

@@ -124,7 +124,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                     case GET_PLAN:
                     {
-                        file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
+                        //planimetric
+                        //planimetricp
+                        //alleywall
+                        file = [NSString stringWithFormat:@"%@/planimetricp.sqltran",toDirectory];
                         _popover.title = @"Load Planimetric Tables";
                     }
                         break;
@@ -354,7 +357,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (IBAction)loadPlan:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MPLS_PlanimetricData.gcf";
+    //NSString *fileName = @"MPLS_PlanimetricData.gcf";
+    NSString *fileName = @"MPLS_PlanimetricPointData.gcf";
+    //NSString *fileName = @"MPLS_AlleyWall.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;

@@ -19,5 +19,8 @@
 -(void)displayPlanPoint:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
+-(void)displayWallPoint:(CGContextRef)context
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds;
 
 @end
