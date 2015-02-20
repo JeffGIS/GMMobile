@@ -15,6 +15,7 @@
 @interface SettingsViewController ()
 
 @property (nonatomic) GSSiPopoverView *popover;
+@property (nonatomic) GSSiAlertController *gssiAlert;
 
 @end
 
@@ -41,66 +42,30 @@
     [pd close];
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
+
 - (void) viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [UIApplication.sharedApplication setIdleTimerDisabled:NO];
 }
+
 - (IBAction)deleteDatabase:(id)sender
 {
-    NSString *title = @"Delete Property Records Database";
+    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
+    _gssiAlert.delegate = self;
     
-    if (UIAlertController.class)
-    {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
-                                                                       message:nil
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
-                                                               style:UIAlertActionStyleCancel
-                                                             handler:^(UIAlertAction *action){
-                                                                 
-                                                                 [alert dismissViewControllerAnimated:YES
-                                                                                           completion:nil];
-                                                             }];
-        
-        UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"Delete Database"
-                                                                style:UIAlertActionStyleDestructive
-                                                              handler:^(UIAlertAction *action){
-                                                                  
-                                                                  [alert dismissViewControllerAnimated:YES
-                                                                                            completion:nil];
-                                                                  
-                                                                  [self databaseDeletion];
-                                                              }];
-        
-        [alert addAction:cancelAction];
-        [alert addAction:defaultAction];
-        
-        [self presentViewController:alert
-                           animated:YES
-                         completion:nil];
-    }
-    
-    else
-    {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                            message:nil
-                                                           delegate:self
-                                                  cancelButtonTitle:@"Cancel"
-                                                  otherButtonTitles:@"DeleteDatabase", nil];
-        
-        [alertView show];
-    }
+    [_gssiAlert showAlertWithTitle:@"Delete Property Records Database"
+                           message:nil
+                 cancelButtonTitle:@"Cancel"
+                 otherButtonTitles:@[@"OK"]
+         destructiveButtonPosition:1];
 }
 
-- (void)alertView:(UIAlertView *)alertView
+- (void)gssiAlert:(GSSiAlertController *)gssiAlert
 clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 1)
-    {
         [self databaseDeletion];
-    }
 }
 
 - (void)databaseDeletion
@@ -374,7 +339,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      forceRefresh:YES];
 }
 
-- (IBAction)loadSewer:(id)sender {
+- (IBAction)loadSewer:(id)sender
+{
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_sewers.gcf";
     
@@ -407,7 +373,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     return TRUE;
 }
 
-- (IBAction)loadPlats:(id)sender {
+- (IBAction)loadPlats:(id)sender
+{
     SewerData* sd = [[SewerData alloc]init];
     _allPlats = [sd getAllSanPlats];
     _nextPlat = 0;
