@@ -62,7 +62,6 @@
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     _firstTime = YES;
     
-    _screenSetting = MapViewScreenSettingFullscreen;
     _mapView = [[MKMapView alloc] init];
     _vectorView = [[VectorView alloc] init];
     
@@ -179,14 +178,6 @@
     
     [self extentZoom:NO];
     [self.view bringSubviewToFront:_vectorView];
-    
-    [self setupButton:_zoomToExtentButton];
-    [self setupButton:_userLocationButton];
-    [self setupButton:_splitScreenButton];
-    [self.view bringSubviewToFront:_annotationSwitch];
-    _mapTypeSC.layer.cornerRadius = 4.0;
-    _mapTypeSC.layer.masksToBounds = YES;
-    [self.view bringSubviewToFront:_mapTypeSC];
     
     [self setupTableView];
     
@@ -398,14 +389,6 @@
     }
 }
 
-- (void)setupButton:(UIButton *)button
-{
-    button.layer.cornerRadius = 10.0;
-    button.layer.borderColor = UIColor.blackColor.CGColor;
-    button.layer.borderWidth = 2.0;
-    [self.view bringSubviewToFront:button];
-}
-
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
             rendererForOverlay:(id <GSSiOverlay>)overlay
 {
@@ -607,15 +590,6 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                    forPID:_selectedPID];
 }
 
-- (IBAction)toggleAnnotationState:(id)sender
-{
-    if (_annotationSwitch.on)
-        _clearAnnotations = NO;
-    
-    else
-        _clearAnnotations = YES;
-}
-
 - (void)addAnnotation:(id <MKAnnotation>)annotation
 {
     if (_clearAnnotations)
@@ -764,23 +738,6 @@ didSelectAnnotationView:(MKAnnotationView *)view
         }
             break;
     }
-}
-
-- (IBAction)userLocation:(id)sender
-{
-    [_mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading
-                         animated:YES];
-
-    _mapView.rotateEnabled = NO;
-}
-
-- (IBAction)zoomToExtent:(id)sender
-{
-    [_mapView setUserTrackingMode:MKUserTrackingModeNone
-                         animated:NO];
-    
-    _mapView.rotateEnabled = YES;
-    [self extentZoom:YES];
 }
 
 - (void)clearVectorView
@@ -1158,160 +1115,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (IBAction)splitScreen:(id)sender
-{
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
-    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-    CGPoint platViewCenter = _platView.center;
-    
-    CGRect frame1 = CGRectMake(0.0,
-                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
-                               self.view.frame.size.width,
-                               ((tabBarTop - statusBarHeight) / 2.0));
-    
-    CGRect frame2 = CGRectMake(0.0,
-                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
-                               self.view.frame.size.width,
-                               ((tabBarTop - statusBarHeight) / 3.0));
-    
-    CGRect frame3 = CGRectMake(0.0,
-                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
-                               (self.view.frame.size.width / 2.0),
-                               ((tabBarTop - statusBarHeight) / 3.0));
-    
-    switch (_screenSetting)
-    {
-        case MapViewScreenSettingFullscreen:
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
-                                 
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 2.0));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _firstView.frame = frame1;
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 [self platViewPosition:platViewCenter
-                                             fromFrame1:frame3
-                                               toFrame2:frame1];
-                             }];
-            
-            _screenSetting = MapViewScreenSettingSplitScreen;
-        }
-            break;
-            
-        case MapViewScreenSettingSplitScreen:
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 3.0));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _firstView.frame = frame2;
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _secondImageView.frame =
-                                 CGRectMake(0.0,
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 3.0));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 [self platViewPosition:platViewCenter
-                                             fromFrame1:frame1
-                                               toFrame2:frame2];
-                             }];
-            
-            _screenSetting = MapViewScreenSettingTriScreen;
-        }
-            break;
-            
-        case MapViewScreenSettingTriScreen:
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 1.5));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _firstView.frame = frame3;
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _secondImageView.frame =
-                                 CGRectMake((self.view.frame.size.width / 2.0),
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
-                                            (self.view.frame.size.width / 2.0),
-                                            ((tabBarTop - statusBarHeight) / 3.0));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 [self platViewPosition:platViewCenter
-                                             fromFrame1:frame2
-                                               toFrame2:frame3];
-                             }];
-            
-            _screenSetting = MapViewScreenSettingSplitBottomScreen;
-        }
-            break;
-            
-        case MapViewScreenSettingSplitBottomScreen:
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _mapView.layer.borderWidth = 0.0;
-                                 
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            (tabBarTop - statusBarHeight));
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _firstView.frame = _secondImageView.frame =
-                                 CGRectMake(0.0,
-                                            tabBarTop,
-                                            self.view.frame.size.width, 0.0);
-                             }];
-            
-            _screenSetting = MapViewScreenSettingFullscreen;
-        }
-            break;
-    }
-    
-    if (![_firstView.subviews containsObject:_platView])
-        [_firstView addSubview:_platView];
-}
-
 - (void)platViewPosition:(CGPoint)center
                fromFrame1:(CGRect)frame1
                  toFrame2:(CGRect)frame2
@@ -1477,22 +1280,202 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectZoomExtent
 {
-    NSLog(@"zoomExtent Selected");
+    [_mapView setUserTrackingMode:MKUserTrackingModeNone
+                         animated:NO];
+    
+    _mapView.rotateEnabled = YES;
+    [self extentZoom:YES];
 }
 
 - (void)mapToolbarDidSelectUserLocation
 {
-    NSLog(@"userLocation Selected");
+    [_mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading
+                         animated:YES];
+    
+    _mapView.rotateEnabled = NO;
 }
 
 - (void)mapToolbarDidSelectAnnotationOption:(BOOL)option
 {
-    NSLog(@"annotationOption Selected:%d", option);
+    if (option)
+        _clearAnnotations = NO;
+    
+    else
+        _clearAnnotations = YES;
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
 {
-    NSLog(@"mapTypeSelected:%li", (long)mapType);
+    switch (mapType)
+    {
+        case MapTypeSettingStandard:
+            _mapView.mapType = MKMapTypeStandard;
+            break;
+            
+        case MapTypeSettingHybrid:
+            _mapView.mapType = MKMapTypeHybrid;
+            break;
+    }
+}
+
+- (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
+{
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    CGPoint platViewCenter = _platView.center;
+    
+    CGRect frame0 = CGRectMake(0.0,
+                               tabBarTop,
+                               self.view.frame.size.width, 0.0);
+    
+    CGRect frame1 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
+                               self.view.frame.size.width,
+                               ((tabBarTop - statusBarHeight) / 2.0));
+    
+    CGRect frame2 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
+                               self.view.frame.size.width,
+                               ((tabBarTop - statusBarHeight) / 3.0));
+    
+    CGRect frame3 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                               (self.view.frame.size.width / 2.0),
+                               ((tabBarTop - statusBarHeight) / 3.0));
+    
+    switch (setting)
+    {
+        case MapViewScreenSettingFullscreen:
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _mapView.layer.borderWidth = 0.0;
+                                 
+                                 _mapView.frame = _vectorView.frame =
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
+                                            self.view.frame.size.width,
+                                            (tabBarTop - statusBarHeight));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _firstView.frame = _secondImageView.frame = frame0;
+                             }];
+            
+            _screenSetting = MapViewScreenSettingFullscreen;
+        }
+            break;
+            
+        case MapViewScreenSettingSplitScreen:
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
+                                 
+                                 _mapView.frame = _vectorView.frame =
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
+                                            self.view.frame.size.width,
+                                            ((tabBarTop - statusBarHeight) / 2.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _firstView.frame = _platView.frame = frame1;
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _secondImageView.frame = frame0;
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 [self platViewPosition:platViewCenter
+                                             fromFrame1:frame3
+                                               toFrame2:frame1];
+                             }];
+            
+            _screenSetting = MapViewScreenSettingSplitScreen;
+        }
+            break;
+            
+        case MapViewScreenSettingTriScreen:
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _mapView.frame = _vectorView.frame =
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
+                                            self.view.frame.size.width,
+                                            ((tabBarTop - statusBarHeight) / 3.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _firstView.frame = frame2;
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _secondImageView.frame =
+                                 CGRectMake(0.0,
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                                            self.view.frame.size.width,
+                                            ((tabBarTop - statusBarHeight) / 3.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 [self platViewPosition:platViewCenter
+                                             fromFrame1:frame1
+                                               toFrame2:frame2];
+                             }];
+            
+            _screenSetting = MapViewScreenSettingTriScreen;
+        }
+            break;
+            
+        case MapViewScreenSettingSplitBottomScreen:
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _mapView.frame = _vectorView.frame =
+                                 CGRectMake(0.0,
+                                            statusBarHeight,
+                                            self.view.frame.size.width,
+                                            ((tabBarTop - statusBarHeight) / 1.5));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _firstView.frame = frame3;
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _secondImageView.frame =
+                                 CGRectMake((self.view.frame.size.width / 2.0),
+                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                                            (self.view.frame.size.width / 2.0),
+                                            ((tabBarTop - statusBarHeight) / 3.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 [self platViewPosition:platViewCenter
+                                             fromFrame1:frame2
+                                               toFrame2:frame3];
+                             }];
+            
+            _screenSetting = MapViewScreenSettingSplitBottomScreen;
+        }
+            break;
+    }
+    
+    if (![_firstView.subviews containsObject:_platView])
+        [_firstView addSubview:_platView];
 }
 
 @end

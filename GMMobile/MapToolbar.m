@@ -22,14 +22,14 @@
     {
         self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
-        self.frame = CGRectMake(0.0, 0.0, 317.0, 64.0);
+        self.frame = CGRectMake(0.0, 0.0, 537.0, 63.0);
         self.center = CGPointMake((view.frame.size.width / 2.0), 52.0);
         self.layer.borderWidth = 2.0;
         self.layer.borderColor = UIColor.blackColor.CGColor;
     }
     
-    CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, segControlWidth = 132.0;
-    CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0;
+    CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
+    CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 216.0;
     
     _userLocation = [[UIButton alloc] initWithFrame:CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize)];
     
@@ -75,7 +75,7 @@
     _mapType.selectedSegmentIndex = 0;
     
     _mapType.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
-                                segControlMargin, segControlWidth, segControlHeight);
+                                segControlMargin, mtscWidth, segControlHeight);
     
     [_mapType addTarget:self
                  action:@selector(mapTypeSelected:)
@@ -83,6 +83,19 @@
     
     [self formatSegControl:_mapType];
     [self addSubview:_mapType];
+    
+    _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Bottom"]];
+    _splitScreenSetting.selectedSegmentIndex = 0;
+    
+    _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
+                                           segControlMargin, ssscWidth, segControlHeight);
+    
+    [_splitScreenSetting addTarget:self
+                            action:@selector(splitScreenSettingSelected:)
+                  forControlEvents:UIControlEventValueChanged];
+    
+    [self formatSegControl:_splitScreenSetting];
+    [self addSubview:_splitScreenSetting];
     
     return self;
 }
@@ -127,6 +140,12 @@
 {
     if (_delegate)
         [_delegate mapToolbarDidSelectMapType:segControl.selectedSegmentIndex];
+}
+
+- (void)splitScreenSettingSelected:(UISegmentedControl *)segControl
+{
+    if (_delegate)
+        [_delegate mapToolbarDidSelectSplitScreenSetting:segControl.selectedSegmentIndex];
 }
 
 @end
