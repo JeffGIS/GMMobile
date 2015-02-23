@@ -1115,24 +1115,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (void)platViewPosition:(CGPoint)center
-               fromFrame1:(CGRect)frame1
-                 toFrame2:(CGRect)frame2
-{
-    if (![_firstView.subviews containsObject:_platView])
-    {
-        _platView.frame =  CGRectMake(0.0, 0.0,
-                                      _firstView.frame.size.width,
-                                      _firstView.frame.size.height);
-    }
-    
-    else
-    {
-        _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
-                                       center.y - ((frame1.size.height - frame2.size.height) / 2.0));
-    }
-}
-
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -1322,7 +1304,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-    CGPoint platViewCenter = _platView.center;
     
     CGRect frame0 = CGRectMake(0.0,
                                tabBarTop,
@@ -1342,6 +1323,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
+    
+    if (![_firstView.subviews containsObject:_platView])
+        [_firstView addSubview:_platView];
     
     switch (setting)
     {
@@ -1382,19 +1366,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame = _platView.frame = frame1;
+                                 _firstView.frame = frame1;
                              }];
             
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondImageView.frame = frame0;
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 [self platViewPosition:platViewCenter
-                                             fromFrame1:frame3
-                                               toFrame2:frame1];
                              }];
             
             _screenSetting = MapViewScreenSettingSplitScreen;
@@ -1426,13 +1403,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 [self platViewPosition:platViewCenter
-                                             fromFrame1:frame1
-                                               toFrame2:frame2];
-                             }];
-            
             _screenSetting = MapViewScreenSettingTriScreen;
         }
             break;
@@ -1462,20 +1432,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 [self platViewPosition:platViewCenter
-                                             fromFrame1:frame2
-                                               toFrame2:frame3];
-                             }];
-            
             _screenSetting = MapViewScreenSettingSplitBottomScreen;
         }
             break;
     }
     
-    if (![_firstView.subviews containsObject:_platView])
-        [_firstView addSubview:_platView];
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _platView.frame =
+                         CGRectMake(0.0, 0.0,
+                                    _firstView.frame.size.width,
+                                    _firstView.frame.size.height);
+                     }];
 }
 
 @end
