@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
@@ -135,57 +135,6 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SBD-ai-nP6">
-                                <rect key="frame" x="8" y="28" width="48" height="48"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="05W-x9-nYT"/>
-                                    <constraint firstAttribute="width" constant="48" id="6Xb-iH-xe7">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="42"/>
-                                    </constraint>
-                                    <constraint firstAttribute="height" constant="48" id="AEI-4R-XOp">
-                                        <variation key="heightClass=compact" constant="42"/>
-                                    </constraint>
-                                    <constraint firstAttribute="height" constant="48" id="AKW-de-Ggd">
-                                        <variation key="heightClass=regular-widthClass=compact" constant="42"/>
-                                    </constraint>
-                                    <constraint firstAttribute="width" constant="48" id="Wd2-iU-OZO">
-                                        <variation key="heightClass=compact" constant="42"/>
-                                    </constraint>
-                                    <constraint firstAttribute="width" constant="48" id="aDU-uI-k6j"/>
-                                </constraints>
-                                <inset key="contentEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
-                                <state key="normal" image="userLocation.png">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="05W-x9-nYT"/>
-                                        <exclude reference="6Xb-iH-xe7"/>
-                                        <exclude reference="AKW-de-Ggd"/>
-                                        <exclude reference="aDU-uI-k6j"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="constraints">
-                                        <include reference="6Xb-iH-xe7"/>
-                                        <exclude reference="AEI-4R-XOp"/>
-                                        <include reference="AKW-de-Ggd"/>
-                                        <exclude reference="Wd2-iU-OZO"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=regular">
-                                    <mask key="constraints">
-                                        <include reference="05W-x9-nYT"/>
-                                        <exclude reference="AEI-4R-XOp"/>
-                                        <exclude reference="Wd2-iU-OZO"/>
-                                        <include reference="aDU-uI-k6j"/>
-                                    </mask>
-                                </variation>
-                                <connections>
-                                    <action selector="userLocation:" destination="9pv-A4-QxB" eventType="touchUpInside" id="66L-Qd-ZWm"/>
-                                </connections>
-                            </button>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="dEb-mb-kpJ">
                                 <rect key="frame" x="452" y="20" width="132" height="29"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -333,7 +282,8 @@
                                         <include reference="Wf0-tc-PFX"/>
                                     </mask>
                                 </variation>
-                                <variation key="heightClass=regular-widthClass=regular">
+                                <variation key="heightClass=regular-widthClass=regular" misplaced="YES">
+                                    <rect key="frame" x="173" y="64" width="120" height="48"/>
                                     <mask key="constraints">
                                         <include reference="QRC-G1-U20"/>
                                         <include reference="WSS-eb-yXz"/>
@@ -341,6 +291,57 @@
                                 </variation>
                                 <connections>
                                     <action selector="dismissStreetView:" destination="9pv-A4-QxB" eventType="touchUpInside" id="JbD-gM-Ofw"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SBD-ai-nP6">
+                                <rect key="frame" x="8" y="28" width="48" height="48"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="05W-x9-nYT"/>
+                                    <constraint firstAttribute="width" constant="48" id="6Xb-iH-xe7">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="42"/>
+                                    </constraint>
+                                    <constraint firstAttribute="height" constant="48" id="AEI-4R-XOp">
+                                        <variation key="heightClass=compact" constant="42"/>
+                                    </constraint>
+                                    <constraint firstAttribute="height" constant="48" id="AKW-de-Ggd">
+                                        <variation key="heightClass=regular-widthClass=compact" constant="42"/>
+                                    </constraint>
+                                    <constraint firstAttribute="width" constant="48" id="Wd2-iU-OZO">
+                                        <variation key="heightClass=compact" constant="42"/>
+                                    </constraint>
+                                    <constraint firstAttribute="width" constant="48" id="aDU-uI-k6j"/>
+                                </constraints>
+                                <inset key="contentEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
+                                <state key="normal" image="userLocation.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="05W-x9-nYT"/>
+                                        <exclude reference="6Xb-iH-xe7"/>
+                                        <exclude reference="AKW-de-Ggd"/>
+                                        <exclude reference="aDU-uI-k6j"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact">
+                                    <mask key="constraints">
+                                        <include reference="6Xb-iH-xe7"/>
+                                        <exclude reference="AEI-4R-XOp"/>
+                                        <include reference="AKW-de-Ggd"/>
+                                        <exclude reference="Wd2-iU-OZO"/>
+                                    </mask>
+                                </variation>
+                                <variation key="heightClass=regular-widthClass=regular">
+                                    <mask key="constraints">
+                                        <include reference="05W-x9-nYT"/>
+                                        <exclude reference="AEI-4R-XOp"/>
+                                        <exclude reference="Wd2-iU-OZO"/>
+                                        <include reference="aDU-uI-k6j"/>
+                                    </mask>
+                                </variation>
+                                <connections>
+                                    <action selector="userLocation:" destination="9pv-A4-QxB" eventType="touchUpInside" id="66L-Qd-ZWm"/>
                                 </connections>
                             </button>
                         </subviews>

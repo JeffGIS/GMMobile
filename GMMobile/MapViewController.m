@@ -31,6 +31,7 @@
 @property (nonatomic) PlatView *platView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) GSSiAlertController *gssiAlert;
+@property (nonatomic) MapToolbar *mapToolbar;
 
 @end
 
@@ -188,6 +189,10 @@
     [self.view bringSubviewToFront:_mapTypeSC];
     
     [self setupTableView];
+    
+    _mapToolbar = [[MapToolbar alloc] initWithView:self.view];
+    _mapToolbar.delegate = self;
+    [self.view addSubview:_mapToolbar];
 }
 
 - (MKCoordinateRegion)getRegionForPoint:(LLPOINT)pidCoord
@@ -1468,6 +1473,26 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
                                                    pitch:_pitch
                                                      fov:_fov];
+}
+
+- (void)mapToolbarDidSelectZoomExtent
+{
+    NSLog(@"zoomExtent Selected");
+}
+
+- (void)mapToolbarDidSelectUserLocation
+{
+    NSLog(@"userLocation Selected");
+}
+
+- (void)mapToolbarDidSelectAnnotationOption:(BOOL)option
+{
+    NSLog(@"annotationOption Selected:%d", option);
+}
+
+- (void)mapToolbarDidSelectMapType:(NSInteger)mapType
+{
+    NSLog(@"mapTypeSelected:%li", (long)mapType);
 }
 
 @end
