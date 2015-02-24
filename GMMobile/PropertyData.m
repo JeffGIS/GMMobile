@@ -36,6 +36,12 @@ int SQLOK(int sqlReturn, char *method)
                   sqlReturn, method, sqlite3_errcode(_database), sqlite3_errmsg(_database)]);
 }
 
+- (BOOL) continue
+{
+    if (self.processingID == keepProcessing)
+        return YES;
+    return NO;
+}
 
 - (id)init
 {
@@ -660,7 +666,7 @@ int SQLOK(int sqlReturn, char *method)
    
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
     NSLog (@"Prepared");
-    while (keepProcessing && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement,7);
         homeStead = (LPSTR)sqlite3_column_text(statement, 8);
@@ -996,7 +1002,7 @@ int SQLOK(int sqlReturn, char *method)
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
     
-    while (keepProcessing && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.y = sqlite3_column_double(statement,1);

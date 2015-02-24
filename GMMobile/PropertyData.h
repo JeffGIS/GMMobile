@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property long long fileSize;
+@property int processingID;
 
 - (void)open;
 - (void)close;

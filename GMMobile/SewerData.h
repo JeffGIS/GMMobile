@@ -16,6 +16,7 @@
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property long long fileSize;
+@property int processingID;
 
 - (void)open;
 - (void)close;
@@ -23,6 +24,12 @@
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
 - (void)commitTransaction;
+
+- (void)displayPlats:(CGContextRef)context
+                type:(NSString*)platType
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds;
+
 
 - (int)pickSanPlat:(LLPOINT *)pt;
 - (NSString *)getSanPlatIDFromRefno:(int)refno;

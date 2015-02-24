@@ -7,6 +7,7 @@ extern int keepProcessing;
 #import "BoundaryData.h"
 #import "PlanimetricData.h"
 #import "PropertyData.h"
+#import "SewerData.h"
 
 
 @implementation VectorView
@@ -125,6 +126,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
+            pd.processingID = keepProcessing;
             [pd displayParcels:_context
                       LLBounds:&_latlonBounds
                     viewBounds:&_viewBounds];
@@ -173,7 +175,15 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
         }
-        
+        /*{
+            SewerData *sd = [[SewerData alloc] init];
+            sd.processingID = keepProcessing;
+            
+            [sd displayPlats:_context
+                        type:@"SAN"
+                    LLBounds:&_latlonBounds
+                  viewBounds:&_viewBounds];
+        }*/
         if (self.displayData && keepProcessing == self.displayID)
         {
             CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);
