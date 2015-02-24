@@ -18,6 +18,12 @@
     _parcelZoomStepper.continuous = NO;
     _parcelZoomStepper.value = CRAPI.sharedInstance.parcelsVisibleAtZoom;
     
+    _sewerZoomStepper.stepValue = 1.0;
+    _sewerZoomStepper.minimumValue = 12.0;
+    _sewerZoomStepper.maximumValue = 20.0;
+    _sewerZoomStepper.continuous = NO;
+    _sewerZoomStepper.value = CRAPI.sharedInstance.parcelsVisibleAtZoom;
+    
     _parcelZoomLabel.text = [NSString stringWithFormat:@"Show Parcels at Zoom Level %i",
                              (int)CRAPI.sharedInstance.parcelsVisibleAtZoom];
     

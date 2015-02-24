@@ -884,43 +884,56 @@ int SQLOK(int sqlReturn, char *method)
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
-    text = [text stringByReplacingOccurrencesOfString:@"&"
-                                           withString:@"\n&\n"];
-    
-    CGMutablePathRef path = CGPathCreateMutable();
-    
+    CGFloat fontSize = 24.0;
+    CGFloat minFontSize = 12.0;
     CGFloat size = sqrtf(maxPixels);
-    
-    CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
-                                             24.0, NULL);
-    
-    NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
-    style.alignment = NSTextAlignmentCenter;
-    
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                (__bridge id)fontRef, kCTFontAttributeName,
-                                style, kCTParagraphStyleAttributeName,
-                                nil];
-    
-    CFRelease(fontRef);
-    
-    CGSize textSize = [text sizeWithAttributes:attributes];
-    
-    if (textSize.width < size)
+    static int yoffinc = 0;
+   
+    while (fontSize > minFontSize)
     {
-        CGPathAddRect(path, NULL, CGRectMake((pviewPoint->x - (size / 2.0)),
-                                             (pviewPoint->y - size + (textSize.height / 2.0)), size, size));
+        CGContextSaveGState(context);
+        text = [text stringByReplacingOccurrencesOfString:@"&"
+                                               withString:@"\n&\n"];
         
-        NSAttributedString *attString = [[NSAttributedString alloc] initWithString:text
-                                                                        attributes:attributes];
+        CGMutablePathRef path = CGPathCreateMutable();
         
-        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-        CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
         
-        CTFrameDraw(frame, context);
-        CFRelease(frame);
-        CFRelease(path);
-        CFRelease(framesetter);
+        CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                                 fontSize, NULL);
+        
+        NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+        style.alignment = NSTextAlignmentCenter;
+        
+        NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    (__bridge id)fontRef, kCTFontAttributeName,
+                                    style, kCTParagraphStyleAttributeName,
+                                    nil];
+        
+        CFRelease(fontRef);
+        
+        CGSize textSize = [text sizeWithAttributes:attributes];
+        
+        if (textSize.width < size)
+        {
+            CGFloat yoffset = textSize.height / 2;// * (yoffinc++ % 2);
+            CGPathAddRect(path, NULL, CGRectMake((pviewPoint->x - (size / 2.0)),
+                                                 (pviewPoint->y - size + yoffset), size, size));
+            
+            NSAttributedString *attString = [[NSAttributedString alloc] initWithString:text
+                                                                            attributes:attributes];
+            
+            CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+            CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+            
+            CTFrameDraw(frame, context);
+            CFRelease(frame);
+            CFRelease(path);
+            CFRelease(framesetter);
+            CGContextRestoreGState(context);
+            return;
+        }
+        fontSize -= 2.0;
+        CGContextRestoreGState(context);
     }
 }
 
