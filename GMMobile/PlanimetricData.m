@@ -5,6 +5,9 @@
 //  Created by JEFFREY E SMITH on 2/19/15.
 //  Copyright (c) 2015 GSSi. All rights reserved.
 //
+
+extern int keepProcessing;
+
 #define COORDINATE_FACTOR 10000000.0
 
 #import "PlanimetricData.h"
@@ -17,17 +20,25 @@
 
 }
 
+- (BOOL) continue
+{
+    if (self.processingID == keepProcessing)
+        return YES;
+    return NO;
+}
 -(void)displayPlanArea:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
+    if (![self continue])
+        return;
     NSString *query,*querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
     int numPoints,numLoops;
     LPSTR symName;
     PropertyData * pd = [[PropertyData alloc]init];
-    
+
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -45,7 +56,7 @@
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -179,74 +190,76 @@
             viewBounds:(MNMXCORD *)pvbounds
 {
     
-        NSString *query,*querys;
-        sqlite3_stmt *statement;
-        DPOINT BasePt;
-        int numPoints,numLoops;
-        LPSTR symName;
-        PropertyData * pd = [[PropertyData alloc]init];
+    if (![self continue])
+        return;
+    NSString *query,*querys;
+    sqlite3_stmt *statement;
+    DPOINT BasePt;
+    int numPoints,numLoops;
+    LPSTR symName;
+    PropertyData * pd = [[PropertyData alloc]init];
+    
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    
+    [pd open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM PLAN_LINE,PLAN_LINE_index WHERE PLAN_LINE.id=PLAN_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
+    }
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        numPoints = sqlite3_column_int(statement,2);
+        numLoops = sqlite3_column_int(statement,3);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
+        nBlobBytes = sqlite3_column_bytes(statement,5);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        symName = (LPSTR)sqlite3_column_text(statement,6);
         
-        CloseTRANS2(&_pTranLLtoView);
-        CloseTRANS2(&_pTranViewtoLL);
-        
-        _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
-        
-        [pd open];
-        
-        switch (CRAPI.sharedInstance.project)
+        if (numPoints < 0)
         {
-            case PROJECT_METROGIS:
-                query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM PLAN_LINE,PLAN_LINE_index WHERE PLAN_LINE.id=PLAN_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                         platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-                querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
-        }
-        
-        SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
-        
-        while (sqlite3_step(statement) == SQLITE_ROW)
-        {
-            BasePt.x = sqlite3_column_double(statement,0);
-            BasePt.y = sqlite3_column_double(statement,1);
-            numPoints = sqlite3_column_int(statement,2);
-            numLoops = sqlite3_column_int(statement,3);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-            int nBlobBytes = sqlite3_column_bytes(statement,4);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
-            nBlobBytes = sqlite3_column_bytes(statement,5);
-            LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-            symName = (LPSTR)sqlite3_column_text(statement,6);
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
             
-            if (numPoints < 0)
+            for (int i = 0; i < numPoints; i++)
             {
-                numPoints = -numPoints;
-                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-                
-                for (int i = 0; i < numPoints; i++)
-                {
-                    llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                    llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-                }
-            }
-            
-            else for (int i = 0; i < numPoints; i++)
-            {
-                llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            
-            [self drawPlanLine:context
-                       nPoints:numPoints
-                        nLoops:numLoops
-                       partLen:polyPartLen
-                        points:llpoints
-                     withColor:UIColor.blackColor.CGColor];
         }
         
-        SQLOK(sqlite3_finalize(statement), "displayParcels");
-        [pd close];
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        
+        [self drawPlanLine:context
+                   nPoints:numPoints
+                    nLoops:numLoops
+                   partLen:polyPartLen
+                    points:llpoints
+                 withColor:UIColor.blackColor.CGColor];
     }
+    
+    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    [pd close];
+}
 
 - (void)drawPlanLine:(CGContextRef)context
             nPoints:(int)np
@@ -308,13 +321,14 @@
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query,*querys;
+    NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints,numLoops;
     LPSTR symName;
     PropertyData * pd = [[PropertyData alloc]init];
     
+    if (![self continue])
+        return;
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -331,7 +345,7 @@
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -370,6 +384,8 @@
     LPSTR symName;
     PropertyData * pd = [[PropertyData alloc]init];
     
+    if (![self continue])
+        return;
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -387,7 +403,7 @@
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);

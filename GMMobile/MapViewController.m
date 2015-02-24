@@ -1,6 +1,8 @@
 //  MapViewController.m
 //  GMMobile
 
+extern int keepProcessing;
+
 #import "MapViewController.h"
 #import "GSSiAnnotationView.h"
 #import "WebKitViewController.h"
@@ -63,7 +65,6 @@
     
     _screenSetting = MapViewScreenSettingFullscreen;
     _mapView = [[MKMapView alloc] init];
-    _vectorView = [[VectorView alloc] init];
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -72,9 +73,10 @@
                                      statusBarHeight,
                                      self.view.frame.size.width,
                                      (tabBarTop - statusBarHeight));
-    
+    _vectorView = [[VectorView alloc] init];
     _vectorView.frame = _mapView.frame = mapViewFrame;
     _vectorView.userInteractionEnabled = NO;
+    _vectorView.delegate = self;
     
     [self.view addSubview:_mapView];
     [self.view addSubview:_vectorView];
@@ -781,6 +783,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
 - (void)clearVectorView
 {
     _vectorView.displayData = 0;
+    keepProcessing++;
     [_vectorView setNeedsDisplay];
 }
 
@@ -795,8 +798,22 @@ didSelectAnnotationView:(MKAnnotationView *)view
     llBounds.ymx = (region.center.latitude + region.span.latitudeDelta / 2.0);
     _vectorView.latlonBounds = llBounds;
     _vectorView.zoom = zoom;
-    [_vectorView setNeedsDisplay];
+    NSLog([NSString stringWithFormat:@"Vector view start: zoom = %i",zoom]);
+
+        [_vectorView setNeedsDisplay];
     
+}
+
+- (void) vectorViewDidComplete
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+    [_vectorView removeFromSuperview];
+
+    [self.view addSubview:_vectorView];
+    [self.view bringSubviewToFront:_vectorView];
+                   });
+
 }
 
 - (void)setupTableView

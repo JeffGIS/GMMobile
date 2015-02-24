@@ -506,12 +506,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
     mc.mailComposeDelegate = self;
     
-    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    fileName1 = [NSString stringWithFormat:@"%@/UseCodeExtract.csv", documentsDirectory];
+    //NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    //fileName1 = [NSString stringWithFormat:@"%@/UseCodeExtract.csv", documentsDirectory];
     
-    PropertyData *pd = [[PropertyData alloc] init];
-    [pd getDistinctUseCodes:fileName1];
-    
+    //PropertyData *pd = [[PropertyData alloc] init];
+    //[pd getDistinctUseCodes:fileName1];
+    fileName1 = CRAPI.sharedInstance.extractFile;
     NSData * data = [NSData dataWithContentsOfFile:fileName1];
 
     mc.subject = emailTitle;
@@ -520,8 +520,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [mc setMessageBody:messageBody
                 isHTML:NO];
     
-    [mc addAttachmentData:data
+/*    [mc addAttachmentData:data
                  mimeType:@"text/csv"
+                 fileName:fileName1.lastPathComponent];*/
+    
+    [mc addAttachmentData:data
+                 mimeType:@"image/png"
                  fileName:fileName1.lastPathComponent];
     
     //Present mail view controller on screen

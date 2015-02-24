@@ -10,6 +10,9 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 @interface PlanimetricData : NSObject
+
+@property int processingID;
+
 -(void)displayPlanArea:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;

@@ -5,6 +5,7 @@
 
 #define COORDINATE_FACTOR 10000000.0
 
+extern int keepProcessing;
 
 @interface PropertyData ()
 
@@ -568,6 +569,7 @@ int SQLOK(int sqlReturn, char *method)
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
 {
+
     CGContextSetLineWidth(context, 1);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
@@ -657,8 +659,8 @@ int SQLOK(int sqlReturn, char *method)
     }
    
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    NSLog (@"Prepared");
+    while (keepProcessing && sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement,7);
         homeStead = (LPSTR)sqlite3_column_text(statement, 8);
@@ -975,7 +977,7 @@ int SQLOK(int sqlReturn, char *method)
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while (keepProcessing && sqlite3_step(statement) == SQLITE_ROW)
     {
         pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.y = sqlite3_column_double(statement,1);
