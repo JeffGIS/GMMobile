@@ -938,6 +938,7 @@ int SQLOK(int sqlReturn, char *method)
             CGContextRestoreGState(context);
             return;
         }
+        
         fontSize -= 2.0;
         CGContextRestoreGState(context);
     }

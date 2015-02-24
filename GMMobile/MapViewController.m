@@ -183,8 +183,12 @@ extern int keepProcessing;
     
     [self setupTableView];
     
-    _mapToolbar = [[MapToolbar alloc] initWithView:self.view];
+    _mapToolbar = [[MapToolbar alloc] init];
     _mapToolbar.delegate = self;
+    
+    _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                     (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+    
     [self.view addSubview:_mapToolbar];
 }
 
@@ -652,6 +656,12 @@ didSelectAnnotationView:(MKAnnotationView *)view
                                         _screenSize, _screenSize);
                          }];
     }
+    
+    [UIView animateWithDuration:duration
+                     animations:^{
+                         _mapToolbar.center = CGPointMake(((self.view.frame.size.height / 2.0) + statusBarHeight),
+                                                          (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+                     }];
     
     switch (_screenSetting)
     {

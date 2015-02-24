@@ -19,6 +19,4 @@
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 
-- (id)initWithView:(UIView *)view;
-
 @end

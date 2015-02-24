@@ -13,23 +13,32 @@
 
 @implementation MapToolbar
 
-//this is the designated initializer
-- (id)initWithView:(UIView *)view
+- (id)init
 {
     self = [super init];
+    
+    CGFloat frameHeight, frameWidth;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        frameHeight = 83.0, frameWidth = 282.0;
+    
+    else
+        frameHeight = 63.0, frameWidth = 537.0;
     
     if (self)
     {
         self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
-        self.frame = CGRectMake(0.0, 0.0, 537.0, 63.0);
-        self.center = CGPointMake((view.frame.size.width / 2.0), 51.5);
+        self.frame = CGRectMake(0.0, 0.0, frameWidth, frameHeight);
         self.layer.borderWidth = 2.0;
         self.layer.borderColor = UIColor.blackColor.CGColor;
     }
     
     CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
     CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 216.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
     
     _userLocation = [[UIButton alloc] initWithFrame:CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize)];
     
@@ -87,8 +96,17 @@
     _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Bottom"]];
     _splitScreenSetting.selectedSegmentIndex = 0;
     
-    _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
-                                           segControlMargin, ssscWidth, segControlHeight);
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
+                                               (frameWidth - (buttonMargin * 2.0)), segControlHeight);
+    }
+    
+    else
+    {
+        _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
+                                               segControlMargin, ssscWidth, segControlHeight);
+    }
     
     [_splitScreenSetting addTarget:self
                             action:@selector(splitScreenSettingSelected:)
