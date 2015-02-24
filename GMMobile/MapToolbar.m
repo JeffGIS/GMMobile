@@ -115,6 +115,12 @@
     [self formatSegControl:_splitScreenSetting];
     [self addSubview:_splitScreenSetting];
     
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(mapToolbarDragged:)];
+    
+    panGesture.delegate = self;
+    [self addGestureRecognizer:panGesture];
+    
     return self;
 }
 
@@ -164,6 +170,27 @@
 {
     if (_delegate)
         [_delegate mapToolbarDidSelectSplitScreenSetting:segControl.selectedSegmentIndex];
+}
+
+- (void)mapToolbarDragged:(UIPanGestureRecognizer *)gesture
+{
+    CGPoint translation = [gesture translationInView:gesture.view.superview];
+    
+    if (gesture.state == UIGestureRecognizerStateBegan ||
+        gesture.state == UIGestureRecognizerStateChanged)
+    {
+        gesture.view.center = CGPointMake(gesture.view.center.x + translation.x,
+                                          gesture.view.center.y + translation.y);
+        
+        [gesture setTranslation:CGPointZero
+                         inView:self];
+    }
+    
+    else if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        if (_delegate)
+            [_delegate mapToolbarDidFinishDrag];
+    }
 }
 
 @end

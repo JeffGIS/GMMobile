@@ -12,10 +12,11 @@
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType;
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting;
 - (void)mapToolbarDidSelectAnnotationOption:(BOOL)option;
+- (void)mapToolbarDidFinishDrag;
 
 @end
 
-@interface MapToolbar : UIView
+@interface MapToolbar : UIView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 

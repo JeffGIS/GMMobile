@@ -1595,5 +1595,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (void)mapToolbarDidFinishDrag
+{
+    NSLog(@"center.x:%f,center.y:%f", _mapToolbar.center.x, _mapToolbar.center.y);
+}
 
 @end
