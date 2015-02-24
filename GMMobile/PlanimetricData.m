@@ -324,6 +324,7 @@ extern int keepProcessing;
     NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
+    int numPoints, numLoops;
     LPSTR symName;
     PropertyData *pd = [[PropertyData alloc] init];
     
