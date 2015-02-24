@@ -3,7 +3,7 @@
 
 #import "PlatView.h"
 
-#define TESTMODE NO
+#define TESTMODE YES
 
 @interface PlatView ()
 
@@ -37,7 +37,6 @@
             
             UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
-
         }
         
         else

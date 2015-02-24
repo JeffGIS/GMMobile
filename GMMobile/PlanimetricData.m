@@ -1,4 +1,4 @@
-//
+
 //  PlanimetricData.m
 //  GMMobile
 //
@@ -17,7 +17,6 @@ extern int keepProcessing;
 {
     LPTRANDATA _pTranLLtoView;
     LPTRANDATA _pTranViewtoLL;
-
 }
 
 - (BOOL) continue
@@ -51,6 +50,7 @@ extern int keepProcessing;
         case PROJECT_METROGIS:
             query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM PLAN_AREA,PLAN_AREA_index WHERE PLAN_AREA.id=PLAN_AREA_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            
             querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
@@ -101,9 +101,9 @@ extern int keepProcessing;
     [pd close];
 }
 - (void)fillPlanArea:(CGContextRef)context
-           nPoints:(int)np
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+             nPoints:(int)np
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -127,11 +127,11 @@ extern int keepProcessing;
 }
 
 - (void)drawPlanArea:(CGContextRef)context
-           nPoints:(int)np
-            nLoops:(int)nLoops
-           partLen:(int *)pPartLen
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+             nPoints:(int)np
+              nLoops:(int)nLoops
+             partLen:(int *)pPartLen
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 1);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -262,11 +262,11 @@ extern int keepProcessing;
 }
 
 - (void)drawPlanLine:(CGContextRef)context
-            nPoints:(int)np
-             nLoops:(int)nLoops
-            partLen:(int *)pPartLen
-             points:(LPDPOINT)pPoints
-          withColor:(CGColorRef)color
+             nPoints:(int)np
+              nLoops:(int)nLoops
+             partLen:(int *)pPartLen
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 2);
     
@@ -325,7 +325,7 @@ extern int keepProcessing;
     sqlite3_stmt *statement;
     DPOINT BasePt;
     LPSTR symName;
-    PropertyData * pd = [[PropertyData alloc]init];
+    PropertyData *pd = [[PropertyData alloc] init];
     
     if (![self continue])
         return;
@@ -382,7 +382,7 @@ extern int keepProcessing;
     sqlite3_stmt *statement;
     DPOINT BasePt;
     LPSTR symName;
-    PropertyData * pd = [[PropertyData alloc]init];
+    PropertyData *pd = [[PropertyData alloc] init];
     
     if (![self continue])
         return;
@@ -430,8 +430,6 @@ extern int keepProcessing;
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
-    
 }
-
 
 @end
