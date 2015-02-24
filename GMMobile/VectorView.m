@@ -93,7 +93,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _vectorViewContext = UIGraphicsGetCurrentContext();
     if (!_vectorViewContext)
         return;
+    
     self.displayID = keepProcessing;
+    
     if (_displayData)
     {
         void *bmData;
@@ -105,20 +107,20 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         _rect = CGRectMake(0, 0, _width, _height);
         //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
         //_bitmapData = bmData;
-        CGSize size = CGSizeMake(self.bounds.size.width*scale, self.bounds.size.height*scale);
+        CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
         CGLayerRef vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
         _context = CGLayerGetContext(vectorLayer);
+        
         if (_context)
         {
-        
 
     dispatch_async(_vectorQueue,
     ^{
+        _viewBounds.xmn = (self.bounds.origin.x * scale);
+        _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
+        _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
+        _viewBounds.ymn = (self.bounds.origin.y * scale);
         
-        _viewBounds.xmn = self.bounds.origin.x*scale;
-        _viewBounds.xmx = (self.bounds.origin.x + self.bounds.size.width)*scale;
-        _viewBounds.ymx = (self.bounds.origin.y + self.bounds.size.height)*scale;
-        _viewBounds.ymn = self.bounds.origin.y*scale;
         if (_zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
         {
             PropertyData *pd = [[PropertyData alloc] init];
@@ -130,39 +132,48 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             [pd displayParcelText:_context
                          LLBounds:&_latlonBounds
                        viewBounds:&_viewBounds];
-            
         }
+        
         if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
         {
-            BoundaryData *bd = [[BoundaryData alloc]init];
-            [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno inContext:_context
+            BoundaryData *bd = [[BoundaryData alloc] init];
+            
+            [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                      inContext:_context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
         }
-/*       if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+        
+        /*if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
         {
             BoundaryData *bd = [[BoundaryData alloc]init];
             [bd displayLandUse:context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
         }*/
+        
         if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
         {
-            PlanimetricData *pd = [[PlanimetricData alloc]init];
+            PlanimetricData *pd = [[PlanimetricData alloc] init];
             pd.processingID = keepProcessing;
+            
             [pd displayPlanArea:_context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
+            
             [pd displayPlanLine:_context
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
+            
             [pd displayPlanPoint:_context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
+            
             [pd displayWallPoint:_context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
         }
+        
         if (self.displayData && keepProcessing == self.displayID)
         {
             CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);
@@ -172,14 +183,16 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
             NSData * pngData = UIImagePNGRepresentation(image);
             [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
+            
             if (self.delegate)
                 [self.delegate vectorViewDidComplete];
         }
+        
         CGLayerRelease(vectorLayer);
         //[self freeResources];
         NSLog (@"Vector view complete");
                    });
-    }
+        }
     }
 }
 

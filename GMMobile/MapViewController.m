@@ -760,20 +760,21 @@ didSelectAnnotationView:(MKAnnotationView *)view
     llBounds.ymx = (region.center.latitude + region.span.latitudeDelta / 2.0);
     _vectorView.latlonBounds = llBounds;
     _vectorView.zoom = zoom;
-    NSLog([NSString stringWithFormat:@"Vector view start: zoom = %i",zoom]);
-
-        [_vectorView setNeedsDisplay];
+    
+    NSLog(@"Vector view start: zoom = %i", zoom);
+    
+    [_vectorView setNeedsDisplay];
     
 }
 
-- (void) vectorViewDidComplete
+- (void)vectorViewDidComplete
 {
     dispatch_async(dispatch_get_main_queue(),
                    ^{
-    [_vectorView removeFromSuperview];
-
-    [self.view addSubview:_vectorView];
-    [self.view bringSubviewToFront:_vectorView];
+                       [_vectorView removeFromSuperview];
+                       [self.view addSubview:_vectorView];
+                       [self.view bringSubviewToFront:_vectorView];
+                       [self.view bringSubviewToFront:_mapToolbar];
                    });
 
 }

@@ -18,6 +18,7 @@
 		A915656C1A826D4D00119C21 /* GSSiTileOverlayRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = A915656B1A826D4D00119C21 /* GSSiTileOverlayRenderer.m */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
+		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
@@ -85,6 +86,7 @@
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
+		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
 		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPropertyOwnerViewController.h; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */,
 				A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */,
 				EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */,
 				A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */,
@@ -196,6 +199,7 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A9476B461A9C358A0082476B /* CoreText.framework */,
 				EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */,
 				A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */,
 				A9F56EBC1A847B47003522AE /* WebKit.framework */,

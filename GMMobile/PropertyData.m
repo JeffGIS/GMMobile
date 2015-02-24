@@ -882,39 +882,45 @@ int SQLOK(int sqlReturn, char *method)
 - (void)displayText:(NSString *)text
             atPoint:(LPDPOINT)pviewPoint
           maxPixels:(CGFloat)maxPixels
+            context:(CGContextRef)context
 {
-    CGPoint textPoint;
-    textPoint.x = pviewPoint->x;
-    textPoint.y = pviewPoint->y;
-    
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"\n&\n"];
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    CGFloat size = sqrtf(maxPixels);
+    
+    CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                             24.0, NULL);
     
     NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
     style.alignment = NSTextAlignmentCenter;
     
-    for (int i = 14; i > 6; i--)
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                (__bridge id)fontRef, kCTFontAttributeName,
+                                style, kCTParagraphStyleAttributeName,
+                                nil];
+    
+    CFRelease(fontRef);
+    
+    CGSize textSize = [text sizeWithAttributes:attributes];
+    
+    if (textSize.width < size)
     {
-        CGFloat fontSize = (CGFloat)i;
+        CGPathAddRect(path, NULL, CGRectMake((pviewPoint->x - (size / 2.0)),
+                                             (pviewPoint->y - size + (textSize.height / 2.0)), size, size));
         
-        NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    [UIFont systemFontOfSize:fontSize], NSFontAttributeName,
-                                    UIColor.blackColor, NSForegroundColorAttributeName,
-                                    style, NSParagraphStyleAttributeName,
-                                    nil];
+        NSAttributedString *attString = [[NSAttributedString alloc] initWithString:text
+                                                                        attributes:attributes];
         
-        CGSize textSize = [text sizeWithAttributes:attributes];
+        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+        CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
         
-        CGRect textFrame = CGRectMake((textPoint.x - (textSize.width / 2.0)),
-                                      (textPoint.y - (textSize.height / 2.0)),
-                                      textSize.width, textSize.height);
-        
-        if (textSize.width < sqrtf(maxPixels))
-        {
-            [text drawInRect:textFrame
-              withAttributes:attributes];
-            break;
-        }
+        CTFrameDraw(frame, context);
+        CFRelease(frame);
+        CFRelease(path);
+        CFRelease(framesetter);
     }
 }
 
@@ -990,29 +996,29 @@ int SQLOK(int sqlReturn, char *method)
         emvTotal = (CGFloat)sqlite3_column_double(statement, 8);
         specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
         owner = (LPSTR)sqlite3_column_text(statement, 10);
+
+        CGFloat alpha = 0.0;
+        UIColor *color;
+        int opt = CRAPI.sharedInstance.parcelTextOption;
+        NSNumber *num;
+        
+        switch (CRAPI.sharedInstance.parcelTextOption)
         {
-            CGFloat alpha = 0.0;
-            UIColor *color;
-            int opt = CRAPI.sharedInstance.parcelTextOption;
-            NSNumber * num;
+            case 1://homestead
+                num = [[NSNumber alloc] initWithDouble:emvTotal];
+                text = [NSString stringWithFormat:@"%s\n%@", owner, [dollarFmt stringFromNumber:num]];
+                break;
             
-            switch (CRAPI.sharedInstance.parcelTextOption)
-            {
-                case 1://homestead
-                    num = [[NSNumber alloc] initWithDouble:emvTotal];
-                    text = [NSString stringWithFormat:@"%s\n%@", owner, [dollarFmt stringFromNumber:num]];
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-            viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-            
-            [self displayText:text
-                      atPoint:&viewPoint
-                    maxPixels:acres *acresToPixelsFactor];
+            default:
+                break;
         }
+        
+        viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        
+        [self displayText:text
+                  atPoint:&viewPoint
+                maxPixels:acres *acresToPixelsFactor
+                  context:context];
     }
     
     SQLOK(sqlite3_finalize(statement), "displayParcelText");

@@ -23,7 +23,7 @@
         self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
         self.frame = CGRectMake(0.0, 0.0, 537.0, 63.0);
-        self.center = CGPointMake((view.frame.size.width / 2.0), 52.0);
+        self.center = CGPointMake((view.frame.size.width / 2.0), 51.5);
         self.layer.borderWidth = 2.0;
         self.layer.borderColor = UIColor.blackColor.CGColor;
     }
