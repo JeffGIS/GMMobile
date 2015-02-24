@@ -11,7 +11,6 @@
 
 @end
 
-
 @interface VectorView : UIView
 @property (nonatomic, weak) id <VectorViewDelegate> delegate;
 

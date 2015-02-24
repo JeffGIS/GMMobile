@@ -3,6 +3,7 @@
 
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import <CoreText/CoreText.h>
 
 typedef NS_ENUM(NSInteger, PropDataOption)
 {
@@ -62,9 +63,8 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (NSMutableArray *)getOwnersMatchingString:(NSString *)string;
 - (BOOL)getDistinctUseCodes:(NSString *)outFile;
-
 - (NSMutableArray *)getBoundaryAreaTypes;
-- (NSMutableArray *)getBoundaryAreaDataForType:(NSString*)type;
+- (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type;
 - (MNMXCORD) getBoundaryAreaBounds:(int)refno;
 
 @end
