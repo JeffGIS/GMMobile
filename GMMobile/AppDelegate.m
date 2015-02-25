@@ -4,6 +4,7 @@
 int keepProcessing=1;
 
 #import "AppDelegate.h"
+#import <GoogleMaps/GoogleMaps.h>
 
 @interface AppDelegate ()
 
@@ -43,6 +44,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.sewerVisibleAtZoom = 17;
     CRAPI.sharedInstance.parcelShadingOption = 0;
     //CRAPI.sharedInstance.basemap = BasemapSettingApple;
+    [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
 
     return YES;
 }

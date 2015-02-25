@@ -160,7 +160,6 @@ extern int keepProcessing;
     _mapView.mapType = kGMSTypeNormal;
     _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = NO;
-    _mapView.settings.myLocationButton = YES;
     _mapView.myLocationEnabled = YES;
     _mapView.delegate = self;
     
