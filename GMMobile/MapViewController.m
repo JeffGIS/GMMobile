@@ -81,13 +81,7 @@ extern int keepProcessing;
     _mapView = [GMSMapView mapWithFrame:mapViewFrame
                                  camera:camera];
     
-    _vectorView = [[VectorView alloc] init];
-    _vectorView.frame = _mapView.frame = mapViewFrame;
-    _vectorView.userInteractionEnabled = NO;
-    _vectorView.delegate = self;
-    
     [self.view addSubview:_mapView];
-    [self.view addSubview:_vectorView];
     
     _platView = [[PlatView alloc] init];
     _platView.delegate = self;
@@ -158,7 +152,11 @@ extern int keepProcessing;
 
     }
     
-    [self.view bringSubviewToFront:_vectorView];
+    _vectorView = [[VectorView alloc] init];
+    _vectorView.frame = mapViewFrame;
+    _vectorView.userInteractionEnabled = NO;
+    _vectorView.delegate = self;
+    [self.view addSubview:_vectorView];
     
     [self setupTableView];
     
@@ -171,6 +169,7 @@ extern int keepProcessing;
     [self.view addSubview:_mapToolbar];
 }
 
+/*
 - (MKCoordinateRegion)getRegionForPoint:(LLPOINT)pidCoord
                                  atZoom:(int)zoom
                                  inRect:(CGRect)rect
@@ -191,6 +190,7 @@ extern int keepProcessing;
     region.span.latitudeDelta = (lat2 - lat1);
     return region;
 }
+*/
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -359,6 +359,34 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
     coordinate.latitude = llp.lat;
     coordinate.longitude = llp.lon;
+    
+    GMSMarker *marker = [GMSMarker markerWithPosition:coordinate];
+    marker.title = _selectedPID;
+    marker.snippet = [propData getOwnerNameForPID:_selectedPID];
+    marker.appearAnimation = kGMSMarkerAnimationPop;
+    marker.map = _mapView;
+    _mapView.selectedMarker = marker;
+}
+
+- (UIView *)mapView:(GMSMapView *)mapView
+   markerInfoWindow:(GMSMarker *)marker
+{
+    CGFloat height = 48.0, width = 240.0;
+    
+    UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, height)];
+    infoView.backgroundColor = UIColor.whiteColor;
+    infoView.layer.cornerRadius = 6.0;
+    infoView.layer.borderColor = UIColor.lightGrayColor.CGColor;
+    infoView.layer.borderWidth = 0.5;
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(height, 0.0, (width - (height * 2.0)), height)];
+    titleLabel.text = marker.title;
+    titleLabel.textColor = UIColor.blackColor;
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleLabel.font = [UIFont systemFontOfSize:14.0];
+    [infoView addSubview:titleLabel];
+    
+    return infoView;
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -428,6 +456,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
 }
+*/
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
