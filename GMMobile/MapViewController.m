@@ -158,8 +158,8 @@ extern int keepProcessing;
     //_mapView.mapType = MKMapTypeStandard;
     
     _mapView.mapType = kGMSTypeNormal;
-    _mapView.settings.compassButton = NO;
-    _mapView.settings.rotateGestures = NO;
+    _mapView.settings.compassButton = YES;
+    _mapView.settings.rotateGestures = YES;
     _mapView.myLocationEnabled = YES;
     _mapView.delegate = self;
     
@@ -1344,10 +1344,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     {
         case MapTypeSettingStandard:
             //_mapView.mapType = MKMapTypeStandard;
+            _mapView.mapType = kGMSTypeNormal;
             break;
             
         case MapTypeSettingHybrid:
             //_mapView.mapType = MKMapTypeHybrid;
+            _mapView.mapType = kGMSTypeHybrid;
             break;
     }
 }
