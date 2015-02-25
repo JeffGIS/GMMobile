@@ -20,4 +20,6 @@
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 
+- (void)deselectMyLocationButton;
+
 @end

@@ -157,6 +157,12 @@
         [_delegate mapToolbarDidSelectUserLocation:_myLocationEnabled];
 }
 
+- (void)deselectMyLocationButton
+{
+    _userLocation.backgroundColor = UIColor.whiteColor;
+    _myLocationEnabled = NO;
+}
+
 - (void)zoomExtentSelected:(UIButton *)button
 {
     if (_delegate)

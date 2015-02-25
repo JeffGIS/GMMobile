@@ -101,7 +101,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     {
         void *bmData;
         //[self freeResources];
-        int scale = [[UIScreen mainScreen] scale];
+        int scale = UIScreen.mainScreen.scale;
         _colorSpace = CGColorSpaceCreateDeviceRGB();
         _width = self.bounds.size.width * scale;
         _height = self.bounds.size.height * scale;
@@ -127,6 +127,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             PropertyData *pd = [[PropertyData alloc] init];
             
             pd.processingID = keepProcessing;
+            
             [pd displayParcels:_context
                       LLBounds:&_latlonBounds
                     viewBounds:&_viewBounds];
