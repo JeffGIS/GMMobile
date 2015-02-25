@@ -7,7 +7,7 @@
 
 @protocol MapToolbarDelegate <NSObject>
 
-- (void)mapToolbarDidSelectUserLocation;
+- (void)mapToolbarDidSelectUserLocation:(BOOL)enabled;
 - (void)mapToolbarDidSelectZoomExtent;
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType;
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting;

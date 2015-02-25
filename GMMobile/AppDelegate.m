@@ -6,14 +6,7 @@ int keepProcessing=1;
 #import "AppDelegate.h"
 #import <GoogleMaps/GoogleMaps.h>
 
-@interface AppDelegate ()
-
-@property CLLocationManager *locationManager;
-
-@end
-
 @implementation AppDelegate
-
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -25,11 +18,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [UserDefaults.defaults saveString:defaultFTP
                                forKey:@"DefaultFtp"];
-    
-    _locationManager = [[CLLocationManager alloc] init];
-    
-    if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
-        [_locationManager requestWhenInUseAuthorization];
     
     UITextField *lagFreeField = [[UITextField alloc] init];
     [self.window addSubview:lagFreeField];

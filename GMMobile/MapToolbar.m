@@ -8,6 +8,7 @@
 @property (nonatomic) UIButton *zoomExtent, *userLocation;
 @property (nonatomic) UISegmentedControl *mapType, *splitScreenSetting;
 @property (nonatomic) UISwitch *annotationOption;
+@property (nonatomic) BOOL myLocationEnabled;
 
 @end
 
@@ -144,8 +145,16 @@
 
 - (void)userLocationSelected:(UIButton *)button
 {
+    _myLocationEnabled = !_myLocationEnabled;
+    
+    if (_myLocationEnabled)
+        _userLocation.backgroundColor = UIColor.greenColor;
+    
+    else
+        _userLocation.backgroundColor = UIColor.whiteColor;
+    
     if (_delegate)
-        [_delegate mapToolbarDidSelectUserLocation];
+        [_delegate mapToolbarDidSelectUserLocation:_myLocationEnabled];
 }
 
 - (void)zoomExtentSelected:(UIButton *)button
