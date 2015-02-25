@@ -11,8 +11,9 @@
 #import "GSSiTileOverlayRenderer.h"
 #import "LayersViewController.h"
 #import "MapToolbar.h"
+#import <GoogleMaps/GoogleMaps.h>
 
-@interface MapViewController : UIViewController <MKMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,PlatViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate>
+@interface MapViewController : UIViewController <GMSMapViewDelegate,GSSiOverlay,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,PlatViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;

@@ -23,6 +23,8 @@
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
 		A983E6931A66FC0400DE8952 /* GSSiTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */; };
+		A99CD8C01A9DB8820049F271 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8BF1A9DB8820049F271 /* GoogleMaps.framework */; };
+		A99CD8C61A9DB8BD0049F271 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A99CD8C51A9DB8BD0049F271 /* GoogleMaps.bundle */; };
 		A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */; };
 		A9BC27F11A927D2B00FA89D8 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BC27F01A927D2B00FA89D8 /* help.png */; };
 		A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC11A7A8D9C0094562B /* userLocation.png */; };
@@ -95,6 +97,8 @@
 		A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindIntersectionViewController.m; sourceTree = "<group>"; };
 		A983E6911A66FC0400DE8952 /* GSSiTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSSiTileOverlay.h; sourceTree = "<group>"; };
 		A983E6921A66FC0400DE8952 /* GSSiTileOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GSSiTileOverlay.m; sourceTree = "<group>"; };
+		A99CD8BF1A9DB8820049F271 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
+		A99CD8C51A9DB8BD0049F271 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemesViewController.h; sourceTree = "<group>"; };
 		A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemesViewController.m; sourceTree = "<group>"; };
 		A9BC27F01A927D2B00FA89D8 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
@@ -161,6 +165,7 @@
 				EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */,
 				EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */,
 				EB55226C1A7523BC008CE2D1 /* QuartzCore.framework in Frameworks */,
+				A99CD8C01A9DB8820049F271 /* GoogleMaps.framework in Frameworks */,
 				EB55226A1A75239F008CE2D1 /* CoreGraphics.framework in Frameworks */,
 				EB5522681A75238C008CE2D1 /* SystemConfiguration.framework in Frameworks */,
 				A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */,
@@ -199,6 +204,8 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A99CD8C51A9DB8BD0049F271 /* GoogleMaps.bundle */,
+				A99CD8BF1A9DB8820049F271 /* GoogleMaps.framework */,
 				A9476B461A9C358A0082476B /* CoreText.framework */,
 				EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */,
 				A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */,
@@ -393,7 +400,7 @@
 						DevelopmentTeam = AJKEHK4Z77;
 						SystemCapabilities = {
 							com.apple.Maps.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -434,6 +441,7 @@
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
+				A99CD8C61A9DB8BD0049F271 /* GoogleMaps.bundle in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
@@ -603,6 +611,10 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = GMMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -619,6 +631,10 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = GMMobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

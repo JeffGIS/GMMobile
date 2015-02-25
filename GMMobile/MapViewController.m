@@ -9,9 +9,15 @@ extern int keepProcessing;
 
 @interface MapViewController ()
 
+////MapKit properties////
 //@property (nonatomic) GSSiTileOverlay *osmOverlay;
-@property (nonatomic) GSSiTileOverlay *gmmOverlay;
-@property (nonatomic) MKMapCamera *camera;
+//@property (nonatomic) GSSiTileOverlay *gmmOverlay;
+//@property (nonatomic) MKMapCamera *camera;
+//@property (nonatomic) MKMapView *mapView;
+
+////GoogleMaps properties////
+@property (nonatomic) GMSMapView *mapView;
+
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) BOOL clearAnnotations;
@@ -26,7 +32,6 @@ extern int keepProcessing;
 @property int selectedPlatRefno;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
-@property (nonatomic) MKMapView *mapView;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *secondImageView, *streetView;
 @property (nonatomic) UIView *firstView;
@@ -64,8 +69,6 @@ extern int keepProcessing;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     _firstTime = YES;
     
-    _mapView = [[MKMapView alloc] init];
-    
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
@@ -73,6 +76,17 @@ extern int keepProcessing;
                                      statusBarHeight,
                                      self.view.frame.size.width,
                                      (tabBarTop - statusBarHeight));
+    
+    _target = CLLocationCoordinate2DMake(44.97, -93.27);
+    
+    //_mapView = [[MKMapView alloc] init];
+    
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
+                                                               zoom:12.0];
+    
+    _mapView = [GMSMapView mapWithFrame:mapViewFrame
+                                 camera:camera];
+    
     _vectorView = [[VectorView alloc] init];
     _vectorView.frame = _mapView.frame = mapViewFrame;
     _vectorView.userInteractionEnabled = NO;
@@ -106,7 +120,7 @@ extern int keepProcessing;
     [_streetView addGestureRecognizer:downSwipe];
     
     UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                 action:@selector(svDoubleTapped:)];
+                                                                                action:@selector(svDoubleTapped:)];
     
     doubleTap.numberOfTapsRequired = 2;
     doubleTap.delegate = self;
@@ -140,36 +154,45 @@ extern int keepProcessing;
     [self.view addSubview:_secondImageView];
     [self.view addSubview:_streetView];
     
-    _mapView.delegate = self;
-    _mapView.showsUserLocation = YES;
-    _mapView.mapType = MKMapTypeStandard;
-    _target = CLLocationCoordinate2DMake(44.97, -93.27);
-/*
-    NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
-    _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
-    _osmOverlay.canReplaceMapContent = NO;
-    _osmOverlay.minimumZ = 0;
-    _osmOverlay.maximumZ = 19;
-    _osmOverlay.type = @"OSM";
+    //_mapView.showsUserLocation = YES;
+    //_mapView.mapType = MKMapTypeStandard;
     
-    if (CRAPI.sharedInstance.basemap == BasemapSettingOSM)
-    {
-        [_mapView addOverlay:_osmOverlay
-                       level:MKOverlayLevelAboveLabels];
-    }
-*/
-    NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
-    //NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
-    _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
-    _gmmOverlay.canReplaceMapContent = NO;
-    _gmmOverlay.minimumZ = 12;
-    _gmmOverlay.maximumZ = 21;
-    _gmmOverlay.type = @"GMM";
+    _mapView.mapType = kGMSTypeNormal;
+    _mapView.settings.compassButton = NO;
+    _mapView.settings.rotateGestures = NO;
+    _mapView.settings.myLocationButton = YES;
+    _mapView.myLocationEnabled = YES;
+    _mapView.delegate = self;
+    
+    /*
+     NSString *osm = @"http://tile.openstreetmap.org/{z}/{x}/{y}.png";
+     _osmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:osm];
+     _osmOverlay.canReplaceMapContent = NO;
+     _osmOverlay.minimumZ = 0;
+     _osmOverlay.maximumZ = 19;
+     _osmOverlay.type = @"OSM";
+     
+     if (CRAPI.sharedInstance.basemap == BasemapSettingOSM)
+     {
+     [_mapView addOverlay:_osmOverlay
+     level:MKOverlayLevelAboveLabels];
+     }
+     
+     NSString *gmm = @"http://www.gssidata.com/MPLS/{z}/{y}/{x}.png";
+     //NSString *gmm = @"http://74.42.137.128/icons/MPLS/{z}/{y}/{x}.png";
+     _gmmOverlay = [[GSSiTileOverlay alloc] initWithURLTemplate:gmm];
+     _gmmOverlay.canReplaceMapContent = NO;
+     _gmmOverlay.minimumZ = 12;
+     _gmmOverlay.maximumZ = 21;
+     _gmmOverlay.type = @"GMM";
+     */
     
     if (CRAPI.sharedInstance.GMTilesVisible)
     {
-        [_mapView addOverlay:_gmmOverlay
-                       level:MKOverlayLevelAboveLabels];
+        //[_mapView addOverlay:_gmmOverlay
+        //level:MKOverlayLevelAboveLabels];
+        
+        
     }
     
     _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
@@ -220,35 +243,35 @@ extern int keepProcessing;
     if (!_firstTime)
     {
         [self initTableView];
-/*
-        if (_osmOverlay)
+        /*
+         if (_osmOverlay)
+         {
+         [_mapView removeOverlay:_osmOverlay];
+         
+         if (!CRAPI.sharedInstance.GMTilesVisible)
+         {
+         _osmOverlay.maximumZ = 19;
+         _osmOverlay.minimumZ = 0;
+         }
+         
+         if (CRAPI.sharedInstance.basemap == BasemapSettingOSM)
+         {
+         [_mapView addOverlay:_osmOverlay
+         level:MKOverlayLevelAboveLabels];
+         }
+         }
+         */
+        //if (_gmmOverlay)
         {
-            [_mapView removeOverlay:_osmOverlay];
-            
-            if (!CRAPI.sharedInstance.GMTilesVisible)
-            {
-                _osmOverlay.maximumZ = 19;
-                _osmOverlay.minimumZ = 0;
-            }
-            
-            if (CRAPI.sharedInstance.basemap == BasemapSettingOSM)
-            {
-                [_mapView addOverlay:_osmOverlay
-                               level:MKOverlayLevelAboveLabels];
-            }
-        }
-*/
-        if (_gmmOverlay)
-        {
-            [_mapView removeOverlay:_gmmOverlay];
+            //[_mapView removeOverlay:_gmmOverlay];
             
             if (CRAPI.sharedInstance.GMTilesVisible)
             {
-                [_mapView addOverlay:_gmmOverlay
-                               level:MKOverlayLevelAboveLabels];
+                //[_mapView addOverlay:_gmmOverlay
+                //level:MKOverlayLevelAboveLabels];
                 
-                _gmmOverlay.minimumZ = 12;
-                _gmmOverlay.maximumZ = 21;
+                //_gmmOverlay.minimumZ = 12;
+                //_gmmOverlay.maximumZ = 21;
             }
         }
     }
@@ -272,15 +295,15 @@ extern int keepProcessing;
         MKCoordinateRegion mapRegion;
         MKCoordinateRegion newRegion;
         
-        CGRect rect = [_mapView convertRegion:_mapView.region
-                                 toRectToView:nil];
-
+        //CGRect rect = [_mapView convertRegion:_mapView.region
+        //toRectToView:nil];
+        
         MKCoordinateSpan pidSpan = MKCoordinateSpanMake(fabs(bounds.ymx - bounds.ymn) * 1.5,
                                                         fabs(bounds.xmx - bounds.xmn) * 1.5);
         
-        mapRegion = [self getRegionForPoint:pidPoint
-                                     atZoom:21
-                                     inRect:rect];
+        /*mapRegion = [self getRegionForPoint:pidPoint
+         atZoom:21
+         inRect:rect];*/
         
         if (mapRegion.span.longitudeDelta < pidSpan.longitudeDelta ||
             mapRegion.span.latitudeDelta < pidSpan.latitudeDelta)
@@ -291,49 +314,49 @@ extern int keepProcessing;
         else
             newRegion = mapRegion;
         
-        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
-                                             fromEyeCoordinate:pidCoord
-                                                   eyeAltitude:(newRegion.span.latitudeDelta * 207360.0)];
+        /*_camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
+         fromEyeCoordinate:pidCoord
+         eyeAltitude:(newRegion.span.latitudeDelta * 207360.0)];
+         
+         [_mapView setCamera:_camera
+         animated:YES];*/
         
-        [_mapView setCamera:_camera
-                   animated:YES];
-        
-        MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-        annotation.coordinate = _selectedPIDCoords = pidCoord;
-        
-        switch (CRAPI.sharedInstance.GMMSetting)
-        {
-            case GMMSettingPID:
-                annotation.title = _selectedPID;
-                annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
-                break;
-                
-            case GMMSettingAddress:
-                annotation.title = _selectedPID;
-                annotation.subtitle = CRAPI.sharedInstance.currentAddress;
-                break;
-                
-            case GMMSettingPropOwner:
-                annotation.title = _selectedPID;
-                annotation.subtitle = CRAPI.sharedInstance.currentPropOwner;
-                break;
-        }
-
-        [self addAnnotation:annotation];
-        
-        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
-    }
-    
-    else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
-    {
-        [self extentZoom:YES];
-        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
-    }
-    
-    else
-    {
-        [self refreshVectorView:_mapView.region
-                         atZoom:_currentZoom];
+        /*MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+         annotation.coordinate = _selectedPIDCoords = pidCoord;
+         
+         switch (CRAPI.sharedInstance.GMMSetting)
+         {
+         case GMMSettingPID:
+         annotation.title = _selectedPID;
+         annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+         break;
+         
+         case GMMSettingAddress:
+         annotation.title = _selectedPID;
+         annotation.subtitle = CRAPI.sharedInstance.currentAddress;
+         break;
+         
+         case GMMSettingPropOwner:
+         annotation.title = _selectedPID;
+         annotation.subtitle = CRAPI.sharedInstance.currentPropOwner;
+         break;
+         }
+         
+         [self addAnnotation:annotation];
+         
+         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
+         }
+         
+         else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
+         {
+         [self extentZoom:YES];
+         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
+         }
+         
+         else
+         {
+         [self refreshVectorView:_mapView.region
+         atZoom:_currentZoom];*/
     }
 }
 
@@ -352,7 +375,7 @@ extern int keepProcessing;
 
 - (void)extentZoom:(BOOL)animated
 {
-    MKCoordinateRegion region, newRegion;
+    //MKCoordinateRegion region, newRegion;
     
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
     {
@@ -361,42 +384,42 @@ extern int keepProcessing;
         MNMXCORD bounds = [propData getBoundaryAreaBounds:
                            CRAPI.sharedInstance.currentOverallBoundaryRefno];
         
-        region.center.latitude = (bounds.ymx + bounds.ymn) / 2.0;
-        region.center.longitude = (bounds.xmx + bounds.xmn) / 2.0;
-        region.span.latitudeDelta = (bounds.ymx - bounds.ymn);
-        region.span.longitudeDelta = (bounds.xmx - bounds.xmn);
-        
-        [_mapView setRegion:region
-                   animated:NO];
-        
-        newRegion = _mapView.region;
-        
-        CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
-                                                                        ((bounds.xmx + bounds.xmn) / 2.0));
-        
-        CGFloat latDelta = region.span.latitudeDelta * 1.05;
-
-        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
-                                             fromEyeCoordinate:boundsCoord
-                                                   eyeAltitude:(latDelta * 207360.0)];
-        
-        [_mapView setCamera:_camera
-                   animated:YES];
+        /*region.center.latitude = (bounds.ymx + bounds.ymn) / 2.0;
+         region.center.longitude = (bounds.xmx + bounds.xmn) / 2.0;
+         region.span.latitudeDelta = (bounds.ymx - bounds.ymn);
+         region.span.longitudeDelta = (bounds.xmx - bounds.xmn);
+         
+         [_mapView setRegion:region
+         animated:NO];
+         
+         newRegion = _mapView.region;
+         
+         CLLocationCoordinate2D boundsCoord = CLLocationCoordinate2DMake(((bounds.ymx + bounds.ymn) / 2.0),
+         ((bounds.xmx + bounds.xmn) / 2.0));
+         
+         CGFloat latDelta = region.span.latitudeDelta * 1.05;
+         
+         _camera = [MKMapCamera cameraLookingAtCenterCoordinate:boundsCoord
+         fromEyeCoordinate:boundsCoord
+         eyeAltitude:(latDelta * 207360.0)];
+         
+         [_mapView setCamera:_camera
+         animated:YES];*/
     }
     
     else
     {
-        _camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
-                                             fromEyeCoordinate:_target
-                                                   eyeAltitude:36000.0];
-        
-        [_mapView setCamera:_camera
-                   animated:animated];
+        /*_camera = [MKMapCamera cameraLookingAtCenterCoordinate:_target
+         fromEyeCoordinate:_target
+         eyeAltitude:36000.0];
+         
+         [_mapView setCamera:_camera
+         animated:animated];*/
     }
 }
 
 - (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
-            rendererForOverlay:(id <GSSiOverlay>)overlay
+                  rendererForOverlay:(id <GSSiOverlay>)overlay
 {
     GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
     return renderer;
@@ -440,24 +463,24 @@ regionDidChangeAnimated:(BOOL)animated
     while (GroundResolution(latlon1.latitude, _currentZoom) > currentScale)
         _currentZoom++;
     
-    _camera = mapView.camera;
+    //_camera = mapView.camera;
     //MKMapRect intRect = MKMapRectUnion(visRect, _cityInnerBounds);
     
     if (CRAPI.sharedInstance.GMTilesVisible)
     {
         /*if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
-            _osmOverlay.maximumZ = 12;
-        
-        else
-            _osmOverlay.maximumZ = 19;*/
+         _osmOverlay.maximumZ = 12;
+         
+         else
+         _osmOverlay.maximumZ = 19;*/
     }
     
     else
     {
         //_osmOverlay.maximumZ = 19;
-        _gmmOverlay.minimumZ = _gmmOverlay.maximumZ = 0;
+        //_gmmOverlay.minimumZ = _gmmOverlay.maximumZ = 0;
     }
-
+    
     [self refreshVectorView:region
                      atZoom:_currentZoom];
 }
@@ -470,153 +493,155 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didLongPressMap:(UIGestureRecognizer *)gesture
 {
-    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+    //MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
     
     if (gesture.state == UIGestureRecognizerStateBegan)
     {
-        for (MKPointAnnotation *selAnnotation in _mapView.selectedAnnotations)
-        {
-            [_mapView deselectAnnotation:selAnnotation
-                                animated:NO];
-        }
+        /*for (MKPointAnnotation *selAnnotation in _mapView.selectedAnnotations)
+         {
+         [_mapView deselectAnnotation:selAnnotation
+         animated:NO];
+         }*/
         
         CGPoint pointPicked = [gesture locationInView:_mapView];
         
-        CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
-                                               toCoordinateFromView:_mapView];
+        /*CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
+         toCoordinateFromView:_mapView];*/
         
         LLPOINT llp, llpSewer;
-        llp.lat = coordPicked.latitude;
-        llp.lon = coordPicked.longitude;
+        //llp.lat = coordPicked.latitude;
+        //llp.lon = coordPicked.longitude;
         llpSewer = llp;
         
         PropertyData *propData = [[PropertyData alloc] init];
         _selectedPID = [propData pickPID:&llp];
         SewerData *sewerData = [[SewerData alloc] init];
         _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
-        coordPicked.latitude = llp.lat;
-        coordPicked.longitude = llp.lon;
+        //coordPicked.latitude = llp.lat;
+        //coordPicked.longitude = llp.lon;
         
         _clearWhenDeselected = NO;
-        annotation.coordinate = _selectedPIDCoords = coordPicked;
-        annotation.title = _selectedPID;
-        annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
-        [self addAnnotation:annotation];
+        /*annotation.coordinate = _selectedPIDCoords = coordPicked;
+         annotation.title = _selectedPID;
+         annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
+         [self addAnnotation:annotation];*/
     }
 }
 
-- (MKAnnotationView *)mapView:(MKMapView *)mapView
-            viewForAnnotation:(id <MKAnnotation>)annotation
-{
-    if ([annotation isKindOfClass:MKUserLocation.class])
-        return nil;
-    
-    MKAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
-                                                                       reuseIdentifier:@"pin"];
-    
-    annotationView.canShowCallout = YES;
-    
-    CGFloat buttonSize = 40.0;
-    UIButton *rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
-    UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
-    
-    [rightButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"arrow"
-                                                                                         ofType:@"png"]]
-                 forState:UIControlStateNormal];
-    
-    [leftButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"list"
-                                                                                        ofType:@"png"]]
-                forState:UIControlStateNormal];
-    
-    annotationView.rightCalloutAccessoryView = rightButton;
-    annotationView.leftCalloutAccessoryView = leftButton;
-    return annotationView;
-}
-
-- (void)mapView:(MKMapView *)mapView
+/*
+ - (MKAnnotationView *)mapView:(MKMapView *)mapView
+ viewForAnnotation:(id <MKAnnotation>)annotation
+ {
+ if ([annotation isKindOfClass:MKUserLocation.class])
+ return nil;
+ 
+ MKAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+ reuseIdentifier:@"pin"];
+ 
+ annotationView.canShowCallout = YES;
+ 
+ CGFloat buttonSize = 40.0;
+ UIButton *rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
+ UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
+ 
+ [rightButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"arrow"
+ ofType:@"png"]]
+ forState:UIControlStateNormal];
+ 
+ [leftButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"list"
+ ofType:@"png"]]
+ forState:UIControlStateNormal];
+ 
+ annotationView.rightCalloutAccessoryView = rightButton;
+ annotationView.leftCalloutAccessoryView = leftButton;
+ return annotationView;
+ }
+ 
+ - (void)mapView:(MKMapView *)mapView
  annotationView:(MKAnnotationView *)view
-calloutAccessoryControlTapped:(UIControl *)control
-{
-    if (control == view.rightCalloutAccessoryView)
-    {
-        _tableViewSetting = PropertyTableViewSettingPropertyReport;
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.allowsSelection = NO;
-        _tableView.delaysContentTouches = YES;
-        [_tableView reloadData];
-        
-        [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                               animated:NO];
-    }
-    
-    else if (control == view.leftCalloutAccessoryView)
-    {
-        if ([self isHennepinCountyPID:view.annotation.title])
-            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
-        
-        else
-            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
-        
-        _tableViewSetting = PropertyTableViewSettingOptions;
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        _tableView.allowsSelection = YES;
-        _tableView.delaysContentTouches = NO;
-        [_tableView reloadData];
-    }
-    
-    CGRect frame = _tableView.frame;
-    _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
-    _tableView.hidden = NO;
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _tableView.frame = frame;
-                     }];
-}
-
-- (void)mapView:(MKMapView *)mapView
-didDeselectAnnotationView:(MKAnnotationView *)view
-{
-    if (_clearWhenDeselected == NO)
-    {
-        [_mapView selectAnnotation:view.annotation
-                          animated:NO];
-        
-        _clearWhenDeselected = YES;
-    }
-}
-
-- (void)mapView:(MKMapView *)mapView
-didSelectAnnotationView:(MKAnnotationView *)view
-{
-    _selectedPID = view.annotation.title;
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-}
-
-- (void)addAnnotation:(id <MKAnnotation>)annotation
-{
-    if (_clearAnnotations)
-    {
-        for (id <MKAnnotation> annotation in _mapView.annotations)
-        {
-            if (![annotation isKindOfClass:MKUserLocation.class])
-                [_mapView removeAnnotation:annotation];
-        }
-    }
-    
-    [_mapView addAnnotation:annotation];
-    
-    [_mapView selectAnnotation:annotation
-                      animated:YES];
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-}
+ calloutAccessoryControlTapped:(UIControl *)control
+ {
+ if (control == view.rightCalloutAccessoryView)
+ {
+ _tableViewSetting = PropertyTableViewSettingPropertyReport;
+ _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+ _tableView.allowsSelection = NO;
+ _tableView.delaysContentTouches = YES;
+ [_tableView reloadData];
+ 
+ [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+ animated:NO];
+ }
+ 
+ else if (control == view.leftCalloutAccessoryView)
+ {
+ if ([self isHennepinCountyPID:view.annotation.title])
+ _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+ 
+ else
+ _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+ 
+ _tableViewSetting = PropertyTableViewSettingOptions;
+ _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+ _tableView.allowsSelection = YES;
+ _tableView.delaysContentTouches = NO;
+ [_tableView reloadData];
+ }
+ 
+ CGRect frame = _tableView.frame;
+ _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
+ _tableView.hidden = NO;
+ 
+ [UIView animateWithDuration:0.25
+ animations:^{
+ _tableView.frame = frame;
+ }];
+ }
+ 
+ - (void)mapView:(MKMapView *)mapView
+ didDeselectAnnotationView:(MKAnnotationView *)view
+ {
+ if (_clearWhenDeselected == NO)
+ {
+ [_mapView selectAnnotation:view.annotation
+ animated:NO];
+ 
+ _clearWhenDeselected = YES;
+ }
+ }
+ 
+ - (void)mapView:(MKMapView *)mapView
+ didSelectAnnotationView:(MKAnnotationView *)view
+ {
+ _selectedPID = view.annotation.title;
+ PropertyData *propData = [[PropertyData alloc] init];
+ 
+ _propertyReport = [propData getReport:PDSettingDefault
+ forPID:_selectedPID];
+ }
+ 
+ - (void)addAnnotation:(id <MKAnnotation>)annotation
+ {
+ if (_clearAnnotations)
+ {
+ for (id <MKAnnotation> annotation in _mapView.annotations)
+ {
+ if (![annotation isKindOfClass:MKUserLocation.class])
+ [_mapView removeAnnotation:annotation];
+ }
+ }
+ 
+ [_mapView addAnnotation:annotation];
+ 
+ [_mapView selectAnnotation:annotation
+ animated:YES];
+ 
+ PropertyData *propData = [[PropertyData alloc] init];
+ 
+ _propertyReport = [propData getReport:PDSettingDefault
+ forPID:_selectedPID];
+ }
+ */
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -786,7 +811,7 @@ didSelectAnnotationView:(MKAnnotationView *)view
                        [self.view bringSubviewToFront:_vectorView];
                        [self.view bringSubviewToFront:_mapToolbar];
                    });
-
+    
 }
 
 - (void)setupTableView
@@ -947,7 +972,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
                                    [UserDefaults.defaults includeTextAfterFirstColon:
                                     _propertyReport[indexPath.row]]];
-           
+            
             
             cell.textLabel.textAlignment = NSTextAlignmentLeft;
             cell.indentationWidth = (cell.frame.size.width * 0.3);
@@ -1056,7 +1081,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             }
             
             break;
-        
+            
         case CensusZoomSettingBlock:
             [self dismissTableView];
             //implement zoom to block here
@@ -1192,34 +1217,34 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)platViewDidTranslate:(CGPoint)translation
 {
-    CGPoint coordPoint = [_mapView convertCoordinate:_camera.centerCoordinate
-                                       toPointToView:_mapView];
-    
-    CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
-                                   coordPoint.y - translation.y);
-    
-    CLLocationCoordinate2D newCoord = [_mapView convertPoint:newPoint
-                                        toCoordinateFromView:_mapView];
-    
-    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:newCoord
-                                         fromEyeCoordinate:newCoord
-                                               eyeAltitude:_camera.altitude];
-    
-    [_mapView setCamera:_camera
-               animated:NO];
+    /*CGPoint coordPoint = [_mapView convertCoordinate:_camera.centerCoordinate
+     toPointToView:_mapView];
+     
+     CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
+     coordPoint.y - translation.y);
+     
+     CLLocationCoordinate2D newCoord = [_mapView convertPoint:newPoint
+     toCoordinateFromView:_mapView];
+     
+     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:newCoord
+     fromEyeCoordinate:newCoord
+     eyeAltitude:_camera.altitude];
+     
+     [_mapView setCamera:_camera
+     animated:NO];*/
 }
 
 - (void)platViewDidTransformScale:(CGFloat)transformationScale
 {
-    CLLocationCoordinate2D coord = _camera.centerCoordinate;
-    CGFloat latDelta = (_mapView.region.span.latitudeDelta * (1.0 / transformationScale));
-    
-    _camera = [MKMapCamera cameraLookingAtCenterCoordinate:coord
-                                         fromEyeCoordinate:coord
-                                               eyeAltitude:(latDelta * 207360.0)];
-    
-    [_mapView setCamera:_camera
-               animated:NO];
+    /*CLLocationCoordinate2D coord = _camera.centerCoordinate;
+     CGFloat latDelta = (_mapView.region.span.latitudeDelta * (1.0 / transformationScale));
+     
+     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:coord
+     fromEyeCoordinate:coord
+     eyeAltitude:(latDelta * 207360.0)];
+     
+     [_mapView setCamera:_camera
+     animated:NO];*/
 }
 
 - (void)platViewDidDoubleTap
@@ -1290,19 +1315,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectZoomExtent
 {
-    [_mapView setUserTrackingMode:MKUserTrackingModeNone
-                         animated:NO];
-    
-    _mapView.rotateEnabled = YES;
+    /*[_mapView setUserTrackingMode:MKUserTrackingModeNone
+     animated:NO];
+     
+     _mapView.rotateEnabled = YES;*/
     [self extentZoom:YES];
 }
 
 - (void)mapToolbarDidSelectUserLocation
 {
-    [_mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading
-                         animated:YES];
-    
-    _mapView.rotateEnabled = NO;
+    /*[_mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading
+     animated:YES];
+     
+     _mapView.rotateEnabled = NO;*/
 }
 
 - (void)mapToolbarDidSelectAnnotationOption:(BOOL)option
@@ -1319,11 +1344,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     switch (mapType)
     {
         case MapTypeSettingStandard:
-            _mapView.mapType = MKMapTypeStandard;
+            //_mapView.mapType = MKMapTypeStandard;
             break;
             
         case MapTypeSettingHybrid:
-            _mapView.mapType = MKMapTypeHybrid;
+            //_mapView.mapType = MKMapTypeHybrid;
             break;
     }
 }
