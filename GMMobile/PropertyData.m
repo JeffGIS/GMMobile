@@ -14,12 +14,14 @@ extern int keepProcessing;
 @end
 
 @implementation BoundaryAreaData
+
 @end
+
 @implementation PropertyData
 
 static PropertyData *_propData;
 
-int SQLOK(int sqlReturn, char *method)
+int SQLOKpd(int sqlReturn, char *method)
 {
     if (sqlReturn != SQLITE_OK)
     {
@@ -29,6 +31,7 @@ int SQLOK(int sqlReturn, char *method)
     
     return sqlReturn;
 }
+
 - (void)logError:(int)sqlReturn
           method:(char *)method
 {
@@ -501,28 +504,6 @@ int SQLOK(int sqlReturn, char *method)
     [self close];
     return ownerName;
 }
-
-/*
-- (void)logError:(int)sqlReturn
-          method:(char *)method
-{
-    NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
-                  sqlReturn, method, sqlite3_errcode(_database), sqlite3_errmsg(_database)]);
-}
-
-int SQLOK(int sqlReturn, char *method)
-{
-    if (sqlReturn != SQLITE_OK)
-    {
-        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
-                      sqlReturn, method, sqlite3_errcode((__bridge sqlite3 *)(_database)),
-                      sqlite3_errmsg((__bridge sqlite3 *)(_database))]);
-    }
-    
-    return sqlReturn;
-}
-*/
-
 
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
@@ -1271,7 +1252,7 @@ int SQLOK(int sqlReturn, char *method)
             NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
-            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetReportForPID");
+            SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetReportForPID");
 /*
     CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
  */
@@ -1399,7 +1380,9 @@ int SQLOK(int sqlReturn, char *method)
                 
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
-                SQLOK(sqlite3_finalize(statement), "getReportForPID");
+                
+                SQLOKpd(sqlite3_finalize(statement), "getReportForPID");
+                
                 double stability, openSpacePCT, pctCommercial, rankTotEMV;
                 rankTotEMV = totalEMV;
                 [self computeStability:&stability openSpace:&openSpacePCT commercialPCT:&pctCommercial totEMVRank:&rankTotEMV inCensusArea:censusBlock];
@@ -1417,12 +1400,10 @@ int SQLOK(int sqlReturn, char *method)
                 
                 line = [NSString stringWithFormat:@"Census Block:%s", cenBlock];
                 [report addObject:line];
-                
-                
             }
             
             else
-                SQLOK(sqlite3_finalize(statement), "getReportForPID");
+                SQLOKpd(sqlite3_finalize(statement), "getReportForPID");
         }
     }
    
@@ -1570,7 +1551,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
                                PartLoc[ipart],endWord];
             
-            SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepare1GetOwners");
+            SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepare1GetOwners");
             
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -1590,7 +1571,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                 }
             }
             
-            SQLOK(sqlite3_finalize(statement), "getOwners");
+            SQLOKpd(sqlite3_finalize(statement), "getOwners");
             
             if (!nPartOffsets[ipart])
                 GetNext = FALSE;
@@ -1623,7 +1604,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         
-        SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepare2GetOwners");
+        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepare2GetOwners");
         
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -1663,7 +1644,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             }
         }
         
-        SQLOK(sqlite3_finalize(statement), "getOwners");
+        SQLOKpd(sqlite3_finalize(statement), "getOwners");
     }
     /*
 GSSiGlobFree (&hPartOffsets[ipart]);
