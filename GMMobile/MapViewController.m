@@ -12,7 +12,7 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) NSArray *options;
-@property (nonatomic) NSMutableArray *propertyReport;
+@property (nonatomic) NSMutableArray *propertyReport, *markerArray;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
@@ -40,6 +40,8 @@ extern int keepProcessing;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _markerArray = [[NSMutableArray alloc] init];
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
@@ -168,29 +170,6 @@ extern int keepProcessing;
     
     [self.view addSubview:_mapToolbar];
 }
-
-/*
-- (MKCoordinateRegion)getRegionForPoint:(LLPOINT)pidCoord
-                                 atZoom:(int)zoom
-                                 inRect:(CGRect)rect
-{
-    MKCoordinateRegion region;
-    int px,py;
-    
-    region.center.latitude = pidCoord.lat;
-    region.center.longitude = pidCoord.lon;
-    CGFloat lat,lon;
-    CGFloat lat1, lon1, lat2, lon2;
-    
-    LatLongToPixelXY(pidCoord.lat, pidCoord.lon, zoom, &px,&py);
-    PixelXYToLatLong(px+rect.size.width, py, zoom, &lat, &lon);
-    region.span.longitudeDelta = lon - pidCoord.lon;
-    PixelXYToLatLong(px, (py - rect.size.height / 2.0), zoom, &lat1, &lon1);
-    PixelXYToLatLong(px, (py + rect.size.height / 2.0), zoom, &lat2, &lon2);
-    region.span.latitudeDelta = (lat2 - lat1);
-    return region;
-}
-*/
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -379,19 +358,64 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         coordinate.latitude = llp.lat;
         coordinate.longitude = llp.lon;
         
+        if (_clearAnnotations)
+        {
+            for (GMSMarker *markers in _markerArray)
+                markers.map = nil;
+            
+            [_markerArray removeAllObjects];
+        }
+        
         GMSMarker *marker = [GMSMarker markerWithPosition:coordinate];
         marker.appearAnimation = kGMSMarkerAnimationPop;
+        marker.title = _selectedPID;
+        marker.snippet = [propData getOwnerNameForPID:_selectedPID];
         marker.map = _mapView;
         
-        CGPoint target = [_mapView.projection pointForCoordinate:coordinate];
+        [_markerArray addObject:marker];
+        
+        [self removePreviousInfoWindow];
+        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
         
         _infoWindow = [[MarkerInfoWindow alloc] init];
         _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
         _infoWindow.delegate = self;
-        _infoWindow.title = _selectedPID;
-        _infoWindow.snippet = [propData getOwnerNameForPID:_selectedPID];
-        _infoWindow.position = coordinate;
+        _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
         [self.view addSubview:_infoWindow];
+    }
+}
+
+- (BOOL)mapView:(GMSMapView *)mapView
+   didTapMarker:(GMSMarker *)marker
+{
+    [self removePreviousInfoWindow];
+    
+    if ([marker.title isEqualToString:_selectedPID])
+    {
+        _selectedPID = nil;
+        return YES;
+    }
+    
+    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+    
+    _infoWindow = [[MarkerInfoWindow alloc] init];
+    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+    _infoWindow.delegate = self;
+    _selectedPID = _infoWindow.title = marker.title;
+    _infoWindow.snippet = marker.snippet;
+    _infoWindow.position = marker.position;
+    [self.view addSubview:_infoWindow];
+    return YES;
+}
+
+- (void)removePreviousInfoWindow
+{
+    for (UIView *view in self.view.subviews)
+    {
+        if ([view isKindOfClass:MarkerInfoWindow.class])
+            [view removeFromSuperview];
     }
 }
 
@@ -399,6 +423,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        willMove:(BOOL)gesture
 {
     [self clearVectorView];
+    [self removePreviousInfoWindow];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -481,6 +506,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
+    [self removePreviousInfoWindow];
+    
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
@@ -830,6 +857,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
          isEqualToString:@"Property Report"])
     {
         _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        _propertyReport = [propData getReport:PDSettingDefault
+                                       forPID:_selectedPID];
+        
         tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         tableView.allowsSelection = NO;
         tableView.delaysContentTouches = YES;
