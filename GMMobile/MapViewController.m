@@ -385,6 +385,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
    didTapMarker:(GMSMarker *)marker
 {
     [self removePreviousInfoWindow];
+    [_markerArray removeObject:marker];
     
     if ([marker.title isEqualToString:_selectedPID])
     {
@@ -393,6 +394,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     
     CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+    [_markerArray addObject:marker];
     
     _infoWindow = [[MarkerInfoWindow alloc] init];
     _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
@@ -416,15 +418,19 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)restorePreviousInfoWindow
 {
     GMSMarker *marker = _markerArray.lastObject;
-    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
     
-    _infoWindow = [[MarkerInfoWindow alloc] init];
-    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-    _infoWindow.delegate = self;
-    _infoWindow.title = marker.title;
-    _infoWindow.snippet = marker.snippet;
-    _infoWindow.position = marker.position;
-    [self.view addSubview:_infoWindow];
+    if (marker)
+    {
+        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+        
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+        _infoWindow.delegate = self;
+        _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
+        [self.view addSubview:_infoWindow];
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
