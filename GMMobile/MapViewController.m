@@ -32,7 +32,7 @@ extern int keepProcessing;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
-@property (nonatomic) BOOL firstTimeAppear, firstTimeMap;
+@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, allowRefresh;
 
 @end
 
@@ -42,7 +42,7 @@ extern int keepProcessing;
 {
     [super viewDidLoad];
     
-    _firstTimeAppear = _firstTimeMap = YES;
+    _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -445,8 +445,11 @@ idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
     {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:position.zoom];
+        if (_allowRefresh)
+        {
+            [self refreshVectorView:_mapView.projection.visibleRegion
+                             atZoom:position.zoom];
+        }
     }
     
     else
@@ -1067,7 +1070,20 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)platViewDidTransformScale:(CGFloat)transformationScale
 {
     [_mapView moveCamera:[GMSCameraUpdate setTarget:_mapView.camera.target
-                                               zoom:(_mapView.camera.zoom * transformationScale)]];
+                                               zoom:(_mapView.camera.zoom * sqrtf(transformationScale))]];
+}
+
+- (void)platViewDidBeginTrans
+{
+    _allowRefresh = NO;
+}
+
+- (void)platViewDidEndTrans
+{
+    _allowRefresh = YES;
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
 }
 
 - (void)platViewDidDoubleTap
@@ -1237,6 +1253,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    [self clearVectorView];
+    
     switch (setting)
     {
         case MapViewScreenSettingFullscreen:
@@ -1250,6 +1268,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             (tabBarTop - statusBarHeight));
+                             }
+                             completion:^(BOOL finished) {
+                                 [self refreshVectorView:_mapView.projection.visibleRegion
+                                                  atZoom:_mapView.camera.zoom];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1275,6 +1297,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 2.0));
+                             }
+                             completion:^(BOOL finished) {
+                                 [self refreshVectorView:_mapView.projection.visibleRegion
+                                                  atZoom:_mapView.camera.zoom];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1336,6 +1362,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 3.0));
+                             }
+                             completion:^(BOOL finished) {
+                                 [self refreshVectorView:_mapView.projection.visibleRegion
+                                                  atZoom:_mapView.camera.zoom];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1401,6 +1431,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 1.5));
+                             }
+                             completion:^(BOOL finished) {
+                                 [self refreshVectorView:_mapView.projection.visibleRegion
+                                                  atZoom:_mapView.camera.zoom];
                              }];
             
             [UIView animateWithDuration:0.25

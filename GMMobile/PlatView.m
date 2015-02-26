@@ -132,11 +132,23 @@
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
 {
-    CGPoint translation = [panGesture translationInView:panGesture.view.superview];
-    
-    if (panGesture.state == UIGestureRecognizerStateBegan ||
-        panGesture.state == UIGestureRecognizerStateChanged)
+    if (panGesture.state == UIGestureRecognizerStateEnded)
     {
+        if (_delegate)
+            [_delegate platViewDidEndTrans];
+    }
+    
+    else if (panGesture.state == UIGestureRecognizerStateBegan ||
+             panGesture.state == UIGestureRecognizerStateChanged)
+    {
+        if (panGesture.state == UIGestureRecognizerStateBegan)
+        {
+            if (_delegate)
+                [_delegate platViewDidBeginTrans];
+        }
+        
+        CGPoint translation = [panGesture translationInView:panGesture.view.superview];
+        
         panGesture.view.center = CGPointMake(panGesture.view.center.x + translation.x,
                                              panGesture.view.center.y + translation.y);
         
@@ -150,9 +162,20 @@
 
 - (void)handlePinchGesture:(UIPinchGestureRecognizer *)pinchGesture
 {
-    if (pinchGesture.state == UIGestureRecognizerStateBegan ||
-        pinchGesture.state == UIGestureRecognizerStateChanged)
+    if (pinchGesture.state == UIGestureRecognizerStateEnded)
     {
+        if (_delegate)
+            [_delegate platViewDidEndTrans];
+    }
+    
+    else if (pinchGesture.state == UIGestureRecognizerStateBegan ||
+             pinchGesture.state == UIGestureRecognizerStateChanged)
+    {
+        if (pinchGesture.state == UIGestureRecognizerStateBegan)
+        {
+            if (_delegate)
+                [_delegate platViewDidBeginTrans];
+        }
         
         CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
         
