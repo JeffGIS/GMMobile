@@ -95,7 +95,7 @@
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
 {
-    CGContextSetLineWidth(context, 5);
+    CGContextSetLineWidth(context, 10);
     
     if (nLoops > 1)
     {

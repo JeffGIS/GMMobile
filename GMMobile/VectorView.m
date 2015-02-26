@@ -92,10 +92,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 - (void)drawRect:(CGRect)rect
 {
     _vectorViewContext = UIGraphicsGetCurrentContext();
-    if (!_vectorViewContext)
+    if (!_vectorViewContext || !keepProcessing)
         return;
     
     self.displayID = keepProcessing;
+    
     
     if (_displayData)
     {
