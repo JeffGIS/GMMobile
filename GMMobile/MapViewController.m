@@ -413,6 +413,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 
+- (void)restorePreviousInfoWindow
+{
+    GMSMarker *marker = _markerArray.lastObject;
+    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+    
+    _infoWindow = [[MarkerInfoWindow alloc] init];
+    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+    _infoWindow.delegate = self;
+    _infoWindow.title = marker.title;
+    _infoWindow.snippet = marker.snippet;
+    _infoWindow.position = marker.position;
+    [self.view addSubview:_infoWindow];
+}
+
 - (void)mapView:(GMSMapView *)mapView
        willMove:(BOOL)gesture
 {
@@ -426,18 +440,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:position.zoom];
     
-    GMSMarker *marker = _markerArray.lastObject;
-    
-    [self removePreviousInfoWindow];
-    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-    
-    _infoWindow = [[MarkerInfoWindow alloc] init];
-    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-    _infoWindow.delegate = self;
-    _infoWindow.title = marker.title;
-    _infoWindow.snippet = marker.snippet;
-    _infoWindow.position = marker.position;
-    [self.view addSubview:_infoWindow];
+    [self restorePreviousInfoWindow];
 }
 
 /*
@@ -461,6 +464,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     {
         [_tableView reloadData];
     }
+    
+    [self restorePreviousInfoWindow];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
