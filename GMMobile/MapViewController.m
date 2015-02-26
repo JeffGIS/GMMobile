@@ -477,8 +477,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     _rotateZoom = !_rotateZoom;
     
-    NSLog(@"%f", _mapView.camera.zoom);
-    
     [self restorePreviousInfoWindow];
 }
 
