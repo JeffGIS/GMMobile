@@ -16,7 +16,7 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property (nonatomic) BOOL clearWhenDeselected, firstTime, initialZoom;
+@property (nonatomic) BOOL clearWhenDeselected, firstTime, initialZoom, rotateZoom;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno;
@@ -467,13 +467,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     if (_tableView)
-    {
         [_tableView reloadData];
-    }
+    
+    if (_rotateZoom)
+        [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
+    
+    else
+        [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
+    
+    _rotateZoom = !_rotateZoom;
+    
+    NSLog(@"%f", _mapView.camera.zoom);
     
     [self restorePreviousInfoWindow];
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -481,7 +487,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     [self removePreviousInfoWindow];
     [self clearVectorView];
-
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
