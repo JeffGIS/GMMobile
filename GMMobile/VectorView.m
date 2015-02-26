@@ -95,6 +95,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     if (!_vectorViewContext || !keepProcessing)
         return;
     
+    keepProcessing++;
+    
     self.displayID = keepProcessing;
     
     if (_displayData)
