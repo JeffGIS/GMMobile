@@ -18,8 +18,7 @@
 @interface MarkerInfoWindow : UIView
 
 @property (nonatomic, weak) id <MarkerInfoWindowDelegate> delegate;
-@property (nonatomic) NSString *title;
-@property (nonatomic) NSString *snippet;
+@property (nonatomic, copy) NSString *title, *snippet;
 @property (nonatomic) CLLocationCoordinate2D position;
 
 @end

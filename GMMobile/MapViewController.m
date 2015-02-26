@@ -12,14 +12,14 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) NSArray *options;
-@property (nonatomic) NSMutableArray *propertyReport;
+@property (nonatomic) NSMutableArray *propertyReport, *markerArray;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearWhenDeselected, firstTime, initialZoom;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
-@property int selectedPlatRefno;
+@property (nonatomic) int selectedPlatRefno;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
@@ -40,6 +40,8 @@ extern int keepProcessing;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _markerArray = [[NSMutableArray alloc] init];
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
@@ -169,29 +171,6 @@ extern int keepProcessing;
     [self.view addSubview:_mapToolbar];
 }
 
-/*
-- (MKCoordinateRegion)getRegionForPoint:(LLPOINT)pidCoord
-                                 atZoom:(int)zoom
-                                 inRect:(CGRect)rect
-{
-    MKCoordinateRegion region;
-    int px,py;
-    
-    region.center.latitude = pidCoord.lat;
-    region.center.longitude = pidCoord.lon;
-    CGFloat lat,lon;
-    CGFloat lat1, lon1, lat2, lon2;
-    
-    LatLongToPixelXY(pidCoord.lat, pidCoord.lon, zoom, &px,&py);
-    PixelXYToLatLong(px+rect.size.width, py, zoom, &lat, &lon);
-    region.span.longitudeDelta = lon - pidCoord.lon;
-    PixelXYToLatLong(px, (py - rect.size.height / 2.0), zoom, &lat1, &lon1);
-    PixelXYToLatLong(px, (py + rect.size.height / 2.0), zoom, &lat2, &lon2);
-    region.span.latitudeDelta = (lat2 - lat1);
-    return region;
-}
-*/
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -215,88 +194,83 @@ extern int keepProcessing;
         }
     }
     
-    else
-        _firstTime = NO;
-    
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
     {
         _tableView.hidden = YES;
-        
         _selectedPID = CRAPI.sharedInstance.currentPID;
         PropertyData *propData = [[PropertyData alloc] init];
+        
         LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
         MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
-        CLLocationCoordinate2D pidCoord;
-        pidCoord.latitude = pidPoint.lat;
-        pidCoord.longitude = pidPoint.lon;
-        MKCoordinateRegion mapRegion;
-        MKCoordinateRegion newRegion;
         
-        //CGRect rect = [_mapView convertRegion:_mapView.region
-        //toRectToView:nil];
+        CLLocationCoordinate2D pidCoord = CLLocationCoordinate2DMake(pidPoint.lat, pidPoint.lon);
+        CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
+        CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
         
-        MKCoordinateSpan pidSpan = MKCoordinateSpanMake(fabs(bounds.ymx - bounds.ymn) * 1.5,
-                                                        fabs(bounds.xmx - bounds.xmn) * 1.5);
+        GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
+                                                                                coordinate:southwest];
         
-        /*mapRegion = [self getRegionForPoint:pidPoint
-         atZoom:21
-         inRect:rect];*/
+        GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
+                                                       insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
         
-        if (mapRegion.span.longitudeDelta < pidSpan.longitudeDelta ||
-            mapRegion.span.latitudeDelta < pidSpan.latitudeDelta)
+        [_mapView animateToCameraPosition:camera];
+        
+        if (_clearAnnotations)
         {
-            newRegion = MKCoordinateRegionMake(pidCoord, pidSpan);
+            for (GMSMarker *markers in _markerArray)
+                markers.map = nil;
+            
+            [_markerArray removeAllObjects];
         }
         
-        else
-            newRegion = mapRegion;
+        _selectedPIDCoords = pidCoord;
+        GMSMarker *marker = [GMSMarker markerWithPosition:pidCoord];
+        marker.appearAnimation = kGMSMarkerAnimationPop;
         
-        /*_camera = [MKMapCamera cameraLookingAtCenterCoordinate:pidCoord
-         fromEyeCoordinate:pidCoord
-         eyeAltitude:(newRegion.span.latitudeDelta * 207360.0)];
-         
-         [_mapView setCamera:_camera
-         animated:YES];
+        switch (CRAPI.sharedInstance.GMMSetting)
+        {
+            case GMMSettingPID:
+                marker.title = _selectedPID;
+                marker.snippet = [propData getOwnerNameForPID:_selectedPID];
+                break;
+                
+            case GMMSettingAddress:
+                marker.title = _selectedPID;
+                marker.snippet = CRAPI.sharedInstance.currentAddress;
+                break;
+                
+            case GMMSettingPropOwner:
+                marker.title = _selectedPID;
+                marker.snippet = CRAPI.sharedInstance.currentPropOwner;
+                break;
+        }
         
-         MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-         annotation.coordinate = _selectedPIDCoords = pidCoord;
-         
-         switch (CRAPI.sharedInstance.GMMSetting)
-         {
-         case GMMSettingPID:
-         annotation.title = _selectedPID;
-         annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
-         break;
-         
-         case GMMSettingAddress:
-         annotation.title = _selectedPID;
-         annotation.subtitle = CRAPI.sharedInstance.currentAddress;
-         break;
-         
-         case GMMSettingPropOwner:
-         annotation.title = _selectedPID;
-         annotation.subtitle = CRAPI.sharedInstance.currentPropOwner;
-         break;
-         }
-         
-         [self addAnnotation:annotation];
-         
-         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;*/
-         }
+        marker.map = _mapView;
+        [_markerArray addObject:marker];
+        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
+    }
     
     else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
     {
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
-         
-         /*else
-         {
-         [self refreshVectorView:_mapView.region
-         atZoom:_currentZoom];
-          }*/
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    if (!_firstTime)
+    {
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
+    
+    else
+        _firstTime = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -379,19 +353,63 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         coordinate.latitude = llp.lat;
         coordinate.longitude = llp.lon;
         
+        if (_clearAnnotations)
+        {
+            for (GMSMarker *markers in _markerArray)
+                markers.map = nil;
+            
+            [_markerArray removeAllObjects];
+        }
+        
         GMSMarker *marker = [GMSMarker markerWithPosition:coordinate];
         marker.appearAnimation = kGMSMarkerAnimationPop;
+        marker.title = _selectedPID;
+        marker.snippet = [propData getOwnerNameForPID:_selectedPID];
         marker.map = _mapView;
         
-        CGPoint target = [_mapView.projection pointForCoordinate:coordinate];
+        [_markerArray addObject:marker];
+        [self removePreviousInfoWindow];
+        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
         
         _infoWindow = [[MarkerInfoWindow alloc] init];
         _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
         _infoWindow.delegate = self;
-        _infoWindow.title = _selectedPID;
-        _infoWindow.snippet = [propData getOwnerNameForPID:_selectedPID];
-        _infoWindow.position = coordinate;
+        _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
         [self.view addSubview:_infoWindow];
+    }
+}
+
+- (BOOL)mapView:(GMSMapView *)mapView
+   didTapMarker:(GMSMarker *)marker
+{
+    [self removePreviousInfoWindow];
+    
+    if ([marker.title isEqualToString:_selectedPID])
+    {
+        _selectedPID = nil;
+        return YES;
+    }
+    
+    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+    
+    _infoWindow = [[MarkerInfoWindow alloc] init];
+    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+    _infoWindow.delegate = self;
+    _selectedPID = _infoWindow.title = marker.title;
+    _infoWindow.snippet = marker.snippet;
+    _infoWindow.position = marker.position;
+    [self.view addSubview:_infoWindow];
+    return YES;
+}
+
+- (void)removePreviousInfoWindow
+{
+    for (UIView *view in self.view.subviews)
+    {
+        if ([view isKindOfClass:MarkerInfoWindow.class])
+            [view removeFromSuperview];
     }
 }
 
@@ -399,6 +417,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        willMove:(BOOL)gesture
 {
     [self clearVectorView];
+    [self removePreviousInfoWindow];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -407,52 +426,18 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:position.zoom];
     
-    /*MKMapRect visRect = mapView.visibleMapRect;
-    MKCoordinateRegion region = mapView.region;
+    GMSMarker *marker = _markerArray.lastObject;
     
-    CGRect mrect = [mapView convertRegion:region
-                             toRectToView:mapView.superview];
+    [self removePreviousInfoWindow];
+    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
     
-    CLLocationCoordinate2D latlon1 = [mapView convertPoint:mrect.origin
-                                      toCoordinateFromView:mapView.superview];
-    
-    CGPoint lrpoint;
-    lrpoint.x = (mrect.origin.x + mrect.size.width);
-    lrpoint.y = (mrect.origin.y + mrect.size.height);
-    
-    CLLocationCoordinate2D latlon2 = [mapView convertPoint:lrpoint
-                                      toCoordinateFromView:mapView.superview];
-    
-    DPOINT p1,p2;
-    p1.x = latlon1.longitude;
-    p1.y = latlon1.latitude;
-    p2.x = latlon2.longitude;
-    p2.y = latlon2.latitude;
-    CGFloat d = ArcDistance(p1,p2);
-    CGFloat currentScale = (d / LDIST(0, 0, mrect.size.width, mrect.size.height));
-    CGFloat wantScale = GroundResolution(latlon1.latitude, 19);
-    _currentZoom = 0;
-    
-    while (GroundResolution(latlon1.latitude, _currentZoom) > currentScale)
-        _currentZoom++;
-    
-    _camera = mapView.camera;
-    MKMapRect intRect = MKMapRectUnion(visRect, _cityInnerBounds);
-    
-    if (CRAPI.sharedInstance.GMTilesVisible)
-    {
-        if (MKMapRectEqualToRect(intRect, _cityInnerBounds))
-            _osmOverlay.maximumZ = 12;
-        
-        else
-            _osmOverlay.maximumZ = 19;
-    }
-    
-    else
-    {
-        _osmOverlay.maximumZ = 19;
-        _gmmOverlay.minimumZ = _gmmOverlay.maximumZ = 0;
-    }*/
+    _infoWindow = [[MarkerInfoWindow alloc] init];
+    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+    _infoWindow.delegate = self;
+    _infoWindow.title = marker.title;
+    _infoWindow.snippet = marker.snippet;
+    _infoWindow.position = marker.position;
+    [self.view addSubview:_infoWindow];
 }
 
 /*
@@ -481,6 +466,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
+    [self removePreviousInfoWindow];
+    
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
@@ -635,6 +622,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        [self.view addSubview:_vectorView];
                        [self.view bringSubviewToFront:_vectorView];
                        [self.view bringSubviewToFront:_mapToolbar];
+                       
+                       if (_infoWindow)
+                           [self.view bringSubviewToFront:_infoWindow];
                    });
 }
 
@@ -830,6 +820,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
          isEqualToString:@"Property Report"])
     {
         _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        _propertyReport = [propData getReport:PDSettingDefault
+                                       forPID:_selectedPID];
+        
         tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         tableView.allowsSelection = NO;
         tableView.delaysContentTouches = YES;
