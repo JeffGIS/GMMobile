@@ -12,6 +12,7 @@
 @end
 
 @interface VectorView : UIView
+
 @property (nonatomic, weak) id <VectorViewDelegate> delegate;
 
 @property int displayData;

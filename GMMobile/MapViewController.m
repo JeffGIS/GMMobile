@@ -4,7 +4,6 @@
 extern int keepProcessing;
 
 #import "MapViewController.h"
-#import "GSSiAnnotationView.h"
 #import "WebKitViewController.h"
 
 @interface MapViewController ()
@@ -32,6 +31,7 @@ extern int keepProcessing;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) MarkerInfoWindow *infoWindow;
 
 @end
 
@@ -348,45 +348,51 @@ extern int keepProcessing;
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    LLPOINT llp, llpSewer;
-    llp.lat = coordinate.latitude;
-    llp.lon = coordinate.longitude;
-    llpSewer = llp;
+    if (!_tableView.hidden)
+    {
+        CGRect frame = _tableView.frame;
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _tableView.frame = CGRectMake(self.view.center.x,
+                                                           self.view.center.y,
+                                                           0.0, 0.0);
+                         }
+                         completion:^(BOOL finished){
+                             _tableView.hidden = YES;
+                             _tableView.frame = frame;
+                             _clearWhenDeselected = NO;
+                         }];
+    }
     
-    PropertyData *propData = [[PropertyData alloc] init];
-    _selectedPID = [propData pickPID:&llp];
-    SewerData *sewerData = [[SewerData alloc] init];
-    _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
-    coordinate.latitude = llp.lat;
-    coordinate.longitude = llp.lon;
-    
-    GMSMarker *marker = [GMSMarker markerWithPosition:coordinate];
-    marker.title = _selectedPID;
-    marker.snippet = [propData getOwnerNameForPID:_selectedPID];
-    marker.appearAnimation = kGMSMarkerAnimationPop;
-    marker.map = _mapView;
-    _mapView.selectedMarker = marker;
-}
-
-- (UIView *)mapView:(GMSMapView *)mapView
-   markerInfoWindow:(GMSMarker *)marker
-{
-    CGFloat height = 48.0, width = 240.0;
-    
-    UIView *infoView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, height)];
-    infoView.backgroundColor = UIColor.whiteColor;
-    infoView.layer.cornerRadius = 6.0;
-    infoView.layer.borderColor = UIColor.lightGrayColor.CGColor;
-    infoView.layer.borderWidth = 0.5;
-    
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(height, 0.0, (width - (height * 2.0)), height)];
-    titleLabel.text = marker.title;
-    titleLabel.textColor = UIColor.blackColor;
-    titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleLabel.font = [UIFont systemFontOfSize:14.0];
-    [infoView addSubview:titleLabel];
-    
-    return infoView;
+    else
+    {
+        LLPOINT llp, llpSewer;
+        llp.lat = coordinate.latitude;
+        llp.lon = coordinate.longitude;
+        llpSewer = llp;
+        
+        PropertyData *propData = [[PropertyData alloc] init];
+        _selectedPID = [propData pickPID:&llp];
+        SewerData *sewerData = [[SewerData alloc] init];
+        _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
+        coordinate.latitude = llp.lat;
+        coordinate.longitude = llp.lon;
+        
+        GMSMarker *marker = [GMSMarker markerWithPosition:coordinate];
+        marker.appearAnimation = kGMSMarkerAnimationPop;
+        marker.map = _mapView;
+        
+        CGPoint target = [_mapView.projection pointForCoordinate:coordinate];
+        
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+        _infoWindow.delegate = self;
+        _infoWindow.title = _selectedPID;
+        _infoWindow.snippet = [propData getOwnerNameForPID:_selectedPID];
+        _infoWindow.position = coordinate;
+        [self.view addSubview:_infoWindow];
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -463,158 +469,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     return YES;
 }
-
-/*
-- (void)didLongPressMap:(UIGestureRecognizer *)gesture
-{
-    MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
-    
-    if (gesture.state == UIGestureRecognizerStateBegan)
-    {
-        for (MKPointAnnotation *selAnnotation in _mapView.selectedAnnotations)
-        {
-            [_mapView deselectAnnotation:selAnnotation
-                                animated:NO];
-        }
-        
-        CGPoint pointPicked = [gesture locationInView:_mapView];
-        
-        CLLocationCoordinate2D coordPicked = [_mapView convertPoint:pointPicked
-                                               toCoordinateFromView:_mapView];
-        
-        LLPOINT llp, llpSewer;
-        llp.lat = coordPicked.latitude;
-        llp.lon = coordPicked.longitude;
-        llpSewer = llp;
-        
-        PropertyData *propData = [[PropertyData alloc] init];
-        _selectedPID = [propData pickPID:&llp];
-        SewerData *sewerData = [[SewerData alloc] init];
-        _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
-        coordPicked.latitude = llp.lat;
-        coordPicked.longitude = llp.lon;
-        
-        _clearWhenDeselected = NO;
-        annotation.coordinate = _selectedPIDCoords = coordPicked;
-         annotation.title = _selectedPID;
-         annotation.subtitle = [propData getOwnerNameForPID:_selectedPID];
-         [self addAnnotation:annotation];
-    }
-}
-
- - (MKAnnotationView *)mapView:(MKMapView *)mapView
- viewForAnnotation:(id <MKAnnotation>)annotation
- {
- if ([annotation isKindOfClass:MKUserLocation.class])
- return nil;
- 
- MKAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
- reuseIdentifier:@"pin"];
- 
- annotationView.canShowCallout = YES;
- 
- CGFloat buttonSize = 40.0;
- UIButton *rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
- UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonSize, buttonSize)];
- 
- [rightButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"arrow"
- ofType:@"png"]]
- forState:UIControlStateNormal];
- 
- [leftButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"list"
- ofType:@"png"]]
- forState:UIControlStateNormal];
- 
- annotationView.rightCalloutAccessoryView = rightButton;
- annotationView.leftCalloutAccessoryView = leftButton;
- return annotationView;
- }
- 
- - (void)mapView:(MKMapView *)mapView
- annotationView:(MKAnnotationView *)view
- calloutAccessoryControlTapped:(UIControl *)control
- {
- if (control == view.rightCalloutAccessoryView)
- {
- _tableViewSetting = PropertyTableViewSettingPropertyReport;
- _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
- _tableView.allowsSelection = NO;
- _tableView.delaysContentTouches = YES;
- [_tableView reloadData];
- 
- [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
- animated:NO];
- }
- 
- else if (control == view.leftCalloutAccessoryView)
- {
- if ([self isHennepinCountyPID:view.annotation.title])
- _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
- 
- else
- _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
- 
- _tableViewSetting = PropertyTableViewSettingOptions;
- _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
- _tableView.allowsSelection = YES;
- _tableView.delaysContentTouches = NO;
- [_tableView reloadData];
- }
- 
- CGRect frame = _tableView.frame;
- _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
- _tableView.hidden = NO;
- 
- [UIView animateWithDuration:0.25
- animations:^{
- _tableView.frame = frame;
- }];
- }
- 
- - (void)mapView:(MKMapView *)mapView
- didDeselectAnnotationView:(MKAnnotationView *)view
- {
- if (_clearWhenDeselected == NO)
- {
- [_mapView selectAnnotation:view.annotation
- animated:NO];
- 
- _clearWhenDeselected = YES;
- }
- }
- 
- - (void)mapView:(MKMapView *)mapView
- didSelectAnnotationView:(MKAnnotationView *)view
- {
- _selectedPID = view.annotation.title;
- PropertyData *propData = [[PropertyData alloc] init];
- 
- _propertyReport = [propData getReport:PDSettingDefault
- forPID:_selectedPID];
- }
- 
- - (void)addAnnotation:(id <MKAnnotation>)annotation
- {
- if (_clearAnnotations)
- {
- for (id <MKAnnotation> annotation in _mapView.annotations)
- {
- if (![annotation isKindOfClass:MKUserLocation.class])
- [_mapView removeAnnotation:annotation];
- }
- }
- 
- [_mapView addAnnotation:annotation];
- 
- [_mapView selectAnnotation:annotation
- animated:YES];
- 
- PropertyData *propData = [[PropertyData alloc] init];
- 
- _propertyReport = [propData getReport:PDSettingDefault
- forPID:_selectedPID];
- }
- */
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
@@ -1110,12 +964,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
     return image;
-}
-
-- (void)touchesBegan:(NSSet *)touches
-           withEvent:(UIEvent *)event
-{
-    [self dismissTableView];
 }
 
 - (void)dismissTableView
@@ -1629,6 +1477,61 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)mapToolbarDidFinishDrag
 {
     NSLog(@"center.x:%f,center.y:%f", _mapToolbar.center.x, _mapToolbar.center.y);
+}
+
+- (void)markerInfoWindowDidSelectOptions:(NSString *)PID
+                                  coords:(CLLocationCoordinate2D)coords
+{
+    _selectedPID = PID;
+    _selectedPIDCoords = coords;
+    
+    if ([self isHennepinCountyPID:_selectedPID])
+        _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+    
+    else
+        _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+    
+    _tableViewSetting = PropertyTableViewSettingOptions;
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    _tableView.allowsSelection = YES;
+    _tableView.delaysContentTouches = NO;
+    [_tableView reloadData];
+    
+    [self presentTableView];
+}
+
+- (void)markerInfoWindowDidSelectPropReport:(NSString *)PID
+{
+    _selectedPID = PID;
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
+    
+    _tableViewSetting = PropertyTableViewSettingPropertyReport;
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.allowsSelection = NO;
+    _tableView.delaysContentTouches = YES;
+    [_tableView reloadData];
+    
+    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+                           animated:NO];
+    
+    [self presentTableView];
+}
+
+- (void)presentTableView
+{
+    CGRect frame = _tableView.frame;
+    _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
+    _tableView.hidden = NO;
+    [self.view bringSubviewToFront:_tableView];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _tableView.frame = frame;
+                     }];
 }
 
 @end
