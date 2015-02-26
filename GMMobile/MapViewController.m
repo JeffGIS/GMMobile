@@ -16,7 +16,7 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property (nonatomic) BOOL clearWhenDeselected, firstTime, initialZoom, rotateZoom;
+@property (nonatomic) BOOL clearWhenDeselected, initialZoom, rotateZoom;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno;
@@ -32,6 +32,7 @@ extern int keepProcessing;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
+@property (nonatomic) BOOL firstTimeAppear, firstTimeMap;
 
 @end
 
@@ -40,6 +41,29 @@ extern int keepProcessing;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _firstTimeAppear = _firstTimeMap = YES;
+    
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    
+    CGRect mapViewFrame = CGRectMake(0.0, statusBarHeight,
+                                     self.view.frame.size.width,
+                                     (tabBarTop - statusBarHeight));
+    
+    _target = CLLocationCoordinate2DMake(44.97, -93.27);
+    
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
+                                                               zoom:12.0];
+    
+    _mapView = [GMSMapView mapWithFrame:mapViewFrame
+                                 camera:camera];
+    
+    _mapView.delegate = self;
+    _mapView.mapType = kGMSTypeNormal;
+    _mapView.settings.compassButton = YES;
+    _mapView.settings.rotateGestures = YES;
+    [self.view addSubview:_mapView];
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -65,25 +89,6 @@ extern int keepProcessing;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-    _firstTime = YES;
-    
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
-    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-    
-    CGRect mapViewFrame = CGRectMake(0.0,
-                                     statusBarHeight,
-                                     self.view.frame.size.width,
-                                     (tabBarTop - statusBarHeight));
-    
-    _target = CLLocationCoordinate2DMake(44.97, -93.27);
-    
-    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                               zoom:12.0];
-    
-    _mapView = [GMSMapView mapWithFrame:mapViewFrame
-                                 camera:camera];
-    
-    [self.view addSubview:_mapView];
     
     _platView = [[PlatView alloc] init];
     _platView.delegate = self;
@@ -144,18 +149,13 @@ extern int keepProcessing;
     [self.view addSubview:_secondImageView];
     [self.view addSubview:_streetView];
     
-    _mapView.mapType = kGMSTypeNormal;
-    _mapView.settings.compassButton = YES;
-    _mapView.settings.rotateGestures = YES;
-    _mapView.delegate = self;
-    
     if (CRAPI.sharedInstance.GMTilesVisible)
     {
 
     }
     
     _vectorView = [[VectorView alloc] init];
-    _vectorView.frame = mapViewFrame;
+    _vectorView.frame = _mapView.frame;
     _vectorView.userInteractionEnabled = NO;
     _vectorView.delegate = self;
     [self.view addSubview:_vectorView];
@@ -175,7 +175,7 @@ extern int keepProcessing;
 {
     [super viewWillAppear:animated];
     
-    if (!_firstTime)
+    if (!_firstTimeAppear)
     {
         [self initTableView];
         
@@ -263,14 +263,14 @@ extern int keepProcessing;
 {
     [super viewDidAppear:animated];
     
-    if (!_firstTime)
+    if (!_firstTimeAppear)
     {
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
     
     else
-        _firstTime = NO;
+        _firstTimeAppear = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -443,8 +443,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)mapView:(GMSMapView *)mapView
 idleAtCameraPosition:(GMSCameraPosition *)position
 {
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:position.zoom];
+    if (!_firstTimeMap)
+    {
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:position.zoom];
+    }
+    
+    else
+        _firstTimeMap = NO;
     
     [self restorePreviousInfoWindow];
 }
@@ -1049,34 +1055,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)platViewDidTranslate:(CGPoint)translation
 {
-    /*CGPoint coordPoint = [_mapView convertCoordinate:_camera.centerCoordinate
-     toPointToView:_mapView];
-     
-     CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
-     coordPoint.y - translation.y);
-     
-     CLLocationCoordinate2D newCoord = [_mapView convertPoint:newPoint
-     toCoordinateFromView:_mapView];
-     
-     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:newCoord
-     fromEyeCoordinate:newCoord
-     eyeAltitude:_camera.altitude];
-     
-     [_mapView setCamera:_camera
-     animated:NO];*/
+    CGPoint coordPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    
+    CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
+                                   coordPoint.y - translation.y);
+    
+    CLLocationCoordinate2D newCoord = [_mapView.projection coordinateForPoint:newPoint];
+    [_mapView moveCamera:[GMSCameraUpdate setTarget:newCoord]];
 }
 
 - (void)platViewDidTransformScale:(CGFloat)transformationScale
 {
-    /*CLLocationCoordinate2D coord = _camera.centerCoordinate;
-     CGFloat latDelta = (_mapView.region.span.latitudeDelta * (1.0 / transformationScale));
-     
-     _camera = [MKMapCamera cameraLookingAtCenterCoordinate:coord
-     fromEyeCoordinate:coord
-     eyeAltitude:(latDelta * 207360.0)];
-     
-     [_mapView setCamera:_camera
-     animated:NO];*/
+    [_mapView moveCamera:[GMSCameraUpdate setTarget:_mapView.camera.target
+                                               zoom:(_mapView.camera.zoom * transformationScale)]];
 }
 
 - (void)platViewDidDoubleTap
