@@ -19,7 +19,7 @@ extern int keepProcessing;
 @property (nonatomic) BOOL clearWhenDeselected, firstTime, initialZoom;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
-@property int selectedPlatRefno;
+@property (nonatomic) int selectedPlatRefno;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
@@ -622,6 +622,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        [self.view addSubview:_vectorView];
                        [self.view bringSubviewToFront:_vectorView];
                        [self.view bringSubviewToFront:_mapToolbar];
+                       
+                       if (_infoWindow)
+                           [self.view bringSubviewToFront:_infoWindow];
                    });
 }
 
