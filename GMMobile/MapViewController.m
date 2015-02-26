@@ -472,12 +472,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
     
     [self restorePreviousInfoWindow];
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
     [self removePreviousInfoWindow];
+    [self clearVectorView];
+
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
