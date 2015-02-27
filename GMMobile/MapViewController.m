@@ -278,14 +278,14 @@ extern int keepProcessing;
     [super viewWillDisappear:animated];
     
     _currentScreenHeight = self.view.frame.size.height;
-    [self clearVectorView];
+    [self stopTrackingUserLocation];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
     
-    [self stopTrackingUserLocation];
+    [self clearVectorView];
 }
 
 - (void)didReceiveMemoryWarning
