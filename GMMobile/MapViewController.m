@@ -1224,6 +1224,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                ((tabBarTop - statusBarHeight) / 3.0));
     
     [self clearVectorView];
+    [self removePreviousInfoWindow];
     
     switch (setting)
     {
@@ -1242,6 +1243,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
+                                 
+                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1271,6 +1274,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
+                                 
+                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1336,6 +1341,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
+                                 
+                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1405,6 +1412,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
+                                 
+                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
