@@ -279,6 +279,12 @@ extern int keepProcessing;
     
     _currentScreenHeight = self.view.frame.size.height;
     [self clearVectorView];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
     [self stopTrackingUserLocation];
 }
 
@@ -445,7 +451,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
     {
-        if (_allowRefresh)
+        if (_allowRefresh && !_mapView.myLocationEnabled)
         {
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:position.zoom];
@@ -1082,8 +1088,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _allowRefresh = YES;
     
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    if (!_mapView.myLocationEnabled)
+    {
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
@@ -1147,7 +1156,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _mapView.myLocationEnabled = YES;
     _mapView.settings.rotateGestures = NO;
     _initialZoom = YES;
-    _allowRefresh = NO;
 }
 
 - (void)stopTrackingUserLocation
@@ -1157,7 +1165,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _mapView.myLocationEnabled = NO;
     _mapView.settings.rotateGestures = YES;
     [_mapToolbar deselectMyLocationButton];
-    _allowRefresh = YES;
     [_mapView animateToBearing:0.0];
 }
 
