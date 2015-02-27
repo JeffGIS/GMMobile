@@ -279,6 +279,7 @@ extern int keepProcessing;
     
     _currentScreenHeight = self.view.frame.size.height;
     [self clearVectorView];
+    [self stopTrackingUserLocation];
 }
 
 - (void)didReceiveMemoryWarning
@@ -310,7 +311,6 @@ extern int keepProcessing;
     else
     {
         [self stopTrackingUserLocation];
-        [_mapToolbar deselectMyLocationButton];
         
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
                                                                    zoom:12.0];
@@ -1147,6 +1147,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _mapView.myLocationEnabled = YES;
     _mapView.settings.rotateGestures = NO;
     _initialZoom = YES;
+    _allowRefresh = NO;
 }
 
 - (void)stopTrackingUserLocation
@@ -1155,6 +1156,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_locationManager stopUpdatingHeading];
     _mapView.myLocationEnabled = NO;
     _mapView.settings.rotateGestures = YES;
+    [_mapToolbar deselectMyLocationButton];
+    _allowRefresh = YES;
+    [_mapView animateToBearing:0.0];
 }
 
 - (void)locationManager:(CLLocationManager *)manager
