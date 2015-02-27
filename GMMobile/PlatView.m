@@ -121,13 +121,6 @@
     pinchGesture.delegate = self;
  
     [self addGestureRecognizer:pinchGesture];
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                 action:@selector(handleTapGesture:)];
-    
-    tapGesture.numberOfTapsRequired = 2;
-    tapGesture.delegate = self;
-    [self addGestureRecognizer:tapGesture];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
@@ -194,15 +187,6 @@
         
         if (_delegate)
             [_delegate platViewDidTransformScale:deltaScale];
-    }
-}
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)tapGesture
-{
-    if (tapGesture.state == UIGestureRecognizerStateEnded)
-    {
-        if (_delegate)
-            [_delegate platViewDidDoubleTap];
     }
 }
 

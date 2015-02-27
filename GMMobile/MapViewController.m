@@ -1086,36 +1086,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                      atZoom:_mapView.camera.zoom];
 }
 
-- (void)platViewDidDoubleTap
-{
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
-    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _mapView.layer.borderWidth = 0.0;
-                         
-                         _mapView.frame = _vectorView.frame =
-                         CGRectMake(0.0,
-                                    statusBarHeight,
-                                    self.view.frame.size.width,
-                                    (tabBarTop - statusBarHeight));
-                     }];
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _firstView.frame = _secondImageView.frame =
-                         CGRectMake(0.0,
-                                    tabBarTop,
-                                    self.view.frame.size.width, 0.0);
-                     }
-                     completion:^(BOOL finished){
-                         [_platView removeFromSuperview];
-                     }];
-    
-    _screenSetting = MapViewScreenSettingFullscreen;
-}
-
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
 {
     _pitch -= 10.0;
