@@ -101,8 +101,14 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     
     if (_displayData)
     {
-        void *bmData;
+        //void *bmData;
         //[self freeResources];
+        
+        //if (_context)
+        {
+
+    dispatch_async(_vectorQueue,
+    ^{
         int scale = UIScreen.mainScreen.scale;
         _colorSpace = CGColorSpaceCreateDeviceRGB();
         _width = self.bounds.size.width * scale;
@@ -113,12 +119,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
         CGLayerRef vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
         _context = CGLayerGetContext(vectorLayer);
-        
-        if (_context)
-        {
-
-    dispatch_async(_vectorQueue,
-    ^{
         _viewBounds.xmn = (self.bounds.origin.x * scale);
         _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
         _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
