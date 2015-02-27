@@ -278,6 +278,7 @@ extern int keepProcessing;
     [super viewWillDisappear:animated];
     
     _currentScreenHeight = self.view.frame.size.height;
+    
     [self stopTrackingUserLocation];
 }
 
