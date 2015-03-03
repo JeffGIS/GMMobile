@@ -17,6 +17,7 @@
 @property LPTRANDATA pTranViewtoLL;
 @property long long fileSize;
 @property int processingID;
+@property int zoom;
 
 - (void)open;
 - (void)close;
@@ -29,6 +30,16 @@
                 type:(NSString*)platType
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
+
+-(void)displayStormLine:(CGContextRef)context
+
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds;
+
+-(void)displayStormPoint:(CGContextRef)context
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds;
+
 
 
 - (int)pickSanPlat:(LLPOINT *)pt;

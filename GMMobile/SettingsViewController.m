@@ -134,7 +134,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                     case GET_SEWER:
                     {
-                        file = [NSString stringWithFormat:@"%@/sewerdata.sqltran",toDirectory];
+                        file = [NSString stringWithFormat:@"%@/sewer.sqltran",toDirectory];
                         _popover.title = @"Load Sewer Tables";
                     }
                         break;
@@ -380,7 +380,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)loadSewer:(id)sender {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MPLS_sewers.gcf";
+    NSString *fileName = @"MPLS_sewer.gcf";
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
@@ -389,7 +389,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.option = GET_SEWER;
     
     [_popover showAfter:0.5
-              withTitle:@"Get Area File"];
+              withTitle:@"Get Sewer File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"
