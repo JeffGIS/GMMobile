@@ -5,6 +5,7 @@
 
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import <CoreText/CoreText.h>
 
 @interface SewerData : NSObject<FTPDataPullDelegate>
 

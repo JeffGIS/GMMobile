@@ -21,6 +21,7 @@ static SewerData *_sewerData;
 {
     if (self.processingID == keepProcessing)
         return YES;
+    
     return NO;
 }
 
@@ -53,7 +54,6 @@ int SQLOKswr(int sqlReturn, char *method)
         _fileName = @"Sewer.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _sewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
-        
     }
     
     return self;
@@ -698,7 +698,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                                              startingAt:startDist];
     }
     
-    if (np == 2 && * text.UTF8String)
+    if (np == 2 && text && ![text isEqualToString:@""])
     {
         [self drawTextOnLine:context
                         text:text
@@ -755,19 +755,59 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     return nextDist;
 }
 
--(void) drawTextOnLine:(CGContextRef)context
-                  text:(NSString*)text
+- (void)drawTextOnLine:(CGContextRef)context
+                  text:(NSString *)text
                 points:(LPDPOINT)points
 {
-    CGFloat az = getazd(&points[0], &points[1]);
+    NSString *invertIn = [UserDefaults.defaults includeTextBeforeTab:text];
+    NSString *invertOut = [UserDefaults.defaults includeTextAfterLastTab:text];
+    
+    NSString *pipe = [UserDefaults.defaults includeTextBeforeTab:
+                      [UserDefaults.defaults includeTextAfterTab:text]];
+    
+    CGFloat fontSize = 18.0;
+    
+    CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                             fontSize, NULL);
+    
+    NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+    style.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                (__bridge id)fontRef, kCTFontAttributeName,
+                                style, kCTParagraphStyleAttributeName,
+                                nil];
+    
+    CFRelease(fontRef);
+    
+    CGSize textSize = [pipe sizeWithAttributes:attributes];
+    
+    CGMutablePathRef path = CGPathCreateMutable();
     CGContextSaveGState(context);
+    CGFloat az = getazd(&points[0], &points[1]);
     CGContextRotateCTM(context, az);
+    
+    CGPathAddRect(path, NULL, CGRectMake((((points[0].x + points[1].x) / 2.0) - (textSize.width / 2.0)),
+                                         (((points[0].y + points[1].y) / 2.0) - (textSize.height / 2.0)),
+                                         textSize.width, 32.0));
+    
+    NSAttributedString *attString = [[NSAttributedString alloc] initWithString:pipe
+                                                                    attributes:attributes];
+    
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+    
+    CTFrameDraw(frame, context);
+    CFRelease(frame);
+    CFRelease(path);
+    CFRelease(framesetter);
+    
     CGContextRestoreGState(context);
 }
 
--(void)displayStormPoint:(CGContextRef)context
-               LLBounds:(MNMXCORD *)platlonBounds
-             viewBounds:(MNMXCORD *)pvbounds
+- (void)displayStormPoint:(CGContextRef)context
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds
 {
     NSString *query;
     sqlite3_stmt *statement;
