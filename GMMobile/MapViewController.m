@@ -10,13 +10,13 @@ extern int keepProcessing;
 
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
-@property (nonatomic) BOOL clearAnnotations;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property (nonatomic) BOOL clearWhenDeselected, initialZoom, rotateZoom;
+@property (nonatomic) BOOL clearAnnotations, clearWhenDeselected, initialZoom, rotateZoom;
+@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, allowRefresh, noneSelected;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno;
@@ -32,7 +32,6 @@ extern int keepProcessing;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
-@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, allowRefresh;
 
 @end
 
@@ -385,6 +384,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _infoWindow.snippet = marker.snippet;
         _infoWindow.position = marker.position;
         [self.view addSubview:_infoWindow];
+        _noneSelected = NO;
     }
 }
 
@@ -397,6 +397,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if ([marker.title isEqualToString:_selectedPID])
     {
         _selectedPID = nil;
+        _noneSelected = YES;
         return YES;
     }
     
@@ -410,6 +411,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _infoWindow.snippet = marker.snippet;
     _infoWindow.position = marker.position;
     [self.view addSubview:_infoWindow];
+    _noneSelected = NO;
     return YES;
 }
 
@@ -424,19 +426,23 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)restorePreviousInfoWindow
 {
-    GMSMarker *marker = _markerArray.lastObject;
-    
-    if (marker)
+    if (!_noneSelected)
     {
-        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+        GMSMarker *marker = _markerArray.lastObject;
         
-        _infoWindow = [[MarkerInfoWindow alloc] init];
-        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-        _infoWindow.delegate = self;
-        _infoWindow.title = marker.title;
-        _infoWindow.snippet = marker.snippet;
-        _infoWindow.position = marker.position;
-        [self.view addSubview:_infoWindow];
+        if (marker)
+        {
+            CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+            
+            _infoWindow = [[MarkerInfoWindow alloc] init];
+            _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+            _infoWindow.delegate = self;
+            _infoWindow.title = marker.title;
+            _infoWindow.snippet = marker.snippet;
+            _infoWindow.position = marker.position;
+            [self.view addSubview:_infoWindow];
+            _noneSelected = NO;
+        }
     }
 }
 
