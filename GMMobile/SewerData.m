@@ -129,7 +129,7 @@ int SQLOKswr(int sqlReturn, char *method)
 }
 
 - (BOOL)loadPlat:(NSString *)platID
-    usingPopover:(GSSiPopoverView*)popover
+    usingPopover:(GSSiPopoverView *)popover
      andDelegate:(id)delegate
 {
     BOOL fileExists = NO;
@@ -177,6 +177,7 @@ int SQLOKswr(int sqlReturn, char *method)
         
     }
 }
+
 /*- (MNMXCORD)getBoundsForSanPlat:(int)refno
 {
     MNMXCORD bounds;
@@ -223,6 +224,7 @@ int SQLOKswr(int sqlReturn, char *method)
     NSString *platID = [[NSString alloc] init];
     return platID;
 }
+
 - (void)displayPlats:(CGContextRef)context
                 type:(NSString*)platType
             LLBounds:(MNMXCORD *)platlonBounds
@@ -294,39 +296,35 @@ int SQLOKswr(int sqlReturn, char *method)
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         
-        {
-            CGFloat alpha = 0.7;
-            UIColor *color;
-            
-            
-            color = [[UIColor alloc]initWithRed:1.0
-                                                  green:1.0
-                                                   blue:0.0
-                                                  alpha:alpha];
-            [self fillPlat:context
-                     nPoints:numPoints
-                      points:llpoints
-                   withColor:color.CGColor];
+        UIColor *color = [[UIColor alloc] initWithRed:1.0
+                                                green:1.0
+                                                 blue:0.0
+                                                alpha:0.7];
         
-            [self drawPlat:context
-                     nPoints:numPoints
-                      nLoops:numLoops
-                     partLen:polyPartLen
-                      points:llpoints
-                   withColor:UIColor.redColor.CGColor];
-        }
+        [self fillPlat:context
+               nPoints:numPoints
+                points:llpoints
+             withColor:color.CGColor];
         
-        free (llpoints);
+        [self drawPlat:context
+               nPoints:numPoints
+                nLoops:numLoops
+               partLen:polyPartLen
+                points:llpoints
+             withColor:UIColor.redColor.CGColor];
+        
+        free(llpoints);
     }
     
     SQLOK(sqlite3_finalize(statement), "displayParcels");
     [self close];
  
 }
+
 - (void)fillPlat:(CGContextRef)context
-           nPoints:(int)np
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+         nPoints:(int)np
+          points:(LPDPOINT)pPoints
+       withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -350,11 +348,11 @@ int SQLOKswr(int sqlReturn, char *method)
 }
 
 - (void)drawPlat:(CGContextRef)context
-           nPoints:(int)np
-            nLoops:(int)nLoops
-           partLen:(int *)pPartLen
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+         nPoints:(int)np
+          nLoops:(int)nLoops
+         partLen:(int *)pPartLen
+          points:(LPDPOINT)pPoints
+       withColor:(CGColorRef)color
 {
     
     CGContextSetLineWidth(context, 1);
@@ -421,10 +419,10 @@ int SQLOKswr(int sqlReturn, char *method)
     p1.x = pt->lon;
     p1.y = pt->lat;
     minpt = p1;
-    bnds.xmn = p1.x - pickap;
-    bnds.xmx = p1.x + pickap;
-    bnds.ymn = p1.y - pickap;
-    bnds.ymx = p1.y + pickap;
+    bnds.xmn = (p1.x - pickap);
+    bnds.xmx = (p1.x + pickap);
+    bnds.ymn = (p1.y - pickap);
+    bnds.ymx = (p1.y + pickap);
     [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT SANPLATAREAS.id, SANPLATAREAS.PLAT, BasePointX, BasePointY FROM SANPLATAREAS,SANPLATAREAS_index WHERE SANPLATAREAS.id=SANPLATAREAS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -457,7 +455,10 @@ int SQLOKswr(int sqlReturn, char *method)
     [self close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
-    NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg", _documentsDirectory, minPlatID];
+    
+    NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg",
+                          _documentsDirectory, minPlatID];
+    
     CRAPI.sharedInstance.currentPlatImagePath = platFile;
     return minRef;
 }
@@ -476,7 +477,7 @@ int SQLOKswr(int sqlReturn, char *method)
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR platID = (LPSTR)sqlite3_column_text(statement, 0);
-        NSString * plat = [NSString stringWithUTF8String:platID];
+        NSString *plat = [NSString stringWithUTF8String:platID];
         [list addObject:plat];
     }
     
@@ -484,51 +485,63 @@ int SQLOKswr(int sqlReturn, char *method)
     [self close];
     return list;
 }
+
 LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 {
     static char rtn[2][32];
     char fmt[12];
     
-    sprintf (fmt,"%%.%if",ndec);
-    sprintf (rtn[i],fmt,val);
+    sprintf(fmt, "%%.%if", ndec);
+    sprintf(rtn[i], fmt, val);
+    
     if (removeZ)
     {
-        int l = (int)strlen (rtn[i]);
-        LPSTR pLoc = &rtn[i][l-1];
+        int l = (int)strlen(rtn[i]);
+        LPSTR pLoc = &rtn[i][l - 1];
+        
         while (*pLoc == '0')
             pLoc--;
+        
         if (*pLoc == '.')
             pLoc--;
+        
         *(++pLoc) = 0;
     }
+    
     return rtn[i];
 }
--(void)displayStormLine:(CGContextRef)context
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds
+- (void)displayStormLine:(CGContextRef)context
+                LLBounds:(MNMXCORD *)platlonBounds
+              viewBounds:(MNMXCORD *)pvbounds
 {
     
     if (![self continue])
         return;
-    NSString *query,*querys;
+    
+    NSString *query, *queries;
     sqlite3_stmt *statement;
     DPOINT BasePt;
     int numPoints,numLoops;
     LPSTR symName;
-    CGFloat width;
     CGColorRef color;
-    UIColor* darkGreen = [[UIColor alloc]initWithRed:0 green:0.5 blue:0 alpha:1];
-    double invertIn, invertOut, diameterIn,widthIn,heightIn;
-    LPSTR pipeShape;
-    LPSTR material;
-    NSString* lineText=@"";
+    
+    UIColor *darkGreen = [[UIColor alloc] initWithRed:0
+                                                green:0.5
+                                                 blue:0
+                                                alpha:1];
+    
+    CGFloat width, invertIn, invertOut, diameterIn, widthIn, heightIn;
+    LPSTR pipeShape, material;
+    NSString *lineText = @"";
     BOOL addPointers;
     
     CGFloat sizeFactor = 1;
+    
     if (_zoom > 18)
-        sizeFactor *= 2*(_zoom - 18);
+        sizeFactor *= (2.0 * (_zoom - 18.0));
+    
     else if (_zoom < 18)
-        sizeFactor /= 2*(18 - _zoom);
+        sizeFactor /= (2.0 * (18.0 - _zoom));
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -537,12 +550,13 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     [self open];
     
-    for (int pass=0;pass<2;pass++)
+    for (int pass = 0; pass < 2; pass++)
     {
         switch (pass)
         {
             case 0:
                 /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
+                
                 query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,\
                          STORM_LINE.SYMBOLNAME,\
                          STORM_MAIN.INVERT_IN_ELEV,\
@@ -555,6 +569,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                          FROM STORM_LINE,STORM_LINE_index,STORM_MAIN WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_MAIN.FACILITY_ID = STORM_LINE.FACILITY_ID AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 break;
+                
             case 1:
                 query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME != \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -602,32 +617,37 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            if (!strcasecmp(symName,"STRM_PIPE"))
+            if (!strcasecmp(symName, "STRM_PIPE"))
             {
-                CGFloat pattern[2]={40,10};
+                CGFloat pattern[2] = {40.0, 10.0};
                 addPointers = YES;
-                width = 9 * sizeFactor;
-                CGContextSetLineDash (context,5,pattern,2);
+                width = (9.0 * sizeFactor);
+                CGContextSetLineDash (context, 5, pattern, 2);
                 color = darkGreen.CGColor;
+                
                 if (diameterIn<=0)
                 {
-                    lineText = [NSString stringWithFormat:@"%.2f\t%s\"x%s\" %s\t%.2f",invertIn,$RND(0,widthIn,1,FALSE,TRUE),$RND(1,heightIn,1,FALSE,TRUE),material,invertOut];
+                    lineText = [NSString stringWithFormat:@"%.2f\t%s\"x%s\" %s\t%.2f",
+                                invertIn, $RND(0, widthIn, 1, FALSE, TRUE),
+                                $RND(1, heightIn, 1, FALSE, TRUE), material, invertOut];
                 }
+                
                 else
                 {
-                    lineText = [NSString stringWithFormat:@"%.2f\t%s\" %s\t%.2f",invertIn,$RND(0,diameterIn,1,FALSE,TRUE),material,invertOut];
+                    lineText = [NSString stringWithFormat:@"%.2f\t%s\" %s\t%.2f",
+                                invertIn, $RND(0, diameterIn, 1, FALSE, TRUE), material, invertOut];
                 };
-                
-
             }
+            
             else
             {
                 addPointers = NO;
                 lineText = @"";
-                width = 3 * sizeFactor;
-                CGContextSetLineDash (context,1,NULL,0);
+                width = (3 * sizeFactor);
+                CGContextSetLineDash (context, 1, NULL, 0);
                 color = UIColor.greenColor.CGColor;
             }
+            
             [self drawStormLine:context
                         nPoints:numPoints
                         partLen:polyPartLen
@@ -640,21 +660,21 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         
         SQLOK(sqlite3_finalize(statement), "");
     }
+    
     [self close];
 }
 
 - (void)drawStormLine:(CGContextRef)context
-             nPoints:(int)np
-             partLen:(int *)pPartLen
-              points:(LPDPOINT)pPoints
-           withColor:(CGColorRef)color
+              nPoints:(int)np
+              partLen:(int *)pPartLen
+               points:(LPDPOINT)pPoints
+            withColor:(CGColorRef)color
              andWidth:(CGFloat)width
-              andText:(NSString*)text
+              andText:(NSString *)text
           andPointers:(BOOL)addPointers
 {
-    static CGFloat startDist=0;
+    static CGFloat startDist = 0;
     CGContextSetLineWidth(context, width);
-    
     CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
     
     for (int i = 1; i < np; i++)
@@ -664,35 +684,50 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     if (!CGContextIsPathEmpty(context))
     {
-        CGContextSetStrokeColorWithColor(context,color);
+        CGContextSetStrokeColorWithColor(context, color);
         CGContextDrawPath(context, kCGPathStroke);
     }
+    
     if (addPointers)
-        startDist = [self drawDirectionalPointersOnLine:context numPoints:np points:pPoints withColor:color andWidth:width startingAt:startDist];
-    if (np==2 && *text.UTF8String)
-        [self drawTextOnLine:context text:text points:pPoints];
+    {
+        startDist = [self drawDirectionalPointersOnLine:context
+                                              numPoints:np
+                                                 points:pPoints
+                                              withColor:color
+                                               andWidth:width
+                                             startingAt:startDist];
+    }
+    
+    if (np == 2 && * text.UTF8String)
+    {
+        [self drawTextOnLine:context
+                        text:text
+                      points:pPoints];
+    }
 }
 
--(CGFloat) drawDirectionalPointersOnLine:(CGContextRef)context
-                            numPoints:(int)np
-                               points:(LPDPOINT)pPoints
-                            withColor:(CGColorRef)color
-                             andWidth:(CGFloat)lineWidth
+- (CGFloat)drawDirectionalPointersOnLine:(CGContextRef)context
+                               numPoints:(int)np
+                                  points:(LPDPOINT)pPoints
+                               withColor:(CGColorRef)color
+                                andWidth:(CGFloat)lineWidth
                               startingAt:(CGFloat)startDist
 {
-    CGFloat pointerWidth = lineWidth / 5;
-    CGFloat pointerLength = lineWidth * 2;
-    CGFloat spacing = lineWidth * 8;
+    CGFloat pointerWidth = (lineWidth / 5.0);
+    CGFloat pointerLength = (lineWidth * 2.0);
+    CGFloat spacing = (lineWidth * 8.0);
     CGFloat nextDist = startDist;
     int startPointIndex = 0;
     
-    if (nextDist <= spacing/2)
+    if (nextDist <= (spacing / 2.0))
         nextDist = spacing;
-    CGContextSetLineDash (context,1,NULL,0);
+    
+    CGContextSetLineDash (context, 1, NULL, 0);
+    
     while (startPointIndex < np-1)
     {
-        CGFloat dist = ddistp (&pPoints[startPointIndex],&pPoints[startPointIndex+1]);
-        CGFloat az = getazd (&pPoints[startPointIndex],&pPoints[startPointIndex+1]);
+        CGFloat dist = ddistp(&pPoints[startPointIndex], &pPoints[startPointIndex + 1]);
+        CGFloat az = getazd (&pPoints[startPointIndex], &pPoints[startPointIndex + 1]);
         DPOINT startPoint, pointerPoint, offsetPoint;
         
         startPoint = pPoints[startPointIndex];
@@ -701,20 +736,22 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         {
             pointerPoint = dnewpoint(&startPoint, az, nextDist);
             startPoint = pointerPoint;
-            offsetPoint = dnewpoint(&pointerPoint, az+(1.5*HALFPI), pointerLength);
+            offsetPoint = dnewpoint(&pointerPoint, (az + (1.5 * HALFPI)), pointerLength);
             dist -= spacing;
             nextDist = spacing;
             CGContextSetLineWidth(context, pointerWidth);
             CGContextMoveToPoint(context, offsetPoint.x, offsetPoint.y);
-            CGContextAddLineToPoint(context, pointerPoint.x,pointerPoint.y);
-            offsetPoint = dnewpoint(&pointerPoint, az-(1.5*HALFPI), pointerLength);
-            CGContextAddLineToPoint(context, offsetPoint.x,offsetPoint.y);
-            CGContextSetStrokeColorWithColor(context,color);
+            CGContextAddLineToPoint(context, pointerPoint.x, pointerPoint.y);
+            offsetPoint = dnewpoint(&pointerPoint, (az - (1.5 * HALFPI)), pointerLength);
+            CGContextAddLineToPoint(context, offsetPoint.x, offsetPoint.y);
+            CGContextSetStrokeColorWithColor(context, color);
             CGContextDrawPath(context, kCGPathStroke);
         }
+        
         nextDist -= dist;
         startPointIndex++;
     }
+    
     return nextDist;
 }
 
@@ -722,11 +759,9 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                   text:(NSString*)text
                 points:(LPDPOINT)points
 {
-    CGFloat az = getazd(&points[0],&points[1]);
+    CGFloat az = getazd(&points[0], &points[1]);
     CGContextSaveGState(context);
-    CGContextRotateCTM(context,az);
-    
-    
+    CGContextRotateCTM(context, az);
     CGContextRestoreGState(context);
 }
 
@@ -741,13 +776,16 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     LPSTR symName;
     CGFloat size;
     CGFloat sizeFactor = 1;
+    
     if (_zoom > 18)
-        sizeFactor *= 2*(_zoom - 18);
+        sizeFactor *= (2.0 *(_zoom - 18.0));
+    
     else if (_zoom < 18)
-        sizeFactor /= 2*(18 - _zoom);
+        sizeFactor /= (2.0 * (18.0 - _zoom));
     
     if (![self continue])
         return;
+    
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -771,10 +809,13 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         symName = (LPSTR)sqlite3_column_text(statement,2);
         
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        
         if (!strcasecmp(symName, "STRM_MHOL"))
-            size = 20;
+            size = 20.0;
+        
         else
-            size = 8;
+            size = 8.0;
+        
         [self drawStormPoint:context
                     atPoint:&llpoint
                   withColor:UIColor.greenColor.CGColor
@@ -783,21 +824,20 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     SQLOK(sqlite3_finalize(statement), "displayParcels");
     [self close];
-    
 }
 
 - (void) drawStormPoint:(CGContextRef)context
-               atPoint:(DPOINT*)pPoint
+               atPoint:(DPOINT *)pPoint
              withColor:(CGColorRef)color
                 andSize:(CGFloat)size
 
 {
-    CGRect pointRect = CGRectMake(pPoint->x-size/2, pPoint->y-size/2, size, size);
+    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
+                                  (pPoint->y - size / 2.0), size, size);
     
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
-    
 }
 
 @end
