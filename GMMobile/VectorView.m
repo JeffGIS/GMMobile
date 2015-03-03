@@ -157,7 +157,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                      viewBounds:&_viewBounds];
         }*/
         
-        if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+ /*       if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
         {
             PlanimetricData *pd = [[PlanimetricData alloc] init];
             pd.processingID = keepProcessing;
@@ -177,16 +177,25 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             [pd displayWallPoint:_context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
-        }
-        /*{
+        }*/
+        if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+        {
             SewerData *sd = [[SewerData alloc] init];
             sd.processingID = keepProcessing;
+            sd.zoom = _zoom;
             
-            [sd displayPlats:_context
+            [sd displayStormLine:_context
+                       LLBounds:&_latlonBounds
+                     viewBounds:&_viewBounds];
+            
+            [sd displayStormPoint:_context
+                        LLBounds:&_latlonBounds
+                      viewBounds:&_viewBounds];
+            /*[sd displayPlats:_context
                         type:@"SAN"
                     LLBounds:&_latlonBounds
-                  viewBounds:&_viewBounds];
-        }*/
+                  viewBounds:&_viewBounds];*/
+        }
         if (self.displayData && keepProcessing == self.displayID)
         {
             CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);
