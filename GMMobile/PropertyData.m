@@ -639,6 +639,7 @@ int SQLOKpd(int sqlReturn, char *method)
             query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             break;
+            
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
@@ -648,6 +649,7 @@ int SQLOKpd(int sqlReturn, char *method)
    
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
     NSLog (@"Prepared");
+    
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement,7);
@@ -903,7 +905,7 @@ int SQLOKpd(int sqlReturn, char *method)
         
         if (textSize.width < size)
         {
-            CGFloat yoffset = textSize.height / 2;// * (yoffinc++ % 2);
+            CGFloat yoffset = (textSize.height / 2);// * (yoffinc++ % 2);
             CGPathAddRect(path, NULL, CGRectMake((pviewPoint->x - (size / 2.0)),
                                                  (pviewPoint->y - size + yoffset), size, size));
             

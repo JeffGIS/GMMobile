@@ -21,6 +21,7 @@ static SewerData *_sewerData;
 {
     if (self.processingID == keepProcessing)
         return YES;
+    
     return NO;
 }
 
@@ -53,7 +54,6 @@ int SQLOKswr(int sqlReturn, char *method)
         _fileName = @"Sewer.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _sewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
-        
     }
     
     return self;
@@ -614,10 +614,10 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     LPSTR symName;
     CGColorRef color;
     
-    UIColor *darkGreen = [[UIColor alloc] initWithRed:0
+    UIColor *darkGreen = [[UIColor alloc] initWithRed:0.0
                                                 green:0.5
-                                                 blue:0
-                                                alpha:1];
+                                                 blue:0.0
+                                                alpha:1.0];
     
     CGFloat width, invertIn, invertOut, diameterIn, widthIn, heightIn;
     LPSTR pipeShape, material;
@@ -787,7 +787,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                                              startingAt:startDist];
     }
     
-    if (np == 2 && * text.UTF8String)
+    if (np == 2 && text && ![text isEqualToString:@""])
     {
         [self drawTextOnLine:context
                         text:text
@@ -844,19 +844,132 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     return nextDist;
 }
 
--(void) drawTextOnLine:(CGContextRef)context
-                  text:(NSString*)text
+- (void)drawTextOnLine:(CGContextRef)context
+                  text:(NSString *)text
                 points:(LPDPOINT)points
 {
+    CGFloat fontSize = 24.0;
+    CGFloat textHeight = (_zoom * 3.0);
     CGFloat az = getazd(&points[0], &points[1]);
+    
+    if (_zoom > 18)
+    {
+        fontSize += ((_zoom - 18.0) * 6.0);
+        textHeight += ((_zoom - 18.0) * 16.0);
+    }
+    
+    UIColor *color = [[UIColor alloc] initWithRed:0.0
+                                            green:0.5
+                                             blue:0.0
+                                            alpha:1.0];
+    
     CGContextSaveGState(context);
+    
+    NSString *invertIn = [UserDefaults.defaults includeTextBeforeTab:text];
+    NSString *invertOut = [UserDefaults.defaults includeTextAfterLastTab:text];
+    
+    NSString *pipe = [UserDefaults.defaults includeTextBeforeTab:
+                      [UserDefaults.defaults includeTextAfterTab:text]];
+    
+    CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                             fontSize, NULL);
+    
+    NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+    style.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *pipeAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    (__bridge id)fontRef, kCTFontAttributeName,
+                                    style, kCTParagraphStyleAttributeName,
+                                    color.CGColor, kCTForegroundColorAttributeName,
+                                    nil];
+    
+    NSDictionary *invertInAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        (__bridge id)fontRef, kCTFontAttributeName,
+                                        style, kCTParagraphStyleAttributeName,
+                                        UIColor.blueColor.CGColor, kCTForegroundColorAttributeName,
+                                        nil];
+    
+    NSDictionary *invertOutAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                         (__bridge id)fontRef, kCTFontAttributeName,
+                                         style, kCTParagraphStyleAttributeName,
+                                         UIColor.redColor.CGColor, kCTForegroundColorAttributeName,
+                                         nil];
+    
+    CFRelease(fontRef);
+    
+    CGMutablePathRef path = CGPathCreateMutable();
+    
+    CGSize textSize = [pipe sizeWithAttributes:pipeAttributes];
+    
+    CGPoint center = CGPointMake(((points[0].x + points[1].x) / 2.0),
+                                 ((points[0].y + points[1].y) / 2.0));
+    
+    CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
+    
+    CGPathAddRect(path, NULL, CGRectMake((-textSize.width / 2.0), 0.0,
+                                         textSize.width, textHeight));
+    
+    NSAttributedString *attString = [[NSAttributedString alloc] initWithString:pipe
+                                                                    attributes:pipeAttributes];
+    
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+    
+    CTFrameDraw(frame, context);
+    
+    CGContextRestoreGState(context);
+    CGContextSaveGState(context);
+    
+    textSize = [invertIn sizeWithAttributes:invertInAttributes];
+    
+    center = CGPointMake(points[0].x, points[0].y);
+    
+    CGContextTranslateCTM(context, center.x, center.y);
+    CGContextRotateCTM(context, az);
+    
+    CGPathAddRect(path, NULL, CGRectMake((textSize.width * 1.8), 0.0,
+                                         textSize.width, textHeight));
+    
+    attString = [[NSAttributedString alloc] initWithString:invertIn
+                                                attributes:invertInAttributes];
+    
+    framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+    
+    CTFrameDraw(frame, context);
+    
+    CGContextRestoreGState(context);
+    CGContextSaveGState(context);
+    
+    textSize = [invertOut sizeWithAttributes:invertOutAttributes];
+    
+    center = CGPointMake(points[1].x, points[1].y);
+    
+    CGContextTranslateCTM(context, center.x, center.y);
+    CGContextRotateCTM(context, az);
+    
+    CGPathAddRect(path, NULL, CGRectMake((-textSize.width * 1.8), 0.0,
+                                         textSize.width, textHeight));
+    
+    attString = [[NSAttributedString alloc] initWithString:invertOut
+                                                attributes:invertOutAttributes];
+    
+    framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+    
+    CTFrameDraw(frame, context);
+    
+    CFRelease(frame);
+    CFRelease(path);
+    CFRelease(framesetter);
+    
     CGContextRestoreGState(context);
 }
 
--(void)displayStormPoint:(CGContextRef)context
-               LLBounds:(MNMXCORD *)platlonBounds
-             viewBounds:(MNMXCORD *)pvbounds
+- (void)displayStormPoint:(CGContextRef)context
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds
 {
     NSString *query;
     sqlite3_stmt *statement;
