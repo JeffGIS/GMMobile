@@ -3,6 +3,9 @@
 
 #define GET_SANPLAT 11
 
+#define LINE_PASS   1
+#define TEXT_PASS   2
+
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
@@ -33,7 +36,7 @@
             viewBounds:(MNMXCORD *)pvbounds;
 
 -(void)displayStormLine:(CGContextRef)context
-
+                   pass:(int)pass
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 

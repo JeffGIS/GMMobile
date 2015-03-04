@@ -185,12 +185,18 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             sd.zoom = _zoom;
             
             [sd displayStormLine:_context
+                            pass:LINE_PASS
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
             
             [sd displayStormPoint:_context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
+            [sd displayStormLine:_context
+                            pass:TEXT_PASS
+                        LLBounds:&_latlonBounds
+                      viewBounds:&_viewBounds];
+            
             /*[sd displayPlats:_context
                         type:@"SAN"
                     LLBounds:&_latlonBounds
