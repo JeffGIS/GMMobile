@@ -706,6 +706,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
+            
             if (!strcasecmp(symName, "STRM_PIPE"))
             {
                 CGFloat pattern[2] = {40.0, 10.0};
@@ -714,7 +715,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                 CGContextSetLineDash (context, 5, pattern, 2);
                 color = darkGreen.CGColor;
                 
-                if (diameterIn<=0)
+                if (diameterIn <= 0)
                 {
                     lineText = [NSString stringWithFormat:@"%.2f\t%s\"x%s\" %s\t%.2f",
                                 invertIn, $RND(0, widthIn, 1, FALSE, TRUE),
@@ -849,23 +850,20 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                 points:(LPDPOINT)points
 {
     CGFloat fontSize = 24.0;
-    CGFloat textHeight = (_zoom * 3.0);
     CGFloat az = getazd(&points[0], &points[1]);
-    BOOL flip = FALSE;
+    BOOL flip = NO;
     
-    if (az > HALFPI && az < 3*HALFPI)
+    if ((az > HALFPI) && (az < (3 * HALFPI)))
     {
         DPOINT savePt = points[0];
         points[0] = points[1];
         points[1] = savePt;
         az += PY;
-        flip = TRUE;
+        flip = YES;
     }
+    
     if (_zoom > 18)
-    {
         fontSize += ((_zoom - 18.0) * 6.0);
-        textHeight += ((_zoom - 18.0) * 16.0);
-    }
     
     UIColor *color = [[UIColor alloc] initWithRed:0.0
                                             green:0.5
@@ -876,11 +874,13 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     NSString *invertIn;
     NSString *invertOut;
+    
     if (flip)
     {
         invertOut = [UserDefaults.defaults includeTextBeforeTab:text];
         invertIn = [UserDefaults.defaults includeTextAfterLastTab:text];
     }
+    
     else
     {
         invertIn = [UserDefaults.defaults includeTextBeforeTab:text];
@@ -916,7 +916,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     CFRelease(fontRef);
     
-    CGMutablePathRef path = CGPathCreateMutable();
+    CGMutablePathRef path1 = CGPathCreateMutable();
     
     CGSize textSize = [pipe sizeWithAttributes:pipeAttributes];
     
@@ -926,40 +926,25 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGPathAddRect(path, NULL, CGRectMake((-textSize.width / 2.0), 0.0,
-                                         textSize.width, textHeight));
+    CGPathAddRect(path1, NULL, CGRectMake((-textSize.width / 2.0), (textSize.height * 0.4),
+                                          textSize.width, (textSize.height * 2.0)));
     
     NSAttributedString *attString = [[NSAttributedString alloc] initWithString:pipe
                                                                     attributes:pipeAttributes];
     
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-    CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+    CTFramesetterRef framesetter1 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef frame1 = CTFramesetterCreateFrame(framesetter1, CFRangeMake(0, 0), path1, NULL);
     
-    CTFrameDraw(frame, context);
+    CTFrameDraw(frame1, context);
     
-    CGContextRestoreGState(context);
-    CGContextSaveGState(context);
-    
-    textSize = [invertIn sizeWithAttributes:invertInAttributes];
-    
-    center = CGPointMake(points[0].x, points[0].y);
-    
-    CGContextTranslateCTM(context, center.x, center.y);
-    CGContextRotateCTM(context, az);
-    
-    CGPathAddRect(path, NULL, CGRectMake((textSize.width * 1.8), 0.0,
-                                         textSize.width, textHeight));
-    
-    attString = [[NSAttributedString alloc] initWithString:invertIn
-                                                attributes:invertInAttributes];
-    
-    framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-    frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
-    
-    CTFrameDraw(frame, context);
+    CFRelease(frame1);
+    CFRelease(path1);
+    CFRelease(framesetter1);
     
     CGContextRestoreGState(context);
     CGContextSaveGState(context);
+    
+    CGMutablePathRef path2 = CGPathCreateMutable();
     
     textSize = [invertOut sizeWithAttributes:invertOutAttributes];
     
@@ -968,20 +953,47 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGPathAddRect(path, NULL, CGRectMake((-textSize.width * 1.8), 0.0,
-                                         textSize.width, textHeight));
+    CGPathAddRect(path2, NULL, CGRectMake((-textSize.width - 10.0), (-textSize.height * 0.4),
+                                          textSize.width, (textSize.height * 2.0)));
     
     attString = [[NSAttributedString alloc] initWithString:invertOut
                                                 attributes:invertOutAttributes];
     
-    framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-    frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+    CTFramesetterRef framesetter2 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef frame2 = CTFramesetterCreateFrame(framesetter2, CFRangeMake(0, 0), path2, NULL);
     
-    CTFrameDraw(frame, context);
+    CTFrameDraw(frame2, context);
     
-    CFRelease(frame);
-    CFRelease(path);
-    CFRelease(framesetter);
+    CFRelease(frame2);
+    CFRelease(path2);
+    CFRelease(framesetter2);
+    
+    CGContextRestoreGState(context);
+    CGContextSaveGState(context);
+    
+    CGMutablePathRef path3 = CGPathCreateMutable();
+    
+    textSize = [invertIn sizeWithAttributes:invertInAttributes];
+    
+    center = CGPointMake(points[0].x, points[0].y);
+    
+    CGContextTranslateCTM(context, center.x, center.y);
+    CGContextRotateCTM(context, az);
+    
+    CGPathAddRect(path3, NULL, CGRectMake(10.0, (-textSize.height * 2.4),
+                                          textSize.width, (textSize.height * 2.0)));
+    
+    attString = [[NSAttributedString alloc] initWithString:invertIn
+                                                attributes:invertInAttributes];
+    
+    CTFramesetterRef framesetter3 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef frame3 = CTFramesetterCreateFrame(framesetter3, CFRangeMake(0, 0), path3, NULL);
+    
+    CTFrameDraw(frame3, context);
+    
+    CFRelease(frame3);
+    CFRelease(path3);
+    CFRelease(framesetter3);
     
     CGContextRestoreGState(context);
 }
