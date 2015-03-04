@@ -431,7 +431,7 @@ int SQLOKpd(int sqlReturn, char *method)
     return array;
 }
 
-- (NSString *)pickPID:(LLPOINT *)pt
+- (NSString *)pickPID:(LLPOINT *)pt distToPID:(CGFloat *)pdist
 {
     NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
@@ -479,6 +479,7 @@ int SQLOKpd(int sqlReturn, char *method)
     [self close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
+    *pdist = mind;
     return minPID;
 }
 

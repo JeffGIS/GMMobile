@@ -348,14 +348,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     else
     {
         LLPOINT llp, llpSewer;
+        CGFloat dist;
         llp.lat = coordinate.latitude;
         llp.lon = coordinate.longitude;
         llpSewer = llp;
+        NSMutableArray * highlightList=[[NSMutableArray alloc]init];
         
         PropertyData *propData = [[PropertyData alloc] init];
-        _selectedPID = [propData pickPID:&llp];
+        _selectedPID = [propData pickPID:&llp distToPID:&dist];
         SewerData *sewerData = [[SewerData alloc] init];
         _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
+        if ([sewerData pickSewer:&llp highlightList:highlightList])
+        {
+            NSString * fid = (NSString*)highlightList[0];
+            [sewerData tracePipeDownstream:fid];
+        }
         coordinate.latitude = llp.lat;
         coordinate.longitude = llp.lon;
         

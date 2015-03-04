@@ -40,11 +40,15 @@
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds;
 
+- (int)pickSewer:(LLPOINT*)pt
+          highlightList:(NSMutableArray*)hlist;
 
 
 - (int)pickSanPlat:(LLPOINT *)pt;
 - (NSString *)getSanPlatIDFromRefno:(int)refno;
 - (NSMutableArray *)getAllSanPlats;
+
+-(void)tracePipeDownstream:(NSString*)fromFacilityID;
 
 - (BOOL)loadPlat:(NSString *)platID
     usingPopover:(GSSiPopoverView *)popover

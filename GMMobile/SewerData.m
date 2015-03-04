@@ -407,6 +407,95 @@ int SQLOKswr(int sqlReturn, char *method)
     }
 }
 
+-(BOOL)getUpDownNodes:(LPSTR)atFid up:(LPSTR)upNode dn:(LPSTR)dnNode
+{
+    BOOL rtn=FALSE;
+    sqlite3_stmt *statement;
+    NSString * query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = '%s'",atFid];
+    
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        strcpy (upNode,(LPSTR)sqlite3_column_text(statement, 0));
+        strcpy (dnNode,(LPSTR)sqlite3_column_text(statement, 1));
+        rtn = TRUE;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    return rtn;
+}
+-(void)tracePipeDownstream:(NSString*)fromFacilityID
+{
+    char cmd[512];
+    char upNode[16], dnNode[16];
+    
+    [self open];
+    if ([self getUpDownNodes:(LPSTR)fromFacilityID.UTF8String up:upNode dn:dnNode])
+    {
+        [self executeCmd:"CREATE TEMP TABLE TRACE_NEXT (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
+        sprintf (cmd,"INSERT INTO TRACE_NEXT VALUES(1,'%s','%s','%s');",fromFacilityID.UTF8String,upNode,dnNode);
+        [self executeCmd:cmd];
+    }
+    [self close];
+    return;
+}
+
+- (int)pickSewer:(LLPOINT*)pt
+   highlightList:(NSMutableArray*)hlist
+{
+    int nPicked = 0;
+    dbounds bnds;
+    CGFloat d, mind = DBL_MAX;
+    CGFloat pickap = 0.005;
+    DPOINT p1, p2, minpt;
+    NSString * minFid=@"";
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    bnds.xmn = (p1.x - pickap);
+    bnds.xmx = (p1.x + pickap);
+    bnds.ymn = (p1.y - pickap);
+    bnds.ymx = (p1.y + pickap);
+    [self open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement;
+    
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR FACILITY_ID = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lon = sqlite3_column_double(statement, 2);
+        CGFloat lat = sqlite3_column_double(statement, 3);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1, p2);
+        
+        if (d < mind)
+        {
+            mind = d;
+            minpt = p2;
+            minFid = [NSString stringWithUTF8String:FACILITY_ID];
+            nPicked = 1;
+        }
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
+    [self close];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    if (nPicked)
+        [hlist addObject:minFid];
+    
+    return nPicked;
+}
+
 - (int)pickSanPlat:(LLPOINT *)pt
 {
     int minRef = 0;
@@ -436,8 +525,8 @@ int SQLOKswr(int sqlReturn, char *method)
     {
         int refno = sqlite3_column_int(statement, 0);
         LPSTR platID = (LPSTR)sqlite3_column_text(statement, 1);
-        CGFloat lat = sqlite3_column_double(statement, 2);
-        CGFloat lon = sqlite3_column_double(statement, 3);
+        CGFloat lon = sqlite3_column_double(statement, 2);
+        CGFloat lat = sqlite3_column_double(statement, 3);
         p2.x = lon;
         p2.y = lat;
         d = ArcDistance(p1, p2);
