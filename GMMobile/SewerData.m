@@ -851,7 +851,16 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGFloat fontSize = 24.0;
     CGFloat textHeight = (_zoom * 3.0);
     CGFloat az = getazd(&points[0], &points[1]);
+    BOOL flip = FALSE;
     
+    if (az > HALFPI && az < 3*HALFPI)
+    {
+        DPOINT savePt = points[0];
+        points[0] = points[1];
+        points[1] = savePt;
+        az += PY;
+        flip = TRUE;
+    }
     if (_zoom > 18)
     {
         fontSize += ((_zoom - 18.0) * 6.0);
@@ -865,8 +874,18 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     CGContextSaveGState(context);
     
-    NSString *invertIn = [UserDefaults.defaults includeTextBeforeTab:text];
-    NSString *invertOut = [UserDefaults.defaults includeTextAfterLastTab:text];
+    NSString *invertIn;
+    NSString *invertOut;
+    if (flip)
+    {
+        invertOut = [UserDefaults.defaults includeTextBeforeTab:text];
+        invertIn = [UserDefaults.defaults includeTextAfterLastTab:text];
+    }
+    else
+    {
+        invertIn = [UserDefaults.defaults includeTextBeforeTab:text];
+        invertOut = [UserDefaults.defaults includeTextAfterLastTab:text];
+    }
     
     NSString *pipe = [UserDefaults.defaults includeTextBeforeTab:
                       [UserDefaults.defaults includeTextAfterTab:text]];
