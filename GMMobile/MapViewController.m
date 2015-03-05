@@ -357,11 +357,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         PropertyData *propData = [[PropertyData alloc] init];
         _selectedPID = [propData pickPID:&llp distToPID:&dist];
         SewerData *sewerData = [[SewerData alloc] init];
+        PipeTrace *pipeTrace = [[PipeTrace alloc]init];
+        
         _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
         if ([sewerData pickSewer:&llp highlightList:highlightList])
         {
             NSString * fid = (NSString*)highlightList[0];
-            [sewerData tracePipeDownstream:fid];
+            [pipeTrace tracePipeDownstream:fid];
         }
         coordinate.latitude = llp.lat;
         coordinate.longitude = llp.lon;
