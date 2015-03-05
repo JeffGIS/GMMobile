@@ -885,8 +885,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     CFRelease(fontRef);
     
-    CGMutablePathRef path1 = CGPathCreateMutable();
-    
     CGSize textSize = [pipe sizeWithAttributes:pipeAttributes];
     
     CGPoint center = CGPointMake(((points[0].x + points[1].x) / 2.0),
@@ -898,7 +896,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect1 = CGRectMake((-textSize.width * 0.55), (textSize.height * 0.4),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    CGPathAddRect(path1, NULL, rect1);
+    CGPathRef path1 = CGPathCreateWithRect(rect1, NULL);
     
     CGContextSetFillColorWithColor(context, color.CGColor);
     CGContextSetAlpha(context, 0.2);
@@ -919,8 +917,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextRestoreGState(context);
     CGContextSaveGState(context);
     
-    CGMutablePathRef path2 = CGPathCreateMutable();
-    
     textSize = [invertOut sizeWithAttributes:invertOutAttributes];
     
     center = CGPointMake(points[1].x, points[1].y);
@@ -931,7 +927,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect2 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    CGPathAddRect(path2, NULL, rect2);
+    CGPathRef path2 = CGPathCreateWithRect(rect2, NULL);
     
     CGContextSetFillColorWithColor(context, UIColor.blueColor.CGColor);
     CGContextSetAlpha(context, 0.2);
@@ -952,8 +948,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextRestoreGState(context);
     CGContextSaveGState(context);
     
-    CGMutablePathRef path3 = CGPathCreateMutable();
-    
     textSize = [invertIn sizeWithAttributes:invertInAttributes];
     
     center = CGPointMake(points[0].x, points[0].y);
@@ -964,7 +958,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect3 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    CGPathAddRect(path3, NULL, rect3);
+    CGPathRef path3 = CGPathCreateWithRect(rect3, NULL);
     
     CGContextSetFillColorWithColor(context, UIColor.redColor.CGColor);
     CGContextSetAlpha(context, 0.2);
