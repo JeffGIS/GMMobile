@@ -874,13 +874,13 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     NSDictionary *invertInAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                         (__bridge id)fontRef, kCTFontAttributeName,
                                         style, kCTParagraphStyleAttributeName,
-                                        UIColor.blueColor.CGColor, kCTForegroundColorAttributeName,
+                                        UIColor.redColor.CGColor, kCTForegroundColorAttributeName,
                                         nil];
     
     NSDictionary *invertOutAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                          (__bridge id)fontRef, kCTFontAttributeName,
                                          style, kCTParagraphStyleAttributeName,
-                                         UIColor.redColor.CGColor, kCTForegroundColorAttributeName,
+                                         UIColor.blueColor.CGColor, kCTForegroundColorAttributeName,
                                          nil];
     
     CFRelease(fontRef);
@@ -928,12 +928,12 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGRect rect2 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
+    CGRect rect2 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
     CGPathAddRect(path2, NULL, rect2);
     
-    CGContextSetFillColorWithColor(context, UIColor.redColor.CGColor);
+    CGContextSetFillColorWithColor(context, UIColor.blueColor.CGColor);
     CGContextSetAlpha(context, 0.2);
     CGContextFillRect(context, rect2);
     
@@ -961,12 +961,12 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGRect rect3 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
+    CGRect rect3 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
     CGPathAddRect(path3, NULL, rect3);
     
-    CGContextSetFillColorWithColor(context, UIColor.blueColor.CGColor);
+    CGContextSetFillColorWithColor(context, UIColor.redColor.CGColor);
     CGContextSetAlpha(context, 0.2);
     CGContextFillRect(context, rect3);
     

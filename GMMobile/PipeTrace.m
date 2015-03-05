@@ -1,10 +1,5 @@
-//
 //  PipeTrace.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 3/5/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "PipeTrace.h"
 #import "SewerData.h"
@@ -17,7 +12,6 @@ typedef struct {
 @implementation PipeTrace
 {
     SewerData * _sd;
-
 }
 
 -(BOOL)getUpDownNodes:(LPSTR)atFid up:(LPSTR)upNode dn:(LPSTR)dnNode
@@ -39,7 +33,7 @@ typedef struct {
     return rtn;
 }
 
--(void)tracePipeDownstream:(NSString*)fromFacilityID
+- (void)tracePipeDownstream:(NSString *)fromFacilityID
 {
     char cmd[512];
     char upNode[16], dnNode[16];
@@ -47,15 +41,23 @@ typedef struct {
     _sd = [[SewerData alloc]init];
     
     [_sd open];
-    if ([self getUpDownNodes:(LPSTR)fromFacilityID.UTF8String up:upNode dn:dnNode])
+    
+    if ([self getUpDownNodes:(LPSTR)fromFacilityID.UTF8String
+                          up:upNode
+                          dn:dnNode])
     {
         [_sd executeCmd:"CREATE TEMP TABLE TRACE_NEXT (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
         [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FEATURE_ID CHAR(12) PRIMARY KEY);"];
-        sprintf (cmd,"INSERT INTO TRACE_NEXT VALUES(1,'%s','%s','%s');",fromFacilityID.UTF8String,upNode,dnNode);
+        
+        sprintf (cmd,"INSERT INTO TRACE_NEXT VALUES(1,'%s','%s','%s');",
+                 fromFacilityID.UTF8String, upNode, dnNode);
+        
         [_sd executeCmd:cmd];
         [_sd executeCmd:"CREATE TEMP TABLE TRACE_PIPE (FEATURE_ID CHAR(12) PRIMARY KEY,UPPIPE CHAR(12),SQ INT,NFOUND INT);"];
-        int SEARCHSEQ=0,NPIPES=0;
+        
+        int SEARCHSEQ = 0, NPIPES = 0;
     }
+    
     [_sd close];
     return;
 }
@@ -124,6 +126,5 @@ typedef struct {
  $DELETEFILE([NXTFILE]);
  $CLOSE(REVERSE);
  */
-
 
 @end
