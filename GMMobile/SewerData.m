@@ -842,8 +842,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     CGContextSaveGState(context);
     
-    NSString *invertIn;
-    NSString *invertOut;
+    NSString *invertIn, *invertOut;
     
     if (flip)
     {
@@ -896,12 +895,14 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGRect rect1 = CGRectMake((-textSize.width / 2.0), (-textSize.height * 0.4),
-                              textSize.width, (textSize.height * 2.0));
-    
-    NSLog(@"%f,%f,%f,%f", rect1.origin.x, rect1.origin.y, center.x, center.y);
+    CGRect rect1 = CGRectMake((-textSize.width * 0.55), (textSize.height * 0.4),
+                              (textSize.width * 1.1), (textSize.height * 1.1));
     
     CGPathAddRect(path1, NULL, rect1);
+    
+    CGContextSetFillColorWithColor(context, color.CGColor);
+    CGContextSetAlpha(context, 0.2);
+    CGContextFillRect(context, rect1);
     
     NSAttributedString *attString = [[NSAttributedString alloc] initWithString:pipe
                                                                     attributes:pipeAttributes];
@@ -927,10 +928,14 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGRect rect2 = CGRectMake((-textSize.width - 10.0), (-textSize.height * 2.4),
-                              textSize.width, (textSize.height * 2.0));
+    CGRect rect2 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
+                              (textSize.width * 1.1), (textSize.height * 1.1));
     
     CGPathAddRect(path2, NULL, rect2);
+    
+    CGContextSetFillColorWithColor(context, UIColor.redColor.CGColor);
+    CGContextSetAlpha(context, 0.2);
+    CGContextFillRect(context, rect2);
     
     attString = [[NSAttributedString alloc] initWithString:invertOut
                                                 attributes:invertOutAttributes];
@@ -956,10 +961,14 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGRect rect3 = CGRectMake(10.0, (-textSize.height * 2.4),
-                              textSize.width, (textSize.height * 2.0));
+    CGRect rect3 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
+                              (textSize.width * 1.1), (textSize.height * 1.1));
     
     CGPathAddRect(path3, NULL, rect3);
+    
+    CGContextSetFillColorWithColor(context, UIColor.blueColor.CGColor);
+    CGContextSetAlpha(context, 0.2);
+    CGContextFillRect(context, rect3);
     
     attString = [[NSAttributedString alloc] initWithString:invertIn
                                                 attributes:invertInAttributes];
@@ -1037,10 +1046,10 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     [self close];
 }
 
-- (void) drawStormPoint:(CGContextRef)context
+- (void)drawStormPoint:(CGContextRef)context
                atPoint:(DPOINT *)pPoint
              withColor:(CGColorRef)color
-                andSize:(CGFloat)size
+               andSize:(CGFloat)size
 
 {
     CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
