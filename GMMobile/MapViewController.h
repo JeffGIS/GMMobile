@@ -6,6 +6,7 @@
 #import "FindViewController.h"
 #import "PropertyData.h"
 #import "SewerData.h"
+#import "PipeTrace.h"
 #import "VectorView.h"
 #import "PlatView.h"
 #import "GSSiTileOverlayRenderer.h"

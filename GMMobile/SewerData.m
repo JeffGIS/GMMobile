@@ -3,6 +3,7 @@
 
 extern int keepProcessing;
 
+
 #import "SewerData.h"
 #define COORDINATE_FACTOR 10000000.0
 
@@ -203,7 +204,7 @@ int SQLOKswr(int sqlReturn, char *method)
             break;
     }
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundsForPID");
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetBoundsForPID");
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -213,7 +214,7 @@ int SQLOKswr(int sqlReturn, char *method)
         bounds.ymx = sqlite3_column_double(statement, 4);
     }
     
-    SQLOK(sqlite3_finalize(statement), "getBoundsforPID");
+    SQLOKswr(sqlite3_finalize(statement), "getBoundsforPID");
     
     [self close];
     return bounds;
@@ -260,7 +261,7 @@ int SQLOKswr(int sqlReturn, char *method)
     query = [NSString stringWithFormat:@"SELECT SANPLATAREAS.id, SANPLATAREAS.PLAT, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM SANPLATAREAS,SANPLATAREAS_index WHERE SANPLATAREAS.id=SANPLATAREAS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
     NSLog (@"Prepared");
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -316,7 +317,7 @@ int SQLOKswr(int sqlReturn, char *method)
         free(llpoints);
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOKswr(sqlite3_finalize(statement), "displayParcels");
     [self close];
  
 }
@@ -405,40 +406,6 @@ int SQLOKswr(int sqlReturn, char *method)
             CGContextDrawPath(context, kCGPathStroke);
         }
     }
-}
-
--(BOOL)getUpDownNodes:(LPSTR)atFid up:(LPSTR)upNode dn:(LPSTR)dnNode
-{
-    BOOL rtn=FALSE;
-    sqlite3_stmt *statement;
-    NSString * query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = '%s'",atFid];
-    
-    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "");
-    
-    if (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        strcpy (upNode,(LPSTR)sqlite3_column_text(statement, 0));
-        strcpy (dnNode,(LPSTR)sqlite3_column_text(statement, 1));
-        rtn = TRUE;
-    }
-    
-    SQLOKswr(sqlite3_finalize(statement), "");
-    return rtn;
-}
--(void)tracePipeDownstream:(NSString*)fromFacilityID
-{
-    char cmd[512];
-    char upNode[16], dnNode[16];
-    
-    [self open];
-    if ([self getUpDownNodes:(LPSTR)fromFacilityID.UTF8String up:upNode dn:dnNode])
-    {
-        [self executeCmd:"CREATE TEMP TABLE TRACE_NEXT (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
-        sprintf (cmd,"INSERT INTO TRACE_NEXT VALUES(1,'%s','%s','%s');",fromFacilityID.UTF8String,upNode,dnNode);
-        [self executeCmd:cmd];
-    }
-    [self close];
-    return;
 }
 
 - (int)pickSewer:(LLPOINT*)pt
@@ -665,7 +632,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                 break;
         }
         
-        SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "prepareDisplayStormLine");
+        SQLOKswr(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "prepareDisplayStormLine");
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -748,7 +715,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                     andPointers:addPointers];
         }
         
-        SQLOK(sqlite3_finalize(statement), "");
+        SQLOKswr(sqlite3_finalize(statement), "");
     }
     
     [self close];
@@ -1033,7 +1000,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "prepareDisplayStorm");
+    SQLOKswr(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "prepareDisplayStorm");
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1055,7 +1022,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                     andSize:size*sizeFactor];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOKswr(sqlite3_finalize(statement), "displayParcels");
     [self close];
 }
 

@@ -7,6 +7,8 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
 
+int SQLOKswr(int sqlReturn, char *method);
+
 @interface SewerData : NSObject<FTPDataPullDelegate>
 
 @property sqlite3 *database;
@@ -49,7 +51,6 @@
 - (NSString *)getSanPlatIDFromRefno:(int)refno;
 - (NSMutableArray *)getAllSanPlats;
 
--(void)tracePipeDownstream:(NSString*)fromFacilityID;
 
 - (BOOL)loadPlat:(NSString *)platID
     usingPopover:(GSSiPopoverView *)popover
