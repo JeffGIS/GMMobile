@@ -7,9 +7,11 @@ extern int keepProcessing;
 #define COORDINATE_FACTOR 10000000.0
 
 static BOOL createDirectory = YES;
+
 @interface SewerData ()
 
 @property (nonatomic) GSSiPopoverView *popover;
+@property (nonatomic) NSMutableArray *pointsArray;
 
 @end
 
@@ -17,7 +19,7 @@ static BOOL createDirectory = YES;
 
 static SewerData *_sewerData;
 
-- (BOOL) continue
+- (BOOL)continue
 {
     if (self.processingID == keepProcessing)
         return YES;
@@ -54,6 +56,7 @@ int SQLOKswr(int sqlReturn, char *method)
         _fileName = @"Sewer.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _sewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
+        _pointsArray = [[NSMutableArray alloc] init];
     }
     
     return self;
@@ -926,8 +929,12 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGPathAddRect(path1, NULL, CGRectMake((-textSize.width / 2.0), (textSize.height * 0.4),
-                                          textSize.width, (textSize.height * 2.0)));
+    CGRect rect1 = CGRectMake((-textSize.width / 2.0), (-textSize.height * 0.4),
+                              textSize.width, (textSize.height * 2.0));
+    
+    NSLog(@"%f,%f,%f,%f", rect1.origin.x, rect1.origin.y, center.x, center.y);
+    
+    CGPathAddRect(path1, NULL, rect1);
     
     NSAttributedString *attString = [[NSAttributedString alloc] initWithString:pipe
                                                                     attributes:pipeAttributes];
@@ -953,8 +960,10 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGPathAddRect(path2, NULL, CGRectMake((-textSize.width - 10.0), (-textSize.height * 0.4),
-                                          textSize.width, (textSize.height * 2.0)));
+    CGRect rect2 = CGRectMake((-textSize.width - 10.0), (-textSize.height * 2.4),
+                              textSize.width, (textSize.height * 2.0));
+    
+    CGPathAddRect(path2, NULL, rect2);
     
     attString = [[NSAttributedString alloc] initWithString:invertOut
                                                 attributes:invertOutAttributes];
@@ -980,8 +989,10 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextTranslateCTM(context, center.x, center.y);
     CGContextRotateCTM(context, az);
     
-    CGPathAddRect(path3, NULL, CGRectMake(10.0, (-textSize.height * 2.4),
-                                          textSize.width, (textSize.height * 2.0)));
+    CGRect rect3 = CGRectMake(10.0, (-textSize.height * 2.4),
+                              textSize.width, (textSize.height * 2.0));
+    
+    CGPathAddRect(path3, NULL, rect3);
     
     attString = [[NSAttributedString alloc] initWithString:invertIn
                                                 attributes:invertInAttributes];
