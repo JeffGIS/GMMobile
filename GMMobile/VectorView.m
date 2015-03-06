@@ -192,6 +192,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             [sd displayStormPoint:_context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
+            
             [sd displayStormLine:_context
                             pass:TEXT_PASS
                         LLBounds:&_latlonBounds

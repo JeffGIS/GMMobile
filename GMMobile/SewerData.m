@@ -3,7 +3,6 @@
 
 extern int keepProcessing;
 
-
 #import "SewerData.h"
 #define COORDINATE_FACTOR 10000000.0
 
@@ -613,6 +612,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     if (pass == TEXT_PASS)
         startpass = 1;
+    
     for (int ipass = startpass; ipass < 2; ipass++)
     {
         switch (ipass)
