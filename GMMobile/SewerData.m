@@ -16,6 +16,10 @@ static BOOL createDirectory = YES;
 @end
 
 @implementation SewerData
+{
+    LPBYTE _textOverlapBuffer;
+    int _textOverlapBufferSizeWidth, _textOverlapBufferSizeHeight;
+}
 
 static SewerData *_sewerData;
 
@@ -611,8 +615,12 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     [self open];
     
     if (pass == TEXT_PASS)
+    {
         startpass = 1;
-    
+        _textOverlapBufferSizeWidth = pvbounds->xmx - pvbounds->xmn;
+        _textOverlapBufferSizeHeight = pvbounds->ymx - pvbounds->ymn;
+        _textOverlapBuffer = (LPBYTE)calloc (_textOverlapBufferSizeWidth * _textOverlapBufferSizeHeight,1);
+    }
     for (int ipass = startpass; ipass < 2; ipass++)
     {
         switch (ipass)
@@ -725,7 +733,11 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         
         SQLOKswr(sqlite3_finalize(statement), "");
     }
-    
+    if (pass == TEXT_PASS)
+    {
+        free (_textOverlapBuffer);
+    }
+
     [self close];
 }
 
@@ -906,7 +918,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect1 = CGRectMake((-textSize.width * 0.55), (textSize.height * 0.4),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    rectFits = [self rectWillFit:rect1
+    rectFits = [self rectWillFit2:rect1
                        inContext:context];
     
     if (rectFits)
@@ -938,7 +950,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect2 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    rectFits = [self rectWillFit:rect2
+    rectFits = [self rectWillFit2:rect2
                        inContext:context];
     
     if (rectFits)
@@ -970,7 +982,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect3 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    rectFits = [self rectWillFit:rect3
+    rectFits = [self rectWillFit2:rect3
                        inContext:context];
     
     if (rectFits)
@@ -1106,6 +1118,45 @@ float roundFloatToNearestTen(float x)
 {
     int y = round(x);
     return roundIntToNearestTen(y);
+}
+- (BOOL)rectWillFit2:(CGRect)rect
+inContext:(CGContextRef)context
+{
+    int minX = CGRectGetMinX(rect);
+    int maxX = CGRectGetMaxX(rect);
+    int minY = CGRectGetMinY(rect);
+    int maxY = CGRectGetMaxY(rect);
+    
+    for (int i = minX; i < maxX; i++)
+    {
+        for (int j = minY; j < maxY; j++)
+        {
+            CGPoint point = CGContextConvertPointToDeviceSpace(context, CGPointMake(i, j));
+            int x = point.x;
+            int y = point.y;
+            if (point.x >= 0 && point.x < _textOverlapBufferSizeWidth &&
+                point.y >= 0 && point.y < _textOverlapBufferSizeHeight)
+            {
+                if (_textOverlapBuffer[y * _textOverlapBufferSizeWidth + x])
+                    return NO;
+            }
+        }
+    }
+    for (int i = minX; i < maxX; i++)
+    {
+        for (int j = minY; j < maxY; j++)
+        {
+            CGPoint point = CGContextConvertPointToDeviceSpace(context, CGPointMake(i, j));
+            int x = point.x;
+            int y = point.y;
+            if (point.x >= 0 && point.x < _textOverlapBufferSizeWidth &&
+                point.y >= 0 && point.y < _textOverlapBufferSizeHeight)
+            {
+                _textOverlapBuffer[y * _textOverlapBufferSizeWidth + x] = 1;
+            }
+        }
+    }
+    return YES;
 }
 
 @end
