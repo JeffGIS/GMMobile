@@ -1,10 +1,5 @@
-
 //  PlanimetricData.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 2/19/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 extern int keepProcessing;
 
@@ -13,16 +8,19 @@ extern int keepProcessing;
 #import "PlanimetricData.h"
 #import "PropertyData.h"
 
-@implementation PlanimetricData
-{
-    LPTRANDATA _pTranLLtoView;
-    LPTRANDATA _pTranViewtoLL;
-}
+@interface PlanimetricData ()
 
-- (BOOL) continue
+@property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
+
+@end
+
+@implementation PlanimetricData
+
+- (BOOL)continue
 {
     if (self.processingID == keepProcessing)
         return YES;
+    
     return NO;
 }
 -(void)displayPlanArea:(CGContextRef)context

@@ -9,16 +9,18 @@ extern int keepProcessing;
 #import "PropertyData.h"
 #import "SewerData.h"
 
+@interface VectorView ()
+
+@property (nonatomic) LPBYTE bitmapData;
+@property (nonatomic) CGColorSpaceRef colorSpace;
+@property (nonatomic) CGContextRef vectorViewContext, context;
+@property (nonatomic) NSInteger width, height;
+@property (nonatomic) dispatch_queue_t vectorQueue;
+@property (nonatomic) CGRect rect;
+
+@end
+
 @implementation VectorView
-{
-    LPBYTE _bitmapData;
-    CGColorSpaceRef _colorSpace;
-    CGContextRef _vectorViewContext;
-    CGContextRef _context;
-    int _width, _height;
-    dispatch_queue_t _vectorQueue;
-    CGRect _rect;
-}
 
 - (id)init
 {

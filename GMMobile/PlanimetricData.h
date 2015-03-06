@@ -10,8 +10,8 @@
 
 -(void)displayPlanArea:(CGContextRef)context
               LLBounds:(MNMXCORD *)platlonBounds
-
             viewBounds:(MNMXCORD *)pvbounds;
+
 -(void)displayPlanLine:(CGContextRef)context
 
               LLBounds:(MNMXCORD *)platlonBounds

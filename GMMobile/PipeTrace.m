@@ -8,15 +8,19 @@ typedef struct {
     
 } NEXTPIPE;
 
+@interface PipeTrace ()
+
+@property (nonatomic) SewerData *sd;
+
+@end
 
 @implementation PipeTrace
-{
-    SewerData * _sd;
-}
 
--(BOOL)getUpDownNodes:(LPSTR)atFid up:(LPSTR)upNode dn:(LPSTR)dnNode
+- (BOOL)getUpDownNodes:(LPSTR)atFid
+                    up:(LPSTR)upNode
+                    dn:(LPSTR)dnNode
 {
-    BOOL rtn=FALSE;
+    BOOL rtn = NO;
     sqlite3_stmt *statement;
     NSString * query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = '%s'",atFid];
     

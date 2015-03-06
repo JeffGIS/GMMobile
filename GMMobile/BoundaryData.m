@@ -6,11 +6,13 @@
 #import "BoundaryData.h"
 #import "PropertyData.h"
 
+@interface BoundaryData ()
+
+@property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
+
+@end
+
 @implementation BoundaryData
-{
-    LPTRANDATA _pTranLLtoView;
-    LPTRANDATA _pTranViewtoLL;
-}
 
 -(void)displayBoundary:(int)refno
              inContext:(CGContextRef)context
