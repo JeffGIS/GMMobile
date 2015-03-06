@@ -5,10 +5,23 @@
 #import "SewerData.h"
 
 typedef struct {int SEQUENCE;
-                char NXTFID[12];
-                char UPPIPE[12];
-                char DN_NODE[12];
+    char NXTFID[14];
+    char UPPIPE[14];
+    char DN_NODE[14];
 } NEXTPIPE;
+
+typedef struct {
+    char FACILITY_ID[14];
+    char DOWN_NODE[14];
+    char UP_NODE[14];
+} PIPEDB;
+
+typedef struct {
+    char FID[14];
+    char UPPIPE[14];
+    int  SQ;
+    int  NFOUND;
+} PIPETRACEDB;
 
 @interface PipeTrace ()
 
@@ -44,7 +57,6 @@ typedef struct {int SEQUENCE;
     BOOL rtn = FALSE;
     NSString *query;
     sqlite3_stmt *statement;
-    /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
     
     query = @"SELECT SEQUENCE,NXTFID,UPPIPE,DN_NODE FROM NEXTPIPE WHERE SEQUENCE >= 0 LIMIT 1";
     
@@ -62,6 +74,86 @@ typedef struct {int SEQUENCE;
     SQLOKswr(sqlite3_finalize(statement), "");
     return rtn;
 }
+-(BOOL) $FETCH_PIPEDB_BYFID:(LPSTR)fid returns:(PIPEDB *)pdb
+{
+    BOOL rtn = FALSE;
+    NSString *query;
+    sqlite3_stmt *statement;
+    /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
+    
+    query = [NSString stringWithFormat:@"SELECT DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = %s",fid];
+    
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        strcpy (pdb->DOWN_NODE,(LPSTR)sqlite3_column_text(statement,0));
+        strcpy (pdb->FACILITY_ID,fid);
+        rtn = TRUE;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    return rtn;
+}
+-(BOOL) $FETCH_PIPEDB_BYUPN:(LPSTR)fid returns:(PIPEDB *)pdb
+{
+    NSString *query;
+    static sqlite3_stmt *statement;
+    /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
+    
+    if (fid)
+    {
+        query = [NSString stringWithFormat:@"SELECT FACILITY_ID,DOWN_NODE FROM STORM_MAIN WHERE UP_NODE = %s",fid];
+    
+        SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+    }
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        strcpy (pdb->FACILITY_ID,(LPSTR)sqlite3_column_text(statement,0));
+        strcpy (pdb->DOWN_NODE,(LPSTR)sqlite3_column_text(statement,1));
+        return TRUE;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    return FALSE;
+}
+-(BOOL)$FETCH_FOUND:(LPSTR)fid returns:(PIPETRACEDB*)ptdb
+{
+    BOOL rtn = FALSE;
+    NSString *query;
+    sqlite3_stmt *statement;
+    
+    query = [NSString stringWithFormat:@"SELECT UPPIPE,SQ FROM PIPETRACEDB WHERE FID = %s",fid];
+    
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        strcpy (ptdb->UPPIPE,(LPSTR)sqlite3_column_text(statement,0));
+        ptdb->SQ = sqlite3_column_int(statement,1);
+        strcpy (ptdb->FID,fid);
+        rtn = TRUE;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+  
+    return rtn;
+}
+-(void)INSERT_FOUND:(PIPETRACEDB*)ptdb
+{
+    char cmd[256];
+    
+    sprintf (cmd,"INSERT INTO PIPETRACEDB VALUES('%s','%s',%i,%i)",ptdb->FID,ptdb->UPPIPE,ptdb->SQ,ptdb->NFOUND);
+    [_sd executeCmd:cmd];
+}
+-(void)INSERT_HIGHLIGHT:(LPSTR)fid
+{
+    char cmd[256];
+    
+    sprintf (cmd,"INSERT INTO TRACE_HIGHLIGHT VALUES('%s')",fid);
+    [_sd executeCmd:cmd];
+}
 -(void) $DELETE_NEXTPIPE:(int)ATSEQ
 {
     char cmd[256];
@@ -71,12 +163,22 @@ typedef struct {int SEQUENCE;
     [_sd executeCmd:cmd];
 }
 
+LPSTR $TRUNCATE(LPSTR text)
+{
+    LPSTR pLoc = strchr (text,0);
+    while (pLoc != text && *pLoc == ' ')
+        pLoc--;
+    *pLoc = 0;
+    return text;
+}
 - (void)tracePipeDownstream:(NSString *)fromFacilityID
 {
     char cmd[512];
-    char upNode[16], dnNode[16];
+    char upNode[16], dnNode[16], PIPEFID[16], UPFID[16], LASTFID[16];
     NEXTPIPE NEXTPIPE;
-    int ATSEQ;
+    PIPEDB PIPEDB, PIPEDB_BYUPN;
+    PIPETRACEDB PIPETRACEDB;
+    int ATSEQ, SEQ=1;
     
     _sd = [[SewerData alloc]init];
     
@@ -93,12 +195,53 @@ typedef struct {int SEQUENCE;
                  fromFacilityID.UTF8String, upNode, dnNode);
         
         [_sd executeCmd:cmd];
-        [_sd executeCmd:"CREATE TEMP TABLE TRACE_PIPE (FEATURE_ID CHAR(12) PRIMARY KEY,UPPIPE CHAR(12),SQ INT,NFOUND INT);"];
+        [_sd executeCmd:"CREATE TEMP TABLE PIPETRACEDB (FEATURE_ID CHAR(12) PRIMARY KEY,UPPIPE CHAR(12),SQ INT,NFOUND INT);"];
         
         int NPIPES = 0;
         while ([self $FETCH_NEXTPIPE:&NEXTPIPE])
         {
             ATSEQ=NEXTPIPE.SEQUENCE;
+            
+            strcpy (PIPEFID,NEXTPIPE.NXTFID);
+            if(*$TRUNCATE(PIPEFID))
+            {
+                if([self $FETCH_PIPEDB_BYFID:PIPEFID returns:&PIPEDB])
+                {
+                    if (![self $FETCH_FOUND:PIPEFID returns:&PIPETRACEDB])
+                    {
+                        strcpy (PIPETRACEDB.FID,PIPEFID);
+                        PIPETRACEDB.SQ = SEQ;
+                        PIPETRACEDB.NFOUND = 1;;
+                        strcpy (PIPETRACEDB.UPPIPE,NEXTPIPE.UPPIPE);
+                        NPIPES++;
+                        [self INSERT_FOUND:&PIPETRACEDB];
+                        [self INSERT_HIGHLIGHT:PIPETRACEDB.FID];
+                        strcpy (UPFID,PIPEDB.DOWN_NODE);
+                        strcpy (LASTFID,PIPEDB.FACILITY_ID);
+                        if(*$TRUNCATE(UPFID))
+                        {
+                            while([self $FETCH_PIPEDB_BYUPN:UPFID returns:&PIPEDB_BYUPN])
+                            {
+                                typedef struct {int SEQUENCE;
+                                    char NXTFID[14];
+                                    char UPPIPE[14];
+                                    char DN_NODE[14];
+                                } NEXTPIPE;
+                               SEQ++;
+                                //sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(%i,'%s','%s','%s');",
+                                //         SEQ,PIPEDB_BYUPN.FACILITY_ID, LASTFID,PIPEDB_BYUPN.UP_NODE, dnNode);
+                                
+                               // $GMDUPDATE(NEXTPIPE,SEQUENCE=[SEQ],NXTFID=[PIPEDB_BYUPN.FACILITY_ID];UPPIPE=[LASTFID];DISTFROMSTART=$FLT([UPDIST]+[PIPEDB_BYUPN.SOURCE_LENGTH_FT]);PIPESIZE=[PIPEDB_BYUPN.DIAMETER_IN];PIPELENGTH=[PIPEDB_BYUPN.SOURCE_LENGTH_FT];FID=[PIPEDB_BYUPN.FACILITY_ID];UP_NODE=[PIPEDB_BYUPN.UP_NODE]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //[NF]=$INT([FOUND.NFOUND]+1);
+                        //$GMDUPDATE(FOUND,FID=[PIPEFID],NFOUND=[NF]);
+                    }
+                }
+            }
             [self $DELETE_NEXTPIPE:ATSEQ];
         }
     }
