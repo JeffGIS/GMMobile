@@ -830,7 +830,8 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 {
     CGFloat fontSize = 24.0;
     CGFloat az = getazd(&points[0], &points[1]);
-    BOOL flip = NO;
+    BOOL flip = NO, rectFits = NO;
+    NSAttributedString *attString;
     
     if ((az > HALFPI) && (az < (3 * HALFPI)))
     {
@@ -905,23 +906,24 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect1 = CGRectMake((-textSize.width * 0.55), (textSize.height * 0.4),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    CGPathRef path1 = CGPathCreateWithRect(rect1, NULL);
+    rectFits = [self rectWillFit:rect1
+                       inContext:context];
     
-    CGContextSetFillColorWithColor(context, color.CGColor);
-    CGContextSetAlpha(context, 0.2);
-    CGContextFillRect(context, rect1);
-    
-    NSAttributedString *attString = [[NSAttributedString alloc] initWithString:pipe
-                                                                    attributes:pipeAttributes];
-    
-    CTFramesetterRef framesetter1 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-    CTFrameRef frame1 = CTFramesetterCreateFrame(framesetter1, CFRangeMake(0, 0), path1, NULL);
-    
-    CTFrameDraw(frame1, context);
-    
-    CFRelease(frame1);
-    CFRelease(path1);
-    CFRelease(framesetter1);
+    if (rectFits)
+    {
+        CGPathRef path1 = CGPathCreateWithRect(rect1, NULL);
+
+        attString = [[NSAttributedString alloc] initWithString:pipe
+                                                    attributes:pipeAttributes];
+        
+        CTFramesetterRef framesetter1 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+        CTFrameRef frame1 = CTFramesetterCreateFrame(framesetter1, CFRangeMake(0, 0), path1, NULL);
+        
+        CTFrameDraw(frame1, context);
+        CFRelease(frame1);
+        CFRelease(path1);
+        CFRelease(framesetter1);
+    }
     
     CGContextRestoreGState(context);
     CGContextSaveGState(context);
@@ -936,23 +938,24 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect2 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    CGPathRef path2 = CGPathCreateWithRect(rect2, NULL);
+    rectFits = [self rectWillFit:rect2
+                       inContext:context];
     
-    CGContextSetFillColorWithColor(context, UIColor.blueColor.CGColor);
-    CGContextSetAlpha(context, 0.2);
-    CGContextFillRect(context, rect2);
-    
-    attString = [[NSAttributedString alloc] initWithString:invertOut
-                                                attributes:invertOutAttributes];
-    
-    CTFramesetterRef framesetter2 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-    CTFrameRef frame2 = CTFramesetterCreateFrame(framesetter2, CFRangeMake(0, 0), path2, NULL);
-    
-    CTFrameDraw(frame2, context);
-    
-    CFRelease(frame2);
-    CFRelease(path2);
-    CFRelease(framesetter2);
+    if (rectFits)
+    {
+        CGPathRef path2 = CGPathCreateWithRect(rect2, NULL);
+        
+        attString = [[NSAttributedString alloc] initWithString:invertOut
+                                                    attributes:invertOutAttributes];
+        
+        CTFramesetterRef framesetter2 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+        CTFrameRef frame2 = CTFramesetterCreateFrame(framesetter2, CFRangeMake(0, 0), path2, NULL);
+        
+        CTFrameDraw(frame2, context);
+        CFRelease(frame2);
+        CFRelease(path2);
+        CFRelease(framesetter2);
+    }
     
     CGContextRestoreGState(context);
     CGContextSaveGState(context);
@@ -967,23 +970,24 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect3 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    CGPathRef path3 = CGPathCreateWithRect(rect3, NULL);
+    rectFits = [self rectWillFit:rect3
+                       inContext:context];
     
-    CGContextSetFillColorWithColor(context, UIColor.redColor.CGColor);
-    CGContextSetAlpha(context, 0.2);
-    CGContextFillRect(context, rect3);
-    
-    attString = [[NSAttributedString alloc] initWithString:invertIn
-                                                attributes:invertInAttributes];
-    
-    CTFramesetterRef framesetter3 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-    CTFrameRef frame3 = CTFramesetterCreateFrame(framesetter3, CFRangeMake(0, 0), path3, NULL);
-    
-    CTFrameDraw(frame3, context);
-    
-    CFRelease(frame3);
-    CFRelease(path3);
-    CFRelease(framesetter3);
+    if (rectFits)
+    {
+        CGPathRef path3 = CGPathCreateWithRect(rect3, NULL);
+        
+        attString = [[NSAttributedString alloc] initWithString:invertIn
+                                                    attributes:invertInAttributes];
+        
+        CTFramesetterRef framesetter3 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+        CTFrameRef frame3 = CTFramesetterCreateFrame(framesetter3, CFRangeMake(0, 0), path3, NULL);
+        
+        CTFrameDraw(frame3, context);
+        CFRelease(frame3);
+        CFRelease(path3);
+        CFRelease(framesetter3);
+    }
     
     CGContextRestoreGState(context);
 }
@@ -1042,7 +1046,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         [self drawStormPoint:context
                     atPoint:&llpoint
                   withColor:UIColor.greenColor.CGColor
-                    andSize:size*sizeFactor];
+                    andSize:(size * sizeFactor)];
     }
     
     SQLOKswr(sqlite3_finalize(statement), "displayParcels");
@@ -1061,6 +1065,47 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
+}
+
+- (BOOL)rectWillFit:(CGRect)rect
+          inContext:(CGContextRef)context
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    int minX = roundIntToNearestTen((int)(CGRectGetMinX(rect)));
+    int maxX = roundIntToNearestTen((int)(CGRectGetMaxX(rect)));
+    int minY = roundIntToNearestTen((int)(CGRectGetMinY(rect)));
+    int maxY = roundIntToNearestTen((int)(CGRectGetMaxY(rect)));
+    
+    for (int i = minX; i <= maxX; i += 10)
+    {
+        for (int j = minY; j <= maxY; j+= 10)
+             {
+                 CGPoint point = CGContextConvertPointToDeviceSpace(context, CGPointMake(i, j));
+                 point.x = roundFloatToNearestTen(point.x);
+                 point.y = roundFloatToNearestTen(point.y);
+                 NSValue *roundedPoint = [NSValue valueWithCGPoint:point];
+                 
+                 if ([_pointsArray containsObject:roundedPoint])
+                     return NO;
+                 
+                 [array addObject:roundedPoint];
+             }
+    }
+    
+    [_pointsArray addObjectsFromArray:array];
+    return YES;
+}
+
+int roundIntToNearestTen(int x)
+{
+    return ((x + 5) / 10) * 10;
+}
+
+float roundFloatToNearestTen(float x)
+{
+    int y = round(x);
+    return roundIntToNearestTen(y);
 }
 
 @end
