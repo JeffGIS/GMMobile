@@ -570,6 +570,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     return rtn[i];
 }
 - (void)displayStormLine:(CGContextRef)context
+                    pass:(int)pass
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
@@ -583,6 +584,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     int numPoints,numLoops;
     LPSTR symName;
     CGColorRef color;
+    int startpass=0;
     
     UIColor *darkGreen = [[UIColor alloc] initWithRed:0.0
                                                 green:0.5
@@ -609,11 +611,13 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     [self open];
     
-    for (int pass = 0; pass < 2; pass++)
+    if (pass == TEXT_PASS)
+        startpass = 1;
+    for (int ipass = startpass; ipass < 2; ipass++)
     {
-        switch (pass)
+        switch (ipass)
         {
-            case 0:
+            case 1:
                 /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
                 
                 query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,\
@@ -629,7 +633,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 break;
                 
-            case 1:
+            case 0:
                 query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME != \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 break;
@@ -709,6 +713,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
             }
             
             [self drawStormLine:context
+                           pass:pass
                         nPoints:numPoints
                         partLen:polyPartLen
                          points:llpoints
@@ -725,6 +730,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 }
 
 - (void)drawStormLine:(CGContextRef)context
+                 pass:(int)pass
               nPoints:(int)np
               partLen:(int *)pPartLen
                points:(LPDPOINT)pPoints
@@ -734,30 +740,33 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
           andPointers:(BOOL)addPointers
 {
     static CGFloat startDist = 0;
-    CGContextSetLineWidth(context, width);
-    CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
-    
-    for (int i = 1; i < np; i++)
-        CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
-    
-    //CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
-    
-    if (!CGContextIsPathEmpty(context))
+    if (pass == LINE_PASS)
     {
-        CGContextSetStrokeColorWithColor(context, color);
-        CGContextDrawPath(context, kCGPathStroke);
+        CGContextSetLineWidth(context, width);
+        CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
+        
+        for (int i = 1; i < np; i++)
+            CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+        
+        //CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
+        
+        if (!CGContextIsPathEmpty(context))
+        {
+            CGContextSetStrokeColorWithColor(context, color);
+            CGContextDrawPath(context, kCGPathStroke);
+        }
+        
+        if (addPointers)
+        {
+            startDist = [self drawDirectionalPointersOnLine:context
+                                                  numPoints:np
+                                                     points:pPoints
+                                                  withColor:color
+                                                   andWidth:width
+                                                 startingAt:startDist];
+        }
     }
-    
-    if (addPointers)
-    {
-        startDist = [self drawDirectionalPointersOnLine:context
-                                              numPoints:np
-                                                 points:pPoints
-                                              withColor:color
-                                               andWidth:width
-                                             startingAt:startDist];
-    }
-    
+    else
     if (np == 2 && text && ![text isEqualToString:@""])
     {
         [self drawTextOnLine:context
