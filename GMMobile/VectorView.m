@@ -9,16 +9,18 @@ extern int keepProcessing;
 #import "PropertyData.h"
 #import "SewerData.h"
 
+@interface VectorView ()
+
+@property (nonatomic) LPBYTE bitmapData;
+@property (nonatomic) CGColorSpaceRef colorSpace;
+@property (nonatomic) CGContextRef vectorViewContext, context;
+@property (nonatomic) NSInteger width, height;
+@property (nonatomic) dispatch_queue_t vectorQueue;
+@property (nonatomic) CGRect rect;
+
+@end
+
 @implementation VectorView
-{
-    LPBYTE _bitmapData;
-    CGColorSpaceRef _colorSpace;
-    CGContextRef _vectorViewContext;
-    CGContextRef _context;
-    int _width, _height;
-    dispatch_queue_t _vectorQueue;
-    CGRect _rect;
-}
 
 - (id)init
 {
@@ -185,12 +187,19 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             sd.zoom = _zoom;
             
             [sd displayStormLine:_context
+                            pass:LINE_PASS
                        LLBounds:&_latlonBounds
                      viewBounds:&_viewBounds];
             
             [sd displayStormPoint:_context
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
+            
+            [sd displayStormLine:_context
+                            pass:TEXT_PASS
+                        LLBounds:&_latlonBounds
+                      viewBounds:&_viewBounds];
+            
             /*[sd displayPlats:_context
                         type:@"SAN"
                     LLBounds:&_latlonBounds

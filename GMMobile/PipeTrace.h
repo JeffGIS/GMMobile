@@ -5,6 +5,6 @@
 
 @interface PipeTrace : NSObject
 
--(void)tracePipeDownstream:(NSString *)fromFacilityID;
+- (void)tracePipeDownstream:(NSString *)fromFacilityID;
 
 @end
