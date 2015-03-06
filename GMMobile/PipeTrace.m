@@ -4,8 +4,10 @@
 #import "PipeTrace.h"
 #import "SewerData.h"
 
-typedef struct {
-    
+typedef struct {int SEQUENCE;
+                char NXTFID[12];
+                char UPPIPE[12];
+                char DN_NODE[12];
 } NEXTPIPE;
 
 
@@ -33,10 +35,44 @@ typedef struct {
     return rtn;
 }
 
+-(BOOL) $FETCH_NEXTPIPE:(NEXTPIPE *)np
+{
+    BOOL rtn = FALSE;
+    NSString *query;
+    sqlite3_stmt *statement;
+    /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
+    
+    query = @"SELECT SEQUENCE,NXTFID,UPPIPE,DN_NODE FROM NEXTPIPE WHERE SEQUENCE >= 0 LIMIT 1";
+    
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        np->SEQUENCE = sqlite3_column_int(statement,0);
+        strcpy (np->NXTFID,(LPSTR)sqlite3_column_text(statement,1));
+        strcpy (np->UPPIPE,(LPSTR)sqlite3_column_text(statement,2));
+        strcpy (np->DN_NODE,(LPSTR)sqlite3_column_text(statement,3));
+        rtn = TRUE;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    return rtn;
+}
+-(void) $DELETE_NEXTPIPE:(int)ATSEQ
+{
+    char cmd[256];
+    
+    sprintf (cmd,"DELETE FROM NEXTPIPE WHERE SEQUENCE = %i",ATSEQ);
+    
+    [_sd executeCmd:cmd];
+}
+
 - (void)tracePipeDownstream:(NSString *)fromFacilityID
 {
     char cmd[512];
     char upNode[16], dnNode[16];
+    NEXTPIPE NEXTPIPE;
+    int ATSEQ;
     
     _sd = [[SewerData alloc]init];
     
@@ -46,16 +82,21 @@ typedef struct {
                           up:upNode
                           dn:dnNode])
     {
-        [_sd executeCmd:"CREATE TEMP TABLE TRACE_NEXT (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
+        [_sd executeCmd:"CREATE TEMP TABLE NEXTPIPE (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
         [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FEATURE_ID CHAR(12) PRIMARY KEY);"];
         
-        sprintf (cmd,"INSERT INTO TRACE_NEXT VALUES(1,'%s','%s','%s');",
+        sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(1,'%s','%s','%s');",
                  fromFacilityID.UTF8String, upNode, dnNode);
         
         [_sd executeCmd:cmd];
         [_sd executeCmd:"CREATE TEMP TABLE TRACE_PIPE (FEATURE_ID CHAR(12) PRIMARY KEY,UPPIPE CHAR(12),SQ INT,NFOUND INT);"];
         
-        int SEARCHSEQ = 0, NPIPES = 0;
+        int NPIPES = 0;
+        while ([self $FETCH_NEXTPIPE:&NEXTPIPE])
+        {
+            ATSEQ=NEXTPIPE.SEQUENCE;
+            [self $DELETE_NEXTPIPE:ATSEQ];
+        }
     }
     
     [_sd close];
