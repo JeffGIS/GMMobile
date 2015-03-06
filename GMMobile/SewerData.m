@@ -619,7 +619,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         startpass = 1;
         _textOverlapBufferSizeWidth = pvbounds->xmx - pvbounds->xmn;
         _textOverlapBufferSizeHeight = pvbounds->ymx - pvbounds->ymn;
-        _textOverlapBuffer = (LPBYTE)calloc (_textOverlapBufferSizeWidth * _textOverlapBufferSizeHeight,1);
+        _textOverlapBuffer = (LPBYTE)calloc(_textOverlapBufferSizeWidth * _textOverlapBufferSizeHeight, 1);
     }
     for (int ipass = startpass; ipass < 2; ipass++)
     {
@@ -733,6 +733,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         
         SQLOKswr(sqlite3_finalize(statement), "");
     }
+    
     if (pass == TEXT_PASS)
     {
         free (_textOverlapBuffer);
@@ -881,8 +882,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     NSString *pipe = [UserDefaults.defaults includeTextBeforeTab:
                       [UserDefaults.defaults includeTextAfterTab:text]];
     
-    CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
-                                             fontSize, NULL);
+    CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"GillSans-Bold", fontSize, NULL);
     
     NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
     style.alignment = NSTextAlignmentCenter;
@@ -925,7 +925,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
     rectFits = [self rectWillFit2:rect1
-                       inContext:context];
+                        inContext:context];
     
     if (rectFits)
     {
@@ -964,7 +964,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
     rectFits = [self rectWillFit2:rect2
-                       inContext:context];
+                        inContext:context];
     
     if (rectFits)
     {
@@ -1003,7 +1003,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
     rectFits = [self rectWillFit2:rect3
-                       inContext:context];
+                        inContext:context];
     
     if (rectFits)
     {
@@ -1205,8 +1205,9 @@ float roundFloatToNearestTen(float x)
     int y = round(x);
     return roundIntToNearestTen(y);
 }
+
 - (BOOL)rectWillFit2:(CGRect)rect
-inContext:(CGContextRef)context
+           inContext:(CGContextRef)context
 {
     int minX = CGRectGetMinX(rect);
     int maxX = CGRectGetMaxX(rect);
@@ -1220,6 +1221,7 @@ inContext:(CGContextRef)context
             CGPoint point = CGContextConvertPointToDeviceSpace(context, CGPointMake(i, j));
             int x = point.x;
             int y = point.y;
+            
             if (point.x >= 0 && point.x < _textOverlapBufferSizeWidth &&
                 point.y >= 0 && point.y < _textOverlapBufferSizeHeight)
             {
@@ -1228,6 +1230,7 @@ inContext:(CGContextRef)context
             }
         }
     }
+    
     for (int i = minX; i < maxX; i++)
     {
         for (int j = minY; j < maxY; j++)
@@ -1235,6 +1238,7 @@ inContext:(CGContextRef)context
             CGPoint point = CGContextConvertPointToDeviceSpace(context, CGPointMake(i, j));
             int x = point.x;
             int y = point.y;
+            
             if (point.x >= 0 && point.x < _textOverlapBufferSizeWidth &&
                 point.y >= 0 && point.y < _textOverlapBufferSizeHeight)
             {
@@ -1242,6 +1246,7 @@ inContext:(CGContextRef)context
             }
         }
     }
+    
     return YES;
 }
 
