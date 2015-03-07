@@ -103,7 +103,7 @@ typedef struct {
     
     if (fid)
     {
-        query = [NSString stringWithFormat:@"SELECT FACILITY_ID,DOWN_NODE FROM STORM_MAIN WHERE UP_NODE = %s",fid];
+        query = [NSString stringWithFormat:@"SELECT FACILITY_ID,DOWN_NODE,UP_NODE FROM STORM_MAIN WHERE UP_NODE = %s",fid];
     
         SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
     }
@@ -112,6 +112,7 @@ typedef struct {
     {
         strcpy (pdb->FACILITY_ID,(LPSTR)sqlite3_column_text(statement,0));
         strcpy (pdb->DOWN_NODE,(LPSTR)sqlite3_column_text(statement,1));
+        strcpy (pdb->UP_NODE,(LPSTR)sqlite3_column_text(statement,2));
         return TRUE;
     }
     
@@ -124,7 +125,7 @@ typedef struct {
     NSString *query;
     sqlite3_stmt *statement;
     
-    query = [NSString stringWithFormat:@"SELECT UPPIPE,SQ FROM PIPETRACEDB WHERE FID = %s",fid];
+    query = [NSString stringWithFormat:@"SELECT UPPIPE,SQ FROM PIPETRACEDB WHERE FEATURE_ID = %s",fid];
     
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
     
@@ -220,17 +221,15 @@ LPSTR $TRUNCATE(LPSTR text)
                         strcpy (LASTFID,PIPEDB.FACILITY_ID);
                         if(*$TRUNCATE(UPFID))
                         {
-                            while([self $FETCH_PIPEDB_BYUPN:UPFID returns:&PIPEDB_BYUPN])
+                            LPSTR pUPFID = UPFID;
+                            while([self $FETCH_PIPEDB_BYUPN:pUPFID returns:&PIPEDB_BYUPN])
                             {
-                                typedef struct {int SEQUENCE;
-                                    char NXTFID[14];
-                                    char UPPIPE[14];
-                                    char DN_NODE[14];
-                                } NEXTPIPE;
-                               SEQ++;
-                                //sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(%i,'%s','%s','%s');",
-                                //         SEQ,PIPEDB_BYUPN.FACILITY_ID, LASTFID,PIPEDB_BYUPN.UP_NODE, dnNode);
-                                
+                                pUPFID = 0;
+                                SEQ++;
+                                sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(%i,'%s','%s','%s');",
+                                        SEQ,PIPEDB_BYUPN.FACILITY_ID, LASTFID,PIPEDB_BYUPN.UP_NODE);
+                                [_sd executeCmd:cmd];
+
                                // $GMDUPDATE(NEXTPIPE,SEQUENCE=[SEQ],NXTFID=[PIPEDB_BYUPN.FACILITY_ID];UPPIPE=[LASTFID];DISTFROMSTART=$FLT([UPDIST]+[PIPEDB_BYUPN.SOURCE_LENGTH_FT]);PIPESIZE=[PIPEDB_BYUPN.DIAMETER_IN];PIPELENGTH=[PIPEDB_BYUPN.SOURCE_LENGTH_FT];FID=[PIPEDB_BYUPN.FACILITY_ID];UP_NODE=[PIPEDB_BYUPN.UP_NODE]);
                             }
                         }
@@ -238,7 +237,10 @@ LPSTR $TRUNCATE(LPSTR text)
                     else
                     {
                         //[NF]=$INT([FOUND.NFOUND]+1);
-                        //$GMDUPDATE(FOUND,FID=[PIPEFID],NFOUND=[NF]);
+                        PIPETRACEDB.NFOUND++;
+                        sprintf (cmd,"UPDATE PIPETRACEDB SET NFOUND = %i WHERE FID = %s",PIPETRACEDB.NFOUND,PIPEFID);
+                        [_sd executeCmd:cmd];
+                       //$GMDUPDATE(FOUND,FID=[PIPEFID],NFOUND=[NF]);
                     }
                 }
             }
@@ -249,6 +251,24 @@ LPSTR $TRUNCATE(LPSTR text)
     [_sd close];
     return;
 }
+-(int) getPipeTraceBounds
+{
+    int nrec = 0;
+    sqlite3_stmt *statement;
+    NSString *query = [NSString stringWithFormat:@"SELECT COUNT (*) FROM TRACE_HIGHLIGHT"];
+    
+    [_sd open];
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        nrec = sqlite3_column_int(statement,0);
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    [_sd close];
+    return nrec;
+}
+
 /*
  [PIPEDB]=$SYMATTRFILE(#[%ARG(1)]);
  [ATTRLOC]=LOCAL;[%AUTOPAN]=F;

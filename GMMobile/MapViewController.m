@@ -364,6 +364,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             NSString * fid = (NSString*)highlightList[0];
             [pipeTrace tracePipeDownstream:fid];
+            [pipeTrace getPipeTraceBounds];
         }
         coordinate.latitude = llp.lat;
         coordinate.longitude = llp.lon;
