@@ -780,11 +780,30 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         }
     }
     else
-    if (np == 2 && text && ![text isEqualToString:@""])
+    if (text && ![text isEqualToString:@""])
     {
-        [self drawTextOnLine:context
-                        text:text
-                      points:pPoints];
+        if (np == 2)
+        {
+            [self drawTextOnLine:context
+                            text:text
+                          points:pPoints];
+        }
+        else
+        {
+            int maxd = abs (pPoints[1].x - pPoints[0].x)+abs (pPoints[1].y - pPoints[0].y), maxi=0;
+            for (int i=1;i<np-1;i++)
+            {
+                int d = abs (pPoints[i+1].x - pPoints[i].x)+abs (pPoints[i+1].y - pPoints[i].y);
+                if (d>maxd)
+                {
+                    maxd = d;
+                    maxi = i;
+                }
+            }
+            [self drawTextOnLine:context
+                            text:text
+                          points:&pPoints[maxi]];
+        }
     }
 }
 

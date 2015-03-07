@@ -6,5 +6,6 @@
 @interface PipeTrace : NSObject
 
 - (void)tracePipeDownstream:(NSString *)fromFacilityID;
+- (int)getPipeTraceBounds;
 
 @end
