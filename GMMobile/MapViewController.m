@@ -197,8 +197,11 @@ extern int keepProcessing;
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
     {
+        GMSCameraPosition *camera;
+        
         _tableView.hidden = YES;
         _selectedPID = CRAPI.sharedInstance.currentPID;
+        
         PropertyData *propData = [[PropertyData alloc] init];
         
         LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
@@ -208,11 +211,21 @@ extern int keepProcessing;
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
         CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
         
-        GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
-                                                                                coordinate:southwest];
+        if (northeast.latitude == 0.0 || northeast.longitude == 0.0 ||
+            southwest.latitude == 0.0 || southwest.longitude == 0.0)
+        {
+            camera = [GMSCameraPosition cameraWithTarget:pidCoord
+                                                    zoom:21.0];
+        }
         
-        GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
-                                                       insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+        else
+        {
+            GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
+                                                                                    coordinate:southwest];
+            
+            camera = [_mapView cameraForBounds:coordBounds
+                                        insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+        }
         
         [_mapView animateToCameraPosition:camera];
         
@@ -364,7 +377,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
         
-        if ([sewerData pickSewer:&llp
+        if ([sewerData pickSewer:llp
                    highlightList:highlightList])
         {
             NSString *fid = (NSString *)highlightList[0];

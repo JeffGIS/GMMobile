@@ -414,7 +414,7 @@ int SQLOKswr(int sqlReturn, char *method)
     }
 }
 
-- (int)pickSewer:(LLPOINT*)pt
+- (int)pickSewer:(LLPOINT)pt
    highlightList:(NSMutableArray*)hlist
 {
     int nPicked = 0;
@@ -424,8 +424,8 @@ int SQLOKswr(int sqlReturn, char *method)
     DPOINT p1, p2, minpt;
     NSString * minFid=@"";
     
-    p1.x = pt->lon;
-    p1.y = pt->lat;
+    p1.x = pt.lon;
+    p1.y = pt.lat;
     minpt = p1;
     bnds.xmn = (p1.x - pickap);
     bnds.xmx = (p1.x + pickap);
@@ -461,8 +461,8 @@ int SQLOKswr(int sqlReturn, char *method)
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [self close];
-    pt->lon = minpt.x;
-    pt->lat = minpt.y;
+    pt.lon = minpt.x;
+    pt.lat = minpt.y;
     if (nPicked)
         [hlist addObject:minFid];
     

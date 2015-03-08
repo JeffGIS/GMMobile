@@ -46,7 +46,7 @@ int SQLOKswr(int sqlReturn, char *method);
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds;
 
-- (int)pickSewer:(LLPOINT*)pt
+- (int)pickSewer:(LLPOINT)pt
           highlightList:(NSMutableArray*)hlist;
 
 
