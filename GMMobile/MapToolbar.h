@@ -19,7 +19,10 @@
 @interface MapToolbar : UIView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
+@property (nonatomic) NSInteger orientation;
 
 - (void)deselectMyLocationButton;
+- (void)animateToVerticalOrientation;
+- (void)animateToHorizontalOrientation;
 
 @end
