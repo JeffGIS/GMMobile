@@ -1,6 +1,9 @@
 //  MapViewController.m
 //  GMMobile
 
+#define ALERT_CENSUS    1
+#define ALERT_SEWERPIPE 2
+
 extern int keepProcessing;
 
 #import "MapViewController.h"
@@ -32,6 +35,8 @@ extern int keepProcessing;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
+@property (nonatomic) GSSiPopoverView *popover;
+@property (nonatomic) NSString * selectedSewerPipe;
 
 @end
 
@@ -76,6 +81,7 @@ extern int keepProcessing;
     
     _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
     _gssiAlert.delegate = self;
+    _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0
                                                 green:0.0
@@ -388,15 +394,18 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                distToPID:&dist];
         
         SewerData *sewerData = [[SewerData alloc] init];
-        PipeTrace *pipeTrace = [[PipeTrace alloc]init];
-        pipeTrace.delegate = self;
         _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
         
-        if ([sewerData pickSewer:llp
+        if ([sewerData pickSewer:llpSewer
                    highlightList:highlightList])
         {
-            NSString *fid = (NSString *)highlightList[0];
-            [pipeTrace tracePipeDownstream:fid];
+            _gssiAlert.option = ALERT_SEWERPIPE;
+            [_gssiAlert showAlertWithTitle:@"Sewer Pipe Trace Options"
+                                   message:@""                         cancelButtonTitle:@"Cancel"
+                         otherButtonTitles:@[@"Display Pipe Attributes",@"Trace Pipe Upstream", @"Trace Pipe Downstream"]
+                 destructiveButtonPosition:0];
+
+            _selectedSewerPipe = (NSString *)highlightList[0];
         }
         
         coordinate.latitude = llp.lat;
@@ -966,6 +975,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Zoom to Census Area"])
     {
+        _gssiAlert.option = ALERT_CENSUS;
         [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
                                message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
                      cancelButtonTitle:@"Cancel"
@@ -977,30 +987,73 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
 clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    switch (buttonIndex)
+    switch (gssiAlert.option)
     {
-        case CensusZoomSettingCancel:
-            if (_tableView.indexPathForSelectedRow)
+        case ALERT_CENSUS:
+        switch (buttonIndex)
+        {
+            case CensusZoomSettingCancel:
+                if (_tableView.indexPathForSelectedRow)
+                {
+                    [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                              animated:YES];
+                }
+                
+                break;
+                
+            case CensusZoomSettingBlock:
+                [self dismissTableView];
+                //implement zoom to block here
+                break;
+                
+            case CensusZoomSettingBlockGroup:
+                [self dismissTableView];
+                //implement zoom to block group here
+                break;
+                
+            case CensusZoomSettingTract:
+                [self dismissTableView];
+                //implement zoom to tract here
+                break;
+        }
+            break;
+        case ALERT_SEWERPIPE:
+            switch (buttonIndex)
+        {
+            case SewerPipeSettingCancel:
+                if (_tableView.indexPathForSelectedRow)
+                {
+                    [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                              animated:YES];
+                }
+                
+                break;
+                
+            case SewerPipeSettingAttributes:
+                [self dismissTableView];
+                //implement pipe attributes here
+                break;
+                
+            case SewerPipeSettingTraceUp:
             {
-                [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                          animated:YES];
+                [self dismissTableView];
+                PipeTrace *pipeTrace = [[PipeTrace alloc]init];
+                pipeTrace.delegate = self;
+                pipeTrace.popover = _popover;
+                [pipeTrace tracePipeUpstream:_selectedSewerPipe];
             }
-            
-            break;
-            
-        case CensusZoomSettingBlock:
-            [self dismissTableView];
-            //implement zoom to block here
-            break;
-            
-        case CensusZoomSettingBlockGroup:
-            [self dismissTableView];
-            //implement zoom to block group here
-            break;
-            
-        case CensusZoomSettingTract:
-            [self dismissTableView];
-            //implement zoom to tract here
+                break;
+                
+            case SewerPipeSettingTraceDown:
+            {
+                [self dismissTableView];
+                PipeTrace *pipeTrace = [[PipeTrace alloc]init];
+                pipeTrace.delegate = self;
+                pipeTrace.popover = _popover;
+                [pipeTrace tracePipeDownstream:_selectedSewerPipe];
+            }
+                break;
+        }
             break;
     }
 }
