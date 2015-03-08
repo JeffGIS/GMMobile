@@ -1,16 +1,20 @@
 //  SewerData.h
 //  GMMobile
 
+#define COORDINATE_FACTOR 10000000.0
+
 #define GET_SANPLAT 11
 
 #define LINE_PASS   1
 #define TEXT_PASS   2
+#define TRACE_PASS   2
 
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
 
 int SQLOKswr(int sqlReturn, char *method);
+
 
 @interface SewerData : NSObject<FTPDataPullDelegate>
 
@@ -32,6 +36,9 @@ int SQLOKswr(int sqlReturn, char *method);
 - (void)startTransaction;
 - (void)commitTransaction;
 
+- (void)setTrans:(MNMXCORD *)platlonBounds
+      viewBounds:(MNMXCORD *)pvbounds;
+
 - (void)displayPlats:(CGContextRef)context
                 type:(NSString*)platType
               LLBounds:(MNMXCORD *)platlonBounds
@@ -41,6 +48,15 @@ int SQLOKswr(int sqlReturn, char *method);
                    pass:(int)pass
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
+
+- (void)drawStormLine:(CGContextRef)context
+                 pass:(int)pass
+              nPoints:(int)np
+               points:(LPDPOINT)pPoints
+            withColor:(CGColorRef)color
+             andWidth:(CGFloat)width
+              andText:(NSString *)text
+          andPointers:(BOOL)addPointers;
 
 -(void)displayStormPoint:(CGContextRef)context
                LLBounds:(MNMXCORD *)platlonBounds

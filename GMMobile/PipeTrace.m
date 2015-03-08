@@ -190,7 +190,7 @@ LPSTR $TRUNCATE(LPSTR text)
                           dn:dnNode])
     {
         [_sd executeCmd:"CREATE TEMP TABLE NEXTPIPE (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
-        [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FEATURE_ID CHAR(12) PRIMARY KEY);"];
+        [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FACILITY_ID CHAR(12) PRIMARY KEY);"];
         
         sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(1,'%s','%s','%s');",
                  fromFacilityID.UTF8String, upNode, dnNode);
@@ -249,13 +249,67 @@ LPSTR $TRUNCATE(LPSTR text)
     }
     
     [_sd close];
+    MNMXCORD bounds;
+    [self getPipeTraceBounds:&bounds];
+    if (self.delegate)
+        [self.delegate zoomToPipeTraceBounds:bounds];
+
     return;
 }
--(int) getPipeTraceBounds
+
+-(void) getPipeTraceBounds:(MNMXCORD*)pbounds
+{
+    DPOINT BasePt, point;
+    int numPoints;
+    sqlite3_stmt *statement;
+    dbounds bounds;
+    
+    InitDBounds(&bounds);
+    
+    NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
+
+    _sd = [[SewerData alloc]init];
+    [_sd open];
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        numPoints = sqlite3_column_int(statement,2);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,3);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                point.x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                point.y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                AddDPointToBounds(&bounds, &point);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            point.x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            point.y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            AddDPointToBounds(&bounds, &point);
+        }
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    *pbounds = bounds;
+    [_sd close];
+}
+
+-(int) getPipeTraceCount
 {
     int nrec = 0;
     sqlite3_stmt *statement;
-    NSString *query = [NSString stringWithFormat:@"SELECT COUNT (*) FROM TRACE_HIGHLIGHT"];
+    NSString *query = [NSString stringWithFormat:@"SELECT (*) FROM TRACE_HIGHLIGHT,"];
     
     [_sd open];
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
@@ -268,6 +322,67 @@ LPSTR $TRUNCATE(LPSTR text)
     [_sd close];
     return nrec;
 }
+
+- (void)displayPipeTrace:(CGContextRef)context
+                LLBounds:(MNMXCORD *)platlonBounds
+              viewBounds:(MNMXCORD *)pvbounds
+{
+    DPOINT BasePt, point;
+    int numPoints;
+    CGColorRef color = UIColor.redColor.CGColor;
+
+    sqlite3_stmt *statement;
+    NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
+    
+    _sd = [[SewerData alloc]init];
+    [_sd open];
+ 
+    [_sd setTrans:platlonBounds viewBounds:pvbounds];
+    
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        numPoints = sqlite3_column_int(statement,2);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,3);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+       
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+        }
+        [_sd drawStormLine:context
+                       pass:LINE_PASS
+                    nPoints:numPoints
+                     points:llpoints
+                  withColor:color
+                   andWidth:15
+                    andText:nil
+                andPointers:YES];
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    [_sd close];
+    
+}
+
 
 /*
  [PIPEDB]=$SYMATTRFILE(#[%ARG(1)]);

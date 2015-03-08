@@ -338,6 +338,21 @@ extern int keepProcessing;
     }
 }
 
+- (void) zoomToPipeTraceBounds:(MNMXCORD)bounds
+{
+    CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
+    CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
+    
+    GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
+                                                                            coordinate:southwest];
+    
+    GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
+                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+    
+    [_mapView animateToCameraPosition:camera];
+    
+}
+
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
@@ -374,7 +389,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         SewerData *sewerData = [[SewerData alloc] init];
         PipeTrace *pipeTrace = [[PipeTrace alloc]init];
-        
+        pipeTrace.delegate = self;
         _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
         
         if ([sewerData pickSewer:llp
@@ -382,7 +397,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             NSString *fid = (NSString *)highlightList[0];
             [pipeTrace tracePipeDownstream:fid];
-            [pipeTrace getPipeTraceBounds];
         }
         
         coordinate.latitude = llp.lat;

@@ -4,7 +4,6 @@
 extern int keepProcessing;
 
 #import "SewerData.h"
-#define COORDINATE_FACTOR 10000000.0
 
 static BOOL createDirectory = YES;
 
@@ -572,6 +571,17 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     return rtn[i];
 }
+
+- (void)setTrans:(MNMXCORD *)platlonBounds
+      viewBounds:(MNMXCORD *)pvbounds
+{
+
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+}
+
+
 - (void)displayStormLine:(CGContextRef)context
                     pass:(int)pass
                 LLBounds:(MNMXCORD *)platlonBounds
@@ -607,10 +617,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     else if (_zoom < 18)
         sizeFactor /= (2.0 * (18.0 - _zoom));
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
-    
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    [self setTrans:platlonBounds viewBounds:pvbounds];
     
     [self open];
     
@@ -723,7 +730,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
             [self drawStormLine:context
                            pass:pass
                         nPoints:numPoints
-                        partLen:polyPartLen
                          points:llpoints
                       withColor:color
                        andWidth:width
@@ -745,7 +751,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 - (void)drawStormLine:(CGContextRef)context
                  pass:(int)pass
               nPoints:(int)np
-              partLen:(int *)pPartLen
                points:(LPDPOINT)pPoints
             withColor:(CGColorRef)color
              andWidth:(CGFloat)width

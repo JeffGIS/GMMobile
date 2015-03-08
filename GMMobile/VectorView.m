@@ -8,6 +8,7 @@ extern int keepProcessing;
 #import "PlanimetricData.h"
 #import "PropertyData.h"
 #import "SewerData.h"
+#import "PipeTrace.h"
 
 @interface VectorView ()
 
@@ -103,127 +104,129 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     
     if (_displayData)
     {
-        //void *bmData;
-        //[self freeResources];
-        
-        //if (_context)
-        {
-
-    dispatch_async(_vectorQueue,
-    ^{
-        int scale = UIScreen.mainScreen.scale;
-        _colorSpace = CGColorSpaceCreateDeviceRGB();
-        _width = self.bounds.size.width * scale;
-        _height = self.bounds.size.height * scale;
-        _rect = CGRectMake(0, 0, _width, _height);
-        //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
-        //_bitmapData = bmData;
-        CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
-        CGLayerRef vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
-        _context = CGLayerGetContext(vectorLayer);
-        _viewBounds.xmn = (self.bounds.origin.x * scale);
-        _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
-        _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
-        _viewBounds.ymn = (self.bounds.origin.y * scale);
-        
-        if (_zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
-        {
-            PropertyData *pd = [[PropertyData alloc] init];
+        dispatch_async(_vectorQueue,
+        ^{
+            int scale = UIScreen.mainScreen.scale;
+            _colorSpace = CGColorSpaceCreateDeviceRGB();
+            _width = self.bounds.size.width * scale;
+            _height = self.bounds.size.height * scale;
+            _rect = CGRectMake(0, 0, _width, _height);
+            //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
+            //_bitmapData = bmData;
+            CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
+            CGLayerRef vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
+            _context = CGLayerGetContext(vectorLayer);
+            _viewBounds.xmn = (self.bounds.origin.x * scale);
+            _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
+            _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
+            _viewBounds.ymn = (self.bounds.origin.y * scale);
             
-            pd.processingID = keepProcessing;
+            if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
+            {
+                PropertyData *pd = [[PropertyData alloc] init];
+                
+                pd.processingID = keepProcessing;
+                
+                [pd displayParcels:_context
+                          LLBounds:&_latlonBounds
+                        viewBounds:&_viewBounds];
+                
+                [pd displayParcelText:_context
+                             LLBounds:&_latlonBounds
+                           viewBounds:&_viewBounds];
+            }
             
-            [pd displayParcels:_context
-                      LLBounds:&_latlonBounds
-                    viewBounds:&_viewBounds];
+            if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+            {
+                BoundaryData *bd = [[BoundaryData alloc] init];
+                
+                [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                          inContext:_context
+                           LLBounds:&_latlonBounds
+                         viewBounds:&_viewBounds];
+            }
             
-            [pd displayParcelText:_context
-                         LLBounds:&_latlonBounds
-                       viewBounds:&_viewBounds];
-        }
-        
-        if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
-        {
-            BoundaryData *bd = [[BoundaryData alloc] init];
+            /*if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+            {
+                BoundaryData *bd = [[BoundaryData alloc]init];
+                [bd displayLandUse:context
+                           LLBounds:&_latlonBounds
+                         viewBounds:&_viewBounds];
+            }*/
             
-            [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                      inContext:_context
-                       LLBounds:&_latlonBounds
-                     viewBounds:&_viewBounds];
-        }
-        
-        /*if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
-        {
-            BoundaryData *bd = [[BoundaryData alloc]init];
-            [bd displayLandUse:context
-                       LLBounds:&_latlonBounds
-                     viewBounds:&_viewBounds];
-        }*/
-        
- /*       if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
-        {
-            PlanimetricData *pd = [[PlanimetricData alloc] init];
-            pd.processingID = keepProcessing;
-            
-            [pd displayPlanArea:_context
-                       LLBounds:&_latlonBounds
-                     viewBounds:&_viewBounds];
-            
-            [pd displayPlanLine:_context
-                       LLBounds:&_latlonBounds
-                     viewBounds:&_viewBounds];
-            
-            [pd displayPlanPoint:_context
+     /*       if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+            {
+                PlanimetricData *pd = [[PlanimetricData alloc] init];
+                pd.processingID = keepProcessing;
+                
+                [pd displayPlanArea:_context
+                           LLBounds:&_latlonBounds
+                         viewBounds:&_viewBounds];
+                
+                [pd displayPlanLine:_context
+                           LLBounds:&_latlonBounds
+                         viewBounds:&_viewBounds];
+                
+                [pd displayPlanPoint:_context
+                            LLBounds:&_latlonBounds
+                          viewBounds:&_viewBounds];
+                
+                [pd displayWallPoint:_context
+                            LLBounds:&_latlonBounds
+                          viewBounds:&_viewBounds];
+            }*/
+            if (keepProcessing == self.displayID && _zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+            {
+                SewerData *sd = [[SewerData alloc] init];
+                sd.processingID = keepProcessing;
+                sd.zoom = _zoom;
+                
+                [sd displayStormLine:_context
+                                pass:LINE_PASS
+                           LLBounds:&_latlonBounds
+                         viewBounds:&_viewBounds];
+                
+                [sd displayStormPoint:_context
+                            LLBounds:&_latlonBounds
+                          viewBounds:&_viewBounds];
+                
+                [sd displayStormLine:_context
+                                pass:TEXT_PASS
+                            LLBounds:&_latlonBounds
+                          viewBounds:&_viewBounds];
+                
+                /*[sd displayPlats:_context
+                            type:@"SAN"
                         LLBounds:&_latlonBounds
-                      viewBounds:&_viewBounds];
+                      viewBounds:&_viewBounds];*/
+            }
+            if (keepProcessing == self.displayID)
+            {
+                PipeTrace *pt = [[PipeTrace alloc] init];
+                pt.processingID = keepProcessing;
+                
+                [pt displayPipeTrace:_context
+                            LLBounds:&_latlonBounds
+                          viewBounds:&_viewBounds];
+            }
+            if (keepProcessing == self.displayID)
+            {
+                CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);
+                /*UIGraphicsBeginImageContext(size);
+                _context = UIGraphicsGetCurrentContext();
+                CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
+                UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+                NSData * pngData = UIImagePNGRepresentation(image);
+                [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
+                
+                if (self.delegate)
+                    [self.delegate vectorViewDidComplete];
+            }
             
-            [pd displayWallPoint:_context
-                        LLBounds:&_latlonBounds
-                      viewBounds:&_viewBounds];
-        }*/
-        if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
-        {
-            SewerData *sd = [[SewerData alloc] init];
-            sd.processingID = keepProcessing;
-            sd.zoom = _zoom;
-            
-            [sd displayStormLine:_context
-                            pass:LINE_PASS
-                       LLBounds:&_latlonBounds
-                     viewBounds:&_viewBounds];
-            
-            [sd displayStormPoint:_context
-                        LLBounds:&_latlonBounds
-                      viewBounds:&_viewBounds];
-            
-            [sd displayStormLine:_context
-                            pass:TEXT_PASS
-                        LLBounds:&_latlonBounds
-                      viewBounds:&_viewBounds];
-            
-            /*[sd displayPlats:_context
-                        type:@"SAN"
-                    LLBounds:&_latlonBounds
-                  viewBounds:&_viewBounds];*/
-        }
-        if (self.displayData && keepProcessing == self.displayID)
-        {
-            CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);
-            /*UIGraphicsBeginImageContext(size);
-            _context = UIGraphicsGetCurrentContext();
-            CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
-            UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
-            NSData * pngData = UIImagePNGRepresentation(image);
-            [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
-            
-            if (self.delegate)
-                [self.delegate vectorViewDidComplete];
-        }
-        
-        CGLayerRelease(vectorLayer);
-        //[self freeResources];
-        NSLog (@"Vector view complete");
-                   });
-        }
+            CGLayerRelease(vectorLayer);
+            //[self freeResources];
+            NSLog (@"Vector view complete");
+        });
     }
 }
 
