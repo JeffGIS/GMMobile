@@ -232,8 +232,6 @@ LPSTR $TRUNCATE(LPSTR text)
     PIPETRACEDB PIPETRACEDB;
     int ATSEQ, SEQ=1;
     
-    [_popover showAfter:0.5
-              withTitle:@"Trace Pipe Downstream"];
     _sd = [[SewerData alloc]init];
     
     [_sd open];
@@ -270,7 +268,7 @@ LPSTR $TRUNCATE(LPSTR text)
                     {
                         strcpy (PIPETRACEDB.FID,PIPEFID);
                         PIPETRACEDB.SQ = SEQ;
-                        PIPETRACEDB.NFOUND = 1;;
+                        PIPETRACEDB.NFOUND = 1;
                         strcpy (PIPETRACEDB.UPPIPE,NEXTPIPE.UPPIPE);
                         NPIPES++;
                         [self INSERT_FOUND:&PIPETRACEDB];
@@ -307,11 +305,15 @@ LPSTR $TRUNCATE(LPSTR text)
     }
     
     [_sd close];
+    int n = [self getPipeTraceCount];
     MNMXCORD bounds;
     [self getPipeTraceBounds:&bounds];
-    [_popover hide];
-    if (self.delegate)
-        [self.delegate zoomToPipeTraceBounds:bounds];
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_popover hide];
+                       if (self.delegate)
+                           [self.delegate zoomToPipeTraceBounds:bounds];
+                   });
 
     return;
 }
@@ -325,8 +327,8 @@ LPSTR $TRUNCATE(LPSTR text)
     PIPETRACEDB PIPETRACEDB;
     int ATSEQ, SEQ=1;
     
-    [_popover showAfter:0.0
-              withTitle:@"Trace Pipe Upstream"];
+    _processingID = 1;
+    _popover.delegate = self;
     _sd = [[SewerData alloc]init];
     
     [_sd open];
@@ -345,7 +347,7 @@ LPSTR $TRUNCATE(LPSTR text)
         [_sd executeCmd:"CREATE TEMP TABLE PIPETRACEDB (FEATURE_ID CHAR(12) PRIMARY KEY,UPPIPE CHAR(12),SQ INT,NFOUND INT);"];
         
         int NPIPES = 0;
-        while ([self $FETCH_NEXTPIPEup:&NEXTPIPE])
+        while (_processingID && [self $FETCH_NEXTPIPEup:&NEXTPIPE])
         {
             ATSEQ=NEXTPIPE.SEQUENCE;
             
@@ -396,13 +398,34 @@ LPSTR $TRUNCATE(LPSTR text)
     }
     
     [_sd close];
-    MNMXCORD bounds;
-    [self getPipeTraceBounds:&bounds];
-    [_popover hide];
-    if (self.delegate)
-        [self.delegate zoomToPipeTraceBounds:bounds];
-    
+    int n = [self getPipeTraceCount];
+    if (_processingID)
+    {
+        MNMXCORD bounds;
+        [self getPipeTraceBounds:&bounds];
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover hide];
+                           if (self.delegate)
+                               [self.delegate zoomToPipeTraceBounds:bounds];
+                       });
+    }
+    else
+    {
+        [_sd open];
+        [_sd executeCmd:"DROP TABLE TRACE_HIGHLIGHT;"];
+        [_sd close];
+    }
     return;
+}
+
+- (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_popover hide];
+                   });
+    _processingID = 0;
 }
 /*
 [PIPEDB]=$SYMATTRFILE(#[%ARG(1)]);
@@ -588,7 +611,7 @@ $RETURN(1);
 {
     int nrec = 0;
     sqlite3_stmt *statement;
-    NSString *query = [NSString stringWithFormat:@"SELECT (*) FROM TRACE_HIGHLIGHT,"];
+    NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM TRACE_HIGHLIGHT;"];
     
     [_sd open];
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");

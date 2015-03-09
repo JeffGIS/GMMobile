@@ -987,6 +987,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
 clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    dispatch_queue_t pipeTraceQueue = dispatch_queue_create("pipeTraceQueue",NULL);
     switch (gssiAlert.option)
     {
         case ALERT_CENSUS:
@@ -1037,21 +1038,33 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case SewerPipeSettingTraceUp:
             {
                 [self dismissTableView];
+                
+                [_popover showAfter:0.0
+                          withTitle:@"Trace Pipe Upstream"];
+                dispatch_async(pipeTraceQueue,
+                               ^{
                 PipeTrace *pipeTrace = [[PipeTrace alloc]init];
                 pipeTrace.delegate = self;
                 pipeTrace.popover = _popover;
                 [pipeTrace tracePipeUpstream:_selectedSewerPipe];
+                               });
             }
+                               
                 break;
                 
             case SewerPipeSettingTraceDown:
             {
                 [self dismissTableView];
+                [_popover showAfter:0.0
+                          withTitle:@"Trace Pipe Downstream"];
+                dispatch_async(pipeTraceQueue,
+                               ^{
                 PipeTrace *pipeTrace = [[PipeTrace alloc]init];
                 pipeTrace.delegate = self;
                 pipeTrace.popover = _popover;
                 [pipeTrace tracePipeDownstream:_selectedSewerPipe];
-            }
+                               });
+           }
                 break;
         }
             break;

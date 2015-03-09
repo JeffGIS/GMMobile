@@ -12,7 +12,7 @@
 
 @end
 
-@interface PipeTrace : NSObject
+@interface PipeTrace : NSObject<GSSiPopoverViewDelegate>
 
 @property (nonatomic, weak) id <PipeTraceDelegate> delegate;
 @property int processingID;
