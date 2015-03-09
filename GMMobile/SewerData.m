@@ -284,11 +284,22 @@ int SQLOKswr(int sqlReturn, char *method)
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         
-        UIColor *color = [[UIColor alloc] initWithRed:1.0
-                                                green:1.0
-                                                 blue:0.0
-                                                alpha:0.2];
-        
+        UIColor *color;
+        if (refno == CRAPI.sharedInstance.showPlats)
+        {
+            color = [[UIColor alloc] initWithRed:1.0
+                                           green:0.0
+                                           blue:0.0
+                                           alpha:0.4];
+        }
+        else
+        {
+            color = [[UIColor alloc] initWithRed:1.0
+                                           green:1.0
+                                            blue:0.0
+                                           alpha:0.2];
+        }
+    
         [self fillPlat:context
                nPoints:numPoints
                 points:llpoints
@@ -468,7 +479,7 @@ int SQLOKswr(int sqlReturn, char *method)
     bnds.ymx = (p1.y + pickap);
     [self open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT SANPLATAREAS.id, SANPLATAREAS.PLAT, BasePointX, BasePointY FROM SANPLATAREAS,SANPLATAREAS_index WHERE SANPLATAREAS.id=SANPLATAREAS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+    NSString *query = [NSString stringWithFormat:@"SELECT STORM_PLAT.id, STORM_PLAT.PLAT_NAME, BasePointX, BasePointY FROM STORM_PLAT,STORM_PLAT_index WHERE STORM_PLAT.id=STORM_PLAT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
     sqlite3_stmt *statement;

@@ -36,6 +36,8 @@ extern int keepProcessing;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) NSString * selectedSewerPipe;
+@property (atomic)    BOOL waitForVectorViewRefresh;
+
 
 @end
 
@@ -402,7 +404,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                distToPID:&dist];
         
         SewerData *sewerData = [[SewerData alloc] init];
-        _selectedPlatRefno = [sewerData pickSanPlat:&llpSewer];
         
         if ([sewerData pickSewer:llpSewer
                    highlightList:highlightList])
@@ -481,16 +482,51 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         gesture.state == UIGestureRecognizerStateChanged)
     {
         if (gesture.state == UIGestureRecognizerStateBegan)
+        {
             _mapView.settings.scrollGestures = NO;
-        
-        CGPoint gesturePoint = [gesture locationInView:self.view];
-        CLLocationCoordinate2D gestureLocation = [_mapView.projection coordinateForPoint:gesturePoint];
-        
-        NSLog(@"%f,%f", gestureLocation.latitude, gestureLocation.longitude);
+            CRAPI.sharedInstance.showPlats = -1;
+            [self clearVectorView];
+            _selectedPlatRefno = 0;
+            _waitForVectorViewRefresh = YES;
+            [self refreshVectorView:_mapView.projection.visibleRegion
+                             atZoom:_mapView.camera.zoom];
+        }
+        else if (!_waitForVectorViewRefresh)
+        {
+            CGPoint gesturePoint = [gesture locationInView:self.view];
+            CLLocationCoordinate2D gestureLocation = [_mapView.projection coordinateForPoint:gesturePoint];
+            SewerData *sewerData = [[SewerData alloc] init];
+            LLPOINT llp;
+            llp.lat = gestureLocation.latitude;
+            llp.lon = gestureLocation.longitude;
+            int platRefno = [sewerData pickSanPlat:&llp];
+            if (platRefno != _selectedPlatRefno)
+            {
+                _selectedPlatRefno = platRefno;
+                _waitForVectorViewRefresh = YES;
+                CRAPI.sharedInstance.showPlats = platRefno;
+               [self refreshVectorView:_mapView.projection.visibleRegion
+                                 atZoom:_mapView.camera.zoom];
+            }
+
+            NSLog(@"%i,%f,%f", _selectedPlatRefno, gestureLocation.latitude, gestureLocation.longitude);
+        }
+        else if (!_selectedPlatRefno)
+        {
+            CRAPI.sharedInstance.showPlats = 0;
+            [self clearVectorView];
+            _waitForVectorViewRefresh = NO;
+        }
     }
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
+    {
         _mapView.settings.scrollGestures = YES;
+        CRAPI.sharedInstance.showPlats = 0;
+        [self clearVectorView];
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
 }
 
 - (void)removePreviousInfoWindow
@@ -729,6 +765,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)vectorViewDidComplete
 {
+    _waitForVectorViewRefresh = NO;
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [_vectorView removeFromSuperview];

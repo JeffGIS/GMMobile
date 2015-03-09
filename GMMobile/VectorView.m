@@ -214,8 +214,15 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                             LLBounds:&_latlonBounds
                           viewBounds:&_viewBounds];
                 
+            }
+            if (keepProcessing == self.displayID && CRAPI.sharedInstance.showPlats)
+            {
+                SewerData *sd = [[SewerData alloc] init];
+                sd.processingID = keepProcessing;
+                sd.zoom = _zoom;
+                
                 [sd displayPlats:_context
-                            type:@"SAN"
+                            type:@"STORM"
                        llCorners:&_latlonCornerPoints
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
