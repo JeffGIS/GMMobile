@@ -66,6 +66,7 @@ extern int keepProcessing;
     _mapView.mapType = kGMSTypeNormal;
     _mapView.settings.compassButton = YES;
     _mapView.settings.rotateGestures = YES;
+    _mapView.settings.tiltGestures = NO;
     [self.view addSubview:_mapView];
     
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
