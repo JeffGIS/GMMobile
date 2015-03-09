@@ -4,7 +4,6 @@
 #import "SettingsViewController.h"
 #import "PropertyData.h"
 #import "SewerData.h"
-#import "GSSiTileOverlay.h"
 
 #define GET_PROPERTY 1
 #define GET_TILES 2
@@ -19,14 +18,12 @@
 
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) GSSiAlertController *gssiAlert;
+@property (nonatomic) NSMutableArray *allPlats;
+@property (nonatomic) NSInteger nextPlat;
 
 @end
 
 @implementation SettingsViewController
-{
-    NSMutableArray* _allPlats;
-    int _nextPlat;
-}
 
 - (void)viewDidLoad
 {
@@ -229,8 +226,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 
             case GET_TILES:
             {
-                [self loadTilesFromList:path
-                          updatePopover:_popover];
+                //[self loadTilesFromList:path
+                          //updatePopover:_popover];
             }
                 break;
         }
@@ -419,6 +416,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [self getNextPlat];
 }
 
+/*
 - (BOOL)loadTilesFromList:(NSString*)fileList
            updatePopover:(GSSiPopoverView*)popover
 {
@@ -486,6 +484,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     return rtn;
 }
+*/
 
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
