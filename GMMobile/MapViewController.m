@@ -36,9 +36,9 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic) NSString * selectedSewerPipe;
-@property (atomic)    BOOL waitForVectorViewRefresh;
-
+@property (nonatomic) NSString *selectedSewerPipe;
+@property (atomic) BOOL waitForVectorViewRefresh;
+@property (nonatomic) GMSTileLayer *layer;
 
 @end
 
@@ -77,6 +77,18 @@ extern int keepProcessing;
     
     longPressGesture.delegate = self;
     [_mapView addGestureRecognizer:longPressGesture];
+    
+    GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
+        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        
+        return [NSURL URLWithString:url];
+    };
+    
+    _layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
+    
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        _layer.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -195,19 +207,11 @@ extern int keepProcessing;
     {
         [self initTableView];
         
-        //if (_gmmOverlay)
-        {
-            //[_mapView removeOverlay:_gmmOverlay];
-            
-            if (CRAPI.sharedInstance.GMTilesVisible)
-            {
-                //[_mapView addOverlay:_gmmOverlay
-                //level:MKOverlayLevelAboveLabels];
-                
-                //_gmmOverlay.minimumZ = 12;
-                //_gmmOverlay.maximumZ = 21;
-            }
-        }
+        if (CRAPI.sharedInstance.GMTilesVisible)
+            _layer.map = _mapView;
+        
+        else
+            _layer.map = nil;
     }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
@@ -506,9 +510,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self clearVectorView];
             _selectedPlatRefno = 0;
             _waitForVectorViewRefresh = YES;
+            
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:_mapView.camera.zoom];
         }
+        
         else if (!_waitForVectorViewRefresh)
         {
             CGPoint gesturePoint = [gesture locationInView:self.view];
@@ -518,17 +524,18 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             llp.lat = gestureLocation.latitude;
             llp.lon = gestureLocation.longitude;
             int platRefno = [sewerData pickSanPlat:&llp];
+            
             if (platRefno != _selectedPlatRefno)
             {
                 _selectedPlatRefno = platRefno;
                 _waitForVectorViewRefresh = YES;
                 CRAPI.sharedInstance.showPlats = platRefno;
+                
                [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
             }
-
-            NSLog(@"%i,%f,%f", _selectedPlatRefno, gestureLocation.latitude, gestureLocation.longitude);
         }
+        
         else if (!_selectedPlatRefno)
         {
             CRAPI.sharedInstance.showPlats = 0;
@@ -542,6 +549,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _mapView.settings.scrollGestures = YES;
         CRAPI.sharedInstance.showPlats = 0;
         [self clearVectorView];
+        
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
@@ -602,15 +610,6 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     [self restorePreviousInfoWindow];
 }
-
-/*
-- (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
-                  rendererForOverlay:(id <GSSiOverlay>)overlay
-{
-    GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
-    return renderer;
-}
-*/
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -1744,6 +1743,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         
         _mapToolbar.orientation = MapToolbarOrientationRight;
     }
+    
+    [self.view bringSubviewToFront:_mapToolbar];
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)PID
