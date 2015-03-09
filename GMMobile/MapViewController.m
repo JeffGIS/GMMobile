@@ -85,7 +85,9 @@ extern int keepProcessing;
     };
     
     _layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
-    _layer.map = _mapView;
+    
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        _layer.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -204,19 +206,11 @@ extern int keepProcessing;
     {
         [self initTableView];
         
-        //if (_gmmOverlay)
-        {
-            //[_mapView removeOverlay:_gmmOverlay];
-            
-            if (CRAPI.sharedInstance.GMTilesVisible)
-            {
-                //[_mapView addOverlay:_gmmOverlay
-                //level:MKOverlayLevelAboveLabels];
-                
-                //_gmmOverlay.minimumZ = 12;
-                //_gmmOverlay.maximumZ = 21;
-            }
-        }
+        if (CRAPI.sharedInstance.GMTilesVisible)
+            _layer.map = _mapView;
+        
+        else
+            _layer.map = nil;
     }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
