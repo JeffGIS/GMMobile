@@ -79,7 +79,7 @@ extern int keepProcessing;
     
     GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
         NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
-                         (unsigned long)x, (unsigned long)y, (unsigned long)zoom];
+                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
