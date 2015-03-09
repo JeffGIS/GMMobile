@@ -593,15 +593,6 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     [self restorePreviousInfoWindow];
 }
 
-/*
-- (GSSiTileOverlayRenderer *)mapView:(MKMapView *)mapView
-                  rendererForOverlay:(id <GSSiOverlay>)overlay
-{
-    GSSiTileOverlayRenderer *renderer = [[GSSiTileOverlayRenderer alloc] initWithTileOverlay:overlay];
-    return renderer;
-}
-*/
-
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {

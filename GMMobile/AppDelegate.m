@@ -26,12 +26,11 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [lagFreeField removeFromSuperview];
     
     CRAPI.sharedInstance.project = PROJECT_METROGIS;
-    CRAPI.sharedInstance.GMTilesVisible = YES;
+    CRAPI.sharedInstance.GMTilesVisible = NO;
     CRAPI.sharedInstance.showParcelBoundary = YES;
     CRAPI.sharedInstance.parcelsVisibleAtZoom = 16;
     CRAPI.sharedInstance.sewerVisibleAtZoom = 17;
     CRAPI.sharedInstance.parcelShadingOption = 0;
-    //CRAPI.sharedInstance.basemap = BasemapSettingApple;
     [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
 
     return YES;

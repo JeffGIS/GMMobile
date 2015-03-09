@@ -1,7 +1,6 @@
 //  MapViewController.h
 //  GMMobile
 
-#import "GSSiTileOverlay.h"
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import "FindViewController.h"
 #import "PropertyData.h"
@@ -9,7 +8,6 @@
 #import "PipeTrace.h"
 #import "VectorView.h"
 #import "PlatView.h"
-#import "GSSiTileOverlayRenderer.h"
 #import "LayersViewController.h"
 #import "MapToolbar.h"
 #import <GoogleMaps/GoogleMaps.h>
