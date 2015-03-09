@@ -9,6 +9,7 @@
 @property (nonatomic) UISegmentedControl *mapType, *splitScreenSetting;
 @property (nonatomic) UISwitch *annotationOption;
 @property (nonatomic) BOOL myLocationEnabled;
+@property (nonatomic) CGSize size;
 
 @end
 
@@ -18,19 +19,17 @@
 {
     self = [super init];
     
-    CGFloat frameHeight, frameWidth;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        frameHeight = 83.0, frameWidth = 282.0;
-    
-    else
-        frameHeight = 63.0, frameWidth = 537.0;
-    
     if (self)
     {
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            _size = CGSizeMake(282.0, 83.0);
+        
+        else
+            _size = CGSizeMake(537.0, 63.0);
+        
         self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
-        self.frame = CGRectMake(0.0, 0.0, frameWidth, frameHeight);
+        self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
         self.layer.borderWidth = 2.0;
         self.layer.borderColor = UIColor.blackColor.CGColor;
         
@@ -99,7 +98,7 @@
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         {
             _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
-                                                   (frameWidth - (buttonMargin * 2.0)), segControlHeight);
+                                                   (_size.width - (buttonMargin * 2.0)), segControlHeight);
         }
         
         else
@@ -206,6 +205,108 @@
         if (_delegate)
             [_delegate mapToolbarDidFinishDrag];
     }
+}
+
+- (void)animateToVerticalOrientation
+{
+    CGFloat buttonSize = 47.0, buttonMargin = 8.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        buttonSize = 39.0, buttonMargin = 5.0;
+    
+    self.frame = CGRectMake(0.0, 0.0, (_size.height * 1.6),
+                            ((buttonSize * 2.0) + (buttonMargin * 6.0) +
+                             _annotationOption.frame.size.height + (_mapType.frame.size.height * 2.0)));
+    
+    CGFloat switchMargin = ((self.frame.size.width - _annotationOption.frame.size.width) / 2.0);
+    CGFloat buttonSideMargin = ((self.frame.size.width - buttonSize) / 2.0);
+    CGFloat switchWidth = (self.frame.size.width - (buttonMargin * 1.6));
+    
+    _userLocation.frame = CGRectMake(buttonSideMargin, buttonMargin, buttonSize, buttonSize);
+    
+    _zoomExtent.frame = CGRectMake(buttonSideMargin, (buttonSize + (buttonMargin * 2.0)),
+                                   buttonSize, buttonSize);
+    
+    _annotationOption.frame = CGRectMake(switchMargin, ((buttonSize * 2.0) + (buttonMargin * 3.0)),
+                                         _annotationOption.frame.size.width, _annotationOption.frame.size.height);
+    
+    _mapType.frame = CGRectMake((buttonMargin / 1.6),
+                                ((buttonSize * 2.0) + (buttonMargin * 4.0) + _annotationOption.frame.size.height),
+                                switchWidth, _mapType.frame.size.height);
+    
+    [_mapType setTitle:@"Stnd"
+     forSegmentAtIndex:0];
+    
+    [_mapType setTitle:@"Hybd"
+     forSegmentAtIndex:1];
+    
+    _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6),
+                                           ((buttonSize * 2.0) + (buttonMargin * 5.0) +
+                                            _annotationOption.frame.size.height + _mapType.frame.size.height),
+                                           switchWidth, _splitScreenSetting.frame.size.height);
+    
+    [_splitScreenSetting setTitle:@"F"
+                forSegmentAtIndex:0];
+    
+    [_splitScreenSetting setTitle:@"S"
+                forSegmentAtIndex:1];
+    
+    [_splitScreenSetting setTitle:@"T"
+                forSegmentAtIndex:2];
+    
+    [_splitScreenSetting setTitle:@"B"
+                forSegmentAtIndex:3];
+}
+
+- (void)animateToHorizontalOrientation
+{
+    self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
+    
+    CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
+    CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 216.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
+    
+    _userLocation.frame = CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize);
+    
+    _zoomExtent.frame = CGRectMake((buttonSize + (buttonMargin * 2.0)),
+                                   buttonMargin, buttonSize, buttonSize);
+    
+    _annotationOption.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 3.0)),
+                                         switchMargin, switchWidth, switchHeight);
+    
+    _mapType.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
+                                segControlMargin, mtscWidth, segControlHeight);
+    [_mapType setTitle:@"Standard"
+     forSegmentAtIndex:0];
+    
+    [_mapType setTitle:@"Hybrid"
+     forSegmentAtIndex:1];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
+                                               (_size.width - (buttonMargin * 2.0)), segControlHeight);
+    }
+    
+    else
+    {
+        _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
+                                               segControlMargin, ssscWidth, segControlHeight);
+    }
+    
+    [_splitScreenSetting setTitle:@"Full"
+                forSegmentAtIndex:0];
+    
+    [_splitScreenSetting setTitle:@"Split"
+                forSegmentAtIndex:1];
+    
+    [_splitScreenSetting setTitle:@"Tri"
+                forSegmentAtIndex:2];
+    
+    [_splitScreenSetting setTitle:@"Bottom"
+                forSegmentAtIndex:3];
 }
 
 @end

@@ -173,6 +173,8 @@ extern int keepProcessing;
     _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
                                      (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
     
+    _mapToolbar.orientation = MapToolbarOrientationTop;
+    
     [self.view addSubview:_mapToolbar];
 }
 
@@ -1624,7 +1626,60 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidFinishDrag
 {
-    NSLog(@"center.x:%f,center.y:%f", _mapToolbar.center.x, _mapToolbar.center.y);
+    if (_mapToolbar.center.y < (self.view.frame.size.height * 0.25))
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar animateToHorizontalOrientation];
+                             
+                             _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                                              (_mapToolbar.frame.size.height / 2.0) +
+                                                              [self statusBarHeight:self.interfaceOrientation]);
+                         }];
+        
+        _mapToolbar.orientation = MapToolbarOrientationTop;
+    }
+    
+    else if (_mapToolbar.center.y > (self.view.frame.size.height * 0.75))
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar animateToHorizontalOrientation];
+                             
+                             _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                                              (self.view.frame.size.height -
+                                                               (_mapToolbar.frame.size.height / 2.0)));
+                         }];
+        
+        _mapToolbar.orientation = MapToolbarOrientationBottom;
+    }
+    
+    else if (_mapToolbar.center.x < (self.view.frame.size.width / 2.0))
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar animateToVerticalOrientation];
+                             
+                             _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
+                                                              (self.view.frame.size.height / 2.0));
+                         }];
+        
+        _mapToolbar.orientation = MapToolbarOrientationLeft;
+    }
+    
+    else if (_mapToolbar.center.x > (self.view.frame.size.width / 2.0))
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar animateToVerticalOrientation];
+                             
+                             _mapToolbar.center = CGPointMake(self.view.frame.size.width -
+                                                              (_mapToolbar.frame.size.width / 2.0),
+                                                              (self.view.frame.size.height / 2.0));
+                         }];
+        
+        _mapToolbar.orientation = MapToolbarOrientationRight;
+    }
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)PID
