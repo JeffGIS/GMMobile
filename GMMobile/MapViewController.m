@@ -11,7 +11,6 @@ extern int keepProcessing;
 
 @interface MapViewController ()
 
-@property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray;
@@ -68,6 +67,12 @@ extern int keepProcessing;
     _mapView.settings.compassButton = YES;
     _mapView.settings.rotateGestures = YES;
     [self.view addSubview:_mapView];
+    
+    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                                   action:@selector(mapViewLongPressed:)];
+    
+    longPressGesture.delegate = self;
+    [_mapView addGestureRecognizer:longPressGesture];
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -467,6 +472,24 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view addSubview:_infoWindow];
     _noneSelected = NO;
     return YES;
+}
+
+- (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateBegan ||
+        gesture.state == UIGestureRecognizerStateChanged)
+    {
+        if (gesture.state == UIGestureRecognizerStateBegan)
+            _mapView.settings.scrollGestures = NO;
+        
+        CGPoint gesturePoint = [gesture locationInView:self.view];
+        CLLocationCoordinate2D gestureLocation = [_mapView.projection coordinateForPoint:gesturePoint];
+        
+        NSLog(@"%f,%f", gestureLocation.latitude, gestureLocation.longitude);
+    }
+    
+    else if (gesture.state == UIGestureRecognizerStateEnded)
+        _mapView.settings.scrollGestures = YES;
 }
 
 - (void)removePreviousInfoWindow
@@ -1162,16 +1185,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _mapView.mapType = MKMapTypeHybrid;
             break;
     }
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-       shouldReceiveTouch:(UITouch *)touch
-{
-    if (gestureRecognizer == _longPress && (!_tableView.hidden))
-        return NO;
-    
-    else
-        return YES;
 }
 
 - (BOOL)isHennepinCountyPID:(NSString *)PID
