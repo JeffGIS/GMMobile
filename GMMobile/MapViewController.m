@@ -77,6 +77,16 @@ extern int keepProcessing;
     longPressGesture.delegate = self;
     [_mapView addGestureRecognizer:longPressGesture];
     
+    GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
+        NSString *url = [NSString stringWithFormat:@"https:///example.com/%lu/%lu/%lu.png",
+                         (unsigned long)x, (unsigned long)y, (unsigned long)zoom];
+        
+        return [NSURL URLWithString:url];
+    };
+    
+    GMSTileLayer *layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
+    layer.map = _mapView;
+    
     _markerArray = [[NSMutableArray alloc] init];
     
     _locationManager = [[CLLocationManager alloc] init];
