@@ -22,6 +22,7 @@
 - (void)tracePipeUpstream:(NSString *)fromFacilityID;
 - (int) getPipeTraceBounds;
 - (void)displayPipeTrace:(CGContextRef)context
+               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds;
 

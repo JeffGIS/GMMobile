@@ -233,41 +233,23 @@ int SQLOKswr(int sqlReturn, char *method)
 
 - (void)displayPlats:(CGContextRef)context
                 type:(NSString*)platType
+           llCorners:(CORNERPOINTS *) latlonCornerPoints
             LLBounds:(MNMXCORD *)platlonBounds
           viewBounds:(MNMXCORD *)pvbounds
 {
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
-    
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints,numLoops, refno;
-    CGFloat emvTotal, specAssmt;
     LPSTR platID;
-    char homeSteadCode = 'H';
-    char taxExemptCode = 'E';
+    int numPoints,numLoops, refno;
     [self open];
     
-    switch (CRAPI.sharedInstance.project)
-    {
-        case PROJECT_MPLS:
-            query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            break;
-        case PROJECT_METROGIS:
-            homeSteadCode = 'Y';
-            taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-    }
-    query = [NSString stringWithFormat:@"SELECT SANPLATAREAS.id, SANPLATAREAS.PLAT, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM SANPLATAREAS,SANPLATAREAS_index WHERE SANPLATAREAS.id=SANPLATAREAS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+    query = [NSString stringWithFormat:@"SELECT STORM_PLAT.id, STORM_PLAT.PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM STORM_PLAT,STORM_PLAT_index WHERE STORM_PLAT.id=STORM_PLAT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     
-    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
-    NSLog (@"Prepared");
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareDisplayPlats");
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement,0);
@@ -305,7 +287,7 @@ int SQLOKswr(int sqlReturn, char *method)
         UIColor *color = [[UIColor alloc] initWithRed:1.0
                                                 green:1.0
                                                  blue:0.0
-                                                alpha:0.7];
+                                                alpha:0.2];
         
         [self fillPlat:context
                nPoints:numPoints
@@ -322,7 +304,7 @@ int SQLOKswr(int sqlReturn, char *method)
         free(llpoints);
     }
     
-    SQLOKswr(sqlite3_finalize(statement), "displayParcels");
+    SQLOKswr(sqlite3_finalize(statement), "displayPlats");
     [self close];
  
 }
@@ -572,18 +554,19 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     return rtn[i];
 }
 
-- (void)setTrans:(MNMXCORD *)platlonBounds
+- (void)setTrans:(CORNERPOINTS *)corners
       viewBounds:(MNMXCORD *)pvbounds
 {
 
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(corners, pvbounds);
 }
 
 
 - (void)displayStormLine:(CGContextRef)context
                     pass:(int)pass
+               llCorners:(CORNERPOINTS *) latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
@@ -617,7 +600,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     else if (_zoom < 18)
         sizeFactor /= (2.0 * (18.0 - _zoom));
     
-    [self setTrans:platlonBounds viewBounds:pvbounds];
+    [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     [self open];
     
@@ -1115,6 +1098,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 }
 
 - (void)displayStormPoint:(CGContextRef)context
+                llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
 {
@@ -1135,10 +1119,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     if (![self continue])
         return;
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
-    
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     [self open];
     

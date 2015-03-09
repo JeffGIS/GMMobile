@@ -24,6 +24,7 @@ extern int keepProcessing;
     return NO;
 }
 -(void)displayPlanArea:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
@@ -39,7 +40,7 @@ extern int keepProcessing;
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
     
@@ -184,6 +185,7 @@ extern int keepProcessing;
 }
 
 -(void)displayPlanLine:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
@@ -200,7 +202,7 @@ extern int keepProcessing;
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
     
@@ -316,6 +318,7 @@ extern int keepProcessing;
 }
 
 -(void)displayPlanPoint:(CGContextRef)context
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
@@ -331,7 +334,7 @@ extern int keepProcessing;
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
     
@@ -374,6 +377,7 @@ extern int keepProcessing;
     
 }
 -(void)displayWallPoint:(CGContextRef)context
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
@@ -388,7 +392,7 @@ extern int keepProcessing;
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
     //CREATE TABLE ALLEYWALLS ('id' INT,'Wall ID' CHAR(8),'Hse No' INT,'STREET' CHAR(64),'City' CHAR(4),'Length' REAL,'Max Hght' REAL,'Offset' REAL,'Gar/Struc' CHAR(12),' COST' CHAR(12),'Type Const' CHAR(32),'InspDate' CHAR(12),'InspBy' CHAR(8),'Rating' CHAR(16),'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))

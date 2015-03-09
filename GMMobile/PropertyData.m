@@ -614,13 +614,14 @@ int SQLOKpd(int sqlReturn, char *method)
  */
 
 - (void)displayParcels:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     NSString *query;
     sqlite3_stmt *statement;
@@ -929,6 +930,7 @@ int SQLOKpd(int sqlReturn, char *method)
 }
 
 - (void)displayParcelText:(CGContextRef)context
+                llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
 {
@@ -938,7 +940,7 @@ int SQLOKpd(int sqlReturn, char *method)
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     DPOINT p1, p2;
     CGFloat boundsWidthInMeters, boundsHeightInMeters;

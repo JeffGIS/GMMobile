@@ -693,14 +693,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(int)zoom
 {
-    MNMXCORD llBounds;
     _vectorView.displayData = 1;
     
-    llBounds.xmn = region.nearLeft.longitude;
-    llBounds.xmx = region.farRight.longitude;
-    llBounds.ymn = region.nearLeft.latitude;
-    llBounds.ymx = region.farRight.latitude;
-    _vectorView.latlonBounds = llBounds;
+    [_vectorView setRegion:region];
     _vectorView.zoom = zoom;
     
     NSLog(@"Vector view start: zoom = %i", zoom);

@@ -53,10 +53,12 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 
 - (void)displayParcels:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
 -(void)displayParcelText:(CGContextRef)context
+               llCorners:(CORNERPOINTS *) latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds;
 

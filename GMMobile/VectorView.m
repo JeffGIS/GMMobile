@@ -91,6 +91,20 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 }
 */
 
+- (void) setRegion:(GMSVisibleRegion)region
+{
+    _latlonCornerPoints.nearLeft.x = region.nearLeft.longitude;
+    _latlonCornerPoints.nearLeft.y = region.nearLeft.latitude;
+    _latlonCornerPoints.farLeft.x = region.farLeft.longitude;
+    _latlonCornerPoints.farLeft.y = region.farLeft.latitude;
+    _latlonCornerPoints.farRight.x = region.farRight.longitude;
+    _latlonCornerPoints.farRight.y = region.farRight.latitude;
+    _latlonCornerPoints.nearRight.x = region.nearRight.longitude;
+    _latlonCornerPoints.nearRight.y = region.nearRight.latitude;
+
+    _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
+}
+
 - (void)drawRect:(CGRect)rect
 {
     _vectorViewContext = UIGraphicsGetCurrentContext();
@@ -128,10 +142,12 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                 pd.processingID = keepProcessing;
                 
                 [pd displayParcels:_context
+                         llCorners:&_latlonCornerPoints
                           LLBounds:&_latlonBounds
                         viewBounds:&_viewBounds];
                 
                 [pd displayParcelText:_context
+                            llCorners:&_latlonCornerPoints
                              LLBounds:&_latlonBounds
                            viewBounds:&_viewBounds];
             }
@@ -175,7 +191,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                             LLBounds:&_latlonBounds
                           viewBounds:&_viewBounds];
             }*/
-            if (keepProcessing == self.displayID && _zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+            if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
             {
                 SewerData *sd = [[SewerData alloc] init];
                 sd.processingID = keepProcessing;
@@ -183,22 +199,26 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                 
                 [sd displayStormLine:_context
                                 pass:LINE_PASS
+                           llCorners:&_latlonCornerPoints
                            LLBounds:&_latlonBounds
                          viewBounds:&_viewBounds];
                 
                 [sd displayStormPoint:_context
+                            llCorners:&_latlonCornerPoints
                             LLBounds:&_latlonBounds
                           viewBounds:&_viewBounds];
                 
                 [sd displayStormLine:_context
                                 pass:TEXT_PASS
+                           llCorners:&_latlonCornerPoints
                             LLBounds:&_latlonBounds
                           viewBounds:&_viewBounds];
                 
-                /*[sd displayPlats:_context
+                [sd displayPlats:_context
                             type:@"SAN"
+                       llCorners:&_latlonCornerPoints
                         LLBounds:&_latlonBounds
-                      viewBounds:&_viewBounds];*/
+                      viewBounds:&_viewBounds];
             }
             if (keepProcessing == self.displayID)
             {
@@ -206,6 +226,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                 pt.processingID = keepProcessing;
                 
                 [pt displayPipeTrace:_context
+                           llCorners:&_latlonCornerPoints
                             LLBounds:&_latlonBounds
                           viewBounds:&_viewBounds];
             }

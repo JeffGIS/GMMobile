@@ -36,16 +36,18 @@ int SQLOKswr(int sqlReturn, char *method);
 - (void)startTransaction;
 - (void)commitTransaction;
 
-- (void)setTrans:(MNMXCORD *)platlonBounds
+- (void)setTrans:(CORNERPOINTS *)corners
       viewBounds:(MNMXCORD *)pvbounds;
 
 - (void)displayPlats:(CGContextRef)context
                 type:(NSString*)platType
+           llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
 -(void)displayStormLine:(CGContextRef)context
                    pass:(int)pass
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
@@ -59,6 +61,7 @@ int SQLOKswr(int sqlReturn, char *method);
           andPointers:(BOOL)addPointers;
 
 -(void)displayStormPoint:(CGContextRef)context
+               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds;
 

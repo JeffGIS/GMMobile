@@ -626,6 +626,7 @@ $RETURN(1);
 }
 
 - (void)displayPipeTrace:(CGContextRef)context
+               llCorners:(CORNERPOINTS *)latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
@@ -639,7 +640,7 @@ $RETURN(1);
     _sd = [[SewerData alloc]init];
     [_sd open];
  
-    [_sd setTrans:platlonBounds viewBounds:pvbounds];
+    [_sd setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
     
