@@ -35,9 +35,9 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic) NSString * selectedSewerPipe;
-@property (atomic)    BOOL waitForVectorViewRefresh;
-
+@property (nonatomic) NSString *selectedSewerPipe;
+@property (atomic) BOOL waitForVectorViewRefresh;
+@property (nonatomic) GMSTileLayer *layer;
 
 @end
 
@@ -78,14 +78,14 @@ extern int keepProcessing;
     [_mapView addGestureRecognizer:longPressGesture];
     
     GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"https:///example.com/%lu/%lu/%lu.png",
+        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
                          (unsigned long)x, (unsigned long)y, (unsigned long)zoom];
         
         return [NSURL URLWithString:url];
     };
     
-    GMSTileLayer *layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
-    layer.map = _mapView;
+    _layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
+    _layer.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
