@@ -8,6 +8,7 @@ extern int keepProcessing;
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
+#import "PickedItem.h"
 
 @interface MapViewController ()
 
@@ -391,61 +392,78 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     else
     {
-        LLPOINT llp, llpSewer;
+        LLPOINT llpickPt, llSewerPt, llPropPt;
         CGFloat dist;
-        llp.lat = coordinate.latitude;
-        llp.lon = coordinate.longitude;
-        llpSewer = llp;
+        llpickPt.lat = coordinate.latitude;
+        llpickPt.lon = coordinate.longitude;
+        llPropPt = llpickPt;
+        llSewerPt = llpickPt;
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         
         PropertyData *propData = [[PropertyData alloc] init];
-        
-        _selectedPID = [propData pickPID:&llp
-                               distToPID:&dist];
-        
         SewerData *sewerData = [[SewerData alloc] init];
         
-        if ([sewerData pickSewer:llpSewer
-                   highlightList:highlightList])
+        sewerData.zoom = _mapView.camera.zoom;
+        propData.zoom = _mapView.camera.zoom;
+        [propData pickPID:&llPropPt
+            highlightList:highlightList];
+        [sewerData pickSewer:llSewerPt
+               highlightList:highlightList];
+        if ([highlightList count])
         {
-            _gssiAlert.option = ALERT_SEWERPIPE;
-            [_gssiAlert showAlertWithTitle:@"Sewer Pipe Trace Options"
-                                   message:@""                         cancelButtonTitle:@"Cancel"
-                         otherButtonTitles:@[@"Display Pipe Attributes",@"Trace Pipe Upstream", @"Trace Pipe Downstream"]
-                 destructiveButtonPosition:0];
+            if (_clearAnnotations)
+            {
+                for (GMSMarker *markers in _markerArray)
+                    markers.map = nil;
+                
+                [_markerArray removeAllObjects];
+            }
+            PickedItem *pi = [PickedItem nearestPickedItem:highlightList];
+            CLLocationCoordinate2D pickedPt;
+            pickedPt.latitude = pi.pickedPoint.y;
+            pickedPt.longitude = pi.pickedPoint.x;
+            switch (pi.itemType)
+            {
+                case PTStormSewerLine:
+                {
+                    _gssiAlert.option = ALERT_SEWERPIPE;
+                    [_gssiAlert showAlertWithTitle:@"Sewer Pipe Trace Options"
+                                           message:@""
+                                 cancelButtonTitle:@"Cancel"
+                                 otherButtonTitles:@[@"Display Pipe Attributes",@"Trace Pipe Upstream", @"Trace Pipe Downstream"]
+                         destructiveButtonPosition:0];
 
-            _selectedSewerPipe = (NSString *)highlightList[0];
+                    _selectedSewerPipe = pi.identifier;
+                }
+                    break;
+                case PTPid:
+                {
+                    GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
+                    _selectedPID = pi.identifier;
+                    marker.appearAnimation = kGMSMarkerAnimationPop;
+                    marker.title = _selectedPID;
+                    marker.snippet = [propData getOwnerNameForPID:_selectedPID];
+                    marker.map = _mapView;
+                    
+                    [_markerArray addObject:marker];
+                    [self removePreviousInfoWindow];
+                    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+                    
+                    _infoWindow = [[MarkerInfoWindow alloc] init];
+                    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+                    _infoWindow.delegate = self;
+                    _infoWindow.title = marker.title;
+                    _infoWindow.snippet = marker.snippet;
+                    _infoWindow.position = marker.position;
+                    [self.view addSubview:_infoWindow];
+                    _noneSelected = NO;
+                    
+                }
+            }
         }
         
-        coordinate.latitude = llp.lat;
-        coordinate.longitude = llp.lon;
         
-        if (_clearAnnotations)
-        {
-            for (GMSMarker *markers in _markerArray)
-                markers.map = nil;
-            
-            [_markerArray removeAllObjects];
-        }
         
-        GMSMarker *marker = [GMSMarker markerWithPosition:coordinate];
-        marker.appearAnimation = kGMSMarkerAnimationPop;
-        marker.title = _selectedPID;
-        marker.snippet = [propData getOwnerNameForPID:_selectedPID];
-        marker.map = _mapView;
-        
-        [_markerArray addObject:marker];
-        [self removePreviousInfoWindow];
-        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-        
-        _infoWindow = [[MarkerInfoWindow alloc] init];
-        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-        _infoWindow.delegate = self;
-        _infoWindow.title = marker.title;
-        _infoWindow.snippet = marker.snippet;
-        _infoWindow.position = marker.position;
-        [self.view addSubview:_infoWindow];
-        _noneSelected = NO;
     }
 }
 

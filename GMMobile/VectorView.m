@@ -135,86 +135,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
             _viewBounds.ymn = (self.bounds.origin.y * scale);
             
-            if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
-            {
-                PropertyData *pd = [[PropertyData alloc] init];
-                
-                pd.processingID = keepProcessing;
-                
-                [pd displayParcels:_context
-                         llCorners:&_latlonCornerPoints
-                          LLBounds:&_latlonBounds
-                        viewBounds:&_viewBounds];
-                
-                [pd displayParcelText:_context
-                            llCorners:&_latlonCornerPoints
-                             LLBounds:&_latlonBounds
-                           viewBounds:&_viewBounds];
-            }
-            
-            if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-            {
-                BoundaryData *bd = [[BoundaryData alloc] init];
-                
-                [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                          inContext:_context
-                           LLBounds:&_latlonBounds
-                         viewBounds:&_viewBounds];
-            }
-            
-            /*if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
-            {
-                BoundaryData *bd = [[BoundaryData alloc]init];
-                [bd displayLandUse:context
-                           LLBounds:&_latlonBounds
-                         viewBounds:&_viewBounds];
-            }*/
-            
-     /*       if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
-            {
-                PlanimetricData *pd = [[PlanimetricData alloc] init];
-                pd.processingID = keepProcessing;
-                
-                [pd displayPlanArea:_context
-                           LLBounds:&_latlonBounds
-                         viewBounds:&_viewBounds];
-                
-                [pd displayPlanLine:_context
-                           LLBounds:&_latlonBounds
-                         viewBounds:&_viewBounds];
-                
-                [pd displayPlanPoint:_context
-                            LLBounds:&_latlonBounds
-                          viewBounds:&_viewBounds];
-                
-                [pd displayWallPoint:_context
-                            LLBounds:&_latlonBounds
-                          viewBounds:&_viewBounds];
-            }*/
-            if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
-            {
-                SewerData *sd = [[SewerData alloc] init];
-                sd.processingID = keepProcessing;
-                sd.zoom = _zoom;
-                
-                [sd displayStormLine:_context
-                                pass:LINE_PASS
-                           llCorners:&_latlonCornerPoints
-                           LLBounds:&_latlonBounds
-                         viewBounds:&_viewBounds];
-                
-                [sd displayStormPoint:_context
-                            llCorners:&_latlonCornerPoints
-                            LLBounds:&_latlonBounds
-                          viewBounds:&_viewBounds];
-                
-                [sd displayStormLine:_context
-                                pass:TEXT_PASS
-                           llCorners:&_latlonCornerPoints
-                            LLBounds:&_latlonBounds
-                          viewBounds:&_viewBounds];
-                
-            }
             if (keepProcessing == self.displayID && CRAPI.sharedInstance.showPlats)
             {
                 SewerData *sd = [[SewerData alloc] init];
@@ -226,6 +146,89 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                        llCorners:&_latlonCornerPoints
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
+            }
+            else
+            {
+                if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
+                {
+                    PropertyData *pd = [[PropertyData alloc] init];
+                    
+                    pd.processingID = keepProcessing;
+                    
+                    [pd displayParcels:_context
+                             llCorners:&_latlonCornerPoints
+                              LLBounds:&_latlonBounds
+                            viewBounds:&_viewBounds];
+                    
+                    [pd displayParcelText:_context
+                                llCorners:&_latlonCornerPoints
+                                 LLBounds:&_latlonBounds
+                               viewBounds:&_viewBounds];
+                }
+                
+                if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                {
+                    BoundaryData *bd = [[BoundaryData alloc] init];
+                    
+                    [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                              inContext:_context
+                               LLBounds:&_latlonBounds
+                             viewBounds:&_viewBounds];
+                }
+                
+                /*if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                {
+                    BoundaryData *bd = [[BoundaryData alloc]init];
+                    [bd displayLandUse:context
+                               LLBounds:&_latlonBounds
+                             viewBounds:&_viewBounds];
+                }*/
+                
+         /*       if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+                {
+                    PlanimetricData *pd = [[PlanimetricData alloc] init];
+                    pd.processingID = keepProcessing;
+                    
+                    [pd displayPlanArea:_context
+                               LLBounds:&_latlonBounds
+                             viewBounds:&_viewBounds];
+                    
+                    [pd displayPlanLine:_context
+                               LLBounds:&_latlonBounds
+                             viewBounds:&_viewBounds];
+                    
+                    [pd displayPlanPoint:_context
+                                LLBounds:&_latlonBounds
+                              viewBounds:&_viewBounds];
+                    
+                    [pd displayWallPoint:_context
+                                LLBounds:&_latlonBounds
+                              viewBounds:&_viewBounds];
+                }*/
+                if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
+                {
+                    SewerData *sd = [[SewerData alloc] init];
+                    sd.processingID = keepProcessing;
+                    sd.zoom = _zoom;
+                    
+                    [sd displayStormLine:_context
+                                    pass:LINE_PASS
+                               llCorners:&_latlonCornerPoints
+                               LLBounds:&_latlonBounds
+                             viewBounds:&_viewBounds];
+                    
+                    [sd displayStormPoint:_context
+                                llCorners:&_latlonCornerPoints
+                                LLBounds:&_latlonBounds
+                              viewBounds:&_viewBounds];
+                    
+                    [sd displayStormLine:_context
+                                    pass:TEXT_PASS
+                               llCorners:&_latlonCornerPoints
+                                LLBounds:&_latlonBounds
+                              viewBounds:&_viewBounds];
+                    
+                }
             }
             if (keepProcessing == self.displayID)
             {

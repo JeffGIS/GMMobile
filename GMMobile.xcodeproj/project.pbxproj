@@ -46,6 +46,7 @@
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */; };
 		EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C11AA89DE100B8B162 /* PipeTrace.m */; };
+		EB4A18C51AAE347700B8B162 /* PickedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C41AAE347600B8B162 /* PickedItem.m */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
 		EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
@@ -132,6 +133,8 @@
 		A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		EB4A18C01AA89DE100B8B162 /* PipeTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeTrace.h; sourceTree = "<group>"; };
 		EB4A18C11AA89DE100B8B162 /* PipeTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PipeTrace.m; sourceTree = "<group>"; };
+		EB4A18C31AAE347600B8B162 /* PickedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickedItem.h; sourceTree = "<group>"; };
+		EB4A18C41AAE347600B8B162 /* PickedItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickedItem.m; sourceTree = "<group>"; };
 		EB4F25831A757F2000761FD5 /* FindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindViewController.h; sourceTree = "<group>"; };
 		EB4F25841A757F2000761FD5 /* FindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindViewController.m; sourceTree = "<group>"; };
 		EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPIDViewController.h; sourceTree = "<group>"; };
@@ -283,6 +286,8 @@
 				EBCA6C201A91301F003F7FB8 /* SewerData.m */,
 				EB4A18C01AA89DE100B8B162 /* PipeTrace.h */,
 				EB4A18C11AA89DE100B8B162 /* PipeTrace.m */,
+				EB4A18C31AAE347600B8B162 /* PickedItem.h */,
+				EB4A18C41AAE347600B8B162 /* PickedItem.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -517,6 +522,7 @@
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
 				A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */,
 				EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */,
+				EB4A18C51AAE347700B8B162 /* PickedItem.m in Sources */,
 				EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */,
 				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
