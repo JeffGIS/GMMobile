@@ -1430,7 +1430,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         _clearAnnotations = NO;
     
     else
+    {
+        for (GMSMarker *markers in _markerArray)
+            markers.map = nil;
+        
+        [_markerArray removeAllObjects];
+        [self removePreviousInfoWindow];
+        
         _clearAnnotations = YES;
+    }
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
