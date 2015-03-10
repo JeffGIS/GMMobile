@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "PropertyData.h"
+#import "PickedItem.h"
 
 #define COORDINATE_FACTOR 10000000.0
 
@@ -431,13 +432,17 @@ int SQLOKpd(int sqlReturn, char *method)
     return array;
 }
 
-- (NSString *)pickPID:(LLPOINT *)pt distToPID:(CGFloat *)pdist
+- (int)pickPID:(LLPOINT *)pt highlightList:(NSMutableArray*)hlist
 {
+    if (_zoom < CRAPI.sharedInstance.parcelsVisibleAtZoom)
+        return 0;
     NSString *minPID = [[NSString alloc] init];
     dbounds bnds;
     CGFloat d, mind = DBL_MAX;
     CGFloat pickap = 0.005;
     DPOINT p1, p2, minpt;
+    int minref = 0;
+    int npicked = 0;
     
     p1.x = pt->lon;
     p1.y = pt->lat;
@@ -448,7 +453,7 @@ int SQLOKpd(int sqlReturn, char *method)
     bnds.ymx = p1.y + pickap;
     [self open];
 
-    NSString *query = [NSString stringWithFormat:@"SELECT PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+    NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
              bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
 
     //NSString *query = [NSString stringWithFormat:@"SELECT PID,LAT,LON FROM PARCELPOINT Where LAT > %f AND LAT < %f AND LON > %f AND LON < %f",
@@ -460,15 +465,18 @@ int SQLOKpd(int sqlReturn, char *method)
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 0);
-        CGFloat lat = sqlite3_column_double(statement, 1);
-        CGFloat lon = sqlite3_column_double(statement, 2);
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lat = sqlite3_column_double(statement, 2);
+        CGFloat lon = sqlite3_column_double(statement, 3);
         p2.x = lon;
         p2.y = lat;
         d = ArcDistance(p1, p2);
         
         if (d < mind)
         {
+            npicked++;
+            minref = refno;
             mind = d;
             minpt = p2;
             minPID = [NSString stringWithUTF8String:cpid];
@@ -479,8 +487,17 @@ int SQLOKpd(int sqlReturn, char *method)
     [self close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
-    *pdist = mind;
-    return minPID;
+    if (npicked)
+    {
+        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTPid;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minPID;
+        pi.refno = minref;
+        [hlist addObject:pi];
+    }
+    return npicked;
 }
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID

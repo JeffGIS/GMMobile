@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property LPTRANDATA pTranViewtoLL;
 @property long long fileSize;
 @property int processingID;
+@property CGFloat zoom;
 
 - (void)open;
 - (void)close;
@@ -47,8 +48,8 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (LLPOINT)getPointForPID:(NSString *)PID;
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
-- (NSString *)pickPID:(LLPOINT*)pt
-            distToPID:(CGFloat *)pdist;
+- (int)pickPID:(LLPOINT*)pt
+  highlightList:(NSMutableArray*)hlist;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 
