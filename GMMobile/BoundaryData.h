@@ -8,7 +8,8 @@
 
 -(void)displayBoundary:(int)refno
              inContext:(CGContextRef)context
-              LLBounds:(MNMXCORD *)platlonBounds
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+             LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
 -(void)displayLandUse:(CGContextRef)context

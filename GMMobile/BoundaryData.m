@@ -16,6 +16,7 @@
 
 -(void)displayBoundary:(int)refno
              inContext:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
              LLBounds:(MNMXCORD *)platlonBounds
            viewBounds:(MNMXCORD *)pvbounds
 {
@@ -28,7 +29,7 @@
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
     

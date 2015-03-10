@@ -172,7 +172,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                     
                     [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
                               inContext:_context
-                               LLBounds:&_latlonBounds
+                              llCorners:&_latlonCornerPoints
+                              LLBounds:&_latlonBounds
                              viewBounds:&_viewBounds];
                 }
                 
