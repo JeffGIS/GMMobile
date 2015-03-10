@@ -147,6 +147,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                         LLBounds:&_latlonBounds
                       viewBounds:&_viewBounds];
             }
+            
             else
             {
                 if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
@@ -205,6 +206,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                 LLBounds:&_latlonBounds
                               viewBounds:&_viewBounds];
                 }*/
+                
                 if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
                 {
                     SewerData *sd = [[SewerData alloc] init];
@@ -230,6 +232,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                     
                 }
             }
+            
             if (keepProcessing == self.displayID)
             {
                 PipeTrace *pt = [[PipeTrace alloc] init];
@@ -240,6 +243,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                             LLBounds:&_latlonBounds
                           viewBounds:&_viewBounds];
             }
+            
             if (keepProcessing == self.displayID)
             {
                 CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);

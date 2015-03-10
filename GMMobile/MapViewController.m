@@ -1119,6 +1119,54 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
              destructiveButtonPosition:0];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Display Pipe Attributes"])
+    {
+        [self dismissTableView];
+        //implement pipe attributes here
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Trace Pipe Upstream"])
+    {
+        [self dismissTableView];
+        
+        [_popover showAfter:0.0
+                  withTitle:@"Trace Pipe Upstream"];
+        
+        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                       ^{
+                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                           pipeTrace.delegate = self;
+                           pipeTrace.popover = _popover;
+                           [pipeTrace tracePipeUpstream:_selectedSewerPipe];
+                       });
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Trace Pipe Downstream"])
+    {
+        [self dismissTableView];
+        
+        [_popover showAfter:0.0
+                  withTitle:@"Trace Pipe Downstream"];
+        
+        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                       ^{
+                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                           pipeTrace.delegate = self;
+                           pipeTrace.popover = _popover;
+                           [pipeTrace tracePipeDownstream:_selectedSewerPipe];
+                       });
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Pipe Trace"])
+    {
+        [self dismissTableView];
+        //implement remove pipe trace here
+    }
 }
 
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
@@ -1150,57 +1198,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             //implement zoom to tract here
             break;
     }
-    /*
-            dispatch_queue_t pipeTraceQueue = dispatch_queue_create("pipeTraceQueue", NULL);
-     
-            case SewerPipeSettingCancel:
-                if (_tableView.indexPathForSelectedRow)
-                {
-                    [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                              animated:YES];
-                }
-                
-                break;
-                
-            case SewerPipeSettingAttributes:
-                [self dismissTableView];
-                //implement pipe attributes here
-                break;
-                
-            case SewerPipeSettingTraceUp:
-            {
-                [self dismissTableView];
-                
-                [_popover showAfter:0.0
-                          withTitle:@"Trace Pipe Upstream"];
-                dispatch_async(pipeTraceQueue,
-                               ^{
-                PipeTrace *pipeTrace = [[PipeTrace alloc]init];
-                pipeTrace.delegate = self;
-                pipeTrace.popover = _popover;
-                [pipeTrace tracePipeUpstream:_selectedSewerPipe];
-                               });
-            }
-                               
-                break;
-                
-            case SewerPipeSettingTraceDown:
-            {
-                [self dismissTableView];
-                [_popover showAfter:0.0
-                          withTitle:@"Trace Pipe Downstream"];
-                dispatch_async(pipeTraceQueue,
-                               ^{
-                PipeTrace *pipeTrace = [[PipeTrace alloc]init];
-                pipeTrace.delegate = self;
-                pipeTrace.popover = _popover;
-                [pipeTrace tracePipeDownstream:_selectedSewerPipe];
-                               });
-           }
-                break;
-        }
-            break;
-    }*/
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -1812,8 +1809,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type
 {
-    NSLog(@"%li", (long)type);
-    
     switch (type)
     {
         case MarkerInfoWindowTypePID:
@@ -1851,25 +1846,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [self presentTableView];
 }
 
-- (void)markerInfoWindowDidSelectPropReport:(NSString *)PID
+- (void)markerInfoWindowDidSelectPropReport:(NSString *)title
+                                       type:(NSInteger)type
 {
-    _selectedPID = PID;
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-    
-    _tableViewSetting = PropertyTableViewSettingPropertyReport;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.allowsSelection = NO;
-    _tableView.delaysContentTouches = YES;
-    [_tableView reloadData];
-    
-    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                           animated:NO];
-    
-    [self presentTableView];
+    switch (type)
+    {
+        case MarkerInfoWindowTypePID:
+            _selectedPID = title;
+            //implement last selected PID option here
+            break;
+            
+        case MarkerInfoWindowTypeStormSewer:
+            _selectedSewerPipe = title;
+            //implement last selected StormSewer option here
+            break;
+    }
 }
 
 - (void)presentTableView
