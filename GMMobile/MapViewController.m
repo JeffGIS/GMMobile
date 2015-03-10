@@ -447,6 +447,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             CLLocationCoordinate2D pickedPt;
             pickedPt.latitude = pi.pickedPoint.y;
             pickedPt.longitude = pi.pickedPoint.x;
+            
+            for (GMSMarker *marker in _markerArray)
+            {
+                if ([marker.title isEqualToString:pi.identifier])
+                    marker.map = nil;
+            }
+            
             GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
             
             [self removePreviousInfoWindow];
