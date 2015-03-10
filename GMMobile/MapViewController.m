@@ -333,7 +333,7 @@ extern int keepProcessing;
     
     _currentScreenHeight = self.view.frame.size.height;
     
-    [self stopTrackingUserLocation];
+    [self stopTrackingUserLocation:YES];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -371,7 +371,7 @@ extern int keepProcessing;
     
     else
     {
-        [self stopTrackingUserLocation];
+        [self stopTrackingUserLocation:YES];
         
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
                                                                    zoom:12.0];
@@ -721,12 +721,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                      animations:^{
                          _compass.frame = CGRectMake((self.view.frame.size.height - compassSize - compassMargin + _tabBarHeight),
                                                      (statusBarHeight + compassMargin), compassSize, compassSize);
+                         
+                         _compass.alpha = 0.0;
                      } completion:^(BOOL finished) {
-                         [UIView animateWithDuration:0.1
-                                          animations:^{
-                                              if (!_compass.hidden)
-                                                  _compass.transform = CGAffineTransformMakeRotation(_mapView.camera.bearing * M_PI / 180);
-                                          }];
+                         _compass.transform = CGAffineTransformMakeRotation(_mapView.camera.bearing * M_PI / 180);
+                         
+                         if (!_compass.hidden)
+                             _compass.alpha = 1.0;
                      }];
     
     switch (_screenSetting)
@@ -1385,7 +1386,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         [self startTrackingUserLocation];
     
     else
-        [self stopTrackingUserLocation];
+        [self stopTrackingUserLocation:YES];
 }
 
 - (void)startTrackingUserLocation
@@ -1401,7 +1402,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _initialZoom = YES;
 }
 
-- (void)stopTrackingUserLocation
+- (void)stopTrackingUserLocation:(BOOL)refresh
 {
     [_locationManager stopUpdatingLocation];
     [_locationManager stopUpdatingHeading];
@@ -1409,8 +1410,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _mapView.settings.rotateGestures = YES;
     [_mapToolbar deselectMyLocationButton];
     
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    if (refresh)
+    {
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -1866,7 +1870,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)compassTapped:(UIButton *)button
 {
     if (_mapView.myLocationEnabled)
-        [self stopTrackingUserLocation];
+        [self stopTrackingUserLocation:NO];
     
     [_mapView animateToBearing:0.0];
     
