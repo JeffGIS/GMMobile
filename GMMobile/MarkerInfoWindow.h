@@ -12,7 +12,8 @@
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type;
 
-- (void)markerInfoWindowDidSelectPropReport:(NSString *)PID;
+- (void)markerInfoWindowDidSelectPropReport:(NSString *)title
+                                       type:(NSInteger)type;
 
 @end
 

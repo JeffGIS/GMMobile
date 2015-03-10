@@ -103,7 +103,10 @@
 - (void)propReportSelected:(UIButton *)button
 {
     if (_delegate)
-        [_delegate markerInfoWindowDidSelectPropReport:_titleLabel.text];
+    {
+        [_delegate markerInfoWindowDidSelectPropReport:_titleLabel.text
+                                                  type:_type];
+    }
 }
 
 @end

@@ -449,8 +449,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             pickedPt.longitude = pi.pickedPoint.x;
             GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
             
-            NSLog(@"%f,%f", pickedPt.latitude, pickedPt.longitude);
-            
             [self removePreviousInfoWindow];
             _infoWindow = [[MarkerInfoWindow alloc] init];
             
@@ -459,8 +457,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
-                    //marker.snippet = [sewerData someMethod:_selectedSewerPipe];
-                    _infoWindow.type = MarkerInfoWindowTypeSewer;
+                    marker.snippet = @"STORM/SEWER PIPE";
+                    _infoWindow.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
                 case PTPid:
@@ -471,6 +469,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     break;
             }
             
+            marker.userData = [NSNumber numberWithInteger:pi.itemType];
             marker.appearAnimation = kGMSMarkerAnimationPop;
             marker.map = _mapView;
             [_markerArray addObject:marker];
@@ -491,19 +490,33 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
    didTapMarker:(GMSMarker *)marker
 {
     [self removePreviousInfoWindow];
-    [_markerArray removeObject:marker];
     
-    if ([marker.title isEqualToString:_selectedPID])
+    if ([marker.title isEqualToString:[_markerArray.lastObject title]])
     {
-        _selectedPID = nil;
+        _selectedPID = _selectedSewerPipe = nil;
         _noneSelected = YES;
         return YES;
     }
     
-    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-    [_markerArray addObject:marker];
-    
+    [_markerArray removeObject:marker];
     _infoWindow = [[MarkerInfoWindow alloc] init];
+    
+    switch ([marker.userData integerValue])
+    {
+        case PTStormSewerLine:
+            _selectedSewerPipe = _infoWindow.title = marker.title;
+            _infoWindow.type = MarkerInfoWindowTypeStormSewer;
+            break;
+            
+        case PTPid:
+            _selectedPID = _infoWindow.title = marker.title;
+            _infoWindow.type = MarkerInfoWindowTypePID;
+            break;
+    }
+    
+    [_markerArray addObject:marker];
+    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+    
     _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
     _infoWindow.delegate = self;
     _selectedPID = _infoWindow.title = marker.title;
@@ -606,7 +619,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        willMove:(BOOL)gesture
 {
     [self clearVectorView];
-    [self removePreviousInfoWindow];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -642,8 +654,6 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     else
         _firstTimeMap = NO;
-    
-    [self restorePreviousInfoWindow];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -664,14 +674,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
     
     _rotateZoom = !_rotateZoom;
-    
-    [self restorePreviousInfoWindow];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    [self removePreviousInfoWindow];
     [self clearVectorView];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
@@ -814,6 +821,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)clearVectorView
 {
+    [self removePreviousInfoWindow];
     _vectorView.displayData = 0;
     keepProcessing++;
     [_vectorView setNeedsDisplay];
@@ -835,15 +843,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)vectorViewDidComplete
 {
     _waitForVectorViewRefresh = NO;
+    
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [_vectorView removeFromSuperview];
                        [self.view addSubview:_vectorView];
                        [self.view bringSubviewToFront:_vectorView];
-                       [self.view bringSubviewToFront:_mapToolbar];
                        
-                       if (_infoWindow)
-                           [self.view bringSubviewToFront:_infoWindow];
+                       [self restorePreviousInfoWindow];
+                       [self.view bringSubviewToFront:_mapToolbar];
                        
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
@@ -1111,6 +1119,54 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
              destructiveButtonPosition:0];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Display Pipe Attributes"])
+    {
+        [self dismissTableView];
+        //implement pipe attributes here
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Trace Pipe Upstream"])
+    {
+        [self dismissTableView];
+        
+        [_popover showAfter:0.0
+                  withTitle:@"Trace Pipe Upstream"];
+        
+        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                       ^{
+                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                           pipeTrace.delegate = self;
+                           pipeTrace.popover = _popover;
+                           [pipeTrace tracePipeUpstream:_selectedSewerPipe];
+                       });
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Trace Pipe Downstream"])
+    {
+        [self dismissTableView];
+        
+        [_popover showAfter:0.0
+                  withTitle:@"Trace Pipe Downstream"];
+        
+        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                       ^{
+                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                           pipeTrace.delegate = self;
+                           pipeTrace.popover = _popover;
+                           [pipeTrace tracePipeDownstream:_selectedSewerPipe];
+                       });
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Pipe Trace"])
+    {
+        [self dismissTableView];
+        //implement remove pipe trace here
+    }
 }
 
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
@@ -1142,57 +1198,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             //implement zoom to tract here
             break;
     }
-    /*
-            dispatch_queue_t pipeTraceQueue = dispatch_queue_create("pipeTraceQueue", NULL);
-     
-            case SewerPipeSettingCancel:
-                if (_tableView.indexPathForSelectedRow)
-                {
-                    [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                              animated:YES];
-                }
-                
-                break;
-                
-            case SewerPipeSettingAttributes:
-                [self dismissTableView];
-                //implement pipe attributes here
-                break;
-                
-            case SewerPipeSettingTraceUp:
-            {
-                [self dismissTableView];
-                
-                [_popover showAfter:0.0
-                          withTitle:@"Trace Pipe Upstream"];
-                dispatch_async(pipeTraceQueue,
-                               ^{
-                PipeTrace *pipeTrace = [[PipeTrace alloc]init];
-                pipeTrace.delegate = self;
-                pipeTrace.popover = _popover;
-                [pipeTrace tracePipeUpstream:_selectedSewerPipe];
-                               });
-            }
-                               
-                break;
-                
-            case SewerPipeSettingTraceDown:
-            {
-                [self dismissTableView];
-                [_popover showAfter:0.0
-                          withTitle:@"Trace Pipe Downstream"];
-                dispatch_async(pipeTraceQueue,
-                               ^{
-                PipeTrace *pipeTrace = [[PipeTrace alloc]init];
-                pipeTrace.delegate = self;
-                pipeTrace.popover = _popover;
-                [pipeTrace tracePipeDownstream:_selectedSewerPipe];
-                               });
-           }
-                break;
-        }
-            break;
-    }*/
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -1430,7 +1435,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         _clearAnnotations = NO;
     
     else
+    {
+        for (GMSMarker *markers in _markerArray)
+            markers.map = nil;
+        
+        [_markerArray removeAllObjects];
+        [self removePreviousInfoWindow];
+        
         _clearAnnotations = YES;
+    }
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
@@ -1473,7 +1486,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                ((tabBarTop - statusBarHeight) / 3.0));
     
     [self clearVectorView];
-    [self removePreviousInfoWindow];
     
     switch (setting)
     {
@@ -1492,8 +1504,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
-                                 
-                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1523,8 +1533,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
-                                 
-                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1590,8 +1598,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
-                                 
-                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1661,8 +1667,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
-                                 
-                                 [self restorePreviousInfoWindow];
                              }];
             
             [UIView animateWithDuration:0.25
@@ -1805,22 +1809,33 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type
 {
-    if (type == MarkerInfoWindowTypePID)
+    switch (type)
     {
-        _selectedPID = title;
-        _selectedPIDCoords = coords;
-        
-        if ([self isHennepinCountyPID:_selectedPID])
-            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
-        
-        else
-            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
-    }
-    
-    else if (type == MarkerInfoWindowTypeSewer)
-    {
-        _selectedSewerPipe = title;
-        _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream", @"Remove Pipe Trace"];
+        case MarkerInfoWindowTypePID:
+            _selectedPID = title;
+            _selectedPIDCoords = coords;
+            
+            if ([self isHennepinCountyPID:_selectedPID])
+            {
+                _options = @[@"Property Report", @"Hennepin County Website", @"Rankings",
+                             @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+            }
+            
+            else
+            {
+                _options = @[@"Property Report", @"Rankings", @"Computed Values",
+                             @"Display Street View", @"Zoom to Census Area"];
+            }
+            
+            break;
+            
+        case MarkerInfoWindowTypeStormSewer:
+            _selectedSewerPipe = title;
+            
+            _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
+                         @"Trace Pipe Downstream", @"Remove Pipe Trace"];
+            
+            break;
     }
     
     _tableViewSetting = PropertyTableViewSettingOptions;
@@ -1828,29 +1843,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _tableView.allowsSelection = YES;
     _tableView.delaysContentTouches = NO;
     [_tableView reloadData];
-    
     [self presentTableView];
 }
 
-- (void)markerInfoWindowDidSelectPropReport:(NSString *)PID
+- (void)markerInfoWindowDidSelectPropReport:(NSString *)title
+                                       type:(NSInteger)type
 {
-    _selectedPID = PID;
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-    
-    _tableViewSetting = PropertyTableViewSettingPropertyReport;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.allowsSelection = NO;
-    _tableView.delaysContentTouches = YES;
-    [_tableView reloadData];
-    
-    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                           animated:NO];
-    
-    [self presentTableView];
+    switch (type)
+    {
+        case MarkerInfoWindowTypePID:
+            _selectedPID = title;
+            //implement last selected PID option here
+            break;
+            
+        case MarkerInfoWindowTypeStormSewer:
+            _selectedSewerPipe = title;
+            //implement last selected StormSewer option here
+            break;
+    }
 }
 
 - (void)presentTableView
