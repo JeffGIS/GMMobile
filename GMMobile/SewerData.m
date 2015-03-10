@@ -556,6 +556,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         pi.refno = minref;
         pi.itemType = PTStormSewerLine;
         pi.distance = mind;
+        pi.pickedPoint = minpt;
         pi.identifier = minFid;
         [hlist addObject:pi];
     }
