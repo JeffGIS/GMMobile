@@ -95,7 +95,8 @@
     if (_delegate)
     {
         [_delegate markerInfoWindowDidSelectOptions:_titleLabel.text
-                                             coords:_position];
+                                             coords:_position
+                                               type:_type];
     }
 }
 

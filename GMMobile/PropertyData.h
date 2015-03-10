@@ -48,8 +48,9 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (LLPOINT)getPointForPID:(NSString *)PID;
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
-- (int)pickPID:(LLPOINT*)pt
-  highlightList:(NSMutableArray*)hlist;
+
+- (int)pickPID:(LLPOINT *)pt
+  highlightList:(NSMutableArray *)hlist;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 

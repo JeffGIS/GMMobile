@@ -1,9 +1,6 @@
 //  MapViewController.m
 //  GMMobile
 
-#define ALERT_CENSUS    1
-#define ALERT_SEWERPIPE 2
-
 extern int keepProcessing;
 
 #import "MapViewController.h"
@@ -424,17 +421,19 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llPropPt = llpickPt;
         llSewerPt = llpickPt;
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
-        
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
+        
         [propData pickPID:&llPropPt
             highlightList:highlightList];
-        [sewerData pickSewer:llSewerPt
+        
+        [sewerData pickSewer:&llSewerPt
                highlightList:highlightList];
-        if ([highlightList count])
+        
+        if (highlightList.count)
         {
             if (_clearAnnotations)
             {
@@ -443,52 +442,48 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 [_markerArray removeAllObjects];
             }
+            
             PickedItem *pi = [PickedItem nearestPickedItem:highlightList];
             CLLocationCoordinate2D pickedPt;
             pickedPt.latitude = pi.pickedPoint.y;
             pickedPt.longitude = pi.pickedPoint.x;
+            GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
+            
+            NSLog(@"%f,%f", pickedPt.latitude, pickedPt.longitude);
+            
+            [self removePreviousInfoWindow];
+            _infoWindow = [[MarkerInfoWindow alloc] init];
+            
             switch (pi.itemType)
             {
                 case PTStormSewerLine:
-                {
-                    _gssiAlert.option = ALERT_SEWERPIPE;
-                    [_gssiAlert showAlertWithTitle:@"Sewer Pipe Trace Options"
-                                           message:@""
-                                 cancelButtonTitle:@"Cancel"
-                                 otherButtonTitles:@[@"Display Pipe Attributes",@"Trace Pipe Upstream", @"Trace Pipe Downstream"]
-                         destructiveButtonPosition:0];
-
                     _selectedSewerPipe = pi.identifier;
-                }
+                    marker.title = _selectedSewerPipe;
+                    //marker.snippet = [sewerData someMethod:_selectedSewerPipe];
+                    _infoWindow.type = MarkerInfoWindowTypeSewer;
                     break;
+                    
                 case PTPid:
-                {
-                    GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
                     _selectedPID = pi.identifier;
-                    marker.appearAnimation = kGMSMarkerAnimationPop;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
-                    marker.map = _mapView;
-                    
-                    [_markerArray addObject:marker];
-                    [self removePreviousInfoWindow];
-                    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-                    
-                    _infoWindow = [[MarkerInfoWindow alloc] init];
-                    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-                    _infoWindow.delegate = self;
-                    _infoWindow.title = marker.title;
-                    _infoWindow.snippet = marker.snippet;
-                    _infoWindow.position = marker.position;
-                    [self.view addSubview:_infoWindow];
-                    _noneSelected = NO;
-                    
-                }
+                    _infoWindow.type = MarkerInfoWindowTypePID;
+                    break;
             }
+            
+            marker.appearAnimation = kGMSMarkerAnimationPop;
+            marker.map = _mapView;
+            [_markerArray addObject:marker];
+            CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+            
+            _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+            _infoWindow.delegate = self;
+            _infoWindow.title = marker.title;
+            _infoWindow.snippet = marker.snippet;
+            _infoWindow.position = marker.position;
+            [self.view addSubview:_infoWindow];
+            _noneSelected = NO;
         }
-        
-        
-        
     }
 }
 
@@ -1110,7 +1105,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Zoom to Census Area"])
     {
-        _gssiAlert.option = ALERT_CENSUS;
         [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
                                message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
                      cancelButtonTitle:@"Cancel"
@@ -1122,40 +1116,35 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
 clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    dispatch_queue_t pipeTraceQueue = dispatch_queue_create("pipeTraceQueue",NULL);
-    switch (gssiAlert.option)
+    switch (buttonIndex)
     {
-        case ALERT_CENSUS:
-        switch (buttonIndex)
-        {
-            case CensusZoomSettingCancel:
-                if (_tableView.indexPathForSelectedRow)
-                {
-                    [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                              animated:YES];
-                }
-                
-                break;
-                
-            case CensusZoomSettingBlock:
-                [self dismissTableView];
-                //implement zoom to block here
-                break;
-                
-            case CensusZoomSettingBlockGroup:
-                [self dismissTableView];
-                //implement zoom to block group here
-                break;
-                
-            case CensusZoomSettingTract:
-                [self dismissTableView];
-                //implement zoom to tract here
-                break;
-        }
+        case CensusZoomSettingCancel:
+            if (_tableView.indexPathForSelectedRow)
+            {
+                [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                          animated:YES];
+            }
+            
             break;
-        case ALERT_SEWERPIPE:
-            switch (buttonIndex)
-        {
+            
+        case CensusZoomSettingBlock:
+            [self dismissTableView];
+            //implement zoom to block here
+            break;
+            
+        case CensusZoomSettingBlockGroup:
+            [self dismissTableView];
+            //implement zoom to block group here
+            break;
+            
+        case CensusZoomSettingTract:
+            [self dismissTableView];
+            //implement zoom to tract here
+            break;
+    }
+    /*
+            dispatch_queue_t pipeTraceQueue = dispatch_queue_create("pipeTraceQueue", NULL);
+     
             case SewerPipeSettingCancel:
                 if (_tableView.indexPathForSelectedRow)
                 {
@@ -1203,7 +1192,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 break;
         }
             break;
-    }
+    }*/
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -1812,17 +1801,27 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [self.view bringSubviewToFront:_mapToolbar];
 }
 
-- (void)markerInfoWindowDidSelectOptions:(NSString *)PID
+- (void)markerInfoWindowDidSelectOptions:(NSString *)title
                                   coords:(CLLocationCoordinate2D)coords
+                                    type:(NSInteger)type
 {
-    _selectedPID = PID;
-    _selectedPIDCoords = coords;
+    if (type == MarkerInfoWindowTypePID)
+    {
+        _selectedPID = title;
+        _selectedPIDCoords = coords;
+        
+        if ([self isHennepinCountyPID:_selectedPID])
+            _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+        
+        else
+            _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+    }
     
-    if ([self isHennepinCountyPID:_selectedPID])
-        _options = @[@"Property Report", @"Hennepin County Website", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
-    
-    else
-        _options = @[@"Property Report", @"Rankings", @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+    else if (type == MarkerInfoWindowTypeSewer)
+    {
+        _selectedSewerPipe = title;
+        _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream", @"Remove Pipe Trace"];
+    }
     
     _tableViewSetting = PropertyTableViewSettingOptions;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
