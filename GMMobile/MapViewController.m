@@ -38,6 +38,7 @@ extern int keepProcessing;
 @property (nonatomic) NSString *selectedSewerPipe;
 @property (atomic) BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer;
+@property (nonatomic) UIButton *compass;
 
 @end
 
@@ -66,10 +67,35 @@ extern int keepProcessing;
     
     _mapView.delegate = self;
     _mapView.mapType = kGMSTypeNormal;
-    _mapView.settings.compassButton = YES;
+    _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
     [self.view addSubview:_mapView];
+    
+    UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
+                                                                                           ofType:@"png"]];
+    
+    CGFloat compassSize = 48.0, compassMargin = 6.0;
+    
+    _compass = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - compassSize - compassMargin),
+                                                          (statusBarHeight + compassMargin), compassSize, compassSize)];
+    
+    [_compass setImage:compassImage
+              forState:UIControlStateNormal];
+    
+    _compass.backgroundColor = UIColor.whiteColor;
+    _compass.layer.cornerRadius = (compassSize / 2.0);
+    _compass.layer.borderWidth = 1.0;
+    _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
+    _compass.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+    _compass.alpha = 0.0;
+    _compass.hidden = YES;
+    
+    [_compass addTarget:self
+                 action:@selector(compassTapped:)
+       forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:_compass];
     
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                                    action:@selector(mapViewLongPressed:)];
@@ -173,11 +199,6 @@ extern int keepProcessing;
     [self.view addSubview:_firstView];
     [self.view addSubview:_secondImageView];
     [self.view addSubview:_streetView];
-    
-    if (CRAPI.sharedInstance.GMTilesVisible)
-    {
-
-    }
     
     _vectorView = [[VectorView alloc] init];
     _vectorView.frame = _mapView.frame;
@@ -576,6 +597,25 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 
 - (void)mapView:(GMSMapView *)mapView
+didChangeCameraPosition:(GMSCameraPosition *)position
+{
+    if (position.bearing != 0.0)
+    {
+        if (_compass.hidden)
+        {
+            _compass.hidden = NO;
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _compass.alpha = 1.0;
+                             }];
+        }
+        
+        _compass.transform = CGAffineTransformMakeRotation(position.bearing * M_PI / 180);
+    }
+}
+
+- (void)mapView:(GMSMapView *)mapView
 idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
@@ -622,6 +662,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self clearVectorView];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
+    CGFloat compassSize = 48.0, compassMargin = 6.0;
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
@@ -653,6 +694,21 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                      animations:^{
                          _mapToolbar.center = CGPointMake(((self.view.frame.size.height / 2.0) + statusBarHeight),
                                                           (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+                     }];
+    
+    if (!_compass.hidden)
+        _compass.transform = CGAffineTransformMakeRotation(0.0);
+    
+    [UIView animateWithDuration:duration
+                     animations:^{
+                         _compass.frame = CGRectMake((self.view.frame.size.height - compassSize - compassMargin + _tabBarHeight),
+                                                     (statusBarHeight + compassMargin), compassSize, compassSize);
+                     } completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.1
+                                          animations:^{
+                                              if (!_compass.hidden)
+                                                  _compass.transform = CGAffineTransformMakeRotation(_mapView.camera.bearing * M_PI / 180);
+                                          }];
                      }];
     
     switch (_screenSetting)
@@ -777,6 +833,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
+                       
+                       if (!_compass.hidden)
+                           [self.view bringSubviewToFront:_compass];
                    });
 }
 
@@ -1331,7 +1390,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _mapView.myLocationEnabled = NO;
     _mapView.settings.rotateGestures = YES;
     [_mapToolbar deselectMyLocationButton];
-    [_mapView animateToBearing:0.0];
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -1781,6 +1842,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [UIView animateWithDuration:0.25
                      animations:^{
                          _tableView.frame = frame;
+                     }];
+}
+
+- (void)compassTapped:(UIButton *)button
+{
+    if (_mapView.myLocationEnabled)
+        [self stopTrackingUserLocation];
+    
+    [_mapView animateToBearing:0.0];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _compass.alpha = 0.0;
+                     } completion:^(BOOL finished) {
+                         _compass.hidden = YES;
                      }];
 }
 

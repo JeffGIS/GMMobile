@@ -20,6 +20,7 @@
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
 		A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */; };
+		A97DFB741AAE5E6E00F225DD /* compass.png in Resources */ = {isa = PBXBuildFile; fileRef = A97DFB731AAE5E6E00F225DD /* compass.png */; };
 		A99CD8C81A9DB99E0049F271 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8C71A9DB99E0049F271 /* GoogleMaps.framework */; };
 		A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A99CD8C91A9DB9AA0049F271 /* GoogleMaps.bundle */; };
 		A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8CB1A9DBA940049F271 /* AVFoundation.framework */; };
@@ -98,6 +99,7 @@
 		A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindIntersectionViewController.m; sourceTree = "<group>"; };
 		A979B0391A9EAFA20098E1C5 /* MarkerInfoWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerInfoWindow.h; sourceTree = "<group>"; };
 		A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerInfoWindow.m; sourceTree = "<group>"; };
+		A97DFB731AAE5E6E00F225DD /* compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass.png; sourceTree = "<group>"; };
 		A99CD8C71A9DB99E0049F271 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		A99CD8C91A9DB9AA0049F271 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		A99CD8CB1A9DBA940049F271 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -206,6 +208,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A97DFB731AAE5E6E00F225DD /* compass.png */,
 				EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */,
 				A9BC27F01A927D2B00FA89D8 /* help.png */,
 				A94656211A85E04A00163525 /* split.png */,
@@ -469,6 +472,7 @@
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
+				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
