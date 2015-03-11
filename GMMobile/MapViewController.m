@@ -885,7 +885,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        for (MarkerButton *markers in _markerArray)
                            [self.view bringSubviewToFront:markers];
                        
-                       
+                       [self.view bringSubviewToFront:_mapToolbar];
                    });
 }
 
