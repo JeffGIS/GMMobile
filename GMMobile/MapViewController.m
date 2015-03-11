@@ -1929,13 +1929,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                      coords:(CLLocationCoordinate2D)coords
                                        type:(NSInteger)type
 {
+    NSInteger option;
+    
     switch (type)
     {
         case MarkerInfoWindowTypePID:
         {
             _selectedPID = title;
+            option = [UserDefaults.defaults integerForKey:@"PIDOption"];
             
-            switch ([UserDefaults.defaults integerForKey:@"PIDOption"])
+            if (option == PropertyTableViewSettingDefault)
+                option = PropertyTableViewSettingPropertyReport;
+            
+            switch (option)
             {
                 case PropertyTableViewSettingPropertyReport:
                     [self presentTableView];
@@ -1961,8 +1967,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeStormSewer:
         {
             _selectedSewerPipe = title;
+            option = [UserDefaults.defaults integerForKey:@"SewerOption"];
             
-            switch ([UserDefaults.defaults integerForKey:@"SewerOption"])
+            if (option == PropertyTableViewSettingDefault)
+                option = SewerPipeSettingTraceDown;
+            
+            switch (option)
             {
                 case SewerPipeSettingAttributes:
                     [self showPipeAttributes];
