@@ -506,9 +506,11 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     dbounds bnds;
     CGFloat d, mind = DBL_MAX;
     CGFloat pickap = 0.005;
-    DPOINT p1, p2, minpt;
+    DPOINT p1, p2, minpt, point,BasePt;
     NSString * minFid=@"";
     int minref = 0;
+    int numPoints, numLoops;
+    
     p1.x = pt->lon;
     p1.y = pt->lat;
     minpt = p1;
@@ -518,7 +520,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     bnds.ymx = (p1.y + pickap);
     [self open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+    NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
     sqlite3_stmt *statement;
@@ -529,9 +531,45 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     {
         int refno = sqlite3_column_int(statement, 0);
         LPSTR FACILITY_ID = (LPSTR)sqlite3_column_text(statement, 1);
-        CGFloat lon = sqlite3_column_double(statement, 2);
-        CGFloat lat = sqlite3_column_double(statement, 3);
-        p2.x = lon;
+        BasePt.x = sqlite3_column_double(statement, 2);
+        BasePt.y = sqlite3_column_double(statement, 3);
+        numPoints = sqlite3_column_int(statement,4);
+        numLoops = sqlite3_column_int(statement,5);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
+        int nBlobBytes = sqlite3_column_bytes(statement,6);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
+        nBlobBytes = sqlite3_column_bytes(statement,7);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                point.x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                point.y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                if (findClosestPoint (&point,&minpt,&mind,&p1))
+                {
+                    nPicked++;
+                    minref = refno;
+                    minFid = [NSString stringWithUTF8String:FACILITY_ID];
+                }
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            point.x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            point.y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            if (findClosestPoint (&point,&minpt,&mind,&p1))
+            {
+                nPicked++;
+                minref = refno;
+                minFid = [NSString stringWithUTF8String:FACILITY_ID];
+            }
+        }
+/*        p2.x = lon;
         p2.y = lat;
         d = ArcDistance(p1, p2);
         
@@ -542,7 +580,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
             minpt = p2;
             minFid = [NSString stringWithUTF8String:FACILITY_ID];
             nPicked = 1;
-        }
+        }*/
     }
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
@@ -558,6 +596,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         pi.distance = mind;
         pi.pickedPoint = minpt;
         pi.identifier = minFid;
+        pi.symbolName = @"STRM_PIPE";
         [hlist addObject:pi];
     }
     
