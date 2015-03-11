@@ -473,7 +473,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
-                    marker.snippet = @"STORM/SEWER PIPE";
+                    //marker.snippet = pi.
                     _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
@@ -513,17 +513,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     switch (marker.type)
     {
-        case PTStormSewerLine:
+        case MarkerInfoWindowTypeStormSewer:
             _selectedSewerPipe = _infoWindow.title = marker.title;
-            _infoWindow.type = MarkerInfoWindowTypeStormSewer;
             break;
             
-        case PTPid:
+        case MarkerInfoWindowTypePID:
             _selectedPID = _infoWindow.title = marker.title;
             _selectedPIDCoords = marker.position;
-            _infoWindow.type = MarkerInfoWindowTypePID;
             break;
     }
+    
+    _infoWindow.type = marker.type;
     
     [_markerArray addObject:marker];
     CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
