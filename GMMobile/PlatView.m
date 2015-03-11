@@ -8,6 +8,13 @@
 @interface PlatView ()
 
 @property (nonatomic) CGImageRef image;
+@property NSString * platType;
+@property NSString * platName;
+@property int imageWidth;
+@property int imageHeight;
+@property CGFloat imageFactor;
+@property CGFloat currentScale;
+@property CGRect imageRect;
 
 @end
 
@@ -20,6 +27,7 @@
     if (self)
     {
         self.opaque = YES;
+        self.currentScale = 1;
         self.backgroundColor = UIColor.clearColor;
     }
     
@@ -28,6 +36,8 @@
 
 - (CGImageRef)getImage
 {
+    CGRect rect = self.bounds;
+    
     if (!_image)
     {
         if (TESTMODE)
@@ -46,33 +56,58 @@
             img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
         }
+        _imageWidth = (int)CGImageGetWidth(_image);
+        _imageHeight = (int)CGImageGetHeight(_image);
+        if (rect.size.height / _imageHeight  < rect.size.width / _imageWidth)
+            _imageFactor = rect.size.height / _imageHeight;
+        else
+            _imageFactor = rect.size.width / _imageWidth;
+        _imageFactor *= _currentScale;
+        CGFloat midx=rect.size.width/2, midy=rect.size.height/2;
+        _imageRect.size.height = _imageHeight;
+        _imageRect.size.width = _imageWidth;
+        _imageRect.origin.x = midx/_imageFactor - _imageRect.size.width/2;
+        _imageRect.origin.y = -(midy/_imageFactor + _imageRect.size.height/2);
     }
     
     return _image;
 }
 
+CGRect scaleRect (CGRect rect,CGFloat scale)
+{
+    CGRect outRect;
+    
+    outRect = rect;
+    outRect.size.height *= scale;
+    outRect.size.width *= scale;
+    
+    return outRect;
+}
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect imageRect = rect;
     
     if (CGRectIsNull(rect) || CGRectIsEmpty(rect) || CGRectIsInfinite(rect))
         return;
     
-    [self getImage];
+    if (!_image)
+        [self getImage];
     
     if (!_image)
         return;
     
+    CGContextSaveGState(context);
     [self addGesturesToView];
     
     //self.transform = CGAffineTransformMakeRotation(M_PI);
     CGContextScaleCTM(context, 1, -1);
-    imageRect.origin.y = -imageRect.size.height;
     //CGContextRotateCTM(context, M_PI);
     //imageRect.origin = CGPointMake(8.0, 8.0);
     //imageRect.size = CGSizeMake(64.0, 64.0);
     
+    CGContextScaleCTM(context,_imageFactor*1,_imageFactor*1);
+    //CGContextTranslateCTM(context, 0, 2000);
+    //imageRect.origin.y = 0;
     // Note: The images are actually drawn upside down because Quartz image drawing expects
     // the coordinate system to have the origin in the lower-left corner, but a UIView
     // puts the origin in the upper-left corner. For the sake of brevity (and because
@@ -81,7 +116,8 @@
     // be noticed, and one method of addressing it is shown there.
     
     // Draw the image in the upper left corner (0,0) with size 64x64
-    CGContextDrawImage(context, imageRect, _image);
+    //CGRect drawRect = scaleRect (_imageRect,_currentScale);
+    CGContextDrawImage(context, _imageRect, _image);
 /*
     // Tile the same image across the bottom of the view
     // CGContextDrawTiledImage() will fill the entire clipping area with the image, so to avoid
@@ -104,6 +140,7 @@
     CGContextStrokeRect(context, CGContextGetClipBoundingBox(context));
  */
     CGImageRelease(_image);
+    CGContextRestoreGState(context);
     _image = NULL;
 }
 
@@ -129,6 +166,7 @@
     {
         if (_delegate)
             [_delegate platViewDidEndTrans];
+        [self setNeedsDisplay];
     }
     
     else if (panGesture.state == UIGestureRecognizerStateBegan ||
@@ -157,8 +195,10 @@
 {
     if (pinchGesture.state == UIGestureRecognizerStateEnded)
     {
+        _currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
         if (_delegate)
             [_delegate platViewDidEndTrans];
+        [self setNeedsDisplay];
     }
     
     else if (pinchGesture.state == UIGestureRecognizerStateBegan ||

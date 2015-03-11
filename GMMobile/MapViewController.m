@@ -679,7 +679,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     else
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
-    
+   
+    if (_platView)
+        [_platView setNeedsDisplay];
     _rotateZoom = !_rotateZoom;
 }
 
@@ -1750,6 +1752,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
                                        center.y - ((frame1.size.height - frame2.size.height) / 2.0));
     }
+    [_platView setNeedsDisplay];
+
 }
 
 - (void)mapToolbarDidFinishDrag
