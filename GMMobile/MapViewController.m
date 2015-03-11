@@ -510,33 +510,36 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _noneSelected = YES;
     }
     
-    [_markerArray removeObject:marker];
-    _infoWindow = [[MarkerInfoWindow alloc] init];
-    
-    switch (marker.type)
+    else
     {
-        case MarkerInfoWindowTypeStormSewer:
-            _selectedSewerPipe = _infoWindow.title = marker.title;
-            break;
-            
-        case MarkerInfoWindowTypePID:
-            _selectedPID = _infoWindow.title = marker.title;
-            _selectedPIDCoords = marker.position;
-            break;
+        [_markerArray removeObject:marker];
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        
+        switch (marker.type)
+        {
+            case MarkerInfoWindowTypeStormSewer:
+                _selectedSewerPipe = _infoWindow.title = marker.title;
+                break;
+                
+            case MarkerInfoWindowTypePID:
+                _selectedPID = _infoWindow.title = marker.title;
+                _selectedPIDCoords = marker.position;
+                break;
+        }
+        
+        _infoWindow.type = marker.type;
+        
+        [_markerArray addObject:marker];
+        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+        
+        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+        _infoWindow.delegate = self;
+        _selectedPID = _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
+        [self.view addSubview:_infoWindow];
+        _noneSelected = NO;
     }
-    
-    _infoWindow.type = marker.type;
-    
-    [_markerArray addObject:marker];
-    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-    
-    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-    _infoWindow.delegate = self;
-    _selectedPID = _infoWindow.title = marker.title;
-    _infoWindow.snippet = marker.snippet;
-    _infoWindow.position = marker.position;
-    [self.view addSubview:_infoWindow];
-    _noneSelected = NO;
 }
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
@@ -598,10 +601,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)removePreviousInfoWindow
 {
-    for (UIView *view in self.view.subviews)
+    for (UIView *views in self.view.subviews)
     {
-        if ([view isKindOfClass:MarkerInfoWindow.class])
-            [view removeFromSuperview];
+        if ([views isKindOfClass:MarkerInfoWindow.class])
+            [views removeFromSuperview];
     }
 }
 
@@ -631,6 +634,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        willMove:(BOOL)gesture
 {
     [self clearVectorView];
+    [self.view bringSubviewToFront:_mapToolbar];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -646,19 +650,22 @@ didChangeCameraPosition:(GMSCameraPosition *)position
                              animations:^{
                                  _compass.alpha = 1.0;
                              }];
+            
+            [self.view bringSubviewToFront:_compass];
         }
         
         _compass.transform = CGAffineTransformMakeRotation(position.bearing * M_PI / 180);
         [self.view bringSubviewToFront:_compass];
     }
     
-    [self.view bringSubviewToFront:_mapToolbar];
-    
     for (MarkerButton *markers in _markerArray)
     {
         CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
         markers.center = target;
     }
+    
+    MarkerButton *marker = _markerArray.lastObject;
+    _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -847,7 +854,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)clearVectorView
 {
-    [self removePreviousInfoWindow];
     _vectorView.displayData = 0;
     keepProcessing++;
     [_vectorView setNeedsDisplay];
@@ -875,11 +881,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        [_vectorView removeFromSuperview];
                        [self.view addSubview:_vectorView];
                        [self.view bringSubviewToFront:_vectorView];
-                       
-                       [self restorePreviousInfoWindow];
 
                        for (MarkerButton *markers in _markerArray)
                            [self.view bringSubviewToFront:markers];
+                       
+                       if (_infoWindow)
+                           [self.view bringSubviewToFront:_infoWindow];
                        
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
