@@ -656,6 +656,9 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         markers.center = target;
         [self.view addSubview:markers];
     }
+    
+    [self.view bringSubviewToFront:_mapToolbar];
+    [self.view bringSubviewToFront:_compass];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -872,7 +875,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        [self.view bringSubviewToFront:_vectorView];
                        
                        [self restorePreviousInfoWindow];
-                       [self.view bringSubviewToFront:_mapToolbar];
                        
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
@@ -882,6 +884,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
                        for (MarkerButton *markers in _markerArray)
                            [self.view bringSubviewToFront:markers];
+                       
+                       
                    });
 }
 
