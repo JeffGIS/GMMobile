@@ -75,6 +75,9 @@ extern int keepProcessing;
     
     CGFloat compassSize = 48.0, compassMargin = 6.0;
     
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        compassSize = 36.0, compassMargin = 4.0;
+    
     _compass = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - compassSize - compassMargin),
                                                           (statusBarHeight + compassMargin), compassSize, compassSize)];
     
@@ -690,6 +693,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     CGFloat compassSize = 48.0, compassMargin = 6.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        compassSize = 36.0, compassMargin = 4.0;
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
