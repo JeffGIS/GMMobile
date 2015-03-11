@@ -46,6 +46,8 @@ extern int keepProcessing;
 {
     [super viewDidLoad];
     
+    [PipeTrace removeTrace];
+    
     _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
@@ -473,7 +475,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
-                    //marker.snippet = pi.
+                    marker.snippet = pi.symbolName;
                     _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
@@ -1259,6 +1261,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissTableView];
     [PipeTrace removeTrace];
+    
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
 

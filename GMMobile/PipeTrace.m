@@ -39,12 +39,9 @@ typedef struct {
 
 + (void)removeTrace
 {
-    SewerData *sd = [[SewerData alloc]init];
-    
+    SewerData *sd = [[SewerData alloc] init];
     [sd open];
-    
     [sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;"];
-        
     [sd close];
 }
 
