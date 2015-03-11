@@ -371,16 +371,17 @@ extern int keepProcessing;
     
     else
     {
-        [self stopTrackingUserLocation:YES];
+        [self stopTrackingUserLocation:NO];
         
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
                                                                    zoom:12.0];
         
         [_mapView animateToCameraPosition:camera];
+        [self hideCompass];
     }
 }
 
-- (void) zoomToPipeTraceBounds:(MNMXCORD)bounds
+- (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
 {
     CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
     CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
@@ -1895,7 +1896,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         [self stopTrackingUserLocation:NO];
     
     [_mapView animateToBearing:0.0];
-    
+    [self hideCompass];
+}
+
+- (void)hideCompass
+{
     [UIView animateWithDuration:0.25
                      animations:^{
                          _compass.alpha = 0.0;
