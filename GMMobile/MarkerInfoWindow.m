@@ -18,10 +18,10 @@
 {
     self = [super init];
     
-    CGFloat height = 48.0, width = 264.0, margin = 4.0;
-    
     if (self)
     {
+        CGFloat height = 48.0, width = 264.0, margin = 4.0;
+        
         self.alpha = 0.9;
         self.backgroundColor = UIColor.whiteColor;
         self.frame = CGRectMake(0.0, 0.0, width, height);
