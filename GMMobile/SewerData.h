@@ -2,12 +2,11 @@
 //  GMMobile
 
 #define COORDINATE_FACTOR 10000000.0
-
 #define GET_SANPLAT 11
 
-#define LINE_PASS   1
-#define TEXT_PASS   2
-#define TRACE_PASS   2
+#define LINE_PASS 1
+#define TEXT_PASS 2
+#define TRACE_PASS 2
 
 #import <sqlite3.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"

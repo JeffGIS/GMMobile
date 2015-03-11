@@ -521,6 +521,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
         case PTPid:
             _selectedPID = _infoWindow.title = marker.title;
+            _selectedPIDCoords = marker.position;
             _infoWindow.type = MarkerInfoWindowTypePID;
             break;
     }
@@ -1066,121 +1067,185 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
          isEqualToString:@"Property Report"])
     {
-        _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        [self showPropReport];
         
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        _propertyReport = [propData getReport:PDSettingDefault
-                                       forPID:_selectedPID];
-        
-        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        tableView.allowsSelection = NO;
-        tableView.delaysContentTouches = YES;
-        
-        [tableView reloadData];
-        
-        [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                              animated:NO];
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingPropertyReport
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Hennepin County Website"])
     {
-        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
-                                      [UserDefaults.defaults removePIDPrefix:_selectedPID]];
+        [self showHCWebsite];
         
-        [self presentViewController:wkvc
-                           animated:YES
-                         completion:nil];
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingHCWebsite
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Street View"])
     {
-        _streetView.frame = _tableView.frame;
-        _fov = 90.0, _pitch = 0.0;
+        [self showStreetView];
         
-        _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                       pitch:_pitch
-                                                         fov:_fov];
-        
-        [self.view bringSubviewToFront:_streetView];
-        
-        for (UIView *view in self.view.subviews)
-            view.hidden = YES;
-        
-        _streetView.hidden = NO;
-        
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             _streetView.frame =
-                             CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
-                                        (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
-                                        _screenSize, _screenSize);
-                             self.view.backgroundColor = UIColor.blackColor;
-                             self.tabBarController.tabBar.alpha = 0.0;
-                             UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
-                             _exitStreetView.hidden = NO;
-                         }];
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingStreetView
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Zoom to Census Area"])
     {
-        [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
-                               message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
-                     cancelButtonTitle:@"Cancel"
-                     otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
-             destructiveButtonPosition:0];
+        [self showCensusArea];
+        
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingCensusArea
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Pipe Attributes"])
     {
-        [self dismissTableView];
-        //implement pipe attributes here
+        [self showPipeAttributes];
+        
+        [UserDefaults.defaults saveInteger:SewerPipeSettingAttributes
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Upstream"])
     {
-        [self dismissTableView];
+        [self showPipeTraceUpstream];
         
-        [_popover showAfter:0.0
-                  withTitle:@"Trace Pipe Upstream"];
-        
-        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
-                       ^{
-                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
-                           pipeTrace.delegate = self;
-                           pipeTrace.popover = _popover;
-                           [pipeTrace tracePipeUpstream:_selectedSewerPipe];
-                       });
+        [UserDefaults.defaults saveInteger:SewerPipeSettingTraceUp
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Downstream"])
     {
-        [self dismissTableView];
+        [self showPipeTraceDownstream];
         
-        [_popover showAfter:0.0
-                  withTitle:@"Trace Pipe Downstream"];
-        
-        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
-                       ^{
-                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
-                           pipeTrace.delegate = self;
-                           pipeTrace.popover = _popover;
-                           [pipeTrace tracePipeDownstream:_selectedSewerPipe];
-                       });
+        [UserDefaults.defaults saveInteger:SewerPipeSettingTraceDown
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Trace"])
     {
-        [self dismissTableView];
-        //implement remove pipe trace here
+        [self removePipeTrace];
     }
+}
+
+- (void)showPropReport
+{
+    NSLog(@"Prop Report Called");
+    
+    _tableViewSetting = PropertyTableViewSettingPropertyReport;
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
+    
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.allowsSelection = NO;
+    _tableView.delaysContentTouches = YES;
+    
+    [_tableView reloadData];
+    
+    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+                           animated:NO];
+}
+
+- (void)showHCWebsite
+{
+    WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
+                                  [UserDefaults.defaults removePIDPrefix:_selectedPID]];
+    
+    [self presentViewController:wkvc
+                       animated:YES
+                     completion:nil];
+}
+
+- (void)showStreetView
+{
+    _streetView.frame = _tableView.frame;
+    _fov = 90.0, _pitch = 0.0;
+    
+    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                   pitch:_pitch
+                                                     fov:_fov];
+    
+    [self.view bringSubviewToFront:_streetView];
+    
+    for (UIView *view in self.view.subviews)
+        view.hidden = YES;
+    
+    _streetView.hidden = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _streetView.frame =
+                         CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
+                                    (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
+                                    _screenSize, _screenSize);
+                         
+                         self.view.backgroundColor = UIColor.blackColor;
+                         self.tabBarController.tabBar.alpha = 0.0;
+                         UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
+                         _exitStreetView.hidden = NO;
+                     }];
+}
+
+- (void)showCensusArea
+{
+    [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
+                           message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
+                 cancelButtonTitle:@"Cancel"
+                 otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
+         destructiveButtonPosition:0];
+}
+
+- (void)showPipeAttributes
+{
+    [self dismissTableView];
+    //implement pipe attributes here
+}
+
+- (void)showPipeTraceUpstream
+{
+    [self dismissTableView];
+    
+    [_popover showAfter:0.0
+              withTitle:@"Trace Pipe Upstream"];
+    
+    dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                   ^{
+                       PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                       pipeTrace.delegate = self;
+                       pipeTrace.popover = _popover;
+                       [pipeTrace tracePipeUpstream:_selectedSewerPipe];
+                   });
+}
+
+- (void)showPipeTraceDownstream
+{
+    [self dismissTableView];
+    
+    [_popover showAfter:0.0
+              withTitle:@"Trace Pipe Downstream"];
+    
+    dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                   ^{
+                       PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                       pipeTrace.delegate = self;
+                       pipeTrace.popover = _popover;
+                       [pipeTrace tracePipeDownstream:_selectedSewerPipe];
+                   });
+}
+
+- (void)removePipeTrace
+{
+    [self dismissTableView];
+    //implement remove pipe trace here
 }
 
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
@@ -1235,6 +1300,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                      completion:^(BOOL finished){
                          [self.view sendSubviewToBack:_streetView];
                          _streetView.hidden = YES;
+                         
+                         if(!_tableView.hidden)
+                             [self.view bringSubviewToFront:_tableView];
                          
                          if (_tableView.indexPathForSelectedRow)
                          {
@@ -1861,33 +1929,75 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)markerInfoWindowDidSelectPropReport:(NSString *)title
+                                     coords:(CLLocationCoordinate2D)coords
                                        type:(NSInteger)type
 {
     switch (type)
     {
         case MarkerInfoWindowTypePID:
+        {
             _selectedPID = title;
-            //implement last selected PID option here
+            
+            switch ([UserDefaults.defaults integerForKey:@"PIDOption"])
+            {
+                case PropertyTableViewSettingPropertyReport:
+                    [self presentTableView];
+                    [self showPropReport];
+                    break;
+                    
+                case PropertyTableViewSettingHCWebsite:
+                    [self showHCWebsite];
+                    break;
+                    
+                case PropertyTableViewSettingStreetView:
+                    _selectedPIDCoords = coords;
+                    [self showStreetView];
+                    break;
+                    
+                case PropertyTableViewSettingCensusArea:
+                    [self showCensusArea];
+                    break;
+            }
+        }
             break;
             
         case MarkerInfoWindowTypeStormSewer:
+        {
             _selectedSewerPipe = title;
-            //implement last selected StormSewer option here
+            
+            switch ([UserDefaults.defaults integerForKey:@"SewerOption"])
+            {
+                case SewerPipeSettingAttributes:
+                    [self showPipeAttributes];
+                    break;
+                    
+                case SewerPipeSettingTraceUp:
+                    [self showPipeTraceUpstream];
+                    break;
+                    
+                case SewerPipeSettingTraceDown:
+                    [self showPipeTraceDownstream];
+                    break;
+            }
+        }
             break;
     }
 }
 
 - (void)presentTableView
 {
-    CGRect frame = _tableView.frame;
-    _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
-    _tableView.hidden = NO;
-    [self.view bringSubviewToFront:_tableView];
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _tableView.frame = frame;
-                     }];
+    if (_tableView.hidden)
+    {
+        CGRect frame = _tableView.frame;
+        _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
+        _tableView.hidden = NO;
+        [self.view bringSubviewToFront:_tableView];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _tableView.frame = frame;
+                         }];
+    }
 }
 
 - (void)compassTapped:(UIButton *)button

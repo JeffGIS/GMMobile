@@ -105,6 +105,7 @@
     if (_delegate)
     {
         [_delegate markerInfoWindowDidSelectPropReport:_titleLabel.text
+                                                coords:_position
                                                   type:_type];
     }
 }
