@@ -13,6 +13,7 @@
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
+		A925DDF11AB0C4B1007A79D4 /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A925DDF01AB0C4B1007A79D4 /* marker.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
@@ -21,6 +22,7 @@
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
 		A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */; };
 		A97DFB741AAE5E6E00F225DD /* compass.png in Resources */ = {isa = PBXBuildFile; fileRef = A97DFB731AAE5E6E00F225DD /* compass.png */; };
+		A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A996613A1AB0BCFF006C0106 /* MarkerButton.m */; };
 		A99CD8C81A9DB99E0049F271 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8C71A9DB99E0049F271 /* GoogleMaps.framework */; };
 		A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A99CD8C91A9DB9AA0049F271 /* GoogleMaps.bundle */; };
 		A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8CB1A9DBA940049F271 /* AVFoundation.framework */; };
@@ -88,6 +90,7 @@
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
 		A91565611A81E76400119C21 /* FindBoundariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindBoundariesViewController.h; sourceTree = "<group>"; };
 		A91565621A81E76400119C21 /* FindBoundariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindBoundariesViewController.m; sourceTree = "<group>"; };
+		A925DDF01AB0C4B1007A79D4 /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
@@ -101,6 +104,8 @@
 		A979B0391A9EAFA20098E1C5 /* MarkerInfoWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerInfoWindow.h; sourceTree = "<group>"; };
 		A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerInfoWindow.m; sourceTree = "<group>"; };
 		A97DFB731AAE5E6E00F225DD /* compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass.png; sourceTree = "<group>"; };
+		A99661391AB0BCFF006C0106 /* MarkerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerButton.h; sourceTree = "<group>"; };
+		A996613A1AB0BCFF006C0106 /* MarkerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerButton.m; sourceTree = "<group>"; };
 		A99CD8C71A9DB99E0049F271 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		A99CD8C91A9DB9AA0049F271 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
 		A99CD8CB1A9DBA940049F271 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -211,6 +216,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A925DDF01AB0C4B1007A79D4 /* marker.png */,
 				A97DFB731AAE5E6E00F225DD /* compass.png */,
 				EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */,
 				A9BC27F01A927D2B00FA89D8 /* help.png */,
@@ -263,6 +269,8 @@
 				EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */,
 				A92964111A9B807700F3332E /* MapToolbar.h */,
 				A92964121A9B807700F3332E /* MapToolbar.m */,
+				A99661391AB0BCFF006C0106 /* MarkerButton.h */,
+				A996613A1AB0BCFF006C0106 /* MarkerButton.m */,
 				A979B0391A9EAFA20098E1C5 /* MarkerInfoWindow.h */,
 				A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */,
 				EB5522781A75576E008CE2D1 /* PropertyData.h */,
@@ -485,6 +493,7 @@
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
+				A925DDF11AB0C4B1007A79D4 /* marker.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -509,6 +518,7 @@
 				A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */,
 				A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */,
 				EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */,
+				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */,

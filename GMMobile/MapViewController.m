@@ -273,15 +273,18 @@ extern int keepProcessing;
         
         if (_clearAnnotations)
         {
-            for (GMSMarker *markers in _markerArray)
-                markers.map = nil;
+            for (MarkerButton *markers in _markerArray)
+                [markers removeFromSuperview];
             
             [_markerArray removeAllObjects];
         }
         
         _selectedPIDCoords = pidCoord;
-        GMSMarker *marker = [GMSMarker markerWithPosition:pidCoord];
-        marker.appearAnimation = kGMSMarkerAnimationPop;
+        
+        MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
+                                                           view:self.view
+                                                            map:_mapView
+                                                       delegate:self];
         
         switch (CRAPI.sharedInstance.GMMSetting)
         {
@@ -301,7 +304,6 @@ extern int keepProcessing;
                 break;
         }
         
-        marker.map = _mapView;
         [_markerArray addObject:marker];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
@@ -441,8 +443,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             if (_clearAnnotations)
             {
-                for (GMSMarker *markers in _markerArray)
-                    markers.map = nil;
+                for (MarkerButton *markers in _markerArray)
+                    [markers removeFromSuperview];
                 
                 [_markerArray removeAllObjects];
             }
@@ -452,13 +454,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             pickedPt.latitude = pi.pickedPoint.y;
             pickedPt.longitude = pi.pickedPoint.x;
             
-            for (GMSMarker *marker in _markerArray)
+            for (MarkerButton *marker in _markerArray)
             {
                 if ([marker.title isEqualToString:pi.identifier])
-                    marker.map = nil;
+                    [marker removeFromSuperview];
             }
             
-            GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
+            MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
+                                                               view:self.view
+                                                                map:_mapView
+                                                           delegate:self];
             
             [self removePreviousInfoWindow];
             _infoWindow = [[MarkerInfoWindow alloc] init];
@@ -469,24 +474,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
                     marker.snippet = @"STORM/SEWER PIPE";
-                    _infoWindow.type = MarkerInfoWindowTypeStormSewer;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
                 case PTPid:
                     _selectedPID = pi.identifier;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
-                    _infoWindow.type = MarkerInfoWindowTypePID;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
                     break;
             }
             
-            marker.userData = [NSNumber numberWithInteger:pi.itemType];
-            marker.appearAnimation = kGMSMarkerAnimationPop;
-            marker.map = _mapView;
             [_markerArray addObject:marker];
-            CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
             
-            _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+            _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.title = marker.title;
             _infoWindow.snippet = marker.snippet;
@@ -497,8 +498,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 
-- (BOOL)mapView:(GMSMapView *)mapView
-   didTapMarker:(GMSMarker *)marker
+- (void)markerButtonWasTapped:(MarkerButton *)marker
 {
     [self removePreviousInfoWindow];
     
@@ -506,13 +506,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _selectedPID = _selectedSewerPipe = nil;
         _noneSelected = YES;
-        return YES;
     }
     
     [_markerArray removeObject:marker];
     _infoWindow = [[MarkerInfoWindow alloc] init];
     
-    switch ([marker.userData integerValue])
+    switch (marker.type)
     {
         case PTStormSewerLine:
             _selectedSewerPipe = _infoWindow.title = marker.title;
@@ -536,7 +535,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     _infoWindow.position = marker.position;
     [self.view addSubview:_infoWindow];
     _noneSelected = NO;
-    return YES;
 }
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
@@ -609,7 +607,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     if (!_noneSelected)
     {
-        GMSMarker *marker = _markerArray.lastObject;
+        MarkerButton *marker = _markerArray.lastObject;
         
         if (marker)
         {
@@ -649,6 +647,14 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         }
         
         _compass.transform = CGAffineTransformMakeRotation(position.bearing * M_PI / 180);
+    }
+    
+    for (MarkerButton *markers in _markerArray)
+    {
+        CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
+        
+        markers.center = target;
+        [self.view addSubview:markers];
     }
 }
 
@@ -873,6 +879,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        
                        if (!_compass.hidden)
                            [self.view bringSubviewToFront:_compass];
+
+                       for (MarkerButton *markers in _markerArray)
+                           [self.view bringSubviewToFront:markers];
                    });
 }
 
@@ -1516,8 +1525,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        for (GMSMarker *markers in _markerArray)
-            markers.map = nil;
+        for (MarkerButton *markers in _markerArray)
+            [markers removeFromSuperview];
         
         [_markerArray removeAllObjects];
         [self removePreviousInfoWindow];
