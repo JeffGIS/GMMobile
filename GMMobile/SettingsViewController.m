@@ -88,7 +88,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case GET_SANPLAT:
                 self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                               target:self
-                                                            selector:@selector(getNextPlat)                                                            userInfo:nil
+                                                            selector:@selector(getNextPlat)
+                                                            userInfo:nil
                                                              repeats:NO];
                 break;
             case GET_PARCELS:
