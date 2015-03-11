@@ -75,6 +75,12 @@
         
         _propReportButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
         [self addSubview:_propReportButton];
+        
+        UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(markerInfoSwiped:)];
+        
+        swipe.direction = UISwipeGestureRecognizerDirectionLeft|UISwipeGestureRecognizerDirectionRight;
+        [self addGestureRecognizer:swipe];
     }
     
     return self;
@@ -108,6 +114,12 @@
                                                 coords:_position
                                                   type:_type];
     }
+}
+
+- (void)markerInfoSwiped:(UISwipeGestureRecognizer *)gesture
+{
+    if (_delegate)
+        [_delegate markerInfoWindowWasSwiped];
 }
 
 @end

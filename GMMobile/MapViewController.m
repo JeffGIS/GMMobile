@@ -502,7 +502,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self removePreviousInfoWindow];
     
-    if ([marker.title isEqualToString:[_markerArray.lastObject title]])
+    if ([marker.title isEqualToString:[_markerArray.lastObject title]] && _noneSelected == NO)
     {
         _selectedPID = _selectedSewerPipe = nil;
         _noneSelected = YES;
@@ -1136,8 +1136,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showPropReport
 {
-    NSLog(@"Prop Report Called");
-    
     _tableViewSetting = PropertyTableViewSettingPropertyReport;
     
     PropertyData *propData = [[PropertyData alloc] init];
@@ -1523,7 +1521,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         
         [_markerArray removeAllObjects];
         [self removePreviousInfoWindow];
-        
         _clearAnnotations = YES;
     }
 }
@@ -1982,6 +1979,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         }
             break;
     }
+}
+
+- (void)markerInfoWindowWasSwiped
+{
+    [self removePreviousInfoWindow];
+    _noneSelected = YES;
 }
 
 - (void)presentTableView
