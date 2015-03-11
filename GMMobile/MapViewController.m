@@ -649,18 +649,16 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         }
         
         _compass.transform = CGAffineTransformMakeRotation(position.bearing * M_PI / 180);
+        [self.view bringSubviewToFront:_compass];
     }
+    
+    [self.view bringSubviewToFront:_mapToolbar];
     
     for (MarkerButton *markers in _markerArray)
     {
         CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
-        
         markers.center = target;
-        [self.view addSubview:markers];
     }
-    
-    [self.view bringSubviewToFront:_mapToolbar];
-    [self.view bringSubviewToFront:_compass];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -879,15 +877,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        [self.view bringSubviewToFront:_vectorView];
                        
                        [self restorePreviousInfoWindow];
+
+                       for (MarkerButton *markers in _markerArray)
+                           [self.view bringSubviewToFront:markers];
                        
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
                        
                        if (!_compass.hidden)
                            [self.view bringSubviewToFront:_compass];
-
-                       for (MarkerButton *markers in _markerArray)
-                           [self.view bringSubviewToFront:markers];
                        
                        [self.view bringSubviewToFront:_mapToolbar];
                    });
