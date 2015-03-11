@@ -1925,13 +1925,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             if ([self isHennepinCountyPID:_selectedPID])
             {
                 _options = @[@"Property Report", @"Hennepin County Website", @"Rankings",
-                             @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+                             @"Computed Values", @"Display Street View", @"Zoom to Census Area", @"Remove Property Marker"];
             }
             
             else
             {
                 _options = @[@"Property Report", @"Rankings", @"Computed Values",
-                             @"Display Street View", @"Zoom to Census Area"];
+                             @"Display Street View", @"Zoom to Census Area", @"Remove Property Marker"];
             }
             
             break;
@@ -1940,7 +1940,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedSewerPipe = title;
             
             _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
-                         @"Trace Pipe Downstream", @"Remove Pipe Trace"];
+                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Remove Pipe Marker"];
             
             break;
     }
