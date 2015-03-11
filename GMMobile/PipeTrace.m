@@ -37,6 +37,17 @@ typedef struct {
 
 @implementation PipeTrace
 
++ (void)removeTrace
+{
+    SewerData *sd = [[SewerData alloc]init];
+    
+    [sd open];
+    
+    [sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;"];
+        
+    [sd close];
+}
+
 - (BOOL)getUpDownNodes:(LPSTR)atFid
                     up:(LPSTR)upNode
                     dn:(LPSTR)dnNode

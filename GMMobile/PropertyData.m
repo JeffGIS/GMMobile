@@ -494,6 +494,7 @@ int SQLOKpd(int sqlReturn, char *method)
         pi.distance = mind;
         pi.pickedPoint = minpt;
         pi.identifier = minPID;
+        pi.symbolName = @"PARCEL";
         pi.refno = minref;
         [hlist addObject:pi];
     }

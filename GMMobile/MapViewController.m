@@ -1245,7 +1245,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)removePipeTrace
 {
     [self dismissTableView];
-    //implement remove pipe trace here
+    [PipeTrace removeTrace];
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
+
 }
 
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
