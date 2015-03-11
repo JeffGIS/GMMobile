@@ -22,10 +22,10 @@
     if (self)
     {
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            _size = CGSizeMake(282.0, 83.0);
+            _size = CGSizeMake(232.0, 83.0);
         
         else
-            _size = CGSizeMake(537.0, 63.0);
+            _size = CGSizeMake(517.0, 63.0);
         
         self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
@@ -34,10 +34,17 @@
         self.layer.borderColor = UIColor.blackColor.CGColor;
         
         CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
-        CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 216.0;
+        CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 196.0;
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        {
             buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
+            mtscWidth = 78.0, ssscWidth = 166.0;
+            _mapType = [[UISegmentedControl alloc] initWithItems:@[@"Stnd", @"Hybd"]];
+        }
+        
+        else
+            _mapType = [[UISegmentedControl alloc] initWithItems:@[@"Standard", @"Hybrid"]];
         
         _userLocation = [[UIButton alloc] initWithFrame:CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize)];
         
@@ -79,7 +86,6 @@
         _annotationOption.tintColor = UIColor.redColor;
         [self addSubview:_annotationOption];
         
-        _mapType = [[UISegmentedControl alloc] initWithItems:@[@"Standard", @"Hybrid"]];
         _mapType.selectedSegmentIndex = 0;
         
         _mapType.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
@@ -209,18 +215,21 @@
 
 - (void)animateToVerticalOrientation
 {
-    CGFloat buttonSize = 47.0, buttonMargin = 8.0;
+    CGFloat buttonSize = 47.0, buttonMargin = 8.0, frameHeight = (_size.height * 1.6);
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
         buttonSize = 39.0, buttonMargin = 5.0;
+        frameHeight = _size.height;
+    }
     
-    self.frame = CGRectMake(0.0, 0.0, (_size.height * 1.6),
+    self.frame = CGRectMake(0.0, 0.0, frameHeight,
                             ((buttonSize * 2.0) + (buttonMargin * 6.0) +
                              _annotationOption.frame.size.height + (_mapType.frame.size.height * 2.0)));
     
     CGFloat switchMargin = ((self.frame.size.width - _annotationOption.frame.size.width) / 2.0);
     CGFloat buttonSideMargin = ((self.frame.size.width - buttonSize) / 2.0);
-    CGFloat switchWidth = (self.frame.size.width - (buttonMargin * 1.6));
+    CGFloat scWidth = (self.frame.size.width - (buttonMargin * 1.6));
     
     _userLocation.frame = CGRectMake(buttonSideMargin, buttonMargin, buttonSize, buttonSize);
     
@@ -232,7 +241,7 @@
     
     _mapType.frame = CGRectMake((buttonMargin / 1.6),
                                 ((buttonSize * 2.0) + (buttonMargin * 4.0) + _annotationOption.frame.size.height),
-                                switchWidth, _mapType.frame.size.height);
+                                scWidth, _mapType.frame.size.height);
     
     [_mapType setTitle:@"Stnd"
      forSegmentAtIndex:0];
@@ -243,7 +252,7 @@
     _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6),
                                            ((buttonSize * 2.0) + (buttonMargin * 5.0) +
                                             _annotationOption.frame.size.height + _mapType.frame.size.height),
-                                           switchWidth, _splitScreenSetting.frame.size.height);
+                                           scWidth, _splitScreenSetting.frame.size.height);
     
     [_splitScreenSetting setTitle:@"F"
                 forSegmentAtIndex:0];
@@ -263,10 +272,28 @@
     self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
     
     CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
-    CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 216.0;
+    CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 196.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
         buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
+        mtscWidth = 78.0, ssscWidth = 166.0;
+        
+        _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
+                                               (_size.width - (buttonMargin * 2.0)), segControlHeight);
+    }
+    
+    else
+    {
+        [_mapType setTitle:@"Standard"
+         forSegmentAtIndex:0];
+    
+        [_mapType setTitle:@"Hybrid"
+         forSegmentAtIndex:1];
+        
+        _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
+                                               segControlMargin, ssscWidth, segControlHeight);
+    }
     
     _userLocation.frame = CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize);
     
@@ -278,23 +305,6 @@
     
     _mapType.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
                                 segControlMargin, mtscWidth, segControlHeight);
-    [_mapType setTitle:@"Standard"
-     forSegmentAtIndex:0];
-    
-    [_mapType setTitle:@"Hybrid"
-     forSegmentAtIndex:1];
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
-                                               (_size.width - (buttonMargin * 2.0)), segControlHeight);
-    }
-    
-    else
-    {
-        _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
-                                               segControlMargin, ssscWidth, segControlHeight);
-    }
     
     [_splitScreenSetting setTitle:@"Full"
                 forSegmentAtIndex:0];
