@@ -80,10 +80,21 @@
     return llPt;
 }
 
-- (GMSCoordinateBounds*) imageRectToMapBounds:(CGRect)imageRect
+- (GMSCoordinateBounds*) imageRectToMapBounds:(CGRect)imageRect bearing:(CGFloat*)bearing
 {
     GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
     GMSCoordinateBounds* gbounds = [[GMSCoordinateBounds alloc]initWithRegion:region];
+    DPOINT ptImage1, ptImage2;
+    DPOINT ptWorld1, ptWorld2;
+    CGFloat az;
+    
+    ptImage1.x = ptImage2.x = imageRect.size.width;
+    ptImage1.y = 0;
+    ptImage2.y = imageRect.size.height;
+    ptWorld1 = TranDPOINT (&ptImage1,_pTranImageToLatlon);
+    ptWorld2 = TranDPOINT (&ptImage2,_pTranImageToLatlon);
+    az = getazd(&ptWorld1,&ptWorld2);
+    *bearing = LTWOPI (HALFPI - az)*DEGRAD;
     return gbounds;
 }
 
@@ -239,7 +250,7 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     GMSCoordinateBounds* bounds = [self imageRectToMapBounds:_imageRect];
     
     if (_delegate)
-        [_delegate platViewDidZoom:bounds];
+        [_delegate platViewDidZoom:bounds withBearing:bearing];
 /*
     // Tile the same image across the bottom of the view
     // CGContextDrawTiledImage() will fill the entire clipping area with the image, so to avoid

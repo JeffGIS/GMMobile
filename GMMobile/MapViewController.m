@@ -1407,6 +1407,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)platViewDidZoom:(GMSCoordinateBounds*)bounds
+            withBearing:(CGFloat)bearing
 {
     GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
