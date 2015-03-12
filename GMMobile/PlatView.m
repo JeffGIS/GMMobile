@@ -2,6 +2,8 @@
 //  GMMobile
 
 #import "PlatView.h"
+#import "SewerData.h"
+#import <GoogleMaps/GoogleMaps.h>
 
 #define TESTMODE YES
 
@@ -15,6 +17,9 @@
 @property CGFloat imageFactor;
 @property CGFloat currentScale;
 @property CGRect imageRect;
+@property LPTRANDATA pTranImageToLatlon;
+@property LPTRANDATA pTranLatlonToImage;
+
 
 @end
 
@@ -34,15 +39,84 @@
     return self;
 }
 
+-(void)dealloc
+{
+    CGImageRelease(_image);
+    CloseTRANS2 (&_pTranImageToLatlon);
+    CloseTRANS2 (&_pTranLatlonToImage);
+    NSLog(@"Sewer Database dealloc");
+}
+
+- (DPOINT) latLonToImage:(LLPOINT)latLonPoint
+{
+    DPOINT dptIn,dptOut;
+    
+    dptIn.x = latLonPoint.lon;
+    dptIn.y = latLonPoint.lat;
+    
+    dptOut = TranDPOINT(&dptIn, _pTranLatlonToImage);
+    return dptOut;
+}
+- (LLPOINT) imageToLatLon:(DPOINT)imagePoint
+{
+    LLPOINT llPt;
+    DPOINT dptOut;
+    
+    dptOut = TranDPOINT(&imagePoint, _pTranImageToLatlon);
+    llPt.lon = dptOut.x;
+    llPt.lat = dptOut.y;
+    
+    return llPt;
+}
+
+-(CLLocationCoordinate2D)imageToCLLocationCoordinate2D:(DPOINT)imagePoint
+{
+    CLLocationCoordinate2D llPt;
+    DPOINT dptOut;
+    
+    dptOut = TranDPOINT(&imagePoint, _pTranImageToLatlon);
+    llPt.longitude = dptOut.x;
+    llPt.latitude = dptOut.y;
+    
+    return llPt;
+}
+
+- (BOOL)getPlatTransformation
+{
+    CloseTRANS2 (&_pTranImageToLatlon);
+    CloseTRANS2 (&_pTranLatlonToImage);
+    SewerData * sd = [[SewerData alloc]init];
+    
+    [sd open];
+    NSString * query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = %@;",_platType,_platName];
+    sqlite3_stmt *statement;
+    
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+    }
+    SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
+    [sd close];
+    return FALSE;
+}
+
+- (GMSVisibleRegion) imageRectToMapRegion:(CGRect)imageRect
+{
+    GMSVisibleRegion region;
+    
+    return region;
+}
+
 - (CGImageRef)getImage
 {
     CGRect rect = self.bounds;
-    
+    NSString *imagePath;
     if (!_image)
     {
         if (TESTMODE)
         {
-            NSString *imagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
+            imagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
                                                                 ofType:@"jpg"];
             
             UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
@@ -51,11 +125,14 @@
         
         else
         {
-            NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
+            imagePath = CRAPI.sharedInstance.currentPlatImagePath;
             UIImage *img;
             img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
         }
+        _platName = [[imagePath lastPathComponent]stringByDeletingPathExtension];
+        _platType = @"STORM";
+        [self getPlatTransformation];
         _imageWidth = (int)CGImageGetWidth(_image);
         _imageHeight = (int)CGImageGetHeight(_image);
         if (rect.size.height / _imageHeight  < rect.size.width / _imageWidth)
@@ -234,11 +311,6 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     return YES;
-}
-
--(void)dealloc
-{
-    CGImageRelease(_image);
 }
 
 @end
