@@ -12,7 +12,8 @@
 - (void)platViewDidTransformScale:(CGFloat)transformationScale;
 - (void)platViewDidBeginTrans;
 - (void)platViewDidEndTrans;
-- (void)platViewDidZoom:(GMSCoordinateBounds*)bounds;
+- (void)platViewDidZoom:(GMSCoordinateBounds*)bounds
+            withBearing:(CGFloat)pBearing;
 
 @end
 
