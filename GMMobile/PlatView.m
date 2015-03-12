@@ -10,8 +10,8 @@
 @interface PlatView ()
 
 @property (nonatomic) CGImageRef image;
-@property NSString * platType;
-@property NSString * platName;
+@property NSString *platType;
+@property NSString *platName;
 @property int imageWidth;
 @property int imageHeight;
 @property CGFloat imageFactor;
@@ -19,7 +19,6 @@
 @property CGRect imageRect;
 @property LPTRANDATA pTranImageToLatlon;
 @property LPTRANDATA pTranLatlonToImage;
-
 
 @end
 
@@ -88,7 +87,7 @@
     return gbounds;
 }
 
-- (GMSVisibleRegion) imageRectToMapRegion:(CGRect)imageRect
+- (GMSVisibleRegion)imageRectToMapRegion:(CGRect)imageRect
 {
     GMSVisibleRegion region;
     DPOINT ptIn, ptOut;
@@ -155,7 +154,7 @@
         if (TESTMODE)
         {
             imagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
-                                                                ofType:@"jpg"];
+                                                      ofType:@"jpg"];
             
             UIImage *img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
@@ -168,15 +167,19 @@
             img = [UIImage imageWithContentsOfFile:imagePath];
             _image = CGImageRetain(img.CGImage);
         }
-        _platName = [[imagePath lastPathComponent]stringByDeletingPathExtension];
+        
+        _platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
         _platType = @"SAN";
         [self getPlatTransformation];
         _imageWidth = (int)CGImageGetWidth(_image);
         _imageHeight = (int)CGImageGetHeight(_image);
+        
         if (rect.size.height / _imageHeight  < rect.size.width / _imageWidth)
             _imageFactor = rect.size.height / _imageHeight;
+        
         else
             _imageFactor = rect.size.width / _imageWidth;
+        
         _imageFactor *= _currentScale;
         CGFloat midx=rect.size.width/2, midy=rect.size.height/2;
         _imageRect.size.height = _imageHeight;
@@ -195,9 +198,9 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     outRect = rect;
     outRect.size.height *= scale;
     outRect.size.width *= scale;
-    
     return outRect;
 }
+
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -234,6 +237,7 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     //CGRect drawRect = scaleRect (_imageRect,_currentScale);
     CGContextDrawImage(context, _imageRect, _image);
     GMSCoordinateBounds* bounds = [self imageRectToMapBounds:_imageRect];
+    
     if (_delegate)
         [_delegate platViewDidZoom:bounds];
 /*
@@ -284,6 +288,7 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     {
         if (_delegate)
             [_delegate platViewDidEndTrans];
+        
         [self setNeedsDisplay];
     }
     
@@ -314,8 +319,10 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     if (pinchGesture.state == UIGestureRecognizerStateEnded)
     {
         _currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
+        
         if (_delegate)
             [_delegate platViewDidEndTrans];
+        
         [self setNeedsDisplay];
     }
     

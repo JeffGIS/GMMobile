@@ -1412,7 +1412,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
     [_mapView animateToCameraPosition:camera];
-
 }
 
 - (void)platViewDidTranslate:(CGPoint)translation
