@@ -1406,6 +1406,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         return NO;
 }
 
+- (void)platViewDidZoom:(GMSCoordinateBounds*)bounds
+{
+    GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
+                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+    
+    [_mapView animateToCameraPosition:camera];
+
+}
+
 - (void)platViewDidTranslate:(CGPoint)translation
 {
     CGPoint coordPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];

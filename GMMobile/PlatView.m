@@ -81,31 +81,69 @@
     return llPt;
 }
 
+- (GMSCoordinateBounds*) imageRectToMapBounds:(CGRect)imageRect
+{
+    GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
+    GMSCoordinateBounds* gbounds = [[GMSCoordinateBounds alloc]initWithRegion:region];
+    return gbounds;
+}
+
+- (GMSVisibleRegion) imageRectToMapRegion:(CGRect)imageRect
+{
+    GMSVisibleRegion region;
+    DPOINT ptIn, ptOut;
+    
+    ptIn.x = imageRect.origin.x;
+    ptIn.y = imageRect.origin.y;
+    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    region.nearLeft.longitude = ptOut.x;
+    region.nearLeft.latitude = ptOut.y;
+    
+    ptIn.y = imageRect.origin.y + imageRect.size.height;
+    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    region.farLeft.longitude = ptOut.x;
+    region.farLeft.latitude = ptOut.y;
+    
+    ptIn.x = imageRect.origin.x + imageRect.size.width;
+    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    region.farRight.longitude = ptOut.x;
+    region.farRight.latitude = ptOut.y;
+    
+    ptIn.y = imageRect.origin.y - imageRect.size.height;
+    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    region.nearRight.longitude = ptOut.x;
+    region.nearRight.latitude = ptOut.y;
+    
+    return region;
+}
+
 - (BOOL)getPlatTransformation
 {
+    double imagex[32], imagey[32], worldx[32], worldy[32];
+    float rsq;
+    int npt = 0;
     CloseTRANS2 (&_pTranImageToLatlon);
     CloseTRANS2 (&_pTranLatlonToImage);
     SewerData * sd = [[SewerData alloc]init];
     
     [sd open];
-    NSString * query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = %@;",_platType,_platName];
+    NSString * query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = '%@';",_platType,_platName];
     sqlite3_stmt *statement;
     
     SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
+        imagex[npt] = sqlite3_column_double(statement, 0);
+        imagey[npt] = sqlite3_column_double(statement, 1);
+        worldx[npt] = sqlite3_column_double(statement, 2);
+        worldy[npt++] = sqlite3_column_double(statement, 3);
     }
+    _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt, &rsq);
+    _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt, &rsq);
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [sd close];
     return FALSE;
-}
-
-- (GMSVisibleRegion) imageRectToMapRegion:(CGRect)imageRect
-{
-    GMSVisibleRegion region;
-    
-    return region;
 }
 
 - (CGImageRef)getImage
@@ -131,7 +169,7 @@
             _image = CGImageRetain(img.CGImage);
         }
         _platName = [[imagePath lastPathComponent]stringByDeletingPathExtension];
-        _platType = @"STORM";
+        _platType = @"SAN";
         [self getPlatTransformation];
         _imageWidth = (int)CGImageGetWidth(_image);
         _imageHeight = (int)CGImageGetHeight(_image);
@@ -195,6 +233,9 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     // Draw the image in the upper left corner (0,0) with size 64x64
     //CGRect drawRect = scaleRect (_imageRect,_currentScale);
     CGContextDrawImage(context, _imageRect, _image);
+    GMSCoordinateBounds* bounds = [self imageRectToMapBounds:_imageRect];
+    if (_delegate)
+        [_delegate platViewDidZoom:bounds];
 /*
     // Tile the same image across the bottom of the view
     // CGContextDrawTiledImage() will fill the entire clipping area with the image, so to avoid
