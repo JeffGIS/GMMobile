@@ -25,7 +25,8 @@ extern int keepProcessing;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *secondImageView, *streetView;
 @property (nonatomic) UIView *firstView;
-@property (nonatomic) PlatView *platView;
+//@property (nonatomic) PlatView *platView;
+@property (nonatomic) PlatImageView *platView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
@@ -47,6 +48,13 @@ extern int keepProcessing;
     [super viewDidLoad];
     
     [PipeTrace removeTrace];
+    
+    UIImage *platImage = [UIImage imageWithContentsOfFile:
+                          [NSBundle.mainBundle pathForResource:@"S-2A-10"
+                                                        ofType:@"jpg"]];
+    
+    _platView = [PlatImageView platImageViewWithImage:platImage
+                                             delegate:self];
     
     _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
@@ -144,8 +152,9 @@ extern int keepProcessing;
     _cityInnerBounds.size.height = 103220;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
-    _platView = [[PlatView alloc] init];
-    _platView.delegate = self;
+    //_platView = [[PlatView alloc] init];
+    //_platView.delegate = self;
+    
     _firstView = [[UIView alloc] init];
     _firstView.clipsToBounds = YES;
     
@@ -701,8 +710,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     else
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
    
-    if (_platView)
-        [_platView setNeedsDisplay];
+    //if (_platView)
+        //[_platView setNeedsDisplay];
+    
     _rotateZoom = !_rotateZoom;
 }
 
@@ -1599,6 +1609,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    if (![_firstView.subviews containsObject:_platView])
+    {
+        switch (setting)
+        {
+            case MapViewScreenSettingSplitScreen:
+                _platView.frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
+                break;
+                
+            case MapViewScreenSettingTriScreen:
+                _platView.frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
+                break;
+                
+            case MapViewScreenSettingSplitBottomScreen:
+                _platView.frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
+                break;
+        }
+    }
+    
     [self clearVectorView];
     
     switch (setting)
@@ -1662,14 +1690,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             switch (_screenSetting)
             {
                 case MapViewScreenSettingFullscreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame0
-                                                       toFrame2:frame1];
-                                     }];
-                }
+                    [self performSelector:@selector(addPlatView)
+                               withObject:nil
+                               afterDelay:0.25];
                     break;
                     
                 case MapViewScreenSettingTriScreen:
@@ -1731,14 +1754,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             switch (_screenSetting)
             {
                 case MapViewScreenSettingFullscreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame0
-                                                       toFrame2:frame2];
-                                     }];
-                }
+                    [self performSelector:@selector(addPlatView)
+                               withObject:nil
+                               afterDelay:0.25];
                     break;
                     
                 case MapViewScreenSettingSplitScreen:
@@ -1800,14 +1818,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             switch (_screenSetting)
             {
                 case MapViewScreenSettingFullscreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame0
-                                                       toFrame2:frame3];
-                                     }];
-                }
+                    [self performSelector:@selector(addPlatView)
+                               withObject:nil
+                               afterDelay:0.25];
                     break;
                     
                 case MapViewScreenSettingTriScreen:
@@ -1839,26 +1852,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (void)addPlatView
+{
+    [_firstView addSubview:_platView];
+}
+
 - (void)platViewPosition:(CGPoint)center
               fromFrame1:(CGRect)frame1
                 toFrame2:(CGRect)frame2
 {
-    if (![_firstView.subviews containsObject:_platView])
-    {
-        _platView.frame =  CGRectMake(0.0, 0.0,
-                                      _firstView.frame.size.width,
-                                      _firstView.frame.size.height);
-        
-        [_firstView addSubview:_platView];
-    }
+    _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
+                                   center.y - ((frame1.size.height - frame2.size.height) / 2.0));
     
-    else
-    {
-        _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
-                                       center.y - ((frame1.size.height - frame2.size.height) / 2.0));
-    }
-    [_platView setNeedsDisplay];
-
+    //[_platView setNeedsDisplay];
 }
 
 - (void)mapToolbarDidFinishDrag

@@ -247,10 +247,10 @@ CGRect scaleRect (CGRect rect,CGFloat scale)
     // Draw the image in the upper left corner (0,0) with size 64x64
     //CGRect drawRect = scaleRect (_imageRect,_currentScale);
     CGContextDrawImage(context, _imageRect, _image);
-    GMSCoordinateBounds* bounds = [self imageRectToMapBounds:_imageRect];
+    //GMSCoordinateBounds* bounds = [self imageRectToMapBounds:_imageRect];
     
-    if (_delegate)
-        [_delegate platViewDidZoom:bounds withBearing:bearing];
+    //if (_delegate)
+        //[_delegate platViewDidZoom:bounds withBearing:bearing];
 /*
     // Tile the same image across the bottom of the view
     // CGContextDrawTiledImage() will fill the entire clipping area with the image, so to avoid

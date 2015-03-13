@@ -7,14 +7,15 @@
 #import "SewerData.h"
 #import "PipeTrace.h"
 #import "VectorView.h"
-#import "PlatView.h"
+//#import "PlatView.h"
+#import "PlatImageView.h"
 #import "LayersViewController.h"
 #import "MapToolbar.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import "MarkerInfoWindow.h"
 #import "MarkerButton.h"
 
-@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,PlatViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate>
+@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,/*PlatViewDelegate,*/GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;
