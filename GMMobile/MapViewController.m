@@ -1133,7 +1133,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Upstream"])
     {
-        [self showPipeTraceUpstream];
+        [self dismissTableView];
+        
+        [self performSelector:@selector(showPipeTraceUpstream)
+                   withObject:nil
+                   afterDelay:0.3];
         
         [UserDefaults.defaults saveInteger:SewerPipeSettingTraceUp
                                     forKey:@"SewerOption"];
@@ -1142,7 +1146,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Downstream"])
     {
-        [self showPipeTraceDownstream];
+        [self dismissTableView];
+        
+        [self performSelector:@selector(showPipeTraceDownstream)
+                   withObject:nil
+                   afterDelay:0.3];
         
         [UserDefaults.defaults saveInteger:SewerPipeSettingTraceDown
                                     forKey:@"SewerOption"];
@@ -1151,7 +1159,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Trace"])
     {
-        [self removePipeTrace];
+        [self dismissTableView];
+        
+        [self performSelector:@selector(removePipeTrace)
+                   withObject:nil
+                   afterDelay:0.3];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Property Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Pipe Marker"])
+    {
+        [self dismissTableView];
+        
+        [self performSelector:@selector(removeMarker)
+                   withObject:nil
+                   afterDelay:0.3];
     }
 }
 
@@ -1225,14 +1249,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showPipeAttributes
 {
-    [self dismissTableView];
-    //implement pipe attributes here
+    [self dismissTableView];//this is temporary
+    
+    //implement pipe attributes here (then reload tableView)
 }
 
 - (void)showPipeTraceUpstream
 {
-    [self dismissTableView];
-    
     [_popover showAfter:0.0
               withTitle:@"Trace Pipe Upstream"];
     
@@ -1247,8 +1270,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showPipeTraceDownstream
 {
-    [self dismissTableView];
-    
     [_popover showAfter:0.0
               withTitle:@"Trace Pipe Downstream"];
     
@@ -1263,12 +1284,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)removePipeTrace
 {
-    [self dismissTableView];
     [PipeTrace removeTrace];
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
 
+}
+
+- (void)removeMarker
+{
+    MarkerButton *marker = _markerArray.lastObject;
+    CGFloat alpha = _infoWindow.alpha;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         marker.alpha = 0.0;
+                         _infoWindow.alpha = 0.0;
+                     }
+                     completion:^(BOOL finished){
+                         [marker removeFromSuperview];
+                         [self removePreviousInfoWindow];
+                         _infoWindow.alpha = alpha;
+                     }];
 }
 
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
