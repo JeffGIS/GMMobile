@@ -10,16 +10,22 @@
 @property (nonatomic) LPTRANDATA pTranLatlonToImage;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
-@property (nonatomic) MNMXCORD imageBounds;
-@property (nonatomic) MNMXCORD worldBounds;
 
 @end
 
 @implementation PlatImageView
+{
+    DPOINT _imageCornersWorld[4];
+}
 
 + (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
                                      delegate:(id)delegate;
 {
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
+                                              ofType:@"jpg"];
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              ofType:@"jpg"];
+
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
@@ -88,9 +94,9 @@
     DPOINT ptWorld1, ptWorld2;
     CGFloat az;
     
-    ptImage1.x = ptImage2.x = imageRect.size.width;
+    ptImage1.x = ptImage2.x = imageRect.size.width/2;
     ptImage1.y = 0;
-    ptImage2.y = -imageRect.size.height;
+    ptImage2.y = imageRect.size.height;
     ptWorld1 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptWorld2 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
     az = getazd(&ptWorld1, &ptWorld2);
@@ -102,27 +108,37 @@
 {
     GMSVisibleRegion region;
     DPOINT ptIn, ptOut;
-    MNMXCORD imageBounds, frameBounds, frameBoundsWorld;
+    DPOINT framePoints[4], framePointsWorld[4];
+    DPOINT imageCorners[4];
     
-    imageBounds.xmn = imageRect.origin.x;
-    imageBounds.ymn = imageRect.origin.y;
-    imageBounds.xmx = imageRect.origin.x + imageRect.size.width;
-    imageBounds.ymx = imageRect.origin.y + imageRect.size.height;
-    LPTRANDATA pTran = STRANBoundsToBounds(&imageBounds, &_worldBounds);
+    imageCorners[0].x = imageRect.origin.x;
+    imageCorners[0].y = imageRect.origin.y;
+    imageCorners[1].x = imageRect.origin.x;
+    imageCorners[1].y = imageRect.origin.y + imageRect.size.height;
+    imageCorners[2].x = imageRect.origin.x + imageRect.size.width;
+    imageCorners[2].y = imageRect.origin.y + imageRect.size.height;
+    imageCorners[3].x = imageRect.origin.x + imageRect.size.width;
+    imageCorners[2].y = imageRect.origin.y;
 
-    frameBounds.xmn = frameBounds.ymx = 0;
-    frameBounds.xmx = self.superview.frame.size.width;
-    frameBounds.ymn = self.superview.frame.size.height;
-    TranMNMXCORD(&frameBounds, &frameBoundsWorld, pTran);
+    LPTRANDATA pTran = STRANPoints (&imageCorners, &_imageCornersWorld,4,0);
+
+    framePoints[0].x = framePoints[0].y = 0;
+    framePoints[1].x = 0;
+    framePoints[1].y = self.superview.frame.size.height;
+    framePoints[2].x = self.superview.frame.size.width;
+    framePoints[2].y = self.superview.frame.size.height;
+    framePoints[3].x = self.superview.frame.size.width;
+    framePoints[3].y = 0;
+    TranPoints(framePoints, framePointsWorld, 4, pTran);
     CloseTRANS2(&pTran);
-    region.nearLeft.longitude = frameBoundsWorld.xmn;
-    region.nearLeft.latitude = frameBoundsWorld.ymn;
-    region.farLeft.longitude = frameBoundsWorld.xmn;
-    region.farLeft.latitude = frameBoundsWorld.ymx;
-    region.farRight.longitude = frameBoundsWorld.xmx;
-    region.farRight.latitude = frameBoundsWorld.ymx;
-    region.nearRight.longitude = frameBoundsWorld.xmx;
-    region.nearRight.latitude = frameBoundsWorld.ymn;
+    region.nearLeft.longitude = framePointsWorld[0].x;
+    region.nearLeft.latitude = framePointsWorld[0].y;
+    region.farLeft.longitude = framePointsWorld[1].x;
+    region.farLeft.latitude = framePointsWorld[1].y;
+    region.farRight.longitude = framePointsWorld[2].x;
+    region.farRight.latitude = framePointsWorld[2].y;
+    region.nearRight.longitude = framePointsWorld[3].x;
+    region.nearRight.latitude = framePointsWorld[3].y;
     
     /*ptIn.x = imageRect.origin.x;
     ptIn.y = imageRect.origin.y;
@@ -152,6 +168,7 @@
     double imagex[32], imagey[32], worldx[32], worldy[32];
     float rsq;
     int npt = 0;
+    DPOINT imageCorners[4];
     
     CloseTRANS2(&_pTranImageToLatlon);
     CloseTRANS2(&_pTranLatlonToImage);
@@ -178,10 +195,14 @@
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [sd close];
-    _imageBounds.xmn = _imageBounds.ymn = 0;
-    _imageBounds.xmx = self.image.size.width;
-    _imageBounds.ymx = self.image.size.height;
-    TranMNMXCORD(&_imageBounds, &_worldBounds, _pTranImageToLatlon);
+    imageCorners[0].x = imageCorners[0].y = 0;
+    imageCorners[1].x = 0;
+    imageCorners[1].y = self.image.size.height;
+    imageCorners[2].x = self.image.size.width;
+    imageCorners[2].y = self.image.size.height;
+    imageCorners[3].x = self.image.size.width;
+    imageCorners[2].y = 0;
+    TranPoints (imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
     return NO;
 }
 

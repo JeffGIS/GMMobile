@@ -674,7 +674,8 @@ idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
     {
-        if (_allowRefresh && !_mapView.myLocationEnabled)
+       // if (_allowRefresh && !_mapView.myLocationEnabled)
+            if (!_mapView.myLocationEnabled)
         {
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:position.zoom];
@@ -1408,6 +1409,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)platViewDidTransBounds:(GMSCoordinateBounds *)bounds
                    withBearing:(CGFloat)pBearing
 {
+    [self clearVectorView];
+
     GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
@@ -1417,6 +1420,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)platViewDidTranslate:(CGPoint)translation
 {
+    [self clearVectorView];
+
     CGPoint coordPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
     
     CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
@@ -1428,12 +1433,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)platViewDidTransformScale:(CGFloat)transformationScale
 {
+    [self clearVectorView];
+
     [_mapView moveCamera:[GMSCameraUpdate setTarget:_mapView.camera.target
                                                zoom:(_mapView.camera.zoom * sqrtf(transformationScale))]];
 }
 
 - (void)platViewDidBeginTrans
 {
+    [self clearVectorView];
+
     _allowRefresh = NO;
 }
 
