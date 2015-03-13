@@ -25,8 +25,6 @@ extern int keepProcessing;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *secondImageView, *streetView;
 @property (nonatomic) UIView *firstView;
-//@property (nonatomic) PlatView *platView;
-@property (nonatomic) PlatImageView *platView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
@@ -38,6 +36,7 @@ extern int keepProcessing;
 @property (atomic) BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer;
 @property (nonatomic) UIButton *compass;
+@property (nonatomic) PlatImageView *platView;
 
 @end
 
@@ -49,12 +48,8 @@ extern int keepProcessing;
     
     [PipeTrace removeTrace];
     
-    UIImage *platImage = [UIImage imageWithContentsOfFile:
-                          [NSBundle.mainBundle pathForResource:@"S-2A-10"
-                                                        ofType:@"jpg"]];
-    
-    _platView = [PlatImageView platImageViewWithImage:platImage
-                                             delegate:self];
+    _platView = [PlatImageView platImageViewWithImagePath:CRAPI.sharedInstance.currentPlatImagePath
+                                                 delegate:self];
     
     _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
@@ -151,9 +146,6 @@ extern int keepProcessing;
     _cityInnerBounds.size.width = 83010;
     _cityInnerBounds.size.height = 103220;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-    
-    //_platView = [[PlatView alloc] init];
-    //_platView.delegate = self;
     
     _firstView = [[UIView alloc] init];
     _firstView.clipsToBounds = YES;
@@ -710,9 +702,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     else
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
    
-    //if (_platView)
-        //[_platView setNeedsDisplay];
-    
     _rotateZoom = !_rotateZoom;
 }
 
@@ -1416,13 +1405,14 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         return NO;
 }
 
-- (void)platViewDidZoom:(GMSCoordinateBounds*)bounds
-            withBearing:(CGFloat)bearing
+- (void)platViewDidTransBounds:(GMSCoordinateBounds *)bounds
+                   withBearing:(CGFloat)pBearing
 {
     GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
     [_mapView animateToCameraPosition:camera];
+    [_mapView animateToBearing:pBearing];
 }
 
 - (void)platViewDidTranslate:(CGPoint)translation
@@ -1450,12 +1440,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)platViewDidEndTrans
 {
     _allowRefresh = YES;
-    
-    if (!_mapView.myLocationEnabled)
-    {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
-    }
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
@@ -1586,6 +1570,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
 {
+    _allowRefresh = NO;
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     CGPoint platViewCenter = _platView.center;
@@ -1855,6 +1840,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)addPlatView
 {
     [_firstView addSubview:_platView];
+    [self syncPlatView];
 }
 
 - (void)platViewPosition:(CGPoint)center
@@ -1864,7 +1850,22 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
                                    center.y - ((frame1.size.height - frame2.size.height) / 2.0));
     
-    //[_platView setNeedsDisplay];
+    [self syncPlatView];
+}
+
+- (void)syncPlatView
+{
+    CGFloat pBearing;
+    
+    GMSCoordinateBounds *bounds = [_platView imageRectToMapBounds:_platView.frame
+                                                          bearing:&pBearing];
+    
+    GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
+                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+    
+    [_mapView animateToCameraPosition:camera];
+    [_mapView animateToBearing:pBearing];
+    _allowRefresh = YES;
 }
 
 - (void)mapToolbarDidFinishDrag

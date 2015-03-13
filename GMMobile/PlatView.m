@@ -3,7 +3,6 @@
 
 #import "PlatView.h"
 #import "SewerData.h"
-#import <GoogleMaps/GoogleMaps.h>
 
 #define TESTMODE YES
 
@@ -33,6 +32,7 @@
         self.opaque = YES;
         self.currentScale = 1;
         self.backgroundColor = UIColor.clearColor;
+        [self addGesturesToView];
     }
     
     return self;

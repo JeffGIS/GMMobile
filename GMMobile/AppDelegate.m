@@ -31,6 +31,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.parcelsVisibleAtZoom = 16;
     CRAPI.sharedInstance.sewerVisibleAtZoom = 17;
     CRAPI.sharedInstance.parcelShadingOption = 0;
+    
+    CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
+                                                                              ofType:@"jpg"];
+    
     [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
 
     return YES;
