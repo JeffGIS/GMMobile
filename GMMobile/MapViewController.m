@@ -655,7 +655,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
             [self.view bringSubviewToFront:_compass];
         }
         
-        _compass.transform = CGAffineTransformMakeRotation(position.bearing * M_PI / 180);
+        _compass.transform = CGAffineTransformMakeRotation(-position.bearing * M_PI / 180);
         [self.view bringSubviewToFront:_compass];
     }
     

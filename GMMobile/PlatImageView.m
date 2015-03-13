@@ -23,8 +23,9 @@
 {
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              ofType:@"jpg"];
+    
+    //imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              //ofType:@"jpg"];
 
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
