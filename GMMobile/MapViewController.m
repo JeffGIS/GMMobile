@@ -1451,8 +1451,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
+    camera = [GMSCameraPosition cameraWithTarget:camera.target
+                                            zoom:camera.zoom
+                                         bearing:pBearing
+                                    viewingAngle:0.0];
+    
     [_mapView animateToCameraPosition:camera];
-    [_mapView animateToBearing:pBearing];
 }
 
 - (void)platViewDidTranslate:(CGPoint)translation
@@ -1909,8 +1913,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
+    camera = [GMSCameraPosition cameraWithTarget:camera.target
+                                            zoom:camera.zoom
+                                         bearing:pBearing
+                                    viewingAngle:0.0];
+    
     [_mapView animateToCameraPosition:camera];
-    [_mapView animateToBearing:pBearing];
     _allowRefresh = YES;
 }
 
