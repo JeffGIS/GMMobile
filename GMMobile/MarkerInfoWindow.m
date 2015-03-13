@@ -18,10 +18,10 @@
 {
     self = [super init];
     
-    CGFloat height = 48.0, width = 264.0, margin = 4.0;
-    
     if (self)
     {
+        CGFloat height = 48.0, width = 264.0, margin = 4.0;
+        
         self.alpha = 0.9;
         self.backgroundColor = UIColor.whiteColor;
         self.frame = CGRectMake(0.0, 0.0, width, height);
@@ -75,6 +75,12 @@
         
         _propReportButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
         [self addSubview:_propReportButton];
+        
+        UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(markerInfoSwiped:)];
+        
+        swipe.direction = UISwipeGestureRecognizerDirectionLeft|UISwipeGestureRecognizerDirectionRight;
+        [self addGestureRecognizer:swipe];
     }
     
     return self;
@@ -105,8 +111,15 @@
     if (_delegate)
     {
         [_delegate markerInfoWindowDidSelectPropReport:_titleLabel.text
+                                                coords:_position
                                                   type:_type];
     }
+}
+
+- (void)markerInfoSwiped:(UISwipeGestureRecognizer *)gesture
+{
+    if (_delegate)
+        [_delegate markerInfoWindowWasSwiped];
 }
 
 @end

@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, PickItemTypes) {
 @property int refno;
 @property double distance;
 @property NSString *identifier;
+@property NSString *symbolName;
 @property DPOINT pickedPoint;
 
 + (PickedItem *) nearestPickedItem:(NSMutableArray *)highlightList;

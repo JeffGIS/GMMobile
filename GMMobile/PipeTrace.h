@@ -18,6 +18,7 @@
 @property int processingID;
 @property GSSiPopoverView* popover;
 
++ (void)removeTrace;
 - (void)tracePipeDownstream:(NSString *)fromFacilityID;
 - (void)tracePipeUpstream:(NSString *)fromFacilityID;
 - (int) getPipeTraceBounds;

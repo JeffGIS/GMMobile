@@ -13,7 +13,10 @@
                                     type:(NSInteger)type;
 
 - (void)markerInfoWindowDidSelectPropReport:(NSString *)title
+                                     coords:(CLLocationCoordinate2D)coords
                                        type:(NSInteger)type;
+
+- (void)markerInfoWindowWasSwiped;
 
 @end
 

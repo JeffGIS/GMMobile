@@ -25,7 +25,6 @@ extern int keepProcessing;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) UIImageView *secondImageView, *streetView;
 @property (nonatomic) UIView *firstView;
-@property (nonatomic) PlatView *platView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
@@ -37,6 +36,7 @@ extern int keepProcessing;
 @property (atomic) BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer;
 @property (nonatomic) UIButton *compass;
+@property (nonatomic) PlatImageView *platView;
 
 @end
 
@@ -45,6 +45,11 @@ extern int keepProcessing;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [PipeTrace removeTrace];
+    
+    _platView = [PlatImageView platImageViewWithImagePath:CRAPI.sharedInstance.currentPlatImagePath
+                                                 delegate:self];
     
     _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
@@ -74,6 +79,9 @@ extern int keepProcessing;
                                                                                            ofType:@"png"]];
     
     CGFloat compassSize = 48.0, compassMargin = 6.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        compassSize = 36.0, compassMargin = 4.0;
     
     _compass = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - compassSize - compassMargin),
                                                           (statusBarHeight + compassMargin), compassSize, compassSize)];
@@ -139,8 +147,6 @@ extern int keepProcessing;
     _cityInnerBounds.size.height = 103220;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
-    _platView = [[PlatView alloc] init];
-    _platView.delegate = self;
     _firstView = [[UIView alloc] init];
     _firstView.clipsToBounds = YES;
     
@@ -270,15 +276,18 @@ extern int keepProcessing;
         
         if (_clearAnnotations)
         {
-            for (GMSMarker *markers in _markerArray)
-                markers.map = nil;
+            for (MarkerButton *markers in _markerArray)
+                [markers removeFromSuperview];
             
             [_markerArray removeAllObjects];
         }
         
         _selectedPIDCoords = pidCoord;
-        GMSMarker *marker = [GMSMarker markerWithPosition:pidCoord];
-        marker.appearAnimation = kGMSMarkerAnimationPop;
+        
+        MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
+                                                           view:self.view
+                                                            map:_mapView
+                                                       delegate:self];
         
         switch (CRAPI.sharedInstance.GMMSetting)
         {
@@ -298,7 +307,6 @@ extern int keepProcessing;
                 break;
         }
         
-        marker.map = _mapView;
         [_markerArray addObject:marker];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
@@ -368,16 +376,17 @@ extern int keepProcessing;
     
     else
     {
-        [self stopTrackingUserLocation:YES];
+        [self stopTrackingUserLocation:NO];
         
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
                                                                    zoom:12.0];
         
         [_mapView animateToCameraPosition:camera];
+        [self hideCompass];
     }
 }
 
-- (void) zoomToPipeTraceBounds:(MNMXCORD)bounds
+- (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
 {
     CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
     CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
@@ -437,8 +446,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             if (_clearAnnotations)
             {
-                for (GMSMarker *markers in _markerArray)
-                    markers.map = nil;
+                for (MarkerButton *markers in _markerArray)
+                    [markers removeFromSuperview];
                 
                 [_markerArray removeAllObjects];
             }
@@ -447,7 +456,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             CLLocationCoordinate2D pickedPt;
             pickedPt.latitude = pi.pickedPoint.y;
             pickedPt.longitude = pi.pickedPoint.x;
-            GMSMarker *marker = [GMSMarker markerWithPosition:pickedPt];
+            
+            for (MarkerButton *marker in _markerArray)
+            {
+                if ([marker.title isEqualToString:pi.identifier])
+                    [marker removeFromSuperview];
+            }
+            
+            MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
+                                                               view:self.view
+                                                                map:_mapView
+                                                           delegate:self];
             
             [self removePreviousInfoWindow];
             _infoWindow = [[MarkerInfoWindow alloc] init];
@@ -457,25 +476,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
-                    marker.snippet = @"STORM/SEWER PIPE";
-                    _infoWindow.type = MarkerInfoWindowTypeStormSewer;
+                    marker.snippet = pi.symbolName;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
                 case PTPid:
                     _selectedPID = pi.identifier;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
-                    _infoWindow.type = MarkerInfoWindowTypePID;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
                     break;
             }
             
-            marker.userData = [NSNumber numberWithInteger:pi.itemType];
-            marker.appearAnimation = kGMSMarkerAnimationPop;
-            marker.map = _mapView;
             [_markerArray addObject:marker];
-            CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
             
-            _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+            _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.title = marker.title;
             _infoWindow.snippet = marker.snippet;
@@ -486,45 +501,46 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 
-- (BOOL)mapView:(GMSMapView *)mapView
-   didTapMarker:(GMSMarker *)marker
+- (void)markerButtonWasTapped:(MarkerButton *)marker
 {
     [self removePreviousInfoWindow];
     
-    if ([marker.title isEqualToString:[_markerArray.lastObject title]])
+    if ([marker.title isEqualToString:[_markerArray.lastObject title]] && _noneSelected == NO)
     {
         _selectedPID = _selectedSewerPipe = nil;
         _noneSelected = YES;
-        return YES;
     }
     
-    [_markerArray removeObject:marker];
-    _infoWindow = [[MarkerInfoWindow alloc] init];
-    
-    switch ([marker.userData integerValue])
+    else
     {
-        case PTStormSewerLine:
-            _selectedSewerPipe = _infoWindow.title = marker.title;
-            _infoWindow.type = MarkerInfoWindowTypeStormSewer;
-            break;
-            
-        case PTPid:
-            _selectedPID = _infoWindow.title = marker.title;
-            _infoWindow.type = MarkerInfoWindowTypePID;
-            break;
+        [_markerArray removeObject:marker];
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        
+        switch (marker.type)
+        {
+            case MarkerInfoWindowTypeStormSewer:
+                _selectedSewerPipe = _infoWindow.title = marker.title;
+                break;
+                
+            case MarkerInfoWindowTypePID:
+                _selectedPID = _infoWindow.title = marker.title;
+                _selectedPIDCoords = marker.position;
+                break;
+        }
+        
+        _infoWindow.type = marker.type;
+        
+        [_markerArray addObject:marker];
+        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
+        
+        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
+        _infoWindow.delegate = self;
+        _selectedPID = _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
+        [self.view addSubview:_infoWindow];
+        _noneSelected = NO;
     }
-    
-    [_markerArray addObject:marker];
-    CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-    
-    _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
-    _infoWindow.delegate = self;
-    _selectedPID = _infoWindow.title = marker.title;
-    _infoWindow.snippet = marker.snippet;
-    _infoWindow.position = marker.position;
-    [self.view addSubview:_infoWindow];
-    _noneSelected = NO;
-    return YES;
 }
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
@@ -586,10 +602,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)removePreviousInfoWindow
 {
-    for (UIView *view in self.view.subviews)
+    for (UIView *views in self.view.subviews)
     {
-        if ([view isKindOfClass:MarkerInfoWindow.class])
-            [view removeFromSuperview];
+        if ([views isKindOfClass:MarkerInfoWindow.class])
+            [views removeFromSuperview];
     }
 }
 
@@ -597,7 +613,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     if (!_noneSelected)
     {
-        GMSMarker *marker = _markerArray.lastObject;
+        MarkerButton *marker = _markerArray.lastObject;
         
         if (marker)
         {
@@ -619,6 +635,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        willMove:(BOOL)gesture
 {
     [self clearVectorView];
+    [self.view bringSubviewToFront:_mapToolbar];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -634,10 +651,22 @@ didChangeCameraPosition:(GMSCameraPosition *)position
                              animations:^{
                                  _compass.alpha = 1.0;
                              }];
+            
+            [self.view bringSubviewToFront:_compass];
         }
         
         _compass.transform = CGAffineTransformMakeRotation(position.bearing * M_PI / 180);
+        [self.view bringSubviewToFront:_compass];
     }
+    
+    for (MarkerButton *markers in _markerArray)
+    {
+        CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
+        markers.center = target;
+    }
+    
+    MarkerButton *marker = _markerArray.lastObject;
+    _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -672,7 +701,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     else
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
-    
+   
     _rotateZoom = !_rotateZoom;
 }
 
@@ -683,6 +712,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     CGFloat compassSize = 48.0, compassMargin = 6.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        compassSize = 36.0, compassMargin = 4.0;
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
@@ -821,7 +853,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)clearVectorView
 {
-    [self removePreviousInfoWindow];
     _vectorView.displayData = 0;
     keepProcessing++;
     [_vectorView setNeedsDisplay];
@@ -849,15 +880,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        [_vectorView removeFromSuperview];
                        [self.view addSubview:_vectorView];
                        [self.view bringSubviewToFront:_vectorView];
+
+                       for (MarkerButton *markers in _markerArray)
+                           [self.view bringSubviewToFront:markers];
                        
-                       [self restorePreviousInfoWindow];
-                       [self.view bringSubviewToFront:_mapToolbar];
+                       if (_infoWindow)
+                           [self.view bringSubviewToFront:_infoWindow];
                        
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
                        
                        if (!_compass.hidden)
                            [self.view bringSubviewToFront:_compass];
+                       
+                       [self.view bringSubviewToFront:_mapToolbar];
                    });
 }
 
@@ -1052,121 +1088,187 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
          isEqualToString:@"Property Report"])
     {
-        _tableViewSetting = PropertyTableViewSettingPropertyReport;
+        [self showPropReport];
         
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        _propertyReport = [propData getReport:PDSettingDefault
-                                       forPID:_selectedPID];
-        
-        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        tableView.allowsSelection = NO;
-        tableView.delaysContentTouches = YES;
-        
-        [tableView reloadData];
-        
-        [tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                              animated:NO];
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingPropertyReport
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Hennepin County Website"])
     {
-        WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
-                                      [UserDefaults.defaults removePIDPrefix:_selectedPID]];
+        [self showHCWebsite];
         
-        [self presentViewController:wkvc
-                           animated:YES
-                         completion:nil];
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingHCWebsite
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Street View"])
     {
-        _streetView.frame = _tableView.frame;
-        _fov = 90.0, _pitch = 0.0;
+        [self showStreetView];
         
-        _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                       pitch:_pitch
-                                                         fov:_fov];
-        
-        [self.view bringSubviewToFront:_streetView];
-        
-        for (UIView *view in self.view.subviews)
-            view.hidden = YES;
-        
-        _streetView.hidden = NO;
-        
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             _streetView.frame =
-                             CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
-                                        (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
-                                        _screenSize, _screenSize);
-                             self.view.backgroundColor = UIColor.blackColor;
-                             self.tabBarController.tabBar.alpha = 0.0;
-                             UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
-                             _exitStreetView.hidden = NO;
-                         }];
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingStreetView
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Zoom to Census Area"])
     {
-        [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
-                               message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
-                     cancelButtonTitle:@"Cancel"
-                     otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
-             destructiveButtonPosition:0];
+        [self showCensusArea];
+        
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingCensusArea
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Pipe Attributes"])
     {
-        [self dismissTableView];
-        //implement pipe attributes here
+        [self showPipeAttributes];
+        
+        [UserDefaults.defaults saveInteger:SewerPipeSettingAttributes
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Upstream"])
     {
-        [self dismissTableView];
+        [self showPipeTraceUpstream];
         
-        [_popover showAfter:0.0
-                  withTitle:@"Trace Pipe Upstream"];
-        
-        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
-                       ^{
-                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
-                           pipeTrace.delegate = self;
-                           pipeTrace.popover = _popover;
-                           [pipeTrace tracePipeUpstream:_selectedSewerPipe];
-                       });
+        [UserDefaults.defaults saveInteger:SewerPipeSettingTraceUp
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Downstream"])
     {
-        [self dismissTableView];
+        [self showPipeTraceDownstream];
         
-        [_popover showAfter:0.0
-                  withTitle:@"Trace Pipe Downstream"];
-        
-        dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
-                       ^{
-                           PipeTrace *pipeTrace = [[PipeTrace alloc] init];
-                           pipeTrace.delegate = self;
-                           pipeTrace.popover = _popover;
-                           [pipeTrace tracePipeDownstream:_selectedSewerPipe];
-                       });
+        [UserDefaults.defaults saveInteger:SewerPipeSettingTraceDown
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Trace"])
     {
-        [self dismissTableView];
-        //implement remove pipe trace here
+        [self removePipeTrace];
     }
+}
+
+- (void)showPropReport
+{
+    _tableViewSetting = PropertyTableViewSettingPropertyReport;
+    
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
+    
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.allowsSelection = NO;
+    _tableView.delaysContentTouches = YES;
+    
+    [_tableView reloadData];
+    
+    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
+                           animated:NO];
+}
+
+- (void)showHCWebsite
+{
+    WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
+                                  [UserDefaults.defaults removePIDPrefix:_selectedPID]];
+    
+    [self presentViewController:wkvc
+                       animated:YES
+                     completion:nil];
+}
+
+- (void)showStreetView
+{
+    _streetView.frame = _tableView.frame;
+    _fov = 90.0, _pitch = 0.0;
+    
+    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
+                                                   pitch:_pitch
+                                                     fov:_fov];
+    
+    [self.view bringSubviewToFront:_streetView];
+    
+    for (UIView *view in self.view.subviews)
+        view.hidden = YES;
+    
+    _streetView.hidden = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _streetView.frame =
+                         CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
+                                    (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
+                                    _screenSize, _screenSize);
+                         
+                         self.view.backgroundColor = UIColor.blackColor;
+                         self.tabBarController.tabBar.alpha = 0.0;
+                         UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
+                         _exitStreetView.hidden = NO;
+                     }];
+}
+
+- (void)showCensusArea
+{
+    [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
+                           message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
+                 cancelButtonTitle:@"Cancel"
+                 otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
+         destructiveButtonPosition:0];
+}
+
+- (void)showPipeAttributes
+{
+    [self dismissTableView];
+    //implement pipe attributes here
+}
+
+- (void)showPipeTraceUpstream
+{
+    [self dismissTableView];
+    
+    [_popover showAfter:0.0
+              withTitle:@"Trace Pipe Upstream"];
+    
+    dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                   ^{
+                       PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                       pipeTrace.delegate = self;
+                       pipeTrace.popover = _popover;
+                       [pipeTrace tracePipeUpstream:_selectedSewerPipe];
+                   });
+}
+
+- (void)showPipeTraceDownstream
+{
+    [self dismissTableView];
+    
+    [_popover showAfter:0.0
+              withTitle:@"Trace Pipe Downstream"];
+    
+    dispatch_async(dispatch_queue_create("pipeTraceQueue", NULL),
+                   ^{
+                       PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+                       pipeTrace.delegate = self;
+                       pipeTrace.popover = _popover;
+                       [pipeTrace tracePipeDownstream:_selectedSewerPipe];
+                   });
+}
+
+- (void)removePipeTrace
+{
+    [self dismissTableView];
+    [PipeTrace removeTrace];
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
+
 }
 
 - (void)gssiAlert:(GSSiAlertController *)gssiAlert
@@ -1221,6 +1323,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                      completion:^(BOOL finished){
                          [self.view sendSubviewToBack:_streetView];
                          _streetView.hidden = YES;
+                         
+                         if(!_tableView.hidden)
+                             [self.view bringSubviewToFront:_tableView];
                          
                          if (_tableView.indexPathForSelectedRow)
                          {
@@ -1300,6 +1405,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         return NO;
 }
 
+- (void)platViewDidTransBounds:(GMSCoordinateBounds *)bounds
+                   withBearing:(CGFloat)pBearing
+{
+    GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
+                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+    
+    [_mapView animateToCameraPosition:camera];
+    [_mapView animateToBearing:pBearing];
+}
+
 - (void)platViewDidTranslate:(CGPoint)translation
 {
     CGPoint coordPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
@@ -1325,12 +1440,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)platViewDidEndTrans
 {
     _allowRefresh = YES;
-    
-    if (!_mapView.myLocationEnabled)
-    {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
-    }
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
@@ -1436,12 +1545,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        for (GMSMarker *markers in _markerArray)
-            markers.map = nil;
+        for (MarkerButton *markers in _markerArray)
+            [markers removeFromSuperview];
         
         [_markerArray removeAllObjects];
         [self removePreviousInfoWindow];
-        
         _clearAnnotations = YES;
     }
 }
@@ -1462,6 +1570,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
 {
+    _allowRefresh = NO;
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     CGPoint platViewCenter = _platView.center;
@@ -1484,6 +1593,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
+    
+    if (![_firstView.subviews containsObject:_platView])
+    {
+        switch (setting)
+        {
+            case MapViewScreenSettingSplitScreen:
+                _platView.frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
+                break;
+                
+            case MapViewScreenSettingTriScreen:
+                _platView.frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
+                break;
+                
+            case MapViewScreenSettingSplitBottomScreen:
+                _platView.frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
+                break;
+        }
+    }
     
     [self clearVectorView];
     
@@ -1548,14 +1675,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             switch (_screenSetting)
             {
                 case MapViewScreenSettingFullscreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame0
-                                                       toFrame2:frame1];
-                                     }];
-                }
+                    [self performSelector:@selector(addPlatView)
+                               withObject:nil
+                               afterDelay:0.25];
                     break;
                     
                 case MapViewScreenSettingTriScreen:
@@ -1617,14 +1739,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             switch (_screenSetting)
             {
                 case MapViewScreenSettingFullscreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame0
-                                                       toFrame2:frame2];
-                                     }];
-                }
+                    [self performSelector:@selector(addPlatView)
+                               withObject:nil
+                               afterDelay:0.25];
                     break;
                     
                 case MapViewScreenSettingSplitScreen:
@@ -1686,14 +1803,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             switch (_screenSetting)
             {
                 case MapViewScreenSettingFullscreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame0
-                                                       toFrame2:frame3];
-                                     }];
-                }
+                    [self performSelector:@selector(addPlatView)
+                               withObject:nil
+                               afterDelay:0.25];
                     break;
                     
                 case MapViewScreenSettingTriScreen:
@@ -1725,24 +1837,35 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (void)addPlatView
+{
+    [_firstView addSubview:_platView];
+    [self syncPlatView];
+}
+
 - (void)platViewPosition:(CGPoint)center
               fromFrame1:(CGRect)frame1
                 toFrame2:(CGRect)frame2
 {
-    if (![_firstView.subviews containsObject:_platView])
-    {
-        _platView.frame =  CGRectMake(0.0, 0.0,
-                                      _firstView.frame.size.width,
-                                      _firstView.frame.size.height);
-        
-        [_firstView addSubview:_platView];
-    }
+    _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
+                                   center.y - ((frame1.size.height - frame2.size.height) / 2.0));
     
-    else
-    {
-        _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
-                                       center.y - ((frame1.size.height - frame2.size.height) / 2.0));
-    }
+    [self syncPlatView];
+}
+
+- (void)syncPlatView
+{
+    CGFloat pBearing;
+    
+    GMSCoordinateBounds *bounds = [_platView imageRectToMapBounds:_platView.frame
+                                                          bearing:&pBearing];
+    
+    GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
+                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+    
+    [_mapView animateToCameraPosition:camera];
+    [_mapView animateToBearing:pBearing];
+    _allowRefresh = YES;
 }
 
 - (void)mapToolbarDidFinishDrag
@@ -1818,13 +1941,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             if ([self isHennepinCountyPID:_selectedPID])
             {
                 _options = @[@"Property Report", @"Hennepin County Website", @"Rankings",
-                             @"Computed Values", @"Display Street View", @"Zoom to Census Area"];
+                             @"Computed Values", @"Display Street View", @"Zoom to Census Area", @"Remove Property Marker"];
             }
             
             else
             {
                 _options = @[@"Property Report", @"Rankings", @"Computed Values",
-                             @"Display Street View", @"Zoom to Census Area"];
+                             @"Display Street View", @"Zoom to Census Area", @"Remove Property Marker"];
             }
             
             break;
@@ -1833,7 +1956,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedSewerPipe = title;
             
             _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
-                         @"Trace Pipe Downstream", @"Remove Pipe Trace"];
+                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Remove Pipe Marker"];
             
             break;
     }
@@ -1847,33 +1970,91 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)markerInfoWindowDidSelectPropReport:(NSString *)title
+                                     coords:(CLLocationCoordinate2D)coords
                                        type:(NSInteger)type
 {
+    NSInteger option;
+    
     switch (type)
     {
         case MarkerInfoWindowTypePID:
+        {
             _selectedPID = title;
-            //implement last selected PID option here
+            option = [UserDefaults.defaults integerForKey:@"PIDOption"];
+            
+            if (option == PropertyTableViewSettingDefault)
+                option = PropertyTableViewSettingPropertyReport;
+            
+            switch (option)
+            {
+                case PropertyTableViewSettingPropertyReport:
+                    [self presentTableView];
+                    [self showPropReport];
+                    break;
+                    
+                case PropertyTableViewSettingHCWebsite:
+                    [self showHCWebsite];
+                    break;
+                    
+                case PropertyTableViewSettingStreetView:
+                    _selectedPIDCoords = coords;
+                    [self showStreetView];
+                    break;
+                    
+                case PropertyTableViewSettingCensusArea:
+                    [self showCensusArea];
+                    break;
+            }
+        }
             break;
             
         case MarkerInfoWindowTypeStormSewer:
+        {
             _selectedSewerPipe = title;
-            //implement last selected StormSewer option here
+            option = [UserDefaults.defaults integerForKey:@"SewerOption"];
+            
+            if (option == PropertyTableViewSettingDefault)
+                option = SewerPipeSettingTraceDown;
+            
+            switch (option)
+            {
+                case SewerPipeSettingAttributes:
+                    [self showPipeAttributes];
+                    break;
+                    
+                case SewerPipeSettingTraceUp:
+                    [self showPipeTraceUpstream];
+                    break;
+                    
+                case SewerPipeSettingTraceDown:
+                    [self showPipeTraceDownstream];
+                    break;
+            }
+        }
             break;
     }
 }
 
+- (void)markerInfoWindowWasSwiped
+{
+    [self removePreviousInfoWindow];
+    _noneSelected = YES;
+}
+
 - (void)presentTableView
 {
-    CGRect frame = _tableView.frame;
-    _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
-    _tableView.hidden = NO;
-    [self.view bringSubviewToFront:_tableView];
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _tableView.frame = frame;
-                     }];
+    if (_tableView.hidden)
+    {
+        CGRect frame = _tableView.frame;
+        _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
+        _tableView.hidden = NO;
+        [self.view bringSubviewToFront:_tableView];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _tableView.frame = frame;
+                         }];
+    }
 }
 
 - (void)compassTapped:(UIButton *)button
@@ -1882,7 +2063,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         [self stopTrackingUserLocation:NO];
     
     [_mapView animateToBearing:0.0];
-    
+    [self hideCompass];
+}
+
+- (void)hideCompass
+{
     [UIView animateWithDuration:0.25
                      animations:^{
                          _compass.alpha = 0.0;

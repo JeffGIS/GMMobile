@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import <GoogleMaps/GoogleMaps.h>
 
 @class PlatView;
 
@@ -11,6 +12,8 @@
 - (void)platViewDidTransformScale:(CGFloat)transformationScale;
 - (void)platViewDidBeginTrans;
 - (void)platViewDidEndTrans;
+- (void)platViewDidZoom:(GMSCoordinateBounds*)bounds
+            withBearing:(CGFloat)pBearing;
 
 @end
 
