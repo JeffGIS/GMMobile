@@ -10,6 +10,8 @@
 @property (nonatomic) LPTRANDATA pTranLatlonToImage;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
+@property (nonatomic) MNMXCORD imageBounds;
+@property (nonatomic) MNMXCORD worldBounds;
 
 @end
 
@@ -88,7 +90,7 @@
     
     ptImage1.x = ptImage2.x = imageRect.size.width;
     ptImage1.y = 0;
-    ptImage2.y = imageRect.size.height;
+    ptImage2.y = -imageRect.size.height;
     ptWorld1 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptWorld2 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
     az = getazd(&ptWorld1, &ptWorld2);
@@ -100,8 +102,29 @@
 {
     GMSVisibleRegion region;
     DPOINT ptIn, ptOut;
+    MNMXCORD imageBounds, frameBounds, frameBoundsWorld;
     
-    ptIn.x = imageRect.origin.x;
+    imageBounds.xmn = imageRect.origin.x;
+    imageBounds.ymn = imageRect.origin.y;
+    imageBounds.xmx = imageRect.origin.x + imageRect.size.width;
+    imageBounds.ymx = imageRect.origin.y + imageRect.size.height;
+    LPTRANDATA pTran = STRANBoundsToBounds(&imageBounds, &_worldBounds);
+
+    frameBounds.xmn = frameBounds.ymx = 0;
+    frameBounds.xmx = self.superview.frame.size.width;
+    frameBounds.ymn = self.superview.frame.size.height;
+    TranMNMXCORD(&frameBounds, &frameBoundsWorld, pTran);
+    CloseTRANS2(&pTran);
+    region.nearLeft.longitude = frameBoundsWorld.xmn;
+    region.nearLeft.latitude = frameBoundsWorld.ymn;
+    region.farLeft.longitude = frameBoundsWorld.xmn;
+    region.farLeft.latitude = frameBoundsWorld.ymx;
+    region.farRight.longitude = frameBoundsWorld.xmx;
+    region.farRight.latitude = frameBoundsWorld.ymx;
+    region.nearRight.longitude = frameBoundsWorld.xmx;
+    region.nearRight.latitude = frameBoundsWorld.ymn;
+    
+    /*ptIn.x = imageRect.origin.x;
     ptIn.y = imageRect.origin.y;
     ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
     region.nearLeft.longitude = ptOut.x;
@@ -120,7 +143,7 @@
     ptIn.y = (imageRect.origin.y - imageRect.size.height);
     ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
     region.nearRight.longitude = ptOut.x;
-    region.nearRight.latitude = ptOut.y;
+    region.nearRight.latitude = ptOut.y;*/
     return region;
 }
 
@@ -129,6 +152,7 @@
     double imagex[32], imagey[32], worldx[32], worldy[32];
     float rsq;
     int npt = 0;
+    
     CloseTRANS2(&_pTranImageToLatlon);
     CloseTRANS2(&_pTranLatlonToImage);
     SewerData *sd = [[SewerData alloc] init];
@@ -154,6 +178,10 @@
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [sd close];
+    _imageBounds.xmn = _imageBounds.ymn = 0;
+    _imageBounds.xmx = self.image.size.width;
+    _imageBounds.ymx = self.image.size.height;
+    TranMNMXCORD(&_imageBounds, &_worldBounds, _pTranImageToLatlon);
     return NO;
 }
 
