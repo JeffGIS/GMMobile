@@ -36,6 +36,12 @@ extern int keepProcessing;
     
     return self;
 }
+- (void)dealloc
+{
+    //[self freeResources];
+    NSLog (@"VectorView dealloc");
+}
+
 
 /*- (void)freeResources
 {
@@ -52,11 +58,6 @@ extern int keepProcessing;
     _colorSpace = nil;
 
 }
-- (void)dealloc
-{
-    [self freeResources];
-}
-
 CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGColorSpaceRef colorSpace, void **bmData)
 {
     CGContextRef context = NULL;

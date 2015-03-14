@@ -149,8 +149,8 @@
         worldx[npt] = sqlite3_column_double(statement, 2);
         worldy[npt++] = sqlite3_column_double(statement, 3);
     }
-    _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt, &rsq);
-    _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt, &rsq);
+    _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
+    _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [sd close];
     return FALSE;

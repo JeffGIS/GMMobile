@@ -21,12 +21,12 @@
 + (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
                                      delegate:(id)delegate;
 {
+    
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              ofType:@"jpg"];
     
-    //imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              //ofType:@"jpg"];
-
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
@@ -99,13 +99,16 @@
     
     DPOINT ptImage1, ptImage2;
     DPOINT ptWorld1, ptWorld2;
+    DPOINT ptLev211, ptLev212;
     
     ptImage1.x = ptImage2.x = imageRect.size.width / 2.0;
     ptImage1.y = 0;
     ptImage2.y = imageRect.size.height;
     ptWorld1 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptWorld2 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
-    CGFloat az = getazd(&ptWorld1, &ptWorld2);
+    ptLev211 = LatLongPointToPixelPoint (ptWorld1,21);
+    ptLev212 = LatLongPointToPixelPoint (ptWorld2,21);
+    CGFloat az = getazd(&ptLev211, &ptLev212);
     *bearing = LTWOPI(HALFPI - az) * DEGRAD;
     *target = center;
     return zoom;
@@ -172,7 +175,7 @@
     imageCorners[3].x = imageRect.origin.x + imageRect.size.width;
     imageCorners[2].y = imageRect.origin.y;
 
-    LPTRANDATA pTran = STRANPoints(&imageCorners, &_imageCornersWorld,4,0);
+    LPTRANDATA pTran = STRANPoints(&imageCorners, &_imageCornersWorld,4,1,0);
 
     framePoints[0].x = framePoints[0].y = 0;
     framePoints[1].x = 0;
@@ -239,20 +242,21 @@
     {
         imagex[npt] = sqlite3_column_double(statement, 0);
         imagey[npt] = sqlite3_column_double(statement, 1);
+        imagey[npt] = self.image.size.height - imagey[npt];
         worldx[npt] = sqlite3_column_double(statement, 2);
         worldy[npt++] = sqlite3_column_double(statement, 3);
     }
     
-    _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt, &rsq);
-    _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt, &rsq);
+    _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
+    _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [sd close];
-    imageCorners[0].x = imageCorners[0].y = 0;
+    imageCorners[0].x = imageCorners[1].y = 0;
     imageCorners[1].x = 0;
-    imageCorners[1].y = self.image.size.height;
+    imageCorners[0].y = self.image.size.height;
     imageCorners[2].x = self.image.size.width;
-    imageCorners[2].y = self.image.size.height;
+    imageCorners[3].y = self.image.size.height;
     imageCorners[3].x = self.image.size.width;
     imageCorners[2].y = 0;
     TranPoints (imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
