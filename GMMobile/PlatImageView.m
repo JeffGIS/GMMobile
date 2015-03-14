@@ -19,13 +19,14 @@
 }
 
 + (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
-                                     delegate:(id)delegate;
+                                     delegate:(id)delegate
 {
     
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              ofType:@"jpg"];
+    
+    //imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              //ofType:@"jpg"];
     
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
@@ -89,8 +90,10 @@
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing
                      target:(CLLocationCoordinate2D *)target
+                mapViewSize:(CGSize)size
 {
     GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
+    _mapViewSize = size;
     
     CLLocationCoordinate2D center;
     
@@ -109,7 +112,9 @@
     ptLev211 = LatLongPointToPixelPoint (ptWorld1,21);
     ptLev212 = LatLongPointToPixelPoint (ptWorld2,21);
     CGFloat az = getazd(&ptLev211, &ptLev212);
-    *bearing = LTWOPI(HALFPI - az) * DEGRAD;
+    CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
+    *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
+    NSLog(@"%f", *bearing);
     *target = center;
     return zoom;
 }
@@ -117,44 +122,25 @@
 - (CGFloat)zoomForVisibleRegion:(GMSVisibleRegion)region
                          target:(CLLocationCoordinate2D *)target
 {
-    CGFloat zoom, longestSide;
-    CLLocation *farLeft, *farRight, *nearLeft, *nearRight;
-    CLLocationDistance top, bottom, left, right;
-    CLLocationCoordinate2D center1, center2, trueCenter;
+    CLLocation *farLeft = [[CLLocation alloc] initWithLatitude:region.farLeft.latitude
+                                                     longitude:region.farLeft.longitude];
     
-    farLeft = [[CLLocation alloc] initWithLatitude:region.farLeft.latitude
-                                         longitude:region.farLeft.longitude];
+    CLLocation *nearRight = [[CLLocation alloc] initWithLatitude:region.nearRight.latitude
+                                                       longitude:region.nearRight.longitude];
     
-    farRight = [[CLLocation alloc] initWithLatitude:region.farRight.latitude
-                                          longitude:region.farRight.longitude];
+    CLLocationCoordinate2D center = CLLocationCoordinate2DMake(((farLeft.coordinate.latitude + nearRight.coordinate.latitude) / 2.0),
+                                                               ((farLeft.coordinate.longitude + nearRight.coordinate.longitude) / 2.0));
     
-    nearLeft = [[CLLocation alloc] initWithLatitude:region.nearLeft.latitude
-                                          longitude:region.nearLeft.longitude];
+    *target = center;
     
-    nearRight = [[CLLocation alloc] initWithLatitude:region.nearRight.latitude
-                                           longitude:region.nearRight.longitude];
+    CLLocationDistance diagonalDist = [farLeft distanceFromLocation:nearRight];
     
-    center1 = CLLocationCoordinate2DMake(((farLeft.coordinate.latitude + nearRight.coordinate.latitude) / 2.0),
-                                        ((farLeft.coordinate.longitude + nearRight.coordinate.longitude) / 2.0));
+    NSInteger pixDist = sqrt((_mapViewSize.height * _mapViewSize.height) +
+                             (_mapViewSize.width * _mapViewSize.width));
     
-    center2 = CLLocationCoordinate2DMake(((nearLeft.coordinate.latitude + farRight.coordinate.latitude) / 2.0),
-                                         ((nearLeft.coordinate.longitude + farRight.coordinate.longitude) / 2.0));
-    
-    trueCenter = CLLocationCoordinate2DMake(((center1.latitude + center2.latitude) / 2.0),
-                                            ((center1.longitude + center2.longitude) / 2.0));
-    
-    *target = trueCenter;
-    
-    top = [farLeft distanceFromLocation:farRight];
-    bottom = [nearLeft distanceFromLocation:nearRight];
-    left = [farLeft distanceFromLocation:nearLeft];
-    right = [farRight distanceFromLocation:nearRight];
-    
-    longestSide = max(right, max(left, max(top, bottom)));
-    
-    zoom = [GMSCameraPosition zoomAtCoordinate:trueCenter
-                                     forMeters:longestSide
-                                     perPoints:self.superview.superview.frame.size.width];
+    CGFloat zoom = [GMSCameraPosition zoomAtCoordinate:center
+                                             forMeters:diagonalDist
+                                             perPoints:pixDist];
     
     return zoom;
 }
@@ -311,7 +297,8 @@
             
             CGFloat pZoom = [self zoomForMapBounds:self.frame
                                            bearing:&pBearing
-                                            target:&pTarget];
+                                            target:&pTarget
+                                       mapViewSize:_mapViewSize];
             
             [_delegate platViewDidZoom:pZoom
                            withBearing:pBearing
@@ -359,7 +346,8 @@
             
             CGFloat pZoom = [self zoomForMapBounds:self.frame
                                            bearing:&pBearing
-                                            target:&pTarget];
+                                            target:&pTarget
+                                       mapViewSize:_mapViewSize];
             
             [_delegate platViewDidZoom:pZoom
                            withBearing:pBearing

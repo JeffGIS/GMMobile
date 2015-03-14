@@ -1909,7 +1909,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     CGFloat pZoom = [_platView zoomForMapBounds:_platView.frame
                                         bearing:&pBearing
-                                         target:&pTarget];
+                                         target:&pTarget
+                                    mapViewSize:_mapView.frame.size];
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom

@@ -20,12 +20,14 @@
 @interface PlatImageView : UIImageView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <PlatImageViewDelegate> delegate;
+@property (nonatomic) CGSize mapViewSize;
 
 + (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
                                      delegate:(id)delegate;
 
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing
-                     target:(CLLocationCoordinate2D *)target;
+                     target:(CLLocationCoordinate2D *)target
+                mapViewSize:(CGSize)size;
 
 @end
