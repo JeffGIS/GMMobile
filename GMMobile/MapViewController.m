@@ -862,6 +862,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(int)zoom
 {
+    [self clearVectorView];
     _vectorView.displayData = 1;
     
     [_vectorView setRegion:region];

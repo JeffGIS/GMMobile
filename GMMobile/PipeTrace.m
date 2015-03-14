@@ -4,6 +4,8 @@
 #import "PipeTrace.h"
 #import "SewerData.h"
 
+extern int keepProcessing;
+
 typedef struct {int SEQUENCE;
     char NXTFID[14];
     char UPPIPE[14];
@@ -633,6 +635,14 @@ $RETURN(1);
     return nrec;
 }
 
+- (BOOL) continue
+{
+    if (self.processingID == keepProcessing)
+        return YES;
+    return NO;
+}
+
+
 - (void)displayPipeTrace:(CGContextRef)context
                llCorners:(CORNERPOINTS *)latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
@@ -652,7 +662,7 @@ $RETURN(1);
     
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
