@@ -18,6 +18,8 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger width, height;
 @property (nonatomic) dispatch_queue_t vectorQueue;
 @property (nonatomic) CGRect rect;
+@property BOOL haveVectorLayer;
+@property CGLayerRef vectorLayer;
 
 @end
 
@@ -109,28 +111,42 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 - (void)drawRect:(CGRect)rect
 {
     _vectorViewContext = UIGraphicsGetCurrentContext();
-    
+    keepProcessing = 0;
     if (!_vectorViewContext || !keepProcessing)
         return;
-    
+    if (_haveVectorLayer)
+    {
+        //CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), _vectorLayer);
+        if (keepProcessing == self.displayID)
+        {
+            CGContextScaleCTM(_vectorViewContext,1,-1);
+            CGContextTranslateCTM(_vectorViewContext, 0, -rect.size.height);
+            CGContextDrawLayerInRect(_vectorViewContext, rect, _vectorLayer);
+        }
+        CGLayerRelease(_vectorLayer);
+        _haveVectorLayer = NO;
+        if (self.delegate)
+            [self.delegate vectorViewDidComplete];
+        return;
+    }
     keepProcessing++;
     
     self.displayID = keepProcessing;
     
     if (_displayData)
     {
+        int scale = UIScreen.mainScreen.scale;
+        CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
+        _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
         dispatch_async(_vectorQueue,
         ^{
-            int scale = UIScreen.mainScreen.scale;
             _colorSpace = CGColorSpaceCreateDeviceRGB();
             _width = self.bounds.size.width * scale;
             _height = self.bounds.size.height * scale;
             _rect = CGRectMake(0, 0, _width, _height);
             //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
             //_bitmapData = bmData;
-            CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
-            CGLayerRef vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
-            _context = CGLayerGetContext(vectorLayer);
+            _context = CGLayerGetContext(_vectorLayer);
             _viewBounds.xmn = (self.bounds.origin.x * scale);
             _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
             _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
@@ -248,7 +264,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             
             if (keepProcessing == self.displayID)
             {
-                CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), vectorLayer);
+                _haveVectorLayer = YES;
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [self setNeedsDisplay];
+                               });
                 /*UIGraphicsBeginImageContext(size);
                 _context = UIGraphicsGetCurrentContext();
                 CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
@@ -256,11 +276,13 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                 NSData * pngData = UIImagePNGRepresentation(image);
                 [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
                 
-                if (self.delegate)
-                    [self.delegate vectorViewDidComplete];
+            }
+            else
+            {
+                CGLayerRelease(_vectorLayer);
+                _haveVectorLayer = NO;
             }
             
-            CGLayerRelease(vectorLayer);
             //[self freeResources];
             NSLog (@"Vector view complete");
         });

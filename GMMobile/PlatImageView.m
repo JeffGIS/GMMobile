@@ -25,8 +25,8 @@
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
     
-    //imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              //ofType:@"jpg"];
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              ofType:@"jpg"];
     
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
@@ -153,15 +153,15 @@
     DPOINT imageCorners[4];
     
     imageCorners[0].x = imageRect.origin.x;
-    imageCorners[0].y = imageRect.origin.y;
+    imageCorners[0].y = imageRect.origin.y + imageRect.size.height;
     imageCorners[1].x = imageRect.origin.x;
-    imageCorners[1].y = imageRect.origin.y + imageRect.size.height;
+    imageCorners[1].y = imageRect.origin.y;
     imageCorners[2].x = imageRect.origin.x + imageRect.size.width;
-    imageCorners[2].y = imageRect.origin.y + imageRect.size.height;
-    imageCorners[3].x = imageRect.origin.x + imageRect.size.width;
     imageCorners[2].y = imageRect.origin.y;
+    imageCorners[3].x = imageRect.origin.x + imageRect.size.width;
+    imageCorners[3].y = imageRect.origin.y + imageRect.size.height;
 
-    LPTRANDATA pTran = STRANPoints(&imageCorners, &_imageCornersWorld,4,1,0);
+    LPTRANDATA pTran = STRANPoints(imageCorners, _imageCornersWorld,4,1,0);
 
     framePoints[0].x = framePoints[0].y = 0;
     framePoints[1].x = 0;
@@ -238,13 +238,13 @@
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [sd close];
-    imageCorners[0].x = imageCorners[1].y = 0;
+    imageCorners[0].x = imageCorners[0].y = 0;
     imageCorners[1].x = 0;
-    imageCorners[0].y = self.image.size.height;
+    imageCorners[1].y = self.image.size.height;
     imageCorners[2].x = self.image.size.width;
-    imageCorners[3].y = self.image.size.height;
+    imageCorners[2].y = self.image.size.height;
     imageCorners[3].x = self.image.size.width;
-    imageCorners[2].y = 0;
+    imageCorners[3].y = 0;
     TranPoints (imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
     return NO;
 }
