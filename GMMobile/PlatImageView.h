@@ -11,8 +11,9 @@
 - (void)platViewDidBeginTrans;
 - (void)platViewDidEndTrans;
 
-- (void)platViewDidTransBounds:(GMSCoordinateBounds *)bounds
-                   withBearing:(CGFloat)pBearing;
+- (void)platViewDidZoom:(CGFloat)pZoom
+            withBearing:(CGFloat)pBearing
+                 target:(CLLocationCoordinate2D)pTarget;
 
 @end
 
@@ -23,7 +24,8 @@
 + (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
                                      delegate:(id)delegate;
 
-- (GMSCoordinateBounds *)imageRectToMapBounds:(CGRect)imageRect
-                                      bearing:(CGFloat *)bearing;
+- (CGFloat)zoomForMapBounds:(CGRect)imageRect
+                    bearing:(CGFloat *)bearing
+                     target:(CLLocationCoordinate2D *)target;
 
 @end

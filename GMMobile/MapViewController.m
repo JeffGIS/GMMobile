@@ -1443,18 +1443,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         return NO;
 }
 
-- (void)platViewDidTransBounds:(GMSCoordinateBounds *)bounds
-                   withBearing:(CGFloat)pBearing
+- (void)platViewDidZoom:(CGFloat)pZoom
+            withBearing:(CGFloat)pBearing
+                 target:(CLLocationCoordinate2D)pTarget
 {
     [self clearVectorView];
-
-    GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
-                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
-    camera = [GMSCameraPosition cameraWithTarget:camera.target
-                                            zoom:camera.zoom
-                                         bearing:pBearing
-                                    viewingAngle:0.0];
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
+                                                               zoom:pZoom
+                                                            bearing:pBearing
+                                                       viewingAngle:0.0];
     
     [_mapView animateToCameraPosition:camera];
 }
@@ -1906,17 +1904,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)syncPlatView
 {
     CGFloat pBearing;
+    CLLocationCoordinate2D pTarget;
     
-    GMSCoordinateBounds *bounds = [_platView imageRectToMapBounds:_platView.frame
-                                                          bearing:&pBearing];
+    CGFloat pZoom = [_platView zoomForMapBounds:_platView.frame
+                                        bearing:&pBearing
+                                         target:&pTarget];
     
-    GMSCameraPosition *camera = [_mapView cameraForBounds:bounds
-                                                   insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
-    
-    camera = [GMSCameraPosition cameraWithTarget:camera.target
-                                            zoom:camera.zoom
-                                         bearing:pBearing
-                                    viewingAngle:0.0];
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
+                                                               zoom:pZoom
+                                                            bearing:pBearing
+                                                       viewingAngle:0.0];
     
     [_mapView animateToCameraPosition:camera];
     _allowRefresh = YES;

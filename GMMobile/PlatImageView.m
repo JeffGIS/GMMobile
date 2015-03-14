@@ -86,23 +86,74 @@
     return llPt;
 }
 
-- (GMSCoordinateBounds *)imageRectToMapBounds:(CGRect)imageRect
-                                      bearing:(CGFloat *)bearing
+- (CGFloat)zoomForMapBounds:(CGRect)imageRect
+                    bearing:(CGFloat *)bearing
+                     target:(CLLocationCoordinate2D *)target
 {
     GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
-    GMSCoordinateBounds *gbounds = [[GMSCoordinateBounds alloc] initWithRegion:region];
+    
+    CLLocationCoordinate2D center;
+    
+    CGFloat zoom = [self zoomForVisibleRegion:region
+                                       target:&center];
+    
     DPOINT ptImage1, ptImage2;
     DPOINT ptWorld1, ptWorld2;
-    CGFloat az;
     
-    ptImage1.x = ptImage2.x = imageRect.size.width/2;
+    ptImage1.x = ptImage2.x = imageRect.size.width / 2.0;
     ptImage1.y = 0;
     ptImage2.y = imageRect.size.height;
     ptWorld1 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptWorld2 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
-    az = getazd(&ptWorld1, &ptWorld2);
+    CGFloat az = getazd(&ptWorld1, &ptWorld2);
     *bearing = LTWOPI(HALFPI - az) * DEGRAD;
-    return gbounds;
+    *target = center;
+    return zoom;
+}
+
+- (CGFloat)zoomForVisibleRegion:(GMSVisibleRegion)region
+                         target:(CLLocationCoordinate2D *)target
+{
+    CGFloat zoom, longestSide;
+    CLLocation *farLeft, *farRight, *nearLeft, *nearRight;
+    CLLocationDistance top, bottom, left, right;
+    CLLocationCoordinate2D center1, center2, trueCenter;
+    
+    farLeft = [[CLLocation alloc] initWithLatitude:region.farLeft.latitude
+                                         longitude:region.farLeft.longitude];
+    
+    farRight = [[CLLocation alloc] initWithLatitude:region.farRight.latitude
+                                          longitude:region.farRight.longitude];
+    
+    nearLeft = [[CLLocation alloc] initWithLatitude:region.nearLeft.latitude
+                                          longitude:region.nearLeft.longitude];
+    
+    nearRight = [[CLLocation alloc] initWithLatitude:region.nearRight.latitude
+                                           longitude:region.nearRight.longitude];
+    
+    center1 = CLLocationCoordinate2DMake(((farLeft.coordinate.latitude + nearRight.coordinate.latitude) / 2.0),
+                                        ((farLeft.coordinate.longitude + nearRight.coordinate.longitude) / 2.0));
+    
+    center2 = CLLocationCoordinate2DMake(((nearLeft.coordinate.latitude + farRight.coordinate.latitude) / 2.0),
+                                         ((nearLeft.coordinate.longitude + farRight.coordinate.longitude) / 2.0));
+    
+    trueCenter = CLLocationCoordinate2DMake(((center1.latitude + center2.latitude) / 2.0),
+                                            ((center1.longitude + center2.longitude) / 2.0));
+    
+    *target = trueCenter;
+    
+    top = [farLeft distanceFromLocation:farRight];
+    bottom = [nearLeft distanceFromLocation:nearRight];
+    left = [farLeft distanceFromLocation:nearLeft];
+    right = [farRight distanceFromLocation:nearRight];
+    
+    longestSide = max(right, max(left, max(top, bottom)));
+    
+    zoom = [GMSCameraPosition zoomAtCoordinate:trueCenter
+                                     forMeters:longestSide
+                                     perPoints:self.superview.superview.frame.size.width];
+    
+    return zoom;
 }
 
 - (GMSVisibleRegion)imageRectToMapRegion:(CGRect)imageRect
@@ -121,7 +172,7 @@
     imageCorners[3].x = imageRect.origin.x + imageRect.size.width;
     imageCorners[2].y = imageRect.origin.y;
 
-    LPTRANDATA pTran = STRANPoints (&imageCorners, &_imageCornersWorld,4,0);
+    LPTRANDATA pTran = STRANPoints(&imageCorners, &_imageCornersWorld,4,0);
 
     framePoints[0].x = framePoints[0].y = 0;
     framePoints[1].x = 0;
@@ -161,6 +212,7 @@
     ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
     region.nearRight.longitude = ptOut.x;
     region.nearRight.latitude = ptOut.y;*/
+    
     return region;
 }
 
@@ -251,12 +303,15 @@
         if (_delegate)
         {
             CGFloat pBearing;
+            CLLocationCoordinate2D pTarget;
             
-            GMSCoordinateBounds *bounds = [self imageRectToMapBounds:self.frame
-                                                             bearing:&pBearing];
+            CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                           bearing:&pBearing
+                                            target:&pTarget];
             
-            [_delegate platViewDidTransBounds:bounds
-                                  withBearing:pBearing];
+            [_delegate platViewDidZoom:pZoom
+                           withBearing:pBearing
+                                target:pTarget];
         }
     }
 }
@@ -296,12 +351,15 @@
         if (_delegate)
         {
             CGFloat pBearing;
+            CLLocationCoordinate2D pTarget;
             
-            GMSCoordinateBounds *bounds = [self imageRectToMapBounds:self.frame
-                                                             bearing:&pBearing];
+            CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                           bearing:&pBearing
+                                            target:&pTarget];
             
-            [_delegate platViewDidTransBounds:bounds
-                                  withBearing:pBearing];
+            [_delegate platViewDidZoom:pZoom
+                           withBearing:pBearing
+                                target:pTarget];
         }
     }
 }
