@@ -25,8 +25,8 @@
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
     
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              ofType:@"jpg"];
+    //imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              //ofType:@"jpg"];
     
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
@@ -112,7 +112,9 @@
     ptLev211 = LatLongPointToPixelPoint (ptWorld1,21);
     ptLev212 = LatLongPointToPixelPoint (ptWorld2,21);
     CGFloat az = getazd(&ptLev211, &ptLev212);
-    *bearing = LTWOPI(HALFPI - az) * DEGRAD;
+    CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
+    *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
+    NSLog(@"%f", *bearing);
     *target = center;
     return zoom;
 }
