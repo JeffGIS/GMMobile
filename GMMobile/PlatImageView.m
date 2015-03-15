@@ -22,12 +22,12 @@
                                      delegate:(id)delegate
 {
     
+    
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
     
     imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
                                               ofType:@"jpg"];
-    
     PlatImageView *platView = [[PlatImageView alloc] init];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
@@ -102,18 +102,16 @@
     
     DPOINT ptImage1, ptImage2;
     DPOINT ptWorld1, ptWorld2;
-    DPOINT ptLev211, ptLev212;
+    DPOINT ptLev201, ptLev202;
     
     ptImage1.x = ptImage2.x = imageRect.size.width / 2.0;
     ptImage1.y = 0;
     ptImage2.y = imageRect.size.height;
-    ptWorld1 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
-    ptWorld2 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
-    ptLev211 = LatLongPointToPixelPoint (ptWorld1,21);
-    ptLev212 = LatLongPointToPixelPoint (ptWorld2,21);
-    CGFloat az = getazd(&ptLev211, &ptLev212);
+    ptLev201 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
+    ptLev202 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
+    CGFloat az = getazd(&ptLev201, &ptLev202);
     CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
-    *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
+    *bearing = trueBearing;//((roundf(trueBearing / 5.0)) * 5.0);
     NSLog(@"%f", *bearing);
     *target = center;
     return zoom;
@@ -163,15 +161,17 @@
 
     LPTRANDATA pTran = STRANPoints(imageCorners, _imageCornersWorld,4,1,0);
 
-    framePoints[0].x = framePoints[0].y = 0;
+    framePoints[0].x = framePoints[1].y = 0;
     framePoints[1].x = 0;
-    framePoints[1].y = self.superview.frame.size.height;
+    framePoints[0].y = self.superview.frame.size.height;
     framePoints[2].x = self.superview.frame.size.width;
-    framePoints[2].y = self.superview.frame.size.height;
+    framePoints[3].y = self.superview.frame.size.height;
     framePoints[3].x = self.superview.frame.size.width;
-    framePoints[3].y = 0;
+    framePoints[2].y = 0;
     TranPoints(framePoints, framePointsWorld, 4, pTran);
     CloseTRANS2(&pTran);
+    for (int i=0;i<4;i++)
+        PixelXYToLatLongd(framePointsWorld[i].x, framePointsWorld[i].y, 20, &framePointsWorld[i].y, &framePointsWorld[i].x);
     region.nearLeft.longitude = framePointsWorld[0].x;
     region.nearLeft.latitude = framePointsWorld[0].y;
     region.farLeft.longitude = framePointsWorld[1].x;
@@ -228,7 +228,7 @@
     {
         imagex[npt] = sqlite3_column_double(statement, 0);
         imagey[npt] = sqlite3_column_double(statement, 1);
-        imagey[npt] = self.image.size.height - imagey[npt];
+        //imagey[npt] = self.image.size.height - imagey[npt];
         worldx[npt] = sqlite3_column_double(statement, 2);
         worldy[npt++] = sqlite3_column_double(statement, 3);
     }
