@@ -10,6 +10,7 @@
 @property (nonatomic) LPTRANDATA pTranLatlonToImage;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
+@property (nonatomic) CGPoint lastPoint;
 
 @end
 
@@ -114,7 +115,6 @@
     CGFloat az = getazd(&ptLev211, &ptLev212);
     CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
-    NSLog(@"%f", *bearing);
     *target = center;
     return zoom;
 }
@@ -318,40 +318,54 @@
     else if (pinchGesture.state == UIGestureRecognizerStateBegan ||
              pinchGesture.state == UIGestureRecognizerStateChanged)
     {
-        if (pinchGesture.state == UIGestureRecognizerStateBegan)
+        if (pinchGesture.numberOfTouches > 1)
         {
+            if (pinchGesture.state == UIGestureRecognizerStateBegan)
+            {
+                if (_delegate)
+                    [_delegate platViewDidBeginTrans];
+                
+                _lastPoint = [pinchGesture locationInView:self];
+            }
+            
+            CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
+            
+            CGFloat minScale = 0.5;
+            CGFloat maxScale = 50.0;
+            CGFloat zoomSpeed = 1.0;
+            
+            CGFloat deltaScale = pinchGesture.scale;
+            deltaScale = (((deltaScale - 1.0) * zoomSpeed) + 1.0);
+            deltaScale = MIN(deltaScale, (maxScale / currentScale));
+            deltaScale = MAX(deltaScale, (minScale / currentScale));
+            
+            CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, deltaScale, deltaScale);
+            pinchGesture.view.transform = scale;
+            pinchGesture.scale = 1.0;
+            
+            CGPoint point = [pinchGesture locationInView:self];
+            
+            CGAffineTransform translate = CGAffineTransformTranslate(pinchGesture.view.transform,
+                                                                     point.x - _lastPoint.x,
+                                                                     point.y - _lastPoint.y);
+            
+            pinchGesture.view.transform = translate;
+            _lastPoint = [pinchGesture locationInView:self];
+            
             if (_delegate)
-                [_delegate platViewDidBeginTrans];
-        }
-        
-        CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
-        
-        CGFloat minScale = 0.25;
-        CGFloat maxScale = 10.0;
-        CGFloat zoomSpeed = 0.5;
-        
-        CGFloat deltaScale = pinchGesture.scale;
-        deltaScale = (((deltaScale - 1.0) * zoomSpeed) + 1.0);
-        deltaScale = MIN(deltaScale, (maxScale / currentScale));
-        deltaScale = MAX(deltaScale, (minScale / currentScale));
-        
-        CGAffineTransform transformation = CGAffineTransformScale(pinchGesture.view.transform, deltaScale, deltaScale);
-        pinchGesture.view.transform = transformation;
-        pinchGesture.scale = 1.0;
-        
-        if (_delegate)
-        {
-            CGFloat pBearing;
-            CLLocationCoordinate2D pTarget;
-            
-            CGFloat pZoom = [self zoomForMapBounds:self.frame
-                                           bearing:&pBearing
-                                            target:&pTarget
-                                       mapViewSize:_mapViewSize];
-            
-            [_delegate platViewDidZoom:pZoom
-                           withBearing:pBearing
-                                target:pTarget];
+            {
+                CGFloat pBearing;
+                CLLocationCoordinate2D pTarget;
+                
+                CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                               bearing:&pBearing
+                                                target:&pTarget
+                                           mapViewSize:_mapViewSize];
+                
+                [_delegate platViewDidZoom:pZoom
+                               withBearing:pBearing
+                                    target:pTarget];
+            }
         }
     }
 }

@@ -659,6 +659,11 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         [self.view bringSubviewToFront:_compass];
     }
     
+    [self updateMarkerPosition];
+}
+
+- (void)updateMarkerPosition
+{
     for (MarkerButton *markers in _markerArray)
     {
         CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
@@ -684,6 +689,8 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     else
         _firstTimeMap = NO;
+    
+    [self updateMarkerPosition];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -1458,27 +1465,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToCameraPosition:camera];
 }
 
-- (void)platViewDidTranslate:(CGPoint)translation
-{
-    [self clearVectorView];
-
-    CGPoint coordPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
-    
-    CGPoint newPoint = CGPointMake(coordPoint.x - translation.x,
-                                   coordPoint.y - translation.y);
-    
-    CLLocationCoordinate2D newCoord = [_mapView.projection coordinateForPoint:newPoint];
-    [_mapView moveCamera:[GMSCameraUpdate setTarget:newCoord]];
-}
-
-- (void)platViewDidTransformScale:(CGFloat)transformationScale
-{
-    [self clearVectorView];
-
-    [_mapView moveCamera:[GMSCameraUpdate setTarget:_mapView.camera.target
-                                               zoom:(_mapView.camera.zoom * sqrtf(transformationScale))]];
-}
-
 - (void)platViewDidBeginTrans
 {
     [self clearVectorView];
@@ -1726,7 +1712,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case MapViewScreenSettingFullscreen:
                     [self performSelector:@selector(addPlatView)
                                withObject:nil
-                               afterDelay:0.25];
+                               afterDelay:0.3];
                     break;
                     
                 case MapViewScreenSettingTriScreen:
@@ -1790,7 +1776,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case MapViewScreenSettingFullscreen:
                     [self performSelector:@selector(addPlatView)
                                withObject:nil
-                               afterDelay:0.25];
+                               afterDelay:0.3];
                     break;
                     
                 case MapViewScreenSettingSplitScreen:
@@ -1854,7 +1840,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case MapViewScreenSettingFullscreen:
                     [self performSelector:@selector(addPlatView)
                                withObject:nil
-                               afterDelay:0.25];
+                               afterDelay:0.3];
                     break;
                     
                 case MapViewScreenSettingTriScreen:
