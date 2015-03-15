@@ -689,8 +689,6 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     else
         _firstTimeMap = NO;
-    
-    [self updateMarkerPosition];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -782,6 +780,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
                                             (self.view.frame.size.width - _tabBarHeight - statusBarHeight));
+                                 
+                                 [self updateMarkerPosition];
                              }];
         }
             break;
@@ -796,6 +796,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
+                                 
+                                 [self updateMarkerPosition];
                              }];
             
             [UIView animateWithDuration:duration
@@ -816,6 +818,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+                                 
+                                 [self updateMarkerPosition];
                              }];
             
             [UIView animateWithDuration:duration
@@ -845,6 +849,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5));
+                                 
+                                 [self updateMarkerPosition];
                              }];
             
             [UIView animateWithDuration:duration
@@ -1671,6 +1677,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             (tabBarTop - statusBarHeight));
+                                 
+                                 [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1700,6 +1708,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 2.0));
+                                 
+                                 [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1760,6 +1770,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 3.0));
+                                 
+                                 [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1824,6 +1836,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             statusBarHeight,
                                             self.view.frame.size.width,
                                             ((tabBarTop - statusBarHeight) / 1.5));
+                                 
+                                 [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
