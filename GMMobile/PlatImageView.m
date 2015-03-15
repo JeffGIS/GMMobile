@@ -168,10 +168,16 @@
     framePoints[3].y = self.superview.frame.size.height;
     framePoints[3].x = self.superview.frame.size.width;
     framePoints[2].y = 0;
+    
     TranPoints(framePoints, framePointsWorld, 4, pTran);
     CloseTRANS2(&pTran);
-    for (int i=0;i<4;i++)
-        PixelXYToLatLongd(framePointsWorld[i].x, framePointsWorld[i].y, 20, &framePointsWorld[i].y, &framePointsWorld[i].x);
+    
+    for (int i = 0; i < 4; i++)
+    {
+        PixelXYToLatLongd(framePointsWorld[i].x, framePointsWorld[i].y, 20,
+                          &framePointsWorld[i].y, &framePointsWorld[i].x);
+    }
+    
     region.nearLeft.longitude = framePointsWorld[0].x;
     region.nearLeft.latitude = framePointsWorld[0].y;
     region.farLeft.longitude = framePointsWorld[1].x;
@@ -180,27 +186,6 @@
     region.farRight.latitude = framePointsWorld[2].y;
     region.nearRight.longitude = framePointsWorld[3].x;
     region.nearRight.latitude = framePointsWorld[3].y;
-    
-    /*ptIn.x = imageRect.origin.x;
-    ptIn.y = imageRect.origin.y;
-    ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
-    region.nearLeft.longitude = ptOut.x;
-    region.nearLeft.latitude = ptOut.y;
-    
-    ptIn.y = (imageRect.origin.y + imageRect.size.height);
-    ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
-    region.farLeft.longitude = ptOut.x;
-    region.farLeft.latitude = ptOut.y;
-    
-    ptIn.x = (imageRect.origin.x + imageRect.size.width);
-    ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
-    region.farRight.longitude = ptOut.x;
-    region.farRight.latitude = ptOut.y;
-    
-    ptIn.y = (imageRect.origin.y - imageRect.size.height);
-    ptOut = TranDPOINT(&ptIn, _pTranImageToLatlon);
-    region.nearRight.longitude = ptOut.x;
-    region.nearRight.latitude = ptOut.y;*/
     
     return region;
 }

@@ -801,6 +801,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame1;
+                                 
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
                              }];
         }
             break;
@@ -818,6 +821,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame2;
+                                 
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
                              }];
             
             [UIView animateWithDuration:duration
@@ -844,6 +850,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame3;
+                                 
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
                              }];
             
             [UIView animateWithDuration:duration
