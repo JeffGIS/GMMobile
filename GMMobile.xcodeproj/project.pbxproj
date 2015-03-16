@@ -15,10 +15,10 @@
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
-		A925DDF11AB0C4B1007A79D4 /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A925DDF01AB0C4B1007A79D4 /* marker.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
+		A96D70131AB686DE002E92CD /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A96D70121AB686DE002E92CD /* marker.png */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
@@ -96,11 +96,11 @@
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
 		A91565611A81E76400119C21 /* FindBoundariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindBoundariesViewController.h; sourceTree = "<group>"; };
 		A91565621A81E76400119C21 /* FindBoundariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindBoundariesViewController.m; sourceTree = "<group>"; };
-		A925DDF01AB0C4B1007A79D4 /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		A96D70121AB686DE002E92CD /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
 		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPropertyOwnerViewController.h; sourceTree = "<group>"; };
@@ -228,7 +228,6 @@
 				EBFB54991AB6FE9400B33053 /* SD-55S-4.jpg */,
 				1FF417FD1AB3724D000650FD /* S-N-54.jpg */,
 				1FF417FE1AB3724D000650FD /* S-55S-2.jpg */,
-				A925DDF01AB0C4B1007A79D4 /* marker.png */,
 				A97DFB731AAE5E6E00F225DD /* compass.png */,
 				EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */,
 				A9BC27F01A927D2B00FA89D8 /* help.png */,
@@ -502,6 +501,7 @@
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
+				A96D70131AB686DE002E92CD /* marker.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
@@ -510,7 +510,6 @@
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */,
-				A925DDF11AB0C4B1007A79D4 /* marker.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
