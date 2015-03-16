@@ -73,7 +73,7 @@
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
-		EBFB549A1AB6FE9400B33053 /* SD-55S-4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBFB54991AB6FE9400B33053 /* SD-55S-4.jpg */; };
+		EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -181,7 +181,7 @@
 		EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-2A-10.jpg"; sourceTree = "<group>"; };
 		EBCA6C2D1A96AEC7003F7FB8 /* PlanimetricData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlanimetricData.h; sourceTree = "<group>"; };
 		EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlanimetricData.m; sourceTree = "<group>"; };
-		EBFB54991AB6FE9400B33053 /* SD-55S-4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "SD-55S-4.jpg"; sourceTree = "<group>"; };
+		EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "SD-30A-10.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,7 +225,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				EBFB54991AB6FE9400B33053 /* SD-55S-4.jpg */,
+				EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */,
+				A96D70121AB686DE002E92CD /* marker.png */,
 				1FF417FD1AB3724D000650FD /* S-N-54.jpg */,
 				1FF417FE1AB3724D000650FD /* S-55S-2.jpg */,
 				A97DFB731AAE5E6E00F225DD /* compass.png */,
@@ -490,7 +491,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A90506461A75E12B00288850 /* settings.png in Resources */,
-				EBFB549A1AB6FE9400B33053 /* SD-55S-4.jpg in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
@@ -506,6 +506,7 @@
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
+				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,

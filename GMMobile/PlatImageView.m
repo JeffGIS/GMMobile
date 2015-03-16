@@ -37,7 +37,7 @@
     imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
                                               ofType:@"jpg"];
     platView.platType = @"STORM";
-    imagePath = [NSBundle.mainBundle pathForResource:@"SD-55S-4"
+    imagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
                                               ofType:@"jpg"];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
