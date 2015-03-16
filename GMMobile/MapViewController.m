@@ -23,8 +23,8 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
-@property (nonatomic) UIImageView *secondImageView, *streetView;
-@property (nonatomic) UIView *firstView;
+@property (nonatomic) UIImageView *streetView;
+@property (nonatomic) UIView *firstView, *secondView;
 @property (nonatomic) NSInteger screenSetting;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
@@ -147,10 +147,6 @@ extern int keepProcessing;
     _cityInnerBounds.size.height = 103220;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
-    _firstView = [[UIView alloc] init];
-    _firstView.clipsToBounds = YES;
-    
-    _secondImageView = [[UIImageView alloc] init];
     _streetView = [[UIImageView alloc] init];
     _streetView.hidden = YES;
     _streetView.userInteractionEnabled = YES;
@@ -183,25 +179,32 @@ extern int keepProcessing;
     twoFingerTap.delegate = self;
     [_streetView addGestureRecognizer:twoFingerTap];
     
-    _firstView.frame = _secondImageView.frame = CGRectMake(0.0,
-                                                           tabBarTop,
-                                                           self.view.frame.size.width,
-                                                           0.0);
+    _firstView = [[UIView alloc] init];
+    _secondView = [[UIView alloc] init];
+    _firstView.clipsToBounds = _secondView.clipsToBounds = YES;
     
-    _secondImageView.backgroundColor = [UIColor colorWithRed:0.7
-                                                       green:1.0
-                                                        blue:0.7
-                                                       alpha:1.0];
-    
+    _firstView.frame = _secondView.frame = CGRectMake(0.0, tabBarTop,
+                                                      self.view.frame.size.width, 0.0);
+
     _splitScreenBorderWidth = 2.0;
     
-    _firstView.layer.borderColor = _secondImageView.layer.borderColor =
+    _firstView.layer.borderColor = _secondView.layer.borderColor =
     _mapView.layer.borderColor = UIColor.darkGrayColor.CGColor;
     
-    _firstView.layer.borderWidth = _secondImageView.layer.borderWidth = _splitScreenBorderWidth;
+    _firstView.backgroundColor = [UIColor colorWithRed:0.8
+                                                 green:0.9
+                                                  blue:1.0
+                                                 alpha:1.0];
+    
+    _secondView.backgroundColor = [UIColor colorWithRed:0.9
+                                                  green:1.0
+                                                   blue:0.8
+                                                  alpha:1.0];
+    
+    _firstView.layer.borderWidth = _secondView.layer.borderWidth = _splitScreenBorderWidth;
     
     [self.view addSubview:_firstView];
-    [self.view addSubview:_secondImageView];
+    [self.view addSubview:_secondView];
     [self.view addSubview:_streetView];
     
     _vectorView = [[VectorView alloc] init];
@@ -284,30 +287,51 @@ extern int keepProcessing;
         
         _selectedPIDCoords = pidCoord;
         
+        for (MarkerButton *marker in _markerArray)
+        {
+            if ([marker.title isEqualToString:_selectedPID])
+                [marker removeFromSuperview];
+        }
+        
         MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
                                                            view:self.view
                                                             map:_mapView
                                                        delegate:self];
         
+        [self removePreviousInfoWindow];
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        
         switch (CRAPI.sharedInstance.GMMSetting)
         {
             case GMMSettingPID:
-                marker.title = _selectedPID;
-                marker.snippet = [propData getOwnerNameForPID:_selectedPID];
+                marker.snippet = CRAPI.sharedInstance.currentPropOwner;
                 break;
                 
             case GMMSettingAddress:
-                marker.title = _selectedPID;
                 marker.snippet = CRAPI.sharedInstance.currentAddress;
                 break;
                 
             case GMMSettingPropOwner:
-                marker.title = _selectedPID;
                 marker.snippet = CRAPI.sharedInstance.currentPropOwner;
                 break;
         }
         
+        marker.title = _selectedPID;
         [_markerArray addObject:marker];
+        
+        _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
+        _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+        _infoWindow.delegate = self;
+        _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
+        
+        NSLog(@"%@", marker.title);
+        NSLog(@"%@", _infoWindow.title);
+        
+        [self.view addSubview:_infoWindow];
+        _noneSelected = NO;
+        
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
@@ -355,6 +379,9 @@ extern int keepProcessing;
 
 - (void)extentZoom
 {
+    [self stopTrackingUserLocation:NO];
+    GMSCameraPosition *camera;
+    
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
     {
         PropertyData *propData = [[PropertyData alloc] init];
@@ -368,22 +395,17 @@ extern int keepProcessing;
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
         
-        GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
-                                                       insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
-        
-        [_mapView animateToCameraPosition:camera];
+        camera = [_mapView cameraForBounds:coordBounds
+                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     }
     
     else
     {
-        [self stopTrackingUserLocation:NO];
-        
-        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                                   zoom:12.0];
-        
-        [_mapView animateToCameraPosition:camera];
-        [self hideCompass];
+        camera = [GMSCameraPosition cameraWithTarget:_target
+                                                zoom:12.0];
     }
+    
+    [_mapView animateToCameraPosition:camera];
 }
 
 - (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
@@ -424,7 +446,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     else
     {
         LLPOINT llpickPt, llSewerPt, llPropPt;
-        CGFloat dist;
+        //CGFloat dist;
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         llPropPt = llpickPt;
@@ -636,6 +658,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
     [self clearVectorView];
     [self.view bringSubviewToFront:_mapToolbar];
+    [self.view bringSubviewToFront:_compass];
+    
+    if (_firstView.frame.size.height != 0.0)
+        [self.view bringSubviewToFront:_firstView];
+    
+    if (_secondView.frame.size.height != 0.0)
+        [self.view bringSubviewToFront:_secondView];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -656,7 +685,6 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         }
         
         _compass.transform = CGAffineTransformMakeRotation(-position.bearing * M_PI / 180);
-        [self.view bringSubviewToFront:_compass];
     }
     
     [self updateMarkerPosition];
@@ -689,6 +717,9 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     else
         _firstTimeMap = NO;
+    
+    if (position.bearing == 0.0 && !_compass.hidden)
+        [self hideCompass];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -790,8 +821,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         {
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
-                                 
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
@@ -832,7 +861,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _secondImageView.frame =
+                                 _secondView.frame =
                                  CGRectMake(0.0, statusBarHeight +
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
                                             (self.view.frame.size.height + _tabBarHeight),
@@ -863,7 +892,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _secondImageView.frame =
+                                 _secondView.frame =
                                  CGRectMake(((self.view.frame.size.height + _tabBarHeight) / 2.0),
                                             statusBarHeight + ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
                                             ((self.view.frame.size.height + _tabBarHeight) / 2.0),
@@ -1687,7 +1716,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame = _secondImageView.frame = frame0;
+                                 _firstView.frame = _secondView.frame = frame0;
                              }
                              completion:^(BOOL finished) {
                                  [_platView removeFromSuperview];
@@ -1723,7 +1752,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _secondImageView.frame = frame0;
+                                 _secondView.frame = frame0;
                              }];
             
             switch (_screenSetting)
@@ -1765,6 +1794,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         {
             [UIView animateWithDuration:0.25
                              animations:^{
+                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
+                                 
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0,
                                             statusBarHeight,
@@ -1785,7 +1816,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _secondImageView.frame =
+                                 _secondView.frame =
                                  CGRectMake(0.0,
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             self.view.frame.size.width,
@@ -1831,6 +1862,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         {
             [UIView animateWithDuration:0.25
                              animations:^{
+                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
+                                 
                                  _mapView.frame = _vectorView.frame =
                                  CGRectMake(0.0,
                                             statusBarHeight,
@@ -1851,7 +1884,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _secondImageView.frame =
+                                 _secondView.frame =
                                  CGRectMake((self.view.frame.size.width / 2.0),
                                             (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                             (self.view.frame.size.width / 2.0),
@@ -2125,7 +2158,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         [self stopTrackingUserLocation:NO];
     
     [_mapView animateToBearing:0.0];
-    [self hideCompass];
 }
 
 - (void)hideCompass

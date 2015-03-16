@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "FindViewController.h"
+#import "PropertyData.h"
 
 @interface FindViewController ()
 
@@ -75,8 +76,11 @@
     [findPID dismissViewControllerAnimated:YES
                                 completion:nil];
     
+    PropertyData *propData = [[PropertyData alloc] init];
+    
     CRAPI.sharedInstance.GMMSetting = GMMSettingPID;
     CRAPI.sharedInstance.currentPID = PID;
+    CRAPI.sharedInstance.currentPropOwner = [propData getOwnerNameForPID:PID];
     self.tabBarController.selectedIndex = 0;
 }
 
