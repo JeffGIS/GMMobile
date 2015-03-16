@@ -660,6 +660,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_mapToolbar];
     [self.view bringSubviewToFront:_compass];
     
+    if (!_tableView.hidden)
+        [self.view bringSubviewToFront:_tableView];
+    
     if (_firstView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_firstView];
     
@@ -730,7 +733,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if (_tableView)
+    if (!_tableView.hidden)
         [_tableView reloadData];
     
     if (_rotateZoom)
@@ -940,13 +943,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                        if (_infoWindow)
                            [self.view bringSubviewToFront:_infoWindow];
                        
+                       [self.view bringSubviewToFront:_mapToolbar];
+                       
                        if (!_tableView.hidden)
                            [self.view bringSubviewToFront:_tableView];
                        
                        if (!_compass.hidden)
                            [self.view bringSubviewToFront:_compass];
-                       
-                       [self.view bringSubviewToFront:_mapToolbar];
                    });
 }
 
