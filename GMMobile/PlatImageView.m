@@ -4,6 +4,7 @@
 #import "PlatImageView.h"
 #import "SewerData.h"
 
+#define MAX_PROFILE_AREAS 8
 @interface PlatImageView ()
 
 @property (nonatomic) LPTRANDATA pTranImageToLatlon;
@@ -17,22 +18,29 @@
 @implementation PlatImageView
 {
     DPOINT _imageCornersWorld[4];
+    int _numProfileAreas;
+    int _numProfileAreaPoints[MAX_PROFILE_AREAS];
+    LPDPOINT _profileAreaPoints[MAX_PROFILE_AREAS];
 }
 
 + (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
                                      delegate:(id)delegate
 {
     
+    PlatImageView *platView = [[PlatImageView alloc] init];
     
+    platView.platType = @"SAN";
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
     
+    platView.platType = @"SAN";
     imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
                                               ofType:@"jpg"];
-    PlatImageView *platView = [[PlatImageView alloc] init];
+    platView.platType = @"STORM";
+    imagePath = [NSBundle.mainBundle pathForResource:@"SD-55S-4"
+                                              ofType:@"jpg"];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
-    platView.platType = @"SAN";
     platView.delegate = delegate;
     [platView getPlatTransformation];
     return platView;
@@ -56,6 +64,9 @@
 {
     CloseTRANS2(&_pTranImageToLatlon);
     CloseTRANS2(&_pTranLatlonToImage);
+    for (int i=0;i<_numProfileAreas;i++)
+        free (_profileAreaPoints[i]);
+    _numProfileAreas = 0;
     NSLog(@"Sewer Database dealloc");
 }
 
@@ -192,6 +203,8 @@
 
 - (BOOL)getPlatTransformation
 {
+    NSString *query;
+    sqlite3_stmt *statement;
     double imagex[32], imagey[32], worldx[32], worldy[32];
     float rsq;
     int npt = 0;
@@ -202,10 +215,9 @@
     SewerData *sd = [[SewerData alloc] init];
     [sd open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = '%@';",
+    query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = '%@';",
                        _platType, _platName];
     
-    sqlite3_stmt *statement;
     
     SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
     
@@ -222,7 +234,6 @@
     _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
-    [sd close];
     imageCorners[0].x = imageCorners[0].y = 0;
     imageCorners[1].x = 0;
     imageCorners[1].y = self.image.size.height;
@@ -231,7 +242,50 @@
     imageCorners[3].x = self.image.size.width;
     imageCorners[3].y = 0;
     TranPoints (imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
-    return NO;
+    
+    for (int i=0;i<_numProfileAreas;i++)
+        free (_profileAreaPoints[i]);
+
+    _numProfileAreas = 0;
+    query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
+                       _platType, _platName,_platName];
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        DPOINT BasePt;
+        LPDPOINT llpoints;
+        LPSTR platName = (LPSTR)sqlite3_column_text(statement,0);
+        BasePt.x = sqlite3_column_double(statement,1);
+        BasePt.y = sqlite3_column_double(statement,2);
+        _numProfileAreaPoints[_numProfileAreas] = sqlite3_column_int(statement,3);
+        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,4);
+        _profileAreaPoints[_numProfileAreas] = malloc(abs(_numProfileAreaPoints[_numProfileAreas]) * sizeof(DPOINT) + 4);
+        llpoints = _profileAreaPoints[_numProfileAreas];
+        if (_numProfileAreaPoints[_numProfileAreas] < 0)
+        {
+            _numProfileAreaPoints[_numProfileAreas] = -_numProfileAreaPoints[_numProfileAreas];
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < _numProfileAreaPoints[_numProfileAreas]; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+            }
+        }
+        
+        else for (int i = 0; i < _numProfileAreaPoints[_numProfileAreas]; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+        }
+        
+        _numProfileAreas++;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "");
+    [sd close];
+    return YES;
 }
 
 - (void)addGesturesToView
