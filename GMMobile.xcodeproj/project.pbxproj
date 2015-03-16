@@ -18,7 +18,6 @@
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
-		A96D70131AB686DE002E92CD /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A96D70121AB686DE002E92CD /* marker.png */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
@@ -45,6 +44,7 @@
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
+		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
 		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
@@ -100,7 +100,6 @@
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
-		A96D70121AB686DE002E92CD /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
 		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPropertyOwnerViewController.h; sourceTree = "<group>"; };
@@ -135,6 +134,7 @@
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		A9E49B421A7ECADF002B2BA2 /* FindAddressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindAddressViewController.h; sourceTree = "<group>"; };
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
+		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A9F56EBC1A847B47003522AE /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A9F56EBE1A847CA8003522AE /* WebKitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitViewController.h; sourceTree = "<group>"; };
 		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
@@ -225,8 +225,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9EC205F1AB738EE004D38FA /* marker.png */,
 				EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */,
-				A96D70121AB686DE002E92CD /* marker.png */,
 				1FF417FD1AB3724D000650FD /* S-N-54.jpg */,
 				1FF417FE1AB3724D000650FD /* S-55S-2.jpg */,
 				A97DFB731AAE5E6E00F225DD /* compass.png */,
@@ -501,7 +501,6 @@
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
-				A96D70131AB686DE002E92CD /* marker.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
@@ -511,6 +510,7 @@
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */,
+				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

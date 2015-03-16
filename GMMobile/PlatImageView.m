@@ -11,7 +11,7 @@
 @property (nonatomic) LPTRANDATA pTranLatlonToImage;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
-@property (nonatomic) CGPoint lastPoint;
+@property (nonatomic) CGPoint previousPoint;
 
 @end
 
@@ -250,6 +250,7 @@
     query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
                        _platType, _platName,_platName];
     SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
+    
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         DPOINT BasePt;
@@ -262,6 +263,7 @@
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,4);
         _profileAreaPoints[_numProfileAreas] = malloc(abs(_numProfileAreaPoints[_numProfileAreas]) * sizeof(DPOINT) + 4);
         llpoints = _profileAreaPoints[_numProfileAreas];
+        
         if (_numProfileAreaPoints[_numProfileAreas] < 0)
         {
             _numProfileAreaPoints[_numProfileAreas] = -_numProfileAreaPoints[_numProfileAreas];
@@ -300,96 +302,32 @@
                                                                                        action:@selector(handlePinchGesture:)];
     
     pinchGesture.delegate = self;
-    
     [self addGestureRecognizer:pinchGesture];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
 {
-    if (panGesture.state == UIGestureRecognizerStateEnded)
+    switch (panGesture.state)
     {
-        if (_delegate)
-            [_delegate platViewDidEndTrans];
-    }
-    
-    else if (panGesture.state == UIGestureRecognizerStateBegan ||
-             panGesture.state == UIGestureRecognizerStateChanged)
-    {
-        if (panGesture.state == UIGestureRecognizerStateBegan)
-        {
+        case UIGestureRecognizerStateEnded:
+            if (_delegate)
+                [_delegate platViewDidEndTrans];
+            break;
+            
+        case UIGestureRecognizerStateBegan:
             if (_delegate)
                 [_delegate platViewDidBeginTrans];
-        }
-        
-        CGPoint translation = [panGesture translationInView:panGesture.view.superview];
-        
-        panGesture.view.center = CGPointMake(panGesture.view.center.x + translation.x,
-                                             panGesture.view.center.y + translation.y);
-        
-        [panGesture setTranslation:CGPointZero
-                            inView:self];
-        
-        if (_delegate)
+            break;
+            
+        case UIGestureRecognizerStateChanged:
         {
-            CGFloat pBearing;
-            CLLocationCoordinate2D pTarget;
+            CGPoint translation = [panGesture translationInView:panGesture.view.superview];
             
-            CGFloat pZoom = [self zoomForMapBounds:self.frame
-                                           bearing:&pBearing
-                                            target:&pTarget
-                                       mapViewSize:_mapViewSize];
+            panGesture.view.center = CGPointMake(panGesture.view.center.x + translation.x,
+                                                 panGesture.view.center.y + translation.y);
             
-            [_delegate platViewDidZoom:pZoom
-                           withBearing:pBearing
-                                target:pTarget];
-        }
-    }
-}
-
-- (void)handlePinchGesture:(UIPinchGestureRecognizer *)pinchGesture
-{
-    if (pinchGesture.state == UIGestureRecognizerStateEnded)
-    {
-        if (_delegate)
-            [_delegate platViewDidEndTrans];
-    }
-    
-    else if (pinchGesture.state == UIGestureRecognizerStateBegan ||
-             pinchGesture.state == UIGestureRecognizerStateChanged)
-    {
-        if (pinchGesture.numberOfTouches > 1)
-        {
-            if (pinchGesture.state == UIGestureRecognizerStateBegan)
-            {
-                if (_delegate)
-                    [_delegate platViewDidBeginTrans];
-                
-                _lastPoint = [pinchGesture locationInView:self];
-            }
-            
-            CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale.x"] floatValue];
-            
-            CGFloat minScale = 0.5;
-            CGFloat maxScale = 50.0;
-            CGFloat zoomSpeed = 1.0;
-            
-            CGFloat deltaScale = pinchGesture.scale;
-            deltaScale = (((deltaScale - 1.0) * zoomSpeed) + 1.0);
-            deltaScale = MIN(deltaScale, (maxScale / currentScale));
-            deltaScale = MAX(deltaScale, (minScale / currentScale));
-            
-            CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, deltaScale, deltaScale);
-            pinchGesture.view.transform = scale;
-            pinchGesture.scale = 1.0;
-            
-            CGPoint point = [pinchGesture locationInView:self];
-            
-            CGAffineTransform translate = CGAffineTransformTranslate(pinchGesture.view.transform,
-                                                                     point.x - _lastPoint.x,
-                                                                     point.y - _lastPoint.y);
-            
-            pinchGesture.view.transform = translate;
-            _lastPoint = [pinchGesture locationInView:self];
+            [panGesture setTranslation:CGPointZero
+                                inView:panGesture.view.superview];
             
             if (_delegate)
             {
@@ -406,6 +344,78 @@
                                     target:pTarget];
             }
         }
+            
+            break;
+            
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStatePossible:
+            break;
+    }
+}
+
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)pinchGesture
+{
+    switch (pinchGesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+            if (_delegate)
+                [_delegate platViewDidEndTrans];
+            break;
+            
+        case UIGestureRecognizerStateBegan:
+            if (_delegate)
+                [_delegate platViewDidBeginTrans];
+            
+            _previousPoint = [pinchGesture locationInView:pinchGesture.view];
+            break;
+            
+        case UIGestureRecognizerStateChanged:
+            if (pinchGesture.numberOfTouches == 2)
+            {
+                CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale"] floatValue];
+                
+                const CGFloat kMinScale = 0.5;
+                const CGFloat kMaxScale = 50.0;
+                
+                CGFloat newScale = pinchGesture.scale;
+                newScale = MIN(newScale, (kMaxScale / currentScale));
+                newScale = MAX(newScale, (kMinScale / currentScale));
+                
+                CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, newScale, newScale);
+                pinchGesture.view.transform = scale;
+                pinchGesture.scale = 1.0;
+                
+                CGPoint point = [pinchGesture locationInView:pinchGesture.view];
+                
+                CGAffineTransform translate = CGAffineTransformTranslate(pinchGesture.view.transform,
+                                                                         point.x - _previousPoint.x,
+                                                                         point.y - _previousPoint.y);
+                
+                pinchGesture.view.transform = translate;
+                
+                if (_delegate)
+                {
+                    CGFloat pBearing;
+                    CLLocationCoordinate2D pTarget;
+                    
+                    CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                                   bearing:&pBearing
+                                                    target:&pTarget
+                                               mapViewSize:_mapViewSize];
+                    
+                    [_delegate platViewDidZoom:pZoom
+                                   withBearing:pBearing
+                                        target:pTarget];
+                }
+            }
+            
+            break;
+            
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStatePossible:
+            break;
     }
 }
 
