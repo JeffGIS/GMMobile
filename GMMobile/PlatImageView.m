@@ -29,29 +29,19 @@
 + (PlatImageView *)platImageViewWithDelegate:(id)delegate
 {
     PlatImageView *platView = [[PlatImageView alloc] init];
+    
+    platView.contentMode = UIViewContentModeScaleAspectFit;
+    platView.userInteractionEnabled = YES;
+    [platView addGesturesToView];
+    
     NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
     
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platType = CRAPI.sharedInstance.currentPlatType;
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
     platView.delegate = delegate;
-    
     [platView getPlatTransformation];
     return platView;
-}
-
-- (id)init
-{
-    self = [super init];
-    
-    if (self)
-    {
-        self.contentMode = UIViewContentModeScaleAspectFit;
-        self.userInteractionEnabled = YES;
-        [self addGesturesToView];
-    }
-    
-    return self;
 }
 
 - (void)dealloc
@@ -114,6 +104,8 @@
                     bearing:(CGFloat *)bearing
                      target:(CLLocationCoordinate2D *)target
                 mapViewSize:(CGSize)size
+                       minYpt:(DPOINT *)minYpt
+                       maxYpt:(DPOINT *)maxYpt
 {
     GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
     _mapViewSize = size;
@@ -126,7 +118,7 @@
     
     DPOINT ptImage1, ptImage2;
     DPOINT ptLev201, ptLev202;
-    DPOINT ptFrame1, ptFrame2;
+    DPOINT ptFrame1;
     
     ptImage1.x = ptImage2.x = (_imageCorners[0].x + _imageCorners[2].x) / 2;
     ptImage1.y = _imageCorners[0].y;
@@ -138,17 +130,19 @@
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
     *target = center;
 
-    ptFrame1.x = self.superview.frame.size.width/2;
+    ptFrame1.x = (self.superview.frame.size.width / 2.0);
     ptFrame1.y = self.superview.frame.size.height;
     ptImage1 = [self frameToImage:ptFrame1];
     
-    if ([self getYValueRangeForProfileAtX:ptImage1.x  minY:&minY maxY:&maxY])
+    if ([self getYValueRangeForProfileAtX:ptImage1.x
+                                     minY:&minY
+                                     maxY:&maxY])
     {
         ptImage1.y = minY;
         ptImage2.x = ptImage1.x;
         ptImage2.y = maxY;
-        ptFrame1 = [self imageToFrame:ptImage1];
-        ptFrame2 = [self imageToFrame:ptImage2];
+        *minYpt = [self imageToFrame:ptImage1];
+        *maxYpt = [self imageToFrame:ptImage2];
     }
     
     return zoom;
@@ -199,8 +193,8 @@
     LPTRANDATA pTranFrameToWorld = STRANPoints(imageCornersFrame, _imageCornersWorld,4,1,0);
     CloseTRANS2(&_pTranFrameToImage);
     CloseTRANS2(&_pTranImageToFrame);
-    _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners,4,1,0);
-    _pTranImageToFrame = STRANPoints(_imageCorners,imageCornersFrame, 4,1,0);
+    _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners, 4, 1, 0);
+    _pTranImageToFrame = STRANPoints(_imageCorners, imageCornersFrame, 4, 1, 0);
 
     framePoints[0].x = framePoints[1].y = 0;
     framePoints[1].x = 0;
@@ -290,8 +284,10 @@
         _numProfileAreaPoints[_numProfileAreas] = sqlite3_column_int(statement,3);
         int nLoops = sqlite3_column_int(statement,4);
         double cFactor = COORDINATE_FACTOR;
+        
         if (nLoops < 0)
             cFactor /= 1000;
+        
         int nBlobBytes = sqlite3_column_bytes(statement,5);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         _profileAreaPoints[_numProfileAreas] = malloc(abs(_numProfileAreaPoints[_numProfileAreas]) * sizeof(DPOINT) + 4);
@@ -351,8 +347,8 @@
                 y = areaPoints[i].y + (areaPoints[i2].y - areaPoints[i].y) *
                 (x  - areaPoints[i].x) / (areaPoints[i].x - areaPoints[i2].x);
                 
-                minY = min (y,minY);
-                maxY = max (y,maxY);
+                minY = min(y, minY);
+                maxY = max(y, maxY);
                 rtn = YES;
             }
         }
@@ -407,15 +403,20 @@
             {
                 CGFloat pBearing;
                 CLLocationCoordinate2D pTarget;
+                DPOINT minYpt, maxYpt;
                 
                 CGFloat pZoom = [self zoomForMapBounds:self.frame
                                                bearing:&pBearing
                                                 target:&pTarget
-                                           mapViewSize:_mapViewSize];
+                                           mapViewSize:_mapViewSize
+                                                minYpt:&minYpt
+                                                maxYpt:&maxYpt];
                 
                 [_delegate platViewDidZoom:pZoom
                                withBearing:pBearing
-                                    target:pTarget];
+                                    target:pTarget
+                                    minYpt:minYpt
+                                    maxYpt:maxYpt];
             }
         }
             
@@ -466,15 +467,20 @@
             {
                 CGFloat pBearing;
                 CLLocationCoordinate2D pTarget;
+                DPOINT minYpt, maxYpt;
                 
                 CGFloat pZoom = [self zoomForMapBounds:self.frame
                                                bearing:&pBearing
                                                 target:&pTarget
-                                           mapViewSize:_mapViewSize];
+                                           mapViewSize:_mapViewSize
+                                                minYpt:&minYpt
+                                                maxYpt:&maxYpt];
                 
                 [_delegate platViewDidZoom:pZoom
                                withBearing:pBearing
-                                    target:pTarget];
+                                    target:pTarget
+                                    minYpt:minYpt
+                                    maxYpt:maxYpt];
             }
         }
             

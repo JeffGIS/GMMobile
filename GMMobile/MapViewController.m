@@ -37,6 +37,7 @@ extern int keepProcessing;
 @property (nonatomic) GMSTileLayer *layer;
 @property (nonatomic) UIButton *compass;
 @property (nonatomic) PlatImageView *platView;
+@property (nonatomic) UIImageView *profileView;
 
 @end
 
@@ -47,6 +48,9 @@ extern int keepProcessing;
     [super viewDidLoad];
     
     [PipeTrace removeTrace];
+    
+    _profileView = [[UIImageView alloc] init];
+    _profileView.contentMode = UIViewContentModeScaleAspectFit;
     
     _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
@@ -1495,8 +1499,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)platViewDidZoom:(CGFloat)pZoom
             withBearing:(CGFloat)pBearing
                  target:(CLLocationCoordinate2D)pTarget
+                 minYpt:(DPOINT)minYpt
+                 maxYpt:(DPOINT)maxYpt
 {
     [self clearVectorView];
+    
+     NSLog(@"minY = %f, maxY = %f", minYpt.y, maxYpt.y);
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
@@ -1670,9 +1678,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    CGRect frame4 = CGRectMake(0.0,
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                               self.view.frame.size.width,
+                               ((tabBarTop - statusBarHeight) / 3.0));
+    
+    //this is the frame for the bottom right of the split bottom
+    /*CGRect frame5 = CGRectMake((self.view.frame.size.width / 2.0),
+                               (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                               (self.view.frame.size.width / 2.0),
+                               ((tabBarTop - statusBarHeight) / 3.0));*/
+    
     if (![_firstView.subviews containsObject:_platView])
     {
-        _platView = [PlatImageView platImageViewWithDelegate:self];
+        if (setting != MapViewScreenSettingFullscreen)
+            _platView = [PlatImageView platImageViewWithDelegate:self];
         
         switch (setting)
         {
@@ -1689,6 +1709,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 break;
         }
     }
+    
+    if (setting == MapViewScreenSettingTriScreen)
+            _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
+        
+        else
+        {
+            [_profileView removeFromSuperview];
+            _profileView.image = nil;
+        }
     
     [self clearVectorView];
     
@@ -1930,8 +1959,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)addPlatView
 {
     [_firstView addSubview:_platView];
-    [self syncPlatView];
     _platView.originalSize = _firstView.frame.size;
+    
+    if (_screenSetting == MapViewScreenSettingTriScreen)
+        [self addProfileView];
+    
+    [self syncPlatView];
+}
+
+- (void)addProfileView
+{
+    _profileView.image = _platView.image;
+    [_secondView addSubview:_profileView];
 }
 
 - (void)platViewPosition:(CGPoint)center
@@ -1941,6 +1980,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
                                    center.y - ((frame1.size.height - frame2.size.height) / 2.0));
     
+    if (_screenSetting == MapViewScreenSettingTriScreen)
+        [self addProfileView];
+    
     [self syncPlatView];
 }
 
@@ -1948,11 +1990,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     CGFloat pBearing;
     CLLocationCoordinate2D pTarget;
+    DPOINT minYpt, maxYpt;
     
     CGFloat pZoom = [_platView zoomForMapBounds:_platView.frame
                                         bearing:&pBearing
                                          target:&pTarget
-                                    mapViewSize:_mapView.frame.size];
+                                    mapViewSize:_mapView.frame.size
+                                         minYpt:&minYpt
+                                         maxYpt:&maxYpt];
+    
+    NSLog(@"minY = %f, maxY = %f", minYpt.y, maxYpt.y);
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom

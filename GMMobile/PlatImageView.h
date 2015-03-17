@@ -13,7 +13,9 @@
 
 - (void)platViewDidZoom:(CGFloat)pZoom
             withBearing:(CGFloat)pBearing
-                 target:(CLLocationCoordinate2D)pTarget;
+                 target:(CLLocationCoordinate2D)pTarget
+                 minYpt:(DPOINT)minYpt
+                 maxYpt:(DPOINT)maxYpt;
 
 @end
 
@@ -21,12 +23,15 @@
 
 @property (nonatomic, weak) id <PlatImageViewDelegate> delegate;
 @property (nonatomic) CGSize mapViewSize, originalSize;
+@property (nonatomic) CGFloat minY, maxY;
 
 + (PlatImageView *)platImageViewWithDelegate:(id)delegate;
 
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing
                      target:(CLLocationCoordinate2D *)target
-                mapViewSize:(CGSize)size;
+                mapViewSize:(CGSize)size
+                     minYpt:(DPOINT *)minYpt
+                     maxYpt:(DPOINT *)maxYpt;
 
 @end
