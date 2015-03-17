@@ -65,6 +65,7 @@
         free(_profileAreaPoints[i]);
     
     _numProfileAreas = 0;
+    
     NSLog(@"Sewer Database dealloc");
 }
 
@@ -437,14 +438,13 @@
         case UIGestureRecognizerStateBegan:
             if (_delegate)
                 [_delegate platViewDidBeginTrans];
-            NSLog(@"%f,%f", pinchGesture.view.layer.anchorPoint.x, pinchGesture.view.layer.anchorPoint.y);
             
         case UIGestureRecognizerStateChanged:
         {
             CGPoint locationInView = [pinchGesture locationInView:pinchGesture.view];
             
-            CGPoint anchor = CGPointMake((locationInView.x / pinchGesture.view.superview.frame.size.width),
-                                         (locationInView.y / pinchGesture.view.superview.frame.size.height));
+            CGPoint anchor = CGPointMake((locationInView.x / _originalSize.width),
+                                         (locationInView.y / _originalSize.height));
             
             [self setAnchorPoint:anchor
                          forView:pinchGesture.view];

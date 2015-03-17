@@ -20,7 +20,7 @@
 @interface PlatImageView : UIImageView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <PlatImageViewDelegate> delegate;
-@property (nonatomic) CGSize mapViewSize;
+@property (nonatomic) CGSize mapViewSize, originalSize;
 
 + (PlatImageView *)platImageViewWithDelegate:(id)delegate;
 

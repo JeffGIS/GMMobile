@@ -1931,6 +1931,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [_firstView addSubview:_platView];
     [self syncPlatView];
+    _platView.originalSize = _firstView.frame.size;
 }
 
 - (void)platViewPosition:(CGPoint)center
