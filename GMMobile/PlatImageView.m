@@ -9,6 +9,7 @@
 
 @property (nonatomic) LPTRANDATA pTranImageToLatlon;
 @property (nonatomic) LPTRANDATA pTranLatlonToImage;
+@property (nonatomic) LPTRANDATA pTranFrameToImage;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
 @property (nonatomic) CGPoint lastPoint;
@@ -17,6 +18,7 @@
 
 @implementation PlatImageView
 {
+    DPOINT _imageCorners[4];
     DPOINT _imageCornersWorld[4];
     int _numProfileAreas;
     int _numProfileAreaPoints[MAX_PROFILE_AREAS];
@@ -33,11 +35,11 @@
     imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                               ofType:@"jpg"];
     
-    platView.platType = @"SAN";
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              ofType:@"jpg"];
     platView.platType = @"STORM";
     imagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
+                                              ofType:@"jpg"];
+    platView.platType = @"SAN";
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
                                               ofType:@"jpg"];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
@@ -64,6 +66,7 @@
 {
     CloseTRANS2(&_pTranImageToLatlon);
     CloseTRANS2(&_pTranLatlonToImage);
+    CloseTRANS2(&_pTranFrameToImage);
     for (int i=0;i<_numProfileAreas;i++)
         free (_profileAreaPoints[i]);
     _numProfileAreas = 0;
@@ -89,6 +92,13 @@
     return llPt;
 }
 
+- (DPOINT)frameToImage:(DPOINT)framePoint
+{
+    DPOINT imagePoint;
+    imagePoint = TranDPOINT(&framePoint, _pTranFrameToImage);
+    return imagePoint;
+}
+
 - (CLLocationCoordinate2D)imageToCLLocationCoordinate2D:(DPOINT)imagePoint
 {
     CLLocationCoordinate2D llPt;
@@ -106,6 +116,7 @@
 {
     GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
     _mapViewSize = size;
+    CGFloat minY, maxY;
     
     CLLocationCoordinate2D center;
     
@@ -113,18 +124,23 @@
                                        target:&center];
     
     DPOINT ptImage1, ptImage2;
-    DPOINT ptWorld1, ptWorld2;
     DPOINT ptLev201, ptLev202;
     
-    ptImage1.x = ptImage2.x = imageRect.size.width / 2.0;
-    ptImage1.y = 0;
-    ptImage2.y = imageRect.size.height;
+    ptImage1.x = ptImage2.x = (_imageCorners[0].x + _imageCorners[2].x) / 2;
+    ptImage1.y = _imageCorners[0].y;
+    ptImage2.y = _imageCorners[2].y;
     ptLev201 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptLev202 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
     CGFloat az = getazd(&ptLev201, &ptLev202);
     CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
     *target = center;
+
+    ptImage1.x = self.superview.frame.size.width/2;
+    ptImage1.y = self.superview.frame.size.height;
+    ptImage2 = [self frameToImage:ptImage1];
+    
+    [self getYValueRangeForProfileAtX:ptImage2.x  minY:&minY maxY:&maxY];
     return zoom;
 }
 
@@ -159,18 +175,20 @@
     GMSVisibleRegion region;
     DPOINT ptIn, ptOut;
     DPOINT framePoints[4], framePointsWorld[4];
-    DPOINT imageCorners[4];
+    DPOINT imageCornersFrame[4];
     
-    imageCorners[0].x = imageRect.origin.x;
-    imageCorners[0].y = imageRect.origin.y + imageRect.size.height;
-    imageCorners[1].x = imageRect.origin.x;
-    imageCorners[1].y = imageRect.origin.y;
-    imageCorners[2].x = imageRect.origin.x + imageRect.size.width;
-    imageCorners[2].y = imageRect.origin.y;
-    imageCorners[3].x = imageRect.origin.x + imageRect.size.width;
-    imageCorners[3].y = imageRect.origin.y + imageRect.size.height;
+    imageCornersFrame[0].x = imageRect.origin.x;
+    imageCornersFrame[0].y = imageRect.origin.y + imageRect.size.height;
+    imageCornersFrame[1].x = imageRect.origin.x;
+    imageCornersFrame[1].y = imageRect.origin.y;
+    imageCornersFrame[2].x = imageRect.origin.x + imageRect.size.width;
+    imageCornersFrame[2].y = imageRect.origin.y;
+    imageCornersFrame[3].x = imageRect.origin.x + imageRect.size.width;
+    imageCornersFrame[3].y = imageRect.origin.y + imageRect.size.height;
 
-    LPTRANDATA pTran = STRANPoints(imageCorners, _imageCornersWorld,4,1,0);
+    LPTRANDATA pTranFrameToWorld = STRANPoints(imageCornersFrame, _imageCornersWorld,4,1,0);
+    CloseTRANS2(&_pTranFrameToImage);
+    _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners,4,1,0);
 
     framePoints[0].x = framePoints[1].y = 0;
     framePoints[1].x = 0;
@@ -180,8 +198,8 @@
     framePoints[3].x = self.superview.frame.size.width;
     framePoints[2].y = 0;
     
-    TranPoints(framePoints, framePointsWorld, 4, pTran);
-    CloseTRANS2(&pTran);
+    TranPoints(framePoints, framePointsWorld, 4, pTranFrameToWorld);
+    CloseTRANS2(&pTranFrameToWorld);
     
     for (int i = 0; i < 4; i++)
     {
@@ -208,7 +226,6 @@
     double imagex[32], imagey[32], worldx[32], worldy[32];
     float rsq;
     int npt = 0;
-    DPOINT imageCorners[4];
     
     CloseTRANS2(&_pTranImageToLatlon);
     CloseTRANS2(&_pTranLatlonToImage);
@@ -234,20 +251,20 @@
     _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
-    imageCorners[0].x = imageCorners[0].y = 0;
-    imageCorners[1].x = 0;
-    imageCorners[1].y = self.image.size.height;
-    imageCorners[2].x = self.image.size.width;
-    imageCorners[2].y = self.image.size.height;
-    imageCorners[3].x = self.image.size.width;
-    imageCorners[3].y = 0;
-    TranPoints (imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
+    _imageCorners[0].x = _imageCorners[0].y = 0;
+    _imageCorners[1].x = 0;
+    _imageCorners[1].y = self.image.size.height;
+    _imageCorners[2].x = self.image.size.width;
+    _imageCorners[2].y = self.image.size.height;
+    _imageCorners[3].x = self.image.size.width;
+    _imageCorners[3].y = 0;
+    TranPoints (_imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
     
     for (int i=0;i<_numProfileAreas;i++)
         free (_profileAreaPoints[i]);
 
     _numProfileAreas = 0;
-    query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
+    query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops, Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
                        _platType, _platName,_platName];
     SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -258,8 +275,12 @@
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         _numProfileAreaPoints[_numProfileAreas] = sqlite3_column_int(statement,3);
-        int nBlobBytes = sqlite3_column_bytes(statement,4);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,4);
+        int nLoops = sqlite3_column_int(statement,4);
+        double cFactor = COORDINATE_FACTOR;
+        if (nLoops < 0)
+            cFactor /= 1000;
+        int nBlobBytes = sqlite3_column_bytes(statement,5);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         _profileAreaPoints[_numProfileAreas] = malloc(abs(_numProfileAreaPoints[_numProfileAreas]) * sizeof(DPOINT) + 4);
         llpoints = _profileAreaPoints[_numProfileAreas];
         if (_numProfileAreaPoints[_numProfileAreas] < 0)
@@ -269,15 +290,15 @@
             
             for (int i = 0; i < _numProfileAreaPoints[_numProfileAreas]; i++)
             {
-                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / cFactor);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / cFactor);
             }
         }
         
         else for (int i = 0; i < _numProfileAreaPoints[_numProfileAreas]; i++)
         {
-            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / cFactor);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / cFactor);
         }
         
         _numProfileAreas++;
@@ -287,7 +308,37 @@
     [sd close];
     return YES;
 }
-
+-(BOOL)getYValueRangeForProfileAtX:(CGFloat)x minY:(CGFloat*)pMinY maxY:(CGFloat*)pMaxY
+{
+    BOOL rtn=FALSE;
+    
+    CGFloat y, minY=DBL_MAX, maxY=DBL_MIN;
+    
+    for (int area=0;area<_numProfileAreas;area++)
+    {
+        LPDPOINT areaPoints = _profileAreaPoints[area];
+        for (int i=0;i<_numProfileAreaPoints[area];i++)
+        {
+            int i2 = i + 1;
+            
+            if (i2 == _numProfileAreaPoints[area])
+                i2 = 0;
+            DPOINT pt = areaPoints[i];
+            DPOINT pt2 = areaPoints[i2];
+            if ((areaPoints[i].x <= x && areaPoints[i2].x >= x) ||
+                (areaPoints[i2].x <= x && areaPoints[i].x >= x))
+            {
+                y = areaPoints[i].y + (areaPoints[i2].y - areaPoints[i].y) * (x  - areaPoints[i].x)/(areaPoints[i].x-areaPoints[i2].x);
+                minY = min (y,minY);
+                maxY = max (y,maxY);
+                rtn = TRUE;
+            }
+        }
+    }
+    *pMinY = minY;
+    *pMaxY = maxY;
+    return rtn;
+}
 - (void)addGesturesToView
 {
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
