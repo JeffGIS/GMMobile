@@ -5,6 +5,7 @@
 #import "SewerData.h"
 
 #define MAX_PROFILE_AREAS 8
+
 @interface PlatImageView ()
 
 @property (nonatomic) LPTRANDATA pTranImageToLatlon;
@@ -25,25 +26,16 @@
     LPDPOINT _profileAreaPoints[MAX_PROFILE_AREAS];
 }
 
-+ (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
-                                     delegate:(id)delegate
++ (PlatImageView *)platImageViewWithDelegate:(id)delegate
 {
-    
     PlatImageView *platView = [[PlatImageView alloc] init];
+    NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
     
-    platView.platType = @"SAN";
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
-                                              ofType:@"jpg"];
-    
-    platView.platType = @"STORM";
-    imagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
-                                              ofType:@"jpg"];
-    platView.platType = @"SAN";
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              ofType:@"jpg"];
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
+    platView.platType = CRAPI.sharedInstance.currentPlatType;
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
     platView.delegate = delegate;
+    
     [platView getPlatTransformation];
     return platView;
 }
@@ -68,8 +60,10 @@
     CloseTRANS2(&_pTranLatlonToImage);
     CloseTRANS2(&_pTranFrameToImage);
     CloseTRANS2(&_pTranImageToFrame);
-    for (int i=0;i<_numProfileAreas;i++)
-        free (_profileAreaPoints[i]);
+    
+    for (int i = 0; i < _numProfileAreas; i++)
+        free(_profileAreaPoints[i]);
+    
     _numProfileAreas = 0;
     NSLog(@"Sewer Database dealloc");
 }
@@ -327,37 +321,47 @@
     [sd close];
     return YES;
 }
--(BOOL)getYValueRangeForProfileAtX:(CGFloat)x minY:(CGFloat*)pMinY maxY:(CGFloat*)pMaxY
+
+- (BOOL)getYValueRangeForProfileAtX:(CGFloat)x
+                               minY:(CGFloat *)pMinY
+                               maxY:(CGFloat *)pMaxY
 {
-    BOOL rtn=FALSE;
+    BOOL rtn = NO;
     
-    CGFloat y, minY=DBL_MAX, maxY=DBL_MIN;
+    CGFloat y, minY = DBL_MAX, maxY = DBL_MIN;
     
-    for (int area=0;area<_numProfileAreas;area++)
+    for (int area = 0; area < _numProfileAreas; area++)
     {
         LPDPOINT areaPoints = _profileAreaPoints[area];
-        for (int i=0;i<_numProfileAreaPoints[area];i++)
+        
+        for (int i = 0; i < _numProfileAreaPoints[area]; i++)
         {
             int i2 = i + 1;
             
             if (i2 == _numProfileAreaPoints[area])
                 i2 = 0;
+            
             DPOINT pt = areaPoints[i];
             DPOINT pt2 = areaPoints[i2];
+            
             if ((areaPoints[i].x <= x && areaPoints[i2].x >= x) ||
                 (areaPoints[i2].x <= x && areaPoints[i].x >= x))
             {
-                y = areaPoints[i].y + (areaPoints[i2].y - areaPoints[i].y) * (x  - areaPoints[i].x)/(areaPoints[i].x-areaPoints[i2].x);
+                y = areaPoints[i].y + (areaPoints[i2].y - areaPoints[i].y) *
+                (x  - areaPoints[i].x) / (areaPoints[i].x - areaPoints[i2].x);
+                
                 minY = min (y,minY);
                 maxY = max (y,maxY);
-                rtn = TRUE;
+                rtn = YES;
             }
         }
     }
+    
     *pMinY = minY;
     *pMaxY = maxY;
     return rtn;
 }
+
 - (void)addGesturesToView
 {
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
@@ -433,6 +437,7 @@
         case UIGestureRecognizerStateBegan:
             if (_delegate)
                 [_delegate platViewDidBeginTrans];
+            NSLog(@"%f,%f", pinchGesture.view.layer.anchorPoint.x, pinchGesture.view.layer.anchorPoint.y);
             
         case UIGestureRecognizerStateChanged:
         {

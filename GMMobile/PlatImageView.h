@@ -22,8 +22,7 @@
 @property (nonatomic, weak) id <PlatImageViewDelegate> delegate;
 @property (nonatomic) CGSize mapViewSize;
 
-+ (PlatImageView *)platImageViewWithImagePath:(NSString *)imagePath
-                                     delegate:(id)delegate;
++ (PlatImageView *)platImageViewWithDelegate:(id)delegate;
 
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing

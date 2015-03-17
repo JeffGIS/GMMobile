@@ -48,9 +48,6 @@ extern int keepProcessing;
     
     [PipeTrace removeTrace];
     
-    _platView = [PlatImageView platImageViewWithImagePath:CRAPI.sharedInstance.currentPlatImagePath
-                                                 delegate:self];
-    
     _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
@@ -1675,6 +1672,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     if (![_firstView.subviews containsObject:_platView])
     {
+        _platView = [PlatImageView platImageViewWithDelegate:self];
+        
         switch (setting)
         {
             case MapViewScreenSettingSplitScreen:
