@@ -12,7 +12,6 @@
 @property (nonatomic) LPTRANDATA pTranFrameToImage;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
-@property (nonatomic) CGPoint previousPoint;
 
 @end
 
@@ -368,17 +367,18 @@
         case UIGestureRecognizerStateBegan:
             if (_delegate)
                 [_delegate platViewDidBeginTrans];
-            break;
             
         case UIGestureRecognizerStateChanged:
         {
-            CGPoint translation = [panGesture translationInView:panGesture.view.superview];
+            CGPoint point = [panGesture translationInView:panGesture.view];
             
-            panGesture.view.center = CGPointMake(panGesture.view.center.x + translation.x,
-                                                 panGesture.view.center.y + translation.y);
+            CGAffineTransform translate = CGAffineTransformTranslate(panGesture.view.transform,
+                                                                     point.x, point.y);
+            
+            panGesture.view.transform = translate;
             
             [panGesture setTranslation:CGPointZero
-                                inView:panGesture.view.superview];
+                                inView:panGesture.view];
             
             if (_delegate)
             {
@@ -398,9 +398,7 @@
             
             break;
             
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed:
-        case UIGestureRecognizerStatePossible:
+        default:
             break;
     }
 }
@@ -418,56 +416,65 @@
             if (_delegate)
                 [_delegate platViewDidBeginTrans];
             
-            _previousPoint = [pinchGesture locationInView:pinchGesture.view];
-            break;
-            
         case UIGestureRecognizerStateChanged:
-            if (pinchGesture.numberOfTouches == 2)
+        {
+            CGPoint locationInView = [pinchGesture locationInView:pinchGesture.view];
+            
+            CGPoint anchor = CGPointMake((locationInView.x / pinchGesture.view.superview.frame.size.width),
+                                         (locationInView.y / pinchGesture.view.superview.frame.size.height));
+            
+            [self setAnchorPoint:anchor
+                         forView:pinchGesture.view];
+            
+            CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale"] floatValue];
+            
+            const CGFloat kMinScale = 0.5;
+            const CGFloat kMaxScale = 50.0;
+            
+            CGFloat newScale = pinchGesture.scale;
+            newScale = MIN(newScale, (kMaxScale / currentScale));
+            newScale = MAX(newScale, (kMinScale / currentScale));
+            
+            CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, newScale, newScale);
+            pinchGesture.view.transform = scale;
+            pinchGesture.scale = 1.0;
+            
+            if (_delegate)
             {
-                CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale"] floatValue];
+                CGFloat pBearing;
+                CLLocationCoordinate2D pTarget;
                 
-                const CGFloat kMinScale = 0.5;
-                const CGFloat kMaxScale = 50.0;
+                CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                               bearing:&pBearing
+                                                target:&pTarget
+                                           mapViewSize:_mapViewSize];
                 
-                CGFloat newScale = pinchGesture.scale;
-                newScale = MIN(newScale, (kMaxScale / currentScale));
-                newScale = MAX(newScale, (kMinScale / currentScale));
-                
-                CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, newScale, newScale);
-                pinchGesture.view.transform = scale;
-                pinchGesture.scale = 1.0;
-                
-                CGPoint point = [pinchGesture locationInView:pinchGesture.view];
-                
-                CGAffineTransform translate = CGAffineTransformTranslate(pinchGesture.view.transform,
-                                                                         point.x - _previousPoint.x,
-                                                                         point.y - _previousPoint.y);
-                
-                pinchGesture.view.transform = translate;
-                
-                if (_delegate)
-                {
-                    CGFloat pBearing;
-                    CLLocationCoordinate2D pTarget;
-                    
-                    CGFloat pZoom = [self zoomForMapBounds:self.frame
-                                                   bearing:&pBearing
-                                                    target:&pTarget
-                                               mapViewSize:_mapViewSize];
-                    
-                    [_delegate platViewDidZoom:pZoom
-                                   withBearing:pBearing
-                                        target:pTarget];
-                }
+                [_delegate platViewDidZoom:pZoom
+                               withBearing:pBearing
+                                    target:pTarget];
             }
+        }
             
             break;
             
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed:
-        case UIGestureRecognizerStatePossible:
+        default:
             break;
     }
+}
+
+- (void)setAnchorPoint:(CGPoint)anchorPoint
+               forView:(UIView *)view
+{
+    CGPoint oldOrigin = view.frame.origin;
+    view.layer.anchorPoint = anchorPoint;
+    CGPoint newOrigin = view.frame.origin;
+    
+    CGPoint transition;
+    transition.x = (newOrigin.x - oldOrigin.x);
+    transition.y = (newOrigin.y - oldOrigin.y);
+    
+    view.center = CGPointMake((view.center.x - transition.x),
+                              (view.center.y - transition.y));
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
