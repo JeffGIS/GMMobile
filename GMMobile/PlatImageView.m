@@ -10,6 +10,7 @@
 @property (nonatomic) LPTRANDATA pTranImageToLatlon;
 @property (nonatomic) LPTRANDATA pTranLatlonToImage;
 @property (nonatomic) LPTRANDATA pTranFrameToImage;
+@property (nonatomic) LPTRANDATA pTranImageToFrame;
 @property (nonatomic, copy) NSString *platType;
 @property (nonatomic, copy) NSString *platName;
 
@@ -66,6 +67,7 @@
     CloseTRANS2(&_pTranImageToLatlon);
     CloseTRANS2(&_pTranLatlonToImage);
     CloseTRANS2(&_pTranFrameToImage);
+    CloseTRANS2(&_pTranImageToFrame);
     for (int i=0;i<_numProfileAreas;i++)
         free (_profileAreaPoints[i]);
     _numProfileAreas = 0;
@@ -93,9 +95,14 @@
 
 - (DPOINT)frameToImage:(DPOINT)framePoint
 {
-    DPOINT imagePoint;
-    imagePoint = TranDPOINT(&framePoint, _pTranFrameToImage);
+    DPOINT imagePoint = TranDPOINT(&framePoint, _pTranFrameToImage);
     return imagePoint;
+}
+
+- (DPOINT)imageToFrame:(DPOINT)imagePoint
+{
+    DPOINT framePoint = TranDPOINT(&imagePoint, _pTranImageToFrame);
+    return framePoint;
 }
 
 - (CLLocationCoordinate2D)imageToCLLocationCoordinate2D:(DPOINT)imagePoint
@@ -124,6 +131,7 @@
     
     DPOINT ptImage1, ptImage2;
     DPOINT ptLev201, ptLev202;
+    DPOINT ptFrame1, ptFrame2;
     
     ptImage1.x = ptImage2.x = (_imageCorners[0].x + _imageCorners[2].x) / 2;
     ptImage1.y = _imageCorners[0].y;
@@ -135,11 +143,19 @@
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
     *target = center;
 
-    ptImage1.x = self.superview.frame.size.width/2;
-    ptImage1.y = self.superview.frame.size.height;
-    ptImage2 = [self frameToImage:ptImage1];
+    ptFrame1.x = self.superview.frame.size.width/2;
+    ptFrame1.y = self.superview.frame.size.height;
+    ptImage1 = [self frameToImage:ptFrame1];
     
-    [self getYValueRangeForProfileAtX:ptImage2.x  minY:&minY maxY:&maxY];
+    if ([self getYValueRangeForProfileAtX:ptImage1.x  minY:&minY maxY:&maxY])
+    {
+        ptImage1.y = minY;
+        ptImage2.x = ptImage1.x;
+        ptImage2.y = maxY;
+        ptFrame1 = [self imageToFrame:ptImage1];
+        ptFrame2 = [self imageToFrame:ptImage2];
+    }
+    
     return zoom;
 }
 
@@ -187,7 +203,9 @@
 
     LPTRANDATA pTranFrameToWorld = STRANPoints(imageCornersFrame, _imageCornersWorld,4,1,0);
     CloseTRANS2(&_pTranFrameToImage);
+    CloseTRANS2(&_pTranImageToFrame);
     _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners,4,1,0);
+    _pTranImageToFrame = STRANPoints(_imageCorners,imageCornersFrame, 4,1,0);
 
     framePoints[0].x = framePoints[1].y = 0;
     framePoints[1].x = 0;
