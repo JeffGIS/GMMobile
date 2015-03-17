@@ -743,6 +743,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
    
     _rotateZoom = !_rotateZoom;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                        (_firstView.frame.size.height / 2.0));
+                     }];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -835,9 +841,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame1;
-                                 
-                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
-                                                                (_firstView.frame.size.height / 2.0));
                              }];
         }
             break;
@@ -857,9 +860,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame2;
-                                 
-                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
-                                                                (_firstView.frame.size.height / 2.0));
                              }];
             
             [UIView animateWithDuration:duration
@@ -888,9 +888,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame3;
-                                 
-                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
-                                                                (_firstView.frame.size.height / 2.0));
                              }];
             
             [UIView animateWithDuration:duration
