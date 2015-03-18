@@ -16,7 +16,7 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearAnnotations, clearWhenDeselected, initialZoom, rotateZoom;
-@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, allowRefresh, noneSelected;
+@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno;
@@ -53,7 +53,8 @@ extern int keepProcessing;
     [super viewDidLoad];
     
     nVectorViews = 0;
-    for (int i=0;i<MAX_VECTORVIEWS;i++)
+    
+    for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
     
     [PipeTrace removeTrace];
@@ -61,7 +62,7 @@ extern int keepProcessing;
     _profileView = [[UIImageView alloc] init];
     _profileView.contentMode = UIViewContentModeScaleAspectFit;
     
-    _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
+    _firstTimeAppear = _firstTimeMap = YES;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -714,8 +715,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
     {
-       // if (_allowRefresh && !_mapView.myLocationEnabled)
-            if (!_mapView.myLocationEnabled)
+        if (!_mapView.myLocationEnabled)
         {
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:position.zoom];
@@ -961,6 +961,7 @@ haveVV:
     
     if (vectorView.displayID != keepProcessing)
         vectorViews[vectorView.ivv] = nil;
+    
     else dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [_vectorView removeFromSuperview];
@@ -1546,18 +1547,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToCameraPosition:camera];
 }
 
-- (void)platViewDidBeginTrans
-{
-    [self clearVectorView];
-
-    _allowRefresh = NO;
-}
-
-- (void)platViewDidEndTrans
-{
-    _allowRefresh = YES;
-}
-
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
 {
     _pitch -= 10.0;
@@ -1686,7 +1675,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
 {
-    _allowRefresh = NO;
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     CGPoint platViewCenter = _platView.center;
@@ -2039,7 +2027,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                        viewingAngle:0.0];
     
     [_mapView animateToCameraPosition:camera];
-    _allowRefresh = YES;
 }
 
 - (void)mapToolbarDidFinishDrag

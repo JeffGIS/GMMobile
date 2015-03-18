@@ -8,9 +8,6 @@
 
 @protocol PlatImageViewDelegate <NSObject>
 
-- (void)platViewDidBeginTrans;
-- (void)platViewDidEndTrans;
-
 - (void)platViewDidZoom:(CGFloat)pZoom
             withBearing:(CGFloat)pBearing
                  target:(CLLocationCoordinate2D)pTarget

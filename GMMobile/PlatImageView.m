@@ -378,15 +378,7 @@
 {
     switch (panGesture.state)
     {
-        case UIGestureRecognizerStateEnded:
-            if (_delegate)
-                [_delegate platViewDidEndTrans];
-            break;
-            
         case UIGestureRecognizerStateBegan:
-            if (_delegate)
-                [_delegate platViewDidBeginTrans];
-            
         case UIGestureRecognizerStateChanged:
         {
             CGPoint point = [panGesture translationInView:panGesture.view];
@@ -431,15 +423,7 @@
 {
     switch (pinchGesture.state)
     {
-        case UIGestureRecognizerStateEnded:
-            if (_delegate)
-                [_delegate platViewDidEndTrans];
-            break;
-            
         case UIGestureRecognizerStateBegan:
-            if (_delegate)
-                [_delegate platViewDidBeginTrans];
-            
         case UIGestureRecognizerStateChanged:
         {
             CGPoint locationInView = [pinchGesture locationInView:pinchGesture.view];
