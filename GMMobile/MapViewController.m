@@ -1539,21 +1539,25 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     CGFloat range = (maxYpt.y - minYpt.y);
     
+    CGFloat profileFramePixPerImgPix = (_profileView.frame.size.height / _profileView.image.size.height);
+    CGFloat platFramePixPerImgPix = (_platView.frame.size.width / _platView.image.size.width);
+    
     if (range > 1)
     {
-        CGFloat framePixPerImgPix = (_profileView.frame.size.height / _profileView.image.size.height);
-        CGFloat zoomLevel = (_secondView.frame.size.height / (range * framePixPerImgPix));
+        CGFloat zoomLevel = (_secondView.frame.size.height / (range * profileFramePixPerImgPix));
         
         CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, zoomLevel, zoomLevel);
         _profileView.transform = scale;
     }
+    
+    CGFloat pixPerImgPixFactor = (platFramePixPerImgPix / profileFramePixPerImgPix);
     
     CGFloat platxTranslation = [[_platView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
     CGFloat profilexTranslation = [[_profileView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
     CGFloat platScale = [[_platView.layer valueForKeyPath:@"transform.scale"] floatValue];
     CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
     CGFloat xTransDiff = ((platxTranslation / platScale) - (profilexTranslation / profileScale));
-    NSLog(@"%f,", xTransDiff);
+    NSLog(@"%f,%f,", profileFramePixPerImgPix, platFramePixPerImgPix);
     
     CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, xTransDiff, 0.0);
     _profileView.transform = translation;
