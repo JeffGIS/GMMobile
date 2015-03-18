@@ -19,6 +19,7 @@ static BOOL createDirectory = YES;
 {
     LPBYTE _textOverlapBuffer;
     int _textOverlapBufferSizeWidth, _textOverlapBufferSizeHeight;
+    UIColor *_darkGreen;
 }
 
 static SewerData *_sewerData;
@@ -61,6 +62,12 @@ int SQLOKswr(int sqlReturn, char *method)
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _sewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
         _pointsArray = [[NSMutableArray alloc] init];
+        _darkGreen = [[UIColor alloc] initWithRed:0.0
+                                            green:0.5
+                                             blue:0.0
+                                            alpha:1.0];
+        
+
     }
     
     return self;
@@ -679,11 +686,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGColorRef color;
     int startpass=0;
     
-    UIColor *darkGreen = [[UIColor alloc] initWithRed:0.0
-                                                green:0.5
-                                                 blue:0.0
-                                                alpha:1.0];
-    
     CGFloat width, invertIn, invertOut, diameterIn, widthIn, heightIn;
     LPSTR pipeShape, material;
     NSString *lineText = @"";
@@ -782,7 +784,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                 addPointers = YES;
                 width = (9.0 * sizeFactor);
                 CGContextSetLineDash (context, 5, pattern, 2);
-                color = darkGreen.CGColor;
+                color = _darkGreen.CGColor;
                 
                 if (diameterIn <= 0)
                 {
@@ -1205,6 +1207,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     int numPoints, numLoops;
     LPSTR symName;
     CGFloat size;
+    CGColorRef color;
     CGFloat sizeFactor = 1;
     
     if (_zoom > 18)
@@ -1238,14 +1241,19 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
         
         if (!strcasecmp(symName, "STRM_MHOL"))
+        {
+            color = _darkGreen.CGColor;
             size = 20.0;
-        
+        }
         else
+        {
+            color = UIColor.greenColor.CGColor;
             size = 8.0;
+        }
         
         [self drawStormPoint:context
                     atPoint:&llpoint
-                  withColor:UIColor.greenColor.CGColor
+                  withColor:color
                     andSize:(size * sizeFactor)];
     }
     
@@ -1262,6 +1270,8 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
                                   (pPoint->y - size / 2.0), size, size);
     
+    //CGContextSetStrokeColorWithColor(context,color);
+    CGContextSetFillColorWithColor(context,color);
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
