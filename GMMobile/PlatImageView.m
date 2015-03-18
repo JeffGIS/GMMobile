@@ -35,9 +35,21 @@
     [platView addGesturesToView];
     
     NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
-    
-    platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platType = CRAPI.sharedInstance.currentPlatType;
+    
+    platView.platType = @"SAN";
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
+                                              ofType:@"jpg"];
+    
+    platView.platType = @"SAN";
+    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
+                                              ofType:@"jpg"];
+
+    platView.platType = @"STORM";
+    imagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
+                                              ofType:@"jpg"];
+   
+    platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
     platView.delegate = delegate;
     [platView getPlatTransformation];

@@ -23,6 +23,7 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
+@property (nonatomic) NSTimer * vectorViewTimer;
 @property (nonatomic) UIImageView *streetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property (nonatomic) NSInteger screenSetting;
@@ -46,6 +47,8 @@ extern int keepProcessing;
 {
     VectorView * vectorViews[MAX_VECTORVIEWS];
     int nVectorViews;
+    GMSVisibleRegion _vectorViewRegion;
+    int _vectorViewZoom;
 }
 
 - (void)viewDidLoad
@@ -931,6 +934,7 @@ haveVV:
 }
 - (void)clearVectorView
 {
+    [self.vectorViewTimer invalidate];
     keepProcessing++;
     if (!_vectorView)
         return;
@@ -944,13 +948,25 @@ haveVV:
                    atZoom:(int)zoom
 {
     [self clearVectorView];
+    _vectorViewRegion = region;
+    _vectorViewZoom = zoom;
+    self.vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                  target:self
+                                                selector:@selector(startVectorView:)
+                                                userInfo:nil
+                                                 repeats:NO];
+}
+
+- (void)startVectorView:(NSTimer *)timer
+{
+    
     [self allocateVectorView];
     _vectorView.displayData = 1;
     
-    [_vectorView setRegion:region];
-    _vectorView.zoom = zoom;
+    [_vectorView setRegion:_vectorViewRegion];
+    _vectorView.zoom = _vectorViewZoom;
     
-    NSLog(@"Vector view start: zoom = %i", zoom);
+    NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
     
     [_vectorView setNeedsDisplay];
 }
