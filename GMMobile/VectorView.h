@@ -8,7 +8,7 @@
 
 @protocol VectorViewDelegate <NSObject>
 
-- (void)vectorViewDidComplete;
+- (void)vectorViewDidComplete:(VectorView*)vectorView;
 
 @end
 
@@ -18,6 +18,7 @@
 
 @property int displayData;
 @property int displayID;
+@property int ivv;
 @property int zoom;
 @property CORNERPOINTS latlonCornerPoints;
 @property MNMXCORD latlonBounds;

@@ -41,7 +41,6 @@ extern int keepProcessing;
 - (void)dealloc
 {
     //[self freeResources];
-    NSLog (@"VectorView dealloc");
 }
 
 
@@ -111,7 +110,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 - (void)drawRect:(CGRect)rect
 {
     _vectorViewContext = UIGraphicsGetCurrentContext();
-    keepProcessing = 0;
     if (!_vectorViewContext || !keepProcessing)
         return;
     if (_haveVectorLayer)
@@ -126,7 +124,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         CGLayerRelease(_vectorLayer);
         _haveVectorLayer = NO;
         if (self.delegate)
-            [self.delegate vectorViewDidComplete];
+            [self.delegate vectorViewDidComplete:self];
         return;
     }
     keepProcessing++;
@@ -281,6 +279,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             {
                 CGLayerRelease(_vectorLayer);
                 _haveVectorLayer = NO;
+                if (self.delegate)
+                    [self.delegate vectorViewDidComplete:self];
             }
             
             //[self freeResources];

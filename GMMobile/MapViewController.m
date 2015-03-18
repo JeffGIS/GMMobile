@@ -41,11 +41,20 @@ extern int keepProcessing;
 
 @end
 
+#define MAX_VECTORVIEWS 8
 @implementation MapViewController
+{
+    VectorView * vectorViews[MAX_VECTORVIEWS];
+    int nVectorViews;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    nVectorViews = 0;
+    for (int i=0;i<MAX_VECTORVIEWS;i++)
+        vectorViews[i] = nil;
     
     [PipeTrace removeTrace];
     
@@ -207,12 +216,6 @@ extern int keepProcessing;
     [self.view addSubview:_firstView];
     [self.view addSubview:_secondView];
     [self.view addSubview:_streetView];
-    
-    _vectorView = [[VectorView alloc] init];
-    _vectorView.frame = _mapView.frame;
-    _vectorView.userInteractionEnabled = NO;
-    _vectorView.delegate = self;
-    [self.view addSubview:_vectorView];
     
     [self setupTableView];
     
@@ -904,17 +907,44 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
 }
 
+-(void)allocateVectorView
+{
+    int ivv;
+    for (int i=0;i<MAX_VECTORVIEWS;i++)
+    {
+        if (!vectorViews[i])
+        {
+            ivv = i;
+            goto haveVV;
+        }
+    }
+    return;
+haveVV:
+    _vectorView = [[VectorView alloc] init];
+    vectorViews[ivv] = _vectorView;
+    _vectorView.ivv = ivv;
+    _vectorView.frame = _mapView.frame;
+    _vectorView.userInteractionEnabled = NO;
+    _vectorView.delegate = self;
+    [self.view addSubview:_vectorView];
+
+}
 - (void)clearVectorView
 {
-    _vectorView.displayData = 0;
     keepProcessing++;
-    [_vectorView setNeedsDisplay];
+    if (!_vectorView)
+        return;
+    _vectorView.displayData = 0;
+    [_vectorView removeFromSuperview];
+    vectorViews[_vectorView.ivv] = nil;
+    _vectorView = nil;
 }
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(int)zoom
 {
     [self clearVectorView];
+    [self allocateVectorView];
     _vectorView.displayData = 1;
     
     [_vectorView setRegion:region];
@@ -925,11 +955,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [_vectorView setNeedsDisplay];
 }
 
-- (void)vectorViewDidComplete
+- (void)vectorViewDidComplete:(VectorView*)vectorView
 {
     _waitForVectorViewRefresh = NO;
     
-    dispatch_async(dispatch_get_main_queue(),
+    if (vectorView.displayID != keepProcessing)
+        vectorViews[vectorView.ivv] = nil;
+    else dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [_vectorView removeFromSuperview];
                        [self.view addSubview:_vectorView];
