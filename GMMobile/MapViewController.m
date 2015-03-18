@@ -60,7 +60,7 @@ extern int keepProcessing;
     [PipeTrace removeTrace];
     
     _profileView = [[UIImageView alloc] init];
-    _profileView.contentMode = UIViewContentModeScaleAspectFit;
+    _profileView.contentMode = UIViewContentModeScaleAspectFill;
     
     _firstTimeAppear = _firstTimeMap = YES;
     
@@ -1537,7 +1537,26 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [self clearVectorView];
     
-     NSLog(@"minY = %f, maxY = %f", minYpt.y, maxYpt.y);
+    CGFloat range = (maxYpt.y - minYpt.y);
+    
+    if (range > 1)
+    {
+        CGFloat framePixPerImgPix = (_profileView.frame.size.height / _profileView.image.size.height);
+        CGFloat zoomLevel = (_secondView.frame.size.height / (range * framePixPerImgPix));
+        
+        CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, zoomLevel, zoomLevel);
+        _profileView.transform = scale;
+    }
+    
+    CGFloat platxTranslation = [[_platView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
+    CGFloat profilexTranslation = [[_profileView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
+    CGFloat platScale = [[_platView.layer valueForKeyPath:@"transform.scale"] floatValue];
+    CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
+    CGFloat xTransDiff = ((platxTranslation / platScale) - (profilexTranslation / profileScale));
+    NSLog(@"%f,", xTransDiff);
+    
+    CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, xTransDiff, 0.0);
+    _profileView.transform = translation;
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
@@ -1679,31 +1698,36 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     CGPoint platViewCenter = _platView.center;
     
+    //frame with no height for hidden views
     CGRect frame0 = CGRectMake(0.0,
                                tabBarTop,
                                self.view.frame.size.width, 0.0);
     
+    //bottom half of split screen
     CGRect frame1 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
                                self.view.frame.size.width,
                                ((tabBarTop - statusBarHeight) / 2.0));
     
+    //upper third of tri screen
     CGRect frame2 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
                                self.view.frame.size.width,
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    //middle third of tri screen
     CGRect frame3 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    //bottom third of tri screen
     CGRect frame4 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                self.view.frame.size.width,
                                ((tabBarTop - statusBarHeight) / 3.0));
     
-    //this is the frame for the bottom right of the split bottom
+    //bottom right of split bottom
     /*CGRect frame5 = CGRectMake((self.view.frame.size.width / 2.0),
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
