@@ -1556,7 +1556,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     CGFloat range = (maxYpt.y - minYpt.y);
     
     CGFloat profileFramePixPerImgPix = (_profileView.frame.size.height / _profileView.image.size.height);
-    CGFloat platFramePixPerImgPix = (_platView.frame.size.width / _platView.image.size.width);
     
     if (range > 1)
     {
@@ -1566,16 +1565,23 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         _profileView.transform = scale;
     }
     
-    CGFloat pixPerImgPixFactor = (platFramePixPerImgPix / profileFramePixPerImgPix);
-    
-    CGFloat platxTranslation = [[_platView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
-    CGFloat profilexTranslation = [[_profileView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
+    CGFloat platXTranslation = [[_platView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
+    CGFloat profileYTranslation = [[_profileView.layer valueForKeyPath:@"transform.translation.y"] floatValue];
+    CGFloat profileXTranslation = [[_profileView.layer valueForKeyPath:@"transform.translation.x"] floatValue];
     CGFloat platScale = [[_platView.layer valueForKeyPath:@"transform.scale"] floatValue];
     CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
-    CGFloat xTransDiff = ((platxTranslation / platScale) - (profilexTranslation / profileScale));
-    NSLog(@"%f,%f,", profileFramePixPerImgPix, platFramePixPerImgPix);
     
-    CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, xTransDiff, 0.0);
+    profileFramePixPerImgPix = (_profileView.frame.size.height / _profileView.image.size.height);
+    CGFloat adjMinY = (minYpt.y * profileFramePixPerImgPix);
+    CGFloat adjMaxY = (maxYpt.y * profileFramePixPerImgPix);
+    CGFloat centerY = (_profileView.frame.size.height - ((adjMaxY + adjMinY) / 2.0));
+    CGFloat profileCenterY = (_profileView.frame.size.height / 2.0);
+    CGFloat translationY = (centerY - profileCenterY);
+    CGFloat translationDiff = (translationY - profileYTranslation);
+    
+    NSLog(@"%f,%f,%f", centerY, profileCenterY, translationY);
+    
+    CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, 0.0, translationDiff);
     _profileView.transform = translation;
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
