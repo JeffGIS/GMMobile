@@ -31,4 +31,7 @@
                      minYpt:(DPOINT *)minYpt
                      maxYpt:(DPOINT *)maxYpt;
 
+- (void)setAnchorPoint:(CGPoint)anchorPoint
+               forView:(UIView *)view;
+
 @end
