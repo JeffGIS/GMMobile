@@ -6,6 +6,8 @@
 #import "BoundaryData.h"
 #import "PropertyData.h"
 
+extern int keepProcessing;
+
 @interface BoundaryData ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
@@ -146,7 +148,15 @@
         }
     }
 }
+- (BOOL) continue
+{
+    if (self.processingID == keepProcessing)
+        return YES;
+    return NO;
+}
+
 -(void)displayLandUse:(CGContextRef)context
+            llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
@@ -159,7 +169,7 @@
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANBoundsToBounds(platlonBounds, pvbounds);
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
     
@@ -173,7 +183,7 @@
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -206,15 +216,20 @@
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         
-        [self drawBoundary:context
-                   nPoints:numPoints
-                    nLoops:numLoops
-                   partLen:polyPartLen
-                    points:llpoints
-                 withColor:UIColor.redColor.CGColor];
+        /*[self drawUseCode:context
+                  nPoints:numPoints
+                   nLoops:numLoops
+                  partLen:polyPartLen
+                   points:llpoints
+                withColor:UIColor.redColor.CGColor];*/
+        if (useCode >=160 && useCode <161)
+            [self fillUseCode:context
+                  nPoints:numPoints
+                   points:llpoints
+                withColor:UIColor.redColor.CGColor];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOK(sqlite3_finalize(statement), "displayLandUse");
     [pd close];
 }
 
@@ -273,5 +288,31 @@
         }
     }
 }
+- (void)fillUseCode:(CGContextRef)context
+           nPoints:(int)np
+            points:(LPDPOINT)pPoints
+         withColor:(CGColorRef)color
+{
+    //CGContextSetLineWidth(context, 3);
+    //CGContextFillEllipseInRect(context, pointRect);
+    //CGContextStrokeEllipseInRect(context, pointRect);
+    //CGContextFillPath(context);
+    
+    
+    CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
+    
+    for (int i = 1; i < np; i++)
+        CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+    
+    CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
+    
+    if (!CGContextIsPathEmpty(context))
+    {
+        //CGContextSetStrokeColorWithColor(context,color);
+        CGContextSetFillColorWithColor(context,color);
+        CGContextDrawPath(context, kCGPathFill);
+    }
+}
+
 
 @end

@@ -193,32 +193,42 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                              viewBounds:&_viewBounds];
                 }
                 
-                /*if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+               /* if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
                 {
                     BoundaryData *bd = [[BoundaryData alloc]init];
-                    [bd displayLandUse:context
+                    bd.processingID = keepProcessing;
+                   [bd displayLandUse:_context
+                             llCorners:&_latlonCornerPoints
                                LLBounds:&_latlonBounds
                              viewBounds:&_viewBounds];
-                }*/
+                }
                 
-         /*       if (_zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+                if (keepProcessing == self.displayID && _zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
                 {
                     PlanimetricData *pd = [[PlanimetricData alloc] init];
                     pd.processingID = keepProcessing;
                     
+                    if (keepProcessing == self.displayID)
                     [pd displayPlanArea:_context
+                              llCorners:&_latlonCornerPoints
                                LLBounds:&_latlonBounds
                              viewBounds:&_viewBounds];
                     
+                    if (keepProcessing == self.displayID)
                     [pd displayPlanLine:_context
+                              llCorners:&_latlonCornerPoints
                                LLBounds:&_latlonBounds
                              viewBounds:&_viewBounds];
                     
+                    if (keepProcessing == self.displayID)
                     [pd displayPlanPoint:_context
+                               llCorners:&_latlonCornerPoints
                                 LLBounds:&_latlonBounds
                               viewBounds:&_viewBounds];
                     
-                    [pd displayWallPoint:_context
+                    if (keepProcessing == self.displayID)
+                   [pd displayWallPoint:_context
+                               llCorners:&_latlonCornerPoints
                                 LLBounds:&_latlonBounds
                               viewBounds:&_viewBounds];
                 }*/
