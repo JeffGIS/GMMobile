@@ -153,8 +153,8 @@
         ptImage1.y = minY;
         ptImage2.x = ptImage1.x;
         ptImage2.y = maxY;
-        *minYpt = [self imageToFrame:ptImage1];
-        *maxYpt = [self imageToFrame:ptImage2];
+        *minYpt = ptImage1;
+        *maxYpt = ptImage2;
     }
     
     return zoom;

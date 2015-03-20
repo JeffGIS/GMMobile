@@ -62,9 +62,6 @@ extern int keepProcessing;
     
     [PipeTrace removeTrace];
     
-    _profileView = [[UIImageView alloc] init];
-    _profileView.contentMode = UIViewContentModeScaleAspectFit;
-    
     _firstTimeAppear = _firstTimeMap = YES;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
@@ -333,9 +330,6 @@ extern int keepProcessing;
         _infoWindow.title = marker.title;
         _infoWindow.snippet = marker.snippet;
         _infoWindow.position = marker.position;
-        
-        NSLog(@"%@", marker.title);
-        NSLog(@"%@", _infoWindow.title);
         
         [self.view addSubview:_infoWindow];
         _noneSelected = NO;
@@ -756,6 +750,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                          _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                         (_firstView.frame.size.height / 2.0));
                      }];
+    
+    CGFloat pBearing;
+    CLLocationCoordinate2D pTarget;
+    DPOINT minYpt, maxYpt;
+    
+    [_platView zoomForMapBounds:_platView.frame
+                        bearing:&pBearing
+                         target:&pTarget
+                    mapViewSize:_mapView.frame.size
+                         minYpt:&minYpt
+                         maxYpt:&maxYpt];
+    
+    [self adjustProfileViewForMinYpt:minYpt
+                              maxYpt:maxYpt];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -1553,7 +1561,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [self clearVectorView];
     
-     NSLog(@"minY = %f, maxY = %f", minYpt.y, maxYpt.y);
+    [self adjustProfileViewForMinYpt:minYpt
+                              maxYpt:maxYpt];
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
@@ -1561,6 +1570,51 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                        viewingAngle:0.0];
     
     [_mapView animateToCameraPosition:camera];
+}
+
+- (void)adjustProfileViewForMinYpt:(DPOINT)minYpt
+                            maxYpt:(DPOINT)maxYpt
+{
+    CGFloat platViewWidth = _platView.frame.size.width;
+    CGFloat platViewOriginX = _platView.frame.origin.x;
+    CGFloat platViewCenterX = _firstView.center.x - platViewOriginX;
+    CGFloat centerXFactor = (platViewCenterX / platViewWidth);
+    
+    CGFloat profileViewWidth = _profileView.frame.size.width;
+    CGFloat profileViewOriginX = _profileView.frame.origin.x;
+    CGFloat profileViewOldCenterX = _secondView.center.x - profileViewOriginX;
+    CGFloat profileViewNewCenterX = (profileViewWidth * centerXFactor);
+    CGFloat xDiff = (profileViewOldCenterX - profileViewNewCenterX);
+    
+    CGFloat profileViewHeight = _profileView.frame.size.height;
+    CGFloat secondViewHeight = _secondView.frame.size.height;
+    CGFloat imageWidth = _platView.image.size.width;
+    CGFloat imageHeight = _platView.image.size.height;
+    CGFloat imagePixToFrame = (imageWidth / profileViewWidth);
+    CGFloat adjImageHeight = (secondViewHeight * imagePixToFrame);
+    CGFloat imageHeightFactor = (adjImageHeight / imageHeight);
+    
+    CGFloat profileViewOriginY = _profileView.frame.origin.y;
+    CGFloat profileViewOldCenterY = ((secondViewHeight / 2.0) - profileViewOriginY);
+    CGFloat minMaxY = ((minYpt.y + maxYpt.y) / 2.0);
+    
+    if (minMaxY > 1.0)
+    {
+        CGFloat adjMinMaxY = ((minMaxY * imageHeightFactor) / imagePixToFrame);
+        CGFloat profileViewNewCenterY = (secondViewHeight - adjMinMaxY);
+        CGFloat yDiff = (profileViewOldCenterY - profileViewNewCenterY);
+        CGFloat centerYFactor = (profileViewNewCenterY / profileViewHeight);
+        CGPoint anchorPoint = CGPointMake(centerXFactor, centerYFactor);
+        
+        CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, xDiff, yDiff);
+        _profileView.transform = translation;
+        
+        [_platView setAnchorPoint:(anchorPoint)
+                          forView:_profileView];
+        
+        //CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, 1.01, 1.01);
+        //_profileView.transform = scale;
+    }
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
@@ -1695,31 +1749,36 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     CGPoint platViewCenter = _platView.center;
     
+    //frame with no height for hidden views
     CGRect frame0 = CGRectMake(0.0,
                                tabBarTop,
                                self.view.frame.size.width, 0.0);
     
+    //bottom half of split screen
     CGRect frame1 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 2.0)),
                                self.view.frame.size.width,
                                ((tabBarTop - statusBarHeight) / 2.0));
     
+    //upper third of tri screen
     CGRect frame2 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 3.0)),
                                self.view.frame.size.width,
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    //middle third of tri screen
     CGRect frame3 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));
     
+    //bottom third of tri screen
     CGRect frame4 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                self.view.frame.size.width,
                                ((tabBarTop - statusBarHeight) / 3.0));
     
-    //this is the frame for the bottom right of the split bottom
+    //bottom right of split bottom
     /*CGRect frame5 = CGRectMake((self.view.frame.size.width / 2.0),
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
@@ -1747,13 +1806,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
     
     if (setting == MapViewScreenSettingTriScreen)
-            _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
-        
-        else
+    {
+        if (_profileView)
         {
             [_profileView removeFromSuperview];
             _profileView.image = nil;
+            _profileView = nil;
         }
+        
+        _profileView = [[UIImageView alloc] init];
+        _profileView.contentMode = UIViewContentModeScaleAspectFit;
+        _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
+    }
     
     [self clearVectorView];
     
@@ -2007,6 +2071,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _profileView.image = _platView.image;
     [_secondView addSubview:_profileView];
+    CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
+    NSLog(@"initial scale:%f", profileScale);
 }
 
 - (void)platViewPosition:(CGPoint)center
@@ -2035,7 +2101,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                          minYpt:&minYpt
                                          maxYpt:&maxYpt];
     
-    NSLog(@"minY = %f, maxY = %f", minYpt.y, maxYpt.y);
+    [self adjustProfileViewForMinYpt:minYpt
+                              maxYpt:maxYpt];
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
