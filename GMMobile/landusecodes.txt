@@ -1,0 +1,97 @@
+SINGLE FAMILY RESIDENTIAL 
+Land used exclusively for residential purposes and containing a single dwelling unit. Includes the following four codes: 
+
+111 - FARMSTEAD 
+Land that encompasses the single family residential dwelling and associated buildings of a farm. Associated buildings of a farm may include buildings used for animal husbandry (barns, chicken coops, grain solos, etc.) along with accessory uses, provided that such accessory uses are incidental to the agricultural activities. 
+
+112 - SEASONAL/VACATION 
+Land meeting the general definition of single-family residential containing a dwelling unit occupied seasonally or used as vacation property. 
+
+113 - SINGLE FAMILY DETACHED 
+Land meeting the general definition of single-family residential and detached from any other residential dwelling unit (i.e., with open space on all four sides). Includes detached townhomes. 
+
+116 - MANUFACTURED HOUSING PARK 
+Land meeting the general definition of Single-Family, Detached dwelling and designated for the placement of multiple manufactured housing structures. Note: this classification IS NOT used for an individual manufactured home. 
+
+
+MULTIFAMILY RESIDENTIAL 
+Land used exclusively for residential multiple-family dwellings containing a building or multiple buildings. Includes the following two codes: 
+
+114 - SINGLE FAMILY ATTACHED 
+Land meeting the general definition of multifamily residential containing two or more attached dwelling units (share a common wall, each with primary ground floor access to the outside. Examples: attached townhome, double bungalow, triplex, large multi-unit structures with each unit having its own external entrance, etc. 
+
+115 - MULTIFAMILY 
+Land meeting the general definition of residential containing two or more attached dwelling units, one or more of which does not have primary ground floor access to the outside. Examples: Apartment building, condominium with a main entrance for all residents. 
+
+Note: Where it was not possible to differentiate between these two categories based on aerial photography and assessors data, the next criteria for differentiation was the number of units. If an indistinguishable parcel contained two to four units, it was coded Single Family Attached. If it had 5 or more units, it was coded Multifamily. If the number of units also was not available, then the final distinction was made using the house like test. If it looked like a house from the photo (e.g. large house split into apartments), it was classified as Single Family Attached, otherwise it became Multifamily. 
+
+
+120 - RETAIL AND OTHER COMMERCIAL 
+Land used for the provision of goods or services. This category is for general sales and services that comprise the vast majority of establishments typically associated with commercial land use. This category is used as the default for commercial/retail land uses. Examples: store, restaurant, hotel, bank, daycare facility, mini-storage facility, Metrodome, Excel Center, Canterbury Downs, YMCA, American Legion, skeet club/outdoor gun range (large game/gun clubs - 80 acres or more - will be coded as Park and Rec.). 
+
+130 - OFFICE 
+Land used predominantly for administrative, professional, or clerical services. Examples: law offices, accounting firms, clinics (but not hospitals), and veterinary clinics. Government office buildings are generally categories as Institutional. However, where government offices are housed on a privately owned parcel (e.g. leased office space), they may be included in the Office category. 
+
+
+MIXED USE 
+Land containing a building with mixed uses. Includes the following three codes: 
+
+141 - MIXED USE RESIDENTIAL 
+Land containing a building with multiple uses in combination with at least a residential unit(s). Examples include: Galtier Plaza in St. Paul, a mom & pop bakery with living space above it. 
+
+142 - MIXED USE INDUSTRIAL 
+Land containing a building with multiple uses in combination with industrial uses and NO residential units. An example would be a building containing a warehouse, offices, and stores. 
+
+143 - MIXED USE COMMERCIAL AND OTHER 
+Land containing a building with multiple uses but with NO residential units or industrial uses. An example would be a building containing commercial shops, childcare facility, offices, and/or restaurants. Downtown areas usually have buildings where the first and/or second floor is commercial and the rest is office (e.g. Lawson Software Building), these types of buildings would be coded under this category. 
+
+
+151 - INDUSTRIAL AND UTILITY 
+Land containing manufacturing, transportation, construction companies, communications, utilities or wholesale trade. This category includes publicly owned industrial lands (e.g., wastewater treatment plants, water towers, large transit garages, DOT road sanding stockpiles or maintenance staging areas). Industrial also includes: warehouses, some special horticultural uses (e.g. large greenhouses that do not sell to the public), landfills, and automotive junk yards (even if they sell retail, SIC 5015). Radio and TV stations were also included in this category. 
+
+153 - EXTRACTIVE 
+Land containing extractive industry (Ex: Gravel Pits and Quarries). 
+
+
+160 - INSTITUTIONAL 
+Land used primarily for religious, governmental, educational, social, cultural or major health care facilities (where they have beds for overnight stay). Examples: schools, synagogues, cemeteries, hospitals, nursing homes, city halls, county and state fairgrounds, and museums. 
+
+This category includes all publicly owned land that is not clearly in any other category (e.g. not in Office, Parks, or Industrial, etc.). Clinics and health care facilities with only outpatient procedures will be classified as Office, NOT Institutional. Government office buildings are generally categories as institutional. However, where government offices are housed on a privately owned parcel (e.g. leased office space), they may be included in the Office category. 
+
+NOTE: All land should be classified based on use NOT Ownership! If land is owned by a church but appears to be Single-Family, Detached housing, say for the minister, or clergy, then the land use should be Single-Family, Detached residential NOT Institutional. 
+
+
+170 - PARK, RECREATIONAL OR PRESERVE 
+Land used for park and recreational sport assembly or passive open space. This may occur at community level fields, regional parks, public parks, private parks, campgrounds, small urban parks, playgrounds, rest areas, and other venues used for indoor and outdoor sporting events or like purposes. This category also includes passive recreational activities or land use areas, such as park preserves, wildlife refuges, habitat areas, public plazas, river walks, DNR or US Fish and Wildlife owned land, greenways and residential common areas with distinguishable walk or bike paths. The category also includes a small number of 'non-developable' areas based on local ordinances or Planned Unit Developments (PUD). Areas designated as PUD represent open areas within or adjacent to urban development (i.e. housing) which together fulfill or meet overall density guidelines for such urban developments as outlined by the city. In addition, some lands within park boundaries are discernibly farmed (i.e., possibly leased lands or granted uses for future protection) and therefore are classified as Agricultural use rather than Park. 
+
+173 - GOLF COURSE 
+Land used for golfing, including driving range and practice areas. 
+
+
+201 - MAJOR HIGHWAY 
+Major roadway strips of land or area, on which a vehicular rights-of-passage exists under the following conditions: all interstate highways; all 4-lane divided highways with rights-of-way of 200 feet or greater in width; or all 4-lane roads with a Metropolitan Council functional class designation of "Principal Arterial". 
+
+NOTE: Where closely aligned frontage roads exist along vehicular rights-of-way which meet the preceding criteria, these frontage roads will be included in the total rights-of-way. Additionally, land uses occurring within a Major Highway rights-of-way, as specified above, but clearly has a different use (i.e., agriculture - row crops) are to be classified by its actual use. In addition, for consistency, if some major roadways that don't meet the above criteria yet have been classified as a Major Highway in past land use dataset, will remain Major Highway. Includes Park-n-Rides lots adjacent to Major Highways 
+
+202 - RAILWAY 
+Land used and occupied or intended to be occupied by multiple railroad track lines or similar uses. This includes railroad classification, storage and repair yards; intermodal containerized freight and transload facilities; railroad depots, etc. that might otherwise be classified under as industrial Note: Single-track railroads are not delineated. 
+
+203 - AIRPORT 
+Land used for the operation of aircraft and any related uses that are on the airport property (Ex: parking lot or car rental) Uses such as ball fields on the airport property would not be included in this category. 
+
+
+100 - AGRICULTURAL 
+Land used for agricultural purposes. Includes discernable cultivation (Ex: ground tillage or crop rows) horticulture, floriculture (exotic flowers), viticulture (grapes) activities, pasture, and a broad range of other agricultural activities such as horse boarding and training, kennels, sod farms, tree farms, fish production and processing, storage areas or buildings). Agricultural buildings (including feedlots) that are not surrounding a farmstead (see definition above) are included in this category. 
+
+NOTE: Not all agricultural lands are discernable based on available data (aerial photography and assessors data). Thus, a significant amount of agricultural land may be placed in the Undeveloped category. 
+
+
+210 - UNDEVELOPED 
+Land not currently used for any defined purpose that may or may not contain buildings or other structures or has no discernable use based on the aerial photos or available data. Undeveloped may include non-protected wetlands or lands currently under development. 
+
+NOTE: These lands are NOT necessarily available for development. 
+
+
+220 - WATER 
+A body of open water or flowing waterway inclusive within a discernable shoreline. This typically does not include wetlands or periodically flooded areas. Generally only features three acres or greater in size were delineated. Areas definable as another land use type will not be depicted as in the Water category (e.g. major highway bridge over a river and marina). 
+ Table Detail:  

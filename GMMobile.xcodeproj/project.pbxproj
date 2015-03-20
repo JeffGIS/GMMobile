@@ -49,6 +49,7 @@
 		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */; };
+		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
 		EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C11AA89DE100B8B162 /* PipeTrace.m */; };
 		EB4A18C51AAE347700B8B162 /* PickedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C41AAE347600B8B162 /* PickedItem.m */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
@@ -140,6 +141,7 @@
 		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
 		A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bmomxcqdduclkngeclsnuwqvhudu/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 		A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		EB398F061ABC61C40043875E /* landusecodes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = landusecodes.txt; sourceTree = "<group>"; };
 		EB4A18C01AA89DE100B8B162 /* PipeTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeTrace.h; sourceTree = "<group>"; };
 		EB4A18C11AA89DE100B8B162 /* PipeTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PipeTrace.m; sourceTree = "<group>"; };
 		EB4A18C31AAE347600B8B162 /* PickedItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickedItem.h; sourceTree = "<group>"; };
@@ -379,6 +381,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EB398F061ABC61C40043875E /* landusecodes.txt */,
 				A90506341A75DCE300288850 /* Images */,
 				EB5521CD1A61B6A8008CE2D1 /* Info.plist */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
@@ -508,6 +511,7 @@
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
+				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
