@@ -1612,8 +1612,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         [_platView setAnchorPoint:(anchorPoint)
                           forView:_profileView];
         
-        //CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, 1.01, 1.01);
-        //_profileView.transform = scale;
+        CGFloat currentScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
+        NSLog(@"%f,%f", adjMinMaxY, yDiff);
+        CGFloat newScale = (1.0 + (1.0 - currentScale));
+        
+        CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, newScale, newScale);
+        _profileView.transform = scale;
     }
 }
 
@@ -2071,8 +2075,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _profileView.image = _platView.image;
     [_secondView addSubview:_profileView];
-    CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
-    NSLog(@"initial scale:%f", profileScale);
 }
 
 - (void)platViewPosition:(CGPoint)center
