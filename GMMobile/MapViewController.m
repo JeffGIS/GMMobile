@@ -1575,45 +1575,48 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)adjustProfileViewForMinYpt:(DPOINT)minYpt
                             maxYpt:(DPOINT)maxYpt
 {
-    CGFloat platViewWidth = _platView.frame.size.width;
-    CGFloat platViewOriginX = _platView.frame.origin.x;
-    CGFloat platViewCenterX = _firstView.center.x - platViewOriginX;
-    CGFloat centerXFactor = (platViewCenterX / platViewWidth);
-    
-    CGFloat profileViewWidth = _profileView.frame.size.width;
-    CGFloat profileViewOriginX = _profileView.frame.origin.x;
-    CGFloat profileViewOldCenterX = _secondView.center.x - profileViewOriginX;
-    CGFloat profileViewNewCenterX = (profileViewWidth * centerXFactor);
-    CGFloat xDiff = (profileViewOldCenterX - profileViewNewCenterX);
-    
-    CGFloat profileViewHeight = _profileView.frame.size.height;
-    CGFloat secondViewHeight = _secondView.frame.size.height;
-    CGFloat imageWidth = _platView.image.size.width;
-    CGFloat imageHeight = _platView.image.size.height;
-    CGFloat imagePixToFrame = (imageWidth / profileViewWidth);
-    CGFloat adjImageHeight = (secondViewHeight * imagePixToFrame);
-    CGFloat imageHeightFactor = (adjImageHeight / imageHeight);
     CGFloat minMaxY = ((minYpt.y + maxYpt.y) / 2.0);
     
     if (minMaxY > 1.0)
     {
-        CGFloat adjMinMaxY = ((minMaxY * imageHeightFactor) / imagePixToFrame);
+        CGFloat oldScale = [[_profileView.layer valueForKeyPath:@"transform.scale.x"] floatValue];
+        
+        CGFloat platViewWidth = _platView.frame.size.width;
+        CGFloat platViewOriginX = _platView.frame.origin.x;
+        CGFloat platViewCenterX = _firstView.center.x - platViewOriginX;
+        CGFloat centerXFactor = (platViewCenterX / platViewWidth);
+        
+        CGFloat profileViewWidth = _profileView.frame.size.width;
+        CGFloat profileViewOriginX = _profileView.frame.origin.x;
+        CGFloat profileViewOldCenterX = _secondView.center.x - profileViewOriginX;
+        CGFloat profileViewNewCenterX = (profileViewWidth * centerXFactor);
+        CGFloat xDiff = ((profileViewOldCenterX - profileViewNewCenterX) / oldScale);
+        
+        CGFloat profileViewHeight = _profileView.frame.size.height;
+        CGFloat secondViewHeight = _secondView.frame.size.height;
+        CGFloat imageWidth = _profileView.image.size.width;
+        CGFloat imageHeight = _profileView.image.size.height;
+        CGFloat imagePixToFrame = (imageWidth / profileViewWidth);
+        CGFloat adjImageHeight = (secondViewHeight * imagePixToFrame);
+        CGFloat imageHeightFactor = (adjImageHeight / imageHeight);
+        CGFloat minMaxY = ((minYpt.y + maxYpt.y) / 2.0);
+        
+        CGFloat adjMinMaxY = (((minMaxY * imageHeightFactor) / imagePixToFrame) * oldScale);
         CGFloat profileViewOriginY = _profileView.frame.origin.y;
         CGFloat profileViewOldCenterY = ((secondViewHeight / 2.0) - profileViewOriginY);
-        CGFloat profileViewNewCenterY = (secondViewHeight - adjMinMaxY);
-        CGFloat yDiff = (profileViewOldCenterY - profileViewNewCenterY);
+        CGFloat profileViewNewCenterY = (profileViewHeight - adjMinMaxY);
+        CGFloat yDiff = ((profileViewOldCenterY - profileViewNewCenterY) / oldScale);
         CGFloat centerYFactor = (profileViewNewCenterY / profileViewHeight);
         CGPoint anchorPoint = CGPointMake(centerXFactor, centerYFactor);
         
         CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, xDiff, yDiff);
         _profileView.transform = translation;
         
-        [_platView setAnchorPoint:(anchorPoint)
+        [_platView setAnchorPoint:anchorPoint
                           forView:_profileView];
         
-        CGFloat currentScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
-        NSLog(@"%f,%f", adjMinMaxY, yDiff);
-        CGFloat newScale = (1.0 + (1.0 - currentScale));
+        CGFloat yRange = (maxYpt.y - minYpt.y);
+        CGFloat newScale = (adjImageHeight / yRange);
         
         CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, newScale, newScale);
         _profileView.transform = scale;
