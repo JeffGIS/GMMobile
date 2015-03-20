@@ -1593,14 +1593,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     CGFloat imagePixToFrame = (imageWidth / profileViewWidth);
     CGFloat adjImageHeight = (secondViewHeight * imagePixToFrame);
     CGFloat imageHeightFactor = (adjImageHeight / imageHeight);
-    
-    CGFloat profileViewOriginY = _profileView.frame.origin.y;
-    CGFloat profileViewOldCenterY = ((secondViewHeight / 2.0) - profileViewOriginY);
     CGFloat minMaxY = ((minYpt.y + maxYpt.y) / 2.0);
     
     if (minMaxY > 1.0)
     {
         CGFloat adjMinMaxY = ((minMaxY * imageHeightFactor) / imagePixToFrame);
+        CGFloat profileViewOriginY = _profileView.frame.origin.y;
+        CGFloat profileViewOldCenterY = ((secondViewHeight / 2.0) - profileViewOriginY);
         CGFloat profileViewNewCenterY = (secondViewHeight - adjMinMaxY);
         CGFloat yDiff = (profileViewOldCenterY - profileViewNewCenterY);
         CGFloat centerYFactor = (profileViewNewCenterY / profileViewHeight);
