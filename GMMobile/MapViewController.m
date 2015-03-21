@@ -47,7 +47,6 @@ extern int keepProcessing;
 {
     VectorView * vectorViews[MAX_VECTORVIEWS];
     int nVectorViews;
-    GMSVisibleRegion _vectorViewRegion;
     int _vectorViewZoom;
 }
 
@@ -956,7 +955,6 @@ haveVV:
                    atZoom:(int)zoom
 {
     [self clearVectorView];
-    _vectorViewRegion = region;
     _vectorViewZoom = zoom;
     self.vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                   target:self
@@ -971,7 +969,7 @@ haveVV:
     [self allocateVectorView];
     _vectorView.displayData = 1;
     
-    [_vectorView setRegion:_vectorViewRegion];
+    [_vectorView setRegion:_mapView.projection.visibleRegion];
     _vectorView.zoom = _vectorViewZoom;
     
     NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
