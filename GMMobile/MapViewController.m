@@ -38,7 +38,7 @@ extern int keepProcessing;
 @property (nonatomic) GMSTileLayer *layer;
 @property (nonatomic) UIButton *compass;
 @property (nonatomic) PlatImageView *platView;
-@property (nonatomic) UIImageView *profileView;
+@property (nonatomic) PlatProfileView *profileView;
 
 @end
 
@@ -1561,6 +1561,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [self clearVectorView];
     
+    [_profileView zoomImage:_platView.image atX:minYpt.x fromMinY:minYpt.y toMaxY:maxYpt.y];
     [self adjustProfileViewForMinYpt:minYpt
                               maxYpt:maxYpt];
     
@@ -1575,6 +1576,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)adjustProfileViewForMinYpt:(DPOINT)minYpt
                             maxYpt:(DPOINT)maxYpt
 {
+    return;
     CGFloat platViewWidth = _platView.frame.size.width;
     CGFloat platViewOriginX = _platView.frame.origin.x;
     CGFloat platViewCenterX = _firstView.center.x - platViewOriginX;
@@ -1786,23 +1788,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     if (![_firstView.subviews containsObject:_platView])
     {
-        if (setting != MapViewScreenSettingFullscreen)
-            _platView = [PlatImageView platImageViewWithDelegate:self];
-        
+        CGRect frame;
         switch (setting)
         {
             case MapViewScreenSettingSplitScreen:
-                _platView.frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
+                frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
                 break;
                 
             case MapViewScreenSettingTriScreen:
-                _platView.frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
+                frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
                 break;
                 
             case MapViewScreenSettingSplitBottomScreen:
-                _platView.frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
+                frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
                 break;
         }
+        if (setting != MapViewScreenSettingFullscreen)
+            _platView = [PlatImageView platImageViewWithDelegate:self andFrame:frame];
+        
     }
     
     if (setting == MapViewScreenSettingTriScreen)
@@ -1814,7 +1817,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _profileView = nil;
         }
         
-        _profileView = [[UIImageView alloc] init];
+        _profileView = [[PlatProfileView alloc] init];
         _profileView.contentMode = UIViewContentModeScaleAspectFit;
         _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
     }
@@ -2071,8 +2074,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _profileView.image = _platView.image;
     [_secondView addSubview:_profileView];
-    CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
-    NSLog(@"initial scale:%f", profileScale);
+    //CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
+    //NSLog(@"initial scale:%f", profileScale);
 }
 
 - (void)platViewPosition:(CGPoint)center

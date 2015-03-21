@@ -8,6 +8,7 @@
 #import "PipeTrace.h"
 #import "VectorView.h"
 #import "PlatImageView.h"
+#import "PlatProfileView.h"
 #import "LayersViewController.h"
 #import "MapToolbar.h"
 #import <GoogleMaps/GoogleMaps.h>

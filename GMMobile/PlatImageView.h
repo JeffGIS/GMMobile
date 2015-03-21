@@ -22,7 +22,7 @@
 @property (nonatomic) CGSize mapViewSize, originalSize;
 @property (nonatomic) CGFloat minY, maxY;
 
-+ (PlatImageView *)platImageViewWithDelegate:(id)delegate;
++ (PlatImageView *)platImageViewWithDelegate:(id)delegate andFrame:(CGRect)frame;
 
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing

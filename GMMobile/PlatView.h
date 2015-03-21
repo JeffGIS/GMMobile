@@ -4,7 +4,7 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <GoogleMaps/GoogleMaps.h>
 
-@class PlatView;
+@class PlatViewx;
 
 @protocol PlatViewDelegate <NSObject>
 
@@ -17,7 +17,7 @@
 
 @end
 
-@interface PlatView : UIView <UIGestureRecognizerDelegate>
+@interface PlatViewx : UIView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <PlatViewDelegate> delegate;
 

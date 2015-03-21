@@ -20,16 +20,19 @@
 @implementation PlatImageView
 {
     DPOINT _imageCorners[4];
+    DPOINT _virtualImageCorners[4];
     DPOINT _imageCornersWorld[4];
+    DPOINT _virtualImageCornersWorld[4];
     int _numProfileAreas;
     int _numProfileAreaPoints[MAX_PROFILE_AREAS];
     LPDPOINT _profileAreaPoints[MAX_PROFILE_AREAS];
 }
 
-+ (PlatImageView *)platImageViewWithDelegate:(id)delegate
++ (PlatImageView *)platImageViewWithDelegate:(id)delegate andFrame:(CGRect)frame
 {
     PlatImageView *platView = [[PlatImageView alloc] init];
     
+    platView.frame = frame;
     platView.contentMode = UIViewContentModeScaleAspectFit;
     platView.userInteractionEnabled = YES;
     [platView addGesturesToView];
@@ -112,13 +115,39 @@
     return llPt;
 }
 
-- (CGFloat)zoomForMapBounds:(CGRect)imageRect
+- (CGRect) frameRectToVirtualImageRect:(CGRect)frameRect bounds:(CGRect)bnd
+{
+    CGRect imageRect;
+    MNMXCORD screenBounds;
+    MNMXCORD imageBounds;
+    DPOINT frameCorners[4];
+    float rsq;
+    
+    frameCorners[0].x = frameCorners[1].x = frameRect.origin.x;
+    frameCorners[1].y = frameCorners[2].y = frameRect.origin.y;
+    frameCorners[2].x = frameCorners[3].x = frameRect.origin.x + frameRect.size.width;
+    frameCorners[0].y = frameCorners[3].y = frameRect.origin.y + frameRect.size.height;
+    LPTRANDATA pTran = STRANPoints(frameCorners, _virtualImageCorners, 4, 1, &rsq);
+    
+    screenBounds.xmn = bnd.origin.x;
+    screenBounds.ymn = bnd.origin.y;
+    screenBounds.xmx = screenBounds.xmn + bnd.size.width;
+    screenBounds.ymx = screenBounds.ymn + bnd.size.height;
+    TranMNMXCORD(&screenBounds, &imageBounds,pTran);
+    CloseTRANS2(&pTran);
+    
+    imageRect = CGRectMake(imageBounds.xmn,imageBounds.ymn, imageBounds.xmx - imageBounds.xmn, imageBounds.ymx - imageBounds.ymn);
+    return imageRect;
+}
+- (CGFloat)zoomForMapBounds:(CGRect)frameRect
                     bearing:(CGFloat *)bearing
                      target:(CLLocationCoordinate2D *)target
                 mapViewSize:(CGSize)size
                        minYpt:(DPOINT *)minYpt
                        maxYpt:(DPOINT *)maxYpt
 {
+    CGRect bnd = self.bounds;
+    CGRect imageRect = [self frameRectToVirtualImageRect:frameRect bounds:bnd];
     GMSVisibleRegion region = [self imageRectToMapRegion:imageRect];
     _mapViewSize = size;
     CGFloat minY, maxY;
@@ -130,11 +159,10 @@
     
     DPOINT ptImage1, ptImage2;
     DPOINT ptLev201, ptLev202;
-    DPOINT ptFrame1;
     
-    ptImage1.x = ptImage2.x = (_imageCorners[0].x + _imageCorners[2].x) / 2;
-    ptImage1.y = _imageCorners[0].y;
-    ptImage2.y = _imageCorners[2].y;
+    ptImage1.x = ptImage2.x = imageRect.origin.x + imageRect.size.width/2;
+    ptImage1.y = imageRect.origin.y - imageRect.size.height/2;
+    ptImage2.y = imageRect.origin.y + imageRect.size.height/2;
     ptLev201 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptLev202 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
     CGFloat az = getazd(&ptLev201, &ptLev202);
@@ -142,10 +170,6 @@
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
     *target = center;
 
-    ptFrame1.x = (self.superview.frame.size.width / 2.0);
-    ptFrame1.y = self.superview.frame.size.height;
-    ptImage1 = [self frameToImage:ptFrame1];
-    
     if ([self getYValueRangeForProfileAtX:ptImage1.x
                                      minY:&minY
                                      maxY:&maxY])
@@ -189,50 +213,34 @@
 - (GMSVisibleRegion)imageRectToMapRegion:(CGRect)imageRect
 {
     GMSVisibleRegion region;
-    DPOINT ptIn, ptOut;
-    DPOINT framePoints[4], framePointsWorld[4];
-    DPOINT imageCornersFrame[4];
+    DPOINT frameCornersImage[4];
+    DPOINT frameCornersWorld[4];
     
-    imageCornersFrame[0].x = imageRect.origin.x;
-    imageCornersFrame[0].y = imageRect.origin.y + imageRect.size.height;
-    imageCornersFrame[1].x = imageRect.origin.x;
-    imageCornersFrame[1].y = imageRect.origin.y;
-    imageCornersFrame[2].x = imageRect.origin.x + imageRect.size.width;
-    imageCornersFrame[2].y = imageRect.origin.y;
-    imageCornersFrame[3].x = imageRect.origin.x + imageRect.size.width;
-    imageCornersFrame[3].y = imageRect.origin.y + imageRect.size.height;
+    frameCornersImage[0].x = imageRect.origin.x;
+    frameCornersImage[0].y = imageRect.origin.y + imageRect.size.height;
+    frameCornersImage[1].x = imageRect.origin.x;
+    frameCornersImage[1].y = imageRect.origin.y;
+    frameCornersImage[2].x = imageRect.origin.x + imageRect.size.width;
+    frameCornersImage[2].y = imageRect.origin.y;
+    frameCornersImage[3].x = imageRect.origin.x + imageRect.size.width;
+    frameCornersImage[3].y = imageRect.origin.y + imageRect.size.height;
 
-    LPTRANDATA pTranFrameToWorld = STRANPoints(imageCornersFrame, _imageCornersWorld,4,1,0);
-    CloseTRANS2(&_pTranFrameToImage);
-    CloseTRANS2(&_pTranImageToFrame);
-    _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners, 4, 1, 0);
-    _pTranImageToFrame = STRANPoints(_imageCorners, imageCornersFrame, 4, 1, 0);
-
-    framePoints[0].x = framePoints[1].y = 0;
-    framePoints[1].x = 0;
-    framePoints[0].y = self.superview.frame.size.height;
-    framePoints[2].x = self.superview.frame.size.width;
-    framePoints[3].y = self.superview.frame.size.height;
-    framePoints[3].x = self.superview.frame.size.width;
-    framePoints[2].y = 0;
-    
-    TranPoints(framePoints, framePointsWorld, 4, pTranFrameToWorld);
-    CloseTRANS2(&pTranFrameToWorld);
+    TranPoints(frameCornersImage, frameCornersWorld, 4, _pTranImageToLatlon);
     
     for (int i = 0; i < 4; i++)
     {
-        PixelXYToLatLongd(framePointsWorld[i].x, framePointsWorld[i].y, 20,
-                          &framePointsWorld[i].y, &framePointsWorld[i].x);
+        PixelXYToLatLongd(frameCornersWorld[i].x, frameCornersWorld[i].y, 20,
+                          &frameCornersWorld[i].y, &frameCornersWorld[i].x);
     }
     
-    region.nearLeft.longitude = framePointsWorld[0].x;
-    region.nearLeft.latitude = framePointsWorld[0].y;
-    region.farLeft.longitude = framePointsWorld[1].x;
-    region.farLeft.latitude = framePointsWorld[1].y;
-    region.farRight.longitude = framePointsWorld[2].x;
-    region.farRight.latitude = framePointsWorld[2].y;
-    region.nearRight.longitude = framePointsWorld[3].x;
-    region.nearRight.latitude = framePointsWorld[3].y;
+    region.nearLeft.longitude = frameCornersWorld[0].x;
+    region.nearLeft.latitude = frameCornersWorld[0].y;
+    region.farLeft.longitude = frameCornersWorld[1].x;
+    region.farLeft.latitude = frameCornersWorld[1].y;
+    region.farRight.longitude = frameCornersWorld[2].x;
+    region.farRight.latitude = frameCornersWorld[2].y;
+    region.nearRight.longitude = frameCornersWorld[3].x;
+    region.nearRight.latitude = frameCornersWorld[3].y;
     
     return region;
 }
@@ -277,7 +285,23 @@
     _imageCorners[3].x = self.image.size.width;
     _imageCorners[3].y = 0;
     TranPoints (_imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
-    
+    DPOINT imageCornersFrame[4];
+    CGFloat midx = self.frame.origin.x + self.frame.size.width / 2;
+    CGFloat midy = self.frame.origin.y + self.frame.size.height / 2;
+    CGFloat scale = min (self.frame.size.height/self.image.size.height,self.frame.size.width/self.image.size.width)/2;
+    imageCornersFrame[0].x = imageCornersFrame[1].x = midx - self.image.size.width * scale;
+    imageCornersFrame[0].y = imageCornersFrame[3].y = midy + self.image.size.height * scale;
+    imageCornersFrame[2].x = imageCornersFrame[3].x = midx + self.image.size.width * scale;
+    imageCornersFrame[1].y = imageCornersFrame[2].y = midy - self.image.size.height * scale;
+    CloseTRANS2(&_pTranFrameToImage);
+    CloseTRANS2(&_pTranImageToFrame);
+    _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners, 4, 1, 0);
+    _pTranImageToFrame = STRANPoints(_imageCorners, imageCornersFrame, 4, 1, 0);
+    DPOINT frameCorners[4];
+    frameCorners[0].x = frameCorners[1].x = frameCorners[1].y = frameCorners[2].y = 0;
+    frameCorners[2].x = frameCorners[3].x = self.frame.size.width;
+    frameCorners[0].y = frameCorners[3].y = self.frame.size.height;
+    TranPoints(frameCorners, _virtualImageCorners, 4, _pTranFrameToImage);
     for (int i=0;i<_numProfileAreas;i++)
         free (_profileAreaPoints[i]);
 
@@ -300,7 +324,6 @@
         if (nLoops < 0)
             cFactor /= 1000;
         
-        int nBlobBytes = sqlite3_column_bytes(statement,5);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         _profileAreaPoints[_numProfileAreas] = malloc(abs(_numProfileAreaPoints[_numProfileAreas]) * sizeof(DPOINT) + 4);
         llpoints = _profileAreaPoints[_numProfileAreas];
@@ -350,14 +373,14 @@
             if (i2 == _numProfileAreaPoints[area])
                 i2 = 0;
             
-            DPOINT pt = areaPoints[i];
-            DPOINT pt2 = areaPoints[i2];
+//            DPOINT pt = areaPoints[i];
+//            DPOINT pt2 = areaPoints[i2];
             
             if ((areaPoints[i].x <= x && areaPoints[i2].x >= x) ||
                 (areaPoints[i2].x <= x && areaPoints[i].x >= x))
             {
                 y = areaPoints[i].y + (areaPoints[i2].y - areaPoints[i].y) *
-                (x  - areaPoints[i].x) / (areaPoints[i].x - areaPoints[i2].x);
+                (x  - areaPoints[i].x) / (areaPoints[i2].x - areaPoints[i].x);
                 
                 minY = min(y, minY);
                 maxY = max(y, maxY);
@@ -464,7 +487,6 @@
                 CGFloat pBearing;
                 CLLocationCoordinate2D pTarget;
                 DPOINT minYpt, maxYpt;
-                
                 CGFloat pZoom = [self zoomForMapBounds:self.frame
                                                bearing:&pBearing
                                                 target:&pTarget

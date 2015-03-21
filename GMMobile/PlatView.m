@@ -6,7 +6,7 @@
 
 #define TESTMODE YES
 
-@interface PlatView ()
+@interface PlatViewx ()
 
 @property (nonatomic) CGImageRef image;
 @property NSString *platType;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation PlatView
+@implementation PlatViewx
 
 - (id)init
 {
