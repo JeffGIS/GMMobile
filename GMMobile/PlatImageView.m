@@ -8,12 +8,10 @@
 
 @interface PlatImageView ()
 
-@property (nonatomic) LPTRANDATA pTranImageToLatlon;
-@property (nonatomic) LPTRANDATA pTranLatlonToImage;
-@property (nonatomic) LPTRANDATA pTranFrameToImage;
-@property (nonatomic) LPTRANDATA pTranImageToFrame;
-@property (nonatomic, copy) NSString *platType;
-@property (nonatomic, copy) NSString *platName;
+@property (nonatomic) LPTRANDATA pTranLatlonToImage, pTranImageToLatlon;
+@property (nonatomic) LPTRANDATA pTranFrameToImage, pTranImageToFrame;
+@property (nonatomic, copy) NSString *platType, *platName;
+@property (nonatomic) int numProfileAreas;
 
 @end
 
@@ -23,12 +21,12 @@
     DPOINT _virtualImageCorners[4];
     DPOINT _imageCornersWorld[4];
     DPOINT _virtualImageCornersWorld[4];
-    int _numProfileAreas;
-    int _numProfileAreaPoints[MAX_PROFILE_AREAS];
+    NSInteger _numProfileAreaPoints[MAX_PROFILE_AREAS];
     LPDPOINT _profileAreaPoints[MAX_PROFILE_AREAS];
 }
 
-+ (PlatImageView *)platImageViewWithDelegate:(id)delegate andFrame:(CGRect)frame
++ (PlatImageView *)platImageViewWithDelegate:(id)delegate
+                                    andFrame:(CGRect)frame
 {
     PlatImageView *platView = [[PlatImageView alloc] init];
     
@@ -302,10 +300,12 @@
     frameCorners[2].x = frameCorners[3].x = self.frame.size.width;
     frameCorners[0].y = frameCorners[3].y = self.frame.size.height;
     TranPoints(frameCorners, _virtualImageCorners, 4, _pTranFrameToImage);
-    for (int i=0;i<_numProfileAreas;i++)
+    
+    for (int i = 0; i < _numProfileAreas; i++)
         free (_profileAreaPoints[i]);
 
     _numProfileAreas = 0;
+    
     query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops, Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
                        _platType, _platName,_platName];
     SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
@@ -411,101 +411,79 @@
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
 {
-    switch (panGesture.state)
+    CGPoint point = [panGesture translationInView:panGesture.view];
+    
+    CGAffineTransform translate = CGAffineTransformTranslate(panGesture.view.transform,
+                                                             point.x, point.y);
+    
+    panGesture.view.transform = translate;
+    
+    [panGesture setTranslation:CGPointZero
+                        inView:panGesture.view];
+    
+    if (_delegate)
     {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStateChanged:
-        {
-            CGPoint point = [panGesture translationInView:panGesture.view];
-            
-            CGAffineTransform translate = CGAffineTransformTranslate(panGesture.view.transform,
-                                                                     point.x, point.y);
-            
-            panGesture.view.transform = translate;
-            
-            [panGesture setTranslation:CGPointZero
-                                inView:panGesture.view];
-            
-            if (_delegate)
-            {
-                CGFloat pBearing;
-                CLLocationCoordinate2D pTarget;
-                DPOINT minYpt, maxYpt;
-                
-                CGFloat pZoom = [self zoomForMapBounds:self.frame
-                                               bearing:&pBearing
-                                                target:&pTarget
-                                           mapViewSize:_mapViewSize
-                                                minYpt:&minYpt
-                                                maxYpt:&maxYpt];
-                
-                [_delegate platViewDidZoom:pZoom
-                               withBearing:pBearing
-                                    target:pTarget
-                                    minYpt:minYpt
-                                    maxYpt:maxYpt];
-            }
-        }
-            
-            break;
-            
-        default:
-            break;
+        CGFloat pBearing;
+        CLLocationCoordinate2D pTarget;
+        DPOINT minYpt, maxYpt;
+        
+        CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                       bearing:&pBearing
+                                        target:&pTarget
+                                   mapViewSize:_mapViewSize
+                                        minYpt:&minYpt
+                                        maxYpt:&maxYpt];
+        
+        [_delegate platViewDidZoom:pZoom
+                       withBearing:pBearing
+                            target:pTarget
+                            minYpt:minYpt
+                            maxYpt:maxYpt
+                      gestureState:panGesture.state];
     }
 }
 
 - (void)handlePinchGesture:(UIPinchGestureRecognizer *)pinchGesture
 {
-    switch (pinchGesture.state)
+    CGPoint locationInView = [pinchGesture locationInView:pinchGesture.view];
+    
+    CGPoint anchor = CGPointMake((locationInView.x / _originalSize.width),
+                                 (locationInView.y / _originalSize.height));
+    
+    [self setAnchorPoint:anchor
+                 forView:pinchGesture.view];
+    
+    CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale"] floatValue];
+    
+    const CGFloat kMinScale = 0.5;
+    const CGFloat kMaxScale = 50.0;
+    
+    CGFloat newScale = pinchGesture.scale;
+    newScale = MIN(newScale, (kMaxScale / currentScale));
+    newScale = MAX(newScale, (kMinScale / currentScale));
+    
+    CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, newScale, newScale);
+    pinchGesture.view.transform = scale;
+    pinchGesture.scale = 1.0;
+    
+    if (_delegate)
     {
-        case UIGestureRecognizerStateBegan:
-        case UIGestureRecognizerStateChanged:
-        {
-            CGPoint locationInView = [pinchGesture locationInView:pinchGesture.view];
-            
-            CGPoint anchor = CGPointMake((locationInView.x / _originalSize.width),
-                                         (locationInView.y / _originalSize.height));
-            
-            [self setAnchorPoint:anchor
-                         forView:pinchGesture.view];
-            
-            CGFloat currentScale = [[pinchGesture.view.layer valueForKeyPath:@"transform.scale"] floatValue];
-            
-            const CGFloat kMinScale = 0.5;
-            const CGFloat kMaxScale = 50.0;
-            
-            CGFloat newScale = pinchGesture.scale;
-            newScale = MIN(newScale, (kMaxScale / currentScale));
-            newScale = MAX(newScale, (kMinScale / currentScale));
-            
-            CGAffineTransform scale = CGAffineTransformScale(pinchGesture.view.transform, newScale, newScale);
-            pinchGesture.view.transform = scale;
-            pinchGesture.scale = 1.0;
-            
-            if (_delegate)
-            {
-                CGFloat pBearing;
-                CLLocationCoordinate2D pTarget;
-                DPOINT minYpt, maxYpt;
-                CGFloat pZoom = [self zoomForMapBounds:self.frame
-                                               bearing:&pBearing
-                                                target:&pTarget
-                                           mapViewSize:_mapViewSize
-                                                minYpt:&minYpt
-                                                maxYpt:&maxYpt];
-                
-                [_delegate platViewDidZoom:pZoom
-                               withBearing:pBearing
-                                    target:pTarget
-                                    minYpt:minYpt
-                                    maxYpt:maxYpt];
-            }
-        }
-            
-            break;
-            
-        default:
-            break;
+        CGFloat pBearing;
+        CLLocationCoordinate2D pTarget;
+        DPOINT minYpt, maxYpt;
+        CGFloat pZoom = [self zoomForMapBounds:self.frame
+                                       bearing:&pBearing
+                                        target:&pTarget
+                                   mapViewSize:_mapViewSize
+                                        minYpt:&minYpt
+                                        maxYpt:&maxYpt];
+        
+        [_delegate platViewDidZoom:pZoom
+                       withBearing:pBearing
+                            target:pTarget
+                            minYpt:minYpt
+                            maxYpt:maxYpt
+                      gestureState:pinchGesture.state];
     }
 }
 

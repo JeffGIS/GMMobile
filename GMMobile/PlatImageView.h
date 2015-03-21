@@ -12,7 +12,8 @@
             withBearing:(CGFloat)pBearing
                  target:(CLLocationCoordinate2D)pTarget
                  minYpt:(DPOINT)minYpt
-                 maxYpt:(DPOINT)maxYpt;
+                 maxYpt:(DPOINT)maxYpt
+           gestureState:(UIGestureRecognizerState)gestureState;
 
 @end
 
