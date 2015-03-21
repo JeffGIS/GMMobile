@@ -34,7 +34,7 @@ extern int keepProcessing;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) NSString *selectedSewerPipe;
-@property (atomic) BOOL waitForVectorViewRefresh;
+@property (atomic) BOOL waitForVectorViewRefresh, allowRefresh;
 @property (nonatomic) GMSTileLayer *layer;
 @property (nonatomic) UIButton *compass;
 @property (nonatomic) PlatImageView *platView;
@@ -62,7 +62,7 @@ extern int keepProcessing;
     
     [PipeTrace removeTrace];
     
-    _firstTimeAppear = _firstTimeMap = YES;
+    _firstTimeAppear = _firstTimeMap = _allowRefresh = YES;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -712,7 +712,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
     {
-        if (!_mapView.myLocationEnabled)
+        if (!_mapView.myLocationEnabled && _allowRefresh)
         {
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:position.zoom];
@@ -1566,6 +1566,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     {
         [self clearVectorView];
         _gestureCount++;
+        _allowRefresh = NO;
     }
     
     if (gestureState == UIGestureRecognizerStateEnded)
@@ -1573,6 +1574,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     if (_gestureCount == 0)
     {
+        _allowRefresh = YES;
+        
         [_profileView zoomImage:_platView.image
                             atX:minYpt.x
                        fromMinY:minYpt.y
