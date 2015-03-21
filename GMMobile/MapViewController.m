@@ -26,7 +26,7 @@ extern int keepProcessing;
 @property (nonatomic) NSTimer * vectorViewTimer;
 @property (nonatomic) UIImageView *streetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting;
+@property (nonatomic) NSInteger screenSetting, gestureCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -762,8 +762,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                          minYpt:&minYpt
                          maxYpt:&maxYpt];
     
-    [self adjustProfileViewForMinYpt:minYpt
-                              maxYpt:maxYpt];
+    [_profileView zoomImage:_platView.image
+                        atX:minYpt.x
+                   fromMinY:minYpt.y
+                     toMaxY:maxYpt.y];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -1558,12 +1560,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                  target:(CLLocationCoordinate2D)pTarget
                  minYpt:(DPOINT)minYpt
                  maxYpt:(DPOINT)maxYpt
+           gestureState:(UIGestureRecognizerState)gestureState
 {
-    [self clearVectorView];
+    if (gestureState == UIGestureRecognizerStateBegan)
+    {
+        [self clearVectorView];
+        _gestureCount++;
+    }
     
-    [_profileView zoomImage:_platView.image atX:minYpt.x fromMinY:minYpt.y toMaxY:maxYpt.y];
-    [self adjustProfileViewForMinYpt:minYpt
-                              maxYpt:maxYpt];
+    if (gestureState == UIGestureRecognizerStateEnded)
+        _gestureCount--;
+    
+    if (_gestureCount == 0)
+    {
+        [_profileView zoomImage:_platView.image
+                            atX:minYpt.x
+                       fromMinY:minYpt.y
+                         toMaxY:maxYpt.y];
+    }
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
@@ -1571,79 +1585,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                        viewingAngle:0.0];
     
     [_mapView animateToCameraPosition:camera];
-}
-
-- (void)adjustProfileViewForMinYpt:(DPOINT)minYpt
-                            maxYpt:(DPOINT)maxYpt
-{
-    return;
-    CGFloat platViewWidth = _platView.frame.size.width;
-    CGFloat platViewOriginX = _platView.frame.origin.x;
-    CGFloat platViewCenterX = _firstView.center.x - platViewOriginX;
-    CGFloat centerXFactor = (platViewCenterX / platViewWidth);
-    
-    CGFloat profileViewWidth = _profileView.frame.size.width;
-    CGFloat profileViewOriginX = _profileView.frame.origin.x;
-    CGFloat profileViewOldCenterX = _secondView.center.x - profileViewOriginX;
-    CGFloat profileViewNewCenterX = (profileViewWidth * centerXFactor);
-    CGFloat xDiff = (profileViewOldCenterX - profileViewNewCenterX);
-    
-    CGFloat profileViewHeight = _profileView.frame.size.height;
-    CGFloat secondViewHeight = _secondView.frame.size.height;
-    CGFloat imageWidth = _platView.image.size.width;
-    CGFloat imageHeight = _platView.image.size.height;
-    CGFloat imagePixToFrame = (imageWidth / profileViewWidth);
-    CGFloat adjImageHeight = (secondViewHeight * imagePixToFrame);
-    CGFloat imageHeightFactor = (adjImageHeight / imageHeight);
-    
-    CGFloat profileViewOriginY = _profileView.frame.origin.y;
-    CGFloat profileViewOldCenterY = ((secondViewHeight / 2.0) - profileViewOriginY);
-    CGFloat minMaxY = ((minYpt.y + maxYpt.y) / 2.0);
-    
-    if (minMaxY > 1.0)
-    {
-        CGFloat oldScale = [[_profileView.layer valueForKeyPath:@"transform.scale.x"] floatValue];
-        
-        CGFloat platViewWidth = _platView.frame.size.width;
-        CGFloat platViewOriginX = _platView.frame.origin.x;
-        CGFloat platViewCenterX = _firstView.center.x - platViewOriginX;
-        CGFloat centerXFactor = (platViewCenterX / platViewWidth);
-        
-        CGFloat profileViewWidth = _profileView.frame.size.width;
-        CGFloat profileViewOriginX = _profileView.frame.origin.x;
-        CGFloat profileViewOldCenterX = _secondView.center.x - profileViewOriginX;
-        CGFloat profileViewNewCenterX = (profileViewWidth * centerXFactor);
-        CGFloat xDiff = ((profileViewOldCenterX - profileViewNewCenterX) / oldScale);
-        
-        CGFloat profileViewHeight = _profileView.frame.size.height;
-        CGFloat secondViewHeight = _secondView.frame.size.height;
-        CGFloat imageWidth = _profileView.image.size.width;
-        CGFloat imageHeight = _profileView.image.size.height;
-        CGFloat imagePixToFrame = (imageWidth / profileViewWidth);
-        CGFloat adjImageHeight = (secondViewHeight * imagePixToFrame);
-        CGFloat imageHeightFactor = (adjImageHeight / imageHeight);
-        CGFloat minMaxY = ((minYpt.y + maxYpt.y) / 2.0);
-        
-        CGFloat adjMinMaxY = (((minMaxY * imageHeightFactor) / imagePixToFrame) * oldScale);
-        CGFloat profileViewOriginY = _profileView.frame.origin.y;
-        CGFloat profileViewOldCenterY = ((secondViewHeight / 2.0) - profileViewOriginY);
-        CGFloat profileViewNewCenterY = (profileViewHeight - adjMinMaxY);
-        CGFloat yDiff = ((profileViewOldCenterY - profileViewNewCenterY) / oldScale);
-        CGFloat centerYFactor = (profileViewNewCenterY / profileViewHeight);
-        CGPoint anchorPoint = CGPointMake(centerXFactor, centerYFactor);
-        
-        CGAffineTransform translation = CGAffineTransformTranslate(_profileView.transform, xDiff, yDiff);
-        _profileView.transform = translation;
-        
-        [_platView setAnchorPoint:anchorPoint
-                          forView:_profileView];
-        
-        CGFloat yRange = (maxYpt.y - minYpt.y);
-        CGFloat newScale = (adjImageHeight / yRange);
-        
-        CGAffineTransform scale = CGAffineTransformScale(_profileView.transform, newScale, newScale);
-        _profileView.transform = scale;
-    }
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
@@ -1830,8 +1771,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
                 break;
         }
+        
         if (setting != MapViewScreenSettingFullscreen)
-            _platView = [PlatImageView platImageViewWithDelegate:self andFrame:frame];
+        {
+            _platView = [PlatImageView platImageViewWithDelegate:self
+                                                        andFrame:frame];
+        }
         
     }
     
@@ -2101,8 +2046,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _profileView.image = _platView.image;
     [_secondView addSubview:_profileView];
-    //CGFloat profileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
-    //NSLog(@"initial scale:%f", profileScale);
 }
 
 - (void)platViewPosition:(CGPoint)center
@@ -2131,8 +2074,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                          minYpt:&minYpt
                                          maxYpt:&maxYpt];
     
-    [self adjustProfileViewForMinYpt:minYpt
-                              maxYpt:maxYpt];
+    [_profileView zoomImage:_platView.image
+                        atX:minYpt.x
+                   fromMinY:minYpt.y
+                     toMaxY:maxYpt.y];
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
