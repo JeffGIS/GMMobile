@@ -711,11 +711,8 @@ idleAtCameraPosition:(GMSCameraPosition *)position
 {
     if (!_firstTimeMap)
     {
-        if (!_mapView.myLocationEnabled)
-        {
-            [self refreshVectorView:_mapView.projection.visibleRegion
-                             atZoom:position.zoom];
-        }
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:position.zoom];
     }
     
     else
