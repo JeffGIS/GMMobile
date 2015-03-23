@@ -407,6 +407,12 @@
     
     pinchGesture.delegate = self;
     [self addGestureRecognizer:pinchGesture];
+    
+    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                                   action:@selector(handleLongPressGesture:)];
+    
+    longPressGesture.delegate = self;
+    [self addGestureRecognizer:longPressGesture];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture
@@ -484,6 +490,33 @@
                             minYpt:minYpt
                             maxYpt:maxYpt
                       gestureState:pinchGesture.state];
+    }
+}
+
+- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)longPressGesture
+{
+    if (longPressGesture.state == UIGestureRecognizerStateBegan)
+        for (UIGestureRecognizer *gestures in self.gestureRecognizers)
+            {
+                if ([gestures isKindOfClass:UIPanGestureRecognizer.class] ||
+                    [gestures isKindOfClass:UIPinchGestureRecognizer.class])
+                {
+                    gestures.enabled = NO;
+                }
+            }
+    
+    else if (longPressGesture.state == UIGestureRecognizerStateEnded)
+    {
+        for (UIGestureRecognizer *gestures in self.gestureRecognizers)
+            gestures.enabled = YES;
+    }
+
+    CGFloat xPoint = [longPressGesture locationInView:self].x;
+    
+    if (_delegate)
+    {
+        [_delegate platViewDidLongPressAtXPosition:xPoint
+                                      gestureState:longPressGesture.state];
     }
 }
 
