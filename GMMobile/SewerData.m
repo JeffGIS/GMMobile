@@ -149,7 +149,7 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     BOOL fileExists = NO;
     NSString *actualPlatID = [self getActualPlatFileName:platID];
-    NSString *toDir = [NSString stringWithFormat:@"%@/%@Plats", type,_documentsDirectory];
+    NSString *toDir = [NSString stringWithFormat:@"%@/%@Plats", _documentsDirectory,type];
     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", actualPlatID];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
