@@ -436,14 +436,14 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
     NSString *platID = _allPlats[_nextPlat++];
     SewerData* sd = [[SewerData alloc]init];
-    [sd loadPlat:platID usingPopover:_popover andDelegate:self];
+    [sd loadPlat:platID ofType:@"STORM" usingPopover:_popover andDelegate:self];
     return TRUE;
 }
 
 - (IBAction)loadPlats:(id)sender
 {
     SewerData* sd = [[SewerData alloc]init];
-    _allPlats = [sd getAllSanPlats];
+    _allPlats = [sd getAllStormPlats];
     _nextPlat = 0;
     [self getNextPlat];
 }

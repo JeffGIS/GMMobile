@@ -4,6 +4,8 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <GoogleMaps/GoogleMaps.h>
 
+#define PLAT_TYPE_SANITARY  1
+#define PLAT_TYPE_STORM     2
 @class PlatImageView;
 
 @protocol PlatImageViewDelegate <NSObject>
@@ -15,7 +17,8 @@
                  maxYpt:(DPOINT)maxYpt
            gestureState:(UIGestureRecognizerState)gestureState;
 
-- (void)platViewDidLongPressAtXPosition:(CGFloat)xPosition
+- (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xPosition
+                           andImageXPosition:(CGFloat)xImage
                            gestureState:(UIGestureRecognizerState)gestureState;
 
 @end
@@ -27,6 +30,8 @@
 @property (nonatomic) CGFloat minY, maxY;
 
 + (PlatImageView *)platImageViewWithDelegate:(id)delegate andFrame:(CGRect)frame;
+
+- (void)setPlatID:(int)refno andType:(int)platType;
 
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing

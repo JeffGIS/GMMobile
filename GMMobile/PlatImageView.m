@@ -72,6 +72,34 @@
     NSLog(@"Sewer Database dealloc");
 }
 
+- (void)setPlatID:(int)refno andType:(int)platType
+{
+    NSString *type = @"STORM";
+    if (platType == PLAT_TYPE_SANITARY)
+        type = @"SAN";
+    
+    sqlite3_stmt *statement;
+    SewerData *sd = [[SewerData alloc] init];
+    [sd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT PLAT_NAME FROM %@_PLAT WHERE id = %i;",
+                       type,refno];
+    
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "setPlatID");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR platname = (LPSTR)sqlite3_column_text(statement, 0);
+        _platName = [NSString stringWithUTF8String:platname];
+        _platType = type;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "setPlatID");
+    [sd close];
+    [self getPlatTransformation];
+    [self setNeedsDisplay];
+}
+
 - (DPOINT)latLonToImage:(LLPOINT)latLonPoint
 {
     DPOINT dptIn, dptOut;
@@ -515,7 +543,13 @@
     
     if (_delegate)
     {
-        [_delegate platViewDidLongPressAtXPosition:xPoint
+        DPOINT framePt;
+        
+        framePt.x = xPoint;
+        framePt.y = 100;
+        DPOINT imagePt = [self frameToImage:framePt];
+        [_delegate platViewDidLongPressAtFrameXPosition:xPoint
+                                 andImageXPosition:imagePt.x
                                       gestureState:longPressGesture.state];
     }
 }
