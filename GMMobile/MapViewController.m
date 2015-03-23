@@ -573,6 +573,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         if (gesture.state == UIGestureRecognizerStateBegan)
         {
+            if (_screenSetting == MapViewScreenSettingFullscreen)
+            {
+                [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
+                [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
+            }
+            
             _mapView.settings.scrollGestures = NO;
             CRAPI.sharedInstance.showPlats = -1;
             [self clearVectorView];
@@ -1584,6 +1590,29 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                        viewingAngle:0.0];
     
     [_mapView animateToCameraPosition:camera];
+}
+
+- (void)platViewDidLongPressAtXPosition:(CGFloat)xPosition
+                           gestureState:(UIGestureRecognizerState)gestureState;
+{
+    if (gestureState == UIGestureRecognizerStateBegan)
+    {
+        UIView *indicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 5.0, _platView.frame.size.height)];
+        indicatorView.backgroundColor = UIColor.redColor;
+        [_platView addSubview:indicatorView];
+    }
+    
+    else if (gestureState == UIGestureRecognizerStateEnded)
+    {
+        for (UIView *subviews in _platView.subviews)
+        {
+            [subviews removeFromSuperview];
+            return;
+        }
+    }
+    
+    for (UIView *subviews in _platView.subviews)
+        subviews.center = CGPointMake(xPosition, (_platView.center.y));
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture

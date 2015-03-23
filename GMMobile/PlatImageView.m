@@ -407,6 +407,12 @@
     
     pinchGesture.delegate = self;
     [self addGestureRecognizer:pinchGesture];
+    
+    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                                   action:@selector(handleLongPressGesture:)];
+    
+    longPressGesture.delegate = self;
+    [self addGestureRecognizer:longPressGesture];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)panGesture

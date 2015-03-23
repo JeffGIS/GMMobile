@@ -24,5 +24,6 @@
 - (void)deselectMyLocationButton;
 - (void)animateToVerticalOrientation;
 - (void)animateToHorizontalOrientation;
+- (void)splitScreenSelectedSegmentIndex:(NSInteger)index;
 
 @end

@@ -99,7 +99,7 @@
         [self addSubview:_mapType];
         
         _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Bottom"]];
-        _splitScreenSetting.selectedSegmentIndex = 0;
+        _splitScreenSetting.selectedSegmentIndex = MapViewScreenSettingFullscreen;
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         {
@@ -317,6 +317,11 @@
     
     [_splitScreenSetting setTitle:@"Bottom"
                 forSegmentAtIndex:3];
+}
+
+- (void)splitScreenSelectedSegmentIndex:(NSInteger)index
+{
+    _splitScreenSetting.selectedSegmentIndex = index;
 }
 
 @end
