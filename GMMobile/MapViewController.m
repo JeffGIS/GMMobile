@@ -1592,7 +1592,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToCameraPosition:camera];
 }
 
-- (void)platViewDidLongPressAtXPosition:(CGFloat)xPosition
+- (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xPosition
+                           andImageXPosition:(CGFloat)xImage
                            gestureState:(UIGestureRecognizerState)gestureState;
 {
     if (gestureState == UIGestureRecognizerStateBegan)
@@ -1613,6 +1614,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *subviews in _platView.subviews)
         subviews.center = CGPointMake(xPosition, (_platView.center.y));
+    if (_profileView)
+        [_profileView drawReferenceLineAtX:xImage];
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture

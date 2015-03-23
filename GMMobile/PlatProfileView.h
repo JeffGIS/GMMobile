@@ -12,4 +12,7 @@
         fromMinY:(NSInteger)minY
           toMaxY:(NSInteger)maxY;
 
+- (void)drawReferenceLineAtX:(CGFloat)imageX;
+
+
 @end

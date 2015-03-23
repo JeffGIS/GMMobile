@@ -17,7 +17,8 @@
                  maxYpt:(DPOINT)maxYpt
            gestureState:(UIGestureRecognizerState)gestureState;
 
-- (void)platViewDidLongPressAtXPosition:(CGFloat)xPosition
+- (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xPosition
+                           andImageXPosition:(CGFloat)xImage
                            gestureState:(UIGestureRecognizerState)gestureState;
 
 @end
