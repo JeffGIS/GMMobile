@@ -11,6 +11,7 @@
 #define GET_AREAS 4
 #define GET_SEWER 5
 #define GET_PLAN 6
+#define GET_CENSUS 7
 
 #define INPUTBUFSIZE USHRT_MAX * 32
 
@@ -97,6 +98,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case GET_AREAS:
             case GET_SEWER:
             case GET_PLAN:
+            case GET_CENSUS:
             {
                 NSString *toDirectory = [path stringByDeletingLastPathComponent];
                 NSString *file;
@@ -110,6 +112,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     {
                         file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
                         _popover.title = @"Load Parcel Tables";
+                    }
+                        break;
+                        
+                    case GET_CENSUS:
+                    {
+                        file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
+                        _popover.title = @"Load Census Tables";
                     }
                         break;
                         
@@ -320,6 +329,28 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Parcel File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+     forceRefresh:YES];
+}
+
+- (IBAction)loadCensus:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"censusdata.gcf";
+    
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_CENSUS;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Census File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"

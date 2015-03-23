@@ -627,9 +627,12 @@ int SQLOKpd(int sqlReturn, char *method)
         }
     }
 }
+-(void) datadef
+{
 /*
  CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
  */
+}
 
 - (void)displayParcels:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -893,10 +896,9 @@ int SQLOKpd(int sqlReturn, char *method)
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
-    CGFloat fontSize = 24.0;
+    CGFloat fontSize = 48.0;
     CGFloat minFontSize = 12.0;
     CGFloat size = sqrtf(maxPixels);
-    static int yoffinc = 0;
    
     while (fontSize > minFontSize)
     {
@@ -1053,23 +1055,39 @@ int SQLOKpd(int sqlReturn, char *method)
                openSpace:(CGFloat *)openSpacePCT
            commercialPCT:(CGFloat *)pctCommercial
               totEMVRank:(CGFloat *)rankTotEMV
-            inCensusArea:(LPSTR)cenBlock
+            inCensusArea:(LPSTR)cenBlockIN
+                 useDesc:(LPSTR) usedesc
 {
     sqlite3_stmt *statement;
     double sumEMV=0;
     double sumAcres=0;
     double pctAveEMV, pctMedEMV, aveEMV;
     int myTotEMV = *rankTotEMV;
+    int nAge = 0, nSales = 0;
+    int minSale = INT_MAX;
+    CGFloat totYears = 0;
+    CGFloat medianAge = 0;
+    CGFloat totAcres = 0, totOSAcres = 0;
+    char cenBlock[20];
+    int l = strlen (cenBlockIN);
+    
+    strcpy (cenBlock,cenBlockIN);
+    if (l)
+        cenBlock[12] = 0;
     
     *stability = 0;
     *openSpacePCT = 0;
     *pctCommercial = 0;
     *rankTotEMV = 0;
-    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD FROM PROPINFO WHERE CENBLOCK='%s'",
-                       cenBlock];
+/*    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK='%s'",
+                       cenBlock];*/
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK>='%s000' AND CENBLOCK<='%s999'",
+                       cenBlock,cenBlock];
     
     [self open];
     NSMutableArray * array=[[NSMutableArray alloc]init];
+    NSMutableArray * ageArray=[[NSMutableArray alloc]init];
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1079,14 +1097,66 @@ int SQLOKpd(int sqlReturn, char *method)
         int totEMV = (int)sqlite3_column_double(statement, 3);
         double totTax = sqlite3_column_double(statement, 4);
         LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 5);
+        LPSTR yearBuilt = (LPSTR)sqlite3_column_text(statement, 6);
+        LPSTR openSpace = (LPSTR)sqlite3_column_text(statement, 7);
         
-        if (*homestead == 'Y')
+        int yrBuilt = atoi (yearBuilt);
+        totAcres += acres;
+        if (*openSpace != 'N')
         {
-            NSNumber * emv = [NSNumber numberWithInteger:totEMV];
-            [array addObject:emv];
-            sumAcres += acres;
-            sumEMV += totEMV;
+        if (*openSpace == 'y' || *openSpace == 'Y')
+            totOSAcres += acres;
         }
+        if (!strcasecmp (useDesc,usedesc))
+        {
+            if (*saleDate)
+            {
+                int date = atoi (saleDate);
+                minSale = min (minSale,date);
+                nSales++;
+            }
+            if (yrBuilt > 1800)
+            {
+                totYears += yrBuilt;
+                nAge++;
+                NSNumber *age = [[NSNumber alloc]initWithInt:yrBuilt];
+                [ageArray addObject:age];
+            }
+            if (*homestead == 'Y')
+            {
+                NSNumber * emv = [NSNumber numberWithInteger:totEMV];
+                [array addObject:emv];
+                sumAcres += acres;
+                sumEMV += totEMV;
+            }
+        }
+    }
+    if (nAge)
+    {
+        totYears /= nAge;
+        [ageArray sortUsingComparator: ^(id obj1, id obj2)
+         {
+             NSNumber *v1 = obj1;
+             NSNumber *v2 = obj2;
+             
+             if (v1 > v2)
+                 return (NSComparisonResult)NSOrderedDescending;
+             
+             if (v1 < v2)
+                 return (NSComparisonResult)NSOrderedAscending;
+             
+             return (NSComparisonResult)NSOrderedSame;
+         }];
+        int median = nAge / 2;
+        NSNumber * age1 = (NSNumber*)ageArray[median];
+        if (nAge %2)
+        {
+            NSNumber * age2 = (NSNumber*)ageArray[median+1];
+          
+            medianAge = (age1.floatValue + age2.floatValue) / 2;
+        }
+        else
+            medianAge = age1.intValue;
     }
     [array sortUsingComparator: ^(id obj1, id obj2)
      {
@@ -1130,6 +1200,30 @@ int SQLOKpd(int sqlReturn, char *method)
         *rankTotEMV = pctAveEMV;
     }
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
+    if (totOSAcres)
+        *openSpacePCT = (100.0 * totOSAcres) / totAcres;
+    query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",
+             cenBlockIN];
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        float medianAge = sqlite3_column_double(statement,0);
+        float homeOwnPct = sqlite3_column_double(statement,1);
+        
+    }
+    SQLOK(sqlite3_finalize(statement), "getReportForPID");
+    query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKGROUPDATA WHERE GEOG_UNIT ='%s'",
+             cenBlock];
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        float medianAge = sqlite3_column_double(statement,0);
+        float homeOwnPct = sqlite3_column_double(statement,1);
+        
+    }
+    SQLOK(sqlite3_finalize(statement), "getReportForPID");
 }
 
 - (NSMutableArray *)getReport:(PropDataOption)option
@@ -1138,6 +1232,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSMutableArray *report = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
     char censusBlock[32];
+    char usedesc[32];
     [self open];
     
     switch (CRAPI.sharedInstance.project)
@@ -1319,6 +1414,8 @@ int SQLOKpd(int sqlReturn, char *method)
                 dollarFmt.usesGroupingSeparator = YES;
                 dollarFmt.maximumFractionDigits = 0;
                 
+                strncpy (usedesc,UseDesc1,31);
+                usedesc[31] = 0;
                 NSString *line;
                 line = [NSString stringWithFormat:@"PIN:%@", pid];
                 [report addObject:line];
@@ -1408,7 +1505,12 @@ int SQLOKpd(int sqlReturn, char *method)
                 
                 double stability, openSpacePCT, pctCommercial, rankTotEMV;
                 rankTotEMV = totalEMV;
-                [self computeStability:&stability openSpace:&openSpacePCT commercialPCT:&pctCommercial totEMVRank:&rankTotEMV inCensusArea:censusBlock];
+                [self computeStability:&stability
+                             openSpace:&openSpacePCT
+                         commercialPCT:&pctCommercial
+                            totEMVRank:&rankTotEMV
+                          inCensusArea:censusBlock
+                               useDesc:usedesc];
                 line = [NSString stringWithFormat:@"Stability:%.1f years", stability];
                 [report addObject:line];
                 
