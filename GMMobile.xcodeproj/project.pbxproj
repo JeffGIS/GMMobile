@@ -14,6 +14,7 @@
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
+		A9128A591AC0C69F00F4242F /* crosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A9128A581AC0C69F00F4242F /* crosshairs.png */; };
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
@@ -97,6 +98,7 @@
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		A90506471A75E24100288850 /* layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = layers.png; sourceTree = "<group>"; };
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
+		A9128A581AC0C69F00F4242F /* crosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = crosshairs.png; sourceTree = "<group>"; };
 		A91565611A81E76400119C21 /* FindBoundariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindBoundariesViewController.h; sourceTree = "<group>"; };
 		A91565621A81E76400119C21 /* FindBoundariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindBoundariesViewController.m; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9128A581AC0C69F00F4242F /* crosshairs.png */,
 				A9EC205F1AB738EE004D38FA /* marker.png */,
 				EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */,
 				1FF417FD1AB3724D000650FD /* S-N-54.jpg */,
@@ -521,6 +524,7 @@
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
+				A9128A591AC0C69F00F4242F /* crosshairs.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,

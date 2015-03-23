@@ -49,9 +49,10 @@
     [self setNeedsDisplay];
 }
 
-- (void)drawReferenceLineAtX:(CGFloat)imageX
+- (CGFloat)referenceLineAtX:(CGFloat)imageX
 {
-    CGFloat frameX = self.frame.origin.x + self.frame.size.width * (imageX - _imageRect.origin.x)/_imageRect.size.width;
+    return (self.frame.origin.x + self.frame.size.width *
+            (imageX - _imageRect.origin.x) /_imageRect.size.width);
 }
 
 - (void)drawRect:(CGRect)rect

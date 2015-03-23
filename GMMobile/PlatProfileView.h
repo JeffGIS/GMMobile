@@ -5,14 +5,13 @@
 
 @interface PlatProfileView : UIView
 
-@property UIImage * image;
+@property UIImage *image;
 
 -(void)zoomImage:(UIImage *)image
              atX:(NSInteger)imageX
         fromMinY:(NSInteger)minY
           toMaxY:(NSInteger)maxY;
 
-- (void)drawReferenceLineAtX:(CGFloat)imageX;
-
+- (CGFloat)referenceLineAtX:(CGFloat)imageX;
 
 @end

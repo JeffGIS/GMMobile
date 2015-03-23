@@ -539,18 +539,20 @@
             gestures.enabled = YES;
     }
 
-    CGFloat xPoint = [longPressGesture locationInView:self].x;
+    CGFloat xFrame = [longPressGesture locationInView:self].x;
+    CGPoint superpoint = [longPressGesture locationInView:self.superview];
     
     if (_delegate)
     {
         DPOINT framePt;
-        
-        framePt.x = xPoint;
-        framePt.y = 100;
+        framePt.x = xFrame;
+        framePt.y = 100.0;
         DPOINT imagePt = [self frameToImage:framePt];
-        [_delegate platViewDidLongPressAtFrameXPosition:xPoint
-                                 andImageXPosition:imagePt.x
-                                      gestureState:longPressGesture.state];
+        
+        [_delegate platViewDidLongPressAtFrameXPosition:xFrame
+                                      andSuperviewPoint:superpoint
+                                      andImageXPosition:imagePt.x
+                                           gestureState:longPressGesture.state];
     }
 }
 

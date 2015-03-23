@@ -24,7 +24,7 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer * vectorViewTimer;
-@property (nonatomic) UIImageView *streetView;
+@property (nonatomic) UIImageView *streetView, *targetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property (nonatomic) NSInteger screenSetting, gestureCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
@@ -84,6 +84,14 @@ extern int keepProcessing;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
     [self.view addSubview:_mapView];
+    
+    _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 48.0, 48.0)];
+    
+    _targetView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"crosshairs"
+                                                                                       ofType:@"png"]];
+    
+    _targetView.hidden = YES;
+    [_mapView addSubview:_targetView];
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -1592,33 +1600,54 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToCameraPosition:camera];
 }
 
-- (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xPosition
+- (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xFrame
+                           andSuperviewPoint:(CGPoint)superpoint
                            andImageXPosition:(CGFloat)xImage
-                           gestureState:(UIGestureRecognizerState)gestureState;
+                                gestureState:(UIGestureRecognizerState)gestureState;
 {
-    if (gestureState == UIGestureRecognizerStateBegan)
+    if (_screenSetting == MapViewScreenSettingTriScreen)
     {
-        CGFloat currentScale = [[_platView.layer valueForKeyPath:@"transform.scale"] floatValue];
+        CGFloat currentPlatScale = [[_platView.layer valueForKeyPath:@"transform.scale"] floatValue];
         
-        UIView *indicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, (5.0 / currentScale), 1024.0)];
-        
-        indicatorView.backgroundColor = UIColor.redColor;
-        [_platView addSubview:indicatorView];
-    }
-    
-    else if (gestureState == UIGestureRecognizerStateEnded)
-    {
-        for (UIView *subviews in _platView.subviews)
+        if (gestureState == UIGestureRecognizerStateBegan)
         {
-            [subviews removeFromSuperview];
+            UIView *platIndicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, (5.0 / currentPlatScale), 1024.0)];
+            platIndicatorView.backgroundColor = UIColor.redColor;
+            [_platView addSubview:platIndicatorView];
+            
+            CGFloat currentProfileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
+            
+            UIView *profileIndicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, (5.0 / currentProfileScale), 1024.0)];
+            profileIndicatorView.backgroundColor = UIColor.redColor;
+            [_profileView addSubview:profileIndicatorView];
+            
+            _targetView.hidden = NO;
+        }
+        
+        else if (gestureState == UIGestureRecognizerStateEnded)
+        {
+            for (UIView *subviews in _platView.subviews)
+                [subviews removeFromSuperview];
+            
+            for (UIView *subviews in _profileView.subviews)
+                [subviews removeFromSuperview];
+            
+            _targetView.hidden = YES;
+            
             return;
         }
+        
+        for (UIView *subviews in _platView.subviews)
+            subviews.center = CGPointMake(xFrame, (_platView.center.y));
+        
+        for (UIView *subviews in _profileView.subviews)
+        {
+            CGFloat xPosition = [_profileView referenceLineAtX:xImage];
+            subviews.center = CGPointMake(xPosition, _profileView.center.y);
+        }
+        
+        _targetView.center = superpoint;
     }
-    
-    for (UIView *subviews in _platView.subviews)
-        subviews.center = CGPointMake(xPosition, (_platView.center.y));
-    if (_profileView)
-        [_profileView drawReferenceLineAtX:xImage];
 }
 
 - (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
