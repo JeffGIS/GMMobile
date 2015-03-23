@@ -1593,7 +1593,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (gestureState == UIGestureRecognizerStateBegan)
     {
-        UIView *indicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 5.0, _platView.frame.size.height)];
+        CGFloat currentScale = [[_platView.layer valueForKeyPath:@"transform.scale"] floatValue];
+        
+        UIView *indicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, (5.0 / currentScale), 1024.0)];
+        
         indicatorView.backgroundColor = UIColor.redColor;
         [_platView addSubview:indicatorView];
     }
