@@ -70,9 +70,11 @@ int SQLOKswr(int sqlReturn, char *method);
 - (int)pickSanPlat:(LLPOINT *)pt;
 - (NSString *)getSanPlatIDFromRefno:(int)refno;
 - (NSMutableArray *)getAllSanPlats;
+- (NSMutableArray *)getAllStormPlats;
 
 
 - (BOOL)loadPlat:(NSString *)platID
+          ofType:(NSString *)type
     usingPopover:(GSSiPopoverView *)popover
      andDelegate:(id)delegate;
 

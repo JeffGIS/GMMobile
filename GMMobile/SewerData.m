@@ -143,12 +143,13 @@ int SQLOKswr(int sqlReturn, char *method)
 }
 
 - (BOOL)loadPlat:(NSString *)platID
+          ofType:(NSString*)type
     usingPopover:(GSSiPopoverView *)popover
      andDelegate:(id)delegate
 {
     BOOL fileExists = NO;
     NSString *actualPlatID = [self getActualPlatFileName:platID];
-    NSString *toDir = [NSString stringWithFormat:@"%@/SanPlats", _documentsDirectory];
+    NSString *toDir = [NSString stringWithFormat:@"%@/%@Plats", type,_documentsDirectory];
     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", actualPlatID];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
@@ -158,9 +159,9 @@ int SQLOKswr(int sqlReturn, char *method)
     //pull.ipAddress = http://74.42.137.128/icons/MPLS/;
     
     [popover showAfter:0.5
-              withTitle:[NSString stringWithFormat:@"Get Sanitary Plat %@", actualPlatID]];
+              withTitle:[NSString stringWithFormat:@"Get %@ Plat %@", type,actualPlatID]];
     
-    pull.ftpSiteOveride = @"74.42.137.128";
+    pull.ftpSiteOveride = @"74.42.136.100";
     pull.usernameOveride = @"GMMobile";
     pull.passwordOveride = @"GeoMaster";
     pull.portOveride = @"21";
@@ -168,7 +169,7 @@ int SQLOKswr(int sqlReturn, char *method)
     pull.returnIfExists = NO;
     
     if ([pull getFile:fileName
-        fromDirectory:@"Sewer/Sanitary/Plats"
+        fromDirectory:[NSString stringWithFormat:@"Sewer/%@/Plats",type]
                toFile:fileName
           toDirectory:toDir
          forceRefresh:NO] == FTPStatusFileExists)
@@ -616,6 +617,29 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     [self open];
     
     NSString *query = @"SELECT PLAT FROM SANPLATAREAS";
+    
+    sqlite3_stmt *statement;
+    
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetAllSanPlats");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR platID = (LPSTR)sqlite3_column_text(statement, 0);
+        NSString *plat = [NSString stringWithUTF8String:platID];
+        [list addObject:plat];
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), "getAllSanPlats");
+    [self close];
+    return list;
+}
+
+- (NSMutableArray *)getAllStormPlats
+{
+    NSMutableArray *list = [[NSMutableArray alloc] init];
+    [self open];
+    
+    NSString *query = @"SELECT PLAT_NAME FROM STORM_PLAT";
     
     sqlite3_stmt *statement;
     

@@ -610,6 +610,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self clearVectorView];
             _waitForVectorViewRefresh = NO;
         }
+        else if (_platView)
+        {
+            [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+        }
     }
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
