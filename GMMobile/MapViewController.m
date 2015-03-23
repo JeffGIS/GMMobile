@@ -85,9 +85,9 @@ extern int keepProcessing;
     _mapView.settings.tiltGestures = NO;
     [self.view addSubview:_mapView];
     
-    _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 48.0, 48.0)];
+    _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
     
-    _targetView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"crosshairs"
+    _targetView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redTarget"
                                                                                        ofType:@"png"]];
     
     _targetView.hidden = YES;
