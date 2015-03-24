@@ -4,6 +4,9 @@
 #define COORDINATE_FACTOR 10000000.0
 #define GET_SANPLAT 11
 
+#define PLAT_TYPE_SANITARY  1
+#define PLAT_TYPE_STORM     2
+
 #define LINE_PASS 1
 #define TEXT_PASS 2
 #define TRACE_PASS 2
@@ -28,12 +31,15 @@ int SQLOKswr(int sqlReturn, char *method);
 @property int processingID;
 @property int zoom;
 
++ (NSString *)getActualPlatFileName:(NSString *)platID;
+
 - (void)open;
 - (void)close;
 - (void)clear;
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
 - (void)commitTransaction;
+-(NSString*)platPathName:(NSString*)platName platType:(int)type;
 
 - (void)setTrans:(CORNERPOINTS *)corners
       viewBounds:(MNMXCORD *)pvbounds;

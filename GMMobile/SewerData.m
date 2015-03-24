@@ -49,8 +49,30 @@ int SQLOKswr(int sqlReturn, char *method)
     
     return sqlReturn;
 }
-
-
++ (NSString *)getActualPlatFileName:(NSString *)platID
+{
+    NSString *outName;
+    char name[128];
+    strncpy (name, platID.UTF8String, 126);
+    LPSTR pU = strrchr(name,'_');
+    
+    if (pU)
+        *pU = 0;
+    
+    outName = [NSString stringWithUTF8String:name];
+    return outName;
+}
+-(NSString*)platPathName:(NSString*)platName platType:(int)type
+{
+    NSString *toDir;
+    NSString *actualPlatID = [SewerData getActualPlatFileName:platName];
+    if (type == PLAT_TYPE_SANITARY)
+        toDir = [NSString stringWithFormat:@"%@/SANPlats", _documentsDirectory];
+    else
+        toDir = [NSString stringWithFormat:@"%@/STORMPlats", _documentsDirectory];
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@.jpg",toDir, actualPlatID];
+    return fileName;
+}
 - (id)init
 {
     self = [super init];
@@ -128,27 +150,13 @@ int SQLOKswr(int sqlReturn, char *method)
     SQLOKswr(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
 }
 
-- (NSString *)getActualPlatFileName:(NSString *)platID
-{
-    NSString *outName;
-    char name[128];
-    strncpy (name, platID.UTF8String, 126);
-    LPSTR pU = strrchr(name,'_');
-    
-    if (pU)
-        *pU = 0;
-    
-    outName = [NSString stringWithUTF8String:name];
-    return outName;
-}
-
 - (BOOL)loadPlat:(NSString *)platID
           ofType:(NSString*)type
     usingPopover:(GSSiPopoverView *)popover
      andDelegate:(id)delegate
 {
     BOOL fileExists = NO;
-    NSString *actualPlatID = [self getActualPlatFileName:platID];
+    NSString *actualPlatID = [SewerData getActualPlatFileName:platID];
     NSString *toDir = [NSString stringWithFormat:@"%@/%@Plats", _documentsDirectory,type];
     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", actualPlatID];
     FTPDataPull *pull = FTPDataPull.pull;

@@ -581,12 +581,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         if (gesture.state == UIGestureRecognizerStateBegan)
         {
-            if (_screenSetting == MapViewScreenSettingFullscreen)
-            {
-                [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
-                [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
-            }
-            
             _mapView.settings.scrollGestures = NO;
             CRAPI.sharedInstance.showPlats = -1;
             [self clearVectorView];
@@ -634,7 +628,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _mapView.settings.scrollGestures = YES;
         CRAPI.sharedInstance.showPlats = 0;
-        [self clearVectorView];
+        if (_screenSetting == MapViewScreenSettingFullscreen && _selectedPlatRefno > 0)
+        {
+            [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
+            [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
+        }
+        
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
@@ -1839,6 +1838,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         {
             _platView = [PlatImageView platImageViewWithDelegate:self
                                                         andFrame:frame];
+            if (_selectedPlatRefno > 0)
+                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+            
         }
         
     }
