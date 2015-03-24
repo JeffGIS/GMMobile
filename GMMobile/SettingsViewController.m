@@ -36,9 +36,10 @@
     _gssiAlert.delegate = self;
 }
 
-- (void) viewWillAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld", pd.fileSize];
@@ -46,9 +47,10 @@
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 
-- (void) viewWillDisappear:(BOOL)animated
+- (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
     [UIApplication.sharedApplication setIdleTimerDisabled:NO];
 }
 
@@ -93,6 +95,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                             userInfo:nil
                                                              repeats:NO];
                 break;
+                
             case GET_PARCELS:
             case GET_PROPERTY:
             case GET_AREAS:
@@ -177,16 +180,20 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             sd = [[SewerData alloc]init];
                             [sd open];
                         }
+                        
                         else
                         {
                             pd = [[PropertyData alloc] init];
                             [pd open];
                         }
+                        
                         fseek(fid, 0, SEEK_END);
                         CGFloat totLen = ftell(fid);
                         fseek(fid, 0, SEEK_SET);
+                        
                         if (option == GET_SEWER)
                             [sd startTransaction];
+                        
                         else
                             [pd startTransaction];
                         
@@ -194,6 +201,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         {
                             if (option == GET_SEWER)
                                 [sd executeCmd:str];
+                            
                             else
                                 [pd executeCmd:str];
                             
@@ -205,8 +213,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GET_SEWER)
                             [sd commitTransaction];
+                        
                         else
                             [pd commitTransaction];
+                        
                         if (option == GET_PARCELS)
                         {
                             dispatch_async(dispatch_get_main_queue(),
@@ -217,8 +227,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
                             [pd commitTransaction];
                         }
+                        
                         if (option == GET_SEWER)
                             [sd close];
+                        
                         else
                             [pd close];
                         fclose(fid);
@@ -526,7 +538,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)showEmail:(id)sender
 {
-    NSString* fileName1, *fileName2;
+    NSString *fileName1, *fileName2;
     //Email Subject
     NSString *emailTitle = @"Data extract file from NewVision Mobile";
     //Email Content
@@ -543,7 +555,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     //PropertyData *pd = [[PropertyData alloc] init];
     //[pd getDistinctUseCodes:fileName1];
     fileName1 = CRAPI.sharedInstance.extractFile;
-    NSData * data = [NSData dataWithContentsOfFile:fileName1];
+    NSData *data = [NSData dataWithContentsOfFile:fileName1];
 
     mc.subject = emailTitle;
     mc.toRecipients = toRecipents;
@@ -566,9 +578,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
 }
 
-- (void) mailComposeController:(MFMailComposeViewController *)controller
-           didFinishWithResult:(MFMailComposeResult)result
-                         error:(NSError *)error
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError *)error
 {
     switch (result)
     {
