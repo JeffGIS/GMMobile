@@ -69,7 +69,15 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    NSString *sourceApp = [SharedDefaults.defaults stringForKey:@"SourceApplication"];
     
+    if ([sourceApp isEqualToString:@""])
+        sourceApp = @"User";
+    
+    NSLog(@"GMMobile opened by %@", sourceApp);
+    
+    [SharedDefaults.defaults saveString:@""
+                                 forKey:@"SourceApplication"];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
