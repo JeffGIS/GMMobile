@@ -601,7 +601,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *CRISDetailURL = @"PedRampDetail://";
     
-    [SharedDefaults.defaults saveString:@"PedRampDetail"
+    [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
