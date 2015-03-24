@@ -597,4 +597,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:NULL];
 }
 
+- (IBAction)launchDetailMod:(id)sender
+{
+    NSString *CRISDetailURL = @"PedRampDetail://";
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    
+    else
+    {
+        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch CRIS Detail"
+                               message:nil
+                     cancelButtonTitle:@"OK"
+                     otherButtonTitles:nil
+             destructiveButtonPosition:0];
+    }
+}
+
 @end
