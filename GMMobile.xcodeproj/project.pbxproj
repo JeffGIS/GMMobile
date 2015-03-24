@@ -382,7 +382,6 @@
 		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
 			isa = PBXGroup;
 			children = (
-				A91B735C1AC1BA8400B1FEFA /* GMMobile.entitlements */,
 				A9C8372A1A65B2DE005EC4FA /* Model */,
 				A9C8372B1A65B2E4005EC4FA /* View */,
 				A9C8372C1A65B2E8005EC4FA /* Controller */,
@@ -395,6 +394,7 @@
 			children = (
 				EB398F0D1AC04B530043875E /* censusdatadef.txt */,
 				EB398F061ABC61C40043875E /* landusecodes.txt */,
+				A91B735C1AC1BA8400B1FEFA /* GMMobile.entitlements */,
 				A90506341A75DCE300288850 /* Images */,
 				EB5521CD1A61B6A8008CE2D1 /* Info.plist */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
