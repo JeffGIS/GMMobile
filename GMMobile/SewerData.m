@@ -296,6 +296,8 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
         nBlobBytes = sqlite3_column_bytes(statement,7);
         
+        if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
+            minRef = refno;
         if (numPoints < 0)
         {
             numPoints = -numPoints;
