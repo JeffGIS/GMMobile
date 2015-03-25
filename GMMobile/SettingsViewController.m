@@ -475,6 +475,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
           ofType:@"storm"
     usingPopover:_popover
      andDelegate:self];
+    
     return YES;
 }
 

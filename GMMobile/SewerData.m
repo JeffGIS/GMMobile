@@ -163,18 +163,13 @@ int SQLOKswr(int sqlReturn, char *method)
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
+    pull.useOnlyPrimaryFTP = YES;
     pull.option = GET_SANPLAT;
-    //pull.ipAddress = http://74.42.137.128/icons/MPLS/;
     
     [popover showAfter:0.5
               withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
                          type, actualPlatID]];
-    
-    //pull.ftpSiteOveride = @"74.42.136.100";
-    //pull.usernameOveride = @"GMMobile";
-    //pull.passwordOveride = @"GeoMaster";
-    //pull.portOveride = @"21";
+
     pull.createDirectory = createDirectory;
     pull.returnIfExists = NO;
     
