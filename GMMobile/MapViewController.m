@@ -758,12 +758,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
    
     _rotateZoom = !_rotateZoom;
     
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
-                                                        (_firstView.frame.size.height / 2.0));
-                     }];
-    
     CGFloat pBearing;
     CLLocationCoordinate2D pTarget;
     DPOINT minYpt, maxYpt;
@@ -872,6 +866,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              animations:^{
                                  _firstView.frame = frame1;
                              }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
+                             }];
         }
             break;
             
@@ -892,6 +892,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame2;
                              }];
             
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
+                             }];
+            
             [UIView animateWithDuration:duration
                              animations:^{
                                  _secondView.frame =
@@ -899,6 +905,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
                                             (self.view.frame.size.height + _tabBarHeight),
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _profileView.frame = CGRectMake(0.0, 0.0, _secondView.frame.size.width,
+                                                                 (_secondView.frame.size.height));
                              }];
         }
             break;
@@ -920,6 +932,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame3;
                              }];
             
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
+                             }];
+            
             [UIView animateWithDuration:duration
                              animations:^{
                                  _secondView.frame =
@@ -936,7 +954,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 -(void)allocateVectorView
 {
     int ivv;
-    for (int i=0;i<MAX_VECTORVIEWS;i++)
+    
+    for (int i = 0; i < MAX_VECTORVIEWS; i++)
     {
         if (!vectorViews[i])
         {
@@ -944,7 +963,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             goto haveVV;
         }
     }
+    
     return;
+    
 haveVV:
     _vectorView = [[VectorView alloc] init];
     vectorViews[ivv] = _vectorView;
@@ -953,14 +974,16 @@ haveVV:
     _vectorView.userInteractionEnabled = NO;
     _vectorView.delegate = self;
     [self.view addSubview:_vectorView];
-
 }
+
 - (void)clearVectorView
 {
-    [self.vectorViewTimer invalidate];
+    [_vectorViewTimer invalidate];
     keepProcessing++;
+    
     if (!_vectorView)
         return;
+    
     _vectorView.displayData = 0;
     [_vectorView removeFromSuperview];
     vectorViews[_vectorView.ivv] = nil;
@@ -972,7 +995,7 @@ haveVV:
 {
     [self clearVectorView];
     _vectorViewZoom = zoom;
-    self.vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+    _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                   target:self
                                                 selector:@selector(startVectorView:)
                                                 userInfo:nil
