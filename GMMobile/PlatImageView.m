@@ -38,7 +38,7 @@
     platView.userInteractionEnabled = YES;
     [platView addGesturesToView];
     platView.delegate = delegate;
-    return platView;
+    //return platView;
   
     NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
     platView.platType = CRAPI.sharedInstance.currentPlatType;

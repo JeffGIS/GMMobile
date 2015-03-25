@@ -1838,25 +1838,30 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         {
             _platView = [PlatImageView platImageViewWithDelegate:self
                                                         andFrame:frame];
-            if (_selectedPlatRefno > 0)
-                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
             
+            if (_selectedPlatRefno > 0)
+            {
+                [_platView setPlatID:_selectedPlatRefno
+                             andType:PLAT_TYPE_STORM];
+            }
         }
-        
     }
     
     if (setting == MapViewScreenSettingTriScreen)
     {
-        if (_profileView)
+        if (_screenSetting == MapViewScreenSettingFullscreen && _profileView)
         {
             [_profileView removeFromSuperview];
             _profileView.image = nil;
             _profileView = nil;
         }
         
-        _profileView = [[PlatProfileView alloc] init];
-        _profileView.contentMode = UIViewContentModeScaleAspectFit;
-        _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
+        if (!_profileView)
+        {
+            _profileView = [[PlatProfileView alloc] init];
+            _profileView.contentMode = UIViewContentModeScaleAspectFit;
+            _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
+        }
     }
     
     [self clearVectorView];
