@@ -81,7 +81,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [super didReceiveMemoryWarning];
 }
 
-- (void)FTPdidComplete:(int)option withStatus:(int)status
+- (void)FTPdidComplete:(int)option
+            withStatus:(int)status
               filePath:(NSString *)path
 {
     if (status == FTPStatusOK)
@@ -103,7 +104,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case GET_PLAN:
             case GET_CENSUS:
             {
-                NSString *toDirectory = [path stringByDeletingLastPathComponent];
+                NSString *toDirectory = path.stringByDeletingLastPathComponent;
                 NSString *file;
                 
                 if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
@@ -156,6 +157,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     }
                         break;
                 }
+                
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
                 
                 dispatch_async(overallQueue,
@@ -170,6 +172,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                            _popover.title = @"Failed to get memory. Hit cancel to continue";
                                        });
                     }
+                    
                     else
                     {
                         PropertyData *pd;
@@ -177,7 +180,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GET_SEWER)
                         {
-                            sd = [[SewerData alloc]init];
+                            sd = [[SewerData alloc] init];
                             [sd open];
                         }
                         
@@ -223,6 +226,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                            ^{
                                                _popover.title = @"Create Parcel Index";
                                            });
+                            
                             [pd startTransaction];
                             [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
                             [pd commitTransaction];
@@ -233,17 +237,32 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         else
                             [pd close];
+                        
                         fclose(fid);
                         free(str);
                         
                         dispatch_async(dispatch_get_main_queue(),
                                        ^{
                                            [_popover hide];
+                                           
+                                           NSFileManager *fileManager = NSFileManager.defaultManager;
+                                           NSError *error;
+                                           
+                                           if (![fileManager removeItemAtPath:path
+                                                                        error:&error])
+                                           {
+                                               NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
+                                           }
+                                           
+                                           if (![fileManager removeItemAtPath:file
+                                                                        error:&error])
+                                           {
+                                               NSLog(@"Could not delete %@:%@", file, error.localizedDescription);
+                                           }
                                        });
                     }
                 });
-                }
-            
+            }
                 break;
                 
             case GET_TILES:
@@ -254,6 +273,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 break;
         }
     }
+    
     else
     {
         if (option == GET_SANPLAT)
@@ -455,7 +475,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
           ofType:@"storm"
     usingPopover:_popover
      andDelegate:self];
-    
     return YES;
 }
 

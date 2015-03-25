@@ -62,7 +62,8 @@ int SQLOKswr(int sqlReturn, char *method)
     outName = [NSString stringWithUTF8String:name];
     return outName;
 }
--(NSString*)platPathName:(NSString*)platName platType:(int)type
+-(NSString*)platPathName:(NSString *)platName
+                platType:(int)type
 {
     NSString *toDir;
     NSString *actualPlatID = [SewerData getActualPlatFileName:platName];
