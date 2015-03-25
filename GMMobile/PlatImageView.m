@@ -12,7 +12,8 @@
 @property (nonatomic) LPTRANDATA pTranFrameToImage, pTranImageToFrame;
 @property (nonatomic, copy) NSString *platType, *platName;
 @property (nonatomic) int numProfileAreas;
-@property (nonatomic) NSString* imagePath;
+@property (nonatomic) NSString *imagePath, *currentTransName;
+@property (nonatomic) BOOL currentTransStatus;
 
 @end
 
@@ -24,8 +25,6 @@
     DPOINT _virtualImageCornersWorld[4];
     NSInteger _numProfileAreaPoints[MAX_PROFILE_AREAS];
     LPDPOINT _profileAreaPoints[MAX_PROFILE_AREAS];
-    NSString * _currentTransName;
-    BOOL _currentTransStatus;
 }
 
 + (PlatImageView *)platImageViewWithDelegate:(id)delegate
@@ -38,9 +37,9 @@
     platView.userInteractionEnabled = YES;
     [platView addGesturesToView];
     platView.delegate = delegate;
-    //return platView;
+    return platView;
   
-    NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
+    /*NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
     platView.platType = CRAPI.sharedInstance.currentPlatType;
     
     platView.platType = @"SAN";
@@ -59,8 +58,9 @@
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
     platView.platName = imagePath.lastPathComponent.stringByDeletingPathExtension;
     [platView getPlatTransformation];
-    return platView;
+    return platView;*/
 }
+
 - (void)dealloc
 {
     CloseTRANS2(&_pTranImageToLatlon);

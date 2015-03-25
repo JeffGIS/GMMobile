@@ -419,7 +419,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      forceRefresh:YES];
 }
 
-- (IBAction)loadSewer:(id)sender {
+- (IBAction)loadSewer:(id)sender
+{
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_sewer.gcf";
     
@@ -439,22 +440,28 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      forceRefresh:YES];
 }
 
-- (BOOL) getNextPlat
+- (BOOL)getNextPlat
 {
-    if (_nextPlat >= [_allPlats count])
+    if (_nextPlat >= _allPlats.count)
     {
         [_popover hide];
-        return FALSE;
+        return NO;
     }
+    
     NSString *platID = _allPlats[_nextPlat++];
-    SewerData* sd = [[SewerData alloc]init];
-    [sd loadPlat:platID ofType:@"STORM" usingPopover:_popover andDelegate:self];
-    return TRUE;
+    SewerData *sd = [[SewerData alloc] init];
+    
+    [sd loadPlat:platID
+          ofType:@"storm"
+    usingPopover:_popover
+     andDelegate:self];
+    
+    return YES;
 }
 
 - (IBAction)loadPlats:(id)sender
 {
-    SewerData* sd = [[SewerData alloc]init];
+    SewerData *sd = [[SewerData alloc] init];
     _allPlats = [sd getAllStormPlats];
     _nextPlat = 0;
     [self getNextPlat];

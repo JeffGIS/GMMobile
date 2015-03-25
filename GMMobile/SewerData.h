@@ -39,13 +39,15 @@ int SQLOKswr(int sqlReturn, char *method);
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
 - (void)commitTransaction;
--(NSString*)platPathName:(NSString*)platName platType:(int)type;
+
+-(NSString *)platPathName:(NSString *)platName
+                 platType:(int)type;
 
 - (void)setTrans:(CORNERPOINTS *)corners
       viewBounds:(MNMXCORD *)pvbounds;
 
 - (void)displayPlats:(CGContextRef)context
-                type:(NSString*)platType
+                type:(NSString *)platType
            llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;

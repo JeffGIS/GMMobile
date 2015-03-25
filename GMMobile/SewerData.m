@@ -151,7 +151,7 @@ int SQLOKswr(int sqlReturn, char *method)
 }
 
 - (BOOL)loadPlat:(NSString *)platID
-          ofType:(NSString*)type
+          ofType:(NSString *)type
     usingPopover:(GSSiPopoverView *)popover
      andDelegate:(id)delegate
 {
@@ -162,22 +162,23 @@ int SQLOKswr(int sqlReturn, char *method)
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = YES;
+    pull.useOnlyPrimaryFTP = NO;
     pull.option = GET_SANPLAT;
     //pull.ipAddress = http://74.42.137.128/icons/MPLS/;
     
     [popover showAfter:0.5
-              withTitle:[NSString stringWithFormat:@"Get %@ Plat %@", type,actualPlatID]];
+              withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
+                         type, actualPlatID]];
     
-    pull.ftpSiteOveride = @"74.42.136.100";
-    pull.usernameOveride = @"GMMobile";
-    pull.passwordOveride = @"GeoMaster";
-    pull.portOveride = @"21";
+    //pull.ftpSiteOveride = @"74.42.136.100";
+    //pull.usernameOveride = @"GMMobile";
+    //pull.passwordOveride = @"GeoMaster";
+    //pull.portOveride = @"21";
     pull.createDirectory = createDirectory;
     pull.returnIfExists = NO;
     
     if ([pull getFile:fileName
-        fromDirectory:[NSString stringWithFormat:@"Sewer/%@/Plats",type]
+        fromDirectory:[NSString stringWithFormat:@"GMMobile/sewerplats/%@", type]
                toFile:fileName
           toDirectory:toDir
          forceRefresh:NO] == FTPStatusFileExists)
