@@ -31,6 +31,9 @@
 + (PlatImageView *)platImageViewWithDelegate:(id)delegate andFrame:(CGRect)frame;
 
 - (void)setPlatID:(int)refno andType:(int)platType;
+- (BOOL)getYValueRangeForProfileAtX:(CGFloat)x
+                               minY:(CGFloat *)pMinY
+                               maxY:(CGFloat *)pMaxY;
 
 - (CGFloat)zoomForMapBounds:(CGRect)imageRect
                     bearing:(CGFloat *)bearing
