@@ -1886,14 +1886,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     if (setting == MapViewScreenSettingTriScreen)
     {
-        if (_platView)
-        {
-            [_platView removeFromSuperview];
-            _platView.image = nil;
-            _platView = nil;
-        }
-        
-        if (_profileView)
+        if (_screenSetting == MapViewScreenSettingFullscreen && _profileView)
         {
             [_profileView removeFromSuperview];
             _profileView.image = nil;
@@ -1902,19 +1895,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         
         if (!_profileView)
         {
-            _platView = [PlatImageView platImageViewWithDelegate:self
-                                                        andFrame:frame3];
-            
-            if (_selectedPlatRefno > 0)
-            {
-                [_platView setPlatID:_selectedPlatRefno
-                             andType:PLAT_TYPE_STORM];
-            }
             _profileView = [[PlatProfileView alloc] init];
             _profileView.contentMode = UIViewContentModeScaleAspectFit;
             _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
-            [self addPlatView];
-            [self addProfileView];
         }
     }
     
