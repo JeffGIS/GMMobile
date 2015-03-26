@@ -1886,18 +1886,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     if (setting == MapViewScreenSettingTriScreen)
     {
-        if (_screenSetting == MapViewScreenSettingFullscreen && _profileView)
+        _profileView = [[PlatProfileView alloc] init];
+        _profileView.contentMode = UIViewContentModeScaleAspectFit;
+        _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
+        [self addProfileView];
+    }
+    
+    else
+    {
+        if (_screenSetting == MapViewScreenSettingTriScreen && _profileView)
         {
             [_profileView removeFromSuperview];
             _profileView.image = nil;
             _profileView = nil;
-        }
-        
-        if (!_profileView)
-        {
-            _profileView = [[PlatProfileView alloc] init];
-            _profileView.contentMode = UIViewContentModeScaleAspectFit;
-            _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
         }
     }
     
