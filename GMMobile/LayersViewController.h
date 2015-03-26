@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "SpreadsheetView.h"
 
 @interface LayersViewController : UIViewController
 
