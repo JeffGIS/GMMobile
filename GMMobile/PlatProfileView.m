@@ -38,6 +38,9 @@
     
     _imageRef = CGImageRetain(image.CGImage);
     _profileX = imageX;
+    CGFloat margin = (maxY - minY) * 0.05;
+    maxY += margin;
+    minY -= margin;
     _profileMinY = minY;
     _profileMaxY = maxY;
     CGFloat scale = ((maxY - minY) / self.frame.size.height);

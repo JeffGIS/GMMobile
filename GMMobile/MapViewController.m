@@ -1664,8 +1664,22 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         
         for (UIView *subviews in _profileView.subviews)
         {
+            CGFloat minY, maxY;
             CGFloat xPosition = [_profileView referenceLineAtX:xImage];
-            subviews.center = CGPointMake(xPosition, _profileView.center.y);
+            if (xPosition < 0 || xPosition > _profileView.frame.size.width)
+            {
+                if ([_platView getYValueRangeForProfileAtX:xImage
+                                                    minY:&minY
+                                                    maxY:&maxY])
+                {
+                    [_profileView zoomImage:_platView.image
+                                        atX:xImage
+                                   fromMinY:minY
+                                     toMaxY:maxY];
+                }
+            }
+            else
+                subviews.center = CGPointMake(xPosition, _profileView.center.y);
         }
         
         _targetView.center = superpoint;
