@@ -129,12 +129,8 @@
 
 - (IBAction)showSpreadsheetView:(id)sender
 {
-    CGRect spreadsheetFrame = CGRectMake(60.0, 60.0, (self.view.frame.size.width - 120.0),
-                                         (self.view.frame.size.height - 120.0));
-    
     SpreadsheetView *spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:24
                                                                         columns:8
-                                                                          frame:spreadsheetFrame
                                                                            view:self.view];
     
     [self.view addSubview:spreadsheetView];

@@ -9,7 +9,6 @@
 
 + (SpreadsheetView *)spreadsheetViewWithRows:(NSUInteger)rows
                                      columns:(NSUInteger)columns
-                                       frame:(CGRect)frame
-                                        view:(UIView *)view;
+                                       view:(UIView *)view;
 
 @end

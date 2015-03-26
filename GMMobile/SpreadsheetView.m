@@ -17,13 +17,36 @@
 
 + (SpreadsheetView *)spreadsheetViewWithRows:(NSUInteger)rows
                                      columns:(NSUInteger)columns
-                                       frame:(CGRect)frame
-                                        view:(UIView *)view
+                                       view:(UIView *)view
 {
+    CGRect frame;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        frame = CGRectMake(20.0, 20.0, (view.frame.size.width - 40.0),
+                           (view.frame.size.height - 40.0));
+    }
+    
+    else
+    {
+        frame = CGRectMake(60.0, 60.0, (view.frame.size.width - 120.0),
+                           (view.frame.size.height - 120.0));
+    }
+    
     SpreadsheetView *spreadsheetView = [[SpreadsheetView alloc] initWithFrame:frame];
     
-    spreadsheetView.rowHeight = 40.0;
-    spreadsheetView.columnWidth = 160.0;
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        spreadsheetView.rowHeight = 40.0;
+        spreadsheetView.columnWidth = 120.0;
+    }
+    
+    else
+    {
+        spreadsheetView.rowHeight = 40.0;
+        spreadsheetView.columnWidth = 160.0;
+    }
+    
     spreadsheetView.overlayView = [[UIView alloc] initWithFrame:view.frame];
     spreadsheetView.overlayView.backgroundColor = UIColor.blackColor;
     spreadsheetView.overlayView.alpha = 0.6;
