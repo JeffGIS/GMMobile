@@ -7,10 +7,10 @@
 
 @property UIImage *image;
 
--(void)zoomImage:(UIImage *)image
-             atX:(NSInteger)imageX
-        fromMinY:(NSInteger)minY
-          toMaxY:(NSInteger)maxY;
+- (void)zoomImage:(UIImage *)image
+              atX:(NSInteger)imageX
+         fromMinY:(NSInteger)minY
+           toMaxY:(NSInteger)maxY;
 
 - (CGFloat)referenceLineAtX:(CGFloat)imageX;
 

@@ -126,19 +126,14 @@
 {
     CRAPI.sharedInstance.showParcelBoundary = !CRAPI.sharedInstance.showParcelBoundary;
 }
-/*
-- (IBAction)toggleBasemap:(UISegmentedControl *)sender
+
+- (IBAction)showSpreadsheetView:(id)sender
 {
-    switch (sender.selectedSegmentIndex)
-    {
-        case 0:
-            CRAPI.sharedInstance.basemap = BasemapSettingApple;
-            break;
-            
-        case 1:
-            CRAPI.sharedInstance.basemap = BasemapSettingOSM;
-            break;
-    }
+    SpreadsheetView *spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:24
+                                                                        columns:8
+                                                                           view:self.view];
+    
+    [self.view addSubview:spreadsheetView];
 }
-*/
+
 @end
