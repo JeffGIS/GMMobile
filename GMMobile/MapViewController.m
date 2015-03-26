@@ -1270,6 +1270,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Add to Property List"])
+    {
+        [self addToPropList];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Pipe Attributes"])
     {
         [self showPipeAttributes];
@@ -1395,10 +1401,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
          destructiveButtonPosition:0];
 }
 
+- (void)addToPropList
+{
+    //implement add to property list here
+}
+
 - (void)showPipeAttributes
 {
-    [self dismissTableView];//this is temporary
-    
     //implement pipe attributes here (then reload tableView)
 }
 
