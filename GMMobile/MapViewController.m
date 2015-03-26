@@ -2268,13 +2268,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             if ([self isHennepinCountyPID:_selectedPID])
             {
                 _options = @[@"Property Report", @"Hennepin County Website", @"Rankings",
-                             @"Computed Values", @"Display Street View", @"Zoom to Census Area", @"Remove Property Marker"];
+                             @"Computed Values", @"Display Street View", @"Zoom to Census Area", @"Add to Property List", @"Remove Property Marker"];
             }
             
             else
             {
                 _options = @[@"Property Report", @"Rankings", @"Computed Values",
-                             @"Display Street View", @"Zoom to Census Area", @"Remove Property Marker"];
+                             @"Display Street View", @"Zoom to Census Area", @"Add to Property List", @"Remove Property Marker"];
             }
             
             break;

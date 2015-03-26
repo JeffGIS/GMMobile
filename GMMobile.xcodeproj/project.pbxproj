@@ -14,6 +14,7 @@
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
+		A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */ = {isa = PBXBuildFile; fileRef = A91076BB1AC46D3A0096EFFD /* PropertyList.m */; };
 		A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */ = {isa = PBXBuildFile; fileRef = A9128A5A1AC0C95600F4242F /* redTarget.png */; };
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
@@ -99,6 +100,8 @@
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		A90506471A75E24100288850 /* layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = layers.png; sourceTree = "<group>"; };
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
+		A91076BA1AC46D3A0096EFFD /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyList.h; sourceTree = "<group>"; };
+		A91076BB1AC46D3A0096EFFD /* PropertyList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyList.m; sourceTree = "<group>"; };
 		A9128A5A1AC0C95600F4242F /* redTarget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redTarget.png; sourceTree = "<group>"; };
 		A91565611A81E76400119C21 /* FindBoundariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindBoundariesViewController.h; sourceTree = "<group>"; };
 		A91565621A81E76400119C21 /* FindBoundariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindBoundariesViewController.m; sourceTree = "<group>"; };
@@ -319,6 +322,8 @@
 				EB4A18C41AAE347600B8B162 /* PickedItem.m */,
 				EB398F081ABC94240043875E /* PlatProfileView.h */,
 				EB398F091ABC94240043875E /* PlatProfileView.m */,
+				A91076BA1AC46D3A0096EFFD /* PropertyList.h */,
+				A91076BB1AC46D3A0096EFFD /* PropertyList.m */,
 				A94DE33D1AC3D55F000A4D6B /* SpreadsheetView.h */,
 				A94DE33E1AC3D55F000A4D6B /* SpreadsheetView.m */,
 			);
@@ -557,6 +562,7 @@
 			files = (
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
+				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
 				A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */,
 				EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */,
 				A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */,
