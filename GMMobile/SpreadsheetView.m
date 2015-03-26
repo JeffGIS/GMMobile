@@ -86,7 +86,7 @@
             
             else if (r == 0)
             {
-                label.text = spreadsheetView.alphabet[c];
+                label.text = spreadsheetView.alphabet[c - 1];
                 label.font = [UIFont boldSystemFontOfSize:24.0];
                 label.backgroundColor = UserDefaults.defaults.appleGray;
             }
@@ -100,7 +100,7 @@
             
             else
             {
-                label.text = [NSString stringWithFormat:@"%@%i", spreadsheetView.alphabet[c], r];
+                label.text = [NSString stringWithFormat:@"%@%i", spreadsheetView.alphabet[c - 1], r];
                 label.backgroundColor = UIColor.whiteColor;
                 label.textColor = UIColor.blackColor;
             }
