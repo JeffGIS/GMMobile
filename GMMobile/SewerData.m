@@ -292,9 +292,9 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         int nBlobBytes = sqlite3_column_bytes(statement,6);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
         nBlobBytes = sqlite3_column_bytes(statement,7);
+ 
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         
-        if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
-            minRef = refno;
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -302,23 +302,47 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
             
             for (int i = 0; i < numPoints; i++)
             {
-                point.x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                point.y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                if (findClosestPoint (&point,&minpt,&mind,&p1))
-                    minRef = refno;
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
         }
         
         else for (int i = 0; i < numPoints; i++)
         {
-            point.x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            point.y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            if (findClosestPoint (&point,&minpt,&mind,&p1))
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        if (POINT_IN_AREAD(p1, numPoints, llpoints, 1, 0, 0, 0))
+        {
+            if (numPoints < 0)
+            {
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
+                {
+                    point.x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    point.y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    if (findClosestPoint (&point,&minpt,&mind,&p1))
+                        minRef = refno;
+                }
+            }
+            
+            else for (int i = 0; i < numPoints; i++)
+            {
+                point.x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                point.y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+                if (findClosestPoint (&point,&minpt,&mind,&p1))
+                    minRef = refno;
+            }
+            if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
                 minRef = refno;
         }
-        
+        free (llpoints);
+      
     }
-    
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
     [self close];
     pt->lon = minpt.x;
