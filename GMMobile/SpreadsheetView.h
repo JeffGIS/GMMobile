@@ -3,7 +3,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SpreadsheetView : UIScrollView
+@interface SpreadsheetView : UIScrollView <UITextFieldDelegate>
 
 @property (nonatomic) NSUInteger rowHeight, columnWidth;
 

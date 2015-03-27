@@ -995,16 +995,16 @@ haveVV:
 {
     [self clearVectorView];
     _vectorViewZoom = zoom;
+    
     _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                  target:self
-                                                selector:@selector(startVectorView:)
-                                                userInfo:nil
-                                                 repeats:NO];
+                                                        target:self
+                                                      selector:@selector(startVectorView:)
+                                                      userInfo:nil
+                                                       repeats:NO];
 }
 
 - (void)startVectorView:(NSTimer *)timer
 {
-    
     [self allocateVectorView];
     _vectorView.displayData = 1;
     

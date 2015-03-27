@@ -9,6 +9,8 @@
 
 @property (nonatomic) UIView *overlayView, *contentView;
 @property (nonatomic) NSArray *alphabet;
+@property (nonatomic) NSDate *touchDown, *touchUp;
+@property (nonatomic) SpreadSheetViewCell *cellForEditing;
 
 @end
 
@@ -111,9 +113,18 @@
     return spreadsheetView;
 }
 
+- (void)touchesBegan:(NSSet *)touches
+           withEvent:(UIEvent *)event
+{
+    _touchDown = [NSDate dateWithTimeIntervalSinceNow:0.0];
+}
+
 - (void)touchesEnded:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
+    _touchUp = [NSDate dateWithTimeIntervalSinceNow:0.0];
+    CGFloat timeInterval = (_touchUp.timeIntervalSinceNow - _touchDown.timeIntervalSinceNow);
+    
     UITouch *touch = touches.anyObject;
     CGPoint point = [touch locationInView:self];
     CGPoint pointID = CGPointMake((point.x / _columnWidth), (point.y / _rowHeight));
@@ -151,12 +162,41 @@
     {
         selection = [NSString stringWithFormat:@"%@%i", _alphabet[xPoint - 1], yPoint];
         
-       for (SpreadSheetViewCell *cell in _contentView.subviews)
+        for (SpreadSheetViewCell *cell in _contentView.subviews)
         {
             if ([cell.identifier isEqualToString:selection])
-                cell.selected = !cell.selected;
+            {
+                if (timeInterval < 0.25)
+                    cell.selected = !cell.selected;
+                
+                else
+                    [self editCell:cell];
+            }
         }
     }
+}
+
+- (void)editCell:(SpreadSheetViewCell *)cell
+{
+    UITextField *textField = [[UITextField alloc] initWithFrame:cell.frame];
+    textField.delegate = self;
+    textField.text = cell.text;
+    textField.backgroundColor = cell.backgroundColor;
+    textField.layer.borderColor = UIColor.redColor.CGColor;
+    textField.layer.borderWidth = 2.0;
+    textField.textAlignment = NSTextAlignmentCenter;
+    textField.clearButtonMode = UITextFieldViewModeAlways;
+    [_contentView addSubview:textField];
+    [textField becomeFirstResponder];
+    _cellForEditing = cell;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    _cellForEditing.text = textField.text;
+    [textField removeFromSuperview];
+    return NO;
 }
 
 @end
