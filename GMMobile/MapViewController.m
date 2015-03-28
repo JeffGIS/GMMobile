@@ -1825,7 +1825,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-    CGPoint platViewCenter = _platView.center;
     
     //frame with no height for hidden views
     CGRect frame0 = CGRectMake(0.0,
@@ -1862,55 +1861,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));*/
     
-    if (![_firstView.subviews containsObject:_platView])
-    {
-        CGRect frame;
-        switch (setting)
-        {
-            case MapViewScreenSettingSplitScreen:
-                frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
-                break;
-                
-            case MapViewScreenSettingTriScreen:
-                frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
-                break;
-                
-            case MapViewScreenSettingSplitBottomScreen:
-                frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
-                break;
-        }
-        
-        if (setting != MapViewScreenSettingFullscreen)
-        {
-            _platView = [PlatImageView platImageViewWithDelegate:self
-                                                        andFrame:frame];
-            
-            if (_selectedPlatRefno > 0)
-            {
-                [_platView setPlatID:_selectedPlatRefno
-                             andType:PLAT_TYPE_STORM];
-            }
-        }
-    }
-    
-    if (setting == MapViewScreenSettingTriScreen)
-    {
-        _profileView = [[PlatProfileView alloc] init];
-        _profileView.contentMode = UIViewContentModeScaleAspectFit;
-        _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
-        [self addProfileView];
-    }
-    
-    else
-    {
-        if (_screenSetting == MapViewScreenSettingTriScreen && _profileView)
-        {
-            [_profileView removeFromSuperview];
-            _profileView.image = nil;
-            _profileView = nil;
-        }
-    }
-    
     [self clearVectorView];
     
     switch (setting)
@@ -1937,9 +1887,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _firstView.frame = _secondView.frame = frame0;
-                             }
-                             completion:^(BOOL finished) {
-                                 [_platView removeFromSuperview];
                              }];
             
             _screenSetting = MapViewScreenSettingFullscreen;
@@ -1974,37 +1921,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              animations:^{
                                  _secondView.frame = frame0;
                              }];
-            
-            switch (_screenSetting)
-            {
-                case MapViewScreenSettingFullscreen:
-                    [self performSelector:@selector(addPlatView)
-                               withObject:nil
-                               afterDelay:0.3];
-                    break;
-                    
-                case MapViewScreenSettingTriScreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame2
-                                                       toFrame2:frame1];
-                                     }];
-                }
-                    break;
-                    
-                case MapViewScreenSettingSplitBottomScreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame3
-                                                       toFrame2:frame1];
-                                     }];
-                }
-                    break;
-            }
             
             _screenSetting = MapViewScreenSettingSplitScreen;
         }
@@ -2043,37 +1959,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
-            switch (_screenSetting)
-            {
-                case MapViewScreenSettingFullscreen:
-                    [self performSelector:@selector(addPlatView)
-                               withObject:nil
-                               afterDelay:0.3];
-                    break;
-                    
-                case MapViewScreenSettingSplitScreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame1
-                                                       toFrame2:frame2];
-                                     }];
-                }
-                    break;
-                    
-                case MapViewScreenSettingSplitBottomScreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame3
-                                                       toFrame2:frame2];
-                                     }];
-                }
-                    break;
-            }
-            
             _screenSetting = MapViewScreenSettingTriScreen;
         }
             break;
@@ -2111,40 +1996,63 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                             ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
-            switch (_screenSetting)
-            {
-                case MapViewScreenSettingFullscreen:
-                    [self performSelector:@selector(addPlatView)
-                               withObject:nil
-                               afterDelay:0.3];
-                    break;
-                    
-                case MapViewScreenSettingTriScreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame2
-                                                       toFrame2:frame3];
-                                     }];
-                }
-                    break;
-                    
-                case MapViewScreenSettingSplitScreen:
-                {
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         [self platViewPosition:platViewCenter
-                                                     fromFrame1:frame1
-                                                       toFrame2:frame3];
-                                     }];
-                }
-                    break;
-            }
-            
             _screenSetting = MapViewScreenSettingSplitBottomScreen;
         }
             break;
+    }
+    
+    if (setting != MapViewScreenSettingFullscreen)
+    {
+        CGRect frame;
+        
+        switch (setting)
+        {
+            case MapViewScreenSettingSplitScreen:
+                frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
+                break;
+                
+            case MapViewScreenSettingTriScreen:
+                frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
+                break;
+                
+            case MapViewScreenSettingSplitBottomScreen:
+                frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
+                break;
+        }
+        
+        if ([_firstView.subviews containsObject:_platView])
+            [_platView removeFromSuperview];
+        
+        _platView = [PlatImageView platImageViewWithDelegate:self
+                                                    andFrame:frame];
+        
+        if (_selectedPlatRefno > 0)
+        {
+            [_platView setPlatID:_selectedPlatRefno
+                         andType:PLAT_TYPE_STORM];
+        }
+        
+        [self performSelector:@selector(addPlatView)
+                   withObject:nil
+                   afterDelay:0.3];
+        
+        if (setting == MapViewScreenSettingTriScreen)
+        {
+            _profileView = [[PlatProfileView alloc] init];
+            _profileView.contentMode = UIViewContentModeScaleAspectFit;
+            _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
+            [self addProfileView];
+        }
+        
+        else
+        {
+            if (_screenSetting == MapViewScreenSettingTriScreen && _profileView)
+            {
+                [_profileView removeFromSuperview];
+                _profileView.image = nil;
+                _profileView = nil;
+            }
+        }
     }
 }
 
@@ -2152,10 +2060,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [_firstView addSubview:_platView];
     _platView.originalSize = _firstView.frame.size;
-    
-    if (_screenSetting == MapViewScreenSettingTriScreen)
-        [self addProfileView];
-    
     [self syncPlatView];
 }
 
@@ -2163,19 +2067,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     _profileView.image = _platView.image;
     [_secondView addSubview:_profileView];
-}
-
-- (void)platViewPosition:(CGPoint)center
-              fromFrame1:(CGRect)frame1
-                toFrame2:(CGRect)frame2
-{
-    _platView.center = CGPointMake(center.x - ((frame1.size.width - frame2.size.width) / 2.0),
-                                   center.y - ((frame1.size.height - frame2.size.height) / 2.0));
-    
-    if (_screenSetting == MapViewScreenSettingTriScreen)
-        [self addProfileView];
-    
-    [self syncPlatView];
 }
 
 - (void)syncPlatView

@@ -168,7 +168,10 @@
     TranMNMXCORD(&screenBounds, &imageBounds,pTran);
     CloseTRANS2(&pTran);
     
-    imageRect = CGRectMake(imageBounds.xmn,imageBounds.ymn, imageBounds.xmx - imageBounds.xmn, imageBounds.ymx - imageBounds.ymn);
+    imageRect = CGRectMake(imageBounds.xmn,imageBounds.ymn,
+                           imageBounds.xmx - imageBounds.xmn,
+                           imageBounds.ymx - imageBounds.ymn);
+    
     return imageRect;
 }
 - (CGFloat)zoomForMapBounds:(CGRect)frameRect

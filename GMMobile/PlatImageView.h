@@ -28,9 +28,12 @@
 @property (nonatomic) CGSize mapViewSize, originalSize;
 @property (nonatomic) CGFloat minY, maxY;
 
-+ (PlatImageView *)platImageViewWithDelegate:(id)delegate andFrame:(CGRect)frame;
++ (PlatImageView *)platImageViewWithDelegate:(id)delegate
+                                    andFrame:(CGRect)frame;
 
-- (void)setPlatID:(int)refno andType:(int)platType;
+- (void)setPlatID:(int)refno
+          andType:(int)platType;
+
 - (BOOL)getYValueRangeForProfileAtX:(CGFloat)x
                                minY:(CGFloat *)pMinY
                                maxY:(CGFloat *)pMaxY;
