@@ -969,8 +969,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
          */
     }
-    
-    NSLog(@"%f,%f", _platView.center.x, _platView.center.y);
 }
 
 -(void)allocateVectorView
