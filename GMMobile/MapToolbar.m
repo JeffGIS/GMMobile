@@ -98,7 +98,7 @@
         [self formatSegControl:_mapType];
         [self addSubview:_mapType];
         
-        _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Bottom"]];
+        _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Plat"]];
         _splitScreenSetting.selectedSegmentIndex = MapViewScreenSettingFullscreen;
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -263,7 +263,7 @@
     [_splitScreenSetting setTitle:@"T"
                 forSegmentAtIndex:2];
     
-    [_splitScreenSetting setTitle:@"B"
+    [_splitScreenSetting setTitle:@"P"
                 forSegmentAtIndex:3];
 }
 
@@ -315,7 +315,7 @@
     [_splitScreenSetting setTitle:@"Tri"
                 forSegmentAtIndex:2];
     
-    [_splitScreenSetting setTitle:@"Bottom"
+    [_splitScreenSetting setTitle:@"Plat"
                 forSegmentAtIndex:3];
 }
 
