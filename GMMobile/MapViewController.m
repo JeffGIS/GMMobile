@@ -606,6 +606,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _selectedPlatRefno = platRefno;
                 _waitForVectorViewRefresh = YES;
                 CRAPI.sharedInstance.showPlats = platRefno;
+                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
                 
                [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];

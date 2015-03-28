@@ -316,25 +316,9 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         }
         if (POINT_IN_AREAD(p1, numPoints, llpoints, 1, 0, 0, 0))
         {
-            if (numPoints < 0)
+            for (int i = 0; i < numPoints; i++)
             {
-                numPoints = -numPoints;
-                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-                
-                for (int i = 0; i < numPoints; i++)
-                {
-                    point.x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                    point.y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                    if (findClosestPoint (&point,&minpt,&mind,&p1))
-                        minRef = refno;
-                }
-            }
-            
-            else for (int i = 0; i < numPoints; i++)
-            {
-                point.x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-                point.y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-                if (findClosestPoint (&point,&minpt,&mind,&p1))
+                if (findClosestPoint (&llpoints[i],&minpt,&mind,&p1))
                     minRef = refno;
             }
             if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
