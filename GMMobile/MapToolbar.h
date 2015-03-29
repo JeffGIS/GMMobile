@@ -25,5 +25,7 @@
 - (void)animateToVerticalOrientation;
 - (void)animateToHorizontalOrientation;
 - (void)splitScreenSelectedSegmentIndex:(NSInteger)index;
+- (void)platViewMode;
+- (void)normalMode;
 
 @end

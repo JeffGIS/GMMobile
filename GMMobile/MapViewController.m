@@ -1871,10 +1871,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                ((tabBarTop - statusBarHeight) / 3.0));
     
     //middle third of tri screen
-    CGRect frame3 = CGRectMake(0.0,
+    /*CGRect frame3 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
-                               ((tabBarTop - statusBarHeight) / 3.0));
+                               ((tabBarTop - statusBarHeight) / 3.0));*/
     
     //bottom third of tri screen
     CGRect frame4 = CGRectMake(0.0,
@@ -1912,10 +1912,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
     
     if (setting == MapViewScreenSettingPlatView)
+    {
         [self hideCompass];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar platViewMode];
+                         }];
+    }
     
     else
+    {
         [self showCompass];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar normalMode];
+                         }];
+    }
     
     switch (setting)
     {
