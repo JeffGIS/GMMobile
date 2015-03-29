@@ -6,4 +6,6 @@
 
 @interface PropertyList : NSObject
 
+-(BOOL) addParcel:(NSString*)PID;
+
 @end

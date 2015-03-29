@@ -1428,6 +1428,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)addToPropList
 {
+    PropertyList * pl = [[PropertyList alloc]init];
+    
+    [pl addParcel:_selectedPID];
     //implement add to property list here
 }
 

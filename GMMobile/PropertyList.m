@@ -5,4 +5,10 @@
 
 @implementation PropertyList
 
+
+-(BOOL) addParcel:(NSString*)PID
+{
+    return NO;
+}
+
 @end

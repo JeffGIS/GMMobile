@@ -78,9 +78,9 @@
 
 - (void)setPlatID:(int)refno andType:(int)platType
 {
-    NSString *type = @"STORM";
+    NSString *type = @"storm";
     if (platType == PLAT_TYPE_SANITARY)
-        type = @"SAN";
+        type = @"san";
     
     sqlite3_stmt *statement;
     SewerData *sd = [[SewerData alloc] init];

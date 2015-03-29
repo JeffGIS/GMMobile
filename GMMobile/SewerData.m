@@ -68,9 +68,9 @@ int SQLOKswr(int sqlReturn, char *method)
     NSString *toDir;
     NSString *actualPlatID = [SewerData getActualPlatFileName:platName];
     if (type == PLAT_TYPE_SANITARY)
-        toDir = [NSString stringWithFormat:@"%@/SANPlats", _documentsDirectory];
+        toDir = [NSString stringWithFormat:@"%@/sanPlats", _documentsDirectory];
     else
-        toDir = [NSString stringWithFormat:@"%@/STORMPlats", _documentsDirectory];
+        toDir = [NSString stringWithFormat:@"%@/stormPlats", _documentsDirectory];
     NSString *fileName = [NSString stringWithFormat:@"%@/%@.jpg",toDir, actualPlatID];
     return fileName;
 }
@@ -170,11 +170,21 @@ int SQLOKswr(int sqlReturn, char *method)
               withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
                          type, actualPlatID]];
 
+    pull.ftpSiteOveride = @"74.42.136.100";
+    pull.usernameOveride = @"GMMobile";
+    pull.passwordOveride = @"GeoMaster";
+    pull.portOveride = @"21";
     pull.createDirectory = createDirectory;
     pull.returnIfExists = NO;
     
     if ([pull getFile:fileName
-        fromDirectory:[NSString stringWithFormat:@"GMMobile/sewerplats/%@", type]
+        fromDirectory:[NSString stringWithFormat:@"Sewer/%@/Plats",type]
+   
+    /*pull.createDirectory = createDirectory;
+    pull.returnIfExists = NO;
+    
+    if ([pull getFile:fileName
+        fromDirectory:[NSString stringWithFormat:@"GMMobile/sewerplats/%@", type]*/
                toFile:fileName
           toDirectory:toDir
          forceRefresh:NO] == FTPStatusFileExists)

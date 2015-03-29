@@ -14,6 +14,7 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "MarkerInfoWindow.h"
 #import "MarkerButton.h"
+#import "PropertyList.h"
 
 @interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate>
 
