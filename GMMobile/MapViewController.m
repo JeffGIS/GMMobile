@@ -675,9 +675,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)mapView:(GMSMapView *)mapView
        willMove:(BOOL)gesture
 {
+    if (_screenSetting == MapViewScreenSettingPlatView)
+        return;
+    
     [self clearVectorView];
-    [self.view bringSubviewToFront:_mapToolbar];
-    [self.view bringSubviewToFront:_compass];
     
     if (!_tableView.hidden)
         [self.view bringSubviewToFront:_tableView];
@@ -687,24 +688,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     if (_secondView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_secondView];
+    
+    [self.view bringSubviewToFront:_mapToolbar];
+    [self.view bringSubviewToFront:_compass];
 }
 
 - (void)mapView:(GMSMapView *)mapView
 didChangeCameraPosition:(GMSCameraPosition *)position
 {
+    if (_screenSetting == MapViewScreenSettingPlatView)
+        return;
+    
     if (position.bearing != 0.0)
     {
         if (_compass.hidden)
-        {
-            _compass.hidden = NO;
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _compass.alpha = 1.0;
-                             }];
-            
-            [self.view bringSubviewToFront:_compass];
-        }
+            [self showCompass];
         
         _compass.transform = CGAffineTransformMakeRotation(-position.bearing * M_PI / 180);
     }
@@ -759,21 +757,27 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
    
     _rotateZoom = !_rotateZoom;
     
-    CGFloat pBearing;
-    CLLocationCoordinate2D pTarget;
-    DPOINT minYpt, maxYpt;
-    
-    [_platView zoomForMapBounds:_platView.frame
-                        bearing:&pBearing
-                         target:&pTarget
-                    mapViewSize:_mapView.frame.size
-                         minYpt:&minYpt
-                         maxYpt:&maxYpt];
-    
-    [_profileView zoomImage:_platView.image
-                        atX:minYpt.x
-                   fromMinY:minYpt.y
-                     toMaxY:maxYpt.y];
+    if (_screenSetting != MapViewScreenSettingPlatView)
+    {
+        CGFloat pBearing;
+        CLLocationCoordinate2D pTarget;
+        DPOINT minYpt, maxYpt;
+        
+        [_platView zoomForMapBounds:_platView.frame
+                            bearing:&pBearing
+                             target:&pTarget
+                        mapViewSize:_mapView.frame.size
+                             minYpt:&minYpt
+                             maxYpt:&maxYpt];
+        
+        if (_screenSetting == MapViewScreenSettingTriScreen)
+        {
+            [_profileView zoomImage:_platView.image
+                                atX:minYpt.x
+                           fromMinY:minYpt.y
+                             toMaxY:maxYpt.y];
+        }
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -801,6 +805,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
                                ((self.view.frame.size.height + _tabBarHeight) / 2.0),
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+    
+    CGRect frame4 = CGRectMake(0.0, statusBarHeight,
+                               (self.view.frame.size.height + _tabBarHeight),
+                               (self.view.frame.size.width - _tabBarHeight - statusBarHeight));
     
     if (!_streetView.hidden)
     {
@@ -841,11 +849,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         {
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, statusBarHeight,
-                                            (self.view.frame.size.height + _tabBarHeight),
-                                            (self.view.frame.size.width - _tabBarHeight - statusBarHeight));
-                                 
+                                 _mapView.frame = _vectorView.frame = frame4;
                                  [self updateMarkerPosition];
                              }];
         }
@@ -916,7 +920,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
             break;
             
-        case MapViewScreenSettingSplitBottomScreen:
+        case MapViewScreenSettingPlatView:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _firstView.frame = frame4;
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
+                                                                (_firstView.frame.size.height / 2.0));
+                             }];
+        }
+            
+            /*
+         case MapViewScreenSettingSplitBottomScreen:
         {
             [UIView animateWithDuration:duration
                              animations:^{
@@ -949,6 +968,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
+         */
     }
 }
 
@@ -1019,7 +1039,7 @@ haveVV:
 
 - (void)vectorViewDidComplete:(VectorView*)vectorView
 {
-    _waitForVectorViewRefresh = NO;
+   _waitForVectorViewRefresh = NO;
     
     if (vectorView.displayID != keepProcessing)
         vectorViews[vectorView.ivv] = nil;
@@ -1027,22 +1047,26 @@ haveVV:
     else dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [_vectorView removeFromSuperview];
-                       [self.view addSubview:_vectorView];
-                       [self.view bringSubviewToFront:_vectorView];
-
-                       for (MarkerButton *markers in _markerArray)
-                           [self.view bringSubviewToFront:markers];
                        
-                       if (_infoWindow)
-                           [self.view bringSubviewToFront:_infoWindow];
-                       
-                       [self.view bringSubviewToFront:_mapToolbar];
-                       
-                       if (!_tableView.hidden)
-                           [self.view bringSubviewToFront:_tableView];
-                       
-                       if (!_compass.hidden)
-                           [self.view bringSubviewToFront:_compass];
+                       if (_screenSetting != MapViewScreenSettingPlatView)
+                       {
+                           [self.view addSubview:_vectorView];
+                           [self.view bringSubviewToFront:_vectorView];
+                           
+                           for (MarkerButton *markers in _markerArray)
+                               [self.view bringSubviewToFront:markers];
+                           
+                           if (_infoWindow)
+                               [self.view bringSubviewToFront:_infoWindow];
+                           
+                           [self.view bringSubviewToFront:_mapToolbar];
+                           
+                           if (!_tableView.hidden)
+                               [self.view bringSubviewToFront:_tableView];
+                           
+                           if (!_compass.hidden)
+                               [self.view bringSubviewToFront:_compass];
+                       }
                    });
 }
 
@@ -1607,6 +1631,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                  maxYpt:(DPOINT)maxYpt
            gestureState:(UIGestureRecognizerState)gestureState
 {
+    if (_screenSetting == MapViewScreenSettingPlatView)
+        return;
+    
     if (gestureState == UIGestureRecognizerStateBegan)
     {
         [self clearVectorView];
@@ -1845,10 +1872,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                ((tabBarTop - statusBarHeight) / 3.0));
     
     //middle third of tri screen
-    CGRect frame3 = CGRectMake(0.0,
+    /*CGRect frame3 = CGRectMake(0.0,
                                (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
                                (self.view.frame.size.width / 2.0),
-                               ((tabBarTop - statusBarHeight) / 3.0));
+                               ((tabBarTop - statusBarHeight) / 3.0));*/
     
     //bottom third of tri screen
     CGRect frame4 = CGRectMake(0.0,
@@ -1862,7 +1889,48 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                (self.view.frame.size.width / 2.0),
                                ((tabBarTop - statusBarHeight) / 3.0));*/
     
+    //fullscreen (except not status bar)
+    CGRect frame6 = CGRectMake(0.0, statusBarHeight,
+                               self.view.frame.size.width,
+                               (tabBarTop - statusBarHeight));
+    
     [self clearVectorView];
+    
+    if ([_firstView.subviews containsObject:_platView])
+        [_platView removeFromSuperview];
+    
+    if (_screenSetting == MapViewScreenSettingTriScreen &&
+        setting != MapViewScreenSettingTriScreen)
+    {
+        if ([_firstView.subviews containsObject:_profileView])
+            [_profileView removeFromSuperview];
+        
+        if (_profileView.image)
+            _profileView.image = nil;
+       
+        if (_profileView)
+            _profileView = nil;
+    }
+    
+    if (setting == MapViewScreenSettingPlatView)
+    {
+        [self hideCompass];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar platViewMode];
+                         }];
+    }
+    
+    else
+    {
+        [self showCompass];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             [_mapToolbar normalMode];
+                         }];
+    }
     
     switch (setting)
     {
@@ -1871,13 +1939,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
-                                 
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            (tabBarTop - statusBarHeight));
-                                 
+                                 _mapView.frame = _vectorView.frame = frame6;
                                  [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
@@ -1964,6 +2026,25 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         }
             break;
             
+        case MapViewScreenSettingPlatView:
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _firstView.frame =
+                                 CGRectMake(0.0, statusBarHeight,
+                                            self.view.frame.size.width,
+                                            (tabBarTop - statusBarHeight));
+                             }];
+            
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 _secondView.frame = frame0;
+                             }];
+            
+            _screenSetting = MapViewScreenSettingPlatView;
+        }
+            
+            /*
         case MapViewScreenSettingSplitBottomScreen:
         {
             [UIView animateWithDuration:0.25
@@ -2000,8 +2081,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _screenSetting = MapViewScreenSettingSplitBottomScreen;
         }
             break;
+             */
     }
     
+            
     if (setting != MapViewScreenSettingFullscreen)
     {
         CGRect frame;
@@ -2016,13 +2099,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
                 break;
                 
-            case MapViewScreenSettingSplitBottomScreen:
-                frame = CGRectMake(0.0, 0.0, frame3.size.width, frame3.size.height);
-                break;
+            case MapViewScreenSettingPlatView:
+                frame = CGRectMake(0.0, 0.0, frame6.size.width, frame6.size.height);
         }
-        
-        if ([_firstView.subviews containsObject:_platView])
-            [_platView removeFromSuperview];
         
         _platView = [PlatImageView platImageViewWithDelegate:self
                                                     andFrame:frame];
@@ -2044,16 +2123,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
             [self addProfileView];
         }
-        
-        else
-        {
-            if (_screenSetting == MapViewScreenSettingTriScreen && _profileView)
-            {
-                [_profileView removeFromSuperview];
-                _profileView.image = nil;
-                _profileView = nil;
-            }
-        }
     }
 }
 
@@ -2061,7 +2130,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [_firstView addSubview:_platView];
     _platView.originalSize = _firstView.frame.size;
-    [self syncPlatView];
+    
+    if (_screenSetting != MapViewScreenSettingPlatView)
+        [self syncPlatView];
 }
 
 - (void)addProfileView
@@ -2083,10 +2154,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                          minYpt:&minYpt
                                          maxYpt:&maxYpt];
     
-    [_profileView zoomImage:_platView.image
-                        atX:minYpt.x
-                   fromMinY:minYpt.y
-                     toMaxY:maxYpt.y];
+    if (_screenSetting == MapViewScreenSettingTriScreen)
+    {
+        [_profileView zoomImage:_platView.image
+                            atX:minYpt.x
+                       fromMinY:minYpt.y
+                         toMaxY:maxYpt.y];
+    }
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:pTarget
                                                                zoom:pZoom
@@ -2301,6 +2375,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                      } completion:^(BOOL finished) {
                          _compass.hidden = YES;
                      }];
+}
+
+- (void)showCompass
+{
+    if (_compass.hidden && _mapView.camera.bearing != 0.0)
+    {
+        _compass.hidden = NO;
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _compass.alpha = 1.0;
+                         }];
+        
+        [self.view bringSubviewToFront:_compass];
+    }
 }
 
 @end

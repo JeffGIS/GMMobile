@@ -8,7 +8,7 @@
 @property (nonatomic) UIButton *zoomExtent, *userLocation;
 @property (nonatomic) UISegmentedControl *mapType, *splitScreenSetting;
 @property (nonatomic) UISwitch *annotationOption;
-@property (nonatomic) BOOL myLocationEnabled;
+@property (nonatomic) BOOL myLocationEnabled, platMode;
 @property (nonatomic) CGSize size;
 
 @end
@@ -98,7 +98,7 @@
         [self formatSegControl:_mapType];
         [self addSubview:_mapType];
         
-        _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Bottom"]];
+        _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Plat"]];
         _splitScreenSetting.selectedSegmentIndex = MapViewScreenSettingFullscreen;
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -223,9 +223,18 @@
         frameHeight = _size.height;
     }
     
-    self.frame = CGRectMake(0.0, 0.0, frameHeight,
-                            ((buttonSize * 2.0) + (buttonMargin * 6.0) +
-                             _annotationOption.frame.size.height + (_mapType.frame.size.height * 2.0)));
+    if (_platMode)
+    {
+        self.frame = CGRectMake(0.0, 0.0, frameHeight,
+                                (_splitScreenSetting.frame.size.height + (buttonMargin * 2.0)));
+    }
+    
+    else
+    {
+        self.frame = CGRectMake(0.0, 0.0, frameHeight,
+                                ((buttonSize * 2.0) + (buttonMargin * 6.0) +
+                                 _annotationOption.frame.size.height + (_mapType.frame.size.height * 2.0)));
+    }
     
     CGFloat switchMargin = ((self.frame.size.width - _annotationOption.frame.size.width) / 2.0);
     CGFloat buttonSideMargin = ((self.frame.size.width - buttonSize) / 2.0);
@@ -249,10 +258,19 @@
     [_mapType setTitle:@"Hybd"
      forSegmentAtIndex:1];
     
-    _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6),
-                                           ((buttonSize * 2.0) + (buttonMargin * 5.0) +
-                                            _annotationOption.frame.size.height + _mapType.frame.size.height),
-                                           scWidth, _splitScreenSetting.frame.size.height);
+    if (_platMode)
+    {
+        _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6), buttonMargin,
+                                               scWidth, _splitScreenSetting.frame.size.height);
+    }
+    
+    else
+    {
+        _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6),
+                                               ((buttonSize * 2.0) + (buttonMargin * 5.0) +
+                                                _annotationOption.frame.size.height + _mapType.frame.size.height),
+                                               scWidth, _splitScreenSetting.frame.size.height);
+    }
     
     [_splitScreenSetting setTitle:@"F"
                 forSegmentAtIndex:0];
@@ -263,14 +281,12 @@
     [_splitScreenSetting setTitle:@"T"
                 forSegmentAtIndex:2];
     
-    [_splitScreenSetting setTitle:@"B"
+    [_splitScreenSetting setTitle:@"P"
                 forSegmentAtIndex:3];
 }
 
 - (void)animateToHorizontalOrientation
 {
-    self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
-    
     CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
     CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 196.0;
     
@@ -279,21 +295,57 @@
         buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
         mtscWidth = 78.0, ssscWidth = 166.0;
         
-        _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
-                                               (_size.width - (buttonMargin * 2.0)), segControlHeight);
+        if (_platMode)
+        {
+            _splitScreenSetting.frame = CGRectMake(buttonMargin, buttonMargin,
+                                                   (_size.width - (buttonMargin * 2.0)), segControlHeight);
+        }
+        
+        else
+        {
+            _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
+                                                   (_size.width - (buttonMargin * 2.0)), segControlHeight);
+        }
     }
     
     else
     {
         [_mapType setTitle:@"Standard"
          forSegmentAtIndex:0];
-    
+        
         [_mapType setTitle:@"Hybrid"
          forSegmentAtIndex:1];
         
-        _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
-                                               segControlMargin, ssscWidth, segControlHeight);
+        if (_platMode)
+        {
+            _splitScreenSetting.frame = CGRectMake(buttonMargin, segControlMargin,
+                                                   ssscWidth, segControlHeight);
+        }
+        
+        else
+        {
+            _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
+                                                   segControlMargin, ssscWidth, segControlHeight);
+        }
     }
+    
+    if (_platMode)
+    {
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        {
+            self.frame = CGRectMake(0.0, 0.0, _splitScreenSetting.frame.size.width + (buttonMargin * 2.0),
+                                    _splitScreenSetting.frame.size.height + (buttonMargin * 2.0));
+        }
+        
+        else
+        {
+            self.frame = CGRectMake(0.0, 0.0, _splitScreenSetting.frame.size.width +
+                                    (buttonMargin * 2.0),  _size.height);
+        }
+    }
+    
+    else
+        self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
     
     _userLocation.frame = CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize);
     
@@ -315,13 +367,85 @@
     [_splitScreenSetting setTitle:@"Tri"
                 forSegmentAtIndex:2];
     
-    [_splitScreenSetting setTitle:@"Bottom"
+    [_splitScreenSetting setTitle:@"Plat"
                 forSegmentAtIndex:3];
 }
 
 - (void)splitScreenSelectedSegmentIndex:(NSInteger)index
 {
     _splitScreenSetting.selectedSegmentIndex = index;
+}
+
+- (void)platViewMode
+{
+    CGFloat height = self.frame.size.height;
+    CGPoint center = self.center;
+    _userLocation.hidden = YES;
+    _zoomExtent.hidden = YES;
+    _annotationOption.hidden = YES;
+    _mapType.hidden = YES;
+    _platMode = YES;
+    
+    [self orientToolbar];
+    
+    if (_orientation == MapToolbarOrientationTop ||
+        _orientation == MapToolbarOrientationBottom)
+    {
+        CGFloat heightDiff = (self.frame.size.height - height);
+        
+        if (heightDiff != 0.0)
+        {
+            if (_orientation == MapToolbarOrientationTop)
+                center = CGPointMake(center.x, center.y + (heightDiff / 2.0));
+            
+            else
+                center = CGPointMake(center.x, center.y - (heightDiff / 2.0));
+        }
+    }
+        
+    self.center = center;
+}
+
+- (void)normalMode
+{
+    CGFloat height = self.frame.size.height;
+    CGPoint center = self.center;
+    _userLocation.hidden = NO;
+    _zoomExtent.hidden = NO;
+    _annotationOption.hidden = NO;
+    _mapType.hidden = NO;
+    _platMode = NO;
+    
+    [self orientToolbar];
+    
+    if (_orientation == MapToolbarOrientationTop ||
+        _orientation == MapToolbarOrientationBottom)
+    {
+        CGFloat heightDiff = (self.frame.size.height - height);
+        
+        if (heightDiff != 0.0)
+        {
+            if (_orientation == MapToolbarOrientationTop)
+                center = CGPointMake(center.x, center.y + (heightDiff / 2.0));
+            
+            else
+                center = CGPointMake(center.x, center.y - (heightDiff / 2.0));
+        }
+    }
+    
+    self.center = center;
+}
+
+- (void)orientToolbar
+{
+    if (_orientation == MapToolbarOrientationLeft ||
+        _orientation == MapToolbarOrientationRight)
+    {
+        [self animateToVerticalOrientation];
+    }
+    
+    else
+        [self animateToHorizontalOrientation];
 }
 
 @end
