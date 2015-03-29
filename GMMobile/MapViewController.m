@@ -1308,6 +1308,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Add to Destinations"])
+    {
+        [self addToDestinations];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Pipe Attributes"])
     {
         [self showPipeAttributes];
@@ -1435,10 +1441,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)addToPropList
 {
-    PropertyList * pl = [[PropertyList alloc]init];
+    PropertyList *pl = [[PropertyList alloc] init];
     
     [pl addParcel:_selectedPID];
-    //implement add to property list here
+}
+
+- (void)addToDestinations
+{
+    //implement add to destinations here
 }
 
 - (void)showPipeAttributes
@@ -2252,14 +2262,14 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             if ([self isHennepinCountyPID:_selectedPID])
             {
-                _options = @[@"Property Report", @"Hennepin County Website", @"Rankings",
-                             @"Computed Values", @"Display Street View", @"Zoom to Census Area", @"Add to Property List", @"Remove Property Marker"];
+                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
+                             @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
             }
             
             else
             {
-                _options = @[@"Property Report", @"Rankings", @"Computed Values",
-                             @"Display Street View", @"Zoom to Census Area", @"Add to Property List", @"Remove Property Marker"];
+                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",
+                             @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
             }
             
             break;
