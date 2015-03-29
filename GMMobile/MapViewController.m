@@ -757,6 +757,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
    
     _rotateZoom = !_rotateZoom;
     
+    [self performSelector:@selector(resetPlatProfileViewsAfterRotation)
+               withObject:nil
+               afterDelay:0.1];
+}
+
+- (void)resetPlatProfileViewsAfterRotation
+{
     if (_screenSetting != MapViewScreenSettingPlatView)
     {
         CGFloat pBearing;
