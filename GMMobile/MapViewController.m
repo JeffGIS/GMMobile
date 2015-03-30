@@ -827,12 +827,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                         _screenSize, _screenSize);
                          }];
     }
-    
-    [UIView animateWithDuration:duration
-                     animations:^{
-                         _mapToolbar.center = CGPointMake(((self.view.frame.size.height / 2.0) + statusBarHeight),
-                                                          (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
-                     }];
+
+    [_mapToolbar willRotateWithDuration:duration
+                           tabBarHeight:_tabBarHeight
+                        statusBarHeight:statusBarHeight];
     
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);

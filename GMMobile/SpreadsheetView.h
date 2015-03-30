@@ -13,7 +13,6 @@
                                        view:(UIView *)view;
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration
-                superviewFrame:(CGRect)superviewFrame
                   tabBarHeight:(CGFloat)tabBarHeight;
 
 @end

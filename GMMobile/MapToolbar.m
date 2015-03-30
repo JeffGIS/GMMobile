@@ -448,4 +448,57 @@
         [self animateToHorizontalOrientation];
 }
 
+- (void)willRotateWithDuration:(NSTimeInterval)duration
+                  tabBarHeight:(CGFloat)tabBarHeight
+               statusBarHeight:(CGFloat)statusBarHeight
+{
+    CGRect superviewFrame = self.superview.frame;
+    
+    switch (_orientation)
+    {
+        case MapToolbarOrientationTop:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 self.center = CGPointMake(((superviewFrame.size.height + tabBarHeight) / 2.0),
+                                                           (statusBarHeight + (self.frame.size.height / 2.0)));
+                                 
+                             }];
+        }
+            break;
+            
+        case MapToolbarOrientationBottom:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 self.center = CGPointMake(((superviewFrame.size.height + tabBarHeight) / 2.0),
+                                                           ((superviewFrame.size.width - tabBarHeight) -
+                                                            (self.frame.size.height / 2.0)));
+                             }];
+        }
+            break;
+            
+        case MapToolbarOrientationLeft:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 self.center = CGPointMake((self.frame.size.width / 2.0),
+                                                           ((superviewFrame.size.width - tabBarHeight) / 2.0));
+                             }];
+        }
+            break;
+            
+        case MapToolbarOrientationRight:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 self.center = CGPointMake(((superviewFrame.size.height + tabBarHeight) -
+                                                            (self.frame.size.width / 2.0)),
+                                                           ((superviewFrame.size.width - tabBarHeight) / 2.0));
+                             }];
+        }
+            break;
+    }
+}
+
 @end

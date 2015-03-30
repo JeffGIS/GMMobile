@@ -144,7 +144,6 @@
         if ([spreadsheetView isKindOfClass:SpreadsheetView.class])
         {
             [spreadsheetView willRotateWithDuration:duration
-                                     superviewFrame:self.view.frame
                                        tabBarHeight:self.tabBarController.tabBar.frame.size.height];
         }
             

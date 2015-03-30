@@ -200,10 +200,10 @@
 }
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration
-                superviewFrame:(CGRect)superviewFrame
                   tabBarHeight:(CGFloat)tabBarHeight
 {
     CGPoint origin = self.frame.origin;
+    CGRect superviewFrame = self.superview.frame;
     
     [UIView animateWithDuration:duration
                      animations:^{

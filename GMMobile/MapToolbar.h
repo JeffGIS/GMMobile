@@ -28,4 +28,8 @@
 - (void)platViewMode;
 - (void)normalMode;
 
+- (void)willRotateWithDuration:(NSTimeInterval)duration
+                  tabBarHeight:(CGFloat)tabBarHeight
+               statusBarHeight:(CGFloat)statusBarHeight;
+
 @end
