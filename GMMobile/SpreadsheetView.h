@@ -11,4 +11,9 @@
 + (SpreadsheetView *)spreadsheetViewWithRows:(NSUInteger)rows
                                      columns:(NSUInteger)columns
                                        view:(UIView *)view;
+
+- (void)willRotateWithDuration:(NSTimeInterval)duration
+                superviewFrame:(CGRect)superviewFrame
+                  tabBarHeight:(CGFloat)tabBarHeight;
+
 @end

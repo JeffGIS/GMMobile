@@ -199,4 +199,22 @@
     return NO;
 }
 
+- (void)willRotateWithDuration:(NSTimeInterval)duration
+                superviewFrame:(CGRect)superviewFrame
+                  tabBarHeight:(CGFloat)tabBarHeight
+{
+    CGPoint origin = self.frame.origin;
+    
+    [UIView animateWithDuration:duration
+                     animations:^{
+                         _overlayView.frame = CGRectMake(superviewFrame.origin.y, superviewFrame.origin.x,
+                                                         (superviewFrame.size.height + tabBarHeight),
+                                                         (superviewFrame.size.width - tabBarHeight));
+                         
+                         self.frame = CGRectMake(origin.y, origin.x,
+                                                 ((superviewFrame.size.height + tabBarHeight) - (origin.y * 2.0)),
+                                                 ((superviewFrame.size.width - tabBarHeight) - (origin.x * 2.0)));
+                     }];
+}
+
 @end
