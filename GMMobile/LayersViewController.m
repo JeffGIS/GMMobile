@@ -143,7 +143,7 @@
     {
         if ([spreadsheetView isKindOfClass:SpreadsheetView.class])
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  
                                  CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
