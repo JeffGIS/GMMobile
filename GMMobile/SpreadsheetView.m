@@ -7,7 +7,7 @@
 
 @interface SpreadsheetView ()
 
-@property (nonatomic) UIView *overlayView, *contentView;
+@property (nonatomic) UIView *contentView;
 @property (nonatomic) NSArray *alphabet;
 @property (nonatomic) NSDate *touchDown, *touchUp;
 @property (nonatomic) SpreadSheetViewCell *cellForEditing;
@@ -20,7 +20,7 @@
 
 + (SpreadsheetView *)spreadsheetViewWithRows:(NSUInteger)rows
                                      columns:(NSUInteger)columns
-                                       view:(UIView *)view
+                                        view:(UIView *)view
 {
     CGRect frame;
     

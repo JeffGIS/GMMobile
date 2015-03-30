@@ -136,4 +136,33 @@
     [self.view addSubview:spreadsheetView];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    for (SpreadsheetView *spreadsheetView in self.view.subviews)
+    {
+        if ([spreadsheetView isKindOfClass:SpreadsheetView.class])
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 
+                                 CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+                                 CGRect frame = self.view.frame;
+                                 CGPoint origin = spreadsheetView.frame.origin;
+                                 
+                                 spreadsheetView.overlayView.frame =
+                                 CGRectMake(frame.origin.y, frame.origin.x,
+                                            (frame.size.height + tabBarHeight),
+                                            (frame.size.width - tabBarHeight));
+                                 
+                                 spreadsheetView.frame =
+                                 CGRectMake(origin.y, origin.x,
+                                            ((frame.size.height + tabBarHeight) - (origin.y * 2.0)),
+                                            ((frame.size.width - tabBarHeight) - (origin.x * 2.0)));
+                             }];
+        }
+            
+    }
+}
+
 @end
