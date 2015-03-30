@@ -23,7 +23,7 @@
     DPOINT _virtualImageCorners[4];
     DPOINT _imageCornersWorld[4];
     DPOINT _virtualImageCornersWorld[4];
-    NSInteger _numProfileAreaPoints[MAX_PROFILE_AREAS];
+    int _numProfileAreaPoints[MAX_PROFILE_AREAS];
     LPDPOINT _profileAreaPoints[MAX_PROFILE_AREAS];
 }
 
@@ -37,22 +37,9 @@
     platView.userInteractionEnabled = YES;
     [platView addGesturesToView];
     platView.delegate = delegate;
-    //return platView;
   
     NSString *imagePath = CRAPI.sharedInstance.currentPlatImagePath;
     platView.platType = CRAPI.sharedInstance.currentPlatType;
-    
-    platView.platType = @"SAN";
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
-                                              ofType:@"jpg"];
-    
-    platView.platType = @"SAN";
-    imagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                              ofType:@"jpg"];
-
-    platView.platType = @"STORM";
-    imagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
-                                              ofType:@"jpg"];
    
     platView.imagePath = imagePath;
     platView.image = [UIImage imageWithContentsOfFile:imagePath];
@@ -76,9 +63,11 @@
     NSLog(@"Sewer Database dealloc");
 }
 
-- (void)setPlatID:(int)refno andType:(int)platType
+- (void)setPlatID:(int)refno
+          andType:(int)platType
 {
     NSString *type = @"storm";
+    
     if (platType == PLAT_TYPE_SANITARY)
         type = @"san";
     
@@ -147,7 +136,8 @@
     return llPt;
 }
 
-- (CGRect) frameRectToVirtualImageRect:(CGRect)frameRect bounds:(CGRect)bnd
+- (CGRect)frameRectToVirtualImageRect:(CGRect)frameRect
+                               bounds:(CGRect)bnd
 {
     CGRect imageRect;
     MNMXCORD screenBounds;
@@ -174,6 +164,7 @@
     
     return imageRect;
 }
+
 - (CGFloat)zoomForMapBounds:(CGRect)frameRect
                     bearing:(CGFloat *)bearing
                      target:(CLLocationCoordinate2D *)target
@@ -359,6 +350,7 @@ top:
         
         query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops, Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
                  _platType, _platName,_platName];
+        
         SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
         
         while (sqlite3_step(statement) == SQLITE_ROW)

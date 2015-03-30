@@ -37,17 +37,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
                                                                               ofType:@"jpg"];
-    
-    CRAPI.sharedInstance.currentPlatType = @"SAN";
-    
-    CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
-                                                                              ofType:@"jpg"];
-    
-    CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
-                                                                              ofType:@"jpg"];
-    
-    CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"S-55S-2"
-                                                                              ofType:@"jpg"];
 
     return YES;
 }
