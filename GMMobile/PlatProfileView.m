@@ -6,9 +6,9 @@
 @interface PlatProfileView ()
 
 @property (nonatomic) CGImageRef imageRef;
-@property (nonatomic) NSInteger profileX, profileMinY, profileMaxY;
+//@property (nonatomic) NSInteger profileX, profileMinY, profileMaxY;
 @property (nonatomic) CGRect imageRect;
-@property (nonatomic) CGFloat scale;
+//@property (nonatomic) CGFloat scale;
 @property (nonatomic) NSInteger imageWidth, imageHeight;
 
 @end
@@ -37,25 +37,28 @@
     _imageHeight = (NSInteger)CGImageGetHeight(image.CGImage);
     
     _imageRef = CGImageRetain(image.CGImage);
-    _profileX = imageX;
-    CGFloat margin = (maxY - minY) * 0.05;
+    //_profileX = imageX;
+    CGFloat margin = ((maxY - minY) * 0.05);
     maxY += margin;
     minY -= margin;
-    _profileMinY = minY;
-    _profileMaxY = maxY;
+    
+    //_profileMinY = minY;
+    //_profileMaxY = maxY;
+    
     CGFloat scale = ((maxY - minY) / self.frame.size.height);
     _imageRect.origin.x = (imageX - (scale * (self.frame.size.width / 2.0)));
     _imageRect.origin.y = (_imageHeight - maxY);
     _imageRect.size.width = (self.frame.size.width * scale);
     _imageRect.size.height = (self.frame.size.height * scale);
-    _scale = scale;
+    //_scale = scale;
+    
     [self setNeedsDisplay];
 }
 
 - (CGFloat)referenceLineAtX:(CGFloat)imageX
 {
-    return (self.frame.origin.x + self.frame.size.width *
-            (imageX - _imageRect.origin.x) /_imageRect.size.width);
+    return (((self.frame.origin.x + self.frame.size.width) *
+            ((imageX - _imageRect.origin.x) /_imageRect.size.width)));
 }
 
 - (void)drawRect:(CGRect)rect
@@ -73,9 +76,9 @@
     
     CGContextScaleCTM(context, 1, -1);
     CGContextTranslateCTM(context, 0, -rect.size.height);
-    //NSInteger imageWidth = (int)CGImageGetWidth(image2);
-    //NSInteger imageHeight = (int)CGImageGetHeight(image2);
-   
+    NSInteger imageWidth = (int)CGImageGetWidth(image2);
+    NSInteger imageHeight = (int)CGImageGetHeight(image2);
+    
     CGContextDrawImage(context, rect, image2);
     CGImageRelease(_imageRef);
     CGImageRelease (image2);
