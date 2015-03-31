@@ -531,6 +531,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
 }
 
 - (int)pickSewer:(LLPOINT *)pt
+          atZoom:(CGFloat)zoom
    highlightList:(NSMutableArray *)hlist
 {
     if (_zoom < CRAPI.sharedInstance.sewerVisibleAtZoom)
@@ -538,19 +539,24 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     int nPicked = 0;
     dbounds bnds;
     CGFloat d, mind = DBL_MAX;
-    CGFloat pickap = 0.005;
-    DPOINT p1, p2, minpt, point,BasePt;
+    int pickApPixels = 50;
+    CGFloat pickApMeters = pickApPixels * GroundResolution(pt->lat, (int)zoom);
+    DPOINT p1, pickedPoint, minpt, point,BasePt;
     NSString * minFid=@"";
     int minref = 0;
     int numPoints, numLoops;
     
+    DPOINT pt1 = NewLatLong(pt->lat, pt->lon, pickApMeters, 0);
+    double pickapY = pt1.y - pt->lat;
+    DPOINT pt2 = NewLatLong(pt->lat, pt->lon, pickApMeters, HALFPI);
+    double pickapX = pt2.x - pt->lon;
     p1.x = pt->lon;
     p1.y = pt->lat;
     minpt = p1;
-    bnds.xmn = (p1.x - pickap);
-    bnds.xmx = (p1.x + pickap);
-    bnds.ymn = (p1.y - pickap);
-    bnds.ymx = (p1.y + pickap);
+    bnds.xmn = (p1.x - pickapX);
+    bnds.xmx = (p1.x + pickapX);
+    bnds.ymn = (p1.y - pickapY);
+    bnds.ymx = (p1.y + pickapY);
     [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -573,7 +579,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
         nBlobBytes = sqlite3_column_bytes(statement,7);
         
-        if (numPoints < 0)
+       /* if (numPoints < 0)
         {
             numPoints = -numPoints;
             LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
@@ -601,19 +607,39 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
                 minref = refno;
                 minFid = [NSString stringWithUTF8String:FACILITY_ID];
             }
-        }
-/*        p2.x = lon;
-        p2.y = lat;
-        d = ArcDistance(p1, p2);
-        
-        if (d < mind)
-        {
-            minref = refno;
-            mind = d;
-            minpt = p2;
-            minFid = [NSString stringWithUTF8String:FACILITY_ID];
-            nPicked = 1;
         }*/
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+
+        if (PICK_POINT_ON_LINE(p1,(pickapX+pickapY)/2,&pickedPoint, numPoints, llpoints))
+        {
+            if (findClosestPoint (&pickedPoint,&minpt,&mind,&p1))
+            {
+                nPicked++;
+                minref = refno;
+                minFid = [NSString stringWithUTF8String:FACILITY_ID];
+            }
+        }
+        free (llpoints);
     }
     
     SQLOKswr(sqlite3_finalize(statement), "pickPLAT");

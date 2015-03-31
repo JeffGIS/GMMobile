@@ -471,6 +471,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             highlightList:highlightList];
         
         [sewerData pickSewer:&llSewerPt
+                      atZoom:_mapView.camera.zoom
                highlightList:highlightList];
         
         if (highlightList.count)

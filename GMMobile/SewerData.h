@@ -73,6 +73,7 @@ int SQLOKswr(int sqlReturn, char *method);
              viewBounds:(MNMXCORD *)pvbounds;
 
 - (int)pickSewer:(LLPOINT *)pt
+          atZoom:(CGFloat)zoom
    highlightList:(NSMutableArray *)hlist;
 
 - (int)pickSanPlat:(LLPOINT *)pt;
