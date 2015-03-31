@@ -76,8 +76,8 @@
     
     CGContextScaleCTM(context, 1, -1);
     CGContextTranslateCTM(context, 0, -rect.size.height);
-    NSInteger imageWidth = (int)CGImageGetWidth(image2);
-    NSInteger imageHeight = (int)CGImageGetHeight(image2);
+    //NSInteger imageWidth = (int)CGImageGetWidth(image2);
+    //NSInteger imageHeight = (int)CGImageGetHeight(image2);
     
     CGContextDrawImage(context, rect, image2);
     CGImageRelease(_imageRef);
