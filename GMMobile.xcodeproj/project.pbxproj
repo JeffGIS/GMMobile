@@ -15,13 +15,11 @@
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
 		A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */ = {isa = PBXBuildFile; fileRef = A91076BB1AC46D3A0096EFFD /* PropertyList.m */; };
-		A91076BF1AC4965B0096EFFD /* SpreadSheetViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A91076BE1AC4965B0096EFFD /* SpreadSheetViewCell.m */; };
 		A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */ = {isa = PBXBuildFile; fileRef = A9128A5A1AC0C95600F4242F /* redTarget.png */; };
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
-		A94DE33F1AC3D55F000A4D6B /* SpreadsheetView.m in Sources */ = {isa = PBXBuildFile; fileRef = A94DE33E1AC3D55F000A4D6B /* SpreadsheetView.m */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
@@ -103,8 +101,6 @@
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
 		A91076BA1AC46D3A0096EFFD /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyList.h; sourceTree = "<group>"; };
 		A91076BB1AC46D3A0096EFFD /* PropertyList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyList.m; sourceTree = "<group>"; };
-		A91076BD1AC4965B0096EFFD /* SpreadSheetViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpreadSheetViewCell.h; sourceTree = "<group>"; };
-		A91076BE1AC4965B0096EFFD /* SpreadSheetViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadSheetViewCell.m; sourceTree = "<group>"; };
 		A9128A5A1AC0C95600F4242F /* redTarget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redTarget.png; sourceTree = "<group>"; };
 		A91565611A81E76400119C21 /* FindBoundariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindBoundariesViewController.h; sourceTree = "<group>"; };
 		A91565621A81E76400119C21 /* FindBoundariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindBoundariesViewController.m; sourceTree = "<group>"; };
@@ -113,8 +109,6 @@
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
-		A94DE33D1AC3D55F000A4D6B /* SpreadsheetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpreadsheetView.h; sourceTree = "<group>"; };
-		A94DE33E1AC3D55F000A4D6B /* SpreadsheetView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetView.m; sourceTree = "<group>"; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
 		A97860ED1A7FDAD60019FE37 /* VectorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VectorView.m; sourceTree = "<group>"; };
 		A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPropertyOwnerViewController.h; sourceTree = "<group>"; };
@@ -327,10 +321,6 @@
 				EB398F091ABC94240043875E /* PlatProfileView.m */,
 				A91076BA1AC46D3A0096EFFD /* PropertyList.h */,
 				A91076BB1AC46D3A0096EFFD /* PropertyList.m */,
-				A94DE33D1AC3D55F000A4D6B /* SpreadsheetView.h */,
-				A94DE33E1AC3D55F000A4D6B /* SpreadsheetView.m */,
-				A91076BD1AC4965B0096EFFD /* SpreadSheetViewCell.h */,
-				A91076BE1AC4965B0096EFFD /* SpreadSheetViewCell.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -581,7 +571,6 @@
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
 				A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */,
 				EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */,
-				A91076BF1AC4965B0096EFFD /* SpreadSheetViewCell.m in Sources */,
 				EB4A18C51AAE347700B8B162 /* PickedItem.m in Sources */,
 				EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */,
 				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
@@ -590,7 +579,6 @@
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */,
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
-				A94DE33F1AC3D55F000A4D6B /* SpreadsheetView.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
