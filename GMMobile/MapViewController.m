@@ -1304,12 +1304,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Add to Property List"])
     {
         [self addToPropList];
+        
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingPropList
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Add to Destinations"])
     {
         [self addToDestinations];
+        
+        [UserDefaults.defaults saveInteger:PropertyTableViewSettingDestinations
+                                    forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1355,6 +1361,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self performSelector:@selector(removePipeTrace)
                    withObject:nil
                    afterDelay:0.3];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Update Cleaning Date"])
+    {
+        [self updateCleaningDate];
+        
+        [UserDefaults.defaults saveInteger:SewerPipeSettingUpdateCleanDate
+                                    forKey:@"SewerOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Update Inspection Notes"])
+    {
+        [self updateInspectionNotes];
+        
+        [UserDefaults.defaults saveInteger:SewerPipeSettingUpdateNotes
+                                    forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1490,6 +1514,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
 
+}
+
+- (void)updateCleaningDate
+{
+    
+}
+
+- (void)updateInspectionNotes
+{
+    
 }
 
 - (void)removeMarker
@@ -2277,7 +2311,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedSewerPipe = title;
             
             _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
-                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Remove Pipe Marker"];
+                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
+                         @"Update Inspection Notes", @"Remove Pipe Marker"];
             
             break;
     }
