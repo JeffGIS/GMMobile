@@ -1437,4 +1437,12 @@ float roundFloatToNearestTen(float x)
     return YES;
 }
 
+- (void)processDate:(NSString *)date
+            forPipe:(NSString *)pipe
+{
+    NSLog(@"Pipe %@ cleaned on %@", pipe, date);
+    
+    //store date to pipe in database here
+}
+
 @end

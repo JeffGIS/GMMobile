@@ -87,4 +87,7 @@ int SQLOKswr(int sqlReturn, char *method);
     usingPopover:(GSSiPopoverView *)popover
      andDelegate:(id)delegate;
 
+- (void)processDate:(NSString *)date
+            forPipe:(NSString *)pipe;
+
 @end

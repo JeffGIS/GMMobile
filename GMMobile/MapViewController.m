@@ -692,6 +692,15 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     [self.view bringSubviewToFront:_mapToolbar];
     [self.view bringSubviewToFront:_compass];
+    
+    for (GSSiDatePicker *datePicker in self.view.subviews)
+    {
+        if ([datePicker isKindOfClass:GSSiDatePicker.class])
+        {
+            [datePicker bringToFrontOfView:self.view];
+            [self initTableView];
+        }
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -832,6 +841,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [_mapToolbar willRotateWithDuration:duration
                            tabBarHeight:_tabBarHeight
                         statusBarHeight:statusBarHeight];
+    
+    for (GSSiDatePicker *datePicker in self.view.subviews)
+    {
+        if ([datePicker isKindOfClass:GSSiDatePicker.class])
+        {
+            [datePicker willRotateWithDuration:duration
+                                  tabBarHeight:_tabBarHeight];
+        }
+        
+    }
     
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
@@ -1072,6 +1091,13 @@ haveVV:
                            
                            if (!_compass.hidden)
                                [self.view bringSubviewToFront:_compass];
+                           
+                           for (GSSiDatePicker *datePicker in self.view.subviews)
+                           {
+                               if ([datePicker isKindOfClass:GSSiDatePicker.class])
+                                   [datePicker bringToFrontOfView:self.view];
+                           }
+                               
                        }
                    });
 }
@@ -1097,11 +1123,29 @@ haveVV:
         if (_currentScreenHeight != self.view.frame.size.height)
             [_tableView reloadData];
         
-        if (_tableView.indexPathForSelectedRow)
+        [self deselectTableViewRow];
+        
+        for (GSSiDatePicker *datePicker in self.view.subviews)
         {
-            [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                      animated:YES];
+            if ([datePicker isKindOfClass:GSSiDatePicker.class])
+            {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateCleanDate - 1)
+                                                            inSection:0];
+                
+                [_tableView selectRowAtIndexPath:indexPath
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionNone];
+            }
         }
+    }
+}
+
+- (void)deselectTableViewRow
+{
+    if (_tableView.indexPathForSelectedRow)
+    {
+        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
+                                  animated:YES];
     }
 }
 
@@ -1518,7 +1562,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)updateCleaningDate
 {
-    
+    GSSiDatePicker *datePicker = [GSSiDatePicker showDatePickerWithView:self.view];
+    #pragma unused(datePicker)
 }
 
 - (void)updateInspectionNotes
@@ -1549,11 +1594,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     switch (buttonIndex)
     {
         case CensusZoomSettingCancel:
-            if (_tableView.indexPathForSelectedRow)
-            {
-                [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                          animated:YES];
-            }
+            [self deselectTableViewRow];
             
             break;
             
@@ -1599,11 +1640,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                          if(!_tableView.hidden)
                              [self.view bringSubviewToFront:_tableView];
                          
-                         if (_tableView.indexPathForSelectedRow)
-                         {
-                             [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                                       animated:YES];
-                         }
+                         [self deselectTableViewRow];
                      }];
 }
 
@@ -2443,6 +2480,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                          }];
         
         [self.view bringSubviewToFront:_compass];
+    }
+}
+
+- (void)touchesBegan:(NSSet *)touches
+           withEvent:(UIEvent *)event
+{
+    for (GSSiDatePicker *datePicker in self.view.subviews)
+    {
+        if ([datePicker isKindOfClass:GSSiDatePicker.class])
+        {
+            SewerData *sewerData = [[SewerData alloc] init];
+            
+            [sewerData processDate:datePicker.dateString
+                           forPipe:_selectedSewerPipe];
+            
+            [datePicker hideDatePicker];
+            [self deselectTableViewRow];
+        }
     }
 }
 
