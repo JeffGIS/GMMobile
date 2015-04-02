@@ -267,6 +267,12 @@ extern int keepProcessing;
                 [datePicker hideDatePicker:NO];
         }
         
+        for (GSSiNotesView *notesView in self.view.subviews)
+        {
+            if ([notesView isKindOfClass:GSSiNotesView.class])
+                [notesView hideNotesView:NO];
+        }
+        
         _selectedPID = CRAPI.sharedInstance.currentPID;
         
         PropertyData *propData = [[PropertyData alloc] init];
