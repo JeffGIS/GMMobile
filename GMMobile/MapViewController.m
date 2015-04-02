@@ -2531,10 +2531,25 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [self deselectTableViewRow];
 }
 
-- (void)notesViewdidCancel:(GSSiNotesView *)notesView
+- (void)notesViewDidCancel:(GSSiNotesView *)notesView
 {
     [notesView hideNotesView:YES];
     [self deselectTableViewRow];
+}
+
+- (void)notesView:(GSSiNotesView *)notesView
+didFindMatchBetweenNote:(NSString *)note
+    andItemInList:(NSString *)itemInList;
+{
+    GSSiAlertController *alert = [[GSSiAlertController alloc] initWithViewController:self];
+    alert.delegate = notesView;
+    
+    [alert showAlertWithTitle:[NSString stringWithFormat:@"List already contains %@", itemInList]
+                      message:nil
+            cancelButtonTitle:@"Cancel"
+            otherButtonTitles:@[[NSString stringWithFormat:@"Replace %@ with %@", itemInList, note],
+                                [NSString stringWithFormat:@"Add %@ to list", note]]
+    destructiveButtonPosition:0];
 }
 
 @end
