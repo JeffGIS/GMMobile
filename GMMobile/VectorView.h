@@ -3,6 +3,12 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <GoogleMaps/GoogleMaps.h>
+#import "PickedItem.h"
+
+#define DISPLAY_DATA_OPTION_NODISPLAY   0
+#define DISPLAY_DATA_OPTION_DISPLAY     1
+#define DISPLAY_DATA_OPTION_HIGHLIGHT   2
+#define DISPLAY_DATA_OPTION_UNHIGHLIGHT 3
 
 @class VectorView;
 
@@ -16,8 +22,9 @@
 
 @property (nonatomic, weak) id <VectorViewDelegate> delegate;
 
-@property int displayData;
+@property int displayDataOption;
 @property int displayID;
+@property PickedItem * pickedItem;
 @property int ivv;
 @property int zoom;
 @property CORNERPOINTS latlonCornerPoints;

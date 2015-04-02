@@ -494,7 +494,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 if ([marker.title isEqualToString:pi.identifier])
                     [marker removeFromSuperview];
             }
-            
+            [self highlightVectorView:pi displayOption:DISPLAY_DATA_OPTION_HIGHLIGHT];
             MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
                                                                view:self.view
                                                                 map:_mapView
@@ -1030,7 +1030,7 @@ haveVV:
     if (!_vectorView)
         return;
     
-    _vectorView.displayData = 0;
+    _vectorView.displayDataOption = DISPLAY_DATA_OPTION_NODISPLAY;
     [_vectorView removeFromSuperview];
     vectorViews[_vectorView.ivv] = nil;
     _vectorView = nil;
@@ -1052,10 +1052,25 @@ haveVV:
 - (void)startVectorView:(NSTimer *)timer
 {
     [self allocateVectorView];
-    _vectorView.displayData = 1;
+    _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
     [_vectorView setRegion:_mapView.projection.visibleRegion];
     _vectorView.zoom = _vectorViewZoom;
+    
+    NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
+    
+    [_vectorView setNeedsDisplay];
+}
+
+- (void)highlightVectorView:(PickedItem *)pi displayOption:(int)option
+{
+    if (!_vectorView)
+        [self allocateVectorView];
+    _vectorView.displayDataOption = option;
+    
+    [_vectorView setRegion:_mapView.projection.visibleRegion];
+    _vectorView.zoom = _vectorViewZoom;
+    _vectorView.pickedItem = pi;
     
     NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
     

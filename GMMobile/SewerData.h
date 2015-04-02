@@ -58,6 +58,12 @@ int SQLOKswr(int sqlReturn, char *method);
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
+- (void)highlightStormLine:(CGContextRef)context
+                     refno:(int)refno
+                 llCorners:(CORNERPOINTS *) latlonCornerPoints
+                  LLBounds:(MNMXCORD *)platlonBounds
+                viewBounds:(MNMXCORD *)pvbounds;
+
 - (void)drawStormLine:(CGContextRef)context
                  pass:(int)pass
               nPoints:(int)np

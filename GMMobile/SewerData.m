@@ -20,6 +20,7 @@ static BOOL createDirectory = YES;
     LPBYTE _textOverlapBuffer;
     int _textOverlapBufferSizeWidth, _textOverlapBufferSizeHeight;
     UIColor *_darkGreen;
+    UIColor *_Red;
 }
 
 static SewerData *_sewerData;
@@ -87,6 +88,10 @@ int SQLOKswr(int sqlReturn, char *method)
         _pointsArray = [[NSMutableArray alloc] init];
         _darkGreen = [[UIColor alloc] initWithRed:0.0
                                             green:0.5
+                                             blue:0.0
+                                            alpha:1.0];
+        _Red = [[UIColor alloc] initWithRed:1.0
+                                            green:0.0
                                              blue:0.0
                                             alpha:1.0];
         
@@ -892,6 +897,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                        andWidth:width
                         andText:lineText
                     andPointers:addPointers];
+            free (llpoints);
         }
         
         SQLOKswr(sqlite3_finalize(statement), "");
@@ -902,6 +908,104 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         free (_textOverlapBuffer);
     }
 
+    [self close];
+}
+- (void)highlightStormLine:(CGContextRef)context
+                    refno:(int)refno
+               llCorners:(CORNERPOINTS *) latlonCornerPoints
+                LLBounds:(MNMXCORD *)platlonBounds
+              viewBounds:(MNMXCORD *)pvbounds
+{
+    DPOINT BasePt;
+    int numPoints,numLoops;
+    LPSTR symName;
+    CGColorRef color;
+    CGFloat width, invertIn, invertOut, diameterIn, widthIn, heightIn;
+    LPSTR pipeShape, material;
+    NSString *lineText = @"";
+    BOOL addPointers;
+    CGFloat sizeFactor = 1;
+    
+    if (_zoom > 18)
+        sizeFactor *= (2.0 * (_zoom - 18.0));
+    
+    else if (_zoom < 18)
+        sizeFactor /= (2.0 * (18.0 - _zoom));
+    
+    [self setTrans:latlonCornerPoints viewBounds:pvbounds];
+    
+    [self open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM STORM_LINE WHERE STORM_LINE.id = %i",refno];
+        
+    sqlite3_stmt *statement;
+    
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "highlightStormLine");
+        
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int ref = sqlite3_column_int(statement, 0);
+        LPSTR FACILITY_ID = (LPSTR)sqlite3_column_text(statement, 1);
+        BasePt.x = sqlite3_column_double(statement, 2);
+        BasePt.y = sqlite3_column_double(statement, 3);
+        numPoints = sqlite3_column_int(statement,4);
+        numLoops = sqlite3_column_int(statement,5);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
+        int nBlobBytes = sqlite3_column_bytes(statement,6);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
+        nBlobBytes = sqlite3_column_bytes(statement,7);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        symName = (LPSTR)sqlite3_column_text(statement,8);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+            
+        if (!strcasecmp(symName, "STRM_PIPE"))
+        {
+            CGFloat pattern[2] = {40.0, 10.0};
+            addPointers = YES;
+            width = (9.0 * sizeFactor);
+            CGContextSetLineDash (context, 5, pattern, 2);
+            color = _Red.CGColor;
+            
+        }
+        else
+        {
+            addPointers = NO;
+            lineText = @"";
+            width = (3 * sizeFactor);
+            CGContextSetLineDash (context, 1, NULL, 0);
+            color = UIColor.greenColor.CGColor;
+        }
+        
+        [self drawStormLine:context
+                       pass:LINE_PASS
+                    nPoints:numPoints
+                     points:llpoints
+                  withColor:color
+                   andWidth:width
+                    andText:lineText
+                andPointers:addPointers];
+        free (llpoints);
+    }
+    SQLOKswr(sqlite3_finalize(statement), "");
     [self close];
 }
 
