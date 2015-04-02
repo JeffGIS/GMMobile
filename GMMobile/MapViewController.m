@@ -260,6 +260,19 @@ extern int keepProcessing;
         GMSCameraPosition *camera;
         
         _tableView.hidden = YES;
+        
+        for (GSSiDatePicker *datePicker in self.view.subviews)
+        {
+            if ([datePicker isKindOfClass:GSSiDatePicker.class])
+                [datePicker hideDatePicker:NO];
+        }
+        
+        for (GSSiNotesView *notesView in self.view.subviews)
+        {
+            if ([notesView isKindOfClass:GSSiNotesView.class])
+                [notesView hideNotesView:NO];
+        }
+        
         _selectedPID = CRAPI.sharedInstance.currentPID;
         
         PropertyData *propData = [[PropertyData alloc] init];
@@ -818,10 +831,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                (self.view.frame.size.height + _tabBarHeight),
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
     
-    CGRect frame3 = CGRectMake(0.0, statusBarHeight +
+    /*CGRect frame3 = CGRectMake(0.0, statusBarHeight +
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
                                ((self.view.frame.size.height + _tabBarHeight) / 2.0),
-                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
+                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));*/
     
     CGRect frame4 = CGRectMake(0.0, statusBarHeight,
                                (self.view.frame.size.height + _tabBarHeight),
@@ -1112,7 +1125,13 @@ haveVV:
                                if ([datePicker isKindOfClass:GSSiDatePicker.class])
                                    [datePicker bringToFrontOfView:self.view];
                            }
-                               
+                           
+                           for (GSSiNotesView *notesView in self.view.subviews)
+                           {
+                               if ([notesView isKindOfClass:GSSiNotesView.class])
+                                   [notesView bringToFrontOfView:self.view];
+                           }
+                           
                        }
                    });
 }
@@ -1578,12 +1597,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)updateCleaningDate
 {
     GSSiDatePicker *datePicker = [GSSiDatePicker showDatePickerWithView:self.view];
-    #pragma unused(datePicker)
+#pragma unused(datePicker)
 }
 
 - (void)updateInspectionNotes
 {
-    
+    GSSiNotesView *notesView = [GSSiNotesView showNotesViewWithView:self.view
+                                                           delegate:self
+                                                       titleSubject:_selectedSewerPipe];
+#pragma unused(notesView)
 }
 
 - (void)removeMarker
@@ -2510,10 +2532,24 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             [sewerData processDate:datePicker.dateString
                            forPipe:_selectedSewerPipe];
             
-            [datePicker hideDatePicker];
+            [datePicker hideDatePicker:YES];
             [self deselectTableViewRow];
         }
     }
+}
+
+- (void)notesView:(GSSiNotesView *)notesView
+     didSaveNotes:(NSString *)notes
+             list:(NSArray *)list
+{
+    [notesView hideNotesView:YES];
+    [self deselectTableViewRow];
+}
+
+- (void)notesViewdidCancel:(GSSiNotesView *)notesView
+{
+    [notesView hideNotesView:YES];
+    [self deselectTableViewRow];
 }
 
 @end
