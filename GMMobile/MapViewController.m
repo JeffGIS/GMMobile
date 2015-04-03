@@ -7,6 +7,8 @@ extern int keepProcessing;
 #import "WebKitViewController.h"
 #import "PickedItem.h"
 
+#define MAX_VECTORVIEWS 8
+
 @interface MapViewController ()
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
@@ -19,11 +21,11 @@ extern int keepProcessing;
 @property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
-@property (nonatomic) int selectedPlatRefno;
+@property (nonatomic) int selectedPlatRefno, nVectorViews, vectorViewZoom;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
-@property (nonatomic) NSTimer * vectorViewTimer;
+@property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property (nonatomic) NSInteger screenSetting, gestureCount;
@@ -42,19 +44,16 @@ extern int keepProcessing;
 
 @end
 
-#define MAX_VECTORVIEWS 8
 @implementation MapViewController
 {
-    VectorView * vectorViews[MAX_VECTORVIEWS];
-    int nVectorViews;
-    int _vectorViewZoom;
+    VectorView *vectorViews[MAX_VECTORVIEWS];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    nVectorViews = 0;
+    _nVectorViews = 0;
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
@@ -694,9 +693,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     [self clearVectorView];
     
-    if (!_tableView.hidden)
-        [self.view bringSubviewToFront:_tableView];
-    
     if (_firstView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_firstView];
     
@@ -706,11 +702,23 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_mapToolbar];
     [self.view bringSubviewToFront:_compass];
     
+    if (!_tableView.hidden)
+        [self.view bringSubviewToFront:_tableView];
+    
     for (GSSiDatePicker *datePicker in self.view.subviews)
     {
         if ([datePicker isKindOfClass:GSSiDatePicker.class])
         {
             [datePicker bringToFrontOfView:self.view];
+            [self initTableView];
+        }
+    }
+    
+    for (GSSiNotesView *notesView in self.view.subviews)
+    {
+        if ([notesView isKindOfClass:GSSiNotesView.class])
+        {
+            [notesView bringToFrontOfView:self.view];
             [self initTableView];
         }
     }
@@ -865,6 +873,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
     }
     
+    for (GSSiNotesView *notesView in self.view.subviews)
+    {
+        if ([notesView isKindOfClass:GSSiNotesView.class])
+        {
+            [notesView willRotateWithDuration:duration
+                       toInterfaceOrientation:toInterfaceOrientation
+                                 tabBarHeight:_tabBarHeight];
+        }
+    }
+    
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
@@ -1010,7 +1028,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
 }
 
--(void)allocateVectorView
+- (void)allocateVectorView
 {
     int ivv;
     
@@ -1160,12 +1178,27 @@ haveVV:
         
         [self deselectTableViewRow];
         
+        NSIndexPath *indexPath;
+        
         for (GSSiDatePicker *datePicker in self.view.subviews)
         {
             if ([datePicker isKindOfClass:GSSiDatePicker.class])
             {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateCleanDate - 1)
-                                                            inSection:0];
+                indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateCleanDate - 1)
+                                               inSection:0];
+                
+                [_tableView selectRowAtIndexPath:indexPath
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionNone];
+            }
+        }
+        
+        for (GSSiNotesView *notesView in self.view.subviews)
+        {
+            if ([notesView isKindOfClass:GSSiNotesView.class])
+            {
+                indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateNotes - 1)
+                                               inSection:0];
                 
                 [_tableView selectRowAtIndexPath:indexPath
                                         animated:NO
@@ -2543,14 +2576,35 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      didSaveNotes:(NSString *)notes
              list:(NSArray *)list
 {
+    SewerData *sewerData = [[SewerData alloc] init];
+    
+    [sewerData processNotes:notes
+                  notesList:list
+                    forPipe:_selectedSewerPipe];
+    
     [notesView hideNotesView:YES];
     [self deselectTableViewRow];
 }
 
-- (void)notesViewdidCancel:(GSSiNotesView *)notesView
+- (void)notesViewDidCancel:(GSSiNotesView *)notesView
 {
     [notesView hideNotesView:YES];
     [self deselectTableViewRow];
+}
+
+- (void)notesView:(GSSiNotesView *)notesView
+didFindMatchBetweenNote:(NSString *)note
+    andItemInList:(NSString *)itemInList;
+{
+    GSSiAlertController *alert = [[GSSiAlertController alloc] initWithViewController:self];
+    alert.delegate = notesView;
+    
+    [alert showAlertWithTitle:[NSString stringWithFormat:@"List already contains %@", itemInList]
+                      message:nil
+            cancelButtonTitle:@"Cancel"
+            otherButtonTitles:@[[NSString stringWithFormat:@"Replace %@ with %@", itemInList, note],
+                                [NSString stringWithFormat:@"Add %@ to list", note]]
+    destructiveButtonPosition:0];
 }
 
 @end

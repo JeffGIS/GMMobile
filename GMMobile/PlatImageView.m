@@ -522,6 +522,7 @@ top:
         CGFloat pBearing;
         CLLocationCoordinate2D pTarget;
         DPOINT minYpt, maxYpt;
+        
         CGFloat pZoom = [self zoomForMapBounds:self.frame
                                        bearing:&pBearing
                                         target:&pTarget

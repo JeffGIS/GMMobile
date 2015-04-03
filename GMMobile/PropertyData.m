@@ -1069,9 +1069,10 @@ int SQLOKpd(int sqlReturn, char *method)
     CGFloat medianAge = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
     char cenBlock[20];
-    int l = strlen (cenBlockIN);
+    int l = (int)strlen(cenBlockIN);
     
-    strcpy (cenBlock,cenBlockIN);
+    strcpy (cenBlock, cenBlockIN);
+    
     if (l)
         cenBlock[12] = 0;
     
