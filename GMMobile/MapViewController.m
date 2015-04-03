@@ -642,18 +642,52 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _mapView.settings.scrollGestures = YES;
         CRAPI.sharedInstance.showPlats = 0;
-        if (_screenSetting == MapViewScreenSettingFullscreen && _selectedPlatRefno > 0)
-        {
-            [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
-            [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
-        }
-        
+        SewerData *sd = [[SewerData alloc] init];
+        NSString * platID = [sd getPlatIDofType:@"storm" fromRefno:_selectedPlatRefno];
+
+        [sd loadPlat:platID
+              ofType:@"storm"
+        usingPopover:_popover
+         andDelegate:self];
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
 }
+- (void)FTPdidComplete:(int)option
+            withStatus:(int)status
+              filePath:(NSString *)path
+{
+    if (status == FTPStatusOK)
+    {
+        [_popover hide];
+        switch (option)
+        {
+            case GET_STORMPLAT:
+            {
+                CRAPI.sharedInstance.currentPlatImagePath = path;
+                CRAPI.sharedInstance.currentPlatType = @"storm";
+                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+                if (_screenSetting == MapViewScreenSettingFullscreen && _selectedPlatRefno > 0)
+                {
+                    [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
+                    [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
+                }
+            }
+        }
+    }
+    else
+    {
+        [_popover hide];
+        
+        [_gssiAlert showAlertWithTitle:@"Error getting plat file"
+                               message:@"Network communication error"
+                     cancelButtonTitle:@"Continue"
+                     otherButtonTitles:nil
+             destructiveButtonPosition:0];
+    }
 
+}
 - (void)removePreviousInfoWindow
 {
     for (UIView *views in self.view.subviews)

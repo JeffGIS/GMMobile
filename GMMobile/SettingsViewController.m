@@ -89,7 +89,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     {
         switch (option)
         {
-            case GET_SANPLAT:
+            case GET_STORMPLAT:
                 self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                               target:self
                                                             selector:@selector(getNextPlat)
@@ -276,7 +276,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        if (option == GET_SANPLAT)
+        if (option == GET_STORMPLAT)
         {
             self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
                                                           target:self

@@ -167,29 +167,26 @@ int SQLOKswr(int sqlReturn, char *method)
     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", actualPlatID];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
-    pull.popover = _popover;
+    pull.popover = popover;
     pull.useOnlyPrimaryFTP = YES;
-    pull.option = GET_SANPLAT;
+    pull.option = GET_STORMPLAT;
     
     [popover showAfter:0.5
               withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
                          type, actualPlatID]];
 
-    pull.ftpSiteOveride = @"74.42.136.100";
+    pull.createDirectory = createDirectory;
+    pull.returnIfExists = NO;
+   /* pull.ftpSiteOveride = @"74.42.136.100";
     pull.usernameOveride = @"GMMobile";
     pull.passwordOveride = @"GeoMaster";
     pull.portOveride = @"21";
-    pull.createDirectory = createDirectory;
-    pull.returnIfExists = NO;
     
     if ([pull getFile:fileName
-        fromDirectory:[NSString stringWithFormat:@"Sewer/%@/Plats",type]
+        fromDirectory:[NSString stringWithFormat:@"Sewer/%@/Plats",type]*/
    
-    /*pull.createDirectory = createDirectory;
-    pull.returnIfExists = NO;
-    
     if ([pull getFile:fileName
-        fromDirectory:[NSString stringWithFormat:@"GMMobile/sewerplats/%@", type]*/
+        fromDirectory:[NSString stringWithFormat:@"GMMobile/sewerplats/%@", type]
                toFile:fileName
           toDirectory:toDir
          forceRefresh:NO] == FTPStatusFileExists)
@@ -361,9 +358,24 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     return minRef;
 }
 
-- (NSString *)getSanPlatIDFromRefno:(int)refno
+- (NSString *)getPlatIDofType:(NSString*)type fromRefno:(int)refno
 {
     NSString *platID = [[NSString alloc] init];
+    sqlite3_stmt *statement;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT STORM_PLAT.PLAT_NAME FROM STORM_PLAT WHERE STORM_PLAT.id=%i",
+             refno];
+    
+    [self open];
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "");
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR pltID = (LPSTR)sqlite3_column_text(statement, 0);
+        platID = [NSString stringWithUTF8String:pltID];
+    }
+    SQLOKswr(sqlite3_finalize(statement), "displayPlats");
+    [self close];
+    
     return platID;
 }
 

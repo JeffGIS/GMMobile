@@ -2,7 +2,8 @@
 //  GMMobile
 
 #define COORDINATE_FACTOR 10000000.0
-#define GET_SANPLAT 11
+#define GET_SANPLATx 11
+#define GET_STORMPLAT 12
 
 #define PLAT_TYPE_SANITARY  1
 #define PLAT_TYPE_STORM     2
@@ -83,7 +84,7 @@ int SQLOKswr(int sqlReturn, char *method);
    highlightList:(NSMutableArray *)hlist;
 
 - (int)pickSanPlat:(LLPOINT *)pt;
-- (NSString *)getSanPlatIDFromRefno:(int)refno;
+- (NSString *)getPlatIDofType:(NSString*)type fromRefno:(int)refno;
 - (NSMutableArray *)getAllSanPlats;
 - (NSMutableArray *)getAllStormPlats;
 
