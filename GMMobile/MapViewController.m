@@ -694,9 +694,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     [self clearVectorView];
     
-    if (!_tableView.hidden)
-        [self.view bringSubviewToFront:_tableView];
-    
     if (_firstView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_firstView];
     
@@ -706,11 +703,23 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     [self.view bringSubviewToFront:_mapToolbar];
     [self.view bringSubviewToFront:_compass];
     
+    if (!_tableView.hidden)
+        [self.view bringSubviewToFront:_tableView];
+    
     for (GSSiDatePicker *datePicker in self.view.subviews)
     {
         if ([datePicker isKindOfClass:GSSiDatePicker.class])
         {
             [datePicker bringToFrontOfView:self.view];
+            [self initTableView];
+        }
+    }
+    
+    for (GSSiNotesView *notesView in self.view.subviews)
+    {
+        if ([notesView isKindOfClass:GSSiNotesView.class])
+        {
+            [notesView bringToFrontOfView:self.view];
             [self initTableView];
         }
     }
@@ -865,6 +874,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
     }
     
+    for (GSSiNotesView *notesView in self.view.subviews)
+    {
+        if ([notesView isKindOfClass:GSSiNotesView.class])
+        {
+            [notesView willRotateWithDuration:duration
+                       toInterfaceOrientation:toInterfaceOrientation
+                                 tabBarHeight:_tabBarHeight];
+        }
+    }
+    
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
@@ -1010,7 +1029,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
 }
 
--(void)allocateVectorView
+- (void)allocateVectorView
 {
     int ivv;
     
@@ -1144,12 +1163,27 @@ haveVV:
         
         [self deselectTableViewRow];
         
+        NSIndexPath *indexPath;
+        
         for (GSSiDatePicker *datePicker in self.view.subviews)
         {
             if ([datePicker isKindOfClass:GSSiDatePicker.class])
             {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateCleanDate - 1)
-                                                            inSection:0];
+                indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateCleanDate - 1)
+                                               inSection:0];
+                
+                [_tableView selectRowAtIndexPath:indexPath
+                                        animated:NO
+                                  scrollPosition:UITableViewScrollPositionNone];
+            }
+        }
+        
+        for (GSSiNotesView *notesView in self.view.subviews)
+        {
+            if ([notesView isKindOfClass:GSSiNotesView.class])
+            {
+                indexPath = [NSIndexPath indexPathForRow:(SewerPipeSettingUpdateNotes - 1)
+                                               inSection:0];
                 
                 [_tableView selectRowAtIndexPath:indexPath
                                         animated:NO
