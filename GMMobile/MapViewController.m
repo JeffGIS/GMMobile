@@ -7,6 +7,8 @@ extern int keepProcessing;
 #import "WebKitViewController.h"
 #import "PickedItem.h"
 
+#define MAX_VECTORVIEWS 8
+
 @interface MapViewController ()
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
@@ -19,11 +21,11 @@ extern int keepProcessing;
 @property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
-@property (nonatomic) int selectedPlatRefno;
+@property (nonatomic) int selectedPlatRefno, nVectorViews, vectorViewZoom;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
-@property (nonatomic) NSTimer * vectorViewTimer;
+@property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property (nonatomic) NSInteger screenSetting, gestureCount;
@@ -42,19 +44,16 @@ extern int keepProcessing;
 
 @end
 
-#define MAX_VECTORVIEWS 8
 @implementation MapViewController
 {
-    VectorView * vectorViews[MAX_VECTORVIEWS];
-    int nVectorViews;
-    int _vectorViewZoom;
+    VectorView *vectorViews[MAX_VECTORVIEWS];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    nVectorViews = 0;
+    _nVectorViews = 0;
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
