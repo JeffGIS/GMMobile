@@ -19,7 +19,6 @@ extern int keepProcessing;
 @property (nonatomic) dispatch_queue_t vectorQueue;
 @property (nonatomic) CGRect rect;
 @property BOOL haveVectorLayer;
-@property CGLayerRef vectorLayer;
 
 @end
 
@@ -40,6 +39,9 @@ extern int keepProcessing;
 }
 - (void)dealloc
 {
+    if (_vectorLayer)
+        CGLayerRelease(_vectorLayer);
+
     //[self freeResources];
 }
 
@@ -122,7 +124,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             CGContextTranslateCTM(_vectorViewContext, 0, -rect.size.height);
             CGContextDrawLayerInRect(_vectorViewContext, rect, _vectorLayer);
         }
-        CGLayerRelease(_vectorLayer);
+        //CGLayerRelease(_vectorLayer);
         _haveVectorLayer = NO;
         if (self.delegate)
             [self.delegate vectorViewDidComplete:self];
@@ -136,12 +138,14 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
     _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
     _viewBounds.ymn = (self.bounds.origin.y * scale);
-    switch (_displayDataOption)
     {
-        case DISPLAY_DATA_OPTION_DISPLAY:
-        {
+        
             CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
-            _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
+            if (_displayDataOption != DISPLAY_DATA_OPTION_HIGHLIGHT || !_vectorLayer)
+                _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
+            else
+                _context = CGLayerGetContext(_vectorLayer);
+
             dispatch_async(_vectorQueue,
                            ^{
                                _colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -167,111 +171,144 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                
                                else
                                {
-                                   if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
+                                   switch (_displayDataOption)
                                    {
-                                       PropertyData *pd = [[PropertyData alloc] init];
-                                       
-                                       pd.processingID = keepProcessing;
-                                       
-                                       [pd displayParcels:_context
-                                                llCorners:&_latlonCornerPoints
-                                                 LLBounds:&_latlonBounds
-                                               viewBounds:&_viewBounds];
-                                       
-                                       [pd displayParcelText:_context
-                                                   llCorners:&_latlonCornerPoints
+                                       case DISPLAY_DATA_OPTION_DISPLAY:
+                                       {
+                                           if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
+                                           {
+                                               PropertyData *pd = [[PropertyData alloc] init];
+                                               
+                                               pd.processingID = keepProcessing;
+                                               
+                                               [pd displayParcels:_context
+                                                        llCorners:&_latlonCornerPoints
+                                                         LLBounds:&_latlonBounds
+                                                       viewBounds:&_viewBounds];
+                                               
+                                               [pd displayParcelText:_context
+                                                           llCorners:&_latlonCornerPoints
+                                                            LLBounds:&_latlonBounds
+                                                          viewBounds:&_viewBounds];
+                                           }
+                                           
+                                           if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                                           {
+                                               BoundaryData *bd = [[BoundaryData alloc] init];
+                                               
+                                               [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                         inContext:_context
+                                                         llCorners:&_latlonCornerPoints
+                                                          LLBounds:&_latlonBounds
+                                                        viewBounds:&_viewBounds];
+                                           }
+                                           
+                                           /* if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                                            {
+                                            BoundaryData *bd = [[BoundaryData alloc]init];
+                                            bd.processingID = keepProcessing;
+                                            [bd displayLandUse:_context
+                                            llCorners:&_latlonCornerPoints
+                                            LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds];
+                                            }
+                                            
+                                            if (keepProcessing == self.displayID && _zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
+                                            {
+                                            PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                            pd.processingID = keepProcessing;
+                                            
+                                            if (keepProcessing == self.displayID)
+                                            [pd displayPlanArea:_context
+                                            llCorners:&_latlonCornerPoints
+                                            LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds];
+                                            
+                                            if (keepProcessing == self.displayID)
+                                            [pd displayPlanLine:_context
+                                            llCorners:&_latlonCornerPoints
+                                            LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds];
+                                            
+                                            if (keepProcessing == self.displayID)
+                                            [pd displayPlanPoint:_context
+                                            llCorners:&_latlonCornerPoints
+                                            LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds];
+                                            
+                                            if (keepProcessing == self.displayID)
+                                            [pd displayWallPoint:_context
+                                            llCorners:&_latlonCornerPoints
+                                            LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds];
+                                            }*/
+                                           
+                                           if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
+                                           {
+                                               SewerData *sd = [[SewerData alloc] init];
+                                               sd.processingID = keepProcessing;
+                                               sd.zoom = _zoom;
+                                               
+                                               [sd displayStormLine:_context
+                                                               pass:LINE_PASS
+                                                          llCorners:&_latlonCornerPoints
+                                                           LLBounds:&_latlonBounds
+                                                         viewBounds:&_viewBounds];
+                                               
+                                               [sd displayStormPoint:_context
+                                                           llCorners:&_latlonCornerPoints
+                                                            LLBounds:&_latlonBounds
+                                                          viewBounds:&_viewBounds];
+                                               
+                                               [sd displayStormLine:_context
+                                                               pass:TEXT_PASS
+                                                          llCorners:&_latlonCornerPoints
+                                                           LLBounds:&_latlonBounds
+                                                         viewBounds:&_viewBounds];
+                                               
+                                           }
+                                           if (keepProcessing == self.displayID)
+                                           {
+                                               PipeTrace *pt = [[PipeTrace alloc] init];
+                                               pt.processingID = keepProcessing;
+                                               
+                                               [pt displayPipeTrace:_context
+                                                          llCorners:&_latlonCornerPoints
+                                                           LLBounds:&_latlonBounds
+                                                         viewBounds:&_viewBounds];
+                                           }
+                                       }
+                                           break;
+                                       case DISPLAY_DATA_OPTION_HIGHLIGHT:
+                                       {
+                                           switch (_pickedItem.itemType)
+                                           {
+                                               case PTStormSewerLine:
+                                               {
+                                                   SewerData *sd = [[SewerData alloc] init];
+                                                   sd.processingID = keepProcessing;
+                                                   sd.zoom = _zoom;
+                                                   
+                                                   [sd highlightStormLine:_context
+                                                    refno:_pickedItem.refno
+                                                    llCorners:&_latlonCornerPoints
                                                     LLBounds:&_latlonBounds
-                                                  viewBounds:&_viewBounds];
-                                   }
-                                   
-                                   if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-                                   {
-                                       BoundaryData *bd = [[BoundaryData alloc] init];
-                                       
-                                       [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                 inContext:_context
-                                                 llCorners:&_latlonCornerPoints
-                                                  LLBounds:&_latlonBounds
-                                                viewBounds:&_viewBounds];
-                                   }
-                                   
-                                   /* if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-                                    {
-                                    BoundaryData *bd = [[BoundaryData alloc]init];
-                                    bd.processingID = keepProcessing;
-                                    [bd displayLandUse:_context
-                                    llCorners:&_latlonCornerPoints
-                                    LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
-                                    }
-                                    
-                                    if (keepProcessing == self.displayID && _zoom > CRAPI.sharedInstance.sewerVisibleAtZoom)
-                                    {
-                                    PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                    pd.processingID = keepProcessing;
-                                    
-                                    if (keepProcessing == self.displayID)
-                                    [pd displayPlanArea:_context
-                                    llCorners:&_latlonCornerPoints
-                                    LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
-                                    
-                                    if (keepProcessing == self.displayID)
-                                    [pd displayPlanLine:_context
-                                    llCorners:&_latlonCornerPoints
-                                    LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
-                                    
-                                    if (keepProcessing == self.displayID)
-                                    [pd displayPlanPoint:_context
-                                    llCorners:&_latlonCornerPoints
-                                    LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
-                                    
-                                    if (keepProcessing == self.displayID)
-                                    [pd displayWallPoint:_context
-                                    llCorners:&_latlonCornerPoints
-                                    LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
-                                    }*/
-                                   
-                                   if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
-                                   {
-                                       SewerData *sd = [[SewerData alloc] init];
-                                       sd.processingID = keepProcessing;
-                                       sd.zoom = _zoom;
-                                       
-                                       [sd displayStormLine:_context
-                                                       pass:LINE_PASS
-                                                  llCorners:&_latlonCornerPoints
-                                                   LLBounds:&_latlonBounds
-                                                 viewBounds:&_viewBounds];
-                                       
-                                       [sd displayStormPoint:_context
-                                                   llCorners:&_latlonCornerPoints
-                                                    LLBounds:&_latlonBounds
-                                                  viewBounds:&_viewBounds];
-                                       
-                                       [sd displayStormLine:_context
-                                                       pass:TEXT_PASS
-                                                  llCorners:&_latlonCornerPoints
-                                                   LLBounds:&_latlonBounds
-                                                 viewBounds:&_viewBounds];
-                                       
+                                                    viewBounds:&_viewBounds];
+                                                  /* [sd displayStormLine:_context
+                                                                   pass:LINE_PASS
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];*/
+                                               }
+                                                   
+                                                   break;
+                                                   
+                                           }
+                                      }
+                                           break;
+                               
                                    }
                                }
-                               
-                               if (keepProcessing == self.displayID)
-                               {
-                                   PipeTrace *pt = [[PipeTrace alloc] init];
-                                   pt.processingID = keepProcessing;
-                                   
-                                   [pt displayPipeTrace:_context
-                                              llCorners:&_latlonCornerPoints
-                                               LLBounds:&_latlonBounds
-                                             viewBounds:&_viewBounds];
-                               }
-                               
                                if (keepProcessing == self.displayID)
                                {
                                    _haveVectorLayer = YES;
@@ -290,6 +327,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                else
                                {
                                    CGLayerRelease(_vectorLayer);
+                                   _vectorLayer = 0;
                                    _haveVectorLayer = NO;
                                    if (self.delegate)
                                        [self.delegate vectorViewDidComplete:self];
@@ -298,37 +336,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                //[self freeResources];
                                NSLog (@"Vector view complete");
                            });
-        }
-            break;
-        case DISPLAY_DATA_OPTION_HIGHLIGHT:
-        {
-            CGContextScaleCTM(_vectorViewContext,1,-1);
-            CGContextTranslateCTM(_vectorViewContext, 0, -rect.size.height);
-            switch (_pickedItem.itemType)
-            {
-                case PTStormSewerLine:
-                {
-                    SewerData *sd = [[SewerData alloc] init];
-                    sd.processingID = keepProcessing;
-                    sd.zoom = _zoom;
-                    
-                    [sd highlightStormLine:_vectorViewContext
-                                    refno:_pickedItem.refno
-                               llCorners:&_latlonCornerPoints
-                                LLBounds:&_latlonBounds
-                              viewBounds:&_viewBounds];
-                }
-                    
-                   break;
-                    
-            }
-            if (self.delegate)
-            {
-                [self.delegate vectorViewDidComplete:self];
-            }
-            
-        }
-            break;
+        
     }
 }
 

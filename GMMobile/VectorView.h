@@ -30,6 +30,7 @@
 @property CORNERPOINTS latlonCornerPoints;
 @property MNMXCORD latlonBounds;
 @property MNMXCORD viewBounds;
+@property CGLayerRef vectorLayer;
 
 - (void) setRegion:(GMSVisibleRegion)region;
 

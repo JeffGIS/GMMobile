@@ -1077,6 +1077,7 @@ haveVV:
 
 - (void)highlightVectorView:(PickedItem *)pi displayOption:(int)option
 {
+    //[self clearVectorView];
     if (!_vectorView)
         [self allocateVectorView];
     _vectorView.displayDataOption = option;
@@ -1085,7 +1086,7 @@ haveVV:
     _vectorView.zoom = _vectorViewZoom;
     _vectorView.pickedItem = pi;
     
-    NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
+    NSLog(@"HighlightVector view start: zoom = %i", _vectorViewZoom);
     
     [_vectorView setNeedsDisplay];
 }

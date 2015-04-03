@@ -334,10 +334,16 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
             for (int i = 0; i < numPoints; i++)
             {
                 if (findClosestPoint (&llpoints[i],&minpt,&mind,&p1))
+                {
                     minRef = refno;
+                    minPlatID = [NSString stringWithUTF8String:platID];
+                }
             }
             if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
+            {
                 minRef = refno;
+                minPlatID = [NSString stringWithUTF8String:platID];
+            }
         }
         free (llpoints);
       
@@ -350,7 +356,8 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg",
                           _documentsDirectory, minPlatID];
     
-    CRAPI.sharedInstance.currentPlatImagePath = platFile;
+    if (minRef)
+        CRAPI.sharedInstance.currentPlatImagePath = platFile;
     return minRef;
 }
 
