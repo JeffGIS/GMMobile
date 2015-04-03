@@ -47,6 +47,11 @@ typedef struct {
     [sd close];
 }
 
+- (int)getPipeTraceBounds
+{
+    return 0;
+}
+
 - (BOOL)getUpDownNodes:(LPSTR)atFid
                     up:(LPSTR)upNode
                     dn:(LPSTR)dnNode

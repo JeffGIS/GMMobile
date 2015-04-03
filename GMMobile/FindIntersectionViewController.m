@@ -86,8 +86,7 @@
     if ((street2SearchText) && ![street2SearchText isEqualToString:@""])
     {
         _street2TF.text = street2SearchText;
-        PropertyData *propData = [[PropertyData alloc] init];
-        
+        //PropertyData *propData = [[PropertyData alloc] init];
         //_intersectionList = [propData someMethod];
         [_tableView reloadData];
     }
@@ -103,8 +102,7 @@
     
     else
     {
-        PropertyData *propData = [[PropertyData alloc] init];
-        
+        //PropertyData *propData = [[PropertyData alloc] init];
         //_intersectionList = [propData someMethod];
         [_tableView reloadData];
     }
@@ -120,8 +118,7 @@
     
     else
     {
-        PropertyData *propData = [[PropertyData alloc] init];
-        
+        //PropertyData *propData = [[PropertyData alloc] init];
         //_intersectionList = [propData someMethod];
         [_tableView reloadData];
     }

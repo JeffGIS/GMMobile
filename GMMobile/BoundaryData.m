@@ -22,7 +22,7 @@ extern int keepProcessing;
              LLBounds:(MNMXCORD *)platlonBounds
            viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query;
+    NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
     int numPoints,numLoops;
@@ -94,20 +94,20 @@ extern int keepProcessing;
 }
 
 - (void)drawBoundary:(CGContextRef)context
-           nPoints:(int)np
-            nLoops:(int)nLoops
-           partLen:(int *)pPartLen
-            points:(LPDPOINT)pPoints
-         withColor:(CGColorRef)color
+             nPoints:(int)np
+              nLoops:(int)nLoops
+             partLen:(int *)pPartLen
+              points:(LPDPOINT)pPoints
+           withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 10);
     
     if (nLoops > 1)
     {
-        int ip=0;
+        int ip = 0;
         int ii;
         
-        for (int loop=0; loop < nLoops; loop++)
+        for (int loop = 0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
