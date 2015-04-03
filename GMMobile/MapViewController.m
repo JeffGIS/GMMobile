@@ -2527,6 +2527,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      didSaveNotes:(NSString *)notes
              list:(NSArray *)list
 {
+    SewerData *sewerData = [[SewerData alloc] init];
+    
+    [sewerData processNotes:notes
+                  notesList:list
+                    forPipe:_selectedSewerPipe];
+    
     [notesView hideNotesView:YES];
     [self deselectTableViewRow];
 }

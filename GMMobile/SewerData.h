@@ -90,4 +90,8 @@ int SQLOKswr(int sqlReturn, char *method);
 - (void)processDate:(NSString *)date
             forPipe:(NSString *)pipe;
 
+- (void)processNotes:(NSString *)notes
+           notesList:(NSArray *)notesList
+             forPipe:(NSString *)pipe;
+
 @end

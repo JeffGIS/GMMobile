@@ -1445,4 +1445,13 @@ float roundFloatToNearestTen(float x)
     //store date to pipe in database here
 }
 
+- (void)processNotes:(NSString *)notes
+           notesList:(NSArray *)notesList
+             forPipe:(NSString *)pipe
+{
+    NSLog(@"Notes:%@ and Notes List:%@ for Pipe:%@", notes, notesList, pipe);
+    
+    //store notes for pipe and notes list for all sewer here
+}
+
 @end
