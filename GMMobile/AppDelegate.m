@@ -33,7 +33,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.parcelShadingOption = 0;
     [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
     
-    CRAPI.sharedInstance.currentPlatType = @"STORM";
+    CRAPI.sharedInstance.currentPlatType = @"storm";
     
     CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
                                                                               ofType:@"jpg"];
