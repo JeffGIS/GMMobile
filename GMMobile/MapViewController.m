@@ -1185,6 +1185,8 @@ haveVV:
                                    [notesView bringToFrontOfView:self.view];
                            }
                            
+                           if ([self.view.subviews containsObject:_popover])
+                               [self.view bringSubviewToFront:_popover];
                        }
                    });
 }
