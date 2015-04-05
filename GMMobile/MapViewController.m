@@ -617,8 +617,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             if (platRefno != _selectedPlatRefno)
             {
                 _selectedPlatRefno = platRefno;
-                _waitForVectorViewRefresh = YES;
-                CRAPI.sharedInstance.showPlats = platRefno;
+                if (!platRefno)
+                {
+                    _waitForVectorViewRefresh = NO;
+                    CRAPI.sharedInstance.showPlats = -1;
+                }
+                else
+                {
+                    _waitForVectorViewRefresh = YES;
+                    CRAPI.sharedInstance.showPlats = platRefno;
+                }
                 [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
                 
                [self refreshVectorView:_mapView.projection.visibleRegion
@@ -642,14 +650,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _mapView.settings.scrollGestures = YES;
         CRAPI.sharedInstance.showPlats = 0;
-        SewerData *sd = [[SewerData alloc] init];
-        NSString * platID = [sd getPlatIDofType:@"storm" fromRefno:_selectedPlatRefno];
-
-        [sd loadPlat:platID
-              ofType:@"storm"
-        usingPopover:_popover
-         andDelegate:self];
-        
+        if (_selectedPlatRefno)
+        {
+            SewerData *sd = [[SewerData alloc] init];
+            NSString * platID = [sd getPlatIDofType:@"storm" fromRefno:_selectedPlatRefno];
+            
+            [sd loadPlat:platID
+                  ofType:@"storm"
+            usingPopover:_popover
+             andDelegate:self];
+        }
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
