@@ -642,7 +642,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         }
         else if (_platView)
         {
-            [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+            [_platView setPlatID:_selectedPlatRefno
+                         andType:PLAT_TYPE_STORM];
         }
     }
     
@@ -668,16 +669,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             withStatus:(int)status
               filePath:(NSString *)path
 {
-    if (status == FTPStatusOK)
+    if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
         [_popover hide];
+        
         switch (option)
         {
             case GET_STORMPLAT:
             {
                 CRAPI.sharedInstance.currentPlatImagePath = path;
                 CRAPI.sharedInstance.currentPlatType = @"storm";
-                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+                
+                [_platView setPlatID:_selectedPlatRefno
+                             andType:PLAT_TYPE_STORM];
+                
                 if (_screenSetting == MapViewScreenSettingFullscreen && _selectedPlatRefno > 0)
                 {
                     [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
@@ -686,6 +691,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
         }
     }
+    
     else
     {
         [_popover hide];
@@ -1139,9 +1145,9 @@ haveVV:
 
 - (void)highlightVectorView:(PickedItem *)pi displayOption:(int)option
 {
-    //[self clearVectorView];
     if (!_vectorView)
         [self allocateVectorView];
+    
     _vectorView.displayDataOption = option;
     
     [_vectorView setRegion:_mapView.projection.visibleRegion];

@@ -316,7 +316,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:NO];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
     
 }
 
@@ -341,7 +341,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
     
 }
 
@@ -366,7 +366,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
 - (IBAction)loadCensus:(id)sender
@@ -388,7 +388,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
 - (IBAction)loadAreas:(id)sender
@@ -412,7 +412,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
 - (IBAction)loadPlan:(id)sender
@@ -436,7 +436,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
 - (IBAction)loadSewer:(id)sender
@@ -457,7 +457,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-     forceRefresh:YES];
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
 - (BOOL)getNextPlat

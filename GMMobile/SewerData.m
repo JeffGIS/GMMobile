@@ -12,16 +12,13 @@ static BOOL createDirectory = YES;
 
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) NSMutableArray *pointsArray;
+@property (nonatomic) UIColor *darkGreen, *red;
+@property (nonatomic) LPBYTE textOverlapBuffer;
+@property (nonatomic) int textOverlapBufferSizeWidth, textOverlapBufferSizeHeight;
 
 @end
 
 @implementation SewerData
-{
-    LPBYTE _textOverlapBuffer;
-    int _textOverlapBufferSizeWidth, _textOverlapBufferSizeHeight;
-    UIColor *_darkGreen;
-    UIColor *_Red;
-}
 
 static SewerData *_sewerData;
 
@@ -50,6 +47,7 @@ int SQLOKswr(int sqlReturn, char *method)
     
     return sqlReturn;
 }
+
 + (NSString *)getActualPlatFileName:(NSString *)platID
 {
     NSString *outName;
@@ -63,18 +61,24 @@ int SQLOKswr(int sqlReturn, char *method)
     outName = [NSString stringWithUTF8String:name];
     return outName;
 }
--(NSString*)platPathName:(NSString *)platName
-                platType:(int)type
+
+- (NSString *)platPathName:(NSString *)platName
+                  platType:(int)type
 {
     NSString *toDir;
     NSString *actualPlatID = [SewerData getActualPlatFileName:platName];
+    
     if (type == PLAT_TYPE_SANITARY)
         toDir = [NSString stringWithFormat:@"%@/sanPlats", _documentsDirectory];
+    
     else
         toDir = [NSString stringWithFormat:@"%@/stormPlats", _documentsDirectory];
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@.jpg",toDir, actualPlatID];
+    
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@.jpg", toDir, actualPlatID];
     return fileName;
+    
 }
+
 - (id)init
 {
     self = [super init];
@@ -86,16 +90,16 @@ int SQLOKswr(int sqlReturn, char *method)
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _sewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
         _pointsArray = [[NSMutableArray alloc] init];
+        
         _darkGreen = [[UIColor alloc] initWithRed:0.0
                                             green:0.5
                                              blue:0.0
                                             alpha:1.0];
-        _Red = [[UIColor alloc] initWithRed:1.0
-                                            green:0.0
-                                             blue:0.0
-                                            alpha:1.0];
         
-
+        _red = [[UIColor alloc] initWithRed:1.0
+                                      green:0.0
+                                       blue:0.0
+                                      alpha:1.0];
     }
     
     return self;
@@ -163,7 +167,7 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     BOOL fileExists = NO;
     NSString *actualPlatID = [SewerData getActualPlatFileName:platID];
-    NSString *toDir = [NSString stringWithFormat:@"%@/%@Plats", _documentsDirectory,type];
+    NSString *toDir = [NSString stringWithFormat:@"%@/%@Plats", _documentsDirectory, type];
     NSString *fileName = [NSString stringWithFormat:@"%@.jpg", actualPlatID];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = delegate;
@@ -172,12 +176,11 @@ int SQLOKswr(int sqlReturn, char *method)
     pull.option = GET_STORMPLAT;
     
     [popover showAfter:0.5
-              withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
-                         type, actualPlatID]];
+             withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
+                        type, actualPlatID]];
 
     pull.createDirectory = createDirectory;
-    pull.returnIfExists = NO;
-   /* pull.ftpSiteOveride = @"74.42.136.100";
+    /*pull.ftpSiteOveride = @"74.42.136.100";
     pull.usernameOveride = @"GMMobile";
     pull.passwordOveride = @"GeoMaster";
     pull.portOveride = @"21";
@@ -189,10 +192,12 @@ int SQLOKswr(int sqlReturn, char *method)
         fromDirectory:[NSString stringWithFormat:@"GMMobile/sewerplats/%@", type]
                toFile:fileName
           toDirectory:toDir
-         forceRefresh:NO] == FTPStatusFileExists)
+        refreshOption:FTPDataPullRefreshOptionCheckFileSize] == FTPStatusFileExists)
     {
         fileExists = YES;
     }
+    
+    NSLog(@"%d", fileExists);
     
     createDirectory = NO;
     return fileExists;
@@ -1002,7 +1007,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
             addPointers = YES;
             width = (9.0 * sizeFactor);
             CGContextSetLineDash (context, 5, pattern, 2);
-            color = _Red.CGColor;
+            color = _red.CGColor;
             
         }
         else
