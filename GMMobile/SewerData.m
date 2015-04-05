@@ -197,8 +197,6 @@ int SQLOKswr(int sqlReturn, char *method)
         fileExists = YES;
     }
     
-    NSLog(@"%d", fileExists);
-    
     createDirectory = NO;
     return fileExists;
 }
