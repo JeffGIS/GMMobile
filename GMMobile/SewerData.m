@@ -175,7 +175,7 @@ int SQLOKswr(int sqlReturn, char *method)
     pull.useOnlyPrimaryFTP = YES;
     pull.option = GET_STORMPLAT;
     
-    [popover showAfter:0.5
+    [popover showAfter:1.5
              withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
                         type, actualPlatID]];
 
