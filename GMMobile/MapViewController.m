@@ -651,16 +651,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _mapView.settings.scrollGestures = YES;
         CRAPI.sharedInstance.showPlats = 0;
+        
         if (_selectedPlatRefno)
         {
             SewerData *sd = [[SewerData alloc] init];
-            NSString * platID = [sd getPlatIDofType:@"storm" fromRefno:_selectedPlatRefno];
+            
+            NSString *platID = [sd getPlatIDofType:@"storm"
+                                         fromRefno:_selectedPlatRefno];
             
             [sd loadPlat:platID
                   ofType:@"storm"
             usingPopover:_popover
              andDelegate:self];
         }
+        
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }

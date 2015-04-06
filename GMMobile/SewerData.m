@@ -6,7 +6,7 @@ extern int keepProcessing;
 #import "SewerData.h"
 #import "PickedItem.h"
 
-static BOOL createDirectory = YES;
+static BOOL _createDirectory = YES;
 
 @interface SewerData ()
 
@@ -179,7 +179,8 @@ int SQLOKswr(int sqlReturn, char *method)
              withTitle:[NSString stringWithFormat:@"Get %@ Plat %@",
                         type, actualPlatID]];
 
-    pull.createDirectory = createDirectory;
+    pull.createDirectory = _createDirectory;
+    
     /*pull.ftpSiteOveride = @"74.42.136.100";
     pull.usernameOveride = @"GMMobile";
     pull.passwordOveride = @"GeoMaster";
@@ -197,7 +198,7 @@ int SQLOKswr(int sqlReturn, char *method)
         fileExists = YES;
     }
     
-    createDirectory = NO;
+    _createDirectory = NO;
     return fileExists;
 }
 
