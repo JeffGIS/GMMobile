@@ -667,6 +667,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 - (void)FTPdidComplete:(int)option
             withStatus:(int)status
+       andStatusString:(NSString*)statusString
               filePath:(NSString *)path
 {
     if (status == FTPStatusOK || status == FTPStatusFileExists)
@@ -697,7 +698,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [_popover hide];
         
         [_gssiAlert showAlertWithTitle:@"Error getting plat file"
-                               message:@"Network communication error"
+                               message:statusString
                      cancelButtonTitle:@"Continue"
                      otherButtonTitles:nil
              destructiveButtonPosition:0];
