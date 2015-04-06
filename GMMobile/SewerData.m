@@ -204,6 +204,7 @@ int SQLOKswr(int sqlReturn, char *method)
 
 - (void)FTPdidComplete:(int)option
             withStatus:(int)status
+       andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
     [_popover hide];
