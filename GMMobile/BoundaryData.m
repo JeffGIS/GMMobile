@@ -25,8 +25,8 @@ extern int keepProcessing;
     NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints,numLoops;
-    PropertyData * pd = [[PropertyData alloc]init];
+    int numPoints, numLoops;
+    PropertyData * pd = [[PropertyData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -56,9 +56,9 @@ extern int keepProcessing;
         numPoints = sqlite3_column_int(statement,2);
         numLoops = sqlite3_column_int(statement,3);
         int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        //int nBlobBytes = sqlite3_column_bytes(statement,4);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
-        nBlobBytes = sqlite3_column_bytes(statement,5);
+        //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         
         if (numPoints < 0)
@@ -105,13 +105,13 @@ extern int keepProcessing;
     if (nLoops > 1)
     {
         int ip = 0;
-        int ii;
+        //int ii;
         
         for (int loop = 0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            ii = pPartLen[loop];
+            //ii = pPartLen[loop];
             
             for (int i = 1; i < pPartLen[loop]; i++)
             {
@@ -129,7 +129,7 @@ extern int keepProcessing;
             }
         }
         
-        ii = ip;
+        //ii = ip;
     }
     
     else
@@ -160,10 +160,12 @@ extern int keepProcessing;
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query,*querys;
+    NSString *query = @"";
+    //NSString *querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints,numLoops, useCode;
+    int numPoints, useCode;
+    //int numLoops;
     PropertyData * pd = [[PropertyData alloc]init];
     
     CloseTRANS2(&_pTranLLtoView);
@@ -178,7 +180,7 @@ extern int keepProcessing;
         case PROJECT_METROGIS:
             query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE FROM LANDUSE,LANDUSE_index WHERE LANDUSE.id=LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
+            //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
@@ -188,11 +190,11 @@ extern int keepProcessing;
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
-        numLoops = sqlite3_column_int(statement,3);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        //numLoops = sqlite3_column_int(statement,3);
+        //int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        //int nBlobBytes = sqlite3_column_bytes(statement,4);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
-        nBlobBytes = sqlite3_column_bytes(statement,5);
+        //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         useCode = sqlite3_column_int(statement,6);
         
@@ -245,13 +247,13 @@ extern int keepProcessing;
     if (nLoops > 1)
     {
         int ip = 0;
-        int ii;
+        //int ii;
         
-        for (int loop=0; loop < nLoops; loop++)
+        for (int loop = 0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            ii = pPartLen[loop];
+            //ii = pPartLen[loop];
             
             for (int i = 1; i < pPartLen[loop]; i++)
             {
@@ -269,7 +271,7 @@ extern int keepProcessing;
             }
         }
         
-        ii = ip;
+        //ii = ip;
     }
     
     else

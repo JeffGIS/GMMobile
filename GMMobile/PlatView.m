@@ -164,8 +164,6 @@
     {
         if (TESTMODE)
         {
-            imagePath = [NSBundle.mainBundle pathForResource:@"S-2A-10"
-                                                      ofType:@"jpg"];
             imagePath = [NSBundle.mainBundle pathForResource:@"S-N-54"
                                                       ofType:@"jpg"];
             

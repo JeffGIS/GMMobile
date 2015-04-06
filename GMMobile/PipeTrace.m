@@ -320,7 +320,7 @@ LPSTR $TRUNCATE(LPSTR text)
     }
     
     [_sd close];
-    int n = [self getPipeTraceCount];
+    //int n = [self getPipeTraceCount];
     MNMXCORD bounds;
     [self getPipeTraceBounds:&bounds];
     dispatch_async(dispatch_get_main_queue(),
@@ -413,7 +413,8 @@ LPSTR $TRUNCATE(LPSTR text)
     }
     
     [_sd close];
-    int n = [self getPipeTraceCount];
+    //int n = [self getPipeTraceCount];
+    
     if (_processingID)
     {
         MNMXCORD bounds;
@@ -421,16 +422,19 @@ LPSTR $TRUNCATE(LPSTR text)
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            [_popover hide];
+                           
                            if (self.delegate)
                                [self.delegate zoomToPipeTraceBounds:bounds];
                        });
     }
+    
     else
     {
         [_sd open];
         [_sd executeCmd:"DROP TABLE TRACE_HIGHLIGHT;"];
         [_sd close];
     }
+    
     return;
 }
 
@@ -653,7 +657,8 @@ $RETURN(1);
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
-    DPOINT BasePt, point;
+    DPOINT BasePt;
+    //DPOINT point;
     int numPoints;
     CGColorRef color = UIColor.redColor.CGColor;
 
@@ -663,7 +668,8 @@ $RETURN(1);
     _sd = [[SewerData alloc]init];
     [_sd open];
  
-    [_sd setTrans:latlonCornerPoints viewBounds:pvbounds];
+    [_sd setTrans:latlonCornerPoints
+       viewBounds:pvbounds];
     
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
     

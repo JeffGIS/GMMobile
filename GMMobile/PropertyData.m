@@ -93,8 +93,8 @@ int SQLOKpd(int sqlReturn, char *method)
 {
     [self close];
     
-    BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
-                                                       error:nil];
+    //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
+                                                       //error:nil];
 }
 
 - (BOOL)executeCmd:(char *)cmd
@@ -583,14 +583,14 @@ int SQLOKpd(int sqlReturn, char *method)
     
     if (nLoops > 1)
     {
-        int ip=0;
-        int ii;
+        int ip = 0;
+        //int ii;
         
-        for (int loop=0; loop < nLoops; loop++)
+        for (int loop = 0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            ii = pPartLen[loop];
+            //ii = pPartLen[loop];
             
             for (int i = 1; i < pPartLen[loop]; i++)
             {
@@ -608,7 +608,7 @@ int SQLOKpd(int sqlReturn, char *method)
             }
         }
         
-        ii = ip;
+        //ii = ip;
     }
     
     else
@@ -646,11 +646,14 @@ int SQLOKpd(int sqlReturn, char *method)
     
     NSString *query;
     sqlite3_stmt *statement;
-    LPSTR pid;
+    //LPSTR pid;
     DPOINT BasePt;
-    int numPoints,numLoops, refno;
-    CGFloat emvTotal, specAssmt;
-    LPSTR homeStead, useCode, useDesc, taxExempt, owner;
+    int numPoints, numLoops;
+    //int refno;
+    //CGFloat emvTotal;
+    CGFloat specAssmt;
+    LPSTR homeStead, useCode, taxExempt, owner;
+    //LPSTR useDesc;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
     [self open];
@@ -674,23 +677,23 @@ int SQLOKpd(int sqlReturn, char *method)
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        refno = sqlite3_column_int(statement,7);
+        //refno = sqlite3_column_int(statement,7);
         homeStead = (LPSTR)sqlite3_column_text(statement, 8);
         useCode = (LPSTR)sqlite3_column_text(statement, 9);
-        useDesc = (LPSTR)sqlite3_column_text(statement, 10);
+        //useDesc = (LPSTR)sqlite3_column_text(statement, 10);
         taxExempt = (LPSTR)sqlite3_column_text(statement, 11);
-        emvTotal = (CGFloat)sqlite3_column_double(statement, 12);
+        //emvTotal = (CGFloat)sqlite3_column_double(statement, 12);
         specAssmt = (CGFloat)sqlite3_column_double(statement, 13);
         owner = (LPSTR)sqlite3_column_text(statement, 14);
-        pid = (LPSTR)sqlite3_column_text(statement, 0);
+        //pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         numPoints = sqlite3_column_int(statement,3);
         numLoops = sqlite3_column_int(statement,4);
         int *polyPartLen = (int *)sqlite3_column_blob(statement,5);
-        int nBlobBytes = sqlite3_column_bytes(statement,5);
+        //int nBlobBytes = sqlite3_column_bytes(statement,5);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,6);
-        nBlobBytes = sqlite3_column_bytes(statement,6);
+        //nBlobBytes = sqlite3_column_bytes(statement,6);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         
         if (numPoints < 0)
@@ -749,10 +752,10 @@ int SQLOKpd(int sqlReturn, char *method)
                     if (*taxExempt == taxExemptCode)
                         alpha = 0.6;
                     
-                    color = [[UIColor alloc]initWithRed:0.0
+                    /*color = [[UIColor alloc]initWithRed:0.0
                                                   green:1.0
                                                    blue:0.0
-                                                  alpha:alpha];
+                                                  alpha:alpha];*/
                 case 6://tax_forfeit
                     if (!strcasecmp (owner,"HENNEPIN FORFEITED LAND"))
                         alpha = 0.8;
@@ -950,7 +953,7 @@ int SQLOKpd(int sqlReturn, char *method)
 }
 
 - (void)displayParcelText:(CGContextRef)context
-                llCorners:(CORNERPOINTS *) latlonCornerPoints
+                llCorners:(CORNERPOINTS *)latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
 {
@@ -977,12 +980,14 @@ int SQLOKpd(int sqlReturn, char *method)
     CGFloat acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
     NSString *query;
     sqlite3_stmt *statement;
-    LPSTR pid;
+    //LPSTR pid;
     DPOINT BasePt, viewPoint;
-    CGFloat emvTotal, specAssmt, acres;
-    LPSTR homeStead,useCode,useDesc,taxExempt,owner;
-    char homeSteadCode = 'H';
-    char taxExemptCode = 'E';
+    CGFloat emvTotal, acres;
+    //CGFloat specAssmt;
+    LPSTR owner;
+    //LPSTR homeStead, useCode, useDesc, taxExempt;
+    //char homeSteadCode = 'H';
+    //char taxExemptCode = 'E';
     NSString *text = @"Test Text\nLine 2";
     NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
     dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
@@ -1001,8 +1006,8 @@ int SQLOKpd(int sqlReturn, char *method)
             break;
             
         case PROJECT_METROGIS:
-            homeSteadCode = 'Y';
-            taxExemptCode = 'Y';
+            //homeSteadCode = 'Y';
+            //taxExemptCode = 'Y';
             query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
@@ -1011,21 +1016,21 @@ int SQLOKpd(int sqlReturn, char *method)
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        pid = (LPSTR)sqlite3_column_text(statement, 0);
+        //pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.y = sqlite3_column_double(statement,1);
         BasePt.x = sqlite3_column_double(statement,2);
         acres = (CGFloat)sqlite3_column_double(statement, 3);
-        homeStead = (LPSTR)sqlite3_column_text(statement, 4);
-        useCode = (LPSTR)sqlite3_column_text(statement, 5);
-        useDesc = (LPSTR)sqlite3_column_text(statement, 6);
-        taxExempt = (LPSTR)sqlite3_column_text(statement, 7);
+        //homeStead = (LPSTR)sqlite3_column_text(statement, 4);
+        //useCode = (LPSTR)sqlite3_column_text(statement, 5);
+        //useDesc = (LPSTR)sqlite3_column_text(statement, 6);
+        //taxExempt = (LPSTR)sqlite3_column_text(statement, 7);
         emvTotal = (CGFloat)sqlite3_column_double(statement, 8);
-        specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
+        //specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
         owner = (LPSTR)sqlite3_column_text(statement, 10);
 
-        CGFloat alpha = 0.0;
-        UIColor *color;
-        int opt = CRAPI.sharedInstance.parcelTextOption;
+        //CGFloat alpha = 0.0;
+        //UIColor *color;
+        //int opt = CRAPI.sharedInstance.parcelTextOption;
         NSNumber *num;
         
         switch (CRAPI.sharedInstance.parcelTextOption)
@@ -1061,12 +1066,13 @@ int SQLOKpd(int sqlReturn, char *method)
     sqlite3_stmt *statement;
     double sumEMV=0;
     double sumAcres=0;
-    double pctAveEMV, pctMedEMV, aveEMV;
+    double pctAveEMV, aveEMV;
+    //double pctMedEMV;
     int myTotEMV = *rankTotEMV;
     int nAge = 0, nSales = 0;
     int minSale = INT_MAX;
     CGFloat totYears = 0;
-    CGFloat medianAge = 0;
+    //CGFloat medianAge = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
     char cenBlock[20];
     int l = (int)strlen(cenBlockIN);
@@ -1096,7 +1102,7 @@ int SQLOKpd(int sqlReturn, char *method)
         LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, 1);
         LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 2);
         int totEMV = (int)sqlite3_column_double(statement, 3);
-        double totTax = sqlite3_column_double(statement, 4);
+        //double totTax = sqlite3_column_double(statement, 4);
         LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 5);
         LPSTR yearBuilt = (LPSTR)sqlite3_column_text(statement, 6);
         LPSTR openSpace = (LPSTR)sqlite3_column_text(statement, 7);
@@ -1134,7 +1140,7 @@ int SQLOKpd(int sqlReturn, char *method)
     }
     if (nAge)
     {
-        totYears /= nAge;
+        //totYears /= nAge;
         [ageArray sortUsingComparator: ^(id obj1, id obj2)
          {
              NSNumber *v1 = obj1;
@@ -1148,19 +1154,22 @@ int SQLOKpd(int sqlReturn, char *method)
              
              return (NSComparisonResult)NSOrderedSame;
          }];
-        int median = nAge / 2;
-        NSNumber * age1 = (NSNumber*)ageArray[median];
+        
+        /*int median = (nAge / 2);
+        NSNumber *age1 = (NSNumber *)ageArray[median];
+        
         if (nAge %2)
         {
-            NSNumber * age2 = (NSNumber*)ageArray[median+1];
-          
-            medianAge = (age1.floatValue + age2.floatValue) / 2;
+            NSNumber *age2 = (NSNumber *)ageArray[median + 1];
+            medianAge = ((age1.floatValue + age2.floatValue) / 2.0);
         }
+        
         else
-            medianAge = age1.intValue;
+            medianAge = age1.intValue;*/
     }
+    
     [array sortUsingComparator: ^(id obj1, id obj2)
-     {
+    {
          NSNumber *v1 = obj1;
          NSNumber *v2 = obj2;
          
@@ -1172,32 +1181,37 @@ int SQLOKpd(int sqlReturn, char *method)
          
          return (NSComparisonResult)NSOrderedSame;
      }];
+    
     if ([array count])
     {
         int n=1;
-        int myStartRank=-1, myEndRank=-1;
+        int myStartRank= -1;
+        //int myEndRank= -1;
         int medianN = (int)array.count / 2;
         int medianM = array.count % 2;
         int medianEMV = 0;
-        NSNumber * minEMV = array[0];
-        NSNumber * maxEMV = array[array.count-1];
-        for (NSNumber * EMVvalue in array)
+        //NSNumber *minEMV = array[0];
+        //NSNumber *maxEMV = array[array.count - 1];
+        for (NSNumber *EMVvalue in array)
         {
             if (n == medianN)
                 medianEMV = EMVvalue.intValue;
+            
             if (n == medianN + medianM)
                 medianEMV = (medianEMV + EMVvalue.intValue) / 2;
+            
             if (EMVvalue.integerValue == myTotEMV)
             {
                 if (myStartRank < 0)
                     myStartRank = n;
-                myEndRank = n;
+                
+                //myEndRank = n;
             }
             n++;
         }
         aveEMV = sumEMV / [array count];
         pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
-        pctMedEMV = ((double)myTotEMV / medianEMV) * 100;
+        //pctMedEMV = ((double)myTotEMV / medianEMV) * 100;
         *rankTotEMV = pctAveEMV;
     }
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
@@ -1207,23 +1221,27 @@ int SQLOKpd(int sqlReturn, char *method)
              cenBlockIN];
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    
+    /*while (sqlite3_step(statement) == SQLITE_ROW)
     {
         float medianAge = sqlite3_column_double(statement,0);
         float homeOwnPct = sqlite3_column_double(statement,1);
         
-    }
+    }*/
+    
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
     query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKGROUPDATA WHERE GEOG_UNIT ='%s'",
              cenBlock];
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "computeStabilityEtc");
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    
+    /*while (sqlite3_step(statement) == SQLITE_ROW)
     {
         float medianAge = sqlite3_column_double(statement,0);
         float homeOwnPct = sqlite3_column_double(statement,1);
         
-    }
+    }*/
+    
     SQLOK(sqlite3_finalize(statement), "getReportForPID");
 }
 
@@ -1552,7 +1570,8 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
 {
     int	nHits = 0;
     int	Order[32];
-    int	i,j,k,ihit, ipart, nValidParts=0,ii;
+    int	i, j, k, ihit, ipart, nValidParts = 0;
+    //int ii;
     LPINT pOff1, pOff2;
     BOOL HaveHit;
     
@@ -1620,8 +1639,8 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         
         Hits[nHits++] = *pOff1;
         
-        if (!*pOff1)
-            ii = 1;
+        //if (!*pOff1)
+            //ii = 1;
         
     NextOff:
         pOff1++;
@@ -1638,13 +1657,15 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         return nil;
     
     NSMutableArray *ownerArray = [[NSMutableArray alloc] init];
-    int	nParts, ipart, iparttest, nOwners;
-    LPWORDINDEX	pRec;
-    WORDINDEX Rec;
+    int	nParts, ipart, iparttest;
+    //int nOwners;
+    //LPWORDINDEX	pRec;
+    //WORDINDEX Rec;
     LPINT partOffsets[MAXPARTS], partoff;
     int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
     LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-    int Trigger = 3, nHits = 0, nowner;
+    int Trigger = 3, nHits = 0;
+    //int nowner;
     BOOL GetNext = TRUE;
     char Name[66];
     LPINT Hits = malloc(MAXHITS * sizeof(int));
@@ -1681,7 +1702,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
-                LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
+                //LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
                 int nOffsets = sqlite3_column_int(statement,1);
                 LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
                 

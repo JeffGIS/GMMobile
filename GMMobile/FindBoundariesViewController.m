@@ -162,9 +162,9 @@
         {
             if (_boundaryDataList.count != 0)
             {
-                BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+                //BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
                 NSNumber *begin = _sectionBegins[indexPath.section];
-                baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
+                BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
                 
                 if ([_selectedType isEqualToString:@"Minneapolis Wards"])
                     cell.textLabel.text = [NSString stringWithFormat:@"Ward %@", baData.name.capitalizedString];
@@ -232,8 +232,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if (_delegate)
         {
             NSNumber *begin = _sectionBegins[indexPath.section];
-            BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
-            baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
+            //BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+            BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
             
             [_delegate findBoundsViewController:self
                                 didSelectBounds:baData.name
@@ -249,13 +249,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _sectionBegins = [[NSMutableArray alloc] init];
     _sectionCounts = [[NSMutableArray alloc] init];
     _sectionKeys = [[NSMutableArray alloc] init];
-    BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+    //BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
     
     int sectionCount = 0;
     
     for (int i = 0; i < _boundaryDataList.count; i++)
     {
-        baData = [_boundaryDataList objectAtIndex:i];
+        BoundaryAreaData *baData = [_boundaryDataList objectAtIndex:i];
         NSString *baDataName = baData.name;
         NSString *indexLetter = [baDataName substringToIndex:1];
         NSString *key = [[NSString alloc] initWithFormat:@"%@", indexLetter];

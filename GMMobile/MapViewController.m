@@ -2300,7 +2300,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
     if (setting != MapViewScreenSettingFullscreen)
     {
-        CGRect frame;
+        CGRect frame = CGRectZero;
         
         switch (setting)
         {

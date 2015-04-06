@@ -357,7 +357,7 @@ top:
         {
             DPOINT BasePt;
             LPDPOINT llpoints;
-            LPSTR platName = (LPSTR)sqlite3_column_text(statement,0);
+            //LPSTR platName = (LPSTR)sqlite3_column_text(statement,0);
             BasePt.x = sqlite3_column_double(statement,1);
             BasePt.y = sqlite3_column_double(statement,2);
             _numProfileAreaPoints[_numProfileAreas] = sqlite3_column_int(statement,3);

@@ -139,8 +139,8 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     [self close];
     
-    BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
-                                                       error:nil];
+    //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
+                                                       //error:nil];
 }
 
 - (BOOL)executeCmd:(char *)cmd
@@ -264,6 +264,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         *pNearPt = *pPoint;
         return YES;
     }
+    
     return NO;
 }
 
@@ -271,13 +272,17 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
 {
     int minRef = 0;
     dbounds bnds;
-    DPOINT BasePt, point;
+    DPOINT BasePt;
+    //DPOINT point;
     LPSTR platID;
-    int numPoints,numLoops, refno;
-    CGFloat d, mind = DBL_MAX;
+    int numPoints, refno;
+    //int numLoops;
+    CGFloat mind = DBL_MAX;
+    //CGFloat d;
     CGFloat pickap = 0.005;
-    DPOINT p1, p2, minpt;
-    NSString *minPlatID=[[NSString alloc] init];
+    DPOINT p1, minpt;
+    //DPOINT p2;
+    NSString *minPlatID = [[NSString alloc] init];
     
     p1.x = pt->lon;
     p1.y = pt->lat;
@@ -302,11 +307,11 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
-        numLoops = sqlite3_column_int(statement,5);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-        int nBlobBytes = sqlite3_column_bytes(statement,6);
+        //numLoops = sqlite3_column_int(statement,5);
+        //int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
+        //int nBlobBytes = sqlite3_column_bytes(statement,6);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-        nBlobBytes = sqlite3_column_bytes(statement,7);
+        //nBlobBytes = sqlite3_column_bytes(statement,7);
  
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         
@@ -393,7 +398,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    LPSTR platID;
+    //LPSTR platID;
     int numPoints,numLoops, refno;
     [self open];
     
@@ -404,15 +409,15 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement,0);
-        platID = (LPSTR)sqlite3_column_text(statement, 1);
+        //platID = (LPSTR)sqlite3_column_text(statement, 1);
         BasePt.x = sqlite3_column_double(statement,2);
         BasePt.y = sqlite3_column_double(statement,3);
         numPoints = sqlite3_column_int(statement,4);
         numLoops = sqlite3_column_int(statement,5);
         int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-        int nBlobBytes = sqlite3_column_bytes(statement,6);
+        //int nBlobBytes = sqlite3_column_bytes(statement,6);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-        nBlobBytes = sqlite3_column_bytes(statement,7);
+        //nBlobBytes = sqlite3_column_bytes(statement,7);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         
         if (numPoints < 0)
@@ -513,13 +518,13 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
     if (nLoops > 1)
     {
         int ip=0;
-        int ii;
+        //int ii;
         
         for (int loop=0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            ii = pPartLen[loop];
+            //ii = pPartLen[loop];
             
             for (int i = 1; i < pPartLen[loop]; i++)
             {
@@ -537,7 +542,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
             }
         }
         
-        ii = ip;
+        //ii = ip;
     }
     
     else
@@ -563,15 +568,19 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
 {
     if (_zoom < CRAPI.sharedInstance.sewerVisibleAtZoom)
         return 0;
+    
     int nPicked = 0;
     dbounds bnds;
-    CGFloat d, mind = DBL_MAX;
+    //CGFloat d;
+    CGFloat mind = DBL_MAX;
     int pickApPixels = 50;
-    CGFloat pickApMeters = pickApPixels * GroundResolution(pt->lat, (int)zoom);
-    DPOINT p1, pickedPoint, minpt, point,BasePt;
-    NSString * minFid=@"";
+    CGFloat pickApMeters = (pickApPixels * GroundResolution(pt->lat, (int)zoom));
+    DPOINT p1, pickedPoint, minpt, BasePt;
+    //DPOINT point;
+    NSString *minFid = @"";
     int minref = 0;
-    int numPoints, numLoops;
+    int numPoints;
+    //int numLoops;
     
     DPOINT pt1 = NewLatLong(pt->lat, pt->lon, pickApMeters, 0);
     double pickapY = pt1.y - pt->lat;
@@ -600,13 +609,13 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
-        numLoops = sqlite3_column_int(statement,5);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-        int nBlobBytes = sqlite3_column_bytes(statement,6);
+        //numLoops = sqlite3_column_int(statement,5);
+        //int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
+        //int nBlobBytes = sqlite3_column_bytes(statement,6);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-        nBlobBytes = sqlite3_column_bytes(statement,7);
+        //nBlobBytes = sqlite3_column_bytes(statement,7);
         
-       /* if (numPoints < 0)
+        /*if (numPoints < 0)
         {
             numPoints = -numPoints;
             LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
@@ -635,6 +644,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
                 minFid = [NSString stringWithUTF8String:FACILITY_ID];
             }
         }*/
+        
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         
         if (numPoints < 0)
@@ -657,9 +667,9 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
 
-        if (PICK_POINT_ON_LINE(p1,(pickapX+pickapY)/2,&pickedPoint, numPoints, llpoints))
+        if (PICK_POINT_ON_LINE(p1, (pickapX + pickapY) / 2, &pickedPoint, numPoints, llpoints))
         {
-            if (findClosestPoint (&pickedPoint,&minpt,&mind,&p1))
+            if (findClosestPoint (&pickedPoint, &minpt, &mind, &p1))
             {
                 nPicked++;
                 minref = refno;
@@ -772,7 +782,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 
 - (void)displayStormLine:(CGContextRef)context
                     pass:(int)pass
-               llCorners:(CORNERPOINTS *) latlonCornerPoints
+               llCorners:(CORNERPOINTS *)latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
@@ -780,17 +790,17 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     if (![self continue])
         return;
     
-    NSString *query, *queries;
+    NSString *query = @"";
+    NSString *lineText = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints,numLoops;
+    int numPoints, startpass;
+    //int numLoops;
     LPSTR symName;
     CGColorRef color;
-    int startpass=0;
-    
     CGFloat width, invertIn, invertOut, diameterIn, widthIn, heightIn;
-    LPSTR pipeShape, material;
-    NSString *lineText = @"";
+    //LPSTR pipeShape;
+    LPSTR material;
     BOOL addPointers;
     
     CGFloat sizeFactor = 1;
@@ -812,6 +822,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         _textOverlapBufferSizeHeight = pvbounds->ymx - pvbounds->ymn;
         _textOverlapBuffer = (LPBYTE)calloc(_textOverlapBufferSizeWidth * _textOverlapBufferSizeHeight, 1);
     }
+    
     for (int ipass = startpass; ipass < 2; ipass++)
     {
         switch (ipass)
@@ -845,11 +856,11 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
             BasePt.x = sqlite3_column_double(statement,0);
             BasePt.y = sqlite3_column_double(statement,1);
             numPoints = sqlite3_column_int(statement,2);
-            numLoops = sqlite3_column_int(statement,3);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-            int nBlobBytes = sqlite3_column_bytes(statement,4);
+            //numLoops = sqlite3_column_int(statement,3);
+            //int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+            //int nBlobBytes = sqlite3_column_bytes(statement,4);
             LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
-            nBlobBytes = sqlite3_column_bytes(statement,5);
+            //nBlobBytes = sqlite3_column_bytes(statement,5);
             LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             symName = (LPSTR)sqlite3_column_text(statement,6);
             invertIn = sqlite3_column_double(statement,7);
@@ -857,7 +868,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
             diameterIn = sqlite3_column_double(statement,9);
             widthIn = sqlite3_column_double(statement,10);
             heightIn = sqlite3_column_double(statement,11);
-            pipeShape = (LPSTR)sqlite3_column_text(statement,12);
+           // pipeShape = (LPSTR)sqlite3_column_text(statement,12);
             material = (LPSTR)sqlite3_column_text(statement,13);
             
             if (numPoints < 0)
@@ -919,31 +930,33 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                        andWidth:width
                         andText:lineText
                     andPointers:addPointers];
-            free (llpoints);
+            
+            free(llpoints);
         }
         
         SQLOKswr(sqlite3_finalize(statement), "");
     }
     
     if (pass == TEXT_PASS)
-    {
-        free (_textOverlapBuffer);
-    }
+        free(_textOverlapBuffer);
 
     [self close];
 }
+
 - (void)highlightStormLine:(CGContextRef)context
                     refno:(int)refno
-               llCorners:(CORNERPOINTS *) latlonCornerPoints
+               llCorners:(CORNERPOINTS *)latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
     DPOINT BasePt;
-    int numPoints,numLoops;
+    int numPoints;
+    //int numLoops;
     LPSTR symName;
     CGColorRef color;
-    CGFloat width, invertIn, invertOut, diameterIn, widthIn, heightIn;
-    LPSTR pipeShape, material;
+    CGFloat width;
+    //CGFloat invertIn, invertOut, diameterIn, widthIn, heightIn;
+    //LPSTR pipeShape, material;
     NSString *lineText = @"";
     BOOL addPointers;
     CGFloat sizeFactor = 1;
@@ -966,16 +979,16 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int ref = sqlite3_column_int(statement, 0);
-        LPSTR FACILITY_ID = (LPSTR)sqlite3_column_text(statement, 1);
+        //int ref = sqlite3_column_int(statement, 0);
+        //LPSTR FACILITY_ID = (LPSTR)sqlite3_column_text(statement, 1);
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
-        numLoops = sqlite3_column_int(statement,5);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-        int nBlobBytes = sqlite3_column_bytes(statement,6);
+        //numLoops = sqlite3_column_int(statement,5);
+        //int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
+        //int nBlobBytes = sqlite3_column_bytes(statement,6);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-        nBlobBytes = sqlite3_column_bytes(statement,7);
+        //nBlobBytes = sqlite3_column_bytes(statement,7);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         symName = (LPSTR)sqlite3_column_text(statement,8);
         
@@ -1025,8 +1038,10 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                    andWidth:width
                     andText:lineText
                 andPointers:addPointers];
-        free (llpoints);
+        
+        free(llpoints);
     }
+    
     SQLOKswr(sqlite3_finalize(statement), "");
     [self close];
 }
@@ -1041,6 +1056,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
           andPointers:(BOOL)addPointers
 {
     static CGFloat startDist = 0;
+    
     if (pass == LINE_PASS)
     {
         CGContextSetLineWidth(context, width);
@@ -1067,8 +1083,8 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                                                  startingAt:startDist];
         }
     }
-    else
-    if (text && ![text isEqualToString:@""])
+    
+    else if (text && ![text isEqualToString:@""])
     {
         if (np == 2)
         {
@@ -1076,18 +1092,22 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                             text:text
                           points:pPoints];
         }
+        
         else
         {
-            int maxd = abs (pPoints[1].x - pPoints[0].x)+abs (pPoints[1].y - pPoints[0].y), maxi=0;
-            for (int i=1;i<np-1;i++)
+            int maxd = abs(pPoints[1].x - pPoints[0].x)+ abs(pPoints[1].y - pPoints[0].y), maxi = 0;
+            
+            for (int i = 1; i < (np - 1); i++)
             {
                 int d = abs (pPoints[i+1].x - pPoints[i].x)+abs (pPoints[i+1].y - pPoints[i].y);
-                if (d>maxd)
+                
+                if (d > maxd)
                 {
                     maxd = d;
                     maxi = i;
                 }
             }
+            
             [self drawTextOnLine:context
                             text:text
                           points:&pPoints[maxi]];
@@ -1231,8 +1251,8 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect1 = CGRectMake((-textSize.width * 0.55), (textSize.height * 0.4),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    rectFits = [self rectWillFit2:rect1
-                        inContext:context];
+    rectFits = [self rectWillFit:rect1
+                       inContext:context];
     
     if (rectFits)
     {
@@ -1270,8 +1290,8 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect2 = CGRectMake((-textSize.width * 1.2), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    rectFits = [self rectWillFit2:rect2
-                        inContext:context];
+    rectFits = [self rectWillFit:rect2
+                       inContext:context];
     
     if (rectFits)
     {
@@ -1309,8 +1329,8 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     CGRect rect3 = CGRectMake((textSize.width * 0.1), (-textSize.height * 1.5),
                               (textSize.width * 1.1), (textSize.height * 1.1));
     
-    rectFits = [self rectWillFit2:rect3
-                        inContext:context];
+    rectFits = [self rectWillFit:rect3
+                       inContext:context];
     
     if (rectFits)
     {
@@ -1405,7 +1425,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints, numLoops;
+    //int numPoints, numLoops;
     LPSTR symName;
     CGFloat size;
     CGColorRef color;
@@ -1479,47 +1499,6 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 }
 
 - (BOOL)rectWillFit:(CGRect)rect
-          inContext:(CGContextRef)context
-{
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    
-    int minX = roundIntToNearestTen((int)(CGRectGetMinX(rect)));
-    int maxX = roundIntToNearestTen((int)(CGRectGetMaxX(rect)));
-    int minY = roundIntToNearestTen((int)(CGRectGetMinY(rect)));
-    int maxY = roundIntToNearestTen((int)(CGRectGetMaxY(rect)));
-    
-    for (int i = minX; i <= maxX; i += 10)
-    {
-        for (int j = minY; j <= maxY; j+= 10)
-             {
-                 CGPoint point = CGContextConvertPointToDeviceSpace(context, CGPointMake(i, j));
-                 point.x = roundFloatToNearestTen(point.x);
-                 point.y = roundFloatToNearestTen(point.y);
-                 NSValue *roundedPoint = [NSValue valueWithCGPoint:point];
-                 
-                 if ([_pointsArray containsObject:roundedPoint])
-                     return NO;
-                 
-                 [array addObject:roundedPoint];
-             }
-    }
-    
-    [_pointsArray addObjectsFromArray:array];
-    return YES;
-}
-
-int roundIntToNearestTen(int x)
-{
-    return ((x + 5) / 10) * 10;
-}
-
-float roundFloatToNearestTen(float x)
-{
-    int y = round(x);
-    return roundIntToNearestTen(y);
-}
-
-- (BOOL)rectWillFit2:(CGRect)rect
            inContext:(CGContextRef)context
 {
     int minX = CGRectGetMinX(rect);

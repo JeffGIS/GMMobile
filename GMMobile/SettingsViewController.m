@@ -565,7 +565,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)showEmail:(id)sender
 {
-    NSString *fileName1, *fileName2;
+    NSString *fileName1;
+    //NSString *fileName2;
     //Email Subject
     NSString *emailTitle = @"Data extract file from NewVision Mobile";
     //Email Content
