@@ -127,7 +127,9 @@ extern int keepProcessing;
     [_mapView addGestureRecognizer:longPressGesture];
     
     GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+//        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+//                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADA/%lu/%lu/%lu.jpg",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
