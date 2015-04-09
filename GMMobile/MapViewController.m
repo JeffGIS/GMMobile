@@ -369,14 +369,26 @@ extern int keepProcessing;
 {
     [super viewDidAppear:animated];
     
-    if (!_firstTimeAppear)
+    if (_firstTimeAppear)
+    {
+        CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+        CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+        
+        _mapView.frame = CGRectMake(0.0, statusBarHeight,
+                                    self.view.frame.size.width,
+                                    (tabBarTop - statusBarHeight));
+        
+        _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                         (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+        
+        _firstTimeAppear = NO;
+    }
+    
+    else
     {
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
-    
-    else
-        _firstTimeAppear = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
