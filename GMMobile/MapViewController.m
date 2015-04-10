@@ -37,7 +37,8 @@ extern int keepProcessing;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) NSString *selectedSewerPipe;
 @property (atomic) BOOL waitForVectorViewRefresh;
-@property (nonatomic) GMSTileLayer *layer;
+@property (nonatomic) GMSTileLayer *layer_jpeg;
+@property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
 @property (nonatomic) PlatImageView *platView;
 @property (nonatomic) PlatProfileView *profileView;
@@ -126,19 +127,33 @@ extern int keepProcessing;
     longPressGesture.delegate = self;
     [_mapView addGestureRecognizer:longPressGesture];
     
-    GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-//        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
-//                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
-        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADA/%lu/%lu/%lu.jpg",
+    GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
+        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADAT/%lu/%lu/%lu.jp2",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
     
-    _layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
+    GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
+        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADAT/%lu/%lu/%lu.png",
+                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        
+        return [NSURL URLWithString:url];
+    };
     
+    _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
+    [_layer_jpeg clearTileCache];
     if (CRAPI.sharedInstance.GMTilesVisible)
-        _layer.map = _mapView;
+        _layer_jpeg.map = _mapView;
+    
+    _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
+    [_layer_png clearTileCache];
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        _layer_png.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -248,10 +263,16 @@ extern int keepProcessing;
         [self initTableView];
         
         if (CRAPI.sharedInstance.GMTilesVisible)
-            _layer.map = _mapView;
+        {
+            _layer_jpeg.map = _mapView;
+            _layer_png.map = _mapView;
+        }
         
         else
-            _layer.map = nil;
+        {
+            _layer_jpeg.map = nil;
+            _layer_png.map = nil;
+        }
     }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
