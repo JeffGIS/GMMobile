@@ -796,7 +796,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     NSString *lineText = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints, startpass;
+    int numPoints, startpass=0;
     //int numLoops;
     LPSTR symName;
     CGColorRef color;
