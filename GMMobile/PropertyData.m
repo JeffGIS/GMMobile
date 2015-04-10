@@ -908,6 +908,8 @@ int SQLOKpd(int sqlReturn, char *method)
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 12.0;
     CGFloat size = sqrtf(maxPixels);
+    NSAttributedString *attString;
+    UIColor *textColor;
    
     while (fontSize > minFontSize)
     {
@@ -915,19 +917,29 @@ int SQLOKpd(int sqlReturn, char *method)
         text = [text stringByReplacingOccurrencesOfString:@"&"
                                                withString:@"\n&\n"];
         
-        CGMutablePathRef path = CGPathCreateMutable();
-        
-        
         CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
                                                  fontSize, NULL);
         
         NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
         style.alignment = NSTextAlignmentCenter;
         
+        if (CRAPI.sharedInstance.GMTilesVisible == YES)
+            textColor = UIColor.redColor;
+        
+        else
+            textColor = UIColor.blackColor;
+
         NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     (__bridge id)fontRef, kCTFontAttributeName,
                                     style, kCTParagraphStyleAttributeName,
+                                    textColor.CGColor, kCTForegroundColorAttributeName,
                                     nil];
+        
+        NSDictionary *shadowAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          (__bridge id)fontRef, kCTFontAttributeName,
+                                          style, kCTParagraphStyleAttributeName,
+                                          UIColor.whiteColor.CGColor, kCTForegroundColorAttributeName,
+                                          nil];
         
         CFRelease(fontRef);
         
@@ -935,12 +947,25 @@ int SQLOKpd(int sqlReturn, char *method)
         
         if (textSize.width < size)
         {
-            CGFloat yoffset = (textSize.height / 2);// * (yoffinc++ % 2);
-            CGPathAddRect(path, NULL, CGRectMake((pviewPoint->x - (size / 2.0)),
-                                                 (pviewPoint->y - size + yoffset), size, size));
+            CGFloat yoffset = (textSize.height / 2.0);
             
-            NSAttributedString *attString = [[NSAttributedString alloc] initWithString:text
-                                                                            attributes:attributes];
+            CGRect rect = CGRectMake((pviewPoint->x - (size / 2.0)),
+                                     (pviewPoint->y - size + yoffset), size, size);
+            
+            if (CRAPI.sharedInstance.GMTilesVisible == YES)
+            {
+                attString = [[NSAttributedString alloc] initWithString:text
+                                                            attributes:shadowAttributes];
+                
+                [self drawTextShadowForRect:rect
+                                  attString:attString
+                                    context:context];
+            }
+            
+            CGPathRef path = CGPathCreateWithRect(rect, NULL);
+            
+            attString = [[NSAttributedString alloc] initWithString:text
+                                                        attributes:attributes];
             
             CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
             CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
@@ -957,6 +982,66 @@ int SQLOKpd(int sqlReturn, char *method)
         CGContextRestoreGState(context);
     }
 }
+
+- (void)drawTextShadowForRect:(CGRect)rect
+                    attString:(NSAttributedString *)attString
+                      context:(CGContextRef)context
+{
+    CGFloat shadowOffset = 2.0;
+    
+    CGRect shadowRect = CGRectMake((rect.origin.x + shadowOffset), (rect.origin.y + shadowOffset),
+                                   rect.size.width, rect.size.height);
+    
+    CGPathRef shadowPath = CGPathCreateWithRect(shadowRect, NULL);
+    
+    CTFramesetterRef shadowFramesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef shadowFrame = CTFramesetterCreateFrame(shadowFramesetter, CFRangeMake(0, 0), shadowPath, NULL);
+    CTFrameDraw(shadowFrame, context);
+    
+    CFRelease(shadowFrame);
+    CFRelease(shadowPath);
+    CFRelease(shadowFramesetter);
+    
+    CGRect shadowRect2 = CGRectMake((rect.origin.x - shadowOffset), (rect.origin.y - shadowOffset),
+                                    rect.size.width, rect.size.height);
+    
+    CGPathRef shadowPath2 = CGPathCreateWithRect(shadowRect2, NULL);
+    
+    CTFramesetterRef shadowFramesetter2 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef shadowFrame2 = CTFramesetterCreateFrame(shadowFramesetter2, CFRangeMake(0, 0), shadowPath2, NULL);
+    CTFrameDraw(shadowFrame2, context);
+    
+    CFRelease(shadowFrame2);
+    CFRelease(shadowPath2);
+    CFRelease(shadowFramesetter2);
+    
+    CGRect shadowRect3 = CGRectMake((rect.origin.x + shadowOffset), (rect.origin.y - shadowOffset),
+                                    rect.size.width, rect.size.height);
+    
+    CGPathRef shadowPath3 = CGPathCreateWithRect(shadowRect3, NULL);
+    
+    CTFramesetterRef shadowFramesetter3 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef shadowFrame3 = CTFramesetterCreateFrame(shadowFramesetter3, CFRangeMake(0, 0), shadowPath3, NULL);
+    CTFrameDraw(shadowFrame3, context);
+    
+    CFRelease(shadowFrame3);
+    CFRelease(shadowPath3);
+    CFRelease(shadowFramesetter3);
+    
+    CGRect shadowRect4 = CGRectMake((rect.origin.x - shadowOffset), (rect.origin.y + shadowOffset),
+                                    rect.size.width, rect.size.height);
+    
+    CGPathRef shadowPath4 = CGPathCreateWithRect(shadowRect4, NULL);
+    
+    CTFramesetterRef shadowFramesetter4 = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+    CTFrameRef shadowFrame4 = CTFramesetterCreateFrame(shadowFramesetter4, CFRangeMake(0, 0), shadowPath4, NULL);
+    CTFrameDraw(shadowFrame4, context);
+    
+    CFRelease(shadowFrame4);
+    CFRelease(shadowPath4);
+    CFRelease(shadowFramesetter4);
+}
+
 
 - (void)displayParcelText:(CGContextRef)context
                 llCorners:(CORNERPOINTS *)latlonCornerPoints

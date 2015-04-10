@@ -1097,11 +1097,11 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         
         else
         {
-            int maxd = abs(pPoints[1].x - pPoints[0].x)+ abs(pPoints[1].y - pPoints[0].y), maxi = 0;
+            int maxd = (int)(fabs(pPoints[1].x - pPoints[0].x) + fabs(pPoints[1].y - pPoints[0].y)), maxi = 0;
             
             for (int i = 1; i < (np - 1); i++)
             {
-                int d = abs (pPoints[i+1].x - pPoints[i].x)+abs (pPoints[i+1].y - pPoints[i].y);
+                int d = (int)(fabs(pPoints[i + 1].x - pPoints[i].x) + fabs(pPoints[i + 1].y - pPoints[i].y));
                 
                 if (d > maxd)
                 {
@@ -1187,7 +1187,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     if (_zoom > 18)
         fontSize += ((_zoom - 18.0) * 6.0);
     
-    UIColor *color = [[UIColor alloc] initWithRed:0.0
+    UIColor *green = [[UIColor alloc] initWithRed:0.0
                                             green:0.5
                                              blue:0.0
                                             alpha:1.0];
@@ -1219,7 +1219,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     NSDictionary *pipeAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     (__bridge id)fontRef, kCTFontAttributeName,
                                     style, kCTParagraphStyleAttributeName,
-                                    color.CGColor, kCTForegroundColorAttributeName,
+                                    green.CGColor, kCTForegroundColorAttributeName,
                                     nil];
     
     NSDictionary *invertInAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
