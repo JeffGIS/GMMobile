@@ -688,6 +688,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _infoWindow.title = marker.title;
         _infoWindow.snippet = marker.snippet;
         _infoWindow.position = marker.position;
+        _infoWindow.type = MarkerInfoWindowTypeCustom;
         [self.view addSubview:_infoWindow];
         _noneSelected = NO;
         
@@ -2604,12 +2605,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             break;
     }
     
-    _tableViewSetting = PropertyTableViewSettingOptions;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    _tableView.allowsSelection = YES;
-    _tableView.delaysContentTouches = NO;
-    [_tableView reloadData];
-    [self presentTableView];
+    if (_options.count > 0)
+    {
+        _tableViewSetting = PropertyTableViewSettingOptions;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _tableView.allowsSelection = YES;
+        _tableView.delaysContentTouches = NO;
+        [_tableView reloadData];
+        [self presentTableView];
+    }
 }
 
 - (void)markerInfoWindowDidSelectPropReport:(NSString *)title
