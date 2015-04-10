@@ -431,11 +431,16 @@ extern int keepProcessing;
              withColor:(CGColorRef)color
 
 {
-    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 15, 15);
+    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 35, 35);
     
     CGContextSetFillColorWithColor(context,color);
     CGContextFillEllipseInRect(context, pointRect);
-    //CGContextStrokeEllipseInRect(context, pointRect);
+    CGContextSetLineWidth(context, 2);
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        CGContextSetRGBStrokeColor(context, 1, 1,0,1);
+    else
+        CGContextSetRGBStrokeColor(context, 0, 0,0,1);
+    CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
 }
 

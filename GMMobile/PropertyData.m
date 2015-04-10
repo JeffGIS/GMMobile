@@ -574,9 +574,10 @@ int SQLOKpd(int sqlReturn, char *method)
            partLen:(int *)pPartLen
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
+          andWidth:(int)width;
 {
 
-    CGContextSetLineWidth(context, 1);
+    CGContextSetLineWidth(context, width);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
@@ -644,6 +645,8 @@ int SQLOKpd(int sqlReturn, char *method)
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
+    UIColor *parcelLineColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+    int parcelLineWidth = 3;
     NSString *query;
     sqlite3_stmt *statement;
     //LPSTR pid;
@@ -658,6 +661,8 @@ int SQLOKpd(int sqlReturn, char *method)
     char taxExemptCode = 'E';
     [self open];
     
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        parcelLineColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:1];
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_MPLS:
@@ -780,7 +785,8 @@ int SQLOKpd(int sqlReturn, char *method)
                       nLoops:numLoops
                      partLen:polyPartLen
                       points:llpoints
-                   withColor:UIColor.redColor.CGColor];
+                   withColor:parcelLineColor.CGColor
+                    andWidth:parcelLineWidth];
         }
         
         free (llpoints);
