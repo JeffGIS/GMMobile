@@ -796,7 +796,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     NSString *lineText = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    int numPoints, startpass=0;
+    int numPoints, startpass = 0;
     //int numLoops;
     LPSTR symName;
     CGColorRef color;
@@ -870,7 +870,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
             diameterIn = sqlite3_column_double(statement,9);
             widthIn = sqlite3_column_double(statement,10);
             heightIn = sqlite3_column_double(statement,11);
-           // pipeShape = (LPSTR)sqlite3_column_text(statement,12);
+            //pipeShape = (LPSTR)sqlite3_column_text(statement,12);
             material = (LPSTR)sqlite3_column_text(statement,13);
             
             if (numPoints < 0)

@@ -26,9 +26,9 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer *vectorViewTimer;
-@property (nonatomic) UIImageView *streetView, *targetView;
+@property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting, gestureCount;
+@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -42,6 +42,8 @@ extern int keepProcessing;
 @property (nonatomic) UIButton *compass;
 @property (nonatomic) PlatImageView *platView;
 @property (nonatomic) PlatProfileView *profileView;
+@property (nonatomic) CGPoint digitizingTargetOffset;
+@property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
 
 @end
 
@@ -92,6 +94,17 @@ extern int keepProcessing;
     
     _targetView.hidden = YES;
     [_mapView addSubview:_targetView];
+    
+    _blackCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackCrosshairs"
+                                                                                      ofType:@"png"]];
+    
+    _orangeCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackOrangeCrosshairs"
+                                                                                       ofType:@"png"]];
+    
+    _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
+    _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    _digitizerTargetView.image = _blackCrosshairs;
+    [self.view addSubview:_digitizerTargetView];
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -147,11 +160,13 @@ extern int keepProcessing;
     
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
     [_layer_jpeg clearTileCache];
+    
     if (CRAPI.sharedInstance.GMTilesVisible)
         _layer_jpeg.map = _mapView;
     
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
     [_layer_png clearTileCache];
+    
     if (CRAPI.sharedInstance.GMTilesVisible)
         _layer_png.map = _mapView;
     
@@ -257,6 +272,8 @@ extern int keepProcessing;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    _digitizerTargetView.hidden = !CRAPI.sharedInstance.inDigitizeMode;
     
     if (!_firstTimeAppear)
     {
@@ -541,7 +558,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 if ([marker.title isEqualToString:pi.identifier])
                     [marker removeFromSuperview];
             }
-            [self highlightVectorView:pi displayOption:DISPLAY_DATA_OPTION_HIGHLIGHT];
+            
+            [self highlightVectorView:pi
+                        displayOption:DISPLAY_DATA_OPTION_HIGHLIGHT];
+            
             MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
                                                                view:self.view
                                                                 map:_mapView
@@ -622,8 +642,67 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 
+- (void)handleLongPressDigitizingForState:(UILongPressGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateBegan ||
+        gesture.state == UIGestureRecognizerStateChanged)
+    {
+        CGPoint gesturePoint = [gesture locationInView:self.view];
+        
+        if (gesture.state == UIGestureRecognizerStateBegan)
+        {
+            _mapView.settings.scrollGestures = NO;
+            _digitizerTargetView.image = _orangeCrosshairs;
+            
+            _digitizingTargetOffset = CGPointMake(gesturePoint.x - _digitizerTargetView.center.x,
+                                                  gesturePoint.y - _digitizerTargetView.center.y);
+        }
+        
+        _digitizerTargetView.center = CGPointMake(gesturePoint.x - _digitizingTargetOffset.x,
+                                                  gesturePoint.y - _digitizingTargetOffset.y);
+    }
+    
+    else if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        _mapView.settings.scrollGestures = YES;
+        _digitizerTargetView.image = _blackCrosshairs;
+        _digitizerCount++;
+        
+        MarkerButton *marker = [MarkerButton markerWithPosition:[_mapView.projection coordinateForPoint:_digitizerTargetView.center]
+                                                           view:self.view
+                                                            map:_mapView
+                                                       delegate:self];
+        
+        [self removePreviousInfoWindow];
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        
+        [marker setImage:_orangeCrosshairs
+                forState:UIControlStateNormal];
+        
+        marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
+        marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+        [_markerArray addObject:marker];
+        
+        _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+        _infoWindow.delegate = self;
+        _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
+        [self.view addSubview:_infoWindow];
+        _noneSelected = NO;
+        
+        _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    }
+}
+
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
 {
+    if (CRAPI.sharedInstance.inDigitizeMode == YES)
+    {
+        [self handleLongPressDigitizingForState:gesture];
+        return;
+    }
+    
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
@@ -652,17 +731,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             if (platRefno != _selectedPlatRefno)
             {
                 _selectedPlatRefno = platRefno;
+                
                 if (!platRefno)
                 {
                     _waitForVectorViewRefresh = NO;
                     CRAPI.sharedInstance.showPlats = -1;
                 }
+                
                 else
                 {
                     _waitForVectorViewRefresh = YES;
                     CRAPI.sharedInstance.showPlats = platRefno;
                 }
-                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+                
+                [_platView setPlatID:_selectedPlatRefno
+                             andType:PLAT_TYPE_STORM];
                 
                [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
@@ -675,6 +758,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self clearVectorView];
             _waitForVectorViewRefresh = NO;
         }
+        
         else if (_platView)
         {
             [_platView setPlatID:_selectedPlatRefno
@@ -1243,6 +1327,9 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_popover])
                                [self.view bringSubviewToFront:_popover];
+                           
+                           if ([self.view.subviews containsObject:_digitizerTargetView])
+                               [self.view bringSubviewToFront:_digitizerTargetView];
                        }
                    });
 }

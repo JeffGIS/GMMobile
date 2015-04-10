@@ -658,4 +658,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (IBAction)toggleDigitizeMode:(UISwitch *)sender
+{
+    CRAPI.sharedInstance.inDigitizeMode = sender.on;
+}
+
 @end
