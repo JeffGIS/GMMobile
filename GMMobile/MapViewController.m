@@ -34,8 +34,7 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic) NSString *selectedSewerPipe;
-@property (nonatomic) NSString *selectedAlleyWall;
+@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall;
 @property (atomic) BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
@@ -579,7 +578,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
                     break;
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
@@ -1701,11 +1700,41 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Move Wall Point"])
+    {
+        [self moveWallPoint];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingMoveWallPoint
+                                    forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Delete Wall Point"])
+    {
+        [self deleteWallPoint];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingDeleteWallPoint
+                                    forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Edit Wall Attributes"])
+    {
+        [self editWallAttributes];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingEditWallAttributes
+                                    forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Alley Wall Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Custom Marker"])
+        
     {
         [self dismissTableView];
         
@@ -1859,6 +1888,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)snapToLine
 {
     //implement snap to line here
+}
+
+- (void)moveWallPoint
+{
+    //implement edit wall point here
+}
+
+- (void)deleteWallPoint
+{
+    //implement delete wall point here
+}
+
+- (void)editWallAttributes
+{
+    //implement edit wall attributes here
 }
 
 - (void)removeMarker
@@ -2643,6 +2687,14 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             break;
             
+        case MarkerInfoWindowTypeAlleyWall:
+            _selectedAlleyWall = title;
+            
+            _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
+                         @"Remove Alley Wall Marker"];
+            
+            break;
+            
         case MarkerInfoWindowTypeCustom:
             _options = @[@"Snap to Node", @"Snap to Line", @"Remove Custom Marker"];
             break;
@@ -2723,10 +2775,32 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         }
             break;
             
+        case MarkerInfoWindowTypeAlleyWall:
+        {
+            option = [UserDefaults.defaults integerForKey:@"AlleyWallOption"];
+            
+            if (option == AlleyWallSettingDefault)
+                option = AlleyWallSettingEditWallAttributes;
+            
+            switch (option)
+            {
+                case AlleyWallSettingMoveWallPoint:
+                    [self moveWallPoint];
+                    break;
+                    
+                case AlleyWallSettingDeleteWallPoint:
+                    [self deleteWallPoint];
+                    break;
+                    
+                case AlleyWallSettingEditWallAttributes:
+                    [self editWallAttributes];
+                    break;
+            }
+        }
+            
         case MarkerInfoWindowTypeCustom:
         {
             option = [UserDefaults.defaults integerForKey:@"CustomOption"];
-            NSLog(@"%ld", (long)option);
             
             if (option == CustomSettingDefault)
                 option = CustomSettingSnapToLine;
