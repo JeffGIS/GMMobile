@@ -663,4 +663,23 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     CRAPI.sharedInstance.inDigitizeMode = sender.on;
 }
 
+- (IBAction)showBumpDetector:(id)sender
+{
+    GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
+                                                                   coundownTime:8
+                                                                       delegate:self];
+#pragma unused(bumpDetector)
+}
+
+- (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
+didReturnTimeInterval:(NSTimeInterval)timeInterval
+{
+    [bumpDetector hideBumpDetector:YES];
+}
+
+- (void)bumpDetectorDidCancel:(GSSiBumpDetector *)bumpDetector;
+{
+    [bumpDetector hideBumpDetector:YES];
+}
+
 @end
