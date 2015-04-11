@@ -4,7 +4,6 @@
 extern int keepProcessing;
 
 #import "SewerData.h"
-#import "PickedItem.h"
 
 static BOOL _createDirectory = YES;
 
@@ -572,29 +571,16 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
         return 0;
     
     int nPicked = 0;
-    dbounds bnds;
-    //CGFloat d;
     CGFloat mind = DBL_MAX;
-    int pickApPixels = 50;
-    CGFloat pickApMeters = (pickApPixels * GroundResolution(pt->lat, (int)zoom));
     DPOINT p1, pickedPoint, minpt, BasePt;
-    //DPOINT point;
     NSString *minFid = @"";
     int minref = 0;
     int numPoints;
-    //int numLoops;
     
-    DPOINT pt1 = NewLatLong(pt->lat, pt->lon, pickApMeters, 0);
-    double pickapY = pt1.y - pt->lat;
-    DPOINT pt2 = NewLatLong(pt->lat, pt->lon, pickApMeters, HALFPI);
-    double pickapX = pt2.x - pt->lon;
     p1.x = pt->lon;
     p1.y = pt->lat;
     minpt = p1;
-    bnds.xmn = (p1.x - pickapX);
-    bnds.xmx = (p1.x + pickapX);
-    bnds.ymn = (p1.y - pickapY);
-    bnds.ymx = (p1.y + pickapY);
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
     [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -669,7 +655,7 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
 
-        if (PICK_POINT_ON_LINE(p1, (pickapX + pickapY) / 2, &pickedPoint, numPoints, llpoints))
+        if (PICK_POINT_ON_LINE(p1, bnds, &pickedPoint, numPoints, llpoints))
         {
             if (findClosestPoint (&pickedPoint, &minpt, &mind, &p1))
             {

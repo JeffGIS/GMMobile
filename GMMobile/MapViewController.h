@@ -5,6 +5,7 @@
 #import "FindViewController.h"
 #import "PropertyData.h"
 #import "SewerData.h"
+#import "PlanimetricData.h"
 #import "PipeTrace.h"
 #import "VectorView.h"
 #import "PlatImageView.h"

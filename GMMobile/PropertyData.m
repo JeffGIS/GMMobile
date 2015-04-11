@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "PropertyData.h"
-#import "PickedItem.h"
 
 #define COORDINATE_FACTOR 10000000.0
 
@@ -437,9 +436,7 @@ int SQLOKpd(int sqlReturn, char *method)
     if (_zoom < CRAPI.sharedInstance.parcelsVisibleAtZoom)
         return 0;
     NSString *minPID = [[NSString alloc] init];
-    dbounds bnds;
     CGFloat d, mind = DBL_MAX;
-    CGFloat pickap = 0.005;
     DPOINT p1, p2, minpt;
     int minref = 0;
     int npicked = 0;
@@ -447,18 +444,12 @@ int SQLOKpd(int sqlReturn, char *method)
     p1.x = pt->lon;
     p1.y = pt->lat;
     minpt = p1;
-    bnds.xmn = p1.x - pickap;
-    bnds.xmx = p1.x + pickap;
-    bnds.ymn = p1.y - pickap;
-    bnds.ymx = p1.y + pickap;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
     [self open];
 
     NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
              bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
 
-    //NSString *query = [NSString stringWithFormat:@"SELECT PID,LAT,LON FROM PARCELPOINT Where LAT > %f AND LAT < %f AND LON > %f AND LON < %f",
-    //                   bnds.ymn, bnds.ymx, bnds.xmn, bnds.xmx];
-    
     sqlite3_stmt *statement;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPID");

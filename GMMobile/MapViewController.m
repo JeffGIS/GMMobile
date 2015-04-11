@@ -5,7 +5,6 @@ extern int keepProcessing;
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
-#import "PickedItem.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -36,6 +35,7 @@ extern int keepProcessing;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) NSString *selectedSewerPipe;
+@property (nonatomic) NSString *selectedAlleyWall;
 @property (atomic) BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
@@ -524,9 +524,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llpickPt.lon = coordinate.longitude;
         llPropPt = llpickPt;
         llSewerPt = llpickPt;
+        CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
+        PlanimetricData *planData = [[PlanimetricData alloc]init];
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
@@ -537,7 +539,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [sewerData pickSewer:&llSewerPt
                       atZoom:_mapView.camera.zoom
                highlightList:highlightList];
-        
+        [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
+
         if (highlightList.count)
         {
             if (_clearAnnotations)
@@ -572,6 +575,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             switch (pi.itemType)
             {
+                case PTAlleyWallPt:
+                    _selectedAlleyWall = pi.identifier;
+                    marker.title = _selectedAlleyWall;
+                    marker.snippet = pi.symbolName;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
+                    break;
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
