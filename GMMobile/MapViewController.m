@@ -1674,9 +1674,29 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Snap to Node"])
+    {
+        [self snapToNode];
+        
+        [UserDefaults.defaults saveInteger:CustomSettingSnapToNode
+                                    forKey:@"CustomOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Snap to Line"])
+    {
+        [self snapToLine];
+        
+        [UserDefaults.defaults saveInteger:CustomSettingSnapToLine
+                                    forKey:@"CustomOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Pipe Marker"])
+              isEqualToString:@"Remove Pipe Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Custom Marker"])
     {
         [self dismissTableView];
         
@@ -1820,6 +1840,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                            delegate:self
                                                        titleSubject:_selectedSewerPipe];
 #pragma unused(notesView)
+}
+
+- (void)snapToNode
+{
+    //implement snap to node here
+}
+
+- (void)snapToLine
+{
+    //implement snap to line here
 }
 
 - (void)removeMarker
@@ -2603,6 +2633,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                          @"Update Inspection Notes", @"Remove Pipe Marker"];
             
             break;
+            
+        case MarkerInfoWindowTypeCustom:
+            _options = @[@"Snap to Node", @"Snap to Line", @"Remove Custom Marker"];
+            break;
     }
     
     if (_options.count > 0)
@@ -2660,7 +2694,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedSewerPipe = title;
             option = [UserDefaults.defaults integerForKey:@"SewerOption"];
             
-            if (option == PropertyTableViewSettingDefault)
+            if (option == SewerPipeSettingDefault)
                 option = SewerPipeSettingTraceDown;
             
             switch (option)
@@ -2679,6 +2713,26 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
+            
+        case MarkerInfoWindowTypeCustom:
+        {
+            option = [UserDefaults.defaults integerForKey:@"CustomOption"];
+            NSLog(@"%ld", (long)option);
+            
+            if (option == CustomSettingDefault)
+                option = CustomSettingSnapToLine;
+            
+            switch (option)
+            {
+                case CustomSettingSnapToLine:
+                    [self snapToLine];
+                    break;
+                    
+                case CustomSettingSnapToNode:
+                    [self snapToNode];
+                    break;
+            }
+        }
     }
 }
 
