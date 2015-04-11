@@ -373,7 +373,9 @@ extern int keepProcessing;
              withColor:(CGColorRef)color
 
 {
-    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 5, 5);
+    CGFloat size = 5;
+    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
+                                  (pPoint->y - size / 2.0), size, size);
     
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
@@ -495,7 +497,9 @@ extern int keepProcessing;
              withColor:(CGColorRef)color
 
 {
-    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 35, 35);
+    CGFloat size = 35;
+    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
+                                  (pPoint->y - size / 2.0), size, size);
     
     CGContextSetFillColorWithColor(context,color);
     CGContextFillEllipseInRect(context, pointRect);
