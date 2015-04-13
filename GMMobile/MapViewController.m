@@ -5,7 +5,6 @@ extern int keepProcessing;
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
-#import "PickedItem.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -26,21 +25,24 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer *vectorViewTimer;
-@property (nonatomic) UIImageView *streetView, *targetView;
+@property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting, gestureCount;
+@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic) NSString *selectedSewerPipe;
+@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall;
 @property (atomic) BOOL waitForVectorViewRefresh;
-@property (nonatomic) GMSTileLayer *layer;
+@property (nonatomic) GMSTileLayer *layer_jpeg;
+@property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
 @property (nonatomic) PlatImageView *platView;
 @property (nonatomic) PlatProfileView *profileView;
+@property (nonatomic) CGPoint digitizingTargetOffset;
+@property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
 
 @end
 
@@ -92,6 +94,17 @@ extern int keepProcessing;
     _targetView.hidden = YES;
     [_mapView addSubview:_targetView];
     
+    _blackCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackCrosshairs"
+                                                                                      ofType:@"png"]];
+    
+    _orangeCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackOrangeCrosshairs"
+                                                                                       ofType:@"png"]];
+    
+    _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
+    _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    _digitizerTargetView.image = _blackCrosshairs;
+    [self.view addSubview:_digitizerTargetView];
+    
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
     
@@ -126,17 +139,35 @@ extern int keepProcessing;
     longPressGesture.delegate = self;
     [_mapView addGestureRecognizer:longPressGesture];
     
-    GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+    GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
+        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADA/%lu/%lu/%lu.jp2",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
     
-    _layer = [GMSURLTileLayer tileLayerWithURLConstructor:constructor];
+    GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
+        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
+        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADA/%lu/%lu/%lu.png",
+                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
+        
+        return [NSURL URLWithString:url];
+    };
+    
+    _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
+    [_layer_jpeg clearTileCache];
     
     if (CRAPI.sharedInstance.GMTilesVisible)
-        _layer.map = _mapView;
+        _layer_jpeg.map = _mapView;
+    
+    _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
+    [_layer_png clearTileCache];
+    
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        _layer_png.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -241,15 +272,23 @@ extern int keepProcessing;
 {
     [super viewWillAppear:animated];
     
+    _digitizerTargetView.hidden = !CRAPI.sharedInstance.inDigitizeMode;
+    
     if (!_firstTimeAppear)
     {
         [self initTableView];
         
         if (CRAPI.sharedInstance.GMTilesVisible)
-            _layer.map = _mapView;
+        {
+            _layer_jpeg.map = _mapView;
+            _layer_png.map = _mapView;
+        }
         
         else
-            _layer.map = nil;
+        {
+            _layer_jpeg.map = nil;
+            _layer_png.map = nil;
+        }
     }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
@@ -367,14 +406,26 @@ extern int keepProcessing;
 {
     [super viewDidAppear:animated];
     
-    if (!_firstTimeAppear)
+    if (_firstTimeAppear)
+    {
+        CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+        CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+        
+        _mapView.frame = CGRectMake(0.0, statusBarHeight,
+                                    self.view.frame.size.width,
+                                    (tabBarTop - statusBarHeight));
+        
+        _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                         (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+        
+        _firstTimeAppear = NO;
+    }
+    
+    else
     {
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
-    
-    else
-        _firstTimeAppear = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -472,9 +523,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llpickPt.lon = coordinate.longitude;
         llPropPt = llpickPt;
         llSewerPt = llpickPt;
+        CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
+        PlanimetricData *planData = [[PlanimetricData alloc]init];
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
@@ -485,7 +538,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [sewerData pickSewer:&llSewerPt
                       atZoom:_mapView.camera.zoom
                highlightList:highlightList];
-        
+        [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
+
         if (highlightList.count)
         {
             if (_clearAnnotations)
@@ -506,7 +560,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 if ([marker.title isEqualToString:pi.identifier])
                     [marker removeFromSuperview];
             }
-            [self highlightVectorView:pi displayOption:DISPLAY_DATA_OPTION_HIGHLIGHT];
+            
+            [self highlightVectorView:pi
+                        displayOption:DISPLAY_DATA_OPTION_HIGHLIGHT];
+            
             MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
                                                                view:self.view
                                                                 map:_mapView
@@ -517,6 +574,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             switch (pi.itemType)
             {
+                case PTAlleyWallPt:
+                    _selectedAlleyWall = pi.identifier;
+                    marker.title = _selectedAlleyWall;
+                    marker.snippet = pi.symbolName;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    break;
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
@@ -587,8 +650,68 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 
+- (void)handleLongPressDigitizingForState:(UILongPressGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateBegan ||
+        gesture.state == UIGestureRecognizerStateChanged)
+    {
+        CGPoint gesturePoint = [gesture locationInView:self.view];
+        
+        if (gesture.state == UIGestureRecognizerStateBegan)
+        {
+            _mapView.settings.scrollGestures = NO;
+            _digitizerTargetView.image = _orangeCrosshairs;
+            
+            _digitizingTargetOffset = CGPointMake(gesturePoint.x - _digitizerTargetView.center.x,
+                                                  gesturePoint.y - _digitizerTargetView.center.y);
+        }
+        
+        _digitizerTargetView.center = CGPointMake(gesturePoint.x - _digitizingTargetOffset.x,
+                                                  gesturePoint.y - _digitizingTargetOffset.y);
+    }
+    
+    else if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        _mapView.settings.scrollGestures = YES;
+        _digitizerTargetView.image = _blackCrosshairs;
+        _digitizerCount++;
+        
+        MarkerButton *marker = [MarkerButton markerWithPosition:[_mapView.projection coordinateForPoint:_digitizerTargetView.center]
+                                                           view:self.view
+                                                            map:_mapView
+                                                       delegate:self];
+        
+        [self removePreviousInfoWindow];
+        _infoWindow = [[MarkerInfoWindow alloc] init];
+        
+        [marker setImage:_orangeCrosshairs
+                forState:UIControlStateNormal];
+        
+        marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
+        marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+        [_markerArray addObject:marker];
+        
+        _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+        _infoWindow.delegate = self;
+        _infoWindow.title = marker.title;
+        _infoWindow.snippet = marker.snippet;
+        _infoWindow.position = marker.position;
+        _infoWindow.type = MarkerInfoWindowTypeCustom;
+        [self.view addSubview:_infoWindow];
+        _noneSelected = NO;
+        
+        _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    }
+}
+
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
 {
+    if (CRAPI.sharedInstance.inDigitizeMode == YES)
+    {
+        [self handleLongPressDigitizingForState:gesture];
+        return;
+    }
+    
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
@@ -617,17 +740,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             if (platRefno != _selectedPlatRefno)
             {
                 _selectedPlatRefno = platRefno;
+                
                 if (!platRefno)
                 {
                     _waitForVectorViewRefresh = NO;
                     CRAPI.sharedInstance.showPlats = -1;
                 }
+                
                 else
                 {
                     _waitForVectorViewRefresh = YES;
                     CRAPI.sharedInstance.showPlats = platRefno;
                 }
-                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+                
+                [_platView setPlatID:_selectedPlatRefno
+                             andType:PLAT_TYPE_STORM];
                 
                [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
@@ -640,6 +767,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self clearVectorView];
             _waitForVectorViewRefresh = NO;
         }
+        
         else if (_platView)
         {
             [_platView setPlatID:_selectedPlatRefno
@@ -1208,6 +1336,9 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_popover])
                                [self.view bringSubviewToFront:_popover];
+                           
+                           if ([self.view.subviews containsObject:_digitizerTargetView])
+                               [self.view bringSubviewToFront:_digitizerTargetView];
                        }
                    });
 }
@@ -1551,9 +1682,59 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Snap to Node"])
+    {
+        [self snapToNode];
+        
+        [UserDefaults.defaults saveInteger:CustomSettingSnapToNode
+                                    forKey:@"CustomOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Snap to Line"])
+    {
+        [self snapToLine];
+        
+        [UserDefaults.defaults saveInteger:CustomSettingSnapToLine
+                                    forKey:@"CustomOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Move Wall Point"])
+    {
+        [self moveWallPoint];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingMoveWallPoint
+                                    forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Delete Wall Point"])
+    {
+        [self deleteWallPoint];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingDeleteWallPoint
+                                    forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Edit Wall Attributes"])
+    {
+        [self editWallAttributes];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingEditWallAttributes
+                                    forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Pipe Marker"])
+              isEqualToString:@"Remove Pipe Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Alley Wall Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Custom Marker"])
+        
     {
         [self dismissTableView];
         
@@ -1697,6 +1878,31 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                            delegate:self
                                                        titleSubject:_selectedSewerPipe];
 #pragma unused(notesView)
+}
+
+- (void)snapToNode
+{
+    //implement snap to node here
+}
+
+- (void)snapToLine
+{
+    //implement snap to line here
+}
+
+- (void)moveWallPoint
+{
+    //implement edit wall point here
+}
+
+- (void)deleteWallPoint
+{
+    //implement delete wall point here
+}
+
+- (void)editWallAttributes
+{
+    //implement edit wall attributes here
 }
 
 - (void)removeMarker
@@ -2480,14 +2686,29 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                          @"Update Inspection Notes", @"Remove Pipe Marker"];
             
             break;
+            
+        case MarkerInfoWindowTypeAlleyWall:
+            _selectedAlleyWall = title;
+            
+            _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
+                         @"Remove Alley Wall Marker"];
+            
+            break;
+            
+        case MarkerInfoWindowTypeCustom:
+            _options = @[@"Snap to Node", @"Snap to Line", @"Remove Custom Marker"];
+            break;
     }
     
-    _tableViewSetting = PropertyTableViewSettingOptions;
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    _tableView.allowsSelection = YES;
-    _tableView.delaysContentTouches = NO;
-    [_tableView reloadData];
-    [self presentTableView];
+    if (_options.count > 0)
+    {
+        _tableViewSetting = PropertyTableViewSettingOptions;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _tableView.allowsSelection = YES;
+        _tableView.delaysContentTouches = NO;
+        [_tableView reloadData];
+        [self presentTableView];
+    }
 }
 
 - (void)markerInfoWindowDidSelectPropReport:(NSString *)title
@@ -2534,7 +2755,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedSewerPipe = title;
             option = [UserDefaults.defaults integerForKey:@"SewerOption"];
             
-            if (option == PropertyTableViewSettingDefault)
+            if (option == SewerPipeSettingDefault)
                 option = SewerPipeSettingTraceDown;
             
             switch (option)
@@ -2553,6 +2774,48 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
+            
+        case MarkerInfoWindowTypeAlleyWall:
+        {
+            option = [UserDefaults.defaults integerForKey:@"AlleyWallOption"];
+            
+            if (option == AlleyWallSettingDefault)
+                option = AlleyWallSettingEditWallAttributes;
+            
+            switch (option)
+            {
+                case AlleyWallSettingMoveWallPoint:
+                    [self moveWallPoint];
+                    break;
+                    
+                case AlleyWallSettingDeleteWallPoint:
+                    [self deleteWallPoint];
+                    break;
+                    
+                case AlleyWallSettingEditWallAttributes:
+                    [self editWallAttributes];
+                    break;
+            }
+        }
+            
+        case MarkerInfoWindowTypeCustom:
+        {
+            option = [UserDefaults.defaults integerForKey:@"CustomOption"];
+            
+            if (option == CustomSettingDefault)
+                option = CustomSettingSnapToLine;
+            
+            switch (option)
+            {
+                case CustomSettingSnapToLine:
+                    [self snapToLine];
+                    break;
+                    
+                case CustomSettingSnapToNode:
+                    [self snapToNode];
+                    break;
+            }
+        }
     }
 }
 

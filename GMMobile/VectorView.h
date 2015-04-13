@@ -3,7 +3,6 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <GoogleMaps/GoogleMaps.h>
-#import "PickedItem.h"
 
 #define DISPLAY_DATA_OPTION_NODISPLAY   0
 #define DISPLAY_DATA_OPTION_DISPLAY     1

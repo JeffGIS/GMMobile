@@ -373,13 +373,78 @@ extern int keepProcessing;
              withColor:(CGColorRef)color
 
 {
-    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 5, 5);
+    CGFloat size = 5;
+    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
+                                  (pPoint->y - size / 2.0), size, size);
     
     CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
     
 }
+- (int)pickAlleyWallPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
+{
+    if (CRAPI.sharedInstance.currentZoom < CRAPI.sharedInstance.parcelsVisibleAtZoom)
+        return 0;
+    NSString *minID = [[NSString alloc] init];
+    CGFloat d, mind = DBL_MAX;
+    DPOINT p1, p2, minpt;
+    LPLLPOINT pt = &point;
+    int minref = 0;
+    int npicked = 0;
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS.id,\"Wall ID\",LATITUDE,LONGITUDE FROM ALLEYWALLS,ALLEYWALLS_index WHERE ALLEYWALLS.id=ALLEYWALLS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "preparePickPID");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR wallID = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lat = sqlite3_column_double(statement, 2);
+        CGFloat lon = sqlite3_column_double(statement, 3);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1, p2);
+        
+        if (d < mind)
+        {
+            npicked++;
+            minref = refno;
+            mind = d;
+            minpt = p2;
+            minID = [NSString stringWithUTF8String:wallID];
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "pickPID");
+    [pd close];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    if (npicked)
+    {
+        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTAlleyWallPt;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minID;
+        pi.symbolName = @"ALLEYWALLPT";
+        pi.refno = minref;
+        [hlist addObject:pi];
+    }
+    return npicked;
+}
+
 -(void)displayWallPoint:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
@@ -389,10 +454,11 @@ extern int keepProcessing;
     sqlite3_stmt *statement;
     DPOINT BasePt;
     //LPSTR symName;
-    PropertyData *pd = [[PropertyData alloc] init];
     
     if (![self continue])
         return;
+    
+    PropertyData *pd = [[PropertyData alloc] init];
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -431,11 +497,18 @@ extern int keepProcessing;
              withColor:(CGColorRef)color
 
 {
-    CGRect pointRect = CGRectMake(pPoint->x, pPoint->y, 15, 15);
+    CGFloat size = 35;
+    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
+                                  (pPoint->y - size / 2.0), size, size);
     
     CGContextSetFillColorWithColor(context,color);
     CGContextFillEllipseInRect(context, pointRect);
-    //CGContextStrokeEllipseInRect(context, pointRect);
+    CGContextSetLineWidth(context, 2);
+    if (CRAPI.sharedInstance.GMTilesVisible)
+        CGContextSetRGBStrokeColor(context, 1, 1,0,1);
+    else
+        CGContextSetRGBStrokeColor(context, 0, 0,0,1);
+    CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
 }
 

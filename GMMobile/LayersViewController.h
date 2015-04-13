@@ -14,7 +14,6 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelTextOption;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelTextOption2;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *parcelBoundaryLines;
-//@property (weak, nonatomic) IBOutlet UISegmentedControl *basemapSC;
 
 - (IBAction)displayTileInfo:(id)sender;
 - (IBAction)parcelShadingOption:(id)sender;

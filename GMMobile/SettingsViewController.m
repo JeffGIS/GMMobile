@@ -658,4 +658,34 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (IBAction)toggleDigitizeMode:(UISwitch *)sender
+{
+    CRAPI.sharedInstance.inDigitizeMode = sender.on;
+}
+
+- (IBAction)showBumpDetector:(id)sender
+{
+    GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
+                                                                   coundownTime:8
+                                                                       delegate:self];
+#pragma unused(bumpDetector)
+}
+
+- (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
+didReturnTimeInterval:(NSTimeInterval)timeInterval
+{
+    [bumpDetector hideBumpDetector:YES];
+    
+    [_gssiAlert showAlertWithTitle:@"Collision Detection Manager"
+                           message:[NSString stringWithFormat:@"Elapsed Time\n%.03f seconds", timeInterval]
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (void)bumpDetectorDidCancel:(GSSiBumpDetector *)bumpDetector;
+{
+    [bumpDetector hideBumpDetector:YES];
+}
+
 @end

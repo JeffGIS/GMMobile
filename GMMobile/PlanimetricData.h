@@ -28,4 +28,6 @@
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds;
 
+- (int)pickAlleyWallPoint:(LLPOINT)pt highlightList:(NSMutableArray*)hlist;
+
 @end
