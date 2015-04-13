@@ -26,6 +26,8 @@
 		A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */; };
 		A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */; };
 		A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */; };
+		A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A97B727F1ADB5D4B001ACFAE /* beep.mp3 */; };
+		A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */; };
 		A97DFB741AAE5E6E00F225DD /* compass.png in Resources */ = {isa = PBXBuildFile; fileRef = A97DFB731AAE5E6E00F225DD /* compass.png */; };
 		A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A996613A1AB0BCFF006C0106 /* MarkerButton.m */; };
 		A997EE221AB28F8300E26D6D /* PlatImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A997EE211AB28F8300E26D6D /* PlatImageView.m */; };
@@ -120,6 +122,9 @@
 		A97860F31A7FF8610019FE37 /* FindIntersectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindIntersectionViewController.m; sourceTree = "<group>"; };
 		A979B0391A9EAFA20098E1C5 /* MarkerInfoWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerInfoWindow.h; sourceTree = "<group>"; };
 		A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerInfoWindow.m; sourceTree = "<group>"; };
+		A97B72751ADB4668001ACFAE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		A97B727F1ADB5D4B001ACFAE /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
+		A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = finalBeep.mp3; sourceTree = "<group>"; };
 		A97DFB731AAE5E6E00F225DD /* compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass.png; sourceTree = "<group>"; };
 		A99661391AB0BCFF006C0106 /* MarkerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerButton.h; sourceTree = "<group>"; };
 		A996613A1AB0BCFF006C0106 /* MarkerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerButton.m; sourceTree = "<group>"; };
@@ -266,6 +271,7 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A97B72751ADB4668001ACFAE /* AudioToolbox.framework */,
 				A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */,
 				A99CD8D91A9DBAC10049F271 /* libz.dylib */,
 				A99CD8D71A9DBABC0049F271 /* libicucore.dylib */,
@@ -398,6 +404,8 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A97B727F1ADB5D4B001ACFAE /* beep.mp3 */,
+				A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */,
 				EB398F0D1AC04B530043875E /* censusdatadef.txt */,
 				EB398F061ABC61C40043875E /* landusecodes.txt */,
 				A91B735C1AC1BA8400B1FEFA /* GMMobile.entitlements */,
@@ -532,9 +540,11 @@
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
+				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
 				A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
+				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
