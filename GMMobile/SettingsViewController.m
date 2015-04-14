@@ -667,17 +667,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
                                                                    coundownTime:8
+                                                                          title:@"This is the title parameter"
                                                                        delegate:self];
 #pragma unused(bumpDetector)
 }
 
 - (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
-didReturnTimeInterval:(NSTimeInterval)timeInterval
+didReturnTimeInterval:(NSString *)timeInterval
 {
     [bumpDetector hideBumpDetector:YES];
     
     [_gssiAlert showAlertWithTitle:@"Collision Detection Manager"
-                           message:[NSString stringWithFormat:@"Elapsed Time\n%.03f seconds", timeInterval]
+                           message:[NSString stringWithFormat:@"Elapsed Time\n%@ seconds", timeInterval]
                  cancelButtonTitle:@"OK"
                  otherButtonTitles:nil
          destructiveButtonPosition:0];
@@ -686,6 +687,20 @@ didReturnTimeInterval:(NSTimeInterval)timeInterval
 - (void)bumpDetectorDidCancel:(GSSiBumpDetector *)bumpDetector;
 {
     [bumpDetector hideBumpDetector:YES];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    for (GSSiBumpDetector *bumpDetector in self.view.subviews)
+    {
+        if ([bumpDetector isKindOfClass:GSSiBumpDetector.class])
+        {
+            [bumpDetector willRotateWithDuration:duration
+                          toInterfaceOrientation:toInterfaceOrientation
+                                    tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+        }
+    }
 }
 
 @end
