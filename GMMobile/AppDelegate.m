@@ -37,6 +37,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
                                                                               ofType:@"jpg"];
+    
+    NSLog(@"Shared File Path: %@", CRAPI.sharedInstance.sharedFilePath);
 
     return YES;
 }
