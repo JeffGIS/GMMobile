@@ -1902,7 +1902,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)editWallAttributes
 {
-    //implement edit wall attributes here
+    [SharedDefaults.defaults saveString:_selectedAlleyWall
+                                 forKey:@"AlleyWallEditAttributes"];
+    
+    [self launchAlleyWallApp];
 }
 
 - (void)removeMarker
@@ -2925,6 +2928,26 @@ didFindMatchBetweenNote:(NSString *)note
             otherButtonTitles:@[[NSString stringWithFormat:@"Replace %@ with %@", itemInList, note],
                                 [NSString stringWithFormat:@"Add %@ to list", note]]
     destructiveButtonPosition:0];
+}
+
+- (void)launchAlleyWallApp
+{
+    NSString *CRISDetailURL = @"AlleyWallInventory://";
+    
+    [SharedDefaults.defaults saveString:@"GMMobile"
+                                 forKey:@"SourceApplication"];
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    
+    else
+    {
+        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch Alley Wall Inventory"
+                               message:nil
+                     cancelButtonTitle:@"OK"
+                     otherButtonTitles:nil
+             destructiveButtonPosition:0];
+    }
 }
 
 @end
