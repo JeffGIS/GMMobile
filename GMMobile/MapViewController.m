@@ -17,7 +17,7 @@ extern int keepProcessing;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property (nonatomic) BOOL clearAnnotations, clearWhenDeselected, initialZoom, rotateZoom;
-@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected;
+@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews, vectorViewZoom;
@@ -27,7 +27,7 @@ extern int keepProcessing;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount;
+@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount, digitizationMode;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -43,6 +43,7 @@ extern int keepProcessing;
 @property (nonatomic) PlatProfileView *profileView;
 @property (nonatomic) CGPoint digitizingTargetOffset;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
+@property (nonatomic) UIButton *cancelDigitization;
 
 @end
 
@@ -63,6 +64,7 @@ extern int keepProcessing;
     [PipeTrace removeTrace];
     
     _firstTimeAppear = _firstTimeMap = YES;
+    _digitizationMode = DigitizationModeCustom;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -101,9 +103,38 @@ extern int keepProcessing;
                                                                                        ofType:@"png"]];
     
     _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
-    _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    
+    CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    
+    _digitizerTargetView.center = CGPointMake(targetPoint.x,
+                                              (targetPoint.y + [self statusBarHeight:self.interfaceOrientation]));
+    
     _digitizerTargetView.image = _blackCrosshairs;
     [self.view addSubview:_digitizerTargetView];
+    
+    _cancelDigitization = [[UIButton alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
+                                                                     _mapView.frame.origin.y,
+                                                                     _mapView.frame.size.width, 49.0)];
+    
+    _cancelDigitization.backgroundColor = UserDefaults.defaults.appleBlue;
+    
+    [_cancelDigitization setTitleColor:UIColor.whiteColor
+                              forState:UIControlStateNormal];
+    
+    [_cancelDigitization setTitleColor:UIColor.redColor
+                              forState:UIControlStateHighlighted];
+    
+    [_cancelDigitization setTitle:@"In Digitization Mode - Tap to Cancel"
+                         forState:UIControlStateNormal];
+    
+    _cancelDigitization.titleLabel.textAlignment = NSTextAlignmentCenter;
+    _cancelDigitization.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    _cancelDigitization.alpha = 0.0;
+    [self.view addSubview:_cancelDigitization];
+    
+    [_cancelDigitization addTarget:self
+                            action:@selector(cancelDigitizationMode:)
+                  forControlEvents:UIControlEventTouchUpInside];
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -272,7 +303,11 @@ extern int keepProcessing;
 {
     [super viewWillAppear:animated];
     
-    _digitizerTargetView.hidden = !CRAPI.sharedInstance.inDigitizeMode;
+    if (CRAPI.sharedInstance.inDigitizeMode)
+        _digitizerTargetView.alpha = 1.0;
+    
+    else
+        _digitizerTargetView.alpha = 0.0;
     
     if (!_firstTimeAppear)
     {
@@ -676,31 +711,56 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _digitizerTargetView.image = _blackCrosshairs;
         _digitizerCount++;
         
-        MarkerButton *marker = [MarkerButton markerWithPosition:[_mapView.projection coordinateForPoint:_digitizerTargetView.center]
-                                                           view:self.view
-                                                            map:_mapView
-                                                       delegate:self];
+        switch (_digitizationMode)
+        {
+            case DigitizationModeCustom:
+            {
+                MarkerButton *marker = [MarkerButton markerWithPosition:[_mapView.projection coordinateForPoint:_digitizerTargetView.center]
+                                                                   view:self.view
+                                                                    map:_mapView
+                                                               delegate:self];
+                
+                [self removePreviousInfoWindow];
+                _infoWindow = [[MarkerInfoWindow alloc] init];
+                
+                [marker setImage:_orangeCrosshairs
+                        forState:UIControlStateNormal];
+                
+                marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
+                marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+                [_markerArray addObject:marker];
+                
+                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+                _infoWindow.delegate = self;
+                _infoWindow.title = marker.title;
+                _infoWindow.snippet = marker.snippet;
+                _infoWindow.position = marker.position;
+                _infoWindow.type = MarkerInfoWindowTypeCustom;
+                [self.view addSubview:_infoWindow];
+                _noneSelected = NO;
+            }
+                break;
+                
+            case DigitizationModeAlleyWall:
+            {
+                [self hideDigitizationMode];
+            }
+                break;
+                
+            case DigitizationModeProperty:
+                break;
+                
+            case DigitizationModeSewer:
+                break;
+                
+            default:
+                break;
+        }
         
-        [self removePreviousInfoWindow];
-        _infoWindow = [[MarkerInfoWindow alloc] init];
+        CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
         
-        [marker setImage:_orangeCrosshairs
-                forState:UIControlStateNormal];
-        
-        marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
-        marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
-        [_markerArray addObject:marker];
-        
-        _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
-        _infoWindow.delegate = self;
-        _infoWindow.title = marker.title;
-        _infoWindow.snippet = marker.snippet;
-        _infoWindow.position = marker.position;
-        _infoWindow.type = MarkerInfoWindowTypeCustom;
-        [self.view addSubview:_infoWindow];
-        _noneSelected = NO;
-        
-        _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+        _digitizerTargetView.center = CGPointMake(targetPoint.x,
+                                                  (targetPoint.y + [self statusBarHeight:self.interfaceOrientation]));
     }
 }
 
@@ -939,6 +999,12 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 - (void)mapView:(GMSMapView *)mapView
 idleAtCameraPosition:(GMSCameraPosition *)position
 {
+    if (_moveDigitizer)
+    {
+        _moveDigitizer = NO;
+        [self showDigitizer];
+    }
+    
     if (!_firstTimeMap)
     {
         [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1339,6 +1405,9 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_digitizerTargetView])
                                [self.view bringSubviewToFront:_digitizerTargetView];
+                           
+                           if ([self.view.subviews containsObject:_cancelDigitization])
+                               [self.view bringSubviewToFront:_cancelDigitization];
                        }
                    });
 }
@@ -1702,7 +1771,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Move Wall Point"])
     {
-        [self moveWallPoint];
+        [self dismissTableView];
+        
+        [self performSelector:@selector(moveWallPoint)
+                   withObject:nil
+                   afterDelay:0.3];
         
         [UserDefaults.defaults saveInteger:AlleyWallSettingMoveWallPoint
                                     forKey:@"AlleyWallOption"];
@@ -1892,7 +1965,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)moveWallPoint
 {
-    //implement edit wall point here
+    CRAPI.sharedInstance.inDigitizeMode = YES;
+    _digitizationMode = DigitizationModeAlleyWall;
+    [self hideMarkersAndInfoWindows];
+    [_mapToolbar hide];
+    
+    MarkerButton *marker = _markerArray.lastObject;
+    
+    NSLog(@"%d", CLLocationCoordinateEqual(_mapView.camera.target, marker.position));
+    
+    if (CLLocationCoordinateEqual(_mapView.camera.target, marker.position))
+        [self showDigitizer];
+    
+    else
+    {
+        _moveDigitizer = YES;
+        [_mapView animateToLocation:marker.position];
+    }
 }
 
 - (void)deleteWallPoint
@@ -1906,6 +1995,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  forKey:@"AlleyWallEditAttributes"];
     
     [self launchAlleyWallApp];
+}
+
+- (void)cancelDigitizationMode:(UIButton *)button
+{
+    [self hideDigitizationMode];
+}
+
+- (void)hideDigitizationMode
+{
+    CRAPI.sharedInstance.inDigitizeMode = NO;
+    
+    [self hideDigitizer];
+    [self showMarkersAndInfoWindows];
+    [_mapToolbar show];
 }
 
 - (void)removeMarker
@@ -1922,6 +2025,59 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          [marker removeFromSuperview];
                          [self removePreviousInfoWindow];
                          _infoWindow.alpha = alpha;
+                     }];
+}
+
+- (void)hideMarkersAndInfoWindows
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         for (MarkerButton *markers in self.view.subviews)
+                         {
+                             if ([markers isKindOfClass:MarkerButton.class])
+                                 markers.alpha = 0.0;
+                         }
+                         
+                         _infoWindow.alpha = 0.0;
+                     }];
+}
+
+- (void)showMarkersAndInfoWindows
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         for (MarkerButton *markers in self.view.subviews)
+                         {
+                             if ([markers isKindOfClass:MarkerButton.class])
+                                 markers.alpha = 1.0;
+                         }
+                         
+                         _infoWindow.alpha = 1.0;
+                     }];
+}
+
+- (void)showDigitizer
+{
+    MarkerButton *marker = _markerArray.lastObject;
+    
+    CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
+    
+    _digitizerTargetView.center = CGPointMake(markerPosition.x,
+                                              (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _digitizerTargetView.alpha = 1.0;
+                         _cancelDigitization.alpha = 0.8;
+                     }];
+}
+
+- (void)hideDigitizer
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _digitizerTargetView.alpha = 0.0;
+                         _cancelDigitization.alpha = 0.0;
                      }];
 }
 
@@ -2948,6 +3104,12 @@ didFindMatchBetweenNote:(NSString *)note
                      otherButtonTitles:nil
              destructiveButtonPosition:0];
     }
+}
+
+BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoordinate2D coordinate2)
+{
+    return (fabs(coordinate1.latitude - coordinate2.latitude) < 0.00001) &&
+           (fabs(coordinate1.longitude - coordinate2.longitude) < 0.00001);
 }
 
 @end
