@@ -711,11 +711,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _digitizerTargetView.image = _blackCrosshairs;
         _digitizerCount++;
         
+        CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:_digitizerTargetView.center];
+        
         switch (_digitizationMode)
         {
             case DigitizationModeCustom:
             {
-                MarkerButton *marker = [MarkerButton markerWithPosition:[_mapView.projection coordinateForPoint:_digitizerTargetView.center]
+                MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view
                                                                     map:_mapView
                                                                delegate:self];
@@ -743,7 +745,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
             case DigitizationModeAlleyWall:
             {
+                PlanimetricData *pd = [[PlanimetricData alloc] init];
+                
+                [pd moveAlleyWallPoint:_selectedAlleyWall
+                                    to:position];
+                
                 [self hideDigitizationMode];
+                
+                [_vectorView setNeedsDisplay];
             }
                 break;
                 
