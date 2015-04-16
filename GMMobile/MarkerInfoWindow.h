@@ -9,6 +9,7 @@
 @protocol MarkerInfoWindowDelegate <NSObject>
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
+                                   refno:(NSInteger) refno
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type;
 
@@ -24,6 +25,7 @@
 
 @property (nonatomic, weak) id <MarkerInfoWindowDelegate> delegate;
 @property (nonatomic, copy) NSString *title, *snippet;
+@property (nonatomic) NSInteger refno;
 @property (nonatomic) CLLocationCoordinate2D position;
 @property (nonatomic) NSInteger type;
 

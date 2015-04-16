@@ -31,7 +31,7 @@
 - (int)pickAlleyWallPoint:(LLPOINT)pt
             highlightList:(NSMutableArray*)hlist;
 
-- (BOOL)moveAlleyWallPoint:(NSString *)refno
+- (BOOL)moveAlleyWallPoint:(NSInteger)refno
                         to:(CLLocationCoordinate2D)point;
 
 - (NSArray*)getDistinctSymbols:(NSString *)tableName;
