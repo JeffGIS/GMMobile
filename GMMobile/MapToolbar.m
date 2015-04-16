@@ -501,4 +501,20 @@
     }
 }
 
+- (void)hide
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.alpha = 0.0;
+                     }];
+}
+
+- (void)show
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.alpha = 1.0;
+                     }];
+}
+
 @end

@@ -28,9 +28,11 @@
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds;
 
-- (int)pickAlleyWallPoint:(LLPOINT)pt highlightList:(NSMutableArray*)hlist;
+- (int)pickAlleyWallPoint:(LLPOINT)pt
+            highlightList:(NSMutableArray*)hlist;
 
-- (BOOL)moveAlleyWallPoint:(int)refno to:(LLPOINT)point;
+- (BOOL)moveAlleyWallPoint:(NSString *)refno
+                        to:(CLLocationCoordinate2D)point;
 
 - (NSArray*)getDistinctSymbols:(NSString *)tableName;
 

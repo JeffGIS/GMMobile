@@ -27,6 +27,8 @@
 - (void)splitScreenSelectedSegmentIndex:(NSInteger)index;
 - (void)platViewMode;
 - (void)normalMode;
+- (void)hide;
+- (void)show;
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration
                   tabBarHeight:(CGFloat)tabBarHeight

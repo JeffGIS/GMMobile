@@ -431,6 +431,7 @@ extern int keepProcessing;
     [pd close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
+    
     if (npicked)
     {
         PickedItem *pi = [[PickedItem alloc]init];
@@ -442,10 +443,12 @@ extern int keepProcessing;
         pi.refno = minref;
         [hlist addObject:pi];
     }
+    
     return npicked;
 }
 
-- (BOOL)moveAlleyWallPoint:(int)refno to:(LLPOINT)point
+- (BOOL)moveAlleyWallPoint:(NSString *)refno
+                        to:(CLLocationCoordinate2D)point
 {
     BOOL rtn = FALSE;
     PropertyData *pd = [[PropertyData alloc] init];
@@ -456,12 +459,15 @@ extern int keepProcessing;
     NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%i",
                        point.lat,point.lon, refno];
     rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    
     if (rtn)
     {
-        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f AND minX=%f AND maxY=%f AND maxX=%f WHERE ALLEYWALLS_index.id=%i",
-                 point.lat,point.lon, point.lat,point.lon, refno];
+        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f AND minX=%f AND maxY=%f AND maxX=%f WHERE ALLEYWALLS_index.id=%@",
+                 point.latitude, point.longitude, point.latitude, point.longitude, refno];
+        
         rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     }
+    
     [pd close];
     return rtn;
 }
@@ -535,9 +541,9 @@ extern int keepProcessing;
     
 }
 
-- (void) drawWallPoint:(CGContextRef)context
-               atPoint:(DPOINT*)pPoint
-             withColor:(CGColorRef)color
+- (void)drawWallPoint:(CGContextRef)context
+              atPoint:(DPOINT*)pPoint
+            withColor:(CGColorRef)color
 
 {
     CGFloat size = 35;
@@ -547,10 +553,13 @@ extern int keepProcessing;
     CGContextSetFillColorWithColor(context,color);
     CGContextFillEllipseInRect(context, pointRect);
     CGContextSetLineWidth(context, 2);
+    
     if (CRAPI.sharedInstance.GMTilesVisible)
         CGContextSetRGBStrokeColor(context, 1, 1,0,1);
+    
     else
         CGContextSetRGBStrokeColor(context, 0, 0,0,1);
+    
     CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
 }
