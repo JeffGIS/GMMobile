@@ -30,4 +30,6 @@
 
 - (int)pickAlleyWallPoint:(LLPOINT)pt highlightList:(NSMutableArray*)hlist;
 
+- (BOOL)moveAlleyWallPoint:(int)refno to:(LLPOINT)point;
+
 @end

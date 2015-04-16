@@ -445,6 +445,27 @@ extern int keepProcessing;
     return npicked;
 }
 
+- (BOOL)moveAlleyWallPoint:(int)refno to:(LLPOINT)point
+{
+    BOOL rtn = FALSE;
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    
+   // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
+   //                    iTime, refno];
+    NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%i",
+                       point.lat,point.lon, refno];
+    rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    if (rtn)
+    {
+        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f AND minX=%f AND maxY=%f AND maxX=%f WHERE ALLEYWALLS_index.id=%i",
+                 point.lat,point.lon, point.lat,point.lon, refno];
+        rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    }
+    [pd close];
+    return rtn;
+}
+
 -(void)displayWallPoint:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
