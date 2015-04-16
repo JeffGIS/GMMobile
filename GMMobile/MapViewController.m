@@ -709,7 +709,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _mapView.settings.scrollGestures = YES;
         _digitizerTargetView.image = _blackCrosshairs;
-        _digitizerCount++;
         
         CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:_digitizerTargetView.center];
         
@@ -717,6 +716,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             case DigitizationModeCustom:
             {
+                _digitizerCount++;
+                
                 MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view
                                                                     map:_mapView
