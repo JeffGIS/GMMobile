@@ -451,8 +451,8 @@ extern int keepProcessing;
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     
-   // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
-   //                    iTime, refno];
+    // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
+    //                    iTime, refno];
     NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%i",
                        point.lat,point.lon, refno];
     rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
@@ -464,6 +464,28 @@ extern int keepProcessing;
     }
     [pd close];
     return rtn;
+}
+
+- (int)addAlleyWallPoint:(LLPOINT)point
+{
+    int newRefno;
+/*    BOOL rtn = FALSE;
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    
+    // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
+    //                    iTime, refno];
+    NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%i",
+                       point.lat,point.lon, refno];
+    rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    if (rtn)
+    {
+        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f AND minX=%f AND maxY=%f AND maxX=%f WHERE ALLEYWALLS_index.id=%i",
+                 point.lat,point.lon, point.lat,point.lon, refno];
+        rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    }
+    [pd close];*/
+    return newRefno;
 }
 
 -(void)displayWallPoint:(CGContextRef)context
@@ -531,6 +553,32 @@ extern int keepProcessing;
         CGContextSetRGBStrokeColor(context, 0, 0,0,1);
     CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
+}
+- (NSArray*)getDistinctSymbols:(NSString *)tableName
+{
+    NSMutableArray * symList = [[NSMutableArray alloc]init];
+    sqlite3_stmt *statement;
+    NSString *query = [[NSString alloc] init];
+    
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    
+    query = [NSString stringWithFormat:@"SELECT DISTINCT SYMBOLNAME FROM %@",tableName];
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDistinctSymbols");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        NSString * symName = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement, 0)];
+        [symList addObject:symName];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "distinctSymbols");
+    
+    [pd close];
+    
+    
+    return symList;
 }
 
 @end

@@ -32,4 +32,6 @@
 
 - (BOOL)moveAlleyWallPoint:(int)refno to:(LLPOINT)point;
 
+- (NSArray*)getDistinctSymbols:(NSString *)tableName;
+
 @end
