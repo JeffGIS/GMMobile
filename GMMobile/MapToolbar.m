@@ -27,6 +27,13 @@
         else
             _size = CGSizeMake(517.0, 63.0);
         
+        self.wantPlat = NO;
+        self.wantDigitize = NO;
+        self.wantMapType = NO;
+        self.wantGPS = YES;
+        self.wantExtents = YES;
+        self.wantLegends = NO;
+        
         self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
         self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
@@ -516,5 +523,39 @@
                          self.alpha = 1.0;
                      }];
 }
+
+- (void)setConfiguration:(int)property value:(BOOL)value
+{
+    switch (property)
+    {
+        case MTPwantPlat:
+            _wantPlat = value;
+            break;
+        case MTPwantDigitize:
+            _wantDigitize = value;
+            break;
+        case MTPwantMapType:
+            _wantMapType = value;
+            break;
+        case MTPwantGPS:
+            _wantGPS = value;
+            break;
+        case MTPwantExtents:
+            _wantExtents = value;
+            break;
+        case MTPwantLegends:
+            _wantLegends = value;
+            break;
+    }
+}
+
+- (void)configure
+{
+    if (!_configChanged)
+        return;
+    //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantGPS _wantLegends and _wantExtents
+    //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
+}
+
 
 @end
