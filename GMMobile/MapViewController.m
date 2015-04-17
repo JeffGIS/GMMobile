@@ -142,9 +142,13 @@ extern int keepProcessing;
                                                                                            ofType:@"png"]];
     
     CGFloat compassSize = 48.0, compassMargin = 6.0;
+    CGFloat helpButtonSize = 64.0, helpButtonMargin = 10.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
         compassSize = 36.0, compassMargin = 4.0;
+        helpButtonSize = 40.0, helpButtonMargin = 4.0;
+    }
     
     _compass = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - compassSize - compassMargin),
                                                           (statusBarHeight + compassMargin), compassSize, compassSize)];
@@ -299,11 +303,26 @@ extern int keepProcessing;
     _mapToolbar.orientation = MapToolbarOrientationTop;
     
     [self.view addSubview:_mapToolbar];
+    
+    
+    HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
+                              CGPointMake(helpButtonMargin, (helpButtonMargin +
+                                           [self statusBarHeight:self.interfaceOrientation]))
+                                                             size:helpButtonSize
+                                                             view:self.view
+                                                              tag:HelpButtonPresenterMapVC];
+#pragma unused(helpButton)
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    for (HelpWebView *helpWebView in self.view.subviews)
+    {
+        if ([helpWebView isKindOfClass:HelpWebView.class])
+            [self.view bringSubviewToFront:helpWebView];
+    }
     
     if (CRAPI.sharedInstance.inDigitizeMode)
     {
@@ -993,6 +1012,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self initTableView];
         }
     }
+    
+    for (HelpWebView *helpWebView in self.view.subviews)
+    {
+        if ([helpWebView isKindOfClass:HelpWebView.class])
+            [self.view bringSubviewToFront:helpWebView];
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -1157,6 +1182,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [notesView willRotateWithDuration:duration
                        toInterfaceOrientation:toInterfaceOrientation
                                  tabBarHeight:_tabBarHeight];
+        }
+    }
+    
+    for (HelpWebView *helpWebView in self.view.subviews)
+    {
+        if ([helpWebView isKindOfClass:HelpWebView.class])
+        {
+            [helpWebView willRotateWithDuration:duration
+                         toInterfaceOrientation:toInterfaceOrientation
+                                   tabBarHeight:_tabBarHeight];
         }
     }
     
@@ -1436,6 +1471,12 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_cancelDigitization])
                                [self.view bringSubviewToFront:_cancelDigitization];
+                           
+                           for (HelpWebView *helpWebView in self.view.subviews)
+                           {
+                               if ([helpWebView isKindOfClass:HelpWebView.class])
+                                   [self.view bringSubviewToFront:helpWebView];
+                           }
                        }
                    });
 }
