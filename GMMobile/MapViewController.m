@@ -2253,6 +2253,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      } completion:^(BOOL finished) {
                          _digitizerTargetView.hidden = YES;
                          _digitizationToolbar.hidden = YES;
+                         _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
+                         _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
 
