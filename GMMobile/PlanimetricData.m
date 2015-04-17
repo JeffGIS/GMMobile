@@ -461,7 +461,7 @@ extern int keepProcessing;
     
     if (!rtn)
     {
-        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f AND minX=%f AND maxY=%f AND maxX=%f WHERE ALLEYWALLS_index.id=%ld",
+        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f,minX=%f,maxY=%f,maxX=%f WHERE ALLEYWALLS_index.id=%ld",
                  point.latitude,point.longitude, point.latitude,point.longitude, refno];
         rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     }
