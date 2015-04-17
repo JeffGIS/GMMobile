@@ -520,16 +520,6 @@
                                     <action selector="launchDetailMod:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="aIs-Nv-uKC"/>
                                 </connections>
                             </button>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="vLg-BK-H8O">
-                                <rect key="frame" x="184" y="378" width="51" height="31"/>
-                                <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="184" y="378" width="51" height="31"/>
-                                </variation>
-                                <connections>
-                                    <action selector="toggleDigitizeMode:" destination="SQ4-SM-lZV" eventType="valueChanged" id="D6K-gS-Ge1"/>
-                                </connections>
-                            </switch>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="iCm-nR-kOo">
                                 <rect key="frame" x="241" y="28" width="118" height="86"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>

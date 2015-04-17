@@ -658,11 +658,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (IBAction)toggleDigitizeMode:(UISwitch *)sender
-{
-    CRAPI.sharedInstance.inDigitizeMode = sender.on;
-}
-
 - (IBAction)showBumpDetector:(id)sender
 {
     GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view

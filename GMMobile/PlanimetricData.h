@@ -36,4 +36,6 @@
 
 - (NSArray*)getDistinctSymbols:(NSString *)tableName;
 
+- (void)userSavedAlleyWallPointMove:(BOOL)saved;
+
 @end

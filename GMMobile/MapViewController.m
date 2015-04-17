@@ -45,7 +45,8 @@ extern int keepProcessing;
 @property (nonatomic) PlatProfileView *profileView;
 @property (nonatomic) CGPoint digitizingTargetOffset;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
-@property (nonatomic) UIButton *cancelDigitization;
+@property (nonatomic) UIView *digitizationToolbar;
+@property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
 
 @end
 
@@ -114,30 +115,40 @@ extern int keepProcessing;
     _digitizerTargetView.image = _blackCrosshairs;
     [self.view addSubview:_digitizerTargetView];
     
-    _cancelDigitization = [[UIButton alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
-                                                                     _mapView.frame.origin.y,
-                                                                     _mapView.frame.size.width, 49.0)];
+    _digitizationToolbar = [[UIView alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
+                                                                    _mapView.frame.origin.y,
+                                                                    _mapView.frame.size.width, 49.0)];
     
-    _cancelDigitization.backgroundColor = UserDefaults.defaults.appleBlue;
+    _digitizationToolbar.backgroundColor = UserDefaults.defaults.appleBlue;
+    _digitizationToolbar.alpha = 0.0;
+    _digitizationToolbar.hidden = YES;
+    [self.view addSubview:_digitizationToolbar];
     
-    [_cancelDigitization setTitleColor:UIColor.whiteColor
-                              forState:UIControlStateNormal];
+    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.2), 0.0,
+                                                                        (_digitizationToolbar.frame.size.width * 0.6),
+                                                                        _digitizationToolbar.frame.size.height)];
     
-    [_cancelDigitization setTitleColor:UIColor.redColor
-                              forState:UIControlStateHighlighted];
+    [self setupDigitizerToolbarButton:_cancelDigitizerButton
+                             selector:@selector(cancelDigitizationMode:)
+                                title:@"Cancel Digitization"];
     
-    [_cancelDigitization setTitle:@"In Digitization Mode - Tap to Cancel"
-                         forState:UIControlStateNormal];
+    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.35),
+                                                                      _digitizationToolbar.frame.size.height)];
     
-    _cancelDigitization.titleLabel.textAlignment = NSTextAlignmentCenter;
-    _cancelDigitization.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
-    _cancelDigitization.alpha = 0.0;
-    _cancelDigitization.hidden = YES;
-    [self.view addSubview:_cancelDigitization];
+    [self setupDigitizerToolbarButton:_saveDigitizerButton
+                             selector:@selector(saveDigitizationMode:)
+                                title:@"Save Digitization"];
     
-    [_cancelDigitization addTarget:self
-                            action:@selector(cancelDigitizationMode:)
-                  forControlEvents:UIControlEventTouchUpInside];
+    _undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.35),
+                                                                      _digitizationToolbar.frame.size.height)];
+
+    [self setupDigitizerToolbarButton:_undoDigitizerButton
+                             selector:@selector(undoDigitizationMode:)
+                                title:@"Undo Digitization"];
+    
+    _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -516,6 +527,31 @@ extern int keepProcessing;
     [super didReceiveMemoryWarning];
 }
 
+- (void)setupDigitizerToolbarButton:(UIButton *)button
+                           selector:(SEL)selector
+                              title:(NSString *)title
+{
+    button.backgroundColor = UIColor.clearColor;
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    
+    [button setTitleColor:UIColor.whiteColor
+                 forState:UIControlStateNormal];
+    
+    [button setTitleColor:UIColor.redColor
+                 forState:UIControlStateHighlighted];
+    
+    [button setTitle:title
+            forState:UIControlStateNormal];
+    
+    [button addTarget:self
+               action:selector
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    [_digitizationToolbar addSubview:button];
+}
+
 - (void)extentZoom
 {
     [self stopTrackingUserLocation:NO];
@@ -565,6 +601,9 @@ extern int keepProcessing;
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
+    if (_digitizationMode)
+        return;
+    
     if (!_tableView.hidden)
     {
         CGRect frame = _tableView.frame;
@@ -793,7 +832,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 marker.center = _digitizerTargetView.center;
                 _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 
-                [self hideDigitizationMode];
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     _cancelDigitizerButton.alpha = 0.0;
+                                     _saveDigitizerButton.alpha = 1.0;
+                                     _undoDigitizerButton.alpha = 1.0;
+                                 }];
                 
                 [_vectorView setNeedsDisplay];
             }
@@ -1245,7 +1289,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame1;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1270,7 +1314,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame2;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1285,7 +1329,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _profileView.frame = CGRectMake(0.0, 0.0, _secondView.frame.size.width,
                                                                  (_secondView.frame.size.height));
@@ -1300,7 +1344,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame4;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1325,7 +1369,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame3;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1474,8 +1518,14 @@ haveVV:
                            if ([self.view.subviews containsObject:_digitizerTargetView])
                                [self.view bringSubviewToFront:_digitizerTargetView];
                            
-                           if ([self.view.subviews containsObject:_cancelDigitization])
-                               [self.view bringSubviewToFront:_cancelDigitization];
+                           if ([self.view.subviews containsObject:_digitizationToolbar])
+                               [self.view bringSubviewToFront:_digitizationToolbar];
+                           
+                           for (HelpButton *helpButton in self.view.subviews)
+                           {
+                               if ([helpButton isKindOfClass:HelpButton.class])
+                                   [self.view bringSubviewToFront:helpButton];
+                           }
                            
                            for (HelpWebView *helpWebView in self.view.subviews)
                            {
@@ -2078,6 +2128,29 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self hideDigitizationMode];
 }
 
+- (void)saveDigitizationMode:(UIButton *)button
+{
+    PlanimetricData *pd = [[PlanimetricData alloc] init];
+    [pd userSavedAlleyWallPointMove:YES];
+    
+    [self hideDigitizationMode];
+}
+
+- (void)undoDigitizationMode:(UIButton *)button
+{
+    PlanimetricData *pd = [[PlanimetricData alloc] init];
+    [pd userSavedAlleyWallPointMove:NO];
+    
+    [_vectorView setNeedsDisplay];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _saveDigitizerButton.alpha = 0.0;
+                         _undoDigitizerButton.alpha = 0.0;
+                         _cancelDigitizerButton.alpha = 1.0;
+                     }];
+}
+
 - (void)hideDigitizationMode
 {
     CRAPI.sharedInstance.inDigitizeMode = NO;
@@ -2142,12 +2215,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                               (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
     
     _digitizerTargetView.hidden = NO;
-    _cancelDigitization.hidden = NO;
+    _digitizationToolbar.hidden = NO;
     
     [UIView animateWithDuration:0.25
                      animations:^{
                          _digitizerTargetView.alpha = 1.0;
-                         _cancelDigitization.alpha = 0.8;
+                         _digitizationToolbar.alpha = 0.9;
+                         
+                         for (HelpButton *helpButton in self.view.subviews)
+                         {
+                             if ([helpButton isKindOfClass:HelpButton.class])
+                             {
+                                 helpButton.center =
+                                 CGPointMake(helpButton.center.x, helpButton.center.y +
+                                             _digitizationToolbar.frame.size.height);
+                             }
+                         }
                      }];
 }
 
@@ -2156,10 +2239,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [UIView animateWithDuration:0.25
                      animations:^{
                          _digitizerTargetView.alpha = 0.0;
-                         _cancelDigitization.alpha = 0.0;
+                         _digitizationToolbar.alpha = 0.0;
+                         
+                         for (HelpButton *helpButton in self.view.subviews)
+                         {
+                             if ([helpButton isKindOfClass:HelpButton.class])
+                             {
+                                 helpButton.center =
+                                 CGPointMake(helpButton.center.x, helpButton.center.y -
+                                             _digitizationToolbar.frame.size.height);
+                             }
+                         }
                      } completion:^(BOOL finished) {
                          _digitizerTargetView.hidden = YES;
-                         _cancelDigitization.hidden = YES;
+                         _digitizationToolbar.hidden = YES;
                      }];
 }
 

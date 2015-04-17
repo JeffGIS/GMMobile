@@ -447,7 +447,8 @@ extern int keepProcessing;
     return npicked;
 }
 
-- (BOOL)moveAlleyWallPoint:(NSInteger)refno to:(CLLocationCoordinate2D)point
+- (BOOL)moveAlleyWallPoint:(NSInteger)refno
+                        to:(CLLocationCoordinate2D)point
 {
     BOOL rtn = FALSE;
     PropertyData *pd = [[PropertyData alloc] init];
@@ -586,6 +587,11 @@ extern int keepProcessing;
     
     
     return symList;
+}
+
+- (void)userSavedAlleyWallPointMove:(BOOL)saved
+{
+    
 }
 
 @end
