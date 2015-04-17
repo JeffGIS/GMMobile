@@ -131,6 +131,7 @@ extern int keepProcessing;
     _cancelDigitization.titleLabel.textAlignment = NSTextAlignmentCenter;
     _cancelDigitization.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
     _cancelDigitization.alpha = 0.0;
+    _cancelDigitization.hidden = YES;
     [self.view addSubview:_cancelDigitization];
     
     [_cancelDigitization addTarget:self
@@ -305,10 +306,16 @@ extern int keepProcessing;
     [super viewWillAppear:animated];
     
     if (CRAPI.sharedInstance.inDigitizeMode)
+    {
+        _digitizerTargetView.hidden = NO;
         _digitizerTargetView.alpha = 1.0;
+    }
     
     else
+    {
+        _digitizerTargetView.hidden = YES;
         _digitizerTargetView.alpha = 0.0;
+    }
     
     if (!_firstTimeAppear)
     {
@@ -574,7 +581,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [sewerData pickSewer:&llSewerPt
                       atZoom:_mapView.camera.zoom
                highlightList:highlightList];
-        [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
+        
+        [planData pickAlleyWallPoint:llpickPt
+                       highlightList:highlightList];
 
         if (highlightList.count)
         {
@@ -753,6 +762,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 [pd moveAlleyWallPoint:_selectedAlleyWallRefno
                                     to:position];
+                
+                MarkerButton *marker = _markerArray.lastObject;
+                marker.position = _infoWindow.position = position;
+                
+                marker.center = _digitizerTargetView.center;
+                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 
                 [self hideDigitizationMode];
                 
@@ -1886,6 +1901,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          self.tabBarController.tabBar.alpha = 0.0;
                          UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
                          _exitStreetView.hidden = NO;
+                     } completion:^(BOOL finished) {
+                         self.tabBarController.tabBar.hidden = YES;
                      }];
 }
 
@@ -2078,6 +2095,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _digitizerTargetView.center = CGPointMake(markerPosition.x,
                                               (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
     
+    _digitizerTargetView.hidden = NO;
+    _cancelDigitization.hidden = NO;
+    
     [UIView animateWithDuration:0.25
                      animations:^{
                          _digitizerTargetView.alpha = 1.0;
@@ -2091,6 +2111,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      animations:^{
                          _digitizerTargetView.alpha = 0.0;
                          _cancelDigitization.alpha = 0.0;
+                     } completion:^(BOOL finished) {
+                         _digitizerTargetView.hidden = YES;
+                         _cancelDigitization.hidden = YES;
                      }];
 }
 
@@ -2123,6 +2146,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)dismissStreetView:(id)sender
 {
+    self.tabBarController.tabBar.hidden = NO;
+    
     [UIView animateWithDuration:0.25
                      animations:^{
                          _streetView.frame = CGRectMake(_tableView.frame.origin.x,
