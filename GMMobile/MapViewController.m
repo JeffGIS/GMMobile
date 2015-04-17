@@ -313,7 +313,8 @@ extern int keepProcessing;
                                            [self statusBarHeight:self.interfaceOrientation]))
                                                              size:helpButtonSize
                                                              view:self.view
-                                                              tag:HelpButtonPresenterMapVC];
+                                                              tag:HelpButtonPresenterMapVC
+                                                           tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
 }
 
