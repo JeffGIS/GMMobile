@@ -3,6 +3,11 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
+typedef NS_ENUM(NSInteger, MapToolbarProp)
+{
+    MTPwantPlat, MTPwantDigitize, MTPwantMapType, MTPwantGPS, MTPwantExtents, MTPwantLegends, 
+};
+
 @class MapToolbar;
 
 @protocol MapToolbarDelegate <NSObject>
@@ -20,6 +25,8 @@
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 @property (nonatomic) NSInteger orientation;
+@property (atomic) BOOL configChanged;
+@property BOOL wantPlat, wantDigitize, wantMapType, wantGPS, wantExtents, wantLegends;
 
 - (void)deselectMyLocationButton;
 - (void)animateToVerticalOrientation;
@@ -29,6 +36,8 @@
 - (void)normalMode;
 - (void)hide;
 - (void)show;
+- (void)setConfiguration:(int)property value:(BOOL)value;
+- (void)configure;
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration
                   tabBarHeight:(CGFloat)tabBarHeight

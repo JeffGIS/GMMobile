@@ -5,6 +5,7 @@ extern int keepProcessing;
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
+#import "AppDelegate.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -291,6 +292,8 @@ extern int keepProcessing;
     
     _mapToolbar = [[MapToolbar alloc] init];
     _mapToolbar.delegate = self;
+    AppDelegate *sharedAppDelegate = [UIApplication sharedApplication].delegate;
+    sharedAppDelegate.mapToolbar = _mapToolbar;
     
     _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
                                      (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
@@ -442,6 +445,7 @@ extern int keepProcessing;
 {
     [super viewDidAppear:animated];
     
+    [_mapToolbar configure];
     if (_firstTimeAppear)
     {
         CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
