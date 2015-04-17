@@ -35,6 +35,7 @@ extern int keepProcessing;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall;
+@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
 @property (atomic) BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
@@ -629,6 +630,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
                     break;
             }
+            marker.refno = pi.refno;
             
             [_markerArray addObject:marker];
             
@@ -637,6 +639,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             _infoWindow.title = marker.title;
             _infoWindow.snippet = marker.snippet;
             _infoWindow.position = marker.position;
+            _infoWindow.refno = marker.refno;
             [self.view addSubview:_infoWindow];
             _noneSelected = NO;
         }
@@ -748,7 +751,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 PlanimetricData *pd = [[PlanimetricData alloc] init];
                 
-                [pd moveAlleyWallPoint:_selectedAlleyWall
+                [pd moveAlleyWallPoint:_selectedAlleyWallRefno
                                     to:position];
                 
                 [self hideDigitizationMode];
@@ -2824,6 +2827,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
+                                   refno:(NSInteger)refno
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type
 {
@@ -2858,7 +2862,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeAlleyWall:
             _selectedAlleyWall = title;
-            
+            _selectedAlleyWallRefno= refno;
             _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
                          @"Remove Alley Wall Marker"];
             

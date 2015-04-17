@@ -101,6 +101,7 @@
     if (_delegate)
     {
         [_delegate markerInfoWindowDidSelectOptions:_titleLabel.text
+                                              refno:_refno
                                              coords:_position
                                                type:_type];
     }
