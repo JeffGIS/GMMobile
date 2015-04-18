@@ -644,8 +644,10 @@
 
 - (void)configure
 {
-    //if (!_configChanged)
-        //return;
+    if (!_configChanged)
+        return;
+    
+    _configChanged = NO;
     
     CGFloat xCount = _buttonMargin;
     
