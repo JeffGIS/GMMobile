@@ -111,7 +111,7 @@
     
     [mt setupButton:mt.digitizeButton
          imageTitle:@"digitize"
-         edgeInsets:UIEdgeInsetsZero
+         edgeInsets:UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0)
              target:mt
            selector:@selector(digitizeSelected:)];
     
@@ -120,7 +120,7 @@
     mt.legendsButton = [[UIButton alloc] init];
     
     [mt setupButton:mt.legendsButton
-         imageTitle:@"legends"
+         imageTitle:@"list"
          edgeInsets:UIEdgeInsetsZero
              target:mt
            selector:@selector(legendsSelected:)];

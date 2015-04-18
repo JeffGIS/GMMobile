@@ -47,6 +47,7 @@
 		A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */; };
 		A9BC27F11A927D2B00FA89D8 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BC27F01A927D2B00FA89D8 /* help.png */; };
 		A9C086751AE173A900E79B3E /* applications.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C086741AE173A900E79B3E /* applications.png */; };
+		A9C086771AE2338000E79B3E /* digitize.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C086761AE2338000E79B3E /* digitize.png */; };
 		A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC11A7A8D9C0094562B /* userLocation.png */; };
 		A9C78BC41A7A8E590094562B /* zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC31A7A8E590094562B /* zoom.png */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
@@ -150,6 +151,7 @@
 		A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemesViewController.m; sourceTree = "<group>"; };
 		A9BC27F01A927D2B00FA89D8 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
 		A9C086741AE173A900E79B3E /* applications.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = applications.png; sourceTree = "<group>"; };
+		A9C086761AE2338000E79B3E /* digitize.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = digitize.png; sourceTree = "<group>"; };
 		A9C78BC11A7A8D9C0094562B /* userLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = userLocation.png; sourceTree = "<group>"; };
 		A9C78BC31A7A8E590094562B /* zoom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoom.png; sourceTree = "<group>"; };
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -250,6 +252,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9C086761AE2338000E79B3E /* digitize.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A97C62161AE0AD7900DA7738 /* greenHelpButton.png */,
 				A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */,
@@ -556,6 +559,7 @@
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
+				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
