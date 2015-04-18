@@ -12,7 +12,7 @@
 @property BOOL configChanged, myLocationEnabled, platMode;
 @property BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation, wantExtents, wantLegends, wantMarkerSwitch;
 @property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth;
-@property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, splitScreenSCWidth;
+@property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, platSCWidth;
 
 @end
 
@@ -32,13 +32,13 @@
     
     //set internal sizes for all devices
     mt.buttonSize = 47.0, mt.switchHeight = 31.0, mt.switchWidth = 51.0, mt.SCHeight = 29.0, mt.mapTypeSCWidth = 128.0;
-    mt.buttonMargin = 8.0, mt.switchMargin = 16.0, mt.SCMargin = 17.0, mt.splitScreenSCWidth = 196.0;
+    mt.buttonMargin = 8.0, mt.switchMargin = 16.0, mt.SCMargin = 17.0, mt.platSCWidth = 196.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         //reset internal sizes for iPhone
         mt.buttonSize = 39.0, mt.buttonMargin = 5.0, mt.switchMargin = 9.0, mt.SCMargin = 10.0;
-        mt.mapTypeSCWidth = 78.0, mt.splitScreenSCWidth = 166.0;
+        mt.mapTypeSCWidth = 78.0, mt.platSCWidth = 166.0;
     }
     
     //set default size for either iPhone or iPad
@@ -644,8 +644,128 @@
 
 - (void)configure
 {
-    if (!_configChanged)
-        return;
+    //if (!_configChanged)
+        //return;
+    
+    CGFloat xCount = _buttonMargin;
+    
+    if (_wantUserLocation)
+    {
+        _userLocationButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        
+        if (![self.subviews containsObject:_userLocationButton])
+            [self addSubview:_userLocationButton];
+        
+        xCount += (_buttonMargin + _buttonSize);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_userLocationButton])
+            [_userLocationButton removeFromSuperview];
+    }
+    
+    if (_wantExtents)
+    {
+        _extentsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        
+        if (![self.subviews containsObject:_extentsButton])
+            [self addSubview:_extentsButton];
+        
+        xCount += (_buttonMargin + _buttonSize);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_extentsButton])
+            [_extentsButton removeFromSuperview];
+    }
+    
+    if (_wantLegends)
+    {
+        _legendsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        
+        if (![self.subviews containsObject:_legendsButton])
+            [self addSubview:_legendsButton];
+        
+        xCount += (_buttonMargin + _buttonSize);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_legendsButton])
+            [_legendsButton removeFromSuperview];
+    }
+    
+    if (_wantDigitize)
+    {
+        _digitizeButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        
+        if (![self.subviews containsObject:_digitizeButton])
+            [self addSubview:_digitizeButton];
+        
+        xCount += (_buttonMargin + _buttonSize);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_digitizeButton])
+            [_digitizeButton removeFromSuperview];
+    }
+    
+    if (_wantMarkerSwitch)
+    {
+        _markerSwitch.frame = CGRectMake(xCount, _switchMargin, _switchWidth, _switchHeight);
+        
+        if (![self.subviews containsObject:_markerSwitch])
+            [self addSubview:_markerSwitch];
+        
+        xCount += (_buttonMargin + _switchWidth);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_markerSwitch])
+            [_markerSwitch removeFromSuperview];
+    }
+    
+    if (_wantMapType)
+    {
+        _mapTypeSC.frame = CGRectMake(xCount, _SCMargin, _mapTypeSCWidth, _SCHeight);
+        
+        if (![self.subviews containsObject:_mapTypeSC])
+            [self addSubview:_mapTypeSC];
+        
+        xCount += (_buttonMargin + _mapTypeSCWidth);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_mapTypeSC])
+            [_mapTypeSC removeFromSuperview];
+    }
+    
+    if (_wantPlat)
+    {
+        _platSC.frame = CGRectMake(xCount, _SCMargin, _platSCWidth, _SCHeight);
+        
+        if (![self.subviews containsObject:_platSC])
+            [self addSubview:_platSC];
+        
+        xCount += (_buttonMargin + _platSCWidth);
+    }
+    
+    else
+    {
+        if ([self.subviews containsObject:_platSC])
+            [_platSC removeFromSuperview];
+    }
+    
+    if (xCount < 20.0)
+        xCount = 0.0;
+    
+    self.frame = CGRectMake((self.center.x - (xCount / 2.0)),
+                            (self.center.y - (_size.height / 2.0)), xCount, _size.height);
     
     //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantUserLocation _wantLegends and _wantExtents
     //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
