@@ -8,8 +8,9 @@
 @property (nonatomic) UIButton *zoomExtent, *userLocation;
 @property (nonatomic) UISegmentedControl *mapType, *splitScreenSetting;
 @property (nonatomic) UISwitch *annotationOption;
-@property (nonatomic) BOOL myLocationEnabled, platMode;
 @property (nonatomic) CGSize size;
+@property BOOL configChanged, myLocationEnabled, platMode;
+@property BOOL wantPlat, wantDigitize, wantMapType, wantGPS, wantExtents, wantLegends, wantMarkerSwitch;
 
 @end
 
@@ -27,14 +28,15 @@
         else
             _size = CGSizeMake(517.0, 63.0);
         
-        self.wantPlat = NO;
-        self.wantDigitize = NO;
-        self.wantMapType = NO;
-        self.wantGPS = YES;
-        self.wantExtents = YES;
-        self.wantLegends = NO;
+        _wantGPS = YES;
+        _wantExtents = YES;
+        _wantMarkerSwitch = YES;
+        _wantPlat = NO;
+        _wantDigitize = NO;
+        _wantMapType = NO;
+        _wantLegends = NO;
+        _configChanged = NO;
         
-        self.opaque = NO;
         self.backgroundColor = UserDefaults.defaults.appleBlue;
         self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
         self.layer.borderWidth = 2.0;
@@ -524,27 +526,76 @@
                      }];
 }
 
-- (void)setConfiguration:(int)property value:(BOOL)value
+- (void)setConfigurationProperty:(MapToolbarProperty)property
+                           value:(BOOL)value
 {
     switch (property)
     {
-        case MTPwantPlat:
-            _wantPlat = value;
+        case MapToolbarPropertyWantPlat:
+            if (_wantPlat != value)
+            {
+                _configChanged = YES;
+                _wantPlat = value;
+            }
+            
             break;
-        case MTPwantDigitize:
-            _wantDigitize = value;
+            
+        case MapToolbarPropertyWantDigitize:
+            if (_wantDigitize != value)
+            {
+                _configChanged = YES;
+                _wantDigitize = value;
+            }
+            
             break;
-        case MTPwantMapType:
-            _wantMapType = value;
+            
+        case MapToolbarPropertyWantMapType:
+            if (_wantMapType != value)
+            {
+                _configChanged = YES;
+                _wantMapType = value;
+            }
+            
             break;
-        case MTPwantGPS:
-            _wantGPS = value;
+            
+        case MapToolbarPropertyWantGPS:
+            if (_wantGPS != value)
+            {
+                _configChanged = YES;
+                _wantGPS = value;
+            }
+            
             break;
-        case MTPwantExtents:
-            _wantExtents = value;
+            
+        case MapToolbarPropertyWantExtents:
+            if (_wantExtents != value)
+            {
+                _configChanged = YES;
+                _wantExtents = value;
+            }
+            
             break;
-        case MTPwantLegends:
-            _wantLegends = value;
+            
+        case MapToolbarPropertyWantLegends:
+            if (_wantLegends != value)
+            {
+                _configChanged = YES;
+                _wantLegends = value;
+            }
+            
+            break;
+            
+        case MapToolbarPropertyWantMarkerSwitch:
+            if (_wantMarkerSwitch != value)
+            {
+                _configChanged = YES;
+                _wantMarkerSwitch = value;
+            }
+            
+            break;
+            
+        case MapToolbarPropertyWantDefault:
+            NSLog(@"ERROR: No MapToolbar Property Type");
             break;
     }
 }
@@ -553,6 +604,7 @@
 {
     if (!_configChanged)
         return;
+    
     //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantGPS _wantLegends and _wantExtents
     //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
 }
