@@ -25,6 +25,7 @@
 + (MarkerButton *)markerWithPosition:(CLLocationCoordinate2D)position
                                 view:(UIView *)view
                                  map:(GMSMapView *)map
+                     statusBarHeight:(CGFloat)statusBarHeight
                             delegate:(id)delegate;
 
 @end

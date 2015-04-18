@@ -436,6 +436,7 @@ extern int keepProcessing;
         MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
                                                            view:self.view
                                                             map:_mapView
+                                                statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
                                                        delegate:self];
         
         [self removePreviousInfoWindow];
@@ -601,7 +602,7 @@ extern int keepProcessing;
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    if (_digitizationMode)
+    if (CRAPI.sharedInstance.inDigitizeMode)
         return;
     
     if (!_tableView.hidden)
@@ -675,6 +676,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
                                                                view:self.view
                                                                 map:_mapView
+                                                    statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
                                                            delegate:self];
             
             [self removePreviousInfoWindow];
@@ -785,7 +787,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _mapView.settings.scrollGestures = YES;
         _digitizerTargetView.image = _blackCrosshairs;
         
-        CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:_digitizerTargetView.center];
+        CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
+                                              (_digitizerTargetView.center.y -
+                                               [self statusBarHeight:self.interfaceOrientation]));
+        
+        CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
         
         switch (_digitizationMode)
         {
@@ -796,6 +802,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view
                                                                     map:_mapView
+                                                        statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
                                                                delegate:self];
                 
                 [self removePreviousInfoWindow];
@@ -829,7 +836,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 MarkerButton *marker = _markerArray.lastObject;
                 marker.position = _infoWindow.position = position;
                 
-                marker.center = _digitizerTargetView.center;
+                marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                            (_digitizerTargetView.center.y -
+                                             (marker.frame.size.height / 2.0)));
+                
                 _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 
                 [UIView animateWithDuration:0.25
@@ -1091,7 +1101,10 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     for (MarkerButton *markers in _markerArray)
     {
         CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
-        markers.center = target;
+        
+        markers.center = CGPointMake(target.x,
+                                     ((target.y + [self statusBarHeight:self.interfaceOrientation]) -
+                                      (markers.frame.size.height / 2.0)));
     }
     
     MarkerButton *marker = _markerArray.lastObject;
