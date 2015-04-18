@@ -9,10 +9,19 @@ typedef NS_ENUM(NSInteger, MapToolbarProperty)
     MapToolbarPropertyWantPlat,
     MapToolbarPropertyWantDigitize,
     MapToolbarPropertyWantMapType,
-    MapToolbarPropertyWantGPS,
+    MapToolbarPropertyWantUserLocation,
     MapToolbarPropertyWantExtents,
     MapToolbarPropertyWantLegends,
     MapToolbarPropertyWantMarkerSwitch,
+};
+
+typedef NS_ENUM(NSInteger, MapToolbarOrientation)
+{
+    MapToolbarOrientationDefault,
+    MapToolbarOrientationTop,
+    MapToolbarOrientationBottom,
+    MapToolbarOrientationLeft,
+    MapToolbarOrientationRight,
 };
 
 @class MapToolbar;
@@ -23,7 +32,9 @@ typedef NS_ENUM(NSInteger, MapToolbarProperty)
 - (void)mapToolbarDidSelectZoomExtent;
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType;
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting;
-- (void)mapToolbarDidSelectAnnotationOption:(BOOL)option;
+- (void)mapToolbarDidSelectMarkerSwitch:(BOOL)option;
+- (void)mapToolbarDidSelectDigitize;
+- (void)mapToolbarDidSelectLegends;
 - (void)mapToolbarDidFinishDrag;
 
 @end
@@ -31,7 +42,12 @@ typedef NS_ENUM(NSInteger, MapToolbarProperty)
 @interface MapToolbar : UIView <UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
-@property (nonatomic) NSInteger orientation;
+@property (nonatomic) MapToolbarOrientation orientation;
+
++ (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
+                                   view:(UIView *)view
+                                delegate:(id)delegate
+                             orientation:(MapToolbarOrientation)orientation;
 
 - (void)deselectMyLocationButton;
 - (void)animateToVerticalOrientation;

@@ -5,149 +5,171 @@
 
 @interface MapToolbar ()
 
-@property (nonatomic) UIButton *zoomExtent, *userLocation;
-@property (nonatomic) UISegmentedControl *mapType, *splitScreenSetting;
-@property (nonatomic) UISwitch *annotationOption;
+@property (nonatomic) UIButton *extentsButton, *userLocationButton, *legendsButton, *digitizeButton;
+@property (nonatomic) UISegmentedControl *mapTypeSC, *platSC;
+@property (nonatomic) UISwitch *markerSwitch;
 @property (nonatomic) CGSize size;
 @property BOOL configChanged, myLocationEnabled, platMode;
-@property BOOL wantPlat, wantDigitize, wantMapType, wantGPS, wantExtents, wantLegends, wantMarkerSwitch;
+@property BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation, wantExtents, wantLegends, wantMarkerSwitch;
+@property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth;
+@property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, splitScreenSCWidth;
 
 @end
 
 @implementation MapToolbar
 
-- (id)init
++ (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
+                                    view:(UIView *)view
+                                delegate:(id)delegate
+                             orientation:(MapToolbarOrientation)orientation;
 {
-    self = [super init];
+    MapToolbar *mt = [[MapToolbar alloc] init];
+    mt.configChanged = NO;
     
-    if (self)
+    //set default configuration
+    mt.wantUserLocation = mt.wantExtents = mt.wantMarkerSwitch = YES;
+    mt.wantPlat = mt.wantDigitize = mt.wantMapType = mt.wantLegends = NO;
+    
+    //set internal sizes for all devices
+    mt.buttonSize = 47.0, mt.switchHeight = 31.0, mt.switchWidth = 51.0, mt.SCHeight = 29.0, mt.mapTypeSCWidth = 128.0;
+    mt.buttonMargin = 8.0, mt.switchMargin = 16.0, mt.SCMargin = 17.0, mt.splitScreenSCWidth = 196.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            _size = CGSizeMake(232.0, 83.0);
-        
-        else
-            _size = CGSizeMake(517.0, 63.0);
-        
-        _wantGPS = YES;
-        _wantExtents = YES;
-        _wantMarkerSwitch = YES;
-        _wantPlat = NO;
-        _wantDigitize = NO;
-        _wantMapType = NO;
-        _wantLegends = NO;
-        _configChanged = NO;
-        
-        self.backgroundColor = UserDefaults.defaults.appleBlue;
-        self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
-        self.layer.borderWidth = 2.0;
-        self.layer.borderColor = UIColor.blackColor.CGColor;
-        
-        CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
-        CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 196.0;
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        {
-            buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
-            mtscWidth = 78.0, ssscWidth = 166.0;
-            _mapType = [[UISegmentedControl alloc] initWithItems:@[@"Stnd", @"Hybd"]];
-        }
-        
-        else
-            _mapType = [[UISegmentedControl alloc] initWithItems:@[@"Standard", @"Hybrid"]];
-        
-        _userLocation = [[UIButton alloc] initWithFrame:CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize)];
-        
-        [_userLocation setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"userLocation"
-                                                                                               ofType:@"png"]]
-                       forState:UIControlStateNormal];
-        
-        [_userLocation addTarget:self
-                          action:@selector(userLocationSelected:)
-                forControlEvents:UIControlEventTouchUpInside];
-        
-        _userLocation.imageEdgeInsets = UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0);
-        [self formatButton:_userLocation];
-        [self addSubview:_userLocation];
-        
-        _zoomExtent = [[UIButton alloc] initWithFrame:CGRectMake((buttonSize + (buttonMargin * 2.0)),
-                                                                 buttonMargin, buttonSize, buttonSize)];
-        
-        [_zoomExtent setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"zoom"
-                                                                                             ofType:@"png"]]
-                     forState:UIControlStateNormal];
-        
-        [_zoomExtent addTarget:self
-                        action:@selector(zoomExtentSelected:)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        _zoomExtent.imageEdgeInsets = UIEdgeInsetsMake(-2.0, -2.0, -2.0, -2.0);
-        [self formatButton:_zoomExtent];
-        [self addSubview:_zoomExtent];
-        
-        _annotationOption = [[UISwitch alloc] initWithFrame:CGRectMake(((buttonSize * 2.0) + (buttonMargin * 3.0)),
-                                                                       switchMargin, switchWidth, switchHeight)];
-        
-        [_annotationOption addTarget:self
-                              action:@selector(annotationOptionSelected:)
-                    forControlEvents:UIControlEventValueChanged];
-        
-        _annotationOption.on = YES;
-        _annotationOption.tintColor = UIColor.redColor;
-        [self addSubview:_annotationOption];
-        
-        _mapType.selectedSegmentIndex = 0;
-        
-        _mapType.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
-                                    segControlMargin, mtscWidth, segControlHeight);
-        
-        [_mapType addTarget:self
-                     action:@selector(mapTypeSelected:)
-           forControlEvents:UIControlEventValueChanged];
-        
-        [self formatSegControl:_mapType];
-        [self addSubview:_mapType];
-        
-        _splitScreenSetting = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Plat"]];
-        _splitScreenSetting.selectedSegmentIndex = MapViewScreenSettingFullscreen;
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        {
-            _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
-                                                   (_size.width - (buttonMargin * 2.0)), segControlHeight);
-        }
-        
-        else
-        {
-            _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
-                                                   segControlMargin, ssscWidth, segControlHeight);
-        }
-        
-        [_splitScreenSetting addTarget:self
-                                action:@selector(splitScreenSettingSelected:)
-                      forControlEvents:UIControlEventValueChanged];
-        
-        [self formatSegControl:_splitScreenSetting];
-        [self addSubview:_splitScreenSetting];
-        
-        UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self
-                                                                                     action:@selector(mapToolbarDragged:)];
-        
-        panGesture.delegate = self;
-        [self addGestureRecognizer:panGesture];
+        //reset internal sizes for iPhone
+        mt.buttonSize = 39.0, mt.buttonMargin = 5.0, mt.switchMargin = 9.0, mt.SCMargin = 10.0;
+        mt.mapTypeSCWidth = 78.0, mt.splitScreenSCWidth = 166.0;
     }
     
-    return self;
+    //set default size for either iPhone or iPad
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        mt.size = CGSizeMake(149.0, 49.0);
+    
+    else
+        mt.size = CGSizeMake(177.0, 63.0);
+    
+    mt.backgroundColor = UserDefaults.defaults.appleBlue;
+    mt.frame = CGRectMake(0.0, 0.0, mt.size.width, mt.size.height);
+    mt.center = center;
+    mt.layer.borderWidth = 2.0;
+    mt.layer.borderColor = UIColor.blackColor.CGColor;
+    mt.delegate = delegate;
+    
+    [view addSubview:mt];
+    
+    mt.userLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(mt.buttonMargin, mt.buttonMargin,
+                                                                       mt.buttonSize, mt.buttonSize)];
+    
+    [mt setupButton:mt.userLocationButton
+         imageTitle:@"userLocation"
+         edgeInsets:UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0)
+             target:mt
+           selector:@selector(userLocationSelected:)];
+
+    //add user location button by default
+    [mt addSubview:mt.userLocationButton];
+    
+    mt.extentsButton = [[UIButton alloc] initWithFrame:CGRectMake((mt.buttonSize + (mt.buttonMargin * 2.0)),
+                                                                  mt.buttonMargin, mt.buttonSize, mt.buttonSize)];
+    
+    [mt setupButton:mt.extentsButton
+         imageTitle:@"zoom"
+         edgeInsets:UIEdgeInsetsMake(-2.0, -2.0, -2.0, -2.0)
+             target:mt
+           selector:@selector(extentsSelected:)];
+  
+    //add extents button by default
+    [mt addSubview:mt.extentsButton];
+    
+    mt.markerSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(((mt.buttonSize * 2.0) + (mt.buttonMargin * 3.0)),
+                                                                 mt.switchMargin, mt.switchWidth, mt.switchHeight)];
+    
+    [mt.markerSwitch addTarget:mt
+                        action:@selector(markerSwitchSelected:)
+              forControlEvents:UIControlEventValueChanged];
+    
+    mt.markerSwitch.on = YES;
+    mt.markerSwitch.tintColor = UIColor.redColor;
+    
+    //add marker switch by default
+    [mt addSubview:mt.markerSwitch];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        mt.mapTypeSC = [[UISegmentedControl alloc] initWithItems:@[@"Stnd", @"Hybd"]];
+    
+    else
+        mt.mapTypeSC = [[UISegmentedControl alloc] initWithItems:@[@"Standard", @"Hybrid"]];
+    
+    [mt setupSegControl:mt.mapTypeSC
+   selectedSegmentIndex:0
+                 target:mt
+               selector:@selector(mapTypeSelected:)];
+    
+    //map type SC is NOT added by default
+    
+    mt.digitizeButton = [[UIButton alloc] init];
+    
+    [mt setupButton:mt.digitizeButton
+         imageTitle:@"digitize"
+         edgeInsets:UIEdgeInsetsZero
+             target:mt
+           selector:@selector(digitizeSelected:)];
+    
+    //digitize button is NOT added by default
+    
+    mt.legendsButton = [[UIButton alloc] init];
+    
+    [mt setupButton:mt.legendsButton
+         imageTitle:@"legends"
+         edgeInsets:UIEdgeInsetsZero
+             target:mt
+           selector:@selector(legendsSelected:)];
+    
+    //legends button is NOT added by default
+    
+    mt.platSC = [[UISegmentedControl alloc] initWithItems:@[@"Full", @"Split", @"Tri", @"Plat"]];
+    
+    [mt setupSegControl:mt.platSC
+   selectedSegmentIndex:MapViewScreenSettingFullscreen
+                 target:mt
+               selector:@selector(splitScreenSettingSelected:)];
+    
+    //plat SC is NOT added by default
+    
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:mt
+                                                                                 action:@selector(mapToolbarDragged:)];
+    
+    panGesture.delegate = mt;
+    [mt addGestureRecognizer:panGesture];
+    
+    return mt;
 }
 
-- (void)formatButton:(UIButton *)button
+- (void)setupButton:(UIButton *)button
+         imageTitle:(NSString *)imageTitle
+         edgeInsets:(UIEdgeInsets)edgeInsets
+             target:(id)target
+           selector:(SEL)selector
 {
+    button.imageEdgeInsets = edgeInsets;
     button.backgroundColor = UIColor.whiteColor;
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UIColor.blackColor.CGColor;
     button.layer.borderWidth = 2.0;
+    
+    [button setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:imageTitle
+                                                                                    ofType:@"png"]]
+            forState:UIControlStateNormal];
+    
+    [button addTarget:target
+               action:selector
+     forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void)formatSegControl:(UISegmentedControl *)segControl
+- (void)setupSegControl:(UISegmentedControl *)segControl
+   selectedSegmentIndex:(NSInteger)selectedSegmentIndex
+                 target:(id)target
+               selector:(SEL)selector
 {
     segControl.backgroundColor = UIColor.whiteColor;
     segControl.tintColor = UIColor.blackColor;
@@ -155,6 +177,11 @@
     segControl.layer.borderColor = UIColor.blackColor.CGColor;
     segControl.layer.borderWidth = 2.0;
     segControl.layer.masksToBounds = YES;
+    segControl.selectedSegmentIndex = MapViewScreenSettingFullscreen;
+    
+    [segControl addTarget:target
+                   action:selector
+         forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)userLocationSelected:(UIButton *)button
@@ -162,10 +189,10 @@
     _myLocationEnabled = !_myLocationEnabled;
     
     if (_myLocationEnabled)
-        _userLocation.backgroundColor = UIColor.greenColor;
+        _userLocationButton.backgroundColor = UIColor.greenColor;
     
     else
-        _userLocation.backgroundColor = UIColor.whiteColor;
+        _userLocationButton.backgroundColor = UIColor.whiteColor;
     
     if (_delegate)
         [_delegate mapToolbarDidSelectUserLocation:_myLocationEnabled];
@@ -173,26 +200,38 @@
 
 - (void)deselectMyLocationButton
 {
-    _userLocation.backgroundColor = UIColor.whiteColor;
+    _userLocationButton.backgroundColor = UIColor.whiteColor;
     _myLocationEnabled = NO;
 }
 
-- (void)zoomExtentSelected:(UIButton *)button
+- (void)extentsSelected:(UIButton *)button
 {
     if (_delegate)
         [_delegate mapToolbarDidSelectZoomExtent];
 }
 
-- (void)annotationOptionSelected:(UISwitch *)annotationSwitch
+- (void)markerSwitchSelected:(UISwitch *)markerSwitch
 {
     if (_delegate)
-        [_delegate mapToolbarDidSelectAnnotationOption:annotationSwitch.on];
+        [_delegate mapToolbarDidSelectMarkerSwitch:markerSwitch.on];
 }
 
 - (void)mapTypeSelected:(UISegmentedControl *)segControl
 {
     if (_delegate)
         [_delegate mapToolbarDidSelectMapType:segControl.selectedSegmentIndex];
+}
+
+- (void)digitizeSelected:(UIButton *)button
+{
+    if (_delegate)
+        [_delegate mapToolbarDidSelectDigitize];
+}
+
+- (void)legendsSelected:(UIButton *)button
+{
+    if (_delegate)
+        [_delegate mapToolbarDidSelectLegends];
 }
 
 - (void)splitScreenSettingSelected:(UISegmentedControl *)segControl
@@ -235,63 +274,63 @@
     if (_platMode)
     {
         self.frame = CGRectMake(0.0, 0.0, frameHeight,
-                                (_splitScreenSetting.frame.size.height + (buttonMargin * 2.0)));
+                                (_platSC.frame.size.height + (buttonMargin * 2.0)));
     }
     
     else
     {
         self.frame = CGRectMake(0.0, 0.0, frameHeight,
                                 ((buttonSize * 2.0) + (buttonMargin * 6.0) +
-                                 _annotationOption.frame.size.height + (_mapType.frame.size.height * 2.0)));
+                                 _markerSwitch.frame.size.height + (_mapTypeSC.frame.size.height * 2.0)));
     }
     
-    CGFloat switchMargin = ((self.frame.size.width - _annotationOption.frame.size.width) / 2.0);
+    CGFloat switchMargin = ((self.frame.size.width - _markerSwitch.frame.size.width) / 2.0);
     CGFloat buttonSideMargin = ((self.frame.size.width - buttonSize) / 2.0);
     CGFloat scWidth = (self.frame.size.width - (buttonMargin * 1.6));
     
-    _userLocation.frame = CGRectMake(buttonSideMargin, buttonMargin, buttonSize, buttonSize);
+    _userLocationButton.frame = CGRectMake(buttonSideMargin, buttonMargin, buttonSize, buttonSize);
     
-    _zoomExtent.frame = CGRectMake(buttonSideMargin, (buttonSize + (buttonMargin * 2.0)),
+    _extentsButton.frame = CGRectMake(buttonSideMargin, (buttonSize + (buttonMargin * 2.0)),
                                    buttonSize, buttonSize);
     
-    _annotationOption.frame = CGRectMake(switchMargin, ((buttonSize * 2.0) + (buttonMargin * 3.0)),
-                                         _annotationOption.frame.size.width, _annotationOption.frame.size.height);
+    _markerSwitch.frame = CGRectMake(switchMargin, ((buttonSize * 2.0) + (buttonMargin * 3.0)),
+                                     _markerSwitch.frame.size.width, _markerSwitch.frame.size.height);
     
-    _mapType.frame = CGRectMake((buttonMargin / 1.6),
-                                ((buttonSize * 2.0) + (buttonMargin * 4.0) + _annotationOption.frame.size.height),
-                                scWidth, _mapType.frame.size.height);
+    _mapTypeSC.frame = CGRectMake((buttonMargin / 1.6),
+                                  ((buttonSize * 2.0) + (buttonMargin * 4.0) + _markerSwitch.frame.size.height),
+                                  scWidth, _mapTypeSC.frame.size.height);
     
-    [_mapType setTitle:@"Stnd"
-     forSegmentAtIndex:0];
+    [_mapTypeSC setTitle:@"Stnd"
+       forSegmentAtIndex:0];
     
-    [_mapType setTitle:@"Hybd"
-     forSegmentAtIndex:1];
+    [_mapTypeSC setTitle:@"Hybd"
+       forSegmentAtIndex:1];
     
     if (_platMode)
     {
-        _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6), buttonMargin,
-                                               scWidth, _splitScreenSetting.frame.size.height);
+        _platSC.frame = CGRectMake((buttonMargin / 1.6), buttonMargin,
+                                          scWidth, _platSC.frame.size.height);
     }
     
     else
     {
-        _splitScreenSetting.frame = CGRectMake((buttonMargin / 1.6),
-                                               ((buttonSize * 2.0) + (buttonMargin * 5.0) +
-                                                _annotationOption.frame.size.height + _mapType.frame.size.height),
-                                               scWidth, _splitScreenSetting.frame.size.height);
+        _platSC.frame = CGRectMake((buttonMargin / 1.6),
+                                          ((buttonSize * 2.0) + (buttonMargin * 5.0) +
+                                           _markerSwitch.frame.size.height + _mapTypeSC.frame.size.height),
+                                          scWidth, _platSC.frame.size.height);
     }
     
-    [_splitScreenSetting setTitle:@"F"
-                forSegmentAtIndex:0];
+    [_platSC setTitle:@"F"
+           forSegmentAtIndex:0];
     
-    [_splitScreenSetting setTitle:@"S"
-                forSegmentAtIndex:1];
+    [_platSC setTitle:@"S"
+           forSegmentAtIndex:1];
     
-    [_splitScreenSetting setTitle:@"T"
-                forSegmentAtIndex:2];
+    [_platSC setTitle:@"T"
+           forSegmentAtIndex:2];
     
-    [_splitScreenSetting setTitle:@"P"
-                forSegmentAtIndex:3];
+    [_platSC setTitle:@"P"
+           forSegmentAtIndex:3];
 }
 
 - (void)animateToHorizontalOrientation
@@ -306,35 +345,35 @@
         
         if (_platMode)
         {
-            _splitScreenSetting.frame = CGRectMake(buttonMargin, buttonMargin,
-                                                   (_size.width - (buttonMargin * 2.0)), segControlHeight);
+            _platSC.frame = CGRectMake(buttonMargin, buttonMargin,
+                                              (_size.width - (buttonMargin * 2.0)), segControlHeight);
         }
         
         else
         {
-            _splitScreenSetting.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
-                                                   (_size.width - (buttonMargin * 2.0)), segControlHeight);
+            _platSC.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
+                                              (_size.width - (buttonMargin * 2.0)), segControlHeight);
         }
     }
     
     else
     {
-        [_mapType setTitle:@"Standard"
-         forSegmentAtIndex:0];
+        [_mapTypeSC setTitle:@"Standard"
+           forSegmentAtIndex:0];
         
-        [_mapType setTitle:@"Hybrid"
-         forSegmentAtIndex:1];
+        [_mapTypeSC setTitle:@"Hybrid"
+           forSegmentAtIndex:1];
         
         if (_platMode)
         {
-            _splitScreenSetting.frame = CGRectMake(buttonMargin, segControlMargin,
-                                                   ssscWidth, segControlHeight);
+            _platSC.frame = CGRectMake(buttonMargin, segControlMargin,
+                                              ssscWidth, segControlHeight);
         }
         
         else
         {
-            _splitScreenSetting.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
-                                                   segControlMargin, ssscWidth, segControlHeight);
+            _platSC.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
+                                              segControlMargin, ssscWidth, segControlHeight);
         }
     }
     
@@ -342,13 +381,13 @@
     {
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         {
-            self.frame = CGRectMake(0.0, 0.0, _splitScreenSetting.frame.size.width + (buttonMargin * 2.0),
-                                    _splitScreenSetting.frame.size.height + (buttonMargin * 2.0));
+            self.frame = CGRectMake(0.0, 0.0, _platSC.frame.size.width + (buttonMargin * 2.0),
+                                    _platSC.frame.size.height + (buttonMargin * 2.0));
         }
         
         else
         {
-            self.frame = CGRectMake(0.0, 0.0, _splitScreenSetting.frame.size.width +
+            self.frame = CGRectMake(0.0, 0.0, _platSC.frame.size.width +
                                     (buttonMargin * 2.0),  _size.height);
         }
     }
@@ -356,43 +395,43 @@
     else
         self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
     
-    _userLocation.frame = CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize);
+    _userLocationButton.frame = CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize);
     
-    _zoomExtent.frame = CGRectMake((buttonSize + (buttonMargin * 2.0)),
-                                   buttonMargin, buttonSize, buttonSize);
+    _extentsButton.frame = CGRectMake((buttonSize + (buttonMargin * 2.0)),
+                                         buttonMargin, buttonSize, buttonSize);
     
-    _annotationOption.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 3.0)),
-                                         switchMargin, switchWidth, switchHeight);
+    _markerSwitch.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 3.0)),
+                                     switchMargin, switchWidth, switchHeight);
     
-    _mapType.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
-                                segControlMargin, mtscWidth, segControlHeight);
+    _mapTypeSC.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
+                                  segControlMargin, mtscWidth, segControlHeight);
     
-    [_splitScreenSetting setTitle:@"Full"
-                forSegmentAtIndex:0];
+    [_platSC setTitle:@"Full"
+           forSegmentAtIndex:0];
     
-    [_splitScreenSetting setTitle:@"Split"
-                forSegmentAtIndex:1];
+    [_platSC setTitle:@"Split"
+           forSegmentAtIndex:1];
     
-    [_splitScreenSetting setTitle:@"Tri"
-                forSegmentAtIndex:2];
+    [_platSC setTitle:@"Tri"
+           forSegmentAtIndex:2];
     
-    [_splitScreenSetting setTitle:@"Plat"
-                forSegmentAtIndex:3];
+    [_platSC setTitle:@"Plat"
+           forSegmentAtIndex:3];
 }
 
 - (void)splitScreenSelectedSegmentIndex:(NSInteger)index
 {
-    _splitScreenSetting.selectedSegmentIndex = index;
+    _platSC.selectedSegmentIndex = index;
 }
 
 - (void)platViewMode
 {
     CGFloat height = self.frame.size.height;
     CGPoint center = self.center;
-    _userLocation.hidden = YES;
-    _zoomExtent.hidden = YES;
-    _annotationOption.hidden = YES;
-    _mapType.hidden = YES;
+    _userLocationButton.hidden = YES;
+    _extentsButton.hidden = YES;
+    _markerSwitch.hidden = YES;
+    _mapTypeSC.hidden = YES;
     _platMode = YES;
     
     [self orientToolbar];
@@ -419,10 +458,10 @@
 {
     CGFloat height = self.frame.size.height;
     CGPoint center = self.center;
-    _userLocation.hidden = NO;
-    _zoomExtent.hidden = NO;
-    _annotationOption.hidden = NO;
-    _mapType.hidden = NO;
+    _userLocationButton.hidden = NO;
+    _extentsButton.hidden = NO;
+    _markerSwitch.hidden = NO;
+    _mapTypeSC.hidden = NO;
     _platMode = NO;
     
     [self orientToolbar];
@@ -507,6 +546,9 @@
                              }];
         }
             break;
+            
+        case MapToolbarOrientationDefault:
+            break;
     }
 }
 
@@ -558,11 +600,11 @@
             
             break;
             
-        case MapToolbarPropertyWantGPS:
-            if (_wantGPS != value)
+        case MapToolbarPropertyWantUserLocation:
+            if (_wantUserLocation != value)
             {
                 _configChanged = YES;
-                _wantGPS = value;
+                _wantUserLocation = value;
             }
             
             break;
@@ -605,7 +647,7 @@
     if (!_configChanged)
         return;
     
-    //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantGPS _wantLegends and _wantExtents
+    //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantUserLocation _wantLegends and _wantExtents
     //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
 }
 

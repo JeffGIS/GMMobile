@@ -17,8 +17,8 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property (nonatomic) BOOL clearAnnotations, clearWhenDeselected, initialZoom, rotateZoom;
-@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
+@property BOOL clearMarkers, clearWhenDeselected, initialZoom, rotateZoom;
+@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews, vectorViewZoom;
@@ -37,7 +37,7 @@ extern int keepProcessing;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
-@property (atomic) BOOL waitForVectorViewRefresh;
+@property BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -306,18 +306,16 @@ extern int keepProcessing;
     
     [self setupTableView];
     
-    _mapToolbar = [[MapToolbar alloc] init];
-    _mapToolbar.delegate = self;
-    AppDelegate *sharedAppDelegate = [UIApplication sharedApplication].delegate;
+    CGPoint mapToolbarCenter = CGPointMake((self.view.frame.size.width / 2.0),
+                                           (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+    
+    _mapToolbar = [MapToolbar showMapToolbarWithCenter:mapToolbarCenter
+                                                  view:self.view
+                                              delegate:self
+                                           orientation:MapToolbarOrientationTop];
+    
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     sharedAppDelegate.mapToolbar = _mapToolbar;
-    
-    _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
-                                     (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
-    
-    _mapToolbar.orientation = MapToolbarOrientationTop;
-    
-    [self.view addSubview:_mapToolbar];
-    
     
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
                               CGPointMake(helpButtonMargin, (helpButtonMargin +
@@ -417,7 +415,7 @@ extern int keepProcessing;
         
         [_mapView animateToCameraPosition:camera];
         
-        if (_clearAnnotations)
+        if (_clearMarkers)
         {
             for (MarkerButton *markers in _markerArray)
                 [markers removeFromSuperview];
@@ -652,7 +650,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
         if (highlightList.count)
         {
-            if (_clearAnnotations)
+            if (_clearMarkers)
             {
                 for (MarkerButton *markers in _markerArray)
                     [markers removeFromSuperview];
@@ -2595,10 +2593,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToBearing:newHeading.trueHeading];
 }
 
-- (void)mapToolbarDidSelectAnnotationOption:(BOOL)option
+- (void)mapToolbarDidSelectMarkerSwitch:(BOOL)option
 {
     if (option)
-        _clearAnnotations = NO;
+        _clearMarkers = NO;
     
     else
     {
@@ -2607,8 +2605,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         
         [_markerArray removeAllObjects];
         [self removePreviousInfoWindow];
-        _clearAnnotations = YES;
+        _clearMarkers = YES;
     }
+}
+
+- (void)mapToolbarDidSelectDigitize
+{
+    //implement digitize here
+}
+
+- (void)mapToolbarDidSelectLegends
+{
+    //implement legends here
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
