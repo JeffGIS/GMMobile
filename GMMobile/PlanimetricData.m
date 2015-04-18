@@ -447,30 +447,6 @@ extern int keepProcessing;
     return npicked;
 }
 
-- (BOOL)moveAlleyWallPoint:(NSInteger)refno
-                        to:(CLLocationCoordinate2D)point
-{
-    BOOL rtn = FALSE;
-    PropertyData *pd = [[PropertyData alloc] init];
-    [pd open];
-    
-    // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
-    //                    iTime, refno];
-    NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%ld",
-                       point.latitude,point.longitude, refno];
-    rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
-    
-    if (!rtn)
-    {
-        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f,minX=%f,maxY=%f,maxX=%f WHERE ALLEYWALLS_index.id=%ld",
-                 point.latitude,point.longitude, point.latitude,point.longitude, refno];
-        rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
-    }
-    
-    [pd close];
-    return !rtn;
-}
-
 - (int)addAlleyWallPoint:(LLPOINT)point
 {
     int newRefno;
@@ -589,9 +565,36 @@ extern int keepProcessing;
     return symList;
 }
 
+- (BOOL)moveAlleyWallPoint:(NSInteger)refno
+                        to:(CLLocationCoordinate2D)point
+{
+    BOOL rtn = FALSE;
+    NSString * query;
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    
+    //rtn = sqlite3_exec(pd.database,"CREATE TABLE IF NOT EXISTS MOVEWALLPTUNDO ('id','LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))", NULL, NULL, NULL);
+    // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
+    //                    iTime, refno];
+    query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%ld",
+                       point.latitude,point.longitude, refno];
+    rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    
+    if (!rtn)
+    {
+        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f,minX=%f,maxY=%f,maxX=%f WHERE ALLEYWALLS_index.id=%ld",
+                 point.latitude,point.longitude, point.latitude,point.longitude, refno];
+        rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+    }
+    
+    [pd close];
+    return !rtn;
+}
+
 - (void)userSavedAlleyWallPointMove:(BOOL)saved
 {
-    
+    int ii=1;
+    ii=2;
 }
 
 @end

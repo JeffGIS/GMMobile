@@ -16,6 +16,7 @@
 - (IBAction)loadPlats:(id)sender;
 - (IBAction)loadPlan:(id)sender;
 - (IBAction)loadCensus:(id)sender;
+- (IBAction)showSpreadsheetView:(id)sender;
 
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
