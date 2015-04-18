@@ -2,21 +2,22 @@
 //  GMMobile
 
 #import "ThemesViewController.h"
+#import "ConfigurationControl.h"
 
 @interface ThemesViewController ()
 
-@property (nonatomic) NSArray *themesList;
 
 @end
 
 @implementation ThemesViewController
+{
+    NSArray * _apList;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    _themesList = @[@"Theme 1", @"Theme 2", @"Theme 3", @"Theme 4"];
-    
+    _apList = [ConfigurationControl sharedInstance].apList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
 }
@@ -50,7 +51,7 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return _themesList.count;
+    return [[ConfigurationControl sharedInstance].apList count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -65,9 +66,10 @@
                                       reuseIdentifier:@"Cell"];
     }
     
-    if (_themesList.count != 0)
+    if ([_apList count] != 0)
     {
-        cell.textLabel.text = _themesList[indexPath.row];
+        ApplicationObject* app = (ApplicationObject*)_apList[indexPath.row];
+        cell.textLabel.text = app.appName;
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
@@ -91,7 +93,7 @@
     
     else
     {
-        cell.textLabel.text = @"No Themes in List";
+        cell.textLabel.text = @"No Apps in List";
         cell.textLabel.textColor = UIColor.grayColor;
         cell.userInteractionEnabled = NO;
     }
@@ -106,14 +108,14 @@
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *theme = _themesList[indexPath.row];
+    ApplicationObject *app = _apList[indexPath.row];
     
-    NSLog(@"Cell selected for %@", theme);
+    [[ConfigurationControl sharedInstance] setApp:app.appID];
 }
 
 - (void)helpForTheme:(UIButton *)button
 {
-    NSString *theme = _themesList[button.tag];
+    NSString *theme = _apList[button.tag];
     
     NSLog(@"Help requested for %@", theme);
 }
@@ -121,7 +123,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *theme = _themesList[indexPath.row];
+    NSString *theme = _apList[indexPath.row];
     
     NSLog(@"Detail Disclosure requested for %@", theme);
 }
