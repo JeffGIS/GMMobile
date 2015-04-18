@@ -651,5 +651,4 @@
     //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
 }
 
-
 @end
