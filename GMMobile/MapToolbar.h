@@ -3,9 +3,16 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-typedef NS_ENUM(NSInteger, MapToolbarProp)
+typedef NS_ENUM(NSInteger, MapToolbarProperty)
 {
-    MTPwantPlat, MTPwantDigitize, MTPwantMapType, MTPwantGPS, MTPwantExtents, MTPwantLegends, 
+    MapToolbarPropertyWantDefault,
+    MapToolbarPropertyWantPlat,
+    MapToolbarPropertyWantDigitize,
+    MapToolbarPropertyWantMapType,
+    MapToolbarPropertyWantGPS,
+    MapToolbarPropertyWantExtents,
+    MapToolbarPropertyWantLegends,
+    MapToolbarPropertyWantMarkerSwitch,
 };
 
 @class MapToolbar;
@@ -25,8 +32,6 @@ typedef NS_ENUM(NSInteger, MapToolbarProp)
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 @property (nonatomic) NSInteger orientation;
-@property (atomic) BOOL configChanged;
-@property BOOL wantPlat, wantDigitize, wantMapType, wantGPS, wantExtents, wantLegends;
 
 - (void)deselectMyLocationButton;
 - (void)animateToVerticalOrientation;
@@ -36,7 +41,10 @@ typedef NS_ENUM(NSInteger, MapToolbarProp)
 - (void)normalMode;
 - (void)hide;
 - (void)show;
-- (void)setConfiguration:(int)property value:(BOOL)value;
+
+- (void)setConfigurationProperty:(MapToolbarProperty)property
+                           value:(BOOL)value;
+
 - (void)configure;
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration

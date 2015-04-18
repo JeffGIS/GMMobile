@@ -478,13 +478,14 @@ extern int keepProcessing;
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
+    
+    [_mapToolbar configure];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
     
-    [_mapToolbar configure];
     if (_firstTimeAppear)
     {
         CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
