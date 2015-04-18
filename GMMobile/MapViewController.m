@@ -154,7 +154,7 @@ extern int keepProcessing;
                                                                                            ofType:@"png"]];
     
     CGFloat compassSize = 48.0, compassMargin = 6.0;
-    CGFloat helpButtonSize = 64.0, helpButtonMargin = 10.0;
+    CGFloat helpButtonSize = 56.0, helpButtonMargin = 8.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {

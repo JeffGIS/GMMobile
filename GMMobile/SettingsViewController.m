@@ -4,6 +4,7 @@
 #import "SettingsViewController.h"
 #import "PropertyData.h"
 #import "SewerData.h"
+#import "AppDelegate.h"
 
 #define GET_PROPERTY 1
 #define GET_TILES 2
@@ -716,5 +717,60 @@ didReturnTimeInterval:(NSString *)timeInterval
     }
 }
 
+- (IBAction)toggleUserLocationButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantUserLocation
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleExtentsButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantExtents
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleLegendsButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantLegends
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleDigitizeButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantDigitize
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleMarkerSwitch:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMarkerSwitch
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleMapTypeSC:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMapType
+                                                     value:sender.on];
+}
+
+- (IBAction)togglePlatSC:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantPlat
+                                                     value:sender.on];
+}
 
 @end
