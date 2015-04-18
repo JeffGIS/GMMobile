@@ -684,9 +684,27 @@ didReturnTimeInterval:(NSString *)timeInterval
     [bumpDetector hideBumpDetector:YES];
 }
 
+- (IBAction)showSpreadsheetView:(id)sender
+{
+    SpreadsheetView *spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:24
+                                                                        columns:8
+                                                                           view:self.view];
+    
+    [self.view addSubview:spreadsheetView];
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
+    for (SpreadsheetView *spreadsheetView in self.view.subviews)
+    {
+        if ([spreadsheetView isKindOfClass:SpreadsheetView.class])
+        {
+            [spreadsheetView willRotateWithDuration:duration
+                                       tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+        }
+        
+    }
     for (GSSiBumpDetector *bumpDetector in self.view.subviews)
     {
         if ([bumpDetector isKindOfClass:GSSiBumpDetector.class])
@@ -697,5 +715,6 @@ didReturnTimeInterval:(NSString *)timeInterval
         }
     }
 }
+
 
 @end
