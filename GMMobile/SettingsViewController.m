@@ -105,7 +105,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
        andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
-    if (status == FTPStatusOK)
+    if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
         switch (option)
         {
@@ -158,7 +158,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         //planimetric
                         //planimetricp
                         //alleywall
-                        file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
+                        file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
                         _popover.title = @"Load Planimetric Tables";
                     }
                         break;
@@ -438,9 +438,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (IBAction)loadPlan:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MPLS_PlanimetricData.gcf";
+    //NSString *fileName = @"MPLS_PlanimetricData.gcf";
     //NSString *fileName = @"MPLS_PlanimetricPointData.gcf";
-    //NSString *fileName = @"MPLS_AlleyWall.gcf";
+    NSString *fileName = @"MPLS_AlleyWall.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;

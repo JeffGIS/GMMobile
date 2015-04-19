@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 + (ConfigurationControl *)sharedInstance;
 
 @property NSMutableArray *appList;
-@property int currentApp;
+@property HardCodedConfigs currentApp;
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;

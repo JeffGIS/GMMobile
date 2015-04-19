@@ -240,14 +240,27 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                llCorners:&_latlonCornerPoints
                                                                 LLBounds:&_latlonBounds
                                                               viewBounds:&_viewBounds];
-                                                
-                                                if (keepProcessing == self.displayID)
-                                                    [pd displayWallPoint:_context
-                                                               llCorners:&_latlonCornerPoints
-                                                                LLBounds:&_latlonBounds
-                                                              viewBounds:&_viewBounds];
                                             }
                                            
+                                           
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                                                            visibleAtZoom:_zoom])
+                                           {
+                                               PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                               pd.processingID = keepProcessing;
+                                               
+                                               if (keepProcessing == self.displayID)
+                                                   [pd displayAlleyLine:_context
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];
+                                               if (keepProcessing == self.displayID)
+                                                   [pd displayWallPoint:_context
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];
+                                           }
                                            if (keepProcessing == self.displayID &&
                                                [ConfigurationControl.sharedInstance layer:HCLayerSewers
                                                                             visibleAtZoom:_zoom])

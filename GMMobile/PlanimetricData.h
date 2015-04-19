@@ -23,6 +23,11 @@
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
+-(void)displayAlleyLine:(CGContextRef)context
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds;
+
 -(void)displayWallPoint:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
