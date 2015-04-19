@@ -196,7 +196,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                                value:configToobarSegs[_currentApp][prop]];
     }
     
-    _layerList = [[NSMutableArray alloc]init];
     [UserDefaults.defaults saveInteger:appID
                                 forKey:@"CurrentConfig"];
     return rtn;
@@ -218,7 +217,22 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     NSMutableArray *layers = [[NSMutableArray alloc] init];
     
     [self setup];
+    for (int layer=0;layer<NUMHardCodedLayers;layer++)
+    {
+        if (configLayers[_currentApp][layer])
+        {
+            LayerObject * lo = [[LayerObject alloc]init];
+            lo.layerID = layer;
+            lo.layerName = [NSString stringWithUTF8String:layerName[layer]];
+            [layers addObject:lo];
+        }
+    }
     return layers;
+}
+
+- (void)setLayer:(HardCodedLayers)layerID visibileAtZoom:(int)zoom
+{
+    configLayerZoom[_currentApp][layerID] = zoom;
 }
 
 - (BOOL)layer:(int)layerID

@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 
 @property NSString *layerName;
 @property int layerID;
+@property BOOL layerOn;
 
 - (id)initWithNameAndID:(NSString *)name
              identifier:(int)identifier;
@@ -49,7 +50,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 + (ConfigurationControl *)sharedInstance;
 
 @property NSMutableArray *appList;
-@property NSMutableArray *layerList;
 @property int currentApp;
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
@@ -57,9 +57,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (NSArray *)getLayerSymbols;
 - (NSString *)getLayerName:(int)layerID;
 
-- (BOOL)getLayerVisibility:(int)layerID;
-- (BOOL)getLayerPickability:(int)layerID;
-
+- (void)setLayer:(HardCodedLayers)layerID visibileAtZoom:(int)zoom;
 - (BOOL)layer:(int)layerID
 visibleAtZoom:(float)zoom;
 

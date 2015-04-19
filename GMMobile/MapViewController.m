@@ -1453,6 +1453,7 @@ haveVV:
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
     [_vectorView setRegion:_mapView.projection.visibleRegion];
+    CRAPI.sharedInstance.currentZoom = _vectorViewZoom;
     _vectorView.zoom = _vectorViewZoom;
     
     NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
