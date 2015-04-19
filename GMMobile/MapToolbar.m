@@ -9,7 +9,7 @@
 @property (nonatomic) UISegmentedControl *mapTypeSC, *platSC;
 @property (nonatomic) UISwitch *markerSwitch;
 @property (nonatomic) CGSize size;
-@property BOOL configChanged, myLocationEnabled, platMode;
+@property BOOL configChanged, myLocationEnabled, platOverride;
 @property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth, mapTypeSCVertWidth;
 @property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, platSCWidth, platSCVertWidth;
 
@@ -25,7 +25,7 @@
                                 delegate:(id)delegate;
 {
     MapToolbar *mt = [[MapToolbar alloc] init];
-    mt.configChanged = NO;
+    mt.configChanged = mt.myLocationEnabled = mt.platOverride = NO;
     
     //set default configuration
     [mt setConfigurationProperty:MapToolbarPropertyWantUserLocation
@@ -511,30 +511,34 @@
                      }];
 }
 
-- (void)platViewMode
+- (void)platViewMode:(MapViewScreenSetting)screenSetting
 {
     [self setPreviousConfiguration];
     
     _wantDigitize = _wantExtents = _wantLegends = _wantMapType =
     _wantMarkerSwitch = _wantUserLocation = NO;
     
-    _wantPlat = YES;
-    _configChanged = YES;
+    _wantPlat = _configChanged = YES;
     
     [UIView animateWithDuration:0.25
                      animations:^{
-                         [self configure];
+                         [self configure:screenSetting];
                      }];
 }
 
-- (void)normalMode
+- (void)normalMode:(MapViewScreenSetting)screenSetting
 {
     [self getPreviousConfiguration];
+    
+    if (_platOverride)
+        _wantPlat = NO;
+    
     _configChanged = YES;
+    _platOverride = NO;
     
     [UIView animateWithDuration:0.25
                      animations:^{
-                         [self configure];
+                         [self configure:screenSetting];
                      }];
 }
 
@@ -603,7 +607,7 @@
     _configChanged = YES;
 }
 
-- (void)configure
+- (void)configure:(MapViewScreenSetting)screenSetting
 {
     if (!_configChanged)
         return;
@@ -875,6 +879,15 @@
         
         for (UIView *views in self.subviews)
             views.center = CGPointMake(self.center.x, views.center.y);
+    }
+    
+    NSLog(@"%ld,%d", (long)screenSetting, _wantPlat);
+    
+    if (screenSetting != MapViewScreenSettingFullscreen && !_wantPlat)
+    {
+        _platOverride = YES;
+        [self splitScreenSettingSelected:MapViewScreenSettingFullscreen];
+        _platSC.selectedSegmentIndex = MapViewScreenSettingFullscreen;
     }
     
     //_wantLegends controls a pulldown list of available legends which display with the MarkerView class
