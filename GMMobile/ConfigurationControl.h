@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @property NSMutableArray *layerList;
 @property int currentApp;
 
-- (BOOL)setApp:(int)appID;
+- (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
 - (NSArray *)getLayerSymbols;
 - (NSString *)getLayerName:(int)layerID;

@@ -182,7 +182,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     return sharedInstance;
 }
 
-- (BOOL)setApp:(int)appID
+- (BOOL)setApp:(HardCodedConfigs)appID
 {
     BOOL rtn = YES;
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
@@ -197,6 +197,8 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     }
     
     _layerList = [[NSMutableArray alloc]init];
+    [UserDefaults.defaults saveInteger:appID
+                                forKey:@"CurrentConfig"];
     return rtn;
 }
 

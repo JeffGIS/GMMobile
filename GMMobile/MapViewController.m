@@ -317,7 +317,11 @@ extern int keepProcessing;
     
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     sharedAppDelegate.mapToolbar = _mapToolbar;
-    
+
+    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+
+    [ConfigurationControl.sharedInstance setApp:config];
+
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
                               CGPointMake(helpButtonMargin, (helpButtonMargin +
                                            [self statusBarHeight:self.interfaceOrientation]))
