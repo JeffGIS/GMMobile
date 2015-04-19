@@ -164,6 +164,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             for (int layer = 0; layer < NUMHardCodedLayers; layer++)
                 configLayerZoom[config][layer] = layerDefaultZoom[layer];
         }
+        configLayerZoom[HCConfigAlleyWalls][HCLayerAerials] = 18;
     }
     
     return self;
