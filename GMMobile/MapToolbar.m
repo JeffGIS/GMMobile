@@ -11,8 +11,8 @@
 @property (nonatomic) CGSize size;
 @property BOOL configChanged, myLocationEnabled, platMode;
 @property BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation, wantExtents, wantLegends, wantMarkerSwitch;
-@property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth;
-@property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, platSCWidth;
+@property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth, mapTypeSCVertWidth;
+@property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, platSCWidth, platSCVertWidth;
 
 @end
 
@@ -33,6 +33,7 @@
     //set internal sizes for all devices
     mt.buttonSize = 47.0, mt.switchHeight = 31.0, mt.switchWidth = 51.0, mt.SCHeight = 29.0, mt.mapTypeSCWidth = 128.0;
     mt.buttonMargin = 8.0, mt.switchMargin = 16.0, mt.SCMargin = 17.0, mt.platSCWidth = 196.0;
+    mt.mapTypeSCVertWidth = 76.0, mt.platSCVertWidth = 112.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -263,42 +264,72 @@
 
 - (void)animateToVerticalOrientation
 {
-    CGFloat buttonSize = 47.0, buttonMargin = 8.0, frameHeight = (_size.height * 1.6);
+    CGFloat yCount = _buttonMargin;
+    CGFloat xCount = 0.0;
     
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    if (_wantUserLocation)
     {
-        buttonSize = 39.0, buttonMargin = 5.0;
-        frameHeight = _size.height;
+        _userLocationButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
     }
+    
+    if (_wantExtents)
+    {
+        _extentsButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+    }
+    
+    if (_wantLegends)
+    {
+        _legendsButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+    }
+    
+    if (_wantDigitize)
+    {
+        _digitizeButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+    }
+    
+    if (_wantMarkerSwitch)
+    {
+        _markerSwitch.frame = CGRectMake(_buttonMargin, yCount, _switchWidth, _switchHeight);
+        yCount += (_buttonMargin + _switchHeight);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _switchWidth);
+    }
+    
+    if (_wantMapType)
+    {
+        _mapTypeSC.frame = CGRectMake(_buttonMargin, yCount, _mapTypeSCVertWidth, _SCHeight);
+        yCount += (_buttonMargin + _SCHeight);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _mapTypeSCVertWidth);
+    }
+    
+    if (_wantPlat)
+    {
+        _platSC.frame = CGRectMake(_buttonMargin, yCount, _platSCVertWidth, _SCHeight);
+        yCount += (_buttonMargin + _SCHeight);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _platSCVertWidth);
+    }
+    
+    if (yCount < 20.0)
+        yCount = 0.0;
     
     if (_platMode)
     {
-        self.frame = CGRectMake(0.0, 0.0, frameHeight,
-                                (_platSC.frame.size.height + (buttonMargin * 2.0)));
+        _platSC.frame = CGRectMake(_buttonMargin, _buttonMargin,
+                                   _platSCVertWidth, _SCHeight);
+        
+        self.frame = CGRectMake(0.0, 0.0, (_platSC.frame.size.width + (_buttonMargin * 2.0)),
+                                (_platSC.frame.size.height + (_buttonMargin * 2.0)));
     }
     
     else
-    {
-        self.frame = CGRectMake(0.0, 0.0, frameHeight,
-                                ((buttonSize * 2.0) + (buttonMargin * 6.0) +
-                                 _markerSwitch.frame.size.height + (_mapTypeSC.frame.size.height * 2.0)));
-    }
-    
-    CGFloat switchMargin = ((self.frame.size.width - _markerSwitch.frame.size.width) / 2.0);
-    CGFloat buttonSideMargin = ((self.frame.size.width - buttonSize) / 2.0);
-    CGFloat scWidth = (self.frame.size.width - (buttonMargin * 1.6));
-    
-    _userLocationButton.frame = CGRectMake(buttonSideMargin, buttonMargin, buttonSize, buttonSize);
-    
-    _extentsButton.frame = CGRectMake(buttonSideMargin, (buttonSize + (buttonMargin * 2.0)),
-                                   buttonSize, buttonSize);
-    
-    _markerSwitch.frame = CGRectMake(switchMargin, ((buttonSize * 2.0) + (buttonMargin * 3.0)),
-                                     _markerSwitch.frame.size.width, _markerSwitch.frame.size.height);
-    
-    _mapTypeSC.frame = CGRectMake((buttonMargin / 1.6),
-                                  ((buttonSize * 2.0) + (buttonMargin * 4.0) + _markerSwitch.frame.size.height),
-                                  scWidth, _mapTypeSC.frame.size.height);
+        self.frame = CGRectMake(0.0, 0.0, xCount, yCount);
     
     [_mapTypeSC setTitle:@"Stnd"
        forSegmentAtIndex:0];
@@ -306,31 +337,17 @@
     [_mapTypeSC setTitle:@"Hybd"
        forSegmentAtIndex:1];
     
-    if (_platMode)
-    {
-        _platSC.frame = CGRectMake((buttonMargin / 1.6), buttonMargin,
-                                          scWidth, _platSC.frame.size.height);
-    }
-    
-    else
-    {
-        _platSC.frame = CGRectMake((buttonMargin / 1.6),
-                                          ((buttonSize * 2.0) + (buttonMargin * 5.0) +
-                                           _markerSwitch.frame.size.height + _mapTypeSC.frame.size.height),
-                                          scWidth, _platSC.frame.size.height);
-    }
-    
     [_platSC setTitle:@"F"
-           forSegmentAtIndex:0];
+    forSegmentAtIndex:0];
     
     [_platSC setTitle:@"S"
-           forSegmentAtIndex:1];
+    forSegmentAtIndex:1];
     
     [_platSC setTitle:@"T"
-           forSegmentAtIndex:2];
+    forSegmentAtIndex:2];
     
     [_platSC setTitle:@"P"
-           forSegmentAtIndex:3];
+    forSegmentAtIndex:3];
 }
 
 - (void)animateToHorizontalOrientation
@@ -649,125 +666,263 @@
     
     _configChanged = NO;
     
-    CGFloat xCount = _buttonMargin;
-    
-    if (_wantUserLocation)
+    if (_orientation == MapToolbarOrientationTop ||
+        _orientation == MapToolbarOrientationBottom)
     {
-        _userLocationButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        CGFloat xCount = _buttonMargin;
         
-        if (![self.subviews containsObject:_userLocationButton])
-            [self addSubview:_userLocationButton];
+        if (_wantUserLocation)
+        {
+            _userLocationButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_userLocationButton])
+                [self addSubview:_userLocationButton];
+            
+            xCount += (_buttonMargin + _buttonSize);
+        }
         
-        xCount += (_buttonMargin + _buttonSize);
+        else
+        {
+            if ([self.subviews containsObject:_userLocationButton])
+                [_userLocationButton removeFromSuperview];
+        }
+        
+        if (_wantExtents)
+        {
+            _extentsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_extentsButton])
+                [self addSubview:_extentsButton];
+            
+            xCount += (_buttonMargin + _buttonSize);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_extentsButton])
+                [_extentsButton removeFromSuperview];
+        }
+        
+        if (_wantLegends)
+        {
+            _legendsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_legendsButton])
+                [self addSubview:_legendsButton];
+            
+            xCount += (_buttonMargin + _buttonSize);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_legendsButton])
+                [_legendsButton removeFromSuperview];
+        }
+        
+        if (_wantDigitize)
+        {
+            _digitizeButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_digitizeButton])
+                [self addSubview:_digitizeButton];
+            
+            xCount += (_buttonMargin + _buttonSize);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_digitizeButton])
+                [_digitizeButton removeFromSuperview];
+        }
+        
+        if (_wantMarkerSwitch)
+        {
+            _markerSwitch.frame = CGRectMake(xCount, _switchMargin, _switchWidth, _switchHeight);
+            
+            if (![self.subviews containsObject:_markerSwitch])
+                [self addSubview:_markerSwitch];
+            
+            xCount += (_buttonMargin + _switchWidth);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_markerSwitch])
+                [_markerSwitch removeFromSuperview];
+        }
+        
+        if (_wantMapType)
+        {
+            _mapTypeSC.frame = CGRectMake(xCount, _SCMargin, _mapTypeSCWidth, _SCHeight);
+            
+            if (![self.subviews containsObject:_mapTypeSC])
+                [self addSubview:_mapTypeSC];
+            
+            xCount += (_buttonMargin + _mapTypeSCWidth);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_mapTypeSC])
+                [_mapTypeSC removeFromSuperview];
+        }
+        
+        if (_wantPlat)
+        {
+            _platSC.frame = CGRectMake(xCount, _SCMargin, _platSCWidth, _SCHeight);
+            
+            if (![self.subviews containsObject:_platSC])
+                [self addSubview:_platSC];
+            
+            xCount += (_buttonMargin + _platSCWidth);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_platSC])
+                [_platSC removeFromSuperview];
+        }
+        
+        if (xCount < 20.0)
+            xCount = 0.0;
+        
+        self.frame = CGRectMake((self.center.x - (xCount / 2.0)),
+                                (self.center.y - (_size.height / 2.0)), xCount, _size.height);
     }
     
     else
     {
-        if ([self.subviews containsObject:_userLocationButton])
-            [_userLocationButton removeFromSuperview];
-    }
-    
-    if (_wantExtents)
-    {
-        _extentsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        CGFloat yCount = _buttonMargin;
+        CGFloat xCount = 0.0;
         
-        if (![self.subviews containsObject:_extentsButton])
-            [self addSubview:_extentsButton];
+        if (_wantUserLocation)
+        {
+            _userLocationButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_userLocationButton])
+                [self addSubview:_userLocationButton];
+            
+            yCount += (_buttonMargin + _buttonSize);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+        }
         
-        xCount += (_buttonMargin + _buttonSize);
-    }
-    
-    else
-    {
-        if ([self.subviews containsObject:_extentsButton])
-            [_extentsButton removeFromSuperview];
-    }
-    
-    if (_wantLegends)
-    {
-        _legendsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        else
+        {
+            if ([self.subviews containsObject:_userLocationButton])
+                [_userLocationButton removeFromSuperview];
+        }
         
-        if (![self.subviews containsObject:_legendsButton])
-            [self addSubview:_legendsButton];
+        if (_wantExtents)
+        {
+            _extentsButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_extentsButton])
+                [self addSubview:_extentsButton];
+            
+            yCount += (_buttonMargin + _buttonSize);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+        }
         
-        xCount += (_buttonMargin + _buttonSize);
-    }
-    
-    else
-    {
-        if ([self.subviews containsObject:_legendsButton])
-            [_legendsButton removeFromSuperview];
-    }
-    
-    if (_wantDigitize)
-    {
-        _digitizeButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        else
+        {
+            if ([self.subviews containsObject:_extentsButton])
+                [_extentsButton removeFromSuperview];
+        }
         
-        if (![self.subviews containsObject:_digitizeButton])
-            [self addSubview:_digitizeButton];
+        if (_wantLegends)
+        {
+            _legendsButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_legendsButton])
+                [self addSubview:_legendsButton];
+            
+            yCount += (_buttonMargin + _buttonSize);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+        }
         
-        xCount += (_buttonMargin + _buttonSize);
-    }
-    
-    else
-    {
-        if ([self.subviews containsObject:_digitizeButton])
-            [_digitizeButton removeFromSuperview];
-    }
-    
-    if (_wantMarkerSwitch)
-    {
-        _markerSwitch.frame = CGRectMake(xCount, _switchMargin, _switchWidth, _switchHeight);
+        else
+        {
+            if ([self.subviews containsObject:_legendsButton])
+                [_legendsButton removeFromSuperview];
+        }
         
-        if (![self.subviews containsObject:_markerSwitch])
-            [self addSubview:_markerSwitch];
+        if (_wantDigitize)
+        {
+            _digitizeButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_digitizeButton])
+                [self addSubview:_digitizeButton];
+            
+            yCount += (_buttonMargin + _buttonSize);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+        }
         
-        xCount += (_buttonMargin + _switchWidth);
-    }
-    
-    else
-    {
-        if ([self.subviews containsObject:_markerSwitch])
-            [_markerSwitch removeFromSuperview];
-    }
-    
-    if (_wantMapType)
-    {
-        _mapTypeSC.frame = CGRectMake(xCount, _SCMargin, _mapTypeSCWidth, _SCHeight);
+        else
+        {
+            if ([self.subviews containsObject:_digitizeButton])
+                [_digitizeButton removeFromSuperview];
+        }
         
-        if (![self.subviews containsObject:_mapTypeSC])
-            [self addSubview:_mapTypeSC];
+        if (_wantMarkerSwitch)
+        {
+            _markerSwitch.frame = CGRectMake(_buttonMargin, yCount, _switchWidth, _switchHeight);
+            
+            if (![self.subviews containsObject:_markerSwitch])
+                [self addSubview:_markerSwitch];
+            
+            yCount += (_buttonMargin + _switchHeight);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _switchWidth);
+        }
         
-        xCount += (_buttonMargin + _mapTypeSCWidth);
-    }
-    
-    else
-    {
-        if ([self.subviews containsObject:_mapTypeSC])
-            [_mapTypeSC removeFromSuperview];
-    }
-    
-    if (_wantPlat)
-    {
-        _platSC.frame = CGRectMake(xCount, _SCMargin, _platSCWidth, _SCHeight);
+        else
+        {
+            if ([self.subviews containsObject:_markerSwitch])
+                [_markerSwitch removeFromSuperview];
+        }
         
-        if (![self.subviews containsObject:_platSC])
-            [self addSubview:_platSC];
+        if (_wantMapType)
+        {
+            _mapTypeSC.frame = CGRectMake(_buttonMargin, yCount, _mapTypeSCVertWidth, _SCHeight);
+            
+            if (![self.subviews containsObject:_mapTypeSC])
+                [self addSubview:_mapTypeSC];
+            
+            yCount += (_buttonMargin + _SCHeight);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _mapTypeSCVertWidth);
+        }
         
-        xCount += (_buttonMargin + _platSCWidth);
+        else
+        {
+            if ([self.subviews containsObject:_mapTypeSC])
+                [_mapTypeSC removeFromSuperview];
+        }
+        
+        if (_wantPlat)
+        {
+            _platSC.frame = CGRectMake(_buttonMargin, yCount, _platSCVertWidth, _SCHeight);
+            
+            if (![self.subviews containsObject:_platSC])
+                [self addSubview:_platSC];
+            
+            yCount += (_buttonMargin + _SCHeight);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _platSCVertWidth);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_platSC])
+                [_platSC removeFromSuperview];
+        }
+        
+        if (yCount < 20.0)
+            yCount = 0.0;
+        
+        if (_orientation == MapToolbarOrientationLeft)
+            self.frame = CGRectMake(0.0, (self.center.y - (yCount / 2.0)), xCount, yCount);
+        
+        else
+            self.frame = CGRectMake((self.superview.frame.size.width - xCount), (self.center.y - (yCount / 2.0)), xCount, yCount);
     }
-    
-    else
-    {
-        if ([self.subviews containsObject:_platSC])
-            [_platSC removeFromSuperview];
-    }
-    
-    if (xCount < 20.0)
-        xCount = 0.0;
-    
-    self.frame = CGRectMake((self.center.x - (xCount / 2.0)),
-                            (self.center.y - (_size.height / 2.0)), xCount, _size.height);
     
     //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantUserLocation _wantLegends and _wantExtents
     //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
