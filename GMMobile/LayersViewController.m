@@ -26,7 +26,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _layerList = [ConfigurationControl sharedInstance].layerList;
+    _layerList = [[ConfigurationControl sharedInstance] getLayers];
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
 }
@@ -61,13 +61,13 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LayerCell"
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"
                                                             forIndexPath:indexPath];
     
     if (!cell)
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:@"LayerCell"];
+                                      reuseIdentifier:@"Cell"];
     }
     
     if ([_layerList count] != 0)
@@ -112,9 +112,11 @@
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ApplicationObject *app = _layerList[indexPath.row];
-    
-    [ConfigurationControl.sharedInstance setApp:app.appID];
+    LayerObject *lo = _layerList[indexPath.row];
+    int zoom = 0;
+    if ([ConfigurationControl.sharedInstance layer:lo.layerID visibleAtZoom:CRAPI.sharedInstance.currentZoom])
+        zoom = 22;
+    [ConfigurationControl.sharedInstance setLayer:lo.layerID visibileAtZoom:zoom];
 }
 
 - (void)helpForTheme:(UIButton *)button
