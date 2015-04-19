@@ -313,9 +313,8 @@ extern int keepProcessing;
     
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     sharedAppDelegate.mapToolbar = _mapToolbar;
-
+    
     NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
-
     [ConfigurationControl.sharedInstance setApp:config];
 
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
@@ -467,7 +466,7 @@ extern int keepProcessing;
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
-    [_mapToolbar configure];
+    [_mapToolbar configure:_screenSetting];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -2713,13 +2712,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     if (setting == MapViewScreenSettingPlatView)
     {
         [self hideCompass];
-        [_mapToolbar platViewMode];
+        [_mapToolbar platViewMode:setting];
     }
     
     else
     {
         [self showCompass];
-        [_mapToolbar normalMode];
+        [_mapToolbar normalMode:setting];
     }
     
     switch (setting)

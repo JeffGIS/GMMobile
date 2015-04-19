@@ -55,15 +55,15 @@ typedef NS_ENUM(NSInteger, MapToolbarOrientation)
 - (void)animateToVerticalOrientation;
 - (void)animateToHorizontalOrientation;
 - (void)splitScreenSelectedSegmentIndex:(NSInteger)index;
-- (void)normalMode;
+- (void)normalMode:(MapViewScreenSetting)screenSetting;
+- (void)platViewMode:(MapViewScreenSetting)screenSetting;
 - (void)hide;
 - (void)show;
-- (void)platViewMode;
 
 - (void)setConfigurationProperty:(MapToolbarProperty)property
                            value:(BOOL)value;
 
-- (void)configure;
+- (void)configure:(MapViewScreenSetting)screenSetting;
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration
                   tabBarHeight:(CGFloat)tabBarHeight
