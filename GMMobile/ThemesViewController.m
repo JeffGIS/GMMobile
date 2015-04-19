@@ -17,7 +17,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _apList = [ConfigurationControl sharedInstance].apList;
+    _apList = [ConfigurationControl sharedInstance].appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
 }
@@ -51,7 +51,7 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return [[ConfigurationControl sharedInstance].apList count];
+    return [[ConfigurationControl sharedInstance].appList count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView

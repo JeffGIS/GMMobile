@@ -6,6 +6,7 @@ extern int keepProcessing;
 #import "MapViewController.h"
 #import "WebKitViewController.h"
 #import "AppDelegate.h"
+#import "ConfigurationControl.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -21,7 +22,8 @@ extern int keepProcessing;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
-@property (nonatomic) int selectedPlatRefno, nVectorViews, vectorViewZoom;
+@property (nonatomic) int selectedPlatRefno, nVectorViews;
+@property (nonatomic) CGFloat vectorViewZoom;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
@@ -207,13 +209,13 @@ extern int keepProcessing;
     };
     
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
-    [_layer_jpeg clearTileCache];
+    //[_layer_jpeg clearTileCache];
     
     if (CRAPI.sharedInstance.GMTilesVisible)
         _layer_jpeg.map = _mapView;
     
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
-    [_layer_png clearTileCache];
+    //[_layer_png clearTileCache];
     
     if (CRAPI.sharedInstance.GMTilesVisible)
         _layer_png.map = _mapView;
@@ -353,17 +355,6 @@ extern int keepProcessing;
     {
         [self initTableView];
         
-        if (CRAPI.sharedInstance.GMTilesVisible)
-        {
-            _layer_jpeg.map = _mapView;
-            _layer_png.map = _mapView;
-        }
-        
-        else
-        {
-            _layer_jpeg.map = nil;
-            _layer_png.map = nil;
-        }
     }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
@@ -1441,7 +1432,7 @@ haveVV:
 }
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
-                   atZoom:(int)zoom
+                   atZoom:(CGFloat)zoom
 {
     [self clearVectorView];
     _vectorViewZoom = zoom;
@@ -1461,7 +1452,17 @@ haveVV:
     [_vectorView setRegion:_mapView.projection.visibleRegion];
     _vectorView.zoom = _vectorViewZoom;
     
-    NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
+    NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
+    if ([[ConfigurationControl sharedInstance] layer:HCLayerAerials visibleAtZoom:_vectorViewZoom])
+    {
+        _layer_jpeg.map = _mapView;
+        _layer_png.map = _mapView;
+    }
+    else
+    {
+        _layer_jpeg.map = nil;
+        _layer_png.map = nil;
+    }
     
     [_vectorView setNeedsDisplay];
 }
@@ -1477,7 +1478,7 @@ haveVV:
     _vectorView.zoom = _vectorViewZoom;
     _vectorView.pickedItem = pi;
     
-    NSLog(@"HighlightVector view start: zoom = %i", _vectorViewZoom);
+    NSLog(@"HighlightVector view start: zoom = %f", _vectorViewZoom);
     
     [_vectorView setNeedsDisplay];
 }

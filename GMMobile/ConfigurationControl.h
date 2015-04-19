@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #define MAX_LAYER_NAME  32
+#define NUMHardCodedConfigs 4
 typedef NS_ENUM(NSInteger, HardCodedConfigs)
 {
     HCConfigAlleyWalls,
@@ -16,6 +17,7 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigMetroProp,
 };
 
+#define NUMHardCodedLayers 5
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
     HCLayerAerials,
@@ -31,11 +33,18 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (id) initWithNameAndID:(NSString*)name id:(int)id;
 @end
 
+@interface LayerObject : NSObject
+@property NSString * layerName;
+@property int layerID;
+- (id) initWithNameAndID:(NSString*)name id:(int)id;
+@end
+
 @interface ConfigurationControl : NSObject
 
 + (ConfigurationControl *)sharedInstance;
 
-@property NSMutableArray * apList;
+@property NSMutableArray * appList;
+@property NSMutableArray * layerList;
 @property int currentApp;
 
 - (BOOL) setApp:(int)appID;
@@ -46,5 +55,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (BOOL) getLayerVisibility:(int)layerID;
 - (BOOL) getLayerPickability:(int)layerID;
 
+- (BOOL) layer:(int)layerID visibleAtZoom:(float)zoom;
 
 @end

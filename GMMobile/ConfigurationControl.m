@@ -10,10 +10,13 @@
 #import "MapToolbar.h"
 #import "AppDelegate.h"
 
-static char layerName[sizeof(HardCodedLayers)][MAX_LAYER_NAME]={0};
-static BOOL layerVisible[sizeof(HardCodedLayers)]={0};
-static BOOL layerPickable[sizeof(HardCodedLayers)]={0};
-static BOOL configToobarSegs[sizeof(HardCodedConfigs)][sizeof(MapToolbarProperty)]={0};
+static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
+static BOOL layerVisible[NUMHardCodedLayers]={0};
+static BOOL layerPickable[NUMHardCodedLayers]={0};
+static float layerDefaultZoom[NUMHardCodedLayers]={0};
+static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};
+static int  configLayers[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
+static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 
 @implementation ApplicationObject
 - (id) initWithNameAndID:(NSString*)name id:(int)id
@@ -23,6 +26,19 @@ static BOOL configToobarSegs[sizeof(HardCodedConfigs)][sizeof(MapToolbarProperty
     {
         self.appName = name;
         self.appID = id;
+    }
+    return self;
+}
+@end
+
+@implementation LayerObject
+- (id) initWithNameAndID:(NSString*)name id:(int)id
+{
+    self = [super init];
+    if (self)
+    {
+        self.layerName = name;
+        self.layerID = id;
     }
     return self;
 }
@@ -41,15 +57,15 @@ static BOOL configToobarSegs[sizeof(HardCodedConfigs)][sizeof(MapToolbarProperty
     if (self)
     {
         self.firstCall = YES;
-        self.apList = [[NSMutableArray alloc]init];
+        self.appList = [[NSMutableArray alloc]init];
         ApplicationObject * ap = [[ApplicationObject alloc]initWithNameAndID:@"Alley Wall Inventory" id:HCConfigAlleyWalls];
-        [self.apList addObject:ap];
+        [self.appList addObject:ap];
         ap = [[ApplicationObject alloc]initWithNameAndID:@"Curb Ramp Inventory" id:HCConfigCurbRamps];
-        [self.apList addObject:ap];
+        [self.appList addObject:ap];
         ap = [[ApplicationObject alloc]initWithNameAndID:@"Sewers" id:HCConfigSewers];
-        [self.apList addObject:ap];
+        [self.appList addObject:ap];
         ap = [[ApplicationObject alloc]initWithNameAndID:@"Metro Property Analysis" id:HCConfigMetroProp];
-        [self.apList addObject:ap];
+        [self.appList addObject:ap];
         self.currentApp = -1;
         
         strcpy (layerName[HCLayerAerials],"Aerial Photos");
@@ -57,7 +73,14 @@ static BOOL configToobarSegs[sizeof(HardCodedConfigs)][sizeof(MapToolbarProperty
         strcpy (layerName[HCLayerSewers],"Sewer Data");
         strcpy (layerName[HCLayerPlanimetric],"Planimetric Data");
         strcpy (layerName[HCLayerAlleys],"Alleys");
+
+        layerDefaultZoom[HCLayerAerials] = 12;
+        layerDefaultZoom[HCLayerParcels] = 16;
+        layerDefaultZoom[HCLayerSewers] = 17;
+        layerDefaultZoom[HCLayerPlanimetric] = 18;
+        layerDefaultZoom[HCLayerAlleys] = 14;
         
+        //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDefault]=YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat]=YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDigitize]=NO;
@@ -94,6 +117,39 @@ static BOOL configToobarSegs[sizeof(HardCodedConfigs)][sizeof(MapToolbarProperty
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends]=YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMarkerSwitch]=YES;
         
+        //setup layers
+        configLayers[HCConfigSewers][HCLayerAerials]=YES;
+        configLayers[HCConfigSewers][HCLayerParcels]=YES;
+        configLayers[HCConfigSewers][HCLayerSewers]=YES;
+        configLayers[HCConfigSewers][HCLayerPlanimetric]=NO;
+        configLayers[HCConfigSewers][HCLayerAlleys]=NO;
+        
+        configLayers[HCConfigAlleyWalls][HCLayerAerials]=YES;
+        configLayers[HCConfigAlleyWalls][HCLayerParcels]=YES;
+        configLayers[HCConfigAlleyWalls][HCLayerSewers]=NO;
+        configLayers[HCConfigAlleyWalls][HCLayerPlanimetric]=YES;
+        configLayers[HCConfigAlleyWalls][HCLayerAlleys]=YES;
+        
+        configLayers[HCConfigCurbRamps][HCLayerAerials]=YES;
+        configLayers[HCConfigCurbRamps][HCLayerParcels]=YES;
+        configLayers[HCConfigCurbRamps][HCLayerSewers]=NO;
+        configLayers[HCConfigCurbRamps][HCLayerPlanimetric]=NO;
+        configLayers[HCConfigCurbRamps][HCLayerAlleys]=NO;
+        
+        configLayers[HCConfigMetroProp][HCLayerAerials]=NO;
+        configLayers[HCConfigMetroProp][HCLayerParcels]=YES;
+        configLayers[HCConfigMetroProp][HCLayerSewers]=NO;
+        configLayers[HCConfigMetroProp][HCLayerPlanimetric]=NO;
+        configLayers[HCConfigMetroProp][HCLayerAlleys]=NO;
+        
+        for (int config=0;config<NUMHardCodedConfigs;config++)
+        {
+            for (int layer=0;layer<NUMHardCodedLayers;layer++)
+            {
+                configLayerZoom[config][layer] = layerDefaultZoom[layer];
+            }
+        }
+        
     }
     
     return self;
@@ -120,16 +176,39 @@ static BOOL configToobarSegs[sizeof(HardCodedConfigs)][sizeof(MapToolbarProperty
    
     _currentApp = appID;
     
-    for (int prop = 0;prop<sizeof(MapToolbarProperty);prop++)
+    for (int prop = 0;prop<NUMMapToolbarProperty;prop++)
         [tb setConfigurationProperty:prop value:configToobarSegs[_currentApp][prop]];
-
-    
+    _layerList = [[NSMutableArray alloc]init];
     return rtn;
 }
 
+- (void) setup
+{
+    if (_currentApp < 0)
+    {
+        [self setApp:HCConfigMetroProp];
+    }
+}
 - (NSString*) getLayerName:(int)layerID
 {
     NSString * name = [NSString stringWithUTF8String:layerName[layerID]];
     return name;
+}
+
+- (NSArray *)getLayers
+{
+    NSMutableArray * layers = [[NSMutableArray alloc]init];
+    
+    [self setup];
+    return layers;
+}
+
+- (BOOL) layer:(int)layerID visibleAtZoom:(float)zoom
+{
+    [self setup];
+    if (configLayers[_currentApp][layerID] && 
+        zoom >= configLayerZoom[_currentApp][layerID])
+        return YES;
+    return NO;
 }
 @end

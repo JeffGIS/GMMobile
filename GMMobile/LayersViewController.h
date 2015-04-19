@@ -3,7 +3,8 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-@interface LayersViewController : UIViewController
+@interface LayersViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @end

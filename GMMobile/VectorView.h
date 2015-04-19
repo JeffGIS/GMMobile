@@ -25,7 +25,7 @@
 @property int displayID;
 @property PickedItem * pickedItem;
 @property int ivv;
-@property int zoom;
+@property CGFloat zoom;
 @property CORNERPOINTS latlonCornerPoints;
 @property MNMXCORD latlonBounds;
 @property MNMXCORD viewBounds;
