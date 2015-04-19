@@ -17,7 +17,7 @@
 
 @implementation MapToolbar
 {
-    BOOL _previousConfig[8];
+    BOOL _previousConfig[NUMMapToolbarProperty];
 }
 
 + (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
@@ -594,7 +594,9 @@
             break;
             
         case MapToolbarPropertyWantDefault:
-            NSLog(@"ERROR: No MapToolbar Property Type");
+            break;
+            
+        default:
             break;
     }
     
@@ -875,8 +877,7 @@
             views.center = CGPointMake(self.center.x, views.center.y);
     }
     
-    //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantUserLocation _wantLegends and _wantExtents
-    //_wantLegends controls a pulldown list of available legends which display with the MarkeView class
+    //_wantLegends controls a pulldown list of available legends which display with the MarkerView class
 }
 
 @end
