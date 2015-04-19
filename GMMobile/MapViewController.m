@@ -2703,21 +2703,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     if (setting == MapViewScreenSettingPlatView)
     {
         [self hideCompass];
-        
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             [_mapToolbar platViewMode];
-                         }];
+        [_mapToolbar platViewMode];
     }
     
     else
     {
         [self showCompass];
-        
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             [_mapToolbar normalMode];
-                         }];
+        [_mapToolbar normalMode];
     }
     
     switch (setting)

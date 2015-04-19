@@ -16,6 +16,9 @@
 @end
 
 @implementation MapToolbar
+{
+    BOOL _previousConfig[8];
+}
 
 + (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
                                     view:(UIView *)view
@@ -25,8 +28,26 @@
     mt.configChanged = NO;
     
     //set default configuration
-    mt.wantUserLocation = mt.wantExtents = mt.wantMarkerSwitch = YES;
-    mt.wantPlat = mt.wantDigitize = mt.wantMapType = mt.wantLegends = NO;
+    [mt setConfigurationProperty:MapToolbarPropertyWantUserLocation
+                           value:YES];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantExtents
+                           value:YES];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantMarkerSwitch
+                           value:YES];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantPlat
+                           value:NO];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantDigitize
+                           value:NO];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantMapType
+                           value:NO];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantLegends
+                           value:NO];
     
     //set internal sizes for all devices
     mt.buttonSize = 47.0, mt.switchHeight = 31.0, mt.switchWidth = 51.0, mt.SCHeight = 29.0, mt.mapTypeSCWidth = 128.0;
@@ -318,17 +339,10 @@
     if (yCount < 20.0)
         yCount = 0.0;
     
-    if (_platMode)
-    {
-        _platSC.frame = CGRectMake(_buttonMargin, _buttonMargin,
-                                   _platSCVertWidth, _SCHeight);
-        
-        self.frame = CGRectMake(0.0, 0.0, (_platSC.frame.size.width + (_buttonMargin * 2.0)),
-                                (_platSC.frame.size.height + (_buttonMargin * 2.0)));
-    }
+    self.frame = CGRectMake(0.0, 0.0, xCount, yCount);
     
-    else
-        self.frame = CGRectMake(0.0, 0.0, xCount, yCount);
+    for (UIView *views in self.subviews)
+        views.center = CGPointMake(self.center.x, views.center.y);
     
     [_mapTypeSC setTitle:@"Stnd"
        forSegmentAtIndex:0];
@@ -351,76 +365,61 @@
 
 - (void)animateToHorizontalOrientation
 {
-    CGFloat buttonSize = 47.0, switchHeight = 31.0, switchWidth = 51.0, segControlHeight = 29.0, mtscWidth = 128.0;
-    CGFloat buttonMargin = 8.0, switchMargin = 16.0, segControlMargin = 17.0, ssscWidth = 196.0;
+    CGFloat xCount = _buttonMargin;
     
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    if (_wantUserLocation)
     {
-        buttonSize = 39.0, buttonMargin = 5.0, switchMargin = 9.0, segControlMargin = 10.0;
-        mtscWidth = 78.0, ssscWidth = 166.0;
-        
-        if (_platMode)
-        {
-            _platSC.frame = CGRectMake(buttonMargin, buttonMargin,
-                                              (_size.width - (buttonMargin * 2.0)), segControlHeight);
-        }
-        
-        else
-        {
-            _platSC.frame = CGRectMake(buttonMargin, (buttonSize + (buttonMargin * 2.0)),
-                                              (_size.width - (buttonMargin * 2.0)), segControlHeight);
-        }
+        _userLocationButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
     }
     
-    else
+    if (_wantExtents)
     {
-        [_mapTypeSC setTitle:@"Standard"
-           forSegmentAtIndex:0];
-        
-        [_mapTypeSC setTitle:@"Hybrid"
-           forSegmentAtIndex:1];
-        
-        if (_platMode)
-        {
-            _platSC.frame = CGRectMake(buttonMargin, segControlMargin,
-                                              ssscWidth, segControlHeight);
-        }
-        
-        else
-        {
-            _platSC.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 5.0) + switchWidth + mtscWidth),
-                                              segControlMargin, ssscWidth, segControlHeight);
-        }
+        _extentsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
     }
     
-    if (_platMode)
+    if (_wantLegends)
     {
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        {
-            self.frame = CGRectMake(0.0, 0.0, _platSC.frame.size.width + (buttonMargin * 2.0),
-                                    _platSC.frame.size.height + (buttonMargin * 2.0));
-        }
-        
-        else
-        {
-            self.frame = CGRectMake(0.0, 0.0, _platSC.frame.size.width +
-                                    (buttonMargin * 2.0),  _size.height);
-        }
+        _legendsButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
     }
     
-    else
-        self.frame = CGRectMake(0.0, 0.0, _size.width, _size.height);
+    if (_wantDigitize)
+    {
+        _digitizeButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
+    }
     
-    _userLocationButton.frame = CGRectMake(buttonMargin, buttonMargin, buttonSize, buttonSize);
+    if (_wantMarkerSwitch)
+    {
+        _markerSwitch.frame = CGRectMake(xCount, _switchMargin, _switchWidth, _switchHeight);
+        xCount += (_buttonMargin + _switchWidth);
+    }
     
-    _extentsButton.frame = CGRectMake((buttonSize + (buttonMargin * 2.0)),
-                                         buttonMargin, buttonSize, buttonSize);
+    if (_wantMapType)
+    {
+        _mapTypeSC.frame = CGRectMake(xCount, _SCMargin, _mapTypeSCWidth, _SCHeight);
+        xCount += (_buttonMargin + _mapTypeSCWidth);
+    }
     
-    _markerSwitch.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 3.0)),
-                                     switchMargin, switchWidth, switchHeight);
+    if (_wantPlat)
+    {
+        _platSC.frame = CGRectMake(xCount, _SCMargin, _platSCWidth, _SCHeight);
+        xCount += (_buttonMargin + _platSCWidth);
+    }
     
-    _mapTypeSC.frame = CGRectMake(((buttonSize * 2.0) + (buttonMargin * 4.0) + switchWidth),
-                                  segControlMargin, mtscWidth, segControlHeight);
+    if (xCount < 20.0)
+        xCount = 0.0;
+    
+    self.frame = CGRectMake((self.center.x - (xCount / 2.0)),
+                                (self.center.y - (_size.height / 2.0)), xCount, _size.height);
+    
+    [_mapTypeSC setTitle:@"Standard"
+       forSegmentAtIndex:0];
+    
+    [_mapTypeSC setTitle:@"Hybrid"
+       forSegmentAtIndex:1];
     
     [_platSC setTitle:@"Full"
            forSegmentAtIndex:0];
@@ -438,78 +437,6 @@
 - (void)splitScreenSelectedSegmentIndex:(NSInteger)index
 {
     _platSC.selectedSegmentIndex = index;
-}
-
-- (void)platViewMode
-{
-    CGFloat height = self.frame.size.height;
-    CGPoint center = self.center;
-    _userLocationButton.hidden = YES;
-    _extentsButton.hidden = YES;
-    _markerSwitch.hidden = YES;
-    _mapTypeSC.hidden = YES;
-    _platMode = YES;
-    
-    [self orientToolbar];
-    
-    if (_orientation == MapToolbarOrientationTop ||
-        _orientation == MapToolbarOrientationBottom)
-    {
-        CGFloat heightDiff = (self.frame.size.height - height);
-        
-        if (heightDiff != 0.0)
-        {
-            if (_orientation == MapToolbarOrientationTop)
-                center = CGPointMake(center.x, center.y + (heightDiff / 2.0));
-            
-            else
-                center = CGPointMake(center.x, center.y - (heightDiff / 2.0));
-        }
-    }
-        
-    self.center = center;
-}
-
-- (void)normalMode
-{
-    CGFloat height = self.frame.size.height;
-    CGPoint center = self.center;
-    _userLocationButton.hidden = NO;
-    _extentsButton.hidden = NO;
-    _markerSwitch.hidden = NO;
-    _mapTypeSC.hidden = NO;
-    _platMode = NO;
-    
-    [self orientToolbar];
-    
-    if (_orientation == MapToolbarOrientationTop ||
-        _orientation == MapToolbarOrientationBottom)
-    {
-        CGFloat heightDiff = (self.frame.size.height - height);
-        
-        if (heightDiff != 0.0)
-        {
-            if (_orientation == MapToolbarOrientationTop)
-                center = CGPointMake(center.x, center.y + (heightDiff / 2.0));
-            
-            else
-                center = CGPointMake(center.x, center.y - (heightDiff / 2.0));
-        }
-    }
-    
-    self.center = center;
-}
-
-- (void)orientToolbar
-{
-    if (_orientation == MapToolbarOrientationLeft ||
-        _orientation == MapToolbarOrientationRight)
-    {
-        [self animateToVerticalOrientation];
-    }
-    
-    else
-        [self animateToHorizontalOrientation];
 }
 
 - (void)willRotateWithDuration:(NSTimeInterval)duration
@@ -582,6 +509,55 @@
                      animations:^{
                          self.alpha = 1.0;
                      }];
+}
+
+- (void)platViewMode
+{
+    [self setPreviousConfiguration];
+    
+    _wantDigitize = _wantExtents = _wantLegends = _wantMapType =
+    _wantMarkerSwitch = _wantUserLocation = NO;
+    
+    _wantPlat = YES;
+    _configChanged = YES;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         [self configure];
+                     }];
+}
+
+- (void)normalMode
+{
+    [self getPreviousConfiguration];
+    _configChanged = YES;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         [self configure];
+                     }];
+}
+
+- (void)setPreviousConfiguration
+{
+    _previousConfig[MapToolbarPropertyWantUserLocation] = _wantUserLocation;
+    _previousConfig[MapToolbarPropertyWantPlat] = _wantPlat;
+    _previousConfig[MapToolbarPropertyWantMarkerSwitch] = _wantMarkerSwitch;
+    _previousConfig[MapToolbarPropertyWantMapType] = _wantMapType;
+    _previousConfig[MapToolbarPropertyWantLegends] = _wantLegends;
+    _previousConfig[MapToolbarPropertyWantExtents] = _wantExtents;
+    _previousConfig[MapToolbarPropertyWantDigitize] = _wantDigitize;
+}
+
+- (void)getPreviousConfiguration
+{
+    _wantUserLocation = _previousConfig[MapToolbarPropertyWantUserLocation];
+    _wantPlat = _previousConfig[MapToolbarPropertyWantPlat];
+    _wantMarkerSwitch = _previousConfig[MapToolbarPropertyWantMarkerSwitch];
+    _wantMapType = _previousConfig[MapToolbarPropertyWantMapType];
+    _wantLegends = _previousConfig[MapToolbarPropertyWantLegends];
+    _wantExtents = _previousConfig[MapToolbarPropertyWantExtents];
+    _wantDigitize = _previousConfig[MapToolbarPropertyWantDigitize];
 }
 
 - (void)setConfigurationProperty:(MapToolbarProperty)property
@@ -884,10 +860,19 @@
             yCount = 0.0;
         
         if (_orientation == MapToolbarOrientationLeft)
-            self.frame = CGRectMake(0.0, (self.center.y - (yCount / 2.0)), xCount, yCount);
+        {
+            self.frame = CGRectMake(0.0, (self.center.y - (yCount / 2.0)),
+                                    xCount, yCount);
+        }
         
         else
-            self.frame = CGRectMake((self.superview.frame.size.width - xCount), (self.center.y - (yCount / 2.0)), xCount, yCount);
+        {
+            self.frame = CGRectMake((self.superview.frame.size.width - xCount),
+                                    (self.center.y - (yCount / 2.0)), xCount, yCount);
+        }
+        
+        for (UIView *views in self.subviews)
+            views.center = CGPointMake(self.center.x, views.center.y);
     }
     
     //configures the toolbar based on the values of _wantPlat, _wantDigitize, _wantMapType, _wantUserLocation _wantLegends and _wantExtents
