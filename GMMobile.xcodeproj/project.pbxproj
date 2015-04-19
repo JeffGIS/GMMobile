@@ -44,7 +44,7 @@
 		A99CD8D81A9DBABC0049F271 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D71A9DBABC0049F271 /* libicucore.dylib */; };
 		A99CD8DA1A9DBAC10049F271 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D91A9DBAC10049F271 /* libz.dylib */; };
 		A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */; };
-		A9B6F33F1AE43500003FD71E /* checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = A9B6F33E1AE43500003FD71E /* checkmark.png */; };
+		A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = A9B6F3481AE46DC3003FD71E /* checkmark.png */; };
 		A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */; };
 		A9BC27F11A927D2B00FA89D8 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BC27F01A927D2B00FA89D8 /* help.png */; };
 		A9C086751AE173A900E79B3E /* applications.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C086741AE173A900E79B3E /* applications.png */; };
@@ -149,7 +149,7 @@
 		A99CD8D71A9DBABC0049F271 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		A99CD8D91A9DBAC10049F271 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		A9B6F33E1AE43500003FD71E /* checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark.png; sourceTree = "<group>"; };
+		A9B6F3481AE46DC3003FD71E /* checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark.png; sourceTree = "<group>"; };
 		A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemesViewController.h; sourceTree = "<group>"; };
 		A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemesViewController.m; sourceTree = "<group>"; };
 		A9BC27F01A927D2B00FA89D8 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
@@ -257,7 +257,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				A9B6F33E1AE43500003FD71E /* checkmark.png */,
+				A9B6F3481AE46DC3003FD71E /* checkmark.png */,
 				A9C086761AE2338000E79B3E /* digitize.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A97C62161AE0AD7900DA7738 /* greenHelpButton.png */,
@@ -551,7 +551,7 @@
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */,
-				A9B6F33F1AE43500003FD71E /* checkmark.png in Resources */,
+				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,

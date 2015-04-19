@@ -881,8 +881,6 @@
             views.center = CGPointMake(self.center.x, views.center.y);
     }
     
-    NSLog(@"%ld,%d", (long)screenSetting, _wantPlat);
-    
     if (screenSetting != MapViewScreenSettingFullscreen && !_wantPlat)
     {
         _platOverride = YES;

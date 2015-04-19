@@ -164,6 +164,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             for (int layer = 0; layer < NUMHardCodedLayers; layer++)
                 configLayerZoom[config][layer] = layerDefaultZoom[layer];
         }
+        
         configLayerZoom[HCConfigAlleyWalls][HCLayerAerials] = 18;
     }
     
@@ -207,6 +208,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     if (_currentApp < 0)
         [self setApp:HCConfigMetroProp];
 }
+
 - (NSString *)getLayerName:(int)layerID
 {
     NSString *name = [NSString stringWithUTF8String:layerName[layerID]];
@@ -218,20 +220,23 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     NSMutableArray *layers = [[NSMutableArray alloc] init];
     
     [self setup];
-    for (int layer=0;layer<NUMHardCodedLayers;layer++)
+    
+    for (int layer = 0; layer < NUMHardCodedLayers; layer++)
     {
         if (configLayers[_currentApp][layer])
         {
-            LayerObject * lo = [[LayerObject alloc]init];
+            LayerObject *lo = [[LayerObject alloc] init];
             lo.layerID = layer;
             lo.layerName = [NSString stringWithUTF8String:layerName[layer]];
             [layers addObject:lo];
         }
     }
+    
     return layers;
 }
 
-- (void)setLayer:(HardCodedLayers)layerID visibileAtZoom:(int)zoom
+- (void)setLayer:(HardCodedLayers)layerID
+  visibileAtZoom:(int)zoom
 {
     configLayerZoom[_currentApp][layerID] = zoom;
 }

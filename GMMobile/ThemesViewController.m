@@ -20,10 +20,28 @@
     [super viewDidLoad];
     _appList = ConfigurationControl.sharedInstance.appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.0), 60.0);
-    _checkmarkView = [[UIImageView alloc] initWithImage:UserDefaults.defaults.checkmark];
+    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 60.0);
+    
+    _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
+                                                         [NSBundle.mainBundle pathForResource:@"checkmark"
+                                                                                       ofType:@"png"]]];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _checkmarkView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+    
+    else
+        _checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
+    
+    _checkmarkView.contentMode = UIViewContentModeScaleToFill;
+    
     _selectedRow = -1;
     [self setupTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [_tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -52,7 +70,6 @@
     
     [_tableView cellForRowAtIndexPath:selectedIndexPath].accessoryView = _checkmarkView;
     _selectedRow = selectedIndexPath.row;
-    [_tableView reloadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -66,7 +83,7 @@ viewForHeaderInSection:(NSInteger)section
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:
                             CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
     
-    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.0)];
+    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.2)];
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
     headerLabel.text = @"Select Application";
@@ -101,6 +118,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         ApplicationObject *app = (ApplicationObject *)_appList[indexPath.row];
         cell.textLabel.text = app.appName;
+        cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
     }
@@ -113,7 +131,7 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.2)];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.6)];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
@@ -138,6 +156,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [tableView cellForRowAtIndexPath:indexPath].accessoryView = _checkmarkView;
     _selectedRow = indexPath.row;
     [tableView reloadData];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    [_tableView reloadData];
 }
 
 @end

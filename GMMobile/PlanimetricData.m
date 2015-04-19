@@ -30,7 +30,8 @@ extern int keepProcessing;
 {
     if (![self continue])
         return;
-    NSString *query;
+    
+    NSString *query = @"";
     //NSString *querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
@@ -193,7 +194,8 @@ extern int keepProcessing;
     
     if (![self continue])
         return;
-    NSString *query;
+    
+    NSString *query = @"";
     //NSString *querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
@@ -327,7 +329,7 @@ extern int keepProcessing;
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query;
+    NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
     //int numPoints, numLoops;
@@ -388,6 +390,7 @@ extern int keepProcessing;
 {
     if (CRAPI.sharedInstance.currentZoom < CRAPI.sharedInstance.parcelsVisibleAtZoom)
         return 0;
+    
     NSString *minID = [[NSString alloc] init];
     CGFloat d, mind = DBL_MAX;
     DPOINT p1, p2, minpt;
@@ -451,23 +454,29 @@ extern int keepProcessing;
 
 - (int)addAlleyWallPoint:(LLPOINT)point
 {
-    int newRefno;
-/*    BOOL rtn = FALSE;
+    int newRefno = 0;
+    
+    /*BOOL rtn = FALSE;
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     
-    // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
-    //                    iTime, refno];
+    NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
+                       iTime, refno];
+     
     NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%i",
                        point.lat,point.lon, refno];
+     
     rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
+     
     if (rtn)
     {
         query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f AND minX=%f AND maxY=%f AND maxX=%f WHERE ALLEYWALLS_index.id=%i",
                  point.lat,point.lon, point.lat,point.lon, refno];
         rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     }
+     
     [pd close];*/
+    
     return newRefno;
 }
 -(void)displayAlleyLine:(CGContextRef)context
@@ -477,12 +486,13 @@ extern int keepProcessing;
 {
     if (![self continue])
         return;
-    NSString *query;
+    
+    NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
     CGFloat width = 16;
     CGColorRef alleyLineColor = UIColor.greenColor.CGColor;
-    int numPoints,numLoops;
+    int numPoints, numLoops;
     //LPSTR symName;
     PropertyData *pd = [[PropertyData alloc] init];
     
@@ -555,7 +565,7 @@ extern int keepProcessing;
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
-    NSString *query;
+    NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
     //LPSTR symName;
@@ -619,16 +629,16 @@ extern int keepProcessing;
     CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
 }
-- (NSArray*)getDistinctSymbols:(NSString *)tableName
+
+- (NSArray *)getDistinctSymbols:(NSString *)tableName
 {
-    NSMutableArray * symList = [[NSMutableArray alloc]init];
+    NSMutableArray *symList = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement;
-    NSString *query = [[NSString alloc] init];
     
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     
-    query = [NSString stringWithFormat:@"SELECT DISTINCT SYMBOLNAME FROM %@",tableName];
+    NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT SYMBOLNAME FROM %@", tableName];
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDistinctSymbols");
     
@@ -650,15 +660,16 @@ extern int keepProcessing;
                         to:(CLLocationCoordinate2D)point
 {
     BOOL rtn = FALSE;
-    NSString * query;
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     
     //rtn = sqlite3_exec(pd.database,"CREATE TABLE IF NOT EXISTS MOVEWALLPTUNDO ('id','LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))", NULL, NULL, NULL);
     // NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f lastUpdateTime=%i WHERE id=%i",
     //                    iTime, refno];
-    query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%ld",
+    
+    NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%ld",
                        point.latitude,point.longitude, refno];
+    
     rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     
     if (!rtn)
@@ -674,8 +685,8 @@ extern int keepProcessing;
 
 - (void)userSavedAlleyWallPointMove:(BOOL)saved
 {
-    int ii=1;
-    ii=2;
+    int ii = 1;
+    ii = 2;
 }
 
 @end

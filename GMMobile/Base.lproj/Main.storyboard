@@ -207,8 +207,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Jff-DT-1OW">
-                                <rect key="frame" x="6" y="9" width="600" height="551"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="Jff-DT-1OW">
+                                <rect key="frame" x="16" y="20" width="568" height="523"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" restorationIdentifier="LayerCell" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="X6g-cT-dce">
@@ -222,6 +222,60 @@
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" id="77P-fQ-Puz"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" constant="8" id="9Vt-ce-w4u"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" id="9aa-b7-53e"/>
+                            <constraint firstItem="Djb-ko-YwX" firstAttribute="top" secondItem="Jff-DT-1OW" secondAttribute="bottom" constant="8" id="BNL-UL-BlY"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="trailing" secondItem="QS5-Rx-YEW" secondAttribute="trailingMargin" id="MMN-9k-BmZ"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" id="SGi-yx-7wd"/>
+                            <constraint firstItem="Djb-ko-YwX" firstAttribute="top" secondItem="Jff-DT-1OW" secondAttribute="bottom" constant="8" id="asl-Mh-EdW"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="leading" secondItem="QS5-Rx-YEW" secondAttribute="leadingMargin" id="c0B-1R-x95"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="top" secondItem="L7p-HK-0SC" secondAttribute="bottom" id="i4S-qf-fqR"/>
+                            <constraint firstItem="Djb-ko-YwX" firstAttribute="top" secondItem="Jff-DT-1OW" secondAttribute="bottom" constant="8" id="jK5-zN-KAi"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="trailing" secondItem="QS5-Rx-YEW" secondAttribute="trailingMargin" id="lxK-pk-0pI"/>
+                            <constraint firstItem="Jff-DT-1OW" firstAttribute="trailing" secondItem="QS5-Rx-YEW" secondAttribute="trailingMargin" id="szG-un-SYB"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="77P-fQ-Puz"/>
+                                <exclude reference="9Vt-ce-w4u"/>
+                                <exclude reference="9aa-b7-53e"/>
+                                <exclude reference="MMN-9k-BmZ"/>
+                                <exclude reference="SGi-yx-7wd"/>
+                                <exclude reference="c0B-1R-x95"/>
+                                <exclude reference="i4S-qf-fqR"/>
+                                <exclude reference="lxK-pk-0pI"/>
+                                <exclude reference="szG-un-SYB"/>
+                                <exclude reference="BNL-UL-BlY"/>
+                                <exclude reference="asl-Mh-EdW"/>
+                                <exclude reference="jK5-zN-KAi"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=compact">
+                            <mask key="constraints">
+                                <include reference="77P-fQ-Puz"/>
+                                <include reference="9Vt-ce-w4u"/>
+                                <include reference="MMN-9k-BmZ"/>
+                                <include reference="jK5-zN-KAi"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="constraints">
+                                <include reference="c0B-1R-x95"/>
+                                <include reference="i4S-qf-fqR"/>
+                                <include reference="szG-un-SYB"/>
+                                <include reference="BNL-UL-BlY"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=regular">
+                            <mask key="constraints">
+                                <include reference="9aa-b7-53e"/>
+                                <include reference="SGi-yx-7wd"/>
+                                <include reference="lxK-pk-0pI"/>
+                                <include reference="asl-Mh-EdW"/>
+                            </mask>
+                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="Layers" image="layers.png" id="cPa-gy-q4n"/>
                     <connections>

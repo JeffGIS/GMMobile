@@ -6,12 +6,12 @@
 
 @interface LayersViewController ()
 
+@property (nonatomic) NSArray *layerList;
+@property (nonatomic) CGFloat rowHeight;
+
 @end
 
 @implementation LayersViewController
-{
-    NSArray * _layerList;
-}
 
 - (void)viewDidLoad
 {
@@ -26,8 +26,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _layerList = [[ConfigurationControl sharedInstance] getLayers];
+    _layerList = ConfigurationControl.sharedInstance.getLayers;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.0), 60.0);
     [self setupTableView];
 }
 
@@ -40,10 +41,8 @@
     _tableView.backgroundColor = UserDefaults.defaults.green;
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.0), 60.0);
-    _tableView.rowHeight = rowHeight;
-    _tableView.layer.borderWidth = (rowHeight / 24.0);
+    _tableView.rowHeight = _rowHeight;
+    _tableView.layer.borderWidth = (_rowHeight / 24.0);
     _tableView.layer.cornerRadius = 10.0;
 }
 
@@ -55,7 +54,7 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return [_layerList count];
+    return _layerList.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -77,22 +76,6 @@
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-        
-        UIButton *helpButton = [[UIButton alloc] initWithFrame:CGRectMake((cell.frame.size.height * 0.15),
-                                                                          (cell.frame.size.height * 0.15),
-                                                                          (cell.frame.size.height * 0.7),
-                                                                          (cell.frame.size.height * 0.7))];
-        
-        [helpButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"help"
-                                                                                            ofType:@"png"]]
-                    forState:UIControlStateNormal];
-        
-        [cell addSubview:helpButton];
-        helpButton.tag = indexPath.row;
-        
-        [helpButton addTarget:self
-                       action:@selector(helpForTheme:)
-             forControlEvents:UIControlEventTouchUpInside];
     }
     
     else
@@ -103,9 +86,7 @@
     }
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
-    cell.indentationLevel = 1;
-    cell.indentationWidth = cell.frame.size.height;
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.2)];
     return cell;
 }
 
@@ -114,23 +95,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     LayerObject *lo = _layerList[indexPath.row];
     int zoom = 0;
-    if ([ConfigurationControl.sharedInstance layer:lo.layerID visibleAtZoom:CRAPI.sharedInstance.currentZoom])
+    if ([ConfigurationControl.sharedInstance layer:lo.layerID
+                                     visibleAtZoom:CRAPI.sharedInstance.currentZoom])
+    {
         zoom = 22;
-    [ConfigurationControl.sharedInstance setLayer:lo.layerID visibileAtZoom:zoom];
-}
-
-- (void)helpForTheme:(UIButton *)button
-{
-    NSString *theme = _layerList[button.tag];
+    }
     
-    NSLog(@"Help requested for %@", theme);
+    [ConfigurationControl.sharedInstance setLayer:lo.layerID
+                                   visibileAtZoom:zoom];
 }
 
 - (void)tableView:(UITableView *)tableView
 accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     NSString *theme = _layerList[indexPath.row];
-    
     NSLog(@"Detail Disclosure requested for %@", theme);
 }
 
