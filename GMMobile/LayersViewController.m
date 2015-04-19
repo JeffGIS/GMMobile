@@ -72,7 +72,7 @@
     
     if ([_layerList count] != 0)
     {
-        LayerObject* layer = (LayerObject*)_layerList[indexPath.row];
+        LayerObject *layer = (LayerObject *)_layerList[indexPath.row];
         cell.textLabel.text = layer.layerName;
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
