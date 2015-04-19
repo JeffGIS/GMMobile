@@ -313,8 +313,7 @@ extern int keepProcessing;
     
     _mapToolbar = [MapToolbar showMapToolbarWithCenter:mapToolbarCenter
                                                   view:self.view
-                                              delegate:self
-                                           orientation:MapToolbarOrientationTop];
+                                              delegate:self];
     
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     sharedAppDelegate.mapToolbar = _mapToolbar;
@@ -1453,11 +1452,14 @@ haveVV:
     _vectorView.zoom = _vectorViewZoom;
     
     NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
-    if ([[ConfigurationControl sharedInstance] layer:HCLayerAerials visibleAtZoom:_vectorViewZoom])
+    
+    if ([ConfigurationControl.sharedInstance layer:HCLayerAerials
+                                     visibleAtZoom:_vectorViewZoom])
     {
         _layer_jpeg.map = _mapView;
         _layer_png.map = _mapView;
     }
+    
     else
     {
         _layer_jpeg.map = nil;
@@ -1467,7 +1469,8 @@ haveVV:
     [_vectorView setNeedsDisplay];
 }
 
-- (void)highlightVectorView:(PickedItem *)pi displayOption:(int)option
+- (void)highlightVectorView:(PickedItem *)pi
+              displayOption:(int)option
 {
     if (!_vectorView)
         [self allocateVectorView];

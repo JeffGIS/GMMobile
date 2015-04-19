@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="13F1066" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -412,7 +412,7 @@
                                     <rect key="frame" x="149" y="570" width="42" height="21"/>
                                 </variation>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BVa-O1-3dd">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="BVa-O1-3dd">
                                 <rect key="frame" x="-25" y="-15" width="51" height="31"/>
                                 <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
@@ -422,7 +422,7 @@
                                     <action selector="toggleUserLocationButton:" destination="SQ4-SM-lZV" eventType="valueChanged" id="Qjs-ob-qIt"/>
                                 </connections>
                             </switch>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Ds-Eh-nU6">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="7Ds-Eh-nU6">
                                 <rect key="frame" x="-25" y="-15" width="51" height="31"/>
                                 <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
@@ -452,7 +452,7 @@
                                     <action selector="toggleDigitizeButton:" destination="SQ4-SM-lZV" eventType="valueChanged" id="tFW-Ui-UcZ"/>
                                 </connections>
                             </switch>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KZA-k3-b0t">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="KZA-k3-b0t">
                                 <rect key="frame" x="-25" y="-15" width="51" height="31"/>
                                 <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
@@ -562,6 +562,13 @@
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
                         <outlet property="databaseSize" destination="TAl-61-czF" id="cUE-vb-S2t"/>
+                        <outlet property="digtSwitch" destination="PXS-IJ-lCN" id="VI7-Ce-8HE"/>
+                        <outlet property="extSwitch" destination="7Ds-Eh-nU6" id="l5u-8l-QDs"/>
+                        <outlet property="legdSwitch" destination="RGs-lt-olM" id="VW6-8H-IET"/>
+                        <outlet property="locSwitch" destination="BVa-O1-3dd" id="Dyg-cB-cOr"/>
+                        <outlet property="mapSwitch" destination="1V5-LW-ioc" id="ko6-cv-Bin"/>
+                        <outlet property="markSwitch" destination="KZA-k3-b0t" id="qeq-Oa-w8W"/>
+                        <outlet property="platSwitch" destination="V7g-NI-WZp" id="b4E-6i-qdI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CRA-4b-ixH" userLabel="First Responder" sceneMemberID="firstResponder"/>

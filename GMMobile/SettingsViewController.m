@@ -23,6 +23,14 @@
 @property (nonatomic) NSMutableArray *allPlats;
 @property (nonatomic) NSInteger nextPlat;
 
+@property (weak, nonatomic) IBOutlet UISwitch *locSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *extSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *legdSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *digtSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *markSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *mapSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *platSwitch;
+
 @end
 
 @implementation SettingsViewController
@@ -40,6 +48,16 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    _locSwitch.on = sharedAppDelegate.mapToolbar.wantUserLocation;
+    _extSwitch.on = sharedAppDelegate.mapToolbar.wantExtents;
+    _legdSwitch.on = sharedAppDelegate.mapToolbar.wantLegends;
+    _digtSwitch.on = sharedAppDelegate.mapToolbar.wantDigitize;
+    _markSwitch.on = sharedAppDelegate.mapToolbar.wantMarkerSwitch;
+    _mapSwitch.on = sharedAppDelegate.mapToolbar.wantMapType;
+    _platSwitch.on = sharedAppDelegate.mapToolbar.wantPlat;
     
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];

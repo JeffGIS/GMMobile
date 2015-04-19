@@ -44,11 +44,11 @@ typedef NS_ENUM(NSInteger, MapToolbarOrientation)
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 @property (nonatomic) MapToolbarOrientation orientation;
+@property BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation, wantExtents, wantLegends, wantMarkerSwitch;
 
 + (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
                                    view:(UIView *)view
-                                delegate:(id)delegate
-                             orientation:(MapToolbarOrientation)orientation;
+                                delegate:(id)delegate;
 
 - (void)deselectMyLocationButton;
 - (void)animateToVerticalOrientation;

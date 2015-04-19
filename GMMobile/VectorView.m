@@ -177,7 +177,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                        case DISPLAY_DATA_OPTION_DISPLAY:
                                        {
                                            if (keepProcessing == self.displayID &&
-                                               [[ConfigurationControl sharedInstance] layer:HCLayerParcels visibleAtZoom:_zoom])
+                                               [ConfigurationControl.sharedInstance layer:HCLayerParcels
+                                                                            visibleAtZoom:_zoom])
                                            {
                                                PropertyData *pd = [[PropertyData alloc] init];
                                                
@@ -215,8 +216,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                             viewBounds:&_viewBounds];
                                             }*/
                                             
-                                           if (keepProcessing == self.displayID &&                                                [[ConfigurationControl sharedInstance] layer:HCLayerPlanimetric visibleAtZoom:_zoom])
-
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
+                                                                            visibleAtZoom:_zoom])
                                             {
                                                 PlanimetricData *pd = [[PlanimetricData alloc] init];
                                                 pd.processingID = keepProcessing;
@@ -246,8 +248,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                               viewBounds:&_viewBounds];
                                             }
                                            
-                                           if (keepProcessing == self.displayID &&                                                [[ConfigurationControl sharedInstance] layer:HCLayerSewers visibleAtZoom:_zoom])
-
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                                                            visibleAtZoom:_zoom])
                                            {
                                                SewerData *sd = [[SewerData alloc] init];
                                                sd.processingID = keepProcessing;

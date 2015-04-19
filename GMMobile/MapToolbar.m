@@ -10,7 +10,6 @@
 @property (nonatomic) UISwitch *markerSwitch;
 @property (nonatomic) CGSize size;
 @property BOOL configChanged, myLocationEnabled, platMode;
-@property BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation, wantExtents, wantLegends, wantMarkerSwitch;
 @property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth, mapTypeSCVertWidth;
 @property (nonatomic) CGFloat buttonMargin, switchMargin, SCMargin, platSCWidth, platSCVertWidth;
 
@@ -20,8 +19,7 @@
 
 + (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
                                     view:(UIView *)view
-                                delegate:(id)delegate
-                             orientation:(MapToolbarOrientation)orientation;
+                                delegate:(id)delegate;
 {
     MapToolbar *mt = [[MapToolbar alloc] init];
     mt.configChanged = NO;
@@ -55,6 +53,7 @@
     mt.layer.borderWidth = 2.0;
     mt.layer.borderColor = UIColor.blackColor.CGColor;
     mt.delegate = delegate;
+    mt.orientation = MapToolbarOrientationTop;
     
     [view addSubview:mt];
     
@@ -591,72 +590,39 @@
     switch (property)
     {
         case MapToolbarPropertyWantPlat:
-            if (_wantPlat != value)
-            {
-                _configChanged = YES;
-                _wantPlat = value;
-            }
-            
+            _wantPlat = value;
             break;
             
         case MapToolbarPropertyWantDigitize:
-            if (_wantDigitize != value)
-            {
-                _configChanged = YES;
-                _wantDigitize = value;
-            }
-            
+            _wantDigitize = value;
             break;
             
         case MapToolbarPropertyWantMapType:
-            if (_wantMapType != value)
-            {
-                _configChanged = YES;
-                _wantMapType = value;
-            }
-            
+            _wantMapType = value;
             break;
             
         case MapToolbarPropertyWantUserLocation:
-            if (_wantUserLocation != value)
-            {
-                _configChanged = YES;
-                _wantUserLocation = value;
-            }
-            
+            _wantUserLocation = value;
             break;
             
         case MapToolbarPropertyWantExtents:
-            if (_wantExtents != value)
-            {
-                _configChanged = YES;
-                _wantExtents = value;
-            }
-            
+            _wantExtents = value;
             break;
             
         case MapToolbarPropertyWantLegends:
-            if (_wantLegends != value)
-            {
-                _configChanged = YES;
-                _wantLegends = value;
-            }
-            
+            _wantLegends = value;
             break;
             
         case MapToolbarPropertyWantMarkerSwitch:
-            if (_wantMarkerSwitch != value)
-            {
-                _configChanged = YES;
-                _wantMarkerSwitch = value;
-            }
-            
+            _wantMarkerSwitch = value;
             break;
             
         case MapToolbarPropertyWantDefault:
             NSLog(@"ERROR: No MapToolbar Property Type");
             break;
     }
+    
+    _configChanged = YES;
 }
 
 - (void)configure

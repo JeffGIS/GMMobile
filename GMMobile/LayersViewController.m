@@ -114,7 +114,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ApplicationObject *app = _layerList[indexPath.row];
     
-    [[ConfigurationControl sharedInstance] setApp:app.appID];
+    [ConfigurationControl.sharedInstance setApp:app.appID];
 }
 
 - (void)helpForTheme:(UIButton *)button

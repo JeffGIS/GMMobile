@@ -6,18 +6,16 @@
 
 @interface ThemesViewController ()
 
+@property (nonatomic) NSArray *appList;
 
 @end
 
 @implementation ThemesViewController
-{
-    NSArray * _apList;
-}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _apList = [ConfigurationControl sharedInstance].appList;
+    _appList = [ConfigurationControl sharedInstance].appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
 }
@@ -66,9 +64,9 @@
                                       reuseIdentifier:@"Cell"];
     }
     
-    if ([_apList count] != 0)
+    if ([_appList count] != 0)
     {
-        ApplicationObject* app = (ApplicationObject*)_apList[indexPath.row];
+        ApplicationObject *app = (ApplicationObject *)_appList[indexPath.row];
         cell.textLabel.text = app.appName;
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
@@ -108,14 +106,14 @@
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ApplicationObject *app = _apList[indexPath.row];
+    ApplicationObject *app = _appList[indexPath.row];
     
-    [[ConfigurationControl sharedInstance] setApp:app.appID];
+    [ConfigurationControl.sharedInstance setApp:app.appID];
 }
 
 - (void)helpForTheme:(UIButton *)button
 {
-    NSString *theme = _apList[button.tag];
+    NSString *theme = _appList[button.tag];
     
     NSLog(@"Help requested for %@", theme);
 }
@@ -123,7 +121,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *theme = _apList[indexPath.row];
+    NSString *theme = _appList[indexPath.row];
     
     NSLog(@"Detail Disclosure requested for %@", theme);
 }

@@ -18,7 +18,6 @@
 - (IBAction)loadCensus:(id)sender;
 - (IBAction)showSpreadsheetView:(id)sender;
 
-
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 
 @property (atomic) int nComplete;
