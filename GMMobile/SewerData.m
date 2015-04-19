@@ -4,6 +4,7 @@
 extern int keepProcessing;
 
 #import "SewerData.h"
+#import "ConfigurationControl.h"
 
 static BOOL _createDirectory = YES;
 
@@ -254,20 +255,6 @@ int SQLOKswr(int sqlReturn, char *method)
     [self close];
     return bounds;
 }*/
-
-BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1)
-{
-    double d = ArcDistance(*p1,*pPoint);
-
-    if (d < *mind)
-    {
-        *mind = d;
-        *pNearPt = *pPoint;
-        return YES;
-    }
-    
-    return NO;
-}
 
 - (int)pickSanPlat:(LLPOINT *)pt
 {
@@ -567,7 +554,8 @@ BOOL findClosestPoint (LPDPOINT pPoint,LPDPOINT pNearPt,double *mind,LPDPOINT p1
           atZoom:(CGFloat)zoom
    highlightList:(NSMutableArray *)hlist
 {
-    if (_zoom < CRAPI.sharedInstance.sewerVisibleAtZoom)
+    if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                 visibleAtZoom:_zoom])
         return 0;
     
     int nPicked = 0;

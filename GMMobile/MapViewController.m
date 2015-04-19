@@ -37,7 +37,7 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall;
+@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
 @property BOOL waitForVectorViewRefresh;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
@@ -211,14 +211,10 @@ extern int keepProcessing;
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
     //[_layer_jpeg clearTileCache];
     
-    if (CRAPI.sharedInstance.GMTilesVisible)
-        _layer_jpeg.map = _mapView;
     
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
     //[_layer_png clearTileCache];
     
-    if (CRAPI.sharedInstance.GMTilesVisible)
-        _layer_png.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -631,6 +627,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
+        planData.zoom = _mapView.camera.zoom;
         
         [propData pickPID:&llPropPt
             highlightList:highlightList];
@@ -641,7 +638,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         [planData pickAlleyWallPoint:llpickPt
                        highlightList:highlightList];
-
+        [planData pickAlleyLine:llpickPt atZoom:_mapView.camera.zoom highlightList:highlightList];
         if (highlightList.count)
         {
             if (_clearMarkers)
@@ -677,6 +674,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             switch (pi.itemType)
             {
+                case PTAlleyLine:
+                    _selectedAlleySeg = pi.identifier;
+                    marker.title = _selectedAlleySeg;
+                    marker.snippet = pi.symbolName;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    break;
                 case PTAlleyWallPt:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
@@ -1463,12 +1466,14 @@ haveVV:
     {
         _layer_jpeg.map = _mapView;
         _layer_png.map = _mapView;
+        ConfigurationControl.sharedInstance.GMTilesVisible = YES;
     }
     
     else
     {
         _layer_jpeg.map = nil;
         _layer_png.map = nil;
+        ConfigurationControl.sharedInstance.GMTilesVisible = NO;
     }
     
     [_vectorView setNeedsDisplay];
