@@ -57,7 +57,9 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (NSArray *)getLayerSymbols;
 - (NSString *)getLayerName:(int)layerID;
 
-- (void)setLayer:(HardCodedLayers)layerID visibileAtZoom:(int)zoom;
+- (void)setLayer:(HardCodedLayers)layerID
+  visibileAtZoom:(int)zoom;
+
 - (BOOL)layer:(int)layerID
 visibleAtZoom:(float)zoom;
 

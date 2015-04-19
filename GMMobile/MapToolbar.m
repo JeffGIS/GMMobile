@@ -594,7 +594,9 @@
             break;
             
         case MapToolbarPropertyWantDefault:
-            NSLog(@"ERROR: No MapToolbar Property Type");
+            break;
+            
+        default:
             break;
     }
     
