@@ -236,7 +236,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 }
 
 - (void)setLayer:(HardCodedLayers)layerID
-  visibileAtZoom:(int)zoom
+  visibileAtZoom:(NSInteger)zoom
 {
     configLayerZoom[_currentApp][layerID] = zoom;
 }
@@ -269,6 +269,20 @@ visibleAtZoom:(float)zoom
 - (BOOL)getLayerPickability:(int)layerID;
 {
     return NO;
+}
+- (HardCodedLayers)layerIDforIndex:(NSInteger)index
+{
+    int id=-1;
+    HardCodedLayers i;
+    
+    for (i=0;i<NUMHardCodedLayers;i++)
+    {
+        if (configLayers[_currentApp][i])
+            id++;
+        if (id == index)
+            break;
+    }
+    return i;
 }
 
 @end

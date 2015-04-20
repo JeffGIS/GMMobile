@@ -26,6 +26,37 @@
 {
     [super viewDidLoad];
     
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        _rowHeight = 60.0;
+        _font = [UIFont boldSystemFontOfSize:22.0];
+        _indentationLevel = 10;
+    }
+    
+    else
+    {
+        _rowHeight = 76.0;
+        _font = [UIFont boldSystemFontOfSize:36.0];
+        _indentationLevel = 34;
+    }
+    
+    [self setupTableView];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self setupLayers];
+    [_tableView reloadData];
+}
+
+- (void)setupLayers
+{
     _layerList = ConfigurationControl.sharedInstance.getLayers;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
@@ -36,6 +67,7 @@
     
     for (int i = 0; i < _layerList.count; i++)
     {
+        LayerObject *layer = (LayerObject *)_layerList[i];
         _stepper[i] = [[UIStepper alloc] init];
         _stepper[i].value = DEFAULT_ZOOM_LEVEL;
         _stepper[i].enabled = YES;
@@ -78,34 +110,8 @@
         _label[i].font = [UIFont boldSystemFontOfSize:16.0];
         _label[i].textAlignment = NSTextAlignmentCenter;
     }
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        _rowHeight = 60.0;
-        _font = [UIFont boldSystemFontOfSize:22.0];
-        _indentationLevel = 10;
-    }
-    
-    else
-    {
-        _rowHeight = 76.0;
-        _font = [UIFont boldSystemFontOfSize:36.0];
-        _indentationLevel = 34;
-    }
-    
-    [self setupTableView];
-}
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
 }
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [_tableView reloadData];
-}
-
 - (void)setupTableView
 {
     _tableView.delegate = self;
@@ -130,17 +136,25 @@
 viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
+                            CGRectMake(0.0, 0.0, tableView.frame.size.width, (3*_rowHeight)/4)];
     
     headerLabel.font = _font;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = @"Layers Manager";
+    headerLabel.text = @"Layers";
+    UILabel *curZoomLabel = [[UILabel alloc] initWithFrame:
+                            CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight/4)];
+    
+    curZoomLabel.font = _font;
+    curZoomLabel.textColor = UIColor.whiteColor;
+    curZoomLabel.textAlignment = NSTextAlignmentCenter;
+    curZoomLabel.text = @"Layers";
     
     UIView *headerView = [[UIView alloc] initWithFrame:
                           CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
     
     [headerView addSubview:headerLabel];
+    [headerView addSubview:curZoomLabel];
     headerView.backgroundColor = UIColor.blackColor;
     return headerView;
 }
@@ -320,21 +334,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)layerWasTurnedOnAtIndex:(NSInteger)index
 {
-    NSLog(@"Layer Turned ON at Index %ld",
-          (long)index);
+    LayerObject *layer = (LayerObject *)_layerList[index];
+    [ConfigurationControl.sharedInstance setLayer:layer.layerID visibileAtZoom:0];
 }
 
 - (void)layerWasTurnedOffAtIndex:(NSInteger)index
 {
-    NSLog(@"Layer Turned OFF at Index %ld",
-          (long)index);
+    LayerObject *layer = (LayerObject *)_layerList[index];
+    [ConfigurationControl.sharedInstance setLayer:layer.layerID visibileAtZoom:22];
 }
 
 - (void)layerVisibilityWasSetToZoomLevel:(NSInteger)zoomLevel
                                  atIndex:(NSInteger)index
 {
-    NSLog(@"Layer Visibility Set to %ld at Index %ld",
-          (long)zoomLevel, (long)index);
+    LayerObject *layer = (LayerObject *)_layerList[index];
+    [ConfigurationControl.sharedInstance setLayer:layer.layerID visibileAtZoom:zoomLevel];
 }
 
 @end
