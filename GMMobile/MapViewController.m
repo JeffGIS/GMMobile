@@ -2197,7 +2197,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (_digitizationMode == DigitizationModeAlleyWallMove)
         [pd userSavedAlleyWallPointMove:YES];
-        
+    
     [self hideDigitizationMode];
 }
 
