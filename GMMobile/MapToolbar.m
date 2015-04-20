@@ -131,8 +131,8 @@
     mt.digitizeButton = [[UIButton alloc] init];
     
     [mt setupButton:mt.digitizeButton
-         imageTitle:@"digitize"
-         edgeInsets:UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0)
+         imageTitle:@"plusSign"
+         edgeInsets:UIEdgeInsetsMake(3.0, 3.0, 3.0, 3.0)
              target:mt
            selector:@selector(digitizeSelected:)];
     

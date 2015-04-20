@@ -54,6 +54,7 @@
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
+		A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D269E21AE4C77C00A5C38E /* plusSign.png */; };
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
@@ -160,6 +161,7 @@
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A9CBF20C1A81558C006AC88E /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
+		A9D269E21AE4C77C00A5C38E /* plusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusSign.png; sourceTree = "<group>"; };
 		A9E49B421A7ECADF002B2BA2 /* FindAddressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindAddressViewController.h; sourceTree = "<group>"; };
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
 		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9D269E21AE4C77C00A5C38E /* plusSign.png */,
 				A9B6F3481AE46DC3003FD71E /* checkmark.png */,
 				A9C086761AE2338000E79B3E /* digitize.png */,
 				A9C086741AE173A900E79B3E /* applications.png */,
@@ -549,6 +552,7 @@
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
+				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */,
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
