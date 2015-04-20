@@ -488,13 +488,20 @@ extern int keepProcessing;
 {
     if (![self continue])
         return;
+    CGFloat sizeFactor = 1;
     
-    NSString *query = @"";
+    /*if (_zoom > 18)
+        sizeFactor *= (2.0 * (_zoom - 18.0));
+    
+    else if (_zoom < 18)
+        */sizeFactor /= (2.0 * (22.0 - _zoom));
+    CGFloat width = 100 * sizeFactor;
+    
+    NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    CGFloat width = 16;
-    CGColorRef alleyLineColor = UIColor.greenColor.CGColor;
-    int numPoints, numLoops;
+    CGColorRef alleyLineColor = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1].CGColor;
+    int numPoints,numLoops;
     //LPSTR symName;
     PropertyData *pd = [[PropertyData alloc] init];
     

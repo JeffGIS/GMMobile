@@ -10,6 +10,7 @@
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) NSInteger selectedRow;
 @property (nonatomic) UIImageView *checkmarkView;
+@property (nonatomic) UIFont *font;
 
 @end
 
@@ -20,17 +21,24 @@
     [super viewDidLoad];
     _appList = ConfigurationControl.sharedInstance.appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 60.0);
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
                                                          [NSBundle.mainBundle pathForResource:@"checkmark"
                                                                                        ofType:@"png"]]];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
         _checkmarkView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+        _rowHeight = 60.0;
+        _font = [UIFont boldSystemFontOfSize:22.0];
+    }
     
     else
+    {
         _checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
+        _rowHeight = 76.0;
+        _font = [UIFont boldSystemFontOfSize:36.0];
+    }
     
     _checkmarkView.contentMode = UIViewContentModeScaleToFill;
     
@@ -83,7 +91,7 @@ viewForHeaderInSection:(NSInteger)section
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:
                             CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
     
-    headerLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.2)];
+    headerLabel.font = _font;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
     headerLabel.text = @"Select Application";
@@ -131,7 +139,7 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(_rowHeight / 2.6)];
+    cell.textLabel.font = _font;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
