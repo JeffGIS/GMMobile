@@ -20,12 +20,14 @@
     UIStepper *_stepper[MAX_LAYER_NAME];
     UISegmentedControl *_segControl[MAX_LAYER_NAME];
     UILabel *_label[MAX_LAYER_NAME];
+    NSString * _headerTitle;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    _headerTitle = @"Layers";
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
     
@@ -134,13 +136,13 @@
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:
+    UILabel * headerLabel = [[UILabel alloc] initWithFrame:
                             CGRectMake(0.0, 0.0, tableView.frame.size.width, (_headerHeight * 0.6))];
     
     headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = @"Layers";
+    headerLabel.text = _headerTitle;
     
     UILabel *currentZoomLabel = [[UILabel alloc] initWithFrame:
                                  CGRectMake(0.0, (_headerHeight * 0.6),
@@ -187,7 +189,8 @@ viewForHeaderInSection:(NSInteger)section
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
         cell.indentationLevel = _indentationLevel;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        if (layer.hasSymbols)
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
         CGFloat margin = 10.0;
         CGFloat xCount = margin;
@@ -235,16 +238,13 @@ viewForHeaderInSection:(NSInteger)section
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     LayerObject *layer = _layerList[indexPath.row];
-    int zoom = 0;
     
-    if ([ConfigurationControl.sharedInstance layer:layer.layerID
-                                     visibleAtZoom:CRAPI.sharedInstance.currentZoom])
+    if (layer.hasSymbols)
     {
-        zoom = 22;
+        _headerTitle = layer.layerName;
+        _layerList = [ConfigurationControl.sharedInstance getSymbolsForLayer:layer.layerID];
+        [_tableView reloadData];
     }
-    
-    [ConfigurationControl.sharedInstance setLayer:layer.layerID
-                                   visibileAtZoom:zoom];
     
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];

@@ -4,11 +4,13 @@
 #import "ConfigurationControl.h"
 #import "MapToolbar.h"
 #import "AppDelegate.h"
+#import "PlanimetricData.h"
 
 static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
 static BOOL layerVisible[NUMHardCodedLayers]={0};
 static BOOL layerPickable[NUMHardCodedLayers]={0};
 static float layerDefaultZoom[NUMHardCodedLayers]={0};
+static BOOL layerHasSymbols[NUMHardCodedLayers]={0};
 static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};
 static int  configLayers[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
@@ -33,8 +35,8 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 
 @implementation LayerObject
 
-- (id)initWithNameAndID:(NSString *)name
-             identifier:(int)identifier
+- (id)initWithName:(NSString *)name
+             andID:(int)identifier
 {
     self = [super init];
     
@@ -54,6 +56,9 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 @end
 
 @implementation ConfigurationControl
+{
+    NSMutableArray* symLists[NUMHardCodedConfigs][NUMHardCodedLayers];
+}
 
 - (id)init
 {
@@ -96,6 +101,12 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerDefaultZoom[HCLayerSewers] = 17;
         layerDefaultZoom[HCLayerPlanimetric] = 18;
         layerDefaultZoom[HCLayerAlleys] = 14;
+        
+        layerHasSymbols[HCLayerAerials] = NO;
+        layerHasSymbols[HCLayerParcels] = NO;
+        layerHasSymbols[HCLayerSewers] = NO;
+        layerHasSymbols[HCLayerPlanimetric] = YES;
+        layerHasSymbols[HCLayerAlleys] = NO;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDefault] = YES;
@@ -228,6 +239,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             LayerObject *lo = [[LayerObject alloc] init];
             lo.layerID = layer;
             lo.layerName = [NSString stringWithUTF8String:layerName[layer]];
+            lo.hasSymbols = layerHasSymbols[layer];
             [layers addObject:lo];
         }
     }
@@ -241,7 +253,21 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     configLayerZoom[_currentApp][layerID] = zoom;
 }
 
-- (BOOL)layer:(int)layerID
+- (BOOL)layer:(HardCodedLayers)layerID
+visibleAtZoom:(float)zoom
+{
+    [self setup];
+    
+    if (configLayers[_currentApp][layerID] &&
+        zoom >= configLayerZoom[_currentApp][layerID])
+    {
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)symbol:(NSString*)sym inLayer:(HardCodedLayers)layerID
 visibleAtZoom:(float)zoom
 {
     [self setup];
@@ -283,6 +309,34 @@ visibleAtZoom:(float)zoom
             break;
     }
     return i;
+}
+- (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID
+{
+    NSMutableArray * array=[[NSMutableArray alloc]init];
+    
+    PlanimetricData * pd = [[PlanimetricData alloc]init];
+    
+    NSArray * syms = [pd getDistinctSymbols:@"PLAN_POINT"];
+    for (NSString * symName in syms)
+    {
+        LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+        [array addObject:lo];
+    }
+    syms = [pd getDistinctSymbols:@"PLAN_LINE"];
+    for (NSString * symName in syms)
+    {
+        LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+        [array addObject:lo];
+    }
+    
+    syms = [pd getDistinctSymbols:@"PLAN_AREA"];
+    for (NSString * symName in syms)
+    {
+        LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+        [array addObject:lo];
+    }
+    
+    return array;
 }
 
 @end

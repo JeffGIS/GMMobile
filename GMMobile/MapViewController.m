@@ -467,7 +467,8 @@ extern int keepProcessing;
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
-    
+    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+
     [_mapToolbar configure:_screenSetting];
 }
 
