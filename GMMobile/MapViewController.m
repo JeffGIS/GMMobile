@@ -30,7 +30,7 @@ extern int keepProcessing;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount, digitizationMode;
+@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -39,7 +39,7 @@ extern int keepProcessing;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
-@property BOOL waitForVectorViewRefresh;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -49,6 +49,8 @@ extern int keepProcessing;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
 @property (nonatomic) UIView *digitizationToolbar;
 @property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
+@property (nonatomic) DigitizationMode digitizationMode;
+
 
 @end
 
@@ -337,7 +339,7 @@ extern int keepProcessing;
             [self.view bringSubviewToFront:helpWebView];
     }
     
-    if (CRAPI.sharedInstance.inDigitizeMode)
+    if (_inDigitizationMode)
     {
         _digitizerTargetView.hidden = NO;
         _digitizerTargetView.alpha = 1.0;
@@ -590,7 +592,7 @@ extern int keepProcessing;
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    if (CRAPI.sharedInstance.inDigitizeMode)
+    if (_inDigitizationMode)
         return;
     
     if (!_tableView.hidden)
@@ -821,7 +823,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
                 break;
                 
-            case DigitizationModeAlleyWall:
+            case DigitizationModeAlleyWallMove:
             {
                 PlanimetricData *pd = [[PlanimetricData alloc] init];
                 
@@ -848,6 +850,44 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
                 break;
                 
+            case DigitizationModeAlleyWallNew:
+            {
+                _digitizerCount++;
+                
+                MarkerButton *marker = [MarkerButton markerWithPosition:position
+                                                                   view:self.view
+                                                                    map:_mapView
+                                                        statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
+                                                               delegate:self];
+                
+                marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                            (_digitizerTargetView.center.y -
+                                             (marker.frame.size.height / 2.0)));
+                
+                [self removePreviousInfoWindow];
+                _infoWindow = [[MarkerInfoWindow alloc] init];
+                
+                marker.title = [NSString stringWithFormat:@"New Alley Wall %ld", (long)_digitizerCount];
+                marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+                [_markerArray addObject:marker];
+                
+                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+                _infoWindow.delegate = self;
+                _infoWindow.title = marker.title;
+                _infoWindow.snippet = marker.snippet;
+                _infoWindow.position = marker.position;
+                _infoWindow.type = MarkerInfoWindowTypeCustom;
+                [self.view addSubview:_infoWindow];
+                _noneSelected = NO;
+                
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     _cancelDigitizerButton.alpha = 0.0;
+                                     _saveDigitizerButton.alpha = 1.0;
+                                     _undoDigitizerButton.alpha = 1.0;
+                                 }];
+            }
+                
             case DigitizationModeProperty:
                 break;
                 
@@ -867,7 +907,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
 {
-    if (CRAPI.sharedInstance.inDigitizeMode == YES)
+    if (_inDigitizationMode)
     {
         [self handleLongPressDigitizingForState:gesture];
         return;
@@ -1112,7 +1152,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     if (_moveDigitizer)
     {
         _moveDigitizer = NO;
-        [self showDigitizer];
+        [self showDigitizer:YES];
     }
     
     if (!_firstTimeMap)
@@ -2116,17 +2156,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)moveWallPoint
 {
-    CRAPI.sharedInstance.inDigitizeMode = YES;
-    _digitizationMode = DigitizationModeAlleyWall;
+    _inDigitizationMode = YES;
+    _digitizationMode = DigitizationModeAlleyWallMove;
     [self hideMarkersAndInfoWindows];
     [_mapToolbar hide];
     
     MarkerButton *marker = _markerArray.lastObject;
     
-    NSLog(@"%d", CLLocationCoordinateEqual(_mapView.camera.target, marker.position));
-    
     if (CLLocationCoordinateEqual(_mapView.camera.target, marker.position))
-        [self showDigitizer];
+        [self showDigitizer:YES];
     
     else
     {
@@ -2156,8 +2194,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)saveDigitizationMode:(UIButton *)button
 {
     PlanimetricData *pd = [[PlanimetricData alloc] init];
-    [pd userSavedAlleyWallPointMove:YES];
     
+    if (_digitizationMode == DigitizationModeAlleyWallMove)
+        [pd userSavedAlleyWallPointMove:YES];
+        
     [self hideDigitizationMode];
 }
 
@@ -2178,7 +2218,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)hideDigitizationMode
 {
-    CRAPI.sharedInstance.inDigitizeMode = NO;
+    _inDigitizationMode = NO;
     
     [self hideDigitizer];
     [self showMarkersAndInfoWindows];
@@ -2230,14 +2270,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      }];
 }
 
-- (void)showDigitizer
+- (void)showDigitizer:(BOOL)moveMarker;
 {
-    MarkerButton *marker = _markerArray.lastObject;
-    
-    CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
-    
-    _digitizerTargetView.center = CGPointMake(markerPosition.x,
-                                              (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
+    if (moveMarker)
+    {
+        MarkerButton *marker = _markerArray.lastObject;
+        
+        CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
+        
+        _digitizerTargetView.center = CGPointMake(markerPosition.x,
+                                                  (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
+    }
     
     _digitizerTargetView.hidden = NO;
     _digitizationToolbar.hidden = NO;
@@ -2624,7 +2667,32 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectDigitize
 {
-    //implement digitize here
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigAlleyWalls:
+            _digitizationMode = DigitizationModeAlleyWallNew;
+            break;
+            
+        case HCConfigMetroProp:
+            _digitizationMode = DigitizationModeProperty;
+            break;
+        
+        case HCConfigSewers:
+            _digitizationMode = DigitizationModeSewer;
+            break;
+            
+        case HCConfigCurbRamps:
+            _digitizationMode = DigitizationModeCurbRamps;
+            break;
+            
+        default:
+            break;
+    }
+    
+    _inDigitizationMode = YES;
+    [self hideMarkersAndInfoWindows];
+    [_mapToolbar hide];
+    [self showDigitizer:NO];
 }
 
 - (void)mapToolbarDidSelectLegends

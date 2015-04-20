@@ -568,9 +568,10 @@ extern int keepProcessing;
     SQLOK(sqlite3_finalize(statement), "displayAlleyLine");
     [pd close];
 }
+
 - (int)pickAlleyLine:(LLPOINT)pt
-          atZoom:(CGFloat)zoom
-   highlightList:(NSMutableArray *)hlist
+              atZoom:(CGFloat)zoom
+       highlightList:(NSMutableArray *)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
                                       visibleAtZoom:zoom])
@@ -706,6 +707,7 @@ extern int keepProcessing;
         BasePt.y = sqlite3_column_double(statement,1);
 
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        
         [self drawWallPoint:context
                     atPoint:&llpoint
                   withColor:UIColor.greenColor.CGColor
@@ -718,10 +720,9 @@ extern int keepProcessing;
 }
 
 - (void)drawWallPoint:(CGContextRef)context
-              atPoint:(DPOINT*)pPoint
+              atPoint:(DPOINT *)pPoint
             withColor:(CGColorRef)color
               andSize:(CGFloat)size
-
 {
     CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
                                   (pPoint->y - size / 2.0), size, size);
@@ -731,10 +732,10 @@ extern int keepProcessing;
     CGContextSetLineWidth(context, 2);
     
     if (ConfigurationControl.sharedInstance.GMTilesVisible)
-        CGContextSetRGBStrokeColor(context, 1, 1,0,1);
+        CGContextSetRGBStrokeColor(context, 1, 1, 0, 1);
     
     else
-        CGContextSetRGBStrokeColor(context, 0, 0,0,1);
+        CGContextSetRGBStrokeColor(context, 0, 0, 0, 1);
     
     CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
