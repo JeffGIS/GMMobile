@@ -2718,7 +2718,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     else
     {
         [self showCompass];
-        [_mapToolbar normalMode:setting];
+        
+        if (_screenSetting == MapViewScreenSettingPlatView)
+            [_mapToolbar normalMode:setting];
     }
     
     switch (setting)
