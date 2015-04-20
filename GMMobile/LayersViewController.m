@@ -9,18 +9,13 @@
 @interface LayersViewController ()
 
 @property (nonatomic) NSArray *layerList;
-@property (nonatomic) CGFloat rowHeight, headerHeight;
+@property (nonatomic) CGFloat rowHeight, headerHeight, segControlWidth, stepperHeight;
 @property (nonatomic) UIFont *font, *headerFont, *headerZoomFont;
 @property (nonatomic) NSInteger indentationLevel;
 
 @end
 
 @implementation LayersViewController
-{
-    UIStepper *_stepper[MAX_LAYER_NAME];
-    UISegmentedControl *_segControl[MAX_LAYER_NAME];
-    UILabel *_label[MAX_LAYER_NAME];
-}
 
 - (void)viewDidLoad
 {
@@ -35,6 +30,7 @@
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
         _headerZoomFont = [UIFont boldSystemFontOfSize:18.0];
         _indentationLevel = 10;
+        _segControlWidth = 120.0;
     }
     
     else
@@ -44,6 +40,7 @@
         _headerFont = [UIFont boldSystemFontOfSize:44.0];
         _headerZoomFont = [UIFont boldSystemFontOfSize:28.0];
         _indentationLevel = 34;
+        _segControlWidth = 160.0;
     }
     
     _headerHeight = (_rowHeight * 1.2);
@@ -144,7 +141,25 @@ viewForHeaderInSection:(NSInteger)section
         CGFloat margin = 10.0;
         CGFloat xCount = margin;
         
-        if (![cell.contentView.subviews containsObject:_segControl[indexPath.row]])
+        BOOL containsSegControl = NO, containsStepper = NO, containsCellLabel = NO;
+        
+        for (UIView *subviews in cell.contentView.subviews)
+        {
+            if ([subviews isKindOfClass:UISegmentedControl.class])
+                containsSegControl = YES;
+            
+            if ([subviews isKindOfClass:UIStepper.class])
+                containsStepper = YES;
+            
+            if ([subviews isKindOfClass:TableViewCellLabel.class])
+                containsCellLabel = YES;
+        }
+        
+        UISegmentedControl *segControl;
+        UIStepper *stepper;
+        TableViewCellLabel *cellLabel;
+        
+        if (!containsSegControl)
         {
             UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
             
@@ -152,73 +167,73 @@ viewForHeaderInSection:(NSInteger)section
                                                                    forKey:NSFontAttributeName];
 
             
-            _segControl[indexPath.row] = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
+            segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
             
-            _segControl[indexPath.row].frame = CGRectMake(xCount, 12.0, 160.0,
-                                                          (cell.frame.size.height - 24.0));
+            segControl.frame = CGRectMake(xCount, 12.0, _segControlWidth,
+                                          (cell.frame.size.height - 24.0));
             
-            _segControl[indexPath.row].selectedSegmentIndex = GMLayerSettingAuto;
-            _segControl[indexPath.row].layer.borderColor = UIColor.blackColor.CGColor;
-            _segControl[indexPath.row].layer.borderWidth = 3.0;
-            _segControl[indexPath.row].layer.cornerRadius = 4.0;
+            segControl.selectedSegmentIndex = GMLayerSettingAuto;
+            segControl.layer.borderColor = UIColor.blackColor.CGColor;
+            segControl.layer.borderWidth = 3.0;
+            segControl.layer.cornerRadius = 4.0;
             
-            [_segControl[indexPath.row] setTitleTextAttributes:attributes
-                                                      forState:UIControlStateNormal];
+            [segControl setTitleTextAttributes:attributes
+                                      forState:UIControlStateNormal];
             
-            [[_segControl[indexPath.row].subviews objectAtIndex:0] setTintColor:UserDefaults.defaults.darkGreen];
-            [[_segControl[indexPath.row].subviews objectAtIndex:2] setTintColor:UIColor.redColor];
-            [[_segControl[indexPath.row].subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.appleBlue];
+            [[segControl.subviews objectAtIndex:0] setTintColor:UserDefaults.defaults.darkGreen];
+            [[segControl.subviews objectAtIndex:2] setTintColor:UIColor.redColor];
+            [[segControl.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.appleBlue];
             
-            [_segControl[indexPath.row] addTarget:self
-                               action:@selector(segControlSelected:)
-                     forControlEvents:UIControlEventValueChanged];
+            [segControl addTarget:self
+                           action:@selector(segControlSelected:)
+                 forControlEvents:UIControlEventValueChanged];
             
-            _segControl[indexPath.row].tag = indexPath.row;
+            segControl.tag = indexPath.row;
 
-            
-            
-            [cell.contentView addSubview:_segControl[indexPath.row]];
+            [cell.contentView addSubview:segControl];
         }
         
-        if (![cell.contentView.subviews containsObject:_stepper[indexPath.row]])
+        if (!containsStepper)
         {
-            xCount += (_segControl[indexPath.row].frame.size.width + margin);
+            xCount += (_segControlWidth + margin);
             
-            _stepper[indexPath.row] = [[UIStepper alloc] initWithFrame:
-                                       CGRectMake((xCount + 23.0), 12.0, 0.0, 0.0)];
+            stepper = [[UIStepper alloc] initWithFrame:
+                       CGRectMake((xCount + 23.0), 12.0, 0.0, 0.0)];
             
-            _stepper[indexPath.row].value = DEFAULT_ZOOM_LEVEL;
-            _stepper[indexPath.row].enabled = YES;
-            _stepper[indexPath.row].minimumValue = 1;
-            _stepper[indexPath.row].maximumValue = 21;
-            _stepper[indexPath.row].layer.cornerRadius = 4.0;
-            _stepper[indexPath.row].layer.borderWidth = 3.0;
-            _stepper[indexPath.row].layer.borderColor = UIColor.blackColor.CGColor;
-            _stepper[indexPath.row].tintColor = UIColor.blackColor;
-            [[_stepper[indexPath.row].subviews objectAtIndex:0] setTintColor:UIColor.redColor];
-            [[_stepper[indexPath.row].subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
+            _stepperHeight = stepper.frame.size.height;
             
-            _stepper[indexPath.row].tag = indexPath.row;
+            stepper.value = DEFAULT_ZOOM_LEVEL;
+            stepper.enabled = YES;
+            stepper.minimumValue = 1;
+            stepper.maximumValue = 21;
+            stepper.layer.cornerRadius = 4.0;
+            stepper.layer.borderWidth = 3.0;
+            stepper.layer.borderColor = UIColor.blackColor.CGColor;
+            stepper.tintColor = UIColor.blackColor;
+            [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.redColor];
+            [[stepper.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
             
-            [_stepper[indexPath.row] addTarget:self
-                                        action:@selector(stepperSelected:)
-                              forControlEvents:UIControlEventValueChanged];
+            stepper.tag = indexPath.row;
             
-            [cell.contentView addSubview:_stepper[indexPath.row]];
+            [stepper addTarget:self
+                        action:@selector(stepperSelected:)
+              forControlEvents:UIControlEventValueChanged];
+            
+            [cell.contentView addSubview:stepper];
         }
         
-        if (![cell.contentView.subviews containsObject:_label[indexPath.row]])
+        if (!containsCellLabel)
         {
-            _label[indexPath.row] = [[UILabel alloc] initWithFrame:
-                                     CGRectMake(xCount, 12.0 + _stepper[indexPath.row].frame.size.height,
-                                                140.0, _stepper[indexPath.row].frame.size.height)];
+            cellLabel = [[TableViewCellLabel alloc] initWithFrame:
+                         CGRectMake(xCount, 12.0 + _stepperHeight, 140.0, _stepperHeight)];
             
-            _label[indexPath.row].layer.cornerRadius = 4.0;
-            _label[indexPath.row].text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
-            _label[indexPath.row].font = [UIFont boldSystemFontOfSize:16.0];
-            _label[indexPath.row].textAlignment = NSTextAlignmentCenter;
+            cellLabel.layer.cornerRadius = 4.0;
+            cellLabel.tag = indexPath.row;
+            cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
+            cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
+            cellLabel.textAlignment = NSTextAlignmentCenter;
             
-            [cell.contentView addSubview:_label[indexPath.row]];
+            [cell.contentView addSubview:cellLabel];
         }
     }
     
@@ -255,35 +270,59 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)segControlSelected:(UISegmentedControl *)segControl
 {
-    switch (segControl.selectedSegmentIndex)
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:segControl.tag
+                                                inSection:0];
+    
+    UIView *contentView = [_tableView cellForRowAtIndexPath:indexPath].contentView;
+    
+    for (UIStepper *stepper in contentView.subviews)
     {
-        case GMLayerSettingOn:
-            [self layerWasTurnedOnAtIndex:segControl.tag];
-            
-            [self disableStepper:_stepper[segControl.tag]
-                         setting:GMLayerSettingOn];
-            break;
-            
-        case GMLayerSettingOff:
-            [self layerWasTurnedOffAtIndex:segControl.tag];
-            
-            [self disableStepper:_stepper[segControl.tag]
-                         setting:GMLayerSettingOff];
-            break;
-            
-        case GMLayerSettingAuto:
-            [self enableStepper:_stepper[segControl.tag]];
-            
-            [self layerVisibilityWasSetToZoomLevel:_stepper[segControl.tag].value
-                                           atIndex:segControl.tag];
-            break;
+        if ([stepper isKindOfClass:UIStepper.class] &&
+            stepper.tag == segControl.tag)
+        {
+            switch (segControl.selectedSegmentIndex)
+            {
+                case GMLayerSettingOn:
+                    [self layerWasTurnedOnAtIndex:segControl.tag];
+                    
+                    [self disableStepper:stepper
+                                 setting:GMLayerSettingOn];
+                    break;
+                    
+                case GMLayerSettingOff:
+                    [self layerWasTurnedOffAtIndex:segControl.tag];
+                    
+                    [self disableStepper:stepper
+                                 setting:GMLayerSettingOff];
+                    break;
+                    
+                case GMLayerSettingAuto:
+                    [self enableStepper:stepper];
+                    
+                    [self layerVisibilityWasSetToZoomLevel:stepper.value
+                                                   atIndex:segControl.tag];
+                    break;
+            }
+        }
     }
 }
 
 - (void)stepperSelected:(UIStepper *)stepper
 {
-    _label[stepper.tag].text = [NSString stringWithFormat:@"Show at Zoom %ld",
-                                (long)stepper.value];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:stepper.tag
+                                                inSection:0];
+    
+    UIView *contentView = [_tableView cellForRowAtIndexPath:indexPath].contentView;
+    
+    for (TableViewCellLabel *cellLabel in contentView.subviews)
+    {
+        if ([cellLabel isKindOfClass:TableViewCellLabel.class] &&
+            cellLabel.tag == stepper.tag)
+        {
+            cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %ld",
+                              (long)stepper.value];
+        }
+    }
     
     [self layerVisibilityWasSetToZoomLevel:stepper.value
                                    atIndex:stepper.tag];
@@ -298,24 +337,47 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         stepper.tintColor = UIColor.blackColor;
         [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.redColor];
         [[stepper.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
-        
-        _label[stepper.tag].textColor = UIColor.blackColor;
-        
-        _label[stepper.tag].text = [NSString stringWithFormat:@"Show at Zoom %d",
-                                    DEFAULT_ZOOM_LEVEL];
-        
         stepper.value = DEFAULT_ZOOM_LEVEL;
+        
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:stepper.tag
+                                                    inSection:0];
+        
+        UIView *contentView = [_tableView cellForRowAtIndexPath:indexPath].contentView;
+        
+        for (TableViewCellLabel *cellLabel in contentView.subviews)
+        {
+            if ([cellLabel isKindOfClass:TableViewCellLabel.class] &&
+                cellLabel.tag == stepper.tag)
+            {
+                cellLabel.textColor = UIColor.blackColor;
+                
+                cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %d",
+                                  DEFAULT_ZOOM_LEVEL];
+            }
+        }
     }
 }
 
 - (void)disableStepper:(UIStepper *)stepper
                setting:(GMLayerSetting)setting
 {
-    if (setting == GMLayerSettingOn)
-        _label[stepper.tag].text = @"ON";
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:stepper.tag
+                                                inSection:0];
     
-    else
-        _label[stepper.tag].text = @"OFF";
+    UIView *contentView = [_tableView cellForRowAtIndexPath:indexPath].contentView;
+    
+    for (TableViewCellLabel *cellLabel in contentView.subviews)
+    {
+        if ([cellLabel isKindOfClass:TableViewCellLabel.class] &&
+            cellLabel.tag == stepper.tag)
+        {
+            if (setting == GMLayerSettingOn)
+                cellLabel.text = @"ON";
+            
+            else
+                cellLabel.text = @"OFF";
+        }
+    }
     
     if (stepper.enabled)
     {
@@ -325,7 +387,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.grayColor];
         [[stepper.subviews objectAtIndex:1] setTintColor:UIColor.grayColor];
         
-        _label[stepper.tag].textColor = UIColor.grayColor;
+        for (TableViewCellLabel *cellLabel in contentView.subviews)
+        {
+            if ([cellLabel isKindOfClass:TableViewCellLabel.class] &&
+                cellLabel.tag == stepper.tag)
+            {
+                cellLabel.textColor = UIColor.grayColor;
+            }
+        }
     }
 }
 
