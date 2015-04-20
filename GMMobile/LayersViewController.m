@@ -165,7 +165,6 @@ viewForHeaderInSection:(NSInteger)section
             
             NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
                                                                    forKey:NSFontAttributeName];
-
             
             segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
             
