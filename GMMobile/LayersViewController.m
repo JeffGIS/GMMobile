@@ -194,7 +194,7 @@ viewForHeaderInSection:(NSInteger)section
         
         if (![cell.contentView.subviews containsObject:_segControl[indexPath.row]])
         {
-            _segControl[indexPath.row].frame = CGRectMake(xCount, 12.0, 160.0, (cell.contentView.frame.size.height - 24.0));
+            _segControl[indexPath.row].frame = CGRectMake(xCount, 12.0, 160.0, (cell.frame.size.height - 24.0));
             _segControl[indexPath.row].tag = indexPath.row;
             
             [cell.contentView addSubview:_segControl[indexPath.row]];

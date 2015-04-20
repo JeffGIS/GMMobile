@@ -495,6 +495,8 @@ extern int keepProcessing;
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
+    
+    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
