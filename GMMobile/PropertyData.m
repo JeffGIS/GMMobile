@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "PropertyData.h"
+#import "ConfigurationControl.h"
 
 #define COORDINATE_FACTOR 10000000.0
 
@@ -433,7 +434,8 @@ int SQLOKpd(int sqlReturn, char *method)
 
 - (int)pickPID:(LLPOINT *)pt highlightList:(NSMutableArray*)hlist
 {
-    if (_zoom < CRAPI.sharedInstance.parcelsVisibleAtZoom)
+    if ([ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                 visibleAtZoom:_zoom])
         return 0;
     NSString *minPID = [[NSString alloc] init];
     CGFloat d, mind = DBL_MAX;
@@ -652,7 +654,7 @@ int SQLOKpd(int sqlReturn, char *method)
     char taxExemptCode = 'E';
     [self open];
     
-    if (CRAPI.sharedInstance.GMTilesVisible)
+    if (ConfigurationControl.sharedInstance.GMTilesVisible)
         parcelLineColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:1];
     switch (CRAPI.sharedInstance.project)
     {
@@ -914,7 +916,7 @@ int SQLOKpd(int sqlReturn, char *method)
         NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
         style.alignment = NSTextAlignmentCenter;
         
-        if (CRAPI.sharedInstance.GMTilesVisible == YES)
+        if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
             textColor = UIColor.redColor;
         
         else
@@ -943,7 +945,7 @@ int SQLOKpd(int sqlReturn, char *method)
             CGRect rect = CGRectMake((pviewPoint->x - (size / 2.0)),
                                      (pviewPoint->y - size + yoffset), size, size);
             
-            if (CRAPI.sharedInstance.GMTilesVisible == YES)
+            if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
             {
                 attString = [[NSAttributedString alloc] initWithString:text
                                                             attributes:shadowAttributes];

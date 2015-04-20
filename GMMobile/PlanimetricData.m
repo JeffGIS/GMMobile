@@ -7,6 +7,7 @@ extern int keepProcessing;
 
 #import "PlanimetricData.h"
 #import "PropertyData.h"
+#import "ConfigurationControl.h"
 
 @interface PlanimetricData ()
 
@@ -388,7 +389,8 @@ extern int keepProcessing;
 }
 - (int)pickAlleyWallPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
 {
-    if (CRAPI.sharedInstance.currentZoom < CRAPI.sharedInstance.parcelsVisibleAtZoom)
+    if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                      visibleAtZoom:_zoom])
         return 0;
     
     NSString *minID = [[NSString alloc] init];
@@ -559,6 +561,98 @@ extern int keepProcessing;
     SQLOK(sqlite3_finalize(statement), "displayAlleyLine");
     [pd close];
 }
+- (int)pickAlleyLine:(LLPOINT)pt
+          atZoom:(CGFloat)zoom
+   highlightList:(NSMutableArray *)hlist
+{
+    if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                      visibleAtZoom:zoom])
+        return 0;
+    
+    PropertyData *pd = [[PropertyData alloc] init];
+    int nPicked = 0;
+    CGFloat mind = DBL_MAX;
+    DPOINT p1, pickedPoint, minpt, BasePt;
+    NSString *minFid = @"";
+    int minref = 0;
+    int numPoints;
+    
+    p1.x = pt.lon;
+    p1.y = pt.lat;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:&pt];
+    [pd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT ALLEY_LINE.id, ALLEY_LINE.ALLEYSEG, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM ALLEY_LINE,ALLEY_LINE_index WHERE  ALLEY_LINE.id=ALLEY_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR ALLEYSEG = (LPSTR)sqlite3_column_text(statement, 1);
+        BasePt.x = sqlite3_column_double(statement, 2);
+        BasePt.y = sqlite3_column_double(statement, 3);
+        numPoints = sqlite3_column_int(statement,4);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
+        
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        
+        if (PICK_POINT_ON_LINE(p1, bnds, &pickedPoint, numPoints, llpoints))
+        {
+            if (findClosestPoint (&pickedPoint, &minpt, &mind, &p1))
+            {
+                nPicked++;
+                minref = refno;
+                minFid = [NSString stringWithUTF8String:ALLEYSEG];
+            }
+        }
+        free (llpoints);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    [pd close];
+    pt.lon = minpt.x;
+    pt.lat = minpt.y;
+    
+    if (nPicked)
+    {
+        PickedItem *pi = [[PickedItem alloc] init];
+        pi.refno = minref;
+        pi.itemType = PTAlleyLine;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minFid;
+        pi.symbolName = @"ALLEYDL";
+        [hlist addObject:pi];
+    }
+    
+    return nPicked;
+}
+
 
 -(void)displayWallPoint:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -572,6 +666,14 @@ extern int keepProcessing;
     
     if (![self continue])
         return;
+    CGFloat sizeFactor = 1;
+    
+    /*if (_zoom > 18)
+        sizeFactor *= (2.0 * (_zoom - 18.0));
+    
+    else if (_zoom < 18)
+        */sizeFactor /= (2.0 * (22.0 - _zoom));
+    CGFloat size = 150 * sizeFactor;;
     
     PropertyData *pd = [[PropertyData alloc] init];
     CloseTRANS2(&_pTranLLtoView);
@@ -589,7 +691,7 @@ extern int keepProcessing;
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareWallPt");
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -599,10 +701,11 @@ extern int keepProcessing;
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
         [self drawWallPoint:context
                     atPoint:&llpoint
-                  withColor:UIColor.greenColor.CGColor];
+                  withColor:UIColor.greenColor.CGColor
+                    andSize:size];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOK(sqlite3_finalize(statement), "displayWallPt");
     [pd close];
     
 }
@@ -610,9 +713,9 @@ extern int keepProcessing;
 - (void)drawWallPoint:(CGContextRef)context
               atPoint:(DPOINT*)pPoint
             withColor:(CGColorRef)color
+              andSize:(CGFloat)size
 
 {
-    CGFloat size = 35;
     CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
                                   (pPoint->y - size / 2.0), size, size);
     
@@ -620,7 +723,7 @@ extern int keepProcessing;
     CGContextFillEllipseInRect(context, pointRect);
     CGContextSetLineWidth(context, 2);
     
-    if (CRAPI.sharedInstance.GMTilesVisible)
+    if (ConfigurationControl.sharedInstance.GMTilesVisible)
         CGContextSetRGBStrokeColor(context, 1, 1,0,1);
     
     else

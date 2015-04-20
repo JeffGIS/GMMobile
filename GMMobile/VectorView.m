@@ -222,7 +222,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                             {
                                                 PlanimetricData *pd = [[PlanimetricData alloc] init];
                                                 pd.processingID = keepProcessing;
-                                                
+                                                pd.zoom = _zoom;
+                                               
                                                 if (keepProcessing == self.displayID)
                                                     [pd displayPlanArea:_context
                                                               llCorners:&_latlonCornerPoints
@@ -249,7 +250,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                            {
                                                PlanimetricData *pd = [[PlanimetricData alloc] init];
                                                pd.processingID = keepProcessing;
-                                               
+                                               pd.zoom = _zoom;
+
                                                if (keepProcessing == self.displayID)
                                                    [pd displayAlleyLine:_context
                                                               llCorners:&_latlonCornerPoints

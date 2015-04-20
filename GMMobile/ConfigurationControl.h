@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 
 @property NSMutableArray *appList;
 @property HardCodedConfigs currentApp;
+@property BOOL GMTilesVisible;
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;

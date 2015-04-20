@@ -7,6 +7,7 @@
 @interface PlanimetricData : NSObject
 
 @property int processingID;
+@property CGFloat zoom;
 
 -(void)displayPlanArea:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -38,6 +39,9 @@
 
 - (BOOL)moveAlleyWallPoint:(NSInteger)refno
                         to:(CLLocationCoordinate2D)point;
+- (int)pickAlleyLine:(LLPOINT)pt
+              atZoom:(CGFloat)zoom
+       highlightList:(NSMutableArray *)hlist;
 
 - (NSArray*)getDistinctSymbols:(NSString *)tableName;
 
