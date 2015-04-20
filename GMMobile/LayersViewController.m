@@ -27,55 +27,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
-    
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
-                                                           forKey:NSFontAttributeName];
-    
-    for (int i = 0; i < MAX_LAYER_NAME; i++)
-    {
-        _stepper[i] = [[UIStepper alloc] init];
-        _stepper[i].value = DEFAULT_ZOOM_LEVEL;
-        _stepper[i].enabled = YES;
-        _stepper[i].minimumValue = 1;
-        _stepper[i].maximumValue = 21;
-        _stepper[i].layer.cornerRadius = 4.0;
-        _stepper[i].layer.borderWidth = 3.0;
-        _stepper[i].layer.borderColor = UIColor.blackColor.CGColor;
-        _stepper[i].tintColor = UIColor.blackColor;
-        [[_stepper[i].subviews objectAtIndex:0] setTintColor:UIColor.redColor];
-        [[_stepper[i].subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
-        
-        [_stepper[i] addTarget:self
-                        action:@selector(stepperSelected:)
-              forControlEvents:UIControlEventValueChanged];
-        
-        _label[i].text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
-        
-        _segControl[i] = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
-        _segControl[i].selectedSegmentIndex = GMLayerSettingAuto;
-        _segControl[i].layer.borderColor = UIColor.blackColor.CGColor;
-        _segControl[i].layer.borderWidth = 3.0;
-        _segControl[i].layer.cornerRadius = 4.0;
-        
-        [_segControl[i] setTitleTextAttributes:attributes
-                                      forState:UIControlStateNormal];
-        
-        [[_segControl[i].subviews objectAtIndex:0] setTintColor:UserDefaults.defaults.darkGreen];
-        [[_segControl[i].subviews objectAtIndex:2] setTintColor:UIColor.redColor];
-        [[_segControl[i].subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.appleBlue];
-        
-        [_segControl[i] addTarget:self
-                           action:@selector(segControlSelected:)
-                 forControlEvents:UIControlEventValueChanged];
-        
-        _label[i] = [[UILabel alloc] init];
-        
-        _label[i].layer.cornerRadius = 4.0;
-        _label[i].text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
-        _label[i].font = [UIFont boldSystemFontOfSize:16.0];
-        _label[i].textAlignment = NSTextAlignmentCenter;
-    }
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -108,6 +59,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     _layerList = ConfigurationControl.sharedInstance.getLayers;
+    
     [_tableView reloadData];
 }
 
@@ -194,8 +146,36 @@ viewForHeaderInSection:(NSInteger)section
         
         if (![cell.contentView.subviews containsObject:_segControl[indexPath.row]])
         {
-            _segControl[indexPath.row].frame = CGRectMake(xCount, 12.0, 160.0, (cell.frame.size.height - 24.0));
+            UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
+            
+            NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
+                                                                   forKey:NSFontAttributeName];
+
+            
+            _segControl[indexPath.row] = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
+            
+            _segControl[indexPath.row].frame = CGRectMake(xCount, 12.0, 160.0,
+                                                          (cell.frame.size.height - 24.0));
+            
+            _segControl[indexPath.row].selectedSegmentIndex = GMLayerSettingAuto;
+            _segControl[indexPath.row].layer.borderColor = UIColor.blackColor.CGColor;
+            _segControl[indexPath.row].layer.borderWidth = 3.0;
+            _segControl[indexPath.row].layer.cornerRadius = 4.0;
+            
+            [_segControl[indexPath.row] setTitleTextAttributes:attributes
+                                                      forState:UIControlStateNormal];
+            
+            [[_segControl[indexPath.row].subviews objectAtIndex:0] setTintColor:UserDefaults.defaults.darkGreen];
+            [[_segControl[indexPath.row].subviews objectAtIndex:2] setTintColor:UIColor.redColor];
+            [[_segControl[indexPath.row].subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.appleBlue];
+            
+            [_segControl[indexPath.row] addTarget:self
+                               action:@selector(segControlSelected:)
+                     forControlEvents:UIControlEventValueChanged];
+            
             _segControl[indexPath.row].tag = indexPath.row;
+
+            
             
             [cell.contentView addSubview:_segControl[indexPath.row]];
         }
@@ -204,16 +184,39 @@ viewForHeaderInSection:(NSInteger)section
         {
             xCount += (_segControl[indexPath.row].frame.size.width + margin);
             
-            _stepper[indexPath.row].frame = CGRectMake((xCount + 23.0), 12.0, 0.0, 0.0);
+            _stepper[indexPath.row] = [[UIStepper alloc] initWithFrame:
+                                       CGRectMake((xCount + 23.0), 12.0, 0.0, 0.0)];
+            
+            _stepper[indexPath.row].value = DEFAULT_ZOOM_LEVEL;
+            _stepper[indexPath.row].enabled = YES;
+            _stepper[indexPath.row].minimumValue = 1;
+            _stepper[indexPath.row].maximumValue = 21;
+            _stepper[indexPath.row].layer.cornerRadius = 4.0;
+            _stepper[indexPath.row].layer.borderWidth = 3.0;
+            _stepper[indexPath.row].layer.borderColor = UIColor.blackColor.CGColor;
+            _stepper[indexPath.row].tintColor = UIColor.blackColor;
+            [[_stepper[indexPath.row].subviews objectAtIndex:0] setTintColor:UIColor.redColor];
+            [[_stepper[indexPath.row].subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
+            
             _stepper[indexPath.row].tag = indexPath.row;
+            
+            [_stepper[indexPath.row] addTarget:self
+                                        action:@selector(stepperSelected:)
+                              forControlEvents:UIControlEventValueChanged];
             
             [cell.contentView addSubview:_stepper[indexPath.row]];
         }
         
         if (![cell.contentView.subviews containsObject:_label[indexPath.row]])
         {
-            _label[indexPath.row].frame = CGRectMake(xCount, 12.0 + _stepper[indexPath.row].frame.size.height,
-                                                     140.0, _stepper[indexPath.row].frame.size.height);
+            _label[indexPath.row] = [[UILabel alloc] initWithFrame:
+                                     CGRectMake(xCount, 12.0 + _stepper[indexPath.row].frame.size.height,
+                                                140.0, _stepper[indexPath.row].frame.size.height)];
+            
+            _label[indexPath.row].layer.cornerRadius = 4.0;
+            _label[indexPath.row].text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
+            _label[indexPath.row].font = [UIFont boldSystemFontOfSize:16.0];
+            _label[indexPath.row].textAlignment = NSTextAlignmentCenter;
             
             [cell.contentView addSubview:_label[indexPath.row]];
         }
