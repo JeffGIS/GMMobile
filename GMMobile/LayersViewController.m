@@ -4,6 +4,8 @@
 #import "LayersViewController.h"
 #import "ConfigurationControl.h"
 
+#define DEFAULT_ZOOM_LEVEL 12
+
 @interface LayersViewController ()
 
 @property (nonatomic) NSArray *layerList;
@@ -15,7 +17,6 @@
 
 @implementation LayersViewController
 {
-    NSInteger _autoZoomLevel[MAX_LAYER_NAME];
     UIStepper *_stepper[MAX_LAYER_NAME];
     UISegmentedControl *_segControl[MAX_LAYER_NAME];
     UILabel *_label[MAX_LAYER_NAME];
@@ -35,10 +36,8 @@
     
     for (int i = 0; i < _layerList.count; i++)
     {
-        _autoZoomLevel[i] = DEFAULT_ZOOM_LEVEL;
-        
         _stepper[i] = [[UIStepper alloc] init];
-        _stepper[i].value = _autoZoomLevel[i];
+        _stepper[i].value = DEFAULT_ZOOM_LEVEL;
         _stepper[i].enabled = YES;
         _stepper[i].minimumValue = 1;
         _stepper[i].maximumValue = 21;
@@ -75,7 +74,7 @@
         _label[i] = [[UILabel alloc] init];
         
         _label[i].layer.cornerRadius = 4.0;
-        _label[i].text = [NSString stringWithFormat:@"Show at Zoom %ld", (long)_autoZoomLevel[i]];
+        _label[i].text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
         _label[i].font = [UIFont boldSystemFontOfSize:16.0];
         _label[i].textAlignment = NSTextAlignmentCenter;
     }
@@ -266,10 +265,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)stepperSelected:(UIStepper *)stepper
 {
-    _autoZoomLevel[stepper.tag] = (NSInteger)stepper.value;
-    
     _label[stepper.tag].text = [NSString stringWithFormat:@"Show at Zoom %ld",
-                                (long)_autoZoomLevel[stepper.tag]];
+                                (long)stepper.value];
     
     [self layerVisibilityWasSetToZoomLevel:stepper.value
                                    atIndex:stepper.tag];
@@ -286,12 +283,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [[stepper.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
         
         _label[stepper.tag].textColor = UIColor.blackColor;
-        _autoZoomLevel[stepper.tag] = DEFAULT_ZOOM_LEVEL;
         
-        _label[stepper.tag].text = [NSString stringWithFormat:@"Show at Zoom %ld",
-                                    (long)_autoZoomLevel[stepper.tag]];
+        _label[stepper.tag].text = [NSString stringWithFormat:@"Show at Zoom %d",
+                                    DEFAULT_ZOOM_LEVEL];
         
-        stepper.value = (double)_autoZoomLevel[stepper.tag];
+        stepper.value = DEFAULT_ZOOM_LEVEL;
     }
 }
 
@@ -313,7 +309,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [[stepper.subviews objectAtIndex:1] setTintColor:UIColor.grayColor];
         
         _label[stepper.tag].textColor = UIColor.grayColor;
-        _autoZoomLevel[stepper.tag] = 0;
     }
 }
 
