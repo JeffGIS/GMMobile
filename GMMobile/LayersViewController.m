@@ -204,17 +204,6 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
-    for (UIView *subviews in cell.contentView.subviews)
-    {
-        if ([subviews isKindOfClass:UISegmentedControl.class] ||
-            [subviews isKindOfClass:UIStepper.class] ||
-            [subviews isKindOfClass:TableViewCellLabel.class] ||
-            [subviews isKindOfClass:TableViewCellButton.class])
-        {
-            [subviews removeFromSuperview];
-        }
-    }
-    
     NSInteger row = indexPath.row;
     
     if (_layerList.count != 0)
@@ -246,107 +235,211 @@ viewForHeaderInSection:(NSInteger)section
         CGFloat cornerRadius = 4.0, borderWidth = 3.0;
         CGFloat xCount = margin;
         
-        UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
-
-        NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
-                                                               forKey:NSFontAttributeName];
+        BOOL containsSegControl = NO, containsStepper = NO;
+        BOOL containsCellLabel = NO, containsCellButton = NO;
         
-        UISegmentedControl *segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
+        for (UIView *subviews in cell.contentView.subviews)
+        {
+            if ([subviews isKindOfClass:UISegmentedControl.class])
+                containsSegControl = YES;
+            
+            if ([subviews isKindOfClass:UIStepper.class])
+                containsStepper = YES;
+            
+            if ([subviews isKindOfClass:TableViewCellLabel.class])
+                containsCellLabel = YES;
+            
+            if ([subviews isKindOfClass:TableViewCellButton.class])
+                containsCellButton = YES;
+            
+            subviews.tag = indexPath.row;
+        }
         
-        segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
-                                      (cell.frame.size.height - (topMargin * 2.0)));
+        UISegmentedControl *segControl;
+        UIStepper *stepper;
+        TableViewCellLabel *cellLabel;
+        TableViewCellButton *cellButton;
         
-        segControl.selectedSegmentIndex = layer.segControlIndex;
-        segControl.layer.borderColor = UIColor.blackColor.CGColor;
-        segControl.layer.borderWidth = borderWidth;
-        segControl.layer.cornerRadius = cornerRadius;
-        segControl.tintColor = UIColor.blackColor;
-        segControl.tag = row;
+        if (!containsSegControl)
+        {
+            UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
+            
+            NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
+                                                                   forKey:NSFontAttributeName];
+            
+            segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
+            
+            segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
+                                          (cell.frame.size.height - (topMargin * 2.0)));
+            
+            segControl.layer.borderColor = UIColor.blackColor.CGColor;
+            segControl.layer.borderWidth = borderWidth;
+            segControl.layer.cornerRadius = cornerRadius;
+            segControl.tintColor = UIColor.blackColor;
+            segControl.selectedSegmentIndex = layer.segControlIndex;
+            segControl.tag = row;
+            
+            [segControl setTitleTextAttributes:attributes
+                                      forState:UIControlStateNormal];
+            
+            [segControl addTarget:self
+                           action:@selector(segControlSelected:)
+                 forControlEvents:UIControlEventValueChanged];
+            
+            [cell.contentView addSubview:segControl];
+        }
         
-        [segControl setTitleTextAttributes:attributes
-                                  forState:UIControlStateNormal];
-        
-        [segControl addTarget:self
-                       action:@selector(segControlSelected:)
-             forControlEvents:UIControlEventValueChanged];
-        
-        [cell.contentView addSubview:segControl];
+        else for (UISegmentedControl *segControls in cell.contentView.subviews)
+        {
+            if ([segControls isKindOfClass:UISegmentedControl.class])
+                segControls.selectedSegmentIndex = layer.segControlIndex;
+        }
         
         xCount += (_segControlWidth + margin);
         
-        UIStepper *stepper = [[UIStepper alloc] initWithFrame:
-                              CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0)];
-        
-        _stepperHeight = stepper.frame.size.height;
-        
-        stepper.value = layer.zoomLevel;
-        stepper.enabled = layer.stepperEnabled;
-        stepper.minimumValue = 1;
-        stepper.maximumValue = 21;
-        stepper.layer.cornerRadius = cornerRadius;
-        stepper.layer.borderWidth = borderWidth;
-        stepper.layer.borderColor = UIColor.blackColor.CGColor;
-        stepper.tintColor = UIColor.blackColor;
-        stepper.tag = row;
-        
-        if (segControl.selectedSegmentIndex != GMLayerSettingAuto)
+        if (!containsStepper)
         {
-            stepper.enabled = NO;
-            stepper.layer.borderColor = UIColor.grayColor.CGColor;
-            stepper.tintColor = UIColor.grayColor;
-        }
-        
-        [stepper addTarget:self
-                    action:@selector(stepperSelected:)
-          forControlEvents:UIControlEventValueChanged];
-        
-        [cell.contentView addSubview:stepper];
-        
-        TableViewCellLabel *cellLabel = [[TableViewCellLabel alloc] initWithFrame:
-                                         CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
-        
-        cellLabel.layer.cornerRadius = cornerRadius;
-        cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %ld", (long)layer.zoomLevel];
-        cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
-        cellLabel.textAlignment = NSTextAlignmentCenter;
-        cellLabel.tag = row;
-        
-        if (segControl.selectedSegmentIndex != GMLayerSettingAuto)
-        {
-            cellLabel.textColor = UIColor.grayColor;
+            stepper = [[UIStepper alloc] initWithFrame:
+                       CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0)];
             
-            if (segControl.selectedSegmentIndex == GMLayerSettingOn)
-                cellLabel.text = @"ON";
+            _stepperHeight = stepper.frame.size.height;
+            
+            stepper.minimumValue = 1;
+            stepper.maximumValue = 21;
+            stepper.layer.cornerRadius = cornerRadius;
+            stepper.layer.borderWidth = borderWidth;
+            stepper.tag = row;
+            
+            stepper.value = layer.zoomLevel;
+            stepper.enabled = layer.stepperEnabled;
+            
+            if (layer.segControlIndex != GMLayerSettingAuto)
+            {
+                stepper.enabled = NO;
+                stepper.layer.borderColor = UIColor.grayColor.CGColor;
+                stepper.tintColor = UIColor.grayColor;
+            }
             
             else
-                cellLabel.text = @"OFF";
+            {
+                stepper.enabled = YES;
+                stepper.layer.borderColor = UIColor.blackColor.CGColor;
+                stepper.tintColor = UIColor.blackColor;
+            }
+            
+            [stepper addTarget:self
+                        action:@selector(stepperSelected:)
+              forControlEvents:UIControlEventValueChanged];
+            
+            [cell.contentView addSubview:stepper];
         }
         
-        [cell.contentView addSubview:cellLabel];
+        else for (UIStepper *steppers in cell.contentView.subviews)
+        {
+            if ([steppers isKindOfClass:UIStepper.class])
+            {
+                steppers.value = layer.zoomLevel;
+                steppers.enabled = layer.stepperEnabled;
+                
+                if (layer.segControlIndex != GMLayerSettingAuto)
+                {
+                    steppers.enabled = NO;
+                    steppers.layer.borderColor = UIColor.grayColor.CGColor;
+                    steppers.tintColor = UIColor.grayColor;
+                }
+                
+                else
+                {
+                    steppers.enabled = YES;
+                    steppers.layer.borderColor = UIColor.blackColor.CGColor;
+                    steppers.tintColor = UIColor.blackColor;
+                }
+            }
+        }
+        
+        if (!containsCellLabel)
+        {
+            cellLabel = [[TableViewCellLabel alloc] initWithFrame:
+                         CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
+            
+            cellLabel.layer.cornerRadius = cornerRadius;
+            cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
+            cellLabel.textAlignment = NSTextAlignmentCenter;
+            cellLabel.tag = row;
+            
+            cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %ld", (long)layer.zoomLevel];
+            
+            if (layer.segControlIndex != GMLayerSettingAuto)
+            {
+                cellLabel.textColor = UIColor.grayColor;
+                
+                if (layer.segControlIndex == GMLayerSettingOn)
+                    cellLabel.text = @"ON";
+                
+                else
+                    cellLabel.text = @"OFF";
+            }
+            
+            else
+                cellLabel.textColor = UIColor.blackColor;
+            
+            [cell.contentView addSubview:cellLabel];
+        }
+        
+        else for (TableViewCellLabel *cellLabels in cell.contentView.subviews)
+        {
+            if ([cellLabels isKindOfClass:TableViewCellLabel.class])
+            {
+                cellLabels.text = [NSString stringWithFormat:@"Show at Zoom %ld", (long)layer.zoomLevel];
+                
+                if (layer.segControlIndex != GMLayerSettingAuto)
+                {
+                    cellLabels.textColor = UIColor.grayColor;
+                    
+                    if (layer.segControlIndex == GMLayerSettingOn)
+                        cellLabels.text = @"ON";
+                    
+                    else
+                        cellLabels.text = @"OFF";
+                }
+                
+                else
+                    cellLabels.textColor = UIColor.blackColor;
+            }
+        }
         
         xCount += (_cellLabelWidth + margin);
+            
+        if (!containsCellButton)
+        {
+            cellButton = [[TableViewCellButton alloc] initWithFrame:
+                          CGRectMake(xCount, topMargin, 40.0,
+                                     (cell.frame.size.height - (topMargin * 2.0)))];
+            
+            [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.appleGray
+                                                              andFrame:cellButton.frame]
+                        forState:UIControlStateHighlighted];
+            
+            cellButton.layer.cornerRadius = cornerRadius;
+            cellButton.layer.masksToBounds = YES;
+            cellButton.tag = row;
+            cellButton.layer.borderWidth = borderWidth;
+            cellButton.layer.borderColor = UIColor.blackColor.CGColor;
+            cellButton.backgroundColor = layer.cellButtonColor;
+            cellButton.opaque = YES;
+            
+            [cellButton addTarget:self
+                           action:@selector(cellButtonSelected:)
+                 forControlEvents:UIControlEventTouchUpInside];
+            
+            [cell.contentView addSubview:cellButton];
+        }
         
-        TableViewCellButton *cellButton = [[TableViewCellButton alloc] initWithFrame:
-                                           CGRectMake(xCount, topMargin, 40.0,
-                                                      (cell.frame.size.height - (topMargin * 2.0)))];
-        
-        [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.appleGray
-                                                          andFrame:cellButton.frame]
-                    forState:UIControlStateHighlighted];
-        
-        cellButton.backgroundColor = layer.cellButtonColor;
-        cellButton.layer.cornerRadius = cornerRadius;
-        cellButton.layer.masksToBounds = YES;
-        cellButton.tag = row;
-        cellButton.layer.borderWidth = borderWidth;
-        cellButton.layer.borderColor = UIColor.blackColor.CGColor;
-        cellButton.opaque = YES;
-        
-        [cellButton addTarget:self
-                       action:@selector(cellButtonSelected:)
-             forControlEvents:UIControlEventTouchUpInside];
-        
-        [cell.contentView addSubview:cellButton];
+        else for (TableViewCellButton *cellButtons in cell.contentView.subviews)
+        {
+            if ([cellButtons isKindOfClass:TableViewCellButton.class])
+                cellButtons.backgroundColor = layer.cellButtonColor;
+        }
     }
     
     else
