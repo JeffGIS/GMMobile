@@ -328,7 +328,7 @@ extern int keepProcessing;
         {
             if (ConfigurationControl.sharedInstance.GMTilesVisible)
             {
-                CGContextSetLineWidth(context, width*3);
+                CGContextSetLineWidth(context, width*2);
                 CGContextSetStrokeColorWithColor(context,UIColor.whiteColor.CGColor);
                 CGContextAddPath(context, path);
                 CGContextDrawPath(context, kCGPathStroke);
