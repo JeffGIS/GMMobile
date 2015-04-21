@@ -335,8 +335,19 @@ visibleAtZoom:(float)zoom
         LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
         [array addObject:lo];
     }
-    
+    [self sortSymbolsByName:array];
     return array;
 }
+- (void)sortSymbolsByName:(NSMutableArray *)symbols
+{
+    [symbols sortUsingComparator: ^(id obj1, id obj2)
+     {
+         LayerObject *lo1 = obj1;
+         LayerObject *lo2 = obj2;
+         
+         return [lo1.layerName compare:lo2.layerName];
+     }];
+}
+
 
 @end
