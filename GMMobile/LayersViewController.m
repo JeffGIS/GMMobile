@@ -9,19 +9,15 @@
 @interface LayersViewController ()
 
 @property (nonatomic) NSArray *layerList;
-@property (nonatomic) CGFloat rowHeight, headerHeight, segControlWidth, stepperHeight;
+@property (nonatomic) CGFloat rowHeight, headerHeight, segControlWidth, stepperHeight, cellLabelWidth;
 @property (nonatomic) UIFont *font, *headerFont, *headerZoomFont;
 @property (nonatomic) NSInteger indentationLevel;
+@property (nonatomic, copy) NSString *headerTitle;
+@property BOOL isDrilledDown;
 
 @end
 
 @implementation LayersViewController
-{
-    UIStepper *_stepper[MAX_LAYER_NAME];
-    UISegmentedControl *_segControl[MAX_LAYER_NAME];
-    UILabel *_label[MAX_LAYER_NAME];
-    NSString * _headerTitle;
-}
 
 - (void)viewDidLoad
 {
@@ -29,6 +25,7 @@
     
     _headerTitle = @"Layers";
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    _isDrilledDown = NO;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -38,6 +35,7 @@
         _headerZoomFont = [UIFont boldSystemFontOfSize:18.0];
         _indentationLevel = 10;
         _segControlWidth = 120.0;
+        _cellLabelWidth = 100.0;
     }
     
     else
@@ -46,8 +44,9 @@
         _font = [UIFont boldSystemFontOfSize:36.0];
         _headerFont = [UIFont boldSystemFontOfSize:44.0];
         _headerZoomFont = [UIFont boldSystemFontOfSize:28.0];
-        _indentationLevel = 34;
+        _indentationLevel = 37;
         _segControlWidth = 160.0;
+        _cellLabelWidth = 140.0;
     }
     
     _headerHeight = (_rowHeight * 1.2);
@@ -63,7 +62,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     _layerList = ConfigurationControl.sharedInstance.getLayers;
-    
     [_tableView reloadData];
 }
 
@@ -90,29 +88,93 @@
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UILabel * headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(0.0, 0.0, tableView.frame.size.width, (_headerHeight * 0.6))];
-    
-    headerLabel.font = _headerFont;
-    headerLabel.textColor = UIColor.whiteColor;
-    headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = _headerTitle;
-    
-    UILabel *currentZoomLabel = [[UILabel alloc] initWithFrame:
-                                 CGRectMake(0.0, (_headerHeight * 0.6),
-                                            tableView.frame.size.width, (_headerHeight * 0.3))];
-    
-    currentZoomLabel.font = _headerZoomFont;
-    currentZoomLabel.textColor = UIColor.whiteColor;
-    currentZoomLabel.textAlignment = NSTextAlignmentCenter;
-    currentZoomLabel.text = [NSString stringWithFormat:@"current zoom = %.1f", CRAPI.sharedInstance.currentZoom];
-    
     UIView *headerView = [[UIView alloc] init];
-    
-    [headerView addSubview:headerLabel];
-    [headerView addSubview:currentZoomLabel];
     headerView.backgroundColor = UIColor.blackColor;
+    
+    BOOL containsBackButton = NO, containsHeaderLabel = NO;
+    
+    for (UIView *subviews in [tableView headerViewForSection:section].subviews)
+    {
+        if ([subviews isKindOfClass:UIButton.class])
+            containsBackButton = YES;
+        
+        if ([subviews isKindOfClass:TableViewCellLabel.class])
+            containsHeaderLabel = YES;
+    }
+    
+    UIButton *headerBackButton;
+    TableViewCellLabel *headerLabel;
+    TableViewCellLabel *currentZoomLabel;
+    
+    if (!containsBackButton && _isDrilledDown)
+    {
+        CGFloat buttonSize = (_headerHeight - 36.0);
+        
+        headerBackButton = [[UIButton alloc] initWithFrame:
+                            CGRectMake(12.0, 18.0, buttonSize, buttonSize)];
+        
+        headerBackButton.backgroundColor = UIColor.whiteColor;
+        
+        [headerBackButton setImage:[UIImage imageWithContentsOfFile:
+                                    [NSBundle.mainBundle pathForResource:@"backArrow"
+                                                                  ofType:@"png"]]
+                          forState:UIControlStateNormal];
+        
+        [headerBackButton setImage:[UIImage imageWithContentsOfFile:
+                                    [NSBundle.mainBundle pathForResource:@"backArrowHighlighted"
+                                                                  ofType:@"png"]]
+                          forState:UIControlStateHighlighted];
+        
+        headerBackButton.layer.cornerRadius = 10.0;
+        
+        [headerBackButton addTarget:self
+                             action:@selector(tableViewReturn:)
+                   forControlEvents:UIControlEventTouchUpInside];
+        
+        [headerView addSubview:headerBackButton];
+    }
+    
+    if (!containsHeaderLabel)
+    {
+        CGFloat headerLabelOriginX = (headerBackButton.frame.origin.x +
+                                      headerBackButton.frame.size.width);
+        
+        headerLabel = [[TableViewCellLabel alloc] initWithFrame:
+                       CGRectMake(headerLabelOriginX, 0.0,
+                                  (tableView.frame.size.width - (headerLabelOriginX * 2.0)),
+                                  (_headerHeight * 0.6))];
+        
+        headerLabel.font = _headerFont;
+        headerLabel.textColor = UIColor.whiteColor;
+        headerLabel.textAlignment = NSTextAlignmentCenter;
+        headerLabel.text = _headerTitle;
+        
+        [headerView addSubview:headerLabel];
+        
+        currentZoomLabel = [[TableViewCellLabel alloc] initWithFrame:
+                            CGRectMake(headerLabelOriginX, (_headerHeight * 0.6),
+                                       (tableView.frame.size.width - (headerLabelOriginX * 2.0)),
+                                       (_headerHeight * 0.3))];
+        
+        currentZoomLabel.font = _headerZoomFont;
+        currentZoomLabel.textColor = UIColor.whiteColor;
+        currentZoomLabel.textAlignment = NSTextAlignmentCenter;
+        
+        currentZoomLabel.text = [NSString stringWithFormat:@"current zoom = %.1f",
+                                 CRAPI.sharedInstance.currentZoom];
+        
+        [headerView addSubview:currentZoomLabel];
+    }
+    
     return headerView;
+}
+
+- (void)tableViewReturn:(UIButton *)button
+{
+    _layerList = ConfigurationControl.sharedInstance.getLayers;
+    _isDrilledDown = NO;
+    _headerTitle = @"Layers";
+    [_tableView reloadData];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -129,11 +191,11 @@ viewForHeaderInSection:(NSInteger)section
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:@"Cell"];
     }
     
-    if ([_layerList count] != 0)
+    if (_layerList.count != 0)
     {
         LayerObject *layer = (LayerObject *)_layerList[indexPath.row];
         cell.textLabel.text = layer.layerName;
@@ -141,15 +203,29 @@ viewForHeaderInSection:(NSInteger)section
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.textLabel.textColor = UIColor.blackColor;
-        cell.userInteractionEnabled = YES;
         cell.indentationLevel = _indentationLevel;
-        if (layer.hasSymbols)
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        CGFloat margin = 10.0;
+        if (layer.hasSymbols)
+        {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+        }
+        
+        else
+        {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        
+        if (_isDrilledDown)
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        CGFloat margin = 10.0, topMargin = 12.0;
+        CGFloat cornerRadius = 4.0, borderWidth = 3.0;
         CGFloat xCount = margin;
         
-        BOOL containsSegControl = NO, containsStepper = NO, containsCellLabel = NO;
+        BOOL containsSegControl = NO, containsStepper = NO;
+        BOOL containsCellLabel = NO, containsCellButton = NO;
         
         for (UIView *subviews in cell.contentView.subviews)
         {
@@ -161,11 +237,17 @@ viewForHeaderInSection:(NSInteger)section
             
             if ([subviews isKindOfClass:TableViewCellLabel.class])
                 containsCellLabel = YES;
+            
+            if ([subviews isKindOfClass:TableViewCellButton.class])
+                containsCellButton = YES;
+            
+            subviews.tag = indexPath.row;
         }
         
         UISegmentedControl *segControl;
         UIStepper *stepper;
         TableViewCellLabel *cellLabel;
+        TableViewCellButton *cellButton;
         
         if (!containsSegControl)
         {
@@ -176,13 +258,13 @@ viewForHeaderInSection:(NSInteger)section
             
             segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
             
-            segControl.frame = CGRectMake(xCount, 12.0, _segControlWidth,
-                                          (cell.frame.size.height - 24.0));
+            segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
+                                          (cell.frame.size.height - (topMargin * 2.0)));
             
             segControl.selectedSegmentIndex = GMLayerSettingAuto;
             segControl.layer.borderColor = UIColor.blackColor.CGColor;
-            segControl.layer.borderWidth = 3.0;
-            segControl.layer.cornerRadius = 4.0;
+            segControl.layer.borderWidth = borderWidth;
+            segControl.layer.cornerRadius = cornerRadius;
             
             [segControl setTitleTextAttributes:attributes
                                       forState:UIControlStateNormal];
@@ -205,7 +287,7 @@ viewForHeaderInSection:(NSInteger)section
             xCount += (_segControlWidth + margin);
             
             stepper = [[UIStepper alloc] initWithFrame:
-                       CGRectMake((xCount + 23.0), 12.0, 0.0, 0.0)];
+                       CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0)];
             
             _stepperHeight = stepper.frame.size.height;
             
@@ -213,8 +295,8 @@ viewForHeaderInSection:(NSInteger)section
             stepper.enabled = YES;
             stepper.minimumValue = 1;
             stepper.maximumValue = 21;
-            stepper.layer.cornerRadius = 4.0;
-            stepper.layer.borderWidth = 3.0;
+            stepper.layer.cornerRadius = cornerRadius;
+            stepper.layer.borderWidth = borderWidth;
             stepper.layer.borderColor = UIColor.blackColor.CGColor;
             stepper.tintColor = UIColor.blackColor;
             [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.redColor];
@@ -232,15 +314,45 @@ viewForHeaderInSection:(NSInteger)section
         if (!containsCellLabel)
         {
             cellLabel = [[TableViewCellLabel alloc] initWithFrame:
-                         CGRectMake(xCount, 12.0 + _stepperHeight, 140.0, _stepperHeight)];
+                         CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
             
-            cellLabel.layer.cornerRadius = 4.0;
+            cellLabel.layer.cornerRadius = cornerRadius;
             cellLabel.tag = indexPath.row;
             cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
             cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
             cellLabel.textAlignment = NSTextAlignmentCenter;
             
             [cell.contentView addSubview:cellLabel];
+        }
+        
+        if (!containsCellButton)
+        {
+            xCount += (_cellLabelWidth + margin);
+            
+            cellButton = [[TableViewCellButton alloc] initWithFrame:
+                          CGRectMake(xCount, topMargin, 40.0,
+                                     (cell.frame.size.height - (topMargin * 2.0)))];
+            
+            [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.darkGreen
+                                                              andFrame:cellButton.frame]
+                        forState:UIControlStateNormal];
+            
+            [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.appleGray
+                                                              andFrame:cellButton.frame]
+                        forState:UIControlStateHighlighted];
+            
+            cellButton.layer.cornerRadius = cornerRadius;
+            cellButton.layer.masksToBounds = YES;
+            cellButton.tag = indexPath.row;
+            cellButton.layer.borderWidth = borderWidth;
+            cellButton.layer.borderColor = UIColor.blackColor.CGColor;
+            cellButton.opaque = YES;
+            
+            [cellButton addTarget:self
+                           action:@selector(cellButtonSelected:)
+                 forControlEvents:UIControlEventTouchUpInside];
+            
+            [cell.contentView addSubview:cellButton];
         }
     }
     
@@ -265,6 +377,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _headerTitle = layer.layerName;
         _layerList = [ConfigurationControl.sharedInstance getSymbolsForLayer:layer.layerID];
+        _isDrilledDown = YES;
         [_tableView reloadData];
     }
     
@@ -330,6 +443,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [self layerVisibilityWasSetToZoomLevel:stepper.value
                                    atIndex:stepper.tag];
+}
+
+- (void)cellButtonSelected:(TableViewCellButton *)cellButton
+{
+    NSLog(@"Symbol Button Selected at Index:%ld", (long)cellButton.tag);
 }
 
 - (void)enableStepper:(UIStepper *)stepper
