@@ -36,6 +36,7 @@ extern int keepProcessing;
     //NSString *querys;
     sqlite3_stmt *statement;
     DPOINT BasePt;
+    CGColorRef color = CGColorCreateCopyWithAlpha(UIColor.redColor.CGColor, 0.5);
     int numPoints,numLoops;
     //LPSTR symName;
     PropertyData * pd = [[PropertyData alloc]init];
@@ -91,12 +92,13 @@ extern int keepProcessing;
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         
-        [self drawPlanArea:context
+        [self fillPlanArea:context
                    nPoints:numPoints
                     nLoops:numLoops
                    partLen:polyPartLen
                     points:llpoints
-                 withColor:UIColor.redColor.CGColor];
+                 withColor:color
+                  andWidth:3];
     }
     
     SQLOK(sqlite3_finalize(statement), "displayParcels");
@@ -104,10 +106,13 @@ extern int keepProcessing;
 }
 - (void)fillPlanArea:(CGContextRef)context
              nPoints:(int)np
+              nLoops:(int)nLoops
+             partLen:(int *)pPartLen
               points:(LPDPOINT)pPoints
            withColor:(CGColorRef)color
+            andWidth:(CGFloat)width
 {
-    CGContextSetLineWidth(context, 3);
+    CGContextSetLineWidth(context, width);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
@@ -122,9 +127,9 @@ extern int keepProcessing;
     
     if (!CGContextIsPathEmpty(context))
     {
-        //CGContextSetStrokeColorWithColor(context,color);
+        CGContextSetStrokeColorWithColor(context,UIColor.blackColor.CGColor);
         CGContextSetFillColorWithColor(context,color);
-        CGContextDrawPath(context, kCGPathFill);
+        CGContextDrawPath(context, kCGPathFillStroke);
     }
 }
 
@@ -134,8 +139,9 @@ extern int keepProcessing;
              partLen:(int *)pPartLen
               points:(LPDPOINT)pPoints
            withColor:(CGColorRef)color
+            andWidth:(int)width
 {
-    CGContextSetLineWidth(context, 1);
+    CGContextSetLineWidth(context, width);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
@@ -261,7 +267,7 @@ extern int keepProcessing;
                    partLen:polyPartLen
                     points:llpoints
                  withColor:UIColor.blackColor.CGColor
-                  andWidth:2];
+                  andWidth:3];
     }
     
     SQLOK(sqlite3_finalize(statement), "displayParcels");
@@ -310,18 +316,29 @@ extern int keepProcessing;
     
     else
     {
-        CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
+        CGMutablePathRef path = CGPathCreateMutable();
+        CGPathMoveToPoint(path,0, pPoints[0].x, pPoints[0].y);
         
         for (int i = 1; i < np; i++)
-            CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+            CGPathAddLineToPoint(path,0,pPoints[i].x, pPoints[i].y);
         
         //CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
         
-        if (!CGContextIsPathEmpty(context))
+        if (!CGPathIsEmpty(path))
         {
+            if (ConfigurationControl.sharedInstance.GMTilesVisible)
+            {
+                CGContextSetLineWidth(context, width*3);
+                CGContextSetStrokeColorWithColor(context,UIColor.whiteColor.CGColor);
+                CGContextAddPath(context, path);
+                CGContextDrawPath(context, kCGPathStroke);
+                CGContextSetLineWidth(context, width);
+            }
+            CGContextAddPath(context, path);
             CGContextSetStrokeColorWithColor(context,color);
             CGContextDrawPath(context, kCGPathStroke);
         }
+        CGPathRelease(path);
     }
 }
 
