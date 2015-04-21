@@ -791,4 +791,10 @@ didReturnTimeInterval:(NSString *)timeInterval
                                                      value:sender.on];
 }
 
+- (IBAction)showHeadingVC:(id)sender
+{
+    NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewController:self];
+#pragma unused(headingVC)
+}
+
 @end
