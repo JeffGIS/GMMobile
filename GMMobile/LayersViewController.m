@@ -14,6 +14,7 @@
 @property (nonatomic) NSInteger indentationLevel;
 @property (nonatomic, copy) NSString *headerTitle;
 @property BOOL isDrilledDown, isFirstTime;
+@property (nonatomic) HardCodedConfigs lastSelectedApp;
 
 @end
 
@@ -27,6 +28,7 @@
     _isFirstTime = YES;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _isDrilledDown = NO;
+    _lastSelectedApp = ConfigurationControl.sharedInstance.currentApp;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -65,9 +67,10 @@
     if (!_isDrilledDown)
         _layerList = ConfigurationControl.sharedInstance.getLayers;
     
-    if (_isFirstTime)
+    if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
     {
         [self initializeTableViewComponentValues];
+        _lastSelectedApp = ConfigurationControl.sharedInstance.currentApp;
         _isFirstTime = NO;
     }
     
@@ -177,6 +180,7 @@ viewForHeaderInSection:(NSInteger)section
 - (void)tableViewReturn:(UIButton *)button
 {
     _layerList = ConfigurationControl.sharedInstance.getLayers;
+    [self initializeTableViewComponentValues];
     _isDrilledDown = NO;
     _headerTitle = @"Layers";
     [_tableView reloadData];
@@ -364,10 +368,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (layer.hasSymbols)
     {
+        _isDrilledDown = YES;
         _headerTitle = layer.layerName;
         _layerList = [ConfigurationControl.sharedInstance getSymbolsForLayer:layer.layerID];
         [self initializeTableViewComponentValues];
-        _isDrilledDown = YES;
         [_tableView reloadData];
     }
     
