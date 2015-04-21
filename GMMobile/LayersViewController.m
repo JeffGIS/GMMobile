@@ -13,7 +13,7 @@
 @property (nonatomic) UIFont *font, *headerFont, *headerZoomFont;
 @property (nonatomic) NSInteger indentationLevel;
 @property (nonatomic, copy) NSString *headerTitle;
-@property BOOL isDrilledDown;
+@property BOOL isDrilledDown, isFirstTime;
 
 @end
 
@@ -24,6 +24,7 @@
     [super viewDidLoad];
     
     _headerTitle = @"Layers";
+    _isFirstTime = YES;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _isDrilledDown = NO;
     
@@ -61,8 +62,28 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    _layerList = ConfigurationControl.sharedInstance.getLayers;
+    if (!_isDrilledDown)
+        _layerList = ConfigurationControl.sharedInstance.getLayers;
+    
+    if (_isFirstTime)
+    {
+        [self initializeTableViewComponentValues];
+        _isFirstTime = NO;
+    }
+    
     [_tableView reloadData];
+}
+
+- (void)initializeTableViewComponentValues
+{
+    for (int i = 0; i < _layerList.count; i++)
+    {
+        LayerObject *layer = (LayerObject *)_layerList[i];
+        layer.segControlIndex = GMLayerSettingAuto;
+        layer.stepperEnabled = YES;
+        layer.cellButtonColor = UserDefaults.defaults.darkGreen;
+        layer.zoomLevel = DEFAULT_ZOOM_LEVEL;
+    }
 }
 
 - (void)setupTableView
@@ -91,22 +112,9 @@ viewForHeaderInSection:(NSInteger)section
     UIView *headerView = [[UIView alloc] init];
     headerView.backgroundColor = UIColor.blackColor;
     
-    BOOL containsBackButton = NO, containsHeaderLabel = NO;
-    
-    for (UIView *subviews in [tableView headerViewForSection:section].subviews)
-    {
-        if ([subviews isKindOfClass:UIButton.class])
-            containsBackButton = YES;
-        
-        if ([subviews isKindOfClass:TableViewCellLabel.class])
-            containsHeaderLabel = YES;
-    }
-    
     UIButton *headerBackButton;
-    TableViewCellLabel *headerLabel;
-    TableViewCellLabel *currentZoomLabel;
     
-    if (!containsBackButton && _isDrilledDown)
+    if (_isDrilledDown)
     {
         CGFloat buttonSize = (_headerHeight - 36.0);
         
@@ -134,37 +142,34 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:headerBackButton];
     }
     
-    if (!containsHeaderLabel)
-    {
-        CGFloat headerLabelOriginX = (headerBackButton.frame.origin.x +
-                                      headerBackButton.frame.size.width);
-        
-        headerLabel = [[TableViewCellLabel alloc] initWithFrame:
-                       CGRectMake(headerLabelOriginX, 0.0,
-                                  (tableView.frame.size.width - (headerLabelOriginX * 2.0)),
-                                  (_headerHeight * 0.6))];
-        
-        headerLabel.font = _headerFont;
-        headerLabel.textColor = UIColor.whiteColor;
-        headerLabel.textAlignment = NSTextAlignmentCenter;
-        headerLabel.text = _headerTitle;
-        
-        [headerView addSubview:headerLabel];
-        
-        currentZoomLabel = [[TableViewCellLabel alloc] initWithFrame:
-                            CGRectMake(headerLabelOriginX, (_headerHeight * 0.6),
-                                       (tableView.frame.size.width - (headerLabelOriginX * 2.0)),
-                                       (_headerHeight * 0.3))];
-        
-        currentZoomLabel.font = _headerZoomFont;
-        currentZoomLabel.textColor = UIColor.whiteColor;
-        currentZoomLabel.textAlignment = NSTextAlignmentCenter;
-        
-        currentZoomLabel.text = [NSString stringWithFormat:@"current zoom = %.1f",
-                                 CRAPI.sharedInstance.currentZoom];
-        
-        [headerView addSubview:currentZoomLabel];
-    }
+    CGFloat headerLabelOriginX = (headerBackButton.frame.origin.x +
+                                  headerBackButton.frame.size.width);
+    
+    TableViewCellLabel *headerLabel = [[TableViewCellLabel alloc] initWithFrame:
+                                       CGRectMake(headerLabelOriginX, 0.0,
+                                                  (tableView.frame.size.width - (headerLabelOriginX * 2.0)),
+                                                  (_headerHeight * 0.6))];
+    
+    headerLabel.font = _headerFont;
+    headerLabel.textColor = UIColor.whiteColor;
+    headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.text = _headerTitle;
+    
+    [headerView addSubview:headerLabel];
+    
+    TableViewCellLabel *currentZoomLabel = [[TableViewCellLabel alloc] initWithFrame:
+                                            CGRectMake(headerLabelOriginX, (_headerHeight * 0.6),
+                                                       (tableView.frame.size.width - (headerLabelOriginX * 2.0)),
+                                                       (_headerHeight * 0.3))];
+    
+    currentZoomLabel.font = _headerZoomFont;
+    currentZoomLabel.textColor = UIColor.whiteColor;
+    currentZoomLabel.textAlignment = NSTextAlignmentCenter;
+    
+    currentZoomLabel.text = [NSString stringWithFormat:@"current zoom = %.1f",
+                             CRAPI.sharedInstance.currentZoom];
+    
+    [headerView addSubview:currentZoomLabel];
     
     return headerView;
 }
@@ -195,9 +200,22 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
+    for (UIView *subviews in cell.contentView.subviews)
+    {
+        if ([subviews isKindOfClass:UISegmentedControl.class] ||
+            [subviews isKindOfClass:UIStepper.class] ||
+            [subviews isKindOfClass:TableViewCellLabel.class] ||
+            [subviews isKindOfClass:TableViewCellButton.class])
+        {
+            [subviews removeFromSuperview];
+        }
+    }
+    
+    NSInteger row = indexPath.row;
+    
     if (_layerList.count != 0)
     {
-        LayerObject *layer = (LayerObject *)_layerList[indexPath.row];
+        LayerObject *layer = (LayerObject *)_layerList[row];
         cell.textLabel.text = layer.layerName;
         cell.textLabel.numberOfLines = 2;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
@@ -224,136 +242,107 @@ viewForHeaderInSection:(NSInteger)section
         CGFloat cornerRadius = 4.0, borderWidth = 3.0;
         CGFloat xCount = margin;
         
-        BOOL containsSegControl = NO, containsStepper = NO;
-        BOOL containsCellLabel = NO, containsCellButton = NO;
-        
-        for (UIView *subviews in cell.contentView.subviews)
-        {
-            if ([subviews isKindOfClass:UISegmentedControl.class])
-                containsSegControl = YES;
-            
-            if ([subviews isKindOfClass:UIStepper.class])
-                containsStepper = YES;
-            
-            if ([subviews isKindOfClass:TableViewCellLabel.class])
-                containsCellLabel = YES;
-            
-            if ([subviews isKindOfClass:TableViewCellButton.class])
-                containsCellButton = YES;
-            
-            subviews.tag = indexPath.row;
-        }
-        
-        UISegmentedControl *segControl;
-        UIStepper *stepper;
-        TableViewCellLabel *cellLabel;
-        TableViewCellButton *cellButton;
-        
-        if (!containsSegControl)
-        {
-            UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
-            
-            NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
-                                                                   forKey:NSFontAttributeName];
-            
-            segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
-            
-            segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
-                                          (cell.frame.size.height - (topMargin * 2.0)));
-            
-            segControl.selectedSegmentIndex = GMLayerSettingAuto;
-            segControl.layer.borderColor = UIColor.blackColor.CGColor;
-            segControl.layer.borderWidth = borderWidth;
-            segControl.layer.cornerRadius = cornerRadius;
-            
-            [segControl setTitleTextAttributes:attributes
-                                      forState:UIControlStateNormal];
-            
-            [[segControl.subviews objectAtIndex:0] setTintColor:UserDefaults.defaults.darkGreen];
-            [[segControl.subviews objectAtIndex:2] setTintColor:UIColor.redColor];
-            [[segControl.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.appleBlue];
-            
-            [segControl addTarget:self
-                           action:@selector(segControlSelected:)
-                 forControlEvents:UIControlEventValueChanged];
-            
-            segControl.tag = indexPath.row;
+        UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
 
-            [cell.contentView addSubview:segControl];
+        NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
+                                                               forKey:NSFontAttributeName];
+        
+        UISegmentedControl *segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
+        
+        segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
+                                      (cell.frame.size.height - (topMargin * 2.0)));
+        
+        segControl.selectedSegmentIndex = layer.segControlIndex;
+        segControl.layer.borderColor = UIColor.blackColor.CGColor;
+        segControl.layer.borderWidth = borderWidth;
+        segControl.layer.cornerRadius = cornerRadius;
+        segControl.tintColor = UIColor.blackColor;
+        segControl.tag = row;
+        
+        [segControl setTitleTextAttributes:attributes
+                                  forState:UIControlStateNormal];
+        
+        [segControl addTarget:self
+                       action:@selector(segControlSelected:)
+             forControlEvents:UIControlEventValueChanged];
+        
+        [cell.contentView addSubview:segControl];
+        
+        xCount += (_segControlWidth + margin);
+        
+        UIStepper *stepper = [[UIStepper alloc] initWithFrame:
+                              CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0)];
+        
+        _stepperHeight = stepper.frame.size.height;
+        
+        stepper.value = layer.zoomLevel;
+        stepper.enabled = layer.stepperEnabled;
+        stepper.minimumValue = 1;
+        stepper.maximumValue = 21;
+        stepper.layer.cornerRadius = cornerRadius;
+        stepper.layer.borderWidth = borderWidth;
+        stepper.layer.borderColor = UIColor.blackColor.CGColor;
+        stepper.tintColor = UIColor.blackColor;
+        stepper.tag = row;
+        
+        if (segControl.selectedSegmentIndex != GMLayerSettingAuto)
+        {
+            stepper.enabled = NO;
+            stepper.layer.borderColor = UIColor.grayColor.CGColor;
+            stepper.tintColor = UIColor.grayColor;
         }
         
-        if (!containsStepper)
+        [stepper addTarget:self
+                    action:@selector(stepperSelected:)
+          forControlEvents:UIControlEventValueChanged];
+        
+        [cell.contentView addSubview:stepper];
+        
+        TableViewCellLabel *cellLabel = [[TableViewCellLabel alloc] initWithFrame:
+                                         CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
+        
+        cellLabel.layer.cornerRadius = cornerRadius;
+        cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %ld", (long)layer.zoomLevel];
+        cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
+        cellLabel.textAlignment = NSTextAlignmentCenter;
+        cellLabel.tag = row;
+        
+        if (segControl.selectedSegmentIndex != GMLayerSettingAuto)
         {
-            xCount += (_segControlWidth + margin);
+            cellLabel.textColor = UIColor.grayColor;
             
-            stepper = [[UIStepper alloc] initWithFrame:
-                       CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0)];
+            if (segControl.selectedSegmentIndex == GMLayerSettingOn)
+                cellLabel.text = @"ON";
             
-            _stepperHeight = stepper.frame.size.height;
-            
-            stepper.value = DEFAULT_ZOOM_LEVEL;
-            stepper.enabled = YES;
-            stepper.minimumValue = 1;
-            stepper.maximumValue = 21;
-            stepper.layer.cornerRadius = cornerRadius;
-            stepper.layer.borderWidth = borderWidth;
-            stepper.layer.borderColor = UIColor.blackColor.CGColor;
-            stepper.tintColor = UIColor.blackColor;
-            [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.redColor];
-            [[stepper.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
-            
-            stepper.tag = indexPath.row;
-            
-            [stepper addTarget:self
-                        action:@selector(stepperSelected:)
-              forControlEvents:UIControlEventValueChanged];
-            
-            [cell.contentView addSubview:stepper];
+            else
+                cellLabel.text = @"OFF";
         }
         
-        if (!containsCellLabel)
-        {
-            cellLabel = [[TableViewCellLabel alloc] initWithFrame:
-                         CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
-            
-            cellLabel.layer.cornerRadius = cornerRadius;
-            cellLabel.tag = indexPath.row;
-            cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %d", DEFAULT_ZOOM_LEVEL];
-            cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
-            cellLabel.textAlignment = NSTextAlignmentCenter;
-            
-            [cell.contentView addSubview:cellLabel];
-        }
+        [cell.contentView addSubview:cellLabel];
         
-        if (!containsCellButton)
-        {
-            xCount += (_cellLabelWidth + margin);
-            
-            cellButton = [[TableViewCellButton alloc] initWithFrame:
-                          CGRectMake(xCount, topMargin, 40.0,
-                                     (cell.frame.size.height - (topMargin * 2.0)))];
-            
-            [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.darkGreen
-                                                              andFrame:cellButton.frame]
-                        forState:UIControlStateNormal];
-            
-            [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.appleGray
-                                                              andFrame:cellButton.frame]
-                        forState:UIControlStateHighlighted];
-            
-            cellButton.layer.cornerRadius = cornerRadius;
-            cellButton.layer.masksToBounds = YES;
-            cellButton.tag = indexPath.row;
-            cellButton.layer.borderWidth = borderWidth;
-            cellButton.layer.borderColor = UIColor.blackColor.CGColor;
-            cellButton.opaque = YES;
-            
-            [cellButton addTarget:self
-                           action:@selector(cellButtonSelected:)
-                 forControlEvents:UIControlEventTouchUpInside];
-            
-            [cell.contentView addSubview:cellButton];
-        }
+        xCount += (_cellLabelWidth + margin);
+        
+        TableViewCellButton *cellButton = [[TableViewCellButton alloc] initWithFrame:
+                                           CGRectMake(xCount, topMargin, 40.0,
+                                                      (cell.frame.size.height - (topMargin * 2.0)))];
+        
+        [cellButton setImage:[UserDefaults.defaults imageWithColor:UserDefaults.defaults.appleGray
+                                                          andFrame:cellButton.frame]
+                    forState:UIControlStateHighlighted];
+        
+        cellButton.backgroundColor = layer.cellButtonColor;
+        cellButton.layer.cornerRadius = cornerRadius;
+        cellButton.layer.masksToBounds = YES;
+        cellButton.tag = row;
+        cellButton.layer.borderWidth = borderWidth;
+        cellButton.layer.borderColor = UIColor.blackColor.CGColor;
+        cellButton.opaque = YES;
+        
+        [cellButton addTarget:self
+                       action:@selector(cellButtonSelected:)
+             forControlEvents:UIControlEventTouchUpInside];
+        
+        [cell.contentView addSubview:cellButton];
     }
     
     else
@@ -377,6 +366,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _headerTitle = layer.layerName;
         _layerList = [ConfigurationControl.sharedInstance getSymbolsForLayer:layer.layerID];
+        [self initializeTableViewComponentValues];
         _isDrilledDown = YES;
         [_tableView reloadData];
     }
@@ -447,7 +437,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)cellButtonSelected:(TableViewCellButton *)cellButton
 {
-    NSLog(@"Symbol Button Selected at Index:%ld", (long)cellButton.tag);
+    NVColorWheel *colorWheel = [NVColorWheel showColorWheelWithView:self.view
+                                                         startColor:cellButton.backgroundColor
+                                                           delegate:self
+                                                             tabBar:self.tabBarController.tabBar
+                                                               tag:cellButton.tag];
+#pragma unused(colorWheel)
 }
 
 - (void)enableStepper:(UIStepper *)stepper
@@ -457,8 +452,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         stepper.enabled = YES;
         stepper.layer.borderColor = UIColor.blackColor.CGColor;
         stepper.tintColor = UIColor.blackColor;
-        [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.redColor];
-        [[stepper.subviews objectAtIndex:1] setTintColor:UserDefaults.defaults.darkGreen];
         stepper.value = DEFAULT_ZOOM_LEVEL;
         
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:stepper.tag
@@ -506,8 +499,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         stepper.enabled = NO;
         stepper.layer.borderColor = UIColor.grayColor.CGColor;
         stepper.tintColor = UIColor.grayColor;
-        [[stepper.subviews objectAtIndex:0] setTintColor:UIColor.grayColor];
-        [[stepper.subviews objectAtIndex:1] setTintColor:UIColor.grayColor];
         
         for (TableViewCellLabel *cellLabel in contentView.subviews)
         {
@@ -529,6 +520,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)layerWasTurnedOnAtIndex:(NSInteger)index
 {
     LayerObject *layer = (LayerObject *)_layerList[index];
+    layer.stepperEnabled = NO;
+    layer.segControlIndex = GMLayerSettingOn;
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
                                    visibileAtZoom:0];
@@ -537,6 +530,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)layerWasTurnedOffAtIndex:(NSInteger)index
 {
     LayerObject *layer = (LayerObject *)_layerList[index];
+    layer.stepperEnabled = NO;
+    layer.segControlIndex = GMLayerSettingOff;
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
                                    visibileAtZoom:22];
@@ -546,9 +541,40 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  atIndex:(NSInteger)index
 {
     LayerObject *layer = (LayerObject *)_layerList[index];
+    layer.zoomLevel = zoomLevel;
+    layer.stepperEnabled = YES;
+    layer.segControlIndex = GMLayerSettingAuto;
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
                                    visibileAtZoom:zoomLevel];
+}
+
+- (void)colorWheel:(NVColorWheel *)colorWheel
+    didReturnColor:(UIColor *)color
+               tag:(NSInteger)tag
+{
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:tag
+                                                inSection:0];
+    
+    UIView *contentView = [_tableView cellForRowAtIndexPath:indexPath].contentView;
+    LayerObject *layer = (LayerObject *)_layerList[tag];
+    
+    for (TableViewCellButton *cellButton in contentView.subviews)
+    {
+        if ([cellButton isKindOfClass:TableViewCellButton.class] &&
+            cellButton.tag == tag)
+        {
+            cellButton.backgroundColor = color;
+            layer.cellButtonColor = color;
+        }
+    }
+    
+    [colorWheel hideColorWheel:YES];
+}
+
+- (void)colorWheelDidCancel:(NVColorWheel *)colorWheel
+{
+    [colorWheel hideColorWheel:YES];
 }
 
 @end

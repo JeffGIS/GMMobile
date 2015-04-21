@@ -1,7 +1,8 @@
 //  ConfigurationControl.h
 //  GMMobile
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 4
 
@@ -38,7 +39,9 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 
 @property NSString *layerName;
 @property int layerID;
-@property BOOL hasSymbols;
+@property BOOL hasSymbols, stepperEnabled;
+@property NSInteger segControlIndex, zoomLevel;
+@property UIColor *cellButtonColor;
 
 - (id)initWithName:(NSString *)name
              andID:(int)identifier;

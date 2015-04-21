@@ -3,14 +3,7 @@
 
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
-typedef NS_ENUM(NSInteger, GMLayerSetting)
-{
-    GMLayerSettingOn,
-    GMLayerSettingOff,
-    GMLayerSettingAuto,
-};
-
-@interface LayersViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface LayersViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVColorWheelDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
