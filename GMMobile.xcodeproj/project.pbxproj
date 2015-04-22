@@ -85,6 +85,7 @@
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
+		EBAB31C91AE74E9600C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31C81AE74E9600C5CCEF /* colormap.png */; };
 		EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C201A91301F003F7FB8 /* SewerData.m */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -210,6 +211,7 @@
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
 		EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		EBAB31C81AE74E9600C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
 		EBCA6C1F1A91301F003F7FB8 /* SewerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SewerData.h; sourceTree = "<group>"; };
 		EBCA6C201A91301F003F7FB8 /* SewerData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SewerData.m; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				EBAB31C81AE74E9600C5CCEF /* colormap.png */,
 				A90D1FBF1AE61C5700CBFEE7 /* colorWheel.png */,
 				A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */,
 				A90D1FAA1AE5D67B00CBFEE7 /* backArrow.png */,
@@ -589,6 +592,7 @@
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
+				EBAB31C91AE74E9600C5CCEF /* colormap.png in Resources */,
 				A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */,
 				1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
