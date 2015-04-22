@@ -177,8 +177,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                        case DISPLAY_DATA_OPTION_DISPLAY:
                                        {
                                            if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerParcels
-                                                                            visibleAtZoom:_zoom])
+                                               [ConfigurationControl.sharedInstance layer:HCLayerParcels                                                                            visibleAtZoom:_zoom])
                                            {
                                                PropertyData *pd = [[PropertyData alloc] init];
                                                

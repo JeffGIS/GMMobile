@@ -223,10 +223,9 @@ extern int keepProcessing;
             query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM PLAN_LINE,PLAN_LINE_index WHERE PLAN_LINE.id=PLAN_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             
-            //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepare PLAN_LINE");
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -321,8 +320,6 @@ extern int keepProcessing;
         
         for (int i = 1; i < np; i++)
             CGPathAddLineToPoint(path,0,pPoints[i].x, pPoints[i].y);
-        
-        //CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
         
         if (!CGPathIsEmpty(path))
         {
