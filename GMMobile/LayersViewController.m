@@ -612,6 +612,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
+    
+    for (NVColorWheel *colorWheel in self.view.subviews)
+    {
+        if ([colorWheel isKindOfClass:NVColorWheel.class])
+        {
+            [colorWheel willRotateWithDuration:duration
+                        toInterfaceOrientation:toInterfaceOrientation];
+        }
+    }
 }
 
 - (void)layerWasTurnedOnAtIndex:(NSInteger)index
