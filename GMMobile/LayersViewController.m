@@ -72,9 +72,8 @@
         [self initializeTableViewComponentValues];
         _lastSelectedApp = ConfigurationControl.sharedInstance.currentApp;
         _isFirstTime = NO;
+        [_tableView reloadData];
     }
-    
-    [_tableView reloadData];
 }
 
 - (void)initializeTableViewComponentValues
