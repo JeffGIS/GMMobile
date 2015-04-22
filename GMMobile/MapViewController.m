@@ -916,6 +916,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         return;
     }
     
+    if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                     visibleAtZoom:_mapView.camera.zoom])
+        return;
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
