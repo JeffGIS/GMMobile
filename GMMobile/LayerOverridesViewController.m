@@ -5,6 +5,8 @@
 
 @interface LayerOverridesViewController ()
 
+@property (nonatomic) CGFloat offTrans, onTrans;
+
 @end
 
 @implementation LayerOverridesViewController
@@ -21,6 +23,15 @@
             [self setupButton:button];
         }
     }
+    
+    _offTrans = 50;
+    _onTrans = 100.0;
+    
+    [_AOnTrans setTitle:[NSString stringWithFormat:@"%.0f%%", _onTrans]
+               forState:UIControlStateNormal];
+    
+    [_AOffTrans setTitle:[NSString stringWithFormat:@"%.0f%%", _offTrans]
+               forState:UIControlStateNormal];
 }
 
 - (void)didReceiveMemoryWarning
@@ -57,6 +68,7 @@
 {
     
 }
+
 - (IBAction)AOnWidthSwitch:(id)sender
 {
     
@@ -107,9 +119,16 @@
 #pragma unused(colorWheel)
 }
 
-- (IBAction)AOnTrans:(id)sender
+- (IBAction)AOnTrans:(UIButton *)sender
 {
-    
+    NVSliderView *sliderView = [NVSliderView showSliderWithView:self.view
+                                                     startValue:_onTrans
+                                                       minValue:0.0
+                                                       maxValue:100.0
+                                                       delegate:self
+                                                         tabBar:self.tabBarController.tabBar
+                                                            tag:[self indexOfButton:sender]];
+#pragma unused(sliderView)
 }
 
 - (IBAction)AOnWidth:(id)sender
@@ -137,9 +156,16 @@
 #pragma unused(colorWheel)
 }
 
-- (IBAction)AOffTrans:(id)sender
+- (IBAction)AOffTrans:(UIButton *)sender
 {
-    
+    NVSliderView *sliderView = [NVSliderView showSliderWithView:self.view
+                                                     startValue:_offTrans
+                                                       minValue:0.0
+                                                       maxValue:100.0
+                                                       delegate:self
+                                                         tabBar:self.tabBarController.tabBar
+                                                            tag:[self indexOfButton:sender]];
+#pragma unused(sliderView)
 }
 
 - (IBAction)AOffWidth:(id)sender
@@ -163,6 +189,11 @@
                              completion:nil];
 }
 
+- (IBAction)cascadeButton:(id)sender
+{
+    
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
@@ -176,9 +207,9 @@
     }
 }
 
-- (NSInteger)indexOfButton:(UIButton *)subview
+- (NSInteger)indexOfButton:(UIButton *)button
 {
-    return [self.view.subviews indexOfObject:subview];
+    return [self.view.subviews indexOfObject:button];
 }
 
 - (UIButton *)buttonAtIndex:(NSInteger)tag
@@ -205,6 +236,34 @@
     [colorWheel hideColorWheel:YES];
 }
 
-- (IBAction)cascadeButton:(id)sender {
+- (void)sliderView:(NVSliderView *)sliderView
+        didReturnValue:(CGFloat)value
+        forViewWithTag:(NSInteger)tag
+{
+    NSLog(@"%ld", (long)tag);
+    
+    if ([self buttonAtIndex:tag] == _AOnTrans)
+    {
+        _onTrans = value;
+        
+        [_AOnTrans setTitle:[NSString stringWithFormat:@"%.0f%%", _onTrans]
+                   forState:UIControlStateNormal];
+    }
+    
+    else if ([self buttonAtIndex:tag] == _AOffTrans)
+    {
+        _offTrans = value;
+        
+        [_AOffTrans setTitle:[NSString stringWithFormat:@"%.0f%%", _offTrans]
+                    forState:UIControlStateNormal];
+    }
+    
+    [sliderView hideSliderView:YES];
 }
+
+- (void)sliderViewDidCancel:(NVSliderView *)sliderView
+{
+    [sliderView hideSliderView:YES];
+}
+
 @end
