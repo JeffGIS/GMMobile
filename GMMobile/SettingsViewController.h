@@ -17,7 +17,6 @@
 - (IBAction)loadPlan:(id)sender;
 - (IBAction)loadCensus:(id)sender;
 
-
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 
 @property (atomic) int nComplete;

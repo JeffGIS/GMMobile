@@ -5,6 +5,8 @@ extern int keepProcessing;
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
+#import "AppDelegate.h"
+#import "ConfigurationControl.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -16,11 +18,12 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property (nonatomic) BOOL clearAnnotations, clearWhenDeselected, initialZoom, rotateZoom;
-@property (nonatomic) BOOL firstTimeAppear, firstTimeMap, noneSelected;
+@property BOOL clearMarkers, clearWhenDeselected, initialZoom, rotateZoom;
+@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
-@property (nonatomic) int selectedPlatRefno, nVectorViews, vectorViewZoom;
+@property (nonatomic) int selectedPlatRefno, nVectorViews;
+@property (nonatomic) CGFloat vectorViewZoom;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
@@ -34,8 +37,9 @@ extern int keepProcessing;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall;
-@property (atomic) BOOL waitForVectorViewRefresh;
+@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
+@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -43,6 +47,10 @@ extern int keepProcessing;
 @property (nonatomic) PlatProfileView *profileView;
 @property (nonatomic) CGPoint digitizingTargetOffset;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
+@property (nonatomic) UIView *digitizationToolbar;
+@property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
+@property (nonatomic) DigitizationMode digitizationMode;
+
 
 @end
 
@@ -63,6 +71,7 @@ extern int keepProcessing;
     [PipeTrace removeTrace];
     
     _firstTimeAppear = _firstTimeMap = YES;
+    _digitizationMode = DigitizationModeCustom;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -101,17 +110,61 @@ extern int keepProcessing;
                                                                                        ofType:@"png"]];
     
     _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
-    _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    
+    CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    
+    _digitizerTargetView.center = CGPointMake(targetPoint.x,
+                                              (targetPoint.y + [self statusBarHeight:self.interfaceOrientation]));
+    
     _digitizerTargetView.image = _blackCrosshairs;
     [self.view addSubview:_digitizerTargetView];
+    
+    _digitizationToolbar = [[UIView alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
+                                                                    _mapView.frame.origin.y,
+                                                                    _mapView.frame.size.width, 49.0)];
+    
+    _digitizationToolbar.backgroundColor = UserDefaults.defaults.appleBlue;
+    _digitizationToolbar.alpha = 0.0;
+    _digitizationToolbar.hidden = YES;
+    [self.view addSubview:_digitizationToolbar];
+    
+    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.2), 0.0,
+                                                                        (_digitizationToolbar.frame.size.width * 0.6),
+                                                                        _digitizationToolbar.frame.size.height)];
+    
+    [self setupDigitizerToolbarButton:_cancelDigitizerButton
+                             selector:@selector(cancelDigitizationMode:)
+                                title:@"Cancel Digitization"];
+    
+    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.35),
+                                                                      _digitizationToolbar.frame.size.height)];
+    
+    [self setupDigitizerToolbarButton:_saveDigitizerButton
+                             selector:@selector(saveDigitizationMode:)
+                                title:@"Save Digitization"];
+    
+    _undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.35),
+                                                                      _digitizationToolbar.frame.size.height)];
+
+    [self setupDigitizerToolbarButton:_undoDigitizerButton
+                             selector:@selector(undoDigitizationMode:)
+                                title:@"Undo Digitization"];
+    
+    _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
     
     CGFloat compassSize = 48.0, compassMargin = 6.0;
+    CGFloat helpButtonSize = 56.0, helpButtonMargin = 8.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
         compassSize = 36.0, compassMargin = 4.0;
+        helpButtonSize = 40.0, helpButtonMargin = 4.0;
+    }
     
     _compass = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - compassSize - compassMargin),
                                                           (statusBarHeight + compassMargin), compassSize, compassSize)];
@@ -142,7 +195,7 @@ extern int keepProcessing;
     GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
         //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
         //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
-        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADA/%lu/%lu/%lu.jp2",
+        NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.jp2",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
@@ -151,23 +204,19 @@ extern int keepProcessing;
     GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
         //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
         //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
-        NSString *url = [NSString stringWithFormat:@"http://74.42.136.100/icons/MPLSADA/%lu/%lu/%lu.png",
+        NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.png",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
     
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
-    [_layer_jpeg clearTileCache];
+    //[_layer_jpeg clearTileCache];
     
-    if (CRAPI.sharedInstance.GMTilesVisible)
-        _layer_jpeg.map = _mapView;
     
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
-    [_layer_png clearTileCache];
+    //[_layer_png clearTileCache];
     
-    if (CRAPI.sharedInstance.GMTilesVisible)
-        _layer_png.map = _mapView;
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -257,38 +306,55 @@ extern int keepProcessing;
     
     [self setupTableView];
     
-    _mapToolbar = [[MapToolbar alloc] init];
-    _mapToolbar.delegate = self;
+    CGPoint mapToolbarCenter = CGPointMake((self.view.frame.size.width / 2.0),
+                                           (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
     
-    _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
-                                     (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
+    _mapToolbar = [MapToolbar showMapToolbarWithCenter:mapToolbarCenter
+                                                  view:self.view
+                                              delegate:self];
     
-    _mapToolbar.orientation = MapToolbarOrientationTop;
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    sharedAppDelegate.mapToolbar = _mapToolbar;
     
-    [self.view addSubview:_mapToolbar];
+    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    [ConfigurationControl.sharedInstance setApp:config];
+
+    HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
+                              CGPointMake(helpButtonMargin, (helpButtonMargin +
+                                           [self statusBarHeight:self.interfaceOrientation]))
+                                                             size:helpButtonSize
+                                                             view:self.view
+                                                              tag:HelpButtonPresenterMapVC
+                                                           tabBar:self.tabBarController.tabBar];
+#pragma unused(helpButton)
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    _digitizerTargetView.hidden = !CRAPI.sharedInstance.inDigitizeMode;
+    for (HelpWebView *helpWebView in self.view.subviews)
+    {
+        if ([helpWebView isKindOfClass:HelpWebView.class])
+            [self.view bringSubviewToFront:helpWebView];
+    }
+    
+    if (_inDigitizationMode)
+    {
+        _digitizerTargetView.hidden = NO;
+        _digitizerTargetView.alpha = 1.0;
+    }
+    
+    else
+    {
+        _digitizerTargetView.hidden = YES;
+        _digitizerTargetView.alpha = 0.0;
+    }
     
     if (!_firstTimeAppear)
     {
         [self initTableView];
         
-        if (CRAPI.sharedInstance.GMTilesVisible)
-        {
-            _layer_jpeg.map = _mapView;
-            _layer_png.map = _mapView;
-        }
-        
-        else
-        {
-            _layer_jpeg.map = nil;
-            _layer_png.map = nil;
-        }
     }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
@@ -340,7 +406,7 @@ extern int keepProcessing;
         
         [_mapView animateToCameraPosition:camera];
         
-        if (_clearAnnotations)
+        if (_clearMarkers)
         {
             for (MarkerButton *markers in _markerArray)
                 [markers removeFromSuperview];
@@ -359,6 +425,7 @@ extern int keepProcessing;
         MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
                                                            view:self.view
                                                             map:_mapView
+                                                statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
                                                        delegate:self];
         
         [self removePreviousInfoWindow];
@@ -400,6 +467,9 @@ extern int keepProcessing;
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
+    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+
+    [_mapToolbar configure:_screenSetting];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -426,6 +496,8 @@ extern int keepProcessing;
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
+    
+    CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -447,6 +519,31 @@ extern int keepProcessing;
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)setupDigitizerToolbarButton:(UIButton *)button
+                           selector:(SEL)selector
+                              title:(NSString *)title
+{
+    button.backgroundColor = UIColor.clearColor;
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    
+    [button setTitleColor:UIColor.whiteColor
+                 forState:UIControlStateNormal];
+    
+    [button setTitleColor:UIColor.redColor
+                 forState:UIControlStateHighlighted];
+    
+    [button setTitle:title
+            forState:UIControlStateNormal];
+    
+    [button addTarget:self
+               action:selector
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    [_digitizationToolbar addSubview:button];
 }
 
 - (void)extentZoom
@@ -498,6 +595,9 @@ extern int keepProcessing;
 - (void)mapView:(GMSMapView *)mapView
 didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 {
+    if (_inDigitizationMode)
+        return;
+    
     if (!_tableView.hidden)
     {
         CGRect frame = _tableView.frame;
@@ -531,6 +631,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
+        planData.zoom = _mapView.camera.zoom;
         
         [propData pickPID:&llPropPt
             highlightList:highlightList];
@@ -538,11 +639,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [sewerData pickSewer:&llSewerPt
                       atZoom:_mapView.camera.zoom
                highlightList:highlightList];
-        [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
-
+        
+        [planData pickAlleyWallPoint:llpickPt
+                       highlightList:highlightList];
+        [planData pickAlleyLine:llpickPt atZoom:_mapView.camera.zoom highlightList:highlightList];
         if (highlightList.count)
         {
-            if (_clearAnnotations)
+            if (_clearMarkers)
             {
                 for (MarkerButton *markers in _markerArray)
                     [markers removeFromSuperview];
@@ -567,6 +670,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
                                                                view:self.view
                                                                 map:_mapView
+                                                    statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
                                                            delegate:self];
             
             [self removePreviousInfoWindow];
@@ -574,6 +678,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             switch (pi.itemType)
             {
+                case PTAlleyLine:
+                    _selectedAlleySeg = pi.identifier;
+                    marker.title = _selectedAlleySeg;
+                    marker.snippet = pi.symbolName;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    break;
                 case PTAlleyWallPt:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
@@ -594,6 +704,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
                     break;
             }
+            marker.refno = pi.refno;
             
             [_markerArray addObject:marker];
             
@@ -602,6 +713,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             _infoWindow.title = marker.title;
             _infoWindow.snippet = marker.snippet;
             _infoWindow.position = marker.position;
+            _infoWindow.refno = marker.refno;
             [self.view addSubview:_infoWindow];
             _noneSelected = NO;
         }
@@ -674,44 +786,139 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         _mapView.settings.scrollGestures = YES;
         _digitizerTargetView.image = _blackCrosshairs;
-        _digitizerCount++;
         
-        MarkerButton *marker = [MarkerButton markerWithPosition:[_mapView.projection coordinateForPoint:_digitizerTargetView.center]
-                                                           view:self.view
-                                                            map:_mapView
-                                                       delegate:self];
+        CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
+                                              (_digitizerTargetView.center.y -
+                                               [self statusBarHeight:self.interfaceOrientation]));
         
-        [self removePreviousInfoWindow];
-        _infoWindow = [[MarkerInfoWindow alloc] init];
+        CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
         
-        [marker setImage:_orangeCrosshairs
-                forState:UIControlStateNormal];
+        switch (_digitizationMode)
+        {
+            case DigitizationModeCustom:
+            {
+                _digitizerCount++;
+                
+                MarkerButton *marker = [MarkerButton markerWithPosition:position
+                                                                   view:self.view
+                                                                    map:_mapView
+                                                        statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
+                                                               delegate:self];
+                
+                [self removePreviousInfoWindow];
+                _infoWindow = [[MarkerInfoWindow alloc] init];
+                
+                [marker setImage:_orangeCrosshairs
+                        forState:UIControlStateNormal];
+                
+                marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
+                marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+                [_markerArray addObject:marker];
+                
+                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+                _infoWindow.delegate = self;
+                _infoWindow.title = marker.title;
+                _infoWindow.snippet = marker.snippet;
+                _infoWindow.position = marker.position;
+                _infoWindow.type = MarkerInfoWindowTypeCustom;
+                [self.view addSubview:_infoWindow];
+                _noneSelected = NO;
+            }
+                break;
+                
+            case DigitizationModeAlleyWallMove:
+            {
+                PlanimetricData *pd = [[PlanimetricData alloc] init];
+                
+                [pd moveAlleyWallPoint:_selectedAlleyWallRefno
+                                    to:position];
+                
+                MarkerButton *marker = _markerArray.lastObject;
+                marker.position = _infoWindow.position = position;
+                
+                marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                            (_digitizerTargetView.center.y -
+                                             (marker.frame.size.height / 2.0)));
+                
+                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+                
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     _cancelDigitizerButton.alpha = 0.0;
+                                     _saveDigitizerButton.alpha = 1.0;
+                                     _undoDigitizerButton.alpha = 1.0;
+                                 }];
+                
+                [_vectorView setNeedsDisplay];
+            }
+                break;
+                
+            case DigitizationModeAlleyWallNew:
+            {
+                _digitizerCount++;
+                
+                MarkerButton *marker = [MarkerButton markerWithPosition:position
+                                                                   view:self.view
+                                                                    map:_mapView
+                                                        statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
+                                                               delegate:self];
+                
+                marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                            (_digitizerTargetView.center.y -
+                                             (marker.frame.size.height / 2.0)));
+                
+                [self removePreviousInfoWindow];
+                _infoWindow = [[MarkerInfoWindow alloc] init];
+                
+                marker.title = [NSString stringWithFormat:@"New Alley Wall %ld", (long)_digitizerCount];
+                marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+                [_markerArray addObject:marker];
+                
+                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+                _infoWindow.delegate = self;
+                _infoWindow.title = marker.title;
+                _infoWindow.snippet = marker.snippet;
+                _infoWindow.position = marker.position;
+                _infoWindow.type = MarkerInfoWindowTypeCustom;
+                [self.view addSubview:_infoWindow];
+                _noneSelected = NO;
+                
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     _cancelDigitizerButton.alpha = 0.0;
+                                     _saveDigitizerButton.alpha = 1.0;
+                                     _undoDigitizerButton.alpha = 1.0;
+                                 }];
+            }
+                
+            case DigitizationModeProperty:
+                break;
+                
+            case DigitizationModeSewer:
+                break;
+                
+            default:
+                break;
+        }
         
-        marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
-        marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
-        [_markerArray addObject:marker];
+        CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
         
-        _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
-        _infoWindow.delegate = self;
-        _infoWindow.title = marker.title;
-        _infoWindow.snippet = marker.snippet;
-        _infoWindow.position = marker.position;
-        _infoWindow.type = MarkerInfoWindowTypeCustom;
-        [self.view addSubview:_infoWindow];
-        _noneSelected = NO;
-        
-        _digitizerTargetView.center = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+        _digitizerTargetView.center = CGPointMake(targetPoint.x,
+                                                  (targetPoint.y + [self statusBarHeight:self.interfaceOrientation]));
     }
 }
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
 {
-    if (CRAPI.sharedInstance.inDigitizeMode == YES)
+    if (_inDigitizationMode)
     {
         [self handleLongPressDigitizingForState:gesture];
         return;
     }
     
+    if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                     visibleAtZoom:_mapView.camera.zoom])
+        return;
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
@@ -905,6 +1112,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self initTableView];
         }
     }
+    
+    for (HelpWebView *helpWebView in self.view.subviews)
+    {
+        if ([helpWebView isKindOfClass:HelpWebView.class])
+            [self.view bringSubviewToFront:helpWebView];
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -929,7 +1142,10 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     for (MarkerButton *markers in _markerArray)
     {
         CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
-        markers.center = target;
+        
+        markers.center = CGPointMake(target.x,
+                                     ((target.y + [self statusBarHeight:self.interfaceOrientation]) -
+                                      (markers.frame.size.height / 2.0)));
     }
     
     MarkerButton *marker = _markerArray.lastObject;
@@ -939,6 +1155,12 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 - (void)mapView:(GMSMapView *)mapView
 idleAtCameraPosition:(GMSCameraPosition *)position
 {
+    if (_moveDigitizer)
+    {
+        _moveDigitizer = NO;
+        [self showDigitizer:YES];
+    }
+    
     if (!_firstTimeMap)
     {
         [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1066,6 +1288,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
     }
     
+    for (HelpWebView *helpWebView in self.view.subviews)
+    {
+        if ([helpWebView isKindOfClass:HelpWebView.class])
+        {
+            [helpWebView willRotateWithDuration:duration
+                         toInterfaceOrientation:toInterfaceOrientation
+                                   tabBarHeight:_tabBarHeight];
+        }
+    }
+    
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
@@ -1111,7 +1343,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame1;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1136,7 +1368,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame2;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1151,7 +1383,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _profileView.frame = CGRectMake(0.0, 0.0, _secondView.frame.size.width,
                                                                  (_secondView.frame.size.height));
@@ -1166,7 +1398,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame4;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1191,7 +1423,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _firstView.frame = frame3;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
@@ -1251,7 +1483,7 @@ haveVV:
 }
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
-                   atZoom:(int)zoom
+                   atZoom:(CGFloat)zoom
 {
     [self clearVectorView];
     _vectorViewZoom = zoom;
@@ -1269,14 +1501,31 @@ haveVV:
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
     [_vectorView setRegion:_mapView.projection.visibleRegion];
+    CRAPI.sharedInstance.currentZoom = _vectorViewZoom;
     _vectorView.zoom = _vectorViewZoom;
     
-    NSLog(@"Vector view start: zoom = %i", _vectorViewZoom);
+    NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
+    
+    if ([ConfigurationControl.sharedInstance layer:HCLayerAerials
+                                     visibleAtZoom:_vectorViewZoom])
+    {
+        _layer_jpeg.map = _mapView;
+        _layer_png.map = _mapView;
+        ConfigurationControl.sharedInstance.GMTilesVisible = YES;
+    }
+    
+    else
+    {
+        _layer_jpeg.map = nil;
+        _layer_png.map = nil;
+        ConfigurationControl.sharedInstance.GMTilesVisible = NO;
+    }
     
     [_vectorView setNeedsDisplay];
 }
 
-- (void)highlightVectorView:(PickedItem *)pi displayOption:(int)option
+- (void)highlightVectorView:(PickedItem *)pi
+              displayOption:(int)option
 {
     if (!_vectorView)
         [self allocateVectorView];
@@ -1287,7 +1536,7 @@ haveVV:
     _vectorView.zoom = _vectorViewZoom;
     _vectorView.pickedItem = pi;
     
-    NSLog(@"HighlightVector view start: zoom = %i", _vectorViewZoom);
+    NSLog(@"HighlightVector view start: zoom = %f", _vectorViewZoom);
     
     [_vectorView setNeedsDisplay];
 }
@@ -1339,6 +1588,21 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_digitizerTargetView])
                                [self.view bringSubviewToFront:_digitizerTargetView];
+                           
+                           if ([self.view.subviews containsObject:_digitizationToolbar])
+                               [self.view bringSubviewToFront:_digitizationToolbar];
+                           
+                           for (HelpButton *helpButton in self.view.subviews)
+                           {
+                               if ([helpButton isKindOfClass:HelpButton.class])
+                                   [self.view bringSubviewToFront:helpButton];
+                           }
+                           
+                           for (HelpWebView *helpWebView in self.view.subviews)
+                           {
+                               if ([helpWebView isKindOfClass:HelpWebView.class])
+                                   [self.view bringSubviewToFront:helpWebView];
+                           }
                        }
                    });
 }
@@ -1702,7 +1966,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Move Wall Point"])
     {
-        [self moveWallPoint];
+        [self dismissTableView];
+        
+        [self performSelector:@selector(moveWallPoint)
+                   withObject:nil
+                   afterDelay:0.3];
         
         [UserDefaults.defaults saveInteger:AlleyWallSettingMoveWallPoint
                                     forKey:@"AlleyWallOption"];
@@ -1800,6 +2068,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          self.tabBarController.tabBar.alpha = 0.0;
                          UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
                          _exitStreetView.hidden = NO;
+                     } completion:^(BOOL finished) {
+                         self.tabBarController.tabBar.hidden = YES;
                      }];
 }
 
@@ -1892,7 +2162,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)moveWallPoint
 {
-    //implement edit wall point here
+    _inDigitizationMode = YES;
+    _digitizationMode = DigitizationModeAlleyWallMove;
+    [self hideMarkersAndInfoWindows];
+    [_mapToolbar hide];
+    
+    MarkerButton *marker = _markerArray.lastObject;
+    
+    if (CLLocationCoordinateEqual(_mapView.camera.target, marker.position))
+        [self showDigitizer:YES];
+    
+    else
+    {
+        _moveDigitizer = YES;
+        [_mapView animateToLocation:marker.position];
+    }
 }
 
 - (void)deleteWallPoint
@@ -1902,7 +2186,49 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)editWallAttributes
 {
-    //implement edit wall attributes here
+    [SharedDefaults.defaults saveString:_selectedAlleyWall
+                                 forKey:@"AlleyWallEditAttributes"];
+    
+    [self launchAlleyWallApp];
+}
+
+- (void)cancelDigitizationMode:(UIButton *)button
+{
+    [self hideDigitizationMode];
+}
+
+- (void)saveDigitizationMode:(UIButton *)button
+{
+    PlanimetricData *pd = [[PlanimetricData alloc] init];
+    
+    if (_digitizationMode == DigitizationModeAlleyWallMove)
+        [pd userSavedAlleyWallPointMove:YES];
+    
+    [self hideDigitizationMode];
+}
+
+- (void)undoDigitizationMode:(UIButton *)button
+{
+    PlanimetricData *pd = [[PlanimetricData alloc] init];
+    [pd userSavedAlleyWallPointMove:NO];
+    
+    [_vectorView setNeedsDisplay];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _saveDigitizerButton.alpha = 0.0;
+                         _undoDigitizerButton.alpha = 0.0;
+                         _cancelDigitizerButton.alpha = 1.0;
+                     }];
+}
+
+- (void)hideDigitizationMode
+{
+    _inDigitizationMode = NO;
+    
+    [self hideDigitizer];
+    [self showMarkersAndInfoWindows];
+    [_mapToolbar show];
 }
 
 - (void)removeMarker
@@ -1919,6 +2245,90 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          [marker removeFromSuperview];
                          [self removePreviousInfoWindow];
                          _infoWindow.alpha = alpha;
+                     }];
+}
+
+- (void)hideMarkersAndInfoWindows
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         for (MarkerButton *markers in self.view.subviews)
+                         {
+                             if ([markers isKindOfClass:MarkerButton.class])
+                                 markers.alpha = 0.0;
+                         }
+                         
+                         _infoWindow.alpha = 0.0;
+                     }];
+}
+
+- (void)showMarkersAndInfoWindows
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         for (MarkerButton *markers in self.view.subviews)
+                         {
+                             if ([markers isKindOfClass:MarkerButton.class])
+                                 markers.alpha = 1.0;
+                         }
+                         
+                         _infoWindow.alpha = 1.0;
+                     }];
+}
+
+- (void)showDigitizer:(BOOL)moveMarker;
+{
+    if (moveMarker)
+    {
+        MarkerButton *marker = _markerArray.lastObject;
+        
+        CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
+        
+        _digitizerTargetView.center = CGPointMake(markerPosition.x,
+                                                  (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
+    }
+    
+    _digitizerTargetView.hidden = NO;
+    _digitizationToolbar.hidden = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _digitizerTargetView.alpha = 1.0;
+                         _digitizationToolbar.alpha = 0.9;
+                         
+                         for (HelpButton *helpButton in self.view.subviews)
+                         {
+                             if ([helpButton isKindOfClass:HelpButton.class])
+                             {
+                                 helpButton.center =
+                                 CGPointMake(helpButton.center.x, helpButton.center.y +
+                                             _digitizationToolbar.frame.size.height);
+                             }
+                         }
+                     }];
+}
+
+- (void)hideDigitizer
+{
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _digitizerTargetView.alpha = 0.0;
+                         _digitizationToolbar.alpha = 0.0;
+                         
+                         for (HelpButton *helpButton in self.view.subviews)
+                         {
+                             if ([helpButton isKindOfClass:HelpButton.class])
+                             {
+                                 helpButton.center =
+                                 CGPointMake(helpButton.center.x, helpButton.center.y -
+                                             _digitizationToolbar.frame.size.height);
+                             }
+                         }
+                     } completion:^(BOOL finished) {
+                         _digitizerTargetView.hidden = YES;
+                         _digitizationToolbar.hidden = YES;
+                         _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
+                         _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
 
@@ -1951,6 +2361,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)dismissStreetView:(id)sender
 {
+    self.tabBarController.tabBar.hidden = NO;
+    
     [UIView animateWithDuration:0.25
                      animations:^{
                          _streetView.frame = CGRectMake(_tableView.frame.origin.x,
@@ -2243,10 +2655,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToBearing:newHeading.trueHeading];
 }
 
-- (void)mapToolbarDidSelectAnnotationOption:(BOOL)option
+- (void)mapToolbarDidSelectMarkerSwitch:(BOOL)option
 {
     if (option)
-        _clearAnnotations = NO;
+        _clearMarkers = NO;
     
     else
     {
@@ -2255,8 +2667,43 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         
         [_markerArray removeAllObjects];
         [self removePreviousInfoWindow];
-        _clearAnnotations = YES;
+        _clearMarkers = YES;
     }
+}
+
+- (void)mapToolbarDidSelectDigitize
+{
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigAlleyWalls:
+            _digitizationMode = DigitizationModeAlleyWallNew;
+            break;
+            
+        case HCConfigMetroProp:
+            _digitizationMode = DigitizationModeProperty;
+            break;
+        
+        case HCConfigSewers:
+            _digitizationMode = DigitizationModeSewer;
+            break;
+            
+        case HCConfigCurbRamps:
+            _digitizationMode = DigitizationModeCurbRamps;
+            break;
+            
+        default:
+            break;
+    }
+    
+    _inDigitizationMode = YES;
+    [self hideMarkersAndInfoWindows];
+    [_mapToolbar hide];
+    [self showDigitizer:NO];
+}
+
+- (void)mapToolbarDidSelectLegends
+{
+    //implement legends here
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
@@ -2339,21 +2786,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     if (setting == MapViewScreenSettingPlatView)
     {
         [self hideCompass];
-        
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             [_mapToolbar platViewMode];
-                         }];
+        [_mapToolbar platViewMode:setting];
     }
     
     else
     {
         [self showCompass];
         
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             [_mapToolbar normalMode];
-                         }];
+        if (_screenSetting == MapViewScreenSettingPlatView)
+            [_mapToolbar normalMode:setting];
     }
     
     switch (setting)
@@ -2655,6 +3096,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
+                                   refno:(NSInteger)refno
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type
 {
@@ -2689,7 +3131,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeAlleyWall:
             _selectedAlleyWall = title;
-            
+            _selectedAlleyWallRefno= refno;
             _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
                          @"Remove Alley Wall Marker"];
             
@@ -2925,6 +3367,32 @@ didFindMatchBetweenNote:(NSString *)note
             otherButtonTitles:@[[NSString stringWithFormat:@"Replace %@ with %@", itemInList, note],
                                 [NSString stringWithFormat:@"Add %@ to list", note]]
     destructiveButtonPosition:0];
+}
+
+- (void)launchAlleyWallApp
+{
+    NSString *CRISDetailURL = @"AlleyWallInventory://";
+    
+    [SharedDefaults.defaults saveString:@"GMMobile"
+                                 forKey:@"SourceApplication"];
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    
+    else
+    {
+        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch Alley Wall Inventory"
+                               message:nil
+                     cancelButtonTitle:@"OK"
+                     otherButtonTitles:nil
+             destructiveButtonPosition:0];
+    }
+}
+
+BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoordinate2D coordinate2)
+{
+    return (fabs(coordinate1.latitude - coordinate2.latitude) < 0.00001) &&
+           (fabs(coordinate1.longitude - coordinate2.longitude) < 0.00001);
 }
 
 @end

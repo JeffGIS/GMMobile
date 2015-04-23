@@ -4,6 +4,7 @@
 #import "SettingsViewController.h"
 #import "PropertyData.h"
 #import "SewerData.h"
+#import "AppDelegate.h"
 
 #define GET_PROPERTY 1
 #define GET_TILES 2
@@ -22,6 +23,14 @@
 @property (nonatomic) NSMutableArray *allPlats;
 @property (nonatomic) NSInteger nextPlat;
 
+@property (weak, nonatomic) IBOutlet UISwitch *locSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *extSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *legdSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *digtSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *markSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *mapSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *platSwitch;
+
 @end
 
 @implementation SettingsViewController
@@ -39,6 +48,16 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    _locSwitch.on = sharedAppDelegate.mapToolbar.wantUserLocation;
+    _extSwitch.on = sharedAppDelegate.mapToolbar.wantExtents;
+    _legdSwitch.on = sharedAppDelegate.mapToolbar.wantLegends;
+    _digtSwitch.on = sharedAppDelegate.mapToolbar.wantDigitize;
+    _markSwitch.on = sharedAppDelegate.mapToolbar.wantMarkerSwitch;
+    _mapSwitch.on = sharedAppDelegate.mapToolbar.wantMapType;
+    _platSwitch.on = sharedAppDelegate.mapToolbar.wantPlat;
     
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
@@ -86,7 +105,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
        andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
-    if (status == FTPStatusOK)
+    if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
         switch (option)
         {
@@ -139,7 +158,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         //planimetric
                         //planimetricp
                         //alleywall
-                        file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
+                        file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
                         _popover.title = @"Load Planimetric Tables";
                     }
                         break;
@@ -419,9 +438,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (IBAction)loadPlan:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MPLS_PlanimetricData.gcf";
+    //NSString *fileName = @"MPLS_PlanimetricData.gcf";
     //NSString *fileName = @"MPLS_PlanimetricPointData.gcf";
-    //NSString *fileName = @"MPLS_AlleyWall.gcf";
+    NSString *fileName = @"MPLS_AlleyWall.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;
@@ -658,26 +677,22 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (IBAction)toggleDigitizeMode:(UISwitch *)sender
-{
-    CRAPI.sharedInstance.inDigitizeMode = sender.on;
-}
-
 - (IBAction)showBumpDetector:(id)sender
 {
     GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
                                                                    coundownTime:8
+                                                                          title:@"This is the title parameter"
                                                                        delegate:self];
 #pragma unused(bumpDetector)
 }
 
 - (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
-didReturnTimeInterval:(NSTimeInterval)timeInterval
+didReturnTimeInterval:(NSString *)timeInterval
 {
     [bumpDetector hideBumpDetector:YES];
     
     [_gssiAlert showAlertWithTitle:@"Collision Detection Manager"
-                           message:[NSString stringWithFormat:@"Elapsed Time\n%.03f seconds", timeInterval]
+                           message:[NSString stringWithFormat:@"Elapsed Time\n%@ seconds", timeInterval]
                  cancelButtonTitle:@"OK"
                  otherButtonTitles:nil
          destructiveButtonPosition:0];
@@ -686,6 +701,100 @@ didReturnTimeInterval:(NSTimeInterval)timeInterval
 - (void)bumpDetectorDidCancel:(GSSiBumpDetector *)bumpDetector;
 {
     [bumpDetector hideBumpDetector:YES];
+}
+
+- (IBAction)showSpreadsheetView:(id)sender
+{
+    SpreadsheetView *spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:24
+                                                                        columns:8
+                                                                           view:self.view];
+    
+    [self.view addSubview:spreadsheetView];
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    for (SpreadsheetView *spreadsheetView in self.view.subviews)
+    {
+        if ([spreadsheetView isKindOfClass:SpreadsheetView.class])
+        {
+            [spreadsheetView willRotateWithDuration:duration
+                                       tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+        }
+        
+    }
+    for (GSSiBumpDetector *bumpDetector in self.view.subviews)
+    {
+        if ([bumpDetector isKindOfClass:GSSiBumpDetector.class])
+        {
+            [bumpDetector willRotateWithDuration:duration
+                          toInterfaceOrientation:toInterfaceOrientation
+                                    tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+        }
+    }
+}
+
+- (IBAction)toggleUserLocationButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantUserLocation
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleExtentsButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantExtents
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleLegendsButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantLegends
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleDigitizeButton:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantDigitize
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleMarkerSwitch:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMarkerSwitch
+                                                     value:sender.on];
+}
+
+- (IBAction)toggleMapTypeSC:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMapType
+                                                     value:sender.on];
+}
+
+- (IBAction)togglePlatSC:(UISwitch *)sender
+{
+    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
+    
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantPlat
+                                                     value:sender.on];
+}
+
+- (IBAction)showHeadingVC:(id)sender
+{
+    NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewController:self];
+#pragma unused(headingVC)
 }
 
 @end

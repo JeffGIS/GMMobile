@@ -26,10 +26,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [lagFreeField removeFromSuperview];
     
     CRAPI.sharedInstance.project = PROJECT_METROGIS;
-    CRAPI.sharedInstance.GMTilesVisible = NO;
     CRAPI.sharedInstance.showParcelBoundary = YES;
-    CRAPI.sharedInstance.parcelsVisibleAtZoom = 16;
-    CRAPI.sharedInstance.sewerVisibleAtZoom = 17;
     CRAPI.sharedInstance.parcelShadingOption = 0;
     [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
     
@@ -37,6 +34,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
                                                                               ofType:@"jpg"];
+    
+    [UserDefaults.defaults disableWebKitDiskImageCache];
+    
+    NSLog(@"Shared File Path: %@", CRAPI.sharedInstance.sharedFilePath);
 
     return YES;
 }

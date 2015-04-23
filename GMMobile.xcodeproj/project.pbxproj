@@ -14,12 +14,16 @@
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
+		A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A90D1FAA1AE5D67B00CBFEE7 /* backArrow.png */; };
+		A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */; };
+		A90D1FC01AE61C5700CBFEE7 /* colorWheel.png in Resources */ = {isa = PBXBuildFile; fileRef = A90D1FBF1AE61C5700CBFEE7 /* colorWheel.png */; };
 		A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */ = {isa = PBXBuildFile; fileRef = A91076BB1AC46D3A0096EFFD /* PropertyList.m */; };
 		A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */ = {isa = PBXBuildFile; fileRef = A9128A5A1AC0C95600F4242F /* redTarget.png */; };
 		A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A91565621A81E76400119C21 /* FindBoundariesViewController.m */; };
 		A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A51AD8818D0027659B /* blackCrosshairs.png */; };
 		A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
+		A937A0701AE87DEE00302DFB /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A937A06F1AE87DEE00302DFB /* coolArrow.png */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
@@ -28,6 +32,8 @@
 		A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */; };
 		A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A97B727F1ADB5D4B001ACFAE /* beep.mp3 */; };
 		A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */; };
+		A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */ = {isa = PBXBuildFile; fileRef = A97C62161AE0AD7900DA7738 /* greenHelpButton.png */; };
+		A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */ = {isa = PBXBuildFile; fileRef = A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */; };
 		A97DFB741AAE5E6E00F225DD /* compass.png in Resources */ = {isa = PBXBuildFile; fileRef = A97DFB731AAE5E6E00F225DD /* compass.png */; };
 		A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A996613A1AB0BCFF006C0106 /* MarkerButton.m */; };
 		A997EE221AB28F8300E26D6D /* PlatImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A997EE211AB28F8300E26D6D /* PlatImageView.m */; };
@@ -42,13 +48,17 @@
 		A99CD8D81A9DBABC0049F271 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D71A9DBABC0049F271 /* libicucore.dylib */; };
 		A99CD8DA1A9DBAC10049F271 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D91A9DBAC10049F271 /* libz.dylib */; };
 		A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */; };
+		A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = A9B6F3481AE46DC3003FD71E /* checkmark.png */; };
 		A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */; };
 		A9BC27F11A927D2B00FA89D8 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BC27F01A927D2B00FA89D8 /* help.png */; };
+		A9C086751AE173A900E79B3E /* applications.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C086741AE173A900E79B3E /* applications.png */; };
+		A9C086771AE2338000E79B3E /* digitize.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C086761AE2338000E79B3E /* digitize.png */; };
 		A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC11A7A8D9C0094562B /* userLocation.png */; };
 		A9C78BC41A7A8E590094562B /* zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C78BC31A7A8E590094562B /* zoom.png */; };
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
+		A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D269E21AE4C77C00A5C38E /* plusSign.png */; };
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
@@ -76,11 +86,14 @@
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
+		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
+		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C201A91301F003F7FB8 /* SewerData.m */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
+		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */; };
 /* End PBXBuildFile section */
 
@@ -102,6 +115,9 @@
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		A90506471A75E24100288850 /* layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = layers.png; sourceTree = "<group>"; };
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
+		A90D1FAA1AE5D67B00CBFEE7 /* backArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backArrow.png; sourceTree = "<group>"; };
+		A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backArrowHighlighted.png; sourceTree = "<group>"; };
+		A90D1FBF1AE61C5700CBFEE7 /* colorWheel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colorWheel.png; sourceTree = "<group>"; };
 		A91076BA1AC46D3A0096EFFD /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyList.h; sourceTree = "<group>"; };
 		A91076BB1AC46D3A0096EFFD /* PropertyList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyList.m; sourceTree = "<group>"; };
 		A9128A5A1AC0C95600F4242F /* redTarget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redTarget.png; sourceTree = "<group>"; };
@@ -112,6 +128,7 @@
 		A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackOrangeCrosshairs.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
+		A937A06F1AE87DEE00302DFB /* coolArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coolArrow.png; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
@@ -125,6 +142,8 @@
 		A97B72751ADB4668001ACFAE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		A97B727F1ADB5D4B001ACFAE /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
 		A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = finalBeep.mp3; sourceTree = "<group>"; };
+		A97C62161AE0AD7900DA7738 /* greenHelpButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenHelpButton.png; sourceTree = "<group>"; };
+		A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ManageMyLocationMap.pdf; sourceTree = "<group>"; };
 		A97DFB731AAE5E6E00F225DD /* compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass.png; sourceTree = "<group>"; };
 		A99661391AB0BCFF006C0106 /* MarkerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerButton.h; sourceTree = "<group>"; };
 		A996613A1AB0BCFF006C0106 /* MarkerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerButton.m; sourceTree = "<group>"; };
@@ -141,14 +160,18 @@
 		A99CD8D71A9DBABC0049F271 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		A99CD8D91A9DBAC10049F271 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		A9B6F3481AE46DC3003FD71E /* checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark.png; sourceTree = "<group>"; };
 		A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemesViewController.h; sourceTree = "<group>"; };
 		A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemesViewController.m; sourceTree = "<group>"; };
 		A9BC27F01A927D2B00FA89D8 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
+		A9C086741AE173A900E79B3E /* applications.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = applications.png; sourceTree = "<group>"; };
+		A9C086761AE2338000E79B3E /* digitize.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = digitize.png; sourceTree = "<group>"; };
 		A9C78BC11A7A8D9C0094562B /* userLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = userLocation.png; sourceTree = "<group>"; };
 		A9C78BC31A7A8E590094562B /* zoom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zoom.png; sourceTree = "<group>"; };
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A9CBF20C1A81558C006AC88E /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
+		A9D269E21AE4C77C00A5C38E /* plusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusSign.png; sourceTree = "<group>"; };
 		A9E49B421A7ECADF002B2BA2 /* FindAddressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindAddressViewController.h; sourceTree = "<group>"; };
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
 		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
@@ -191,6 +214,9 @@
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
 		EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		EBAB31CA1AE8200000C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
+		EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerOverridesViewController.h; sourceTree = "<group>"; };
+		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
 		EBCA6C1F1A91301F003F7FB8 /* SewerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SewerData.h; sourceTree = "<group>"; };
 		EBCA6C201A91301F003F7FB8 /* SewerData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SewerData.m; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
@@ -200,6 +226,8 @@
 		EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-2A-10.jpg"; sourceTree = "<group>"; };
 		EBCA6C2D1A96AEC7003F7FB8 /* PlanimetricData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlanimetricData.h; sourceTree = "<group>"; };
 		EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlanimetricData.m; sourceTree = "<group>"; };
+		EBF1356E1AE282A30046990F /* ConfigurationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationControl.h; sourceTree = "<group>"; };
+		EBF1356F1AE282A30046990F /* ConfigurationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationControl.m; sourceTree = "<group>"; };
 		EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "SD-30A-10.jpg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -244,6 +272,16 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A937A06F1AE87DEE00302DFB /* coolArrow.png */,
+				EBAB31CA1AE8200000C5CCEF /* colormap.png */,
+				A90D1FBF1AE61C5700CBFEE7 /* colorWheel.png */,
+				A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */,
+				A90D1FAA1AE5D67B00CBFEE7 /* backArrow.png */,
+				A9D269E21AE4C77C00A5C38E /* plusSign.png */,
+				A9B6F3481AE46DC3003FD71E /* checkmark.png */,
+				A9C086761AE2338000E79B3E /* digitize.png */,
+				A9C086741AE173A900E79B3E /* applications.png */,
+				A97C62161AE0AD7900DA7738 /* greenHelpButton.png */,
 				A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */,
 				A92382A51AD8818D0027659B /* blackCrosshairs.png */,
 				A9128A5A1AC0C95600F4242F /* redTarget.png */,
@@ -328,6 +366,8 @@
 				EBCA6C201A91301F003F7FB8 /* SewerData.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
+				EBF1356E1AE282A30046990F /* ConfigurationControl.h */,
+				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -367,6 +407,8 @@
 				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
 				A9F56EBF1A847CA8003522AE /* WebKitViewController.m */,
+				EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */,
+				EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -404,6 +446,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */,
 				A97B727F1ADB5D4B001ACFAE /* beep.mp3 */,
 				A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */,
 				EB398F0D1AC04B530043875E /* censusdatadef.txt */,
@@ -529,26 +572,37 @@
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
+				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */,
+				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
+				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
+				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
 				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
 				A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
+				A937A0701AE87DEE00302DFB /* coolArrow.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
+				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
+				A90D1FC01AE61C5700CBFEE7 /* colorWheel.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
+				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
+				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
+				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
+				A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */,
 				1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 			);
@@ -571,10 +625,12 @@
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
+				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,
 				A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */,
 				EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */,
 				A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */,
 				A997EE221AB28F8300E26D6D /* PlatImageView.m in Sources */,
+				EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */,
 				A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */,
 				EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */,
 				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,

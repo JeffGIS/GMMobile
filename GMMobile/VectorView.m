@@ -9,6 +9,7 @@ extern int keepProcessing;
 #import "PropertyData.h"
 #import "SewerData.h"
 #import "PipeTrace.h"
+#import "ConfigurationControl.h"
 
 @interface VectorView ()
 
@@ -175,7 +176,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                    {
                                        case DISPLAY_DATA_OPTION_DISPLAY:
                                        {
-                                           if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.parcelsVisibleAtZoom)
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerParcels                                                                            visibleAtZoom:_zoom])
                                            {
                                                PropertyData *pd = [[PropertyData alloc] init];
                                                
@@ -213,11 +215,14 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                             viewBounds:&_viewBounds];
                                             }*/
                                             
-                                            if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
+                                                                            visibleAtZoom:_zoom])
                                             {
                                                 PlanimetricData *pd = [[PlanimetricData alloc] init];
                                                 pd.processingID = keepProcessing;
-                                                
+                                                pd.zoom = _zoom;
+                                               
                                                 if (keepProcessing == self.displayID)
                                                     [pd displayPlanArea:_context
                                                               llCorners:&_latlonCornerPoints
@@ -235,15 +240,32 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                llCorners:&_latlonCornerPoints
                                                                 LLBounds:&_latlonBounds
                                                               viewBounds:&_viewBounds];
-                                                
-                                                if (keepProcessing == self.displayID)
-                                                    [pd displayWallPoint:_context
-                                                               llCorners:&_latlonCornerPoints
-                                                                LLBounds:&_latlonBounds
-                                                              viewBounds:&_viewBounds];
                                             }
                                            
-                                           if (keepProcessing == self.displayID && _zoom >= CRAPI.sharedInstance.sewerVisibleAtZoom)
+                                           
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                                                            visibleAtZoom:_zoom])
+                                           {
+                                               PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                               pd.processingID = keepProcessing;
+                                               pd.zoom = _zoom;
+
+                                               if (keepProcessing == self.displayID)
+                                                   [pd displayAlleyLine:_context
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];
+                                               
+                                               if (keepProcessing == self.displayID)
+                                                   [pd displayWallPoint:_context
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];
+                                           }
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                                                            visibleAtZoom:_zoom])
                                            {
                                                SewerData *sd = [[SewerData alloc] init];
                                                sd.processingID = keepProcessing;

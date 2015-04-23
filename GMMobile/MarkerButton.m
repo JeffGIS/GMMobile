@@ -8,6 +8,7 @@
 + (MarkerButton *)markerWithPosition:(CLLocationCoordinate2D)position
                                 view:(UIView *)view
                                  map:(GMSMapView *)map
+                     statusBarHeight:(CGFloat)statusBarHeight
                             delegate:(id)delegate
 {
     MarkerButton *marker = [[MarkerButton alloc] init];
@@ -19,8 +20,8 @@
     marker.delegate = delegate;
         
     CGPoint target = [map.projection pointForCoordinate:position];
-        
-    marker.center = target;
+    
+    marker.center = CGPointMake(target.x, ((target.y + statusBarHeight) - (marker.frame.size.height / 2.0)));
     [view addSubview:marker];
     
     [marker setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"marker"

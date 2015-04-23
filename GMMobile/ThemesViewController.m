@@ -2,10 +2,15 @@
 //  GMMobile
 
 #import "ThemesViewController.h"
+#import "ConfigurationControl.h"
 
 @interface ThemesViewController ()
 
-@property (nonatomic) NSArray *themesList;
+@property (nonatomic) NSArray *appList;
+@property (nonatomic) CGFloat rowHeight;
+@property (nonatomic) NSInteger selectedRow;
+@property (nonatomic) UIImageView *checkmarkView;
+@property (nonatomic) UIFont *font;
 
 @end
 
@@ -14,11 +19,37 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    _themesList = @[@"Theme 1", @"Theme 2", @"Theme 3", @"Theme 4"];
-    
+    _appList = ConfigurationControl.sharedInstance.appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    
+    _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
+                                                         [NSBundle.mainBundle pathForResource:@"checkmark"
+                                                                                       ofType:@"png"]]];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        _checkmarkView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+        _rowHeight = 60.0;
+        _font = [UIFont boldSystemFontOfSize:22.0];
+    }
+    
+    else
+    {
+        _checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
+        _rowHeight = 76.0;
+        _font = [UIFont boldSystemFontOfSize:36.0];
+    }
+    
+    _checkmarkView.contentMode = UIViewContentModeScaleToFill;
+    
+    _selectedRow = -1;
     [self setupTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [_tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -35,11 +66,18 @@
     _tableView.backgroundColor = UserDefaults.defaults.green;
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.0), 60.0);
-    _tableView.rowHeight = rowHeight;
-    _tableView.layer.borderWidth = (rowHeight / 24.0);
+    _tableView.layer.borderWidth = (_rowHeight / 24.0);
     _tableView.layer.cornerRadius = 10.0;
+    _tableView.rowHeight = _rowHeight;
+    _tableView.sectionHeaderHeight = _rowHeight;
+    
+    NSInteger selectedRow = (NSInteger)ConfigurationControl.sharedInstance.currentApp;
+    
+    NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:selectedRow
+                                                        inSection:0];
+    
+    [_tableView cellForRowAtIndexPath:selectedIndexPath].accessoryView = _checkmarkView;
+    _selectedRow = selectedIndexPath.row;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -47,10 +85,29 @@
     return 1;
 }
 
+- (UIView *)tableView:(UITableView *)tableView
+viewForHeaderInSection:(NSInteger)section
+{
+    UILabel *headerLabel = [[UILabel alloc] initWithFrame:
+                            CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
+    
+    headerLabel.font = _font;
+    headerLabel.textColor = UIColor.whiteColor;
+    headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.text = @"Select Application";
+    
+    UIView *headerView = [[UIView alloc] initWithFrame:
+                          CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
+
+    [headerView addSubview:headerLabel];
+    headerView.backgroundColor = UIColor.blackColor;
+    return headerView;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return _themesList.count;
+    return ConfigurationControl.sharedInstance.appList.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -61,69 +118,58 @@
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:@"Cell"];
     }
     
-    if (_themesList.count != 0)
+    if (_appList.count != 0)
     {
-        cell.textLabel.text = _themesList[indexPath.row];
+        ApplicationObject *app = (ApplicationObject *)_appList[indexPath.row];
+        cell.textLabel.text = app.appName;
+        cell.textLabel.adjustsFontSizeToFitWidth = YES;
         cell.textLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
-        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-        
-        UIButton *helpButton = [[UIButton alloc] initWithFrame:CGRectMake((cell.frame.size.height * 0.15),
-                                                                          (cell.frame.size.height * 0.15),
-                                                                          (cell.frame.size.height * 0.7),
-                                                                          (cell.frame.size.height * 0.7))];
-        
-        [helpButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"help"
-                                                                                            ofType:@"png"]]
-                    forState:UIControlStateNormal];
-        
-        [cell addSubview:helpButton];
-        helpButton.tag = indexPath.row;
-        
-        [helpButton addTarget:self
-                       action:@selector(helpForTheme:)
-             forControlEvents:UIControlEventTouchUpInside];
     }
     
     else
     {
-        cell.textLabel.text = @"No Themes in List";
+        cell.textLabel.text = @"No Apps in List";
         cell.textLabel.textColor = UIColor.grayColor;
         cell.userInteractionEnabled = NO;
     }
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
-    cell.indentationLevel = 1;
-    cell.indentationWidth = cell.frame.size.height;
+    cell.textLabel.font = _font;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
+forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == _selectedRow)
+        cell.accessoryView = _checkmarkView;
+    
+    else
+        cell.accessoryView = nil;
 }
 
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *theme = _themesList[indexPath.row];
+    ApplicationObject *app = _appList[indexPath.row];
+    [ConfigurationControl.sharedInstance setApp:app.appID];
     
-    NSLog(@"Cell selected for %@", theme);
+    [tableView cellForRowAtIndexPath:indexPath].accessoryView = _checkmarkView;
+    _selectedRow = indexPath.row;
+    [tableView reloadData];
 }
 
-- (void)helpForTheme:(UIButton *)button
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
 {
-    NSString *theme = _themesList[button.tag];
-    
-    NSLog(@"Help requested for %@", theme);
-}
-
-- (void)tableView:(UITableView *)tableView
-accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *theme = _themesList[indexPath.row];
-    
-    NSLog(@"Detail Disclosure requested for %@", theme);
+    [_tableView reloadData];
 }
 
 @end
