@@ -23,6 +23,7 @@
 		A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A51AD8818D0027659B /* blackCrosshairs.png */; };
 		A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
+		A937A0701AE87DEE00302DFB /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A937A06F1AE87DEE00302DFB /* coolArrow.png */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
 		A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A97860ED1A7FDAD60019FE37 /* VectorView.m */; };
@@ -126,6 +127,7 @@
 		A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackOrangeCrosshairs.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
+		A937A06F1AE87DEE00302DFB /* coolArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coolArrow.png; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		A97860EC1A7FDAD60019FE37 /* VectorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorView.h; sourceTree = "<group>"; };
@@ -267,6 +269,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A937A06F1AE87DEE00302DFB /* coolArrow.png */,
 				EBAB31CA1AE8200000C5CCEF /* colormap.png */,
 				A90D1FBF1AE61C5700CBFEE7 /* colorWheel.png */,
 				A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */,
@@ -582,6 +585,7 @@
 				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
 				A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
+				A937A0701AE87DEE00302DFB /* coolArrow.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
