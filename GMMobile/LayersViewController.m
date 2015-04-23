@@ -533,12 +533,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)cellButtonSelected:(TableViewCellButton *)cellButton
 {
-    NVColorWheel *colorWheel = [NVColorWheel showColorWheelWithView:self.view
-                                                         startColor:cellButton.backgroundColor
-                                                           delegate:self
-                                                             tabBar:self.tabBarController.tabBar
-                                                               tag:cellButton.tag];
-#pragma unused(colorWheel)
+    [self performSegueWithIdentifier:@"ShowLayerOverrides"
+                              sender:self];
 }
 
 - (void)enableStepper:(UIStepper *)stepper
@@ -611,15 +607,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
-    
-    for (NVColorWheel *colorWheel in self.view.subviews)
-    {
-        if ([colorWheel isKindOfClass:NVColorWheel.class])
-        {
-            [colorWheel willRotateWithDuration:duration
-                        toInterfaceOrientation:toInterfaceOrientation];
-        }
-    }
 }
 
 - (void)layerWasTurnedOnAtIndex:(NSInteger)index
@@ -652,34 +639,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
                                    visibileAtZoom:zoomLevel];
-}
-
-- (void)colorWheel:(NVColorWheel *)colorWheel
-    didReturnColor:(UIColor *)color
-               tag:(NSInteger)tag
-{
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:tag
-                                                inSection:0];
-    
-    UIView *contentView = [_tableView cellForRowAtIndexPath:indexPath].contentView;
-    LayerObject *layer = (LayerObject *)_layerList[tag];
-    
-    for (TableViewCellButton *cellButton in contentView.subviews)
-    {
-        if ([cellButton isKindOfClass:TableViewCellButton.class] &&
-            cellButton.tag == tag)
-        {
-            cellButton.backgroundColor = color;
-            layer.cellButtonColor = color;
-        }
-    }
-    
-    [colorWheel hideColorWheel:YES];
-}
-
-- (void)colorWheelDidCancel:(NVColorWheel *)colorWheel
-{
-    [colorWheel hideColorWheel:YES];
 }
 
 @end

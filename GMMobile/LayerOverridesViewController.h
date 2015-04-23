@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
+@interface LayerOverridesViewController : UIViewController <NVColorWheelDelegate>
+
 //switches
-@interface LayerOverridesViewController : UIViewController<NVColorWheelDelegate>
 - (IBAction)AOnColorSwitch:(id)sender;
 @property (weak, nonatomic) IBOutlet UISwitch *AOnColorSwitch;
 - (IBAction)AOnTransSwitch:(id)sender;
@@ -57,4 +58,5 @@
 @property (weak, nonatomic) IBOutlet UIButton *AOnShadow;
 - (IBAction)returnButton:(id)sender;
 @property (weak, nonatomic) IBOutlet UIButton *returnButton;
+
 @end
