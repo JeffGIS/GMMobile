@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 
 //switches
-@interface LayerOverridesViewController : UIViewController
+@interface LayerOverridesViewController : UIViewController<NVColorWheelDelegate>
 - (IBAction)AOnColorSwitch:(id)sender;
 @property (weak, nonatomic) IBOutlet UISwitch *AOnColorSwitch;
 - (IBAction)AOnTransSwitch:(id)sender;

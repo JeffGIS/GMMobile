@@ -55,7 +55,12 @@
 - (IBAction)AOffShadowSwitch:(id)sender{
 }
 
-- (IBAction)AOnColor:(id)sender {
+- (IBAction)AOnColor:(UIButton*)sender {
+/*    NVColorWheel *colorWheel = [NVColorWheel showColorWheelWithView:sender.backgroundColor
+                                                           delegate:self
+                                                             tabBar:self.tabBarController.tabBar
+                                                                tag:cellButton.tag];*/
+#pragma unused(colorWheel)
 }
 - (IBAction)AOnTrans:(id)sender {
 }
@@ -76,5 +81,7 @@
 - (IBAction)AOffShadow:(id)sender {
 }
 - (IBAction)returnButton:(id)sender {
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
 @end
