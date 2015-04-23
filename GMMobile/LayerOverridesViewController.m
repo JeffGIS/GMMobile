@@ -240,8 +240,6 @@
         didReturnValue:(CGFloat)value
         forViewWithTag:(NSInteger)tag
 {
-    NSLog(@"%ld", (long)tag);
-    
     if ([self buttonAtIndex:tag] == _AOnTrans)
     {
         _onTrans = value;
