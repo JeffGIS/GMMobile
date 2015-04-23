@@ -686,6 +686,9 @@
                                 <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
                                     <rect key="frame" x="328" y="661" width="145" height="60"/>
                                 </variation>
+                                <connections>
+                                    <action selector="cascadeButton:" destination="1Va-SO-cwP" eventType="touchUpInside" id="SAC-tZ-XO9"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -711,6 +714,7 @@
                         <outlet property="AOnTransSwitch" destination="te8-il-wjd" id="dqg-K7-zXH"/>
                         <outlet property="AOnWidth" destination="EL1-Zi-DON" id="BkW-1r-cVL"/>
                         <outlet property="AOnWidthSwitch" destination="z4L-vP-1YO" id="p4j-Xb-bha"/>
+                        <outlet property="cascadeButton" destination="kK2-5G-FDo" id="FyD-bh-CTQ"/>
                         <outlet property="returnButton" destination="SYA-BC-2m8" id="feB-e9-MhT"/>
                     </connections>
                 </viewController>

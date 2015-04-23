@@ -58,5 +58,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *AOnShadow;
 - (IBAction)returnButton:(id)sender;
 @property (weak, nonatomic) IBOutlet UIButton *returnButton;
+- (IBAction)cascadeButton:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *cascadeButton;
 
 @end
