@@ -87,6 +87,7 @@
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
 		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
 		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
+		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C201A91301F003F7FB8 /* SewerData.m */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -214,6 +215,8 @@
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
 		EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		EBAB31CA1AE8200000C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
+		EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerOverridesViewController.h; sourceTree = "<group>"; };
+		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
 		EBCA6C1F1A91301F003F7FB8 /* SewerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SewerData.h; sourceTree = "<group>"; };
 		EBCA6C201A91301F003F7FB8 /* SewerData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SewerData.m; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
@@ -404,6 +407,8 @@
 				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
 				A9F56EBF1A847CA8003522AE /* WebKitViewController.m */,
+				EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */,
+				EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -625,6 +630,7 @@
 				EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */,
 				A979B03B1A9EAFA20098E1C5 /* MarkerInfoWindow.m in Sources */,
 				A997EE221AB28F8300E26D6D /* PlatImageView.m in Sources */,
+				EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */,
 				A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */,
 				EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */,
 				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,

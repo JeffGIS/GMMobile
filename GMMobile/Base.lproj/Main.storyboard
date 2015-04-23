@@ -294,10 +294,10 @@
             </objects>
             <point key="canvasLocation" x="1677" y="159"/>
         </scene>
-        <!--View Controller-->
+        <!--Layer Overrides View Controller-->
         <scene sceneID="wuY-Zy-S5h">
             <objects>
-                <viewController id="1Va-SO-cwP" sceneMemberID="viewController">
+                <viewController id="1Va-SO-cwP" customClass="LayerOverridesViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="RXL-Ts-SVB"/>
                         <viewControllerLayoutGuide type="bottom" id="1gP-AQ-L5Y"/>
@@ -320,8 +320,9 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iWf-nk-wyl">
                                 <rect key="frame" x="255" y="253" width="140" height="31"/>
                                 <color key="backgroundColor" red="1" green="0.98180846929999999" blue="0.1192069639" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="27"/>
-                                <state key="normal">
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <state key="normal" title="2 pixels">
+                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <variation key="heightClass=regular-widthClass=regular" ambiguous="YES" misplaced="YES">
@@ -449,8 +450,9 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8D2-eG-QP4">
                                 <rect key="frame" x="255" y="214" width="140" height="31"/>
                                 <color key="backgroundColor" red="1" green="0.98180846929999999" blue="0.1192069639" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="27"/>
-                                <state key="normal">
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="System Medium 14">
+                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <variation key="heightClass=regular-widthClass=regular" ambiguous="YES" misplaced="YES">
@@ -1232,6 +1234,29 @@
                             </mask>
                         </variation>
                     </view>
+                    <connections>
+                        <outlet property="AOffColor" destination="IQo-kG-Rdu" id="aDN-gS-yJp"/>
+                        <outlet property="AOffColorSwitch" destination="QnP-c5-Qir" id="chT-7b-ZUS"/>
+                        <outlet property="AOffFont" destination="8D2-eG-QP4" id="ipP-hO-fbD"/>
+                        <outlet property="AOffFontSwitch" destination="KQ6-On-IMR" id="IDs-s1-NBG"/>
+                        <outlet property="AOffShadow" destination="iWf-nk-wyl" id="kI1-N9-2hy"/>
+                        <outlet property="AOffShadowSwitch" destination="JpC-Fj-AbU" id="8FX-EA-EyS"/>
+                        <outlet property="AOffTrans" destination="ZN1-rg-Z4J" id="uE6-h0-hXt"/>
+                        <outlet property="AOffTransSwitch" destination="do7-WY-oIy" id="FhJ-sL-aIF"/>
+                        <outlet property="AOffWidth" destination="NHl-JS-kaT" id="0fa-wL-fJl"/>
+                        <outlet property="AOffWidthSwitch" destination="aEa-r3-anT" id="3sw-Ba-xqa"/>
+                        <outlet property="AOnColor" destination="Hdb-LC-qwl" id="Qzo-Cb-L06"/>
+                        <outlet property="AOnColorSwitch" destination="9qG-3c-iZb" id="p7X-vF-avm"/>
+                        <outlet property="AOnFont" destination="cqg-VE-oEP" id="SgF-fr-go4"/>
+                        <outlet property="AOnFontSwitch" destination="hpN-hE-hq4" id="Vkn-fb-zF3"/>
+                        <outlet property="AOnShadow" destination="0Ex-MP-6nR" id="V3w-2l-QO3"/>
+                        <outlet property="AOnShadowSwitch" destination="cQt-tG-umu" id="chZ-rz-gwP"/>
+                        <outlet property="AOnTrans" destination="cd3-UN-p7Q" id="FYL-K7-daO"/>
+                        <outlet property="AOnTransSwitch" destination="te8-il-wjd" id="dqg-K7-zXH"/>
+                        <outlet property="AOnWidth" destination="EL1-Zi-DON" id="BkW-1r-cVL"/>
+                        <outlet property="AOnWidthSwitch" destination="z4L-vP-1YO" id="p4j-Xb-bha"/>
+                        <outlet property="returnButton" destination="SYA-BC-2m8" id="feB-e9-MhT"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QU0-iQ-YdZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
