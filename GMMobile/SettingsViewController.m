@@ -793,8 +793,34 @@ didReturnTimeInterval:(NSString *)timeInterval
 
 - (IBAction)showHeadingVC:(id)sender
 {
-    NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewController:self];
+    NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewControllerWithDelegate:self
+                                                                                        stabilityFactor:2.0];
 #pragma unused(headingVC)
+}
+
+- (void)headingViewController:(NVHeadingViewController *)headingViewController
+             didReturnHeading:(NSInteger)heading
+{
+    [headingViewController dismissViewControllerAnimated:YES
+                                              completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Heading View Controller"
+                           message:[NSString stringWithFormat:@"Average Heading: %ld", (long)heading]
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (void)headingViewControllerDidCancel:(NVHeadingViewController *)headingViewController
+{
+    [headingViewController dismissViewControllerAnimated:YES
+                                              completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Heading View Controller"
+                           message:@"Heading Measurement Cancelled"
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
 }
 
 @end
