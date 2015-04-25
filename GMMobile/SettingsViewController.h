@@ -4,7 +4,7 @@
 #import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
 #import <MessageUI/MessageUI.h>
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,GSSiAlertDelegate,MFMailComposeViewControllerDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,GSSiAlertDelegate,MFMailComposeViewControllerDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
 
 - (IBAction)loadDatabase:(id)sender;
 - (IBAction)preloadTiles:(id)sender;

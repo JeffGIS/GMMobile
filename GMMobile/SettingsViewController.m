@@ -833,4 +833,29 @@ didReturnTimeInterval:(NSString *)timeInterval
     #pragma unused(videoHeadingVC)
 }
 
+- (void)videoHeadingViewController:(NVVideoHeadingViewController *)headingViewController
+             didReturnHeading:(NSInteger)heading
+{
+    [headingViewController dismissViewControllerAnimated:YES
+                                              completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
+                           message:[NSString stringWithFormat:@"Average Heading: %ld", (long)heading]
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (void)videoHeadingViewControllerDidCancel:(NVVideoHeadingViewController *)videoHeadingViewController
+{
+    [videoHeadingViewController dismissViewControllerAnimated:YES
+                                                   completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
+                           message:@"Video Heading Measurement Cancelled"
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
 @end
