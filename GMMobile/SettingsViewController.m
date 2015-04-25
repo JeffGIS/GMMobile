@@ -824,4 +824,13 @@ didReturnTimeInterval:(NSString *)timeInterval
          destructiveButtonPosition:0];
 }
 
+- (IBAction)showVideoHeadingVC:(id)sender
+{
+    NVVideoHeadingViewController *videoHeadingVC = [NVVideoHeadingViewController
+                                                    showVideoHeadingViewControllerWithDelegate:self
+                                                                               stabilityFactor:5.0
+                                                                                   numReadings:100];
+    #pragma unused(videoHeadingVC)
+}
+
 @end
