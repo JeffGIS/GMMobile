@@ -794,8 +794,8 @@ didReturnTimeInterval:(NSString *)timeInterval
 - (IBAction)showHeadingVC:(id)sender
 {
     NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewControllerWithDelegate:self
-                                                                                        stabilityFactor:5.0
-                                                                                            numReadings:100];
+                                                                                        stabilityFactor:4.0
+                                                                                            numReadings:250];
 #pragma unused(headingVC)
 }
 
@@ -828,8 +828,8 @@ didReturnTimeInterval:(NSString *)timeInterval
 {
     NVVideoHeadingViewController *videoHeadingVC = [NVVideoHeadingViewController
                                                     showVideoHeadingViewControllerWithDelegate:self
-                                                                               stabilityFactor:5.0
-                                                                                   numReadings:100];
+                                                                               stabilityFactor:4.0
+                                                                                   numReadings:250];
     #pragma unused(videoHeadingVC)
 }
 
