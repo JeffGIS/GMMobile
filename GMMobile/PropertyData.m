@@ -74,6 +74,7 @@ int SQLOKpd(int sqlReturn, char *method)
 {
     if (!_isOpen)
     {
+        self.isOpen = YES;
         self.isOpen = !SQLOK(sqlite3_open(self.path.UTF8String, &_database), "open(Property)");
         NSLog(@"Property Database open");
         

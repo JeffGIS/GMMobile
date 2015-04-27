@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @interface PropertyData : NSObject 
 
 @property sqlite3 *database;
-@property (nonatomic) BOOL isOpen;
+@property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;

@@ -7,6 +7,7 @@ extern int keepProcessing;
 
 #import "PlanimetricData.h"
 #import "PropertyData.h"
+#import "AlleyWallData.h"
 #import "ConfigurationControl.h"
 
 @interface PlanimetricData ()
@@ -418,7 +419,7 @@ extern int keepProcessing;
     p1.y = pt->lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     [pd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS.id,\"Wall ID\",LATITUDE,LONGITUDE FROM ALLEYWALLS,ALLEYWALLS_index WHERE ALLEYWALLS.id=ALLEYWALLS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -517,7 +518,7 @@ extern int keepProcessing;
     CGColorRef alleyLineColor = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1].CGColor;
     int numPoints,numLoops;
     //LPSTR symName;
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -591,7 +592,7 @@ extern int keepProcessing;
                                       visibleAtZoom:zoom])
         return 0;
     
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     int nPicked = 0;
     CGFloat mind = DBL_MAX;
     DPOINT p1, pickedPoint, minpt, BasePt;
@@ -697,7 +698,7 @@ extern int keepProcessing;
         */sizeFactor /= (2.0 * (22.0 - _zoom));
     CGFloat size = 150 * sizeFactor;;
     
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -785,7 +786,7 @@ extern int keepProcessing;
                         to:(CLLocationCoordinate2D)point
 {
     BOOL rtn = FALSE;
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     [pd open];
     
     //rtn = sqlite3_exec(pd.database,"CREATE TABLE IF NOT EXISTS MOVEWALLPTUNDO ('id','LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))", NULL, NULL, NULL);
