@@ -844,13 +844,13 @@ didReturnTimeInterval:(NSString *)timeInterval
 }
 
 - (void)headingViewController:(NVHeadingViewController *)headingViewController
-             didReturnHeading:(NSInteger)heading
+             didReturnHeading:(CGFloat)heading
 {
     [headingViewController dismissViewControllerAnimated:YES
                                               completion:nil];
     
     [_gssiAlert showAlertWithTitle:@"Heading View Controller"
-                           message:[NSString stringWithFormat:@"Average Heading: %ld", (long)heading]
+                           message:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
                  cancelButtonTitle:@"OK"
                  otherButtonTitles:nil
          destructiveButtonPosition:0];
@@ -878,13 +878,13 @@ didReturnTimeInterval:(NSString *)timeInterval
 }
 
 - (void)videoHeadingViewController:(NVVideoHeadingViewController *)headingViewController
-             didReturnHeading:(NSInteger)heading
+                  didReturnHeading:(CGFloat)heading
 {
     [headingViewController dismissViewControllerAnimated:YES
                                               completion:nil];
     
     [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
-                           message:[NSString stringWithFormat:@"Average Heading: %ld", (long)heading]
+                           message:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
                  cancelButtonTitle:@"OK"
                  otherButtonTitles:nil
          destructiveButtonPosition:0];
