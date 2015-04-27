@@ -1,7 +1,7 @@
 //  WebKitViewController.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import <WebKit/WebKit.h>
 
 @interface WebKitViewController : UIViewController <WKNavigationDelegate>

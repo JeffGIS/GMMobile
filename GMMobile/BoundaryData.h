@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import <sqlite3.h>
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 @interface BoundaryData : NSObject
 @property int processingID;
