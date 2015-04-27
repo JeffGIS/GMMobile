@@ -13,7 +13,7 @@
 #define TRACE_PASS 2
 
 #import <sqlite3.h>
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
 
 int SQLOKswr(int sqlReturn, char *method);

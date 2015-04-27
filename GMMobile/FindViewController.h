@@ -1,7 +1,7 @@
 //  FindViewController.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import "FindPIDViewController.h"
 #import "FindAddressViewController.h"
 #import "FindIntersectionViewController.h"

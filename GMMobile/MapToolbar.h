@@ -1,7 +1,7 @@
 //  MapToolbar.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 #define NUMMapToolbarProperty 8
 

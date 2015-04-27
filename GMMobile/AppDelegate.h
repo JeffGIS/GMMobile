@@ -1,7 +1,7 @@
 //  AppDelegate.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import "MapToolbar.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>

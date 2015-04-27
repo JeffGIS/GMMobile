@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import <sqlite3.h>
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
 
 typedef NS_ENUM(NSInteger, PropDataOption)

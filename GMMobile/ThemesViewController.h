@@ -1,7 +1,7 @@
 //  ThemesViewController.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 @interface ThemesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
 

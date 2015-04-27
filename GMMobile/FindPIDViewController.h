@@ -1,7 +1,7 @@
 //  FindPIDViewController.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 @class FindPIDViewController;
 
