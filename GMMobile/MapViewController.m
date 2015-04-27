@@ -10,12 +10,80 @@ extern int keepProcessing;
 
 #define MAX_VECTORVIEWS 8
 
+typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
+{
+    PropertyTableViewSettingDefault,
+    PropertyTableViewSettingOptions,
+    PropertyTableViewSettingPropertyReport,
+    PropertyTableViewSettingHCWebsite,
+    PropertyTableViewSettingStreetView,
+    PropertyTableViewSettingCensusArea,
+    PropertyTableViewSettingPropList,
+    PropertyTableViewSettingDestinations,
+};
+
+typedef NS_ENUM(NSInteger, CensusZoomSetting)
+{
+    CensusZoomSettingCancel,
+    CensusZoomSettingBlock,
+    CensusZoomSettingBlockGroup,
+    CensusZoomSettingTract,
+};
+
+typedef NS_ENUM(NSInteger, SewerPipeSetting)
+{
+    SewerPipeSettingDefault,
+    SewerPipeSettingAttributes,
+    SewerPipeSettingTraceUp,
+    SewerPipeSettingTraceDown,
+    SewerPipeSettingRemoveTrace,
+    SewerPipeSettingUpdateCleanDate,
+    SewerPipeSettingUpdateNotes,
+};
+
+typedef NS_ENUM(NSInteger, CustomSetting)
+{
+    CustomSettingDefault,
+    CustomSettingSnapToNode,
+    CustomSettingSnapToLine,
+};
+
+typedef NS_ENUM(NSInteger, AlleyWallSetting)
+{
+    AlleyWallSettingDefault,
+    AlleyWallSettingMoveWallPoint,
+    AlleyWallSettingDeleteWallPoint,
+    AlleyWallSettingEditWallAttributes,
+};
+
+typedef NS_ENUM(NSInteger, AlleyLineSetting)
+{
+    AlleyLineSettingDefault,
+    AlleyLineSettingToggleCompletionStatus,
+};
+
+typedef NS_ENUM(NSInteger, MapTypeSetting)
+{
+    MapTypeSettingStandard,
+    MapTypeSettingHybrid,
+};
+
+typedef NS_ENUM(NSInteger, DigitizationMode)
+{
+    DigitizationModeCustom,
+    DigitizationModeAlleyWallNew,
+    DigitizationModeAlleyWallMove,
+    DigitizationModeSewer,
+    DigitizationModeProperty,
+    DigitizationModeCurbRamps,
+};
+
 @interface MapViewController ()
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray;
-@property (nonatomic) NSInteger tableViewSetting;
+@property (nonatomic) PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearMarkers, clearWhenDeselected, initialZoom, rotateZoom;
@@ -30,7 +98,8 @@ extern int keepProcessing;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount;
+@property (nonatomic) MapViewScreenSetting screenSetting;
+@property (nonatomic) NSInteger gestureCount, digitizerCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -193,8 +262,6 @@ extern int keepProcessing;
     [_mapView addGestureRecognizer:longPressGesture];
     
     GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
-        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.jp2",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
@@ -202,8 +269,6 @@ extern int keepProcessing;
     };
     
     GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
-        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.png",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
@@ -213,10 +278,8 @@ extern int keepProcessing;
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
     //[_layer_jpeg clearTileCache];
     
-    
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
     //[_layer_png clearTileCache];
-    
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -624,10 +687,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llPropPt = llpickPt;
         llSewerPt = llpickPt;
         CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+        
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
-        PlanimetricData *planData = [[PlanimetricData alloc]init];
+        PlanimetricData *planData = [[PlanimetricData alloc] init];
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
@@ -642,7 +706,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         [planData pickAlleyWallPoint:llpickPt
                        highlightList:highlightList];
-        [planData pickAlleyLine:llpickPt atZoom:_mapView.camera.zoom highlightList:highlightList];
+        
+        [planData pickAlleyLine:llpickPt
+                         atZoom:_mapView.camera.zoom
+                  highlightList:highlightList];
+        
         if (highlightList.count)
         {
             if (_clearMarkers)
@@ -682,14 +750,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _selectedAlleySeg = pi.identifier;
                     marker.title = _selectedAlleySeg;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyLine;
                     break;
+                    
                 case PTAlleyWallPt:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
                     _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
                     break;
+                    
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
@@ -744,6 +814,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case MarkerInfoWindowTypePID:
                 _selectedPID = _infoWindow.title = marker.title;
                 _selectedPIDCoords = marker.position;
+                break;
+                
+            case MarkerInfoWindowTypeAlleyWall:
+                _selectedAlleyWall = _infoWindow.title = marker.title;
+                break;
+                
+            case MarkerInfoWindowTypeAlleyLine:
+                _selectedAlleySeg = _infoWindow.title = marker.title;
+                break;
+                
+            default:
                 break;
         }
         
@@ -1440,6 +1521,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
             break;
          */
+            
+        default:
+            break;
     }
 }
 
@@ -1695,6 +1779,9 @@ viewForHeaderInSection:(NSInteger)section
             headerLabel.numberOfLines = 2;
             headerLabel.text = @"Property Report for\nTaxes Payable 2014";
             break;
+            
+        default:
+            break;
     }
     
     return headerLabel;
@@ -1713,6 +1800,9 @@ viewForHeaderInSection:(NSInteger)section
             
         case PropertyTableViewSettingPropertyReport:
             numberOfRows = _propertyReport.count;
+            break;
+            
+        default:
             break;
     }
     
@@ -1793,6 +1883,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             break;
             
         case PropertyTableViewSettingPropertyReport:
+        {
             cell.textLabel.font = [UIFont systemFontOfSize:MAX((_screenSize / 28.0), 18.0)];
             
             cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
@@ -1819,6 +1910,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             cell.textLabel.adjustsFontSizeToFitWidth = YES;
             
             [cell.contentView addSubview:rowHeader];
+            break;
+        }
+            
+        default:
             break;
     }
     
@@ -1995,13 +2090,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Toggle Alley Line Completion Status"])
+    {
+        [self toggleCompletionStatus];
+        
+        [UserDefaults.defaults saveInteger:AlleyWallSettingEditWallAttributes
+                                    forKey:@"AlleyLineOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Alley Wall Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Custom Marker"])
+              isEqualToString:@"Remove Custom Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Alley Line Marker"])
         
     {
         [self dismissTableView];
@@ -2190,6 +2296,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  forKey:@"AlleyWallEditAttributes"];
     
     [self launchAlleyWallApp];
+}
+
+- (void)toggleCompletionStatus
+{
+    //implement toggle completion status here
 }
 
 - (void)cancelDigitizationMode:(UIButton *)button
@@ -3132,9 +3243,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeAlleyWall:
             _selectedAlleyWall = title;
             _selectedAlleyWallRefno= refno;
+            
             _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
                          @"Remove Alley Wall Marker"];
             
+            break;
+            
+        case MarkerInfoWindowTypeAlleyLine:
+            _selectedAlleySeg = title;
+            _options = @[@"Toggle Alley Line\nCompletion Status", @"Remove Alley Line Marker"];
             break;
             
         case MarkerInfoWindowTypeCustom:
@@ -3236,6 +3353,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     
                 case AlleyWallSettingEditWallAttributes:
                     [self editWallAttributes];
+                    break;
+            }
+        }
+            
+        case MarkerInfoWindowTypeAlleyLine:
+        {
+            option = [UserDefaults.defaults integerForKey:@"AlleyLineOption"];
+            
+            if (option == AlleyLineSettingDefault)
+                option = AlleyLineSettingToggleCompletionStatus;
+            
+            switch (option)
+            {
+                case AlleyLineSettingToggleCompletionStatus:
+                    [self toggleCompletionStatus];
                     break;
             }
         }
