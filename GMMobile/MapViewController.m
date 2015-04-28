@@ -116,7 +116,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
-@property BOOL waitForVectorViewRefresh, inDigitizationMode;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -438,6 +438,32 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
+    {
+        for (NVLegendView *legendView in self.view.subviews)
+        {
+            if ([legendView isKindOfClass:NVLegendView.class])
+            {
+                [legendView hideLegendView:NO];
+                
+                if (_helpButtonMoved)
+                {
+                    for (HelpButton *helpButton in self.view.subviews)
+                    {
+                        if ([helpButton isKindOfClass:HelpButton.class])
+                        {
+                            helpButton.center =
+                            CGPointMake(helpButton.center.x, helpButton.center.y -
+                                        legendView.frame.size.height);
+                            
+                            _helpButtonMoved = NO;
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     for (HelpWebView *helpWebView in self.view.subviews)
     {
@@ -1728,6 +1754,12 @@ haveVV:
                                if ([helpWebView isKindOfClass:HelpWebView.class])
                                    [self.view bringSubviewToFront:helpWebView];
                            }
+                           
+                           for (NVLegendView *legendView in self.view.subviews)
+                           {
+                               if ([legendView isKindOfClass:NVLegendView.class])
+                                   [self.view bringSubviewToFront:legendView];
+                           }
                        }
                    });
 }
@@ -2373,6 +2405,51 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                   forKey:@"CurrentConfig"];
     
     ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
+    NVLegendView *legendView;
+    
+    CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:self.interfaceOrientation] + 6.0));
+    
+    for (NVLegendView *legendView in self.view.subviews)
+    {
+        if ([legendView isKindOfClass:NVLegendView.class])
+            [legendView hideLegendView:NO];
+    }
+    
+    switch(_alleyStatusSetting)
+    {
+        case AlleyStatusSettingWall:
+            legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                       inView:self.view
+                                                        title:@"Alley Wall Status"];
+            break;
+            
+        case AlleyStatusSettingCenterline:
+            legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                       inView:self.view
+                                                        title:@"Alley Centerline Status"];
+            break;
+            
+        case AlleyStatusSettingDefault:
+            break;
+    }
+    
+    if (!_helpButtonMoved)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             for (HelpButton *helpButton in self.view.subviews)
+                             {
+                                 if ([helpButton isKindOfClass:HelpButton.class])
+                                 {
+                                     helpButton.center =
+                                     CGPointMake(helpButton.center.x, helpButton.center.y +
+                                                 legendView.frame.size.height);
+                                 }
+                             }
+                         } completion:^(BOOL finished) {
+                             _helpButtonMoved = YES;
+                         }];
+    }
 }
 
 - (void)cancelDigitizationMode:(UIButton *)button
