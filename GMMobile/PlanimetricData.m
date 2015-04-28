@@ -685,6 +685,8 @@ extern int keepProcessing;
     NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
+    CGColorRef wallPointColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.7].CGColor;
+
     //LPSTR symName;
     
     if (![self continue])
@@ -725,7 +727,7 @@ extern int keepProcessing;
         
         [self drawWallPoint:context
                     atPoint:&llpoint
-                  withColor:UIColor.greenColor.CGColor
+                  withColor:wallPointColor
                     andSize:size];
     }
     
