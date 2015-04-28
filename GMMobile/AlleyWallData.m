@@ -102,6 +102,36 @@ int SQLOKawd(int sqlReturn, char *method)
 {
     SQLOKawd(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
 }
+-(int) getAlleyLineStatus:(NSInteger)refno
+{
+    int status = 0;
+    [self open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT ALLEY_LINE.CHECKED FROM ALLEY_LINE WHERE  ALLEY_LINE.id=%li",(long)refno];
+    
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int checked = sqlite3_column_int(statement, 0);
+        status = checked;
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    [self close];
+    
+    return status;
+}
+-(void) setAlleyLineStatus:(NSInteger)refno to:(int)status
+{
+    [self open];
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEY_LINE SET CHECKED = %i WHERE id=%ld",status,refno];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self close];
+}
+
 
 
 @end

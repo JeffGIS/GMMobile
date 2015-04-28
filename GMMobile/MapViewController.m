@@ -2396,7 +2396,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)toggleCompletionStatus
 {
-    //implement toggle completion status here
+    AlleyWallData *awd = [[AlleyWallData alloc] init];
+    int status = [awd getAlleyLineStatus:_selectedAlleyLineRefno];
+    [awd setAlleyLineStatus:_selectedAlleyLineRefno to:!status];
 }
 
 - (void)alleyStatus
@@ -3410,6 +3412,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
+            _selectedAlleyLineRefno = refno;
             _options = @[@"Toggle Alley Line\nCompletion Status", @"Remove Alley Line Marker"];
             break;
             
@@ -3544,6 +3547,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             {
                 case AlleyLineSettingToggleCompletionStatus:
                     [self toggleCompletionStatus];
+                    [self refreshVectorView:_mapView.projection.visibleRegion
+                                     atZoom:_mapView.camera.zoom];
                     break;
                     
                 default:
