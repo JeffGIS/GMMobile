@@ -119,7 +119,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMarkerSwitch] = YES;
         
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDefault] = YES;
@@ -146,7 +146,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMarkerSwitch] = YES;
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDefault] = YES;
@@ -155,7 +155,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapType] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMarkerSwitch] = YES;
         
         //setup layers
