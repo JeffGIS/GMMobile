@@ -107,7 +107,7 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
-@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
+@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
@@ -2333,7 +2333,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)toggleCompletionStatus
 {
-    //implement toggle completion status here
+    AlleyWallData *awd = [[AlleyWallData alloc] init];
+    int status = [awd getAlleyLineStatus:_selectedAlleyLineRefno];
+    [awd setAlleyLineStatus:_selectedAlleyLineRefno to:!status];
 }
 
 - (void)cancelDigitizationMode:(UIButton *)button
@@ -3284,6 +3286,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
+            _selectedAlleyLineRefno = refno;
             _options = @[@"Toggle Alley Line\nCompletion Status", @"Remove Alley Line Marker"];
             break;
             
@@ -3401,6 +3404,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             {
                 case AlleyLineSettingToggleCompletionStatus:
                     [self toggleCompletionStatus];
+                    [self refreshVectorView:_mapView.projection.visibleRegion
+                                     atZoom:_mapView.camera.zoom];
                     break;
             }
         }
