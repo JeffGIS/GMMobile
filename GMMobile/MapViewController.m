@@ -210,23 +210,36 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
                              selector:@selector(cancelDigitizationMode:)
                                 title:@"Cancel Digitization"];
     
-    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
+    //save button on left side
+    /*_saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
                                                                       (_digitizationToolbar.frame.size.width * 0.35),
+                                                                      _digitizationToolbar.frame.size.height)];*/
+    
+    //save button in middle
+    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.2), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.6),
                                                                       _digitizationToolbar.frame.size.height)];
+    
+    //"Save Digitization" title
+    /*[self setupDigitizerToolbarButton:_saveDigitizerButton
+                             selector:@selector(saveDigitizationMode:)
+                                title:@"Save Digitization"];*/
+    
     
     [self setupDigitizerToolbarButton:_saveDigitizerButton
                              selector:@selector(saveDigitizationMode:)
-                                title:@"Save Digitization"];
+                                title:@"Exit Move/Add Mode"];
     
-    _undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
+    //undo button on right side
+    /*_undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
                                                                       (_digitizationToolbar.frame.size.width * 0.35),
                                                                       _digitizationToolbar.frame.size.height)];
 
     [self setupDigitizerToolbarButton:_undoDigitizerButton
                              selector:@selector(undoDigitizationMode:)
-                                title:@"Undo Digitization"];
+                                title:@"Undo Digitization"];*/
     
-    _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
+    _saveDigitizerButton.alpha = /*_undoDigitizerButton.alpha =*/ 0.0;
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -946,7 +959,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                  animations:^{
                                      _cancelDigitizerButton.alpha = 0.0;
                                      _saveDigitizerButton.alpha = 1.0;
-                                     _undoDigitizerButton.alpha = 1.0;
+                                     //_undoDigitizerButton.alpha = 1.0;
                                  }];
                 
                 [_vectorView setNeedsDisplay];
@@ -987,7 +1000,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                  animations:^{
                                      _cancelDigitizerButton.alpha = 0.0;
                                      _saveDigitizerButton.alpha = 1.0;
-                                     _undoDigitizerButton.alpha = 1.0;
+                                     //_undoDigitizerButton.alpha = 1.0;
                                  }];
             }
                 
@@ -2348,7 +2361,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [UIView animateWithDuration:0.25
                      animations:^{
                          _saveDigitizerButton.alpha = 0.0;
-                         _undoDigitizerButton.alpha = 0.0;
+                         //_undoDigitizerButton.alpha = 0.0;
                          _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
@@ -2458,7 +2471,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      } completion:^(BOOL finished) {
                          _digitizerTargetView.hidden = YES;
                          _digitizationToolbar.hidden = YES;
-                         _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
+                         _saveDigitizerButton.alpha = /*_undoDigitizerButton.alpha =*/ 0.0;
                          _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
