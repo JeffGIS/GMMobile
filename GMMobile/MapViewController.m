@@ -132,6 +132,11 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
 {
     [super viewDidLoad];
     
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(becameActive:)
+                                               name:@"didBecomeActive"
+                                             object:nil];
+    
     _nVectorViews = 0;
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
@@ -379,6 +384,7 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     sharedAppDelegate.mapToolbar = _mapToolbar;
     
+    
     NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     [ConfigurationControl.sharedInstance setApp:config];
 
@@ -390,6 +396,21 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
                                                               tag:HelpButtonPresenterMapVC
                                                            tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
+}
+
+- (void)becameActive:(id)selector
+{
+    if (CRAPI.sharedInstance.setToAlleyWalls)
+    {
+        [UserDefaults.defaults saveInteger:HCConfigAlleyWalls
+                                    forKey:@"CurrentConfig"];
+        
+        [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
+        CRAPI.sharedInstance.setToAlleyWalls = NO;
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -415,10 +436,7 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
     }
     
     if (!_firstTimeAppear)
-    {
         [self initTableView];
-        
-    }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
@@ -530,6 +548,7 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
+    
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
 
     [_mapToolbar configure:_screenSetting];

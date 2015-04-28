@@ -49,6 +49,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self updateTableView];
     [_tableView reloadData];
 }
 
@@ -70,7 +71,10 @@
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = _rowHeight;
     _tableView.sectionHeaderHeight = _rowHeight;
-    
+}
+
+- (void)updateTableView
+{
     NSInteger selectedRow = (NSInteger)ConfigurationControl.sharedInstance.currentApp;
     
     NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:selectedRow
