@@ -61,13 +61,20 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSString *sourceApp = [SharedDefaults.defaults stringForKey:@"SourceApplication"];
     
+    CRAPI.sharedInstance.setToAlleyWalls = NO;
+    
     if ([sourceApp isEqualToString:@""])
         sourceApp = @"User";
     
-    NSLog(@"GMMobile opened by %@", sourceApp);
+    else if ([sourceApp isEqualToString:@"AlleyWallInventory"])
+        CRAPI.sharedInstance.setToAlleyWalls = YES;
     
     [SharedDefaults.defaults saveString:@""
                                  forKey:@"SourceApplication"];
+    
+    [NSNotificationCenter.defaultCenter postNotificationName:@"didBecomeActive"
+                                                      object:nil
+                                                    userInfo:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
