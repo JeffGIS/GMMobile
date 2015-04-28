@@ -2296,6 +2296,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  forKey:@"AlleyWallEditAttributes"];
     
     [self launchAlleyWallApp];
+    [self dismissTableView];
 }
 
 - (void)toggleCompletionStatus
