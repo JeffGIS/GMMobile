@@ -115,7 +115,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
-@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
+@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
@@ -2163,9 +2163,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Toggle Alley Line Completion Status"])
+              isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
-        [self toggleCompletionStatus];
+        [self dismissTableView];
+        
+        [self performSelector:@selector(toggleCompletionStatus)
+                   withObject:nil
+                   afterDelay:0.3];
         
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes
                                       forKey:@"AlleyLineOption"];
@@ -2398,7 +2402,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     AlleyWallData *awd = [[AlleyWallData alloc] init];
     int status = [awd getAlleyLineStatus:_selectedAlleyLineRefno];
-    [awd setAlleyLineStatus:_selectedAlleyLineRefno to:!status];
+    
+    [awd setAlleyLineStatus:_selectedAlleyLineRefno
+                         to:!status];
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
 }
 
 - (void)alleyStatus
