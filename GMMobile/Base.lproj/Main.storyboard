@@ -1042,20 +1042,6 @@
                                     <action selector="loadAlleyWall:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="4dp-Ub-Xgg"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" adjustsImageWhenDisabled="NO" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="ceA-sN-uHK">
-                                <rect key="frame" x="32" y="423" width="240" height="90"/>
-                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                <state key="normal" title="NVSlider Controller">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
-                                <variation key="heightClass=regular-widthClass=regular" fixedFrame="YES">
-                                    <rect key="frame" x="280" y="423" width="127" height="90"/>
-                                </variation>
-                                <connections>
-                                    <action selector="showSliderController:" destination="SQ4-SM-lZV" eventType="touchUpInside" id="i9x-d5-L1P"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.96409872211230019" green="1" blue="0.94926863086543956" alpha="1" colorSpace="calibratedRGB"/>
                         <variation key="default">
@@ -1074,7 +1060,6 @@
                                 <exclude reference="6zW-Fs-ifW"/>
                                 <exclude reference="5Ua-dd-6zC"/>
                                 <exclude reference="ulh-CQ-h2I"/>
-                                <exclude reference="ceA-sN-uHK"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
@@ -1093,7 +1078,6 @@
                                 <include reference="6zW-Fs-ifW"/>
                                 <include reference="5Ua-dd-6zC"/>
                                 <include reference="ulh-CQ-h2I"/>
-                                <include reference="ceA-sN-uHK"/>
                             </mask>
                         </variation>
                     </view>
