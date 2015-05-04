@@ -2386,7 +2386,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)deleteWallPoint
 {
-    //implement delete wall point here
+    AlleyWallData *awd = [[AlleyWallData alloc] init];
+    [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
 }
 
 - (void)editWallAttributes
