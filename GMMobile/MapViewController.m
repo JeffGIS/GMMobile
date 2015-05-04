@@ -2396,10 +2396,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)deleteWallPoint
 {
-    AlleyWallData *awd = [[AlleyWallData alloc] init];
-    [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    NVLargeAlertView *alert = [NVLargeAlertView showLargeAlertViewinView:self.view
+                                                                delegate:self
+                                                                   title:@"Do You Wish to Delete This Alley Wall?"
+                                                           topButtonText:@"YES"
+                                                        bottomButtonText:@"NO"
+                                                        destructiveIndex:NVLargeAlertIndexTopButton];
+#pragma unused(alert)
+    
+    [self deselectTableViewRow];
 }
 
 - (void)editWallAttributes
@@ -3755,6 +3760,26 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     return (fabs(coordinate1.latitude - coordinate2.latitude) < 0.00001) &&
            (fabs(coordinate1.longitude - coordinate2.longitude) < 0.00001);
+}
+
+- (void)largeAlertView:(NVLargeAlertView *)largeAlertView
+   didTapButtonAtIndex:(NVLargeAlertIndex)buttonIndex
+{
+    if (buttonIndex == NVLargeAlertIndexTopButton)
+    {
+        AlleyWallData *awd = [[AlleyWallData alloc] init];
+        
+        [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
+        
+        [self dismissTableView];
+        [self removePreviousInfoWindow];
+        [self removeMarker];
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
+    
+    [largeAlertView hideLargeAlertView:YES];
 }
 
 @end
