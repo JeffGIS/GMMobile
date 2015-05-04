@@ -131,6 +131,15 @@ int SQLOKawd(int sqlReturn, char *method)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close];
 }
+-(BOOL)deleteAlleyWallPoint:(NSInteger)refno
+{
+    BOOL rtn=FALSE;
+    [self open];
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = 0,LONGITUDE = 0 WHERE id=%ld",refno];
+    rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self close];
+    return rtn;
+}
 
 
 

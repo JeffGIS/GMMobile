@@ -26,5 +26,6 @@
 - (void)commitTransaction;
 -(int) getAlleyLineStatus:(NSInteger)refno;
 -(void) setAlleyLineStatus:(NSInteger)refno to:(int)status;
+-(BOOL)deleteAlleyWallPoint:(NSInteger)refno;
 
 @end
