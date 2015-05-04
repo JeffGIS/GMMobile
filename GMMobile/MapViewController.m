@@ -1005,6 +1005,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case DigitizationModeAlleyWallNew:
             {
                 _digitizerCount++;
+                CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
+                                                      (_digitizerTargetView.center.y -
+                                                       [self statusBarHeight:self.interfaceOrientation]));
+                
+                CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
+                
+                AlleyWallData *awd = [[AlleyWallData alloc] init];
+                [awd createNewWallPoint:position];
+                [self refreshVectorView:_mapView.projection.visibleRegion
+                                 atZoom:_mapView.camera.zoom];
                 
                 MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view

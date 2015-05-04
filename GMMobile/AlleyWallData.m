@@ -141,6 +141,35 @@ int SQLOKawd(int sqlReturn, char *method)
     return rtn;
 }
 
+-(BOOL)createNewWallPoint:(CLLocationCoordinate2D)position
+{
+/*    INSERT INTO ALLEYWALLS VALUES(1,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',-93.260388,44.938210,1,0)
+    INSERT INTO ALLEYWALLS_index VALUES(2,-93.260613,-93.260613,44.936725,44.936725);
+SELECT max(_id) FROM MyTable*/
+    BOOL rtn=FALSE;
+    NSInteger refno=0;
+    [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM ALLEYWALLS"];
+    
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "");
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int checked = sqlite3_column_int(statement, 0);
+        refno = checked+1;
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "");
+ //   NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,'6119.1',3536,'10TH AVE S','',,,,'','','','','','','',%f,%f,1,0);",refno,position.longitude,position.latitude];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',%f,%f,1,0);",refno,position.longitude,position.latitude];
+    rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_index VALUES(%ld,%f,%f,%f,%f)",refno,position.longitude,position.longitude,position.latitude,position.latitude];
+    rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self close];
+    return rtn;
+}
 
 
 @end
