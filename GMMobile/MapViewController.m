@@ -54,6 +54,7 @@ typedef NS_ENUM(NSInteger, AlleyWallSetting)
     AlleyWallSettingMoveWallPoint,
     AlleyWallSettingDeleteWallPoint,
     AlleyWallSettingEditWallAttributes,
+    AlleyWallSettingViewWallPhotos,
 };
 
 typedef NS_ENUM(NSInteger, AlleyLineSetting)
@@ -2163,6 +2164,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"View Wall Photos"])
+    {
+        [self viewWallPhotos];
+        
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewWallPhotos
+                                      forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
         [self dismissTableView];
@@ -2396,6 +2406,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [self launchAlleyWallApp];
     [self dismissTableView];
+}
+
+- (void)viewWallPhotos
+{
+    NVPhotoViewController *photoViewer = [[NVPhotoViewController alloc] init];
+    
+    [self presentViewController:photoViewer
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)toggleCompletionStatus
@@ -3415,7 +3434,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWallRefno= refno;
             
             _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
-                         @"Remove Alley Wall Marker"];
+                         @"View Wall Photos", @"Remove Alley Wall Marker"];
             
             break;
             
@@ -3538,6 +3557,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     
                 case AlleyWallSettingEditWallAttributes:
                     [self editWallAttributes];
+                    break;
+                    
+                case AlleyWallSettingViewWallPhotos:
+                    [self viewWallPhotos];
                     break;
                     
                 default:
