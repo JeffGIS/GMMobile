@@ -45,16 +45,6 @@
 
     _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
     _gssiAlert.delegate = self;
-    
-    NVSliderController *slider = [[NVSliderController alloc] initWithCenter:CGPointMake((self.view.frame.size.width * 0.5),
-                                                                                        (self.view.frame.size.height * 0.8))
-                                                                      width:(self.view.frame.size.width - 80.0)
-                                                                 startValue:50.0
-                                                                   minValue:0.0
-                                                                   maxValue:100.0
-                                                                   delegate:self];
-    
-    [self.view addSubview:slider];
 }
 
 - (void)viewWillAppear:(BOOL)animated
