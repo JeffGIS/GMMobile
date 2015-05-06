@@ -75,6 +75,10 @@
             cellSwitch.center = CGPointMake((cell.contentView.frame.size.width - 100.0),
                                             (cell.contentView.frame.size.height / 2.0));
             
+            [cellSwitch addTarget:self
+                           action:@selector(cellSwitchValueChanged:)
+                 forControlEvents:UIControlEventValueChanged];
+            
             [cell.contentView addSubview:cellSwitch];
         }
         
@@ -126,24 +130,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [textAlert hideTextAlert:YES];
     
-    NSString *dateString = [NSDateFormatter localizedStringFromDate:NSDate.date
-                                                          dateStyle:NSDateFormatterShortStyle
-                                                          timeStyle:NSDateFormatterShortStyle];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.timeStyle = NSDateFormatterNoStyle;
+    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    [dateFormatter setDateFormat:@"MMdd"];
     
-    dateString = [UserDefaults.defaults includeTextBeforeComma:dateString];
-    dateString = [UserDefaults.defaults includeTextBeforeLastSlash:dateString];
-    
-    NSString *month = [UserDefaults.defaults includeTextBeforeSlash:dateString];
-    NSString *day = [UserDefaults.defaults includeTextAfterSlash:dateString];
-    
-    if (month.integerValue < 10)
-        month = [NSString stringWithFormat:@"0%@", month];
-    
-    if (day.integerValue < 10)
-        day = [NSString stringWithFormat:@"0%@", day];
-    
-    dateString = [NSString stringWithFormat:@"%@%@", month, day];
-    
+    NSString *dateString = [dateFormatter stringFromDate:NSDate.date];
     dateString = [UserDefaults.defaults reverseString:dateString];
     
     if ([dateString isEqualToString:text])
@@ -178,6 +170,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     [largeAlertView hideLargeAlertView:YES];
+}
+
+- (void)cellSwitchValueChanged:(UISwitch *)aSwitch
+{
+    NSLog(@"Auto Upload Status:%d", aSwitch.on);
 }
 
 @end
