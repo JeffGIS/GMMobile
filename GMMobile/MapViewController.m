@@ -1022,10 +1022,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 NSString *nearestAlley = [awd nearestAlleyLine:&positioncl];
                 NSString *newWallID = [awd getNextWallForAlley:nearestAlley];
                 PropertyData *propData = [[PropertyData alloc] init];
-                NSInteger house;
-                char street[256];
-                [propData getNearestParcelAddress:&positionpid house:&house street:street];
-                [awd createNewWall:newWallID atPoint:position];
+                NSString* houseAndUnit = @"";
+                NSString* streetName = @"";
+                NSString * nearPID = [propData getNearestPID:&positionpid];
+                if (nearPID)
+                {
+                    [propData getAddressForPID:nearPID houseNumAndUnit:&houseAndUnit streetName:&streetName];
+                }
+                [awd createNewWall:newWallID atPoint:position withHouse:houseAndUnit andStreet:streetName];
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 

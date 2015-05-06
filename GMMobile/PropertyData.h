@@ -51,9 +51,10 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (int)pickPID:(LLPOINT *)pt
   highlightList:(NSMutableArray *)hlist;
-- (int)getNearestParcelAddress:(CLLocationCoordinate2D*)pt house:(NSInteger*)pHouse street:(char *)pStreet;
+- (BOOL)getAddressForPID:(NSString *)PID houseNumAndUnit:(NSString **)houseAndUnit streetName:(NSString **)streetName;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
+- (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;
 
 - (void)displayParcels:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints

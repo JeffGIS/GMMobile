@@ -142,13 +142,14 @@ int SQLOKawd(int sqlReturn, char *method)
     return rtn;
 }
 
--(BOOL)createNewWall:(NSString*)wallID atPoint:(CLLocationCoordinate2D)position
+-(BOOL)createNewWall:(NSString*)wallID atPoint:(CLLocationCoordinate2D)position withHouse:(NSString*)house andStreet:(NSString*)street
 {
 /*    INSERT INTO ALLEYWALLS VALUES(1,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',-93.260388,44.938210,1,0)
     INSERT INTO ALLEYWALLS_index VALUES(2,-93.260613,-93.260613,44.936725,44.936725);
 SELECT max(_id) FROM MyTable*/
     BOOL rtn=FALSE;
     NSInteger refno=0;
+    NSInteger iHouse = [house integerValue];
     [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM ALLEYWALLS"];
     
@@ -170,7 +171,7 @@ SELECT max(_id) FROM MyTable*/
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,3536,'10TH AVE S','',0,0,0,'','','','%@','','','',%f,%f,1,0);",refno,wallID,today,position.longitude,position.latitude];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,%ld,'%@','',0,0,0,'','','','%@','','','',%f,%f,1,0);",refno,wallID,iHouse,street,today,position.longitude,position.latitude];
   //  NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',%f,%f,1,0);",refno,position.longitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_index VALUES(%ld,%f,%f,%f,%f)",refno,position.longitude,position.longitude,position.latitude,position.latitude];
