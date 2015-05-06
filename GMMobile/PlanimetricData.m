@@ -518,7 +518,7 @@ extern int keepProcessing;
     int checked;
     CGColorRef alleyLineColor;
     CGColorRef alleyLineColorNotChecked = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1].CGColor;
-    CGColorRef alleyLineColorChecked = [UIColor colorWithRed:155.0/255.0 green:148.0/255.0 blue:106.0/255.0 alpha:1].CGColor;
+    CGColorRef alleyLineColorChecked = [UIColor colorWithRed:1 green:1 blue:0 alpha:1].CGColor;
     int numPoints,numLoops;
     //LPSTR symName;
     AlleyWallData *pd = [[AlleyWallData alloc] init];
@@ -625,6 +625,7 @@ extern int keepProcessing;
     {
         int refno = sqlite3_column_int(statement, 0);
         LPSTR ALLEYSEG = (LPSTR)sqlite3_column_text(statement, 1);
+        NSInteger iALLEYSEG = sqlite3_column_int(statement, 1);
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
@@ -641,7 +642,6 @@ extern int keepProcessing;
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -649,7 +649,6 @@ extern int keepProcessing;
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         
         if (PICK_POINT_ON_LINE(p1, bnds, &pickedPoint, numPoints, llpoints))

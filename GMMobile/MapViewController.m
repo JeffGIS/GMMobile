@@ -1010,13 +1010,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                        [self statusBarHeight:self.interfaceOrientation]));
                 
                 CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
-                
+                CLLocationCoordinate2D positioncl = position;
+                CLLocationCoordinate2D positionpid = position;
                 AlleyWallData *awd = [[AlleyWallData alloc] init];
-                [awd createNewWallPoint:position];
+                NSString * nearestAlley = [awd nearestAlleyLine:&positioncl];
+                NSString * newWallID = [awd getNextWallForAlley:nearestAlley];
+                PropertyData *propData = [[PropertyData alloc] init];
+                NSInteger house;
+                char street[256];
+                [propData getNearestParcelAddress:&positionpid house:&house street:street];
+                [awd createNewWall:newWallID atPoint:position];
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 
-                MarkerButton *marker = [MarkerButton markerWithPosition:position
+/*                MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view
                                                                     map:_mapView
                                                         statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
@@ -1039,7 +1046,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _infoWindow.snippet = marker.snippet;
                 _infoWindow.position = marker.position;
                 _infoWindow.type = MarkerInfoWindowTypeCustom;
-                [self.view addSubview:_infoWindow];
+                [self.view addSubview:_infoWindow];*/
                 _noneSelected = NO;
                 
                 [UIView animateWithDuration:0.25

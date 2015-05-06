@@ -494,6 +494,65 @@ int SQLOKpd(int sqlReturn, char *method)
     }
     return npicked;
 }
+- (int)getNearestParcelAddress:(CLLocationCoordinate2D*)pt house:(NSInteger*)pHouse street:(char *)pStreet
+{
+    NSString *minPID = [[NSString alloc] init];
+    CGFloat d, mind = DBL_MAX;
+    DPOINT p1, p2, minpt;
+    int minref = 0;
+    int npicked = 0;
+    
+    p1.x = pt->longitude;
+    p1.y = pt->latitude;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getBoundsAtPoint:pt andDist:500];
+    [self open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPID");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR house = (LPSTR)sqlite3_column_text(statement, 0);
+        LPSTR street = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lat = sqlite3_column_double(statement, 2);
+        CGFloat lon = sqlite3_column_double(statement, 3);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1, p2);
+        
+        if (d < mind)
+        {
+            npicked++;
+            //minref = refno;
+            mind = d;
+            minpt = p2;
+            //minPID = [NSString stringWithUTF8String:cpid];
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement), "pickPID");
+    [self close];
+    pt->longitude = minpt.x;
+    pt->latitude = minpt.y;
+    if (npicked)
+    {
+/*        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTPid;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minPID;
+        pi.symbolName = @"PARCEL";
+        pi.refno = minref;
+        [hlist addObject:pi];*/
+    }
+    return npicked;
+}
+
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID
 {
