@@ -22,6 +22,7 @@
 		A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */ = {isa = PBXBuildFile; fileRef = A91F36951AE97A2D00602BCE /* metalSliderLeft.png */; };
 		A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */ = {isa = PBXBuildFile; fileRef = A91F36961AE97A2D00602BCE /* metalSliderRight.png */; };
 		A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = A91F36991AE97B0500602BCE /* redSliderThumb.png */; };
+		A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */; };
 		A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A51AD8818D0027659B /* blackCrosshairs.png */; };
 		A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
@@ -129,6 +130,8 @@
 		A91F36951AE97A2D00602BCE /* metalSliderLeft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeft.png; sourceTree = "<group>"; };
 		A91F36961AE97A2D00602BCE /* metalSliderRight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRight.png; sourceTree = "<group>"; };
 		A91F36991AE97B0500602BCE /* redSliderThumb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumb.png; sourceTree = "<group>"; };
+		A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingOptionsViewController.h; sourceTree = "<group>"; };
+		A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingOptionsViewController.m; sourceTree = "<group>"; };
 		A92382A51AD8818D0027659B /* blackCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackCrosshairs.png; sourceTree = "<group>"; };
 		A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackOrangeCrosshairs.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
@@ -412,6 +415,8 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
+				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
+				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
 				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
 				A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */,
@@ -635,6 +640,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,

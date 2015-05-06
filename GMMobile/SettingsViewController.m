@@ -902,15 +902,10 @@ didReturnTimeInterval:(NSString *)timeInterval
          destructiveButtonPosition:0];
 }
 
-- (void)sliderView:(NVSliderController *)sliderView
-    didReturnValue:(CGFloat)value
+- (IBAction)goBack:(id)sender
 {
-    NSLog(@"SliderController returned value:%f", value);
-}
-
-- (void)sliderViewDidCancel:(NVSliderController *)sliderView
-{
-    NSLog(@"SliderController cancelled");
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
 
 @end
