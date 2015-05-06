@@ -251,13 +251,18 @@ SELECT max(_id) FROM MyTable*/
 
     return minFid;
 }
--(NSString*)getNextWallForAlley:(NSString*)nearestAlley
+
+- (NSString *)getNextWallForAlley:(NSString *)nearestAlley
 {
-    NSString * nextWall=@"";
-    CGFloat maxWall=0;
+    NSString *nextWall = @"";
+    CGFloat maxWall = 0;
     [self open];
-    NSString * minID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".0"];
-    NSString * maxID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".99"];
+    
+    if ([nearestAlley isEqualToString:@""])
+        return @"";
+    
+    NSString *minID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".0"];
+    NSString *maxID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".99"];
     NSString *query = [NSString stringWithFormat:@"SELECT [Wall ID] FROM ALLEYWALLS WHERE  [Wall ID] >= %@ AND [Wall ID] <= %@",minID,maxID];
     
     sqlite3_stmt *statement;
@@ -269,15 +274,19 @@ SELECT max(_id) FROM MyTable*/
         LPSTR wallID = (LPSTR)sqlite3_column_text(statement, 0);
         CGFloat fWall = atof (wallID);
         NSInteger iWall = fWall;
+        
         if (strlen (wallID)<7)
             fWall = iWall + (fWall - iWall)/10.0;
+        
         maxWall = max (fWall,maxWall);
     }
     
     SQLOK(sqlite3_finalize(statement), "pickAlley");
     [self close];
+    
     if (maxWall < 1)
         nextWall = [[nearestAlley substringToIndex:4] stringByAppendingString:@".01"];
+    
     else
         nextWall = [NSString stringWithFormat:@"%.2f",maxWall + 0.01];
     

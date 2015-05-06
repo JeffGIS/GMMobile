@@ -220,7 +220,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     [self setupDigitizerToolbarButton:_cancelDigitizerButton
                              selector:@selector(cancelDigitizationMode:)
-                                title:@"Cancel Digitization"];
+                                title:@"Cancel Move/Add Mode"];
     
     //save button on left side
     /*_saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
@@ -1019,8 +1019,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 CLLocationCoordinate2D positioncl = position;
                 CLLocationCoordinate2D positionpid = position;
                 AlleyWallData *awd = [[AlleyWallData alloc] init];
-                NSString * nearestAlley = [awd nearestAlleyLine:&positioncl];
-                NSString * newWallID = [awd getNextWallForAlley:nearestAlley];
+                NSString *nearestAlley = [awd nearestAlleyLine:&positioncl];
+                NSString *newWallID = [awd getNextWallForAlley:nearestAlley];
                 PropertyData *propData = [[PropertyData alloc] init];
                 NSInteger house;
                 char street[256];
