@@ -193,7 +193,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     _orangeCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackOrangeCrosshairs"
                                                                                        ofType:@"png"]];
     
-    _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
+    _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 120.0, 120.0)];
     
     CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
     
@@ -205,15 +205,17 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     _digitizationToolbar = [[UIView alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
                                                                     _mapView.frame.origin.y,
-                                                                    _mapView.frame.size.width, 49.0)];
+                                                                    _mapView.frame.size.width, 80.0)];
     
     _digitizationToolbar.backgroundColor = UserDefaults.defaults.appleBlue;
+    _digitizationToolbar.layer.borderColor = UIColor.darkGrayColor.CGColor;
+    _digitizationToolbar.layer.borderWidth = 1.0;
     _digitizationToolbar.alpha = 0.0;
     _digitizationToolbar.hidden = YES;
     [self.view addSubview:_digitizationToolbar];
     
-    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.2), 0.0,
-                                                                        (_digitizationToolbar.frame.size.width * 0.6),
+    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
+                                                                        (_digitizationToolbar.frame.size.width * 0.8),
                                                                         _digitizationToolbar.frame.size.height)];
     
     [self setupDigitizerToolbarButton:_cancelDigitizerButton
@@ -226,8 +228,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                                       _digitizationToolbar.frame.size.height)];*/
     
     //save button in middle
-    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.2), 0.0,
-                                                                      (_digitizationToolbar.frame.size.width * 0.6),
+    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.8),
                                                                       _digitizationToolbar.frame.size.height)];
     
     //"Save Digitization" title
@@ -657,9 +659,13 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                               title:(NSString *)title
 {
     button.backgroundColor = UIColor.clearColor;
-    button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:48.0];
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
+    button.titleLabel.layer.shadowOffset = CGSizeZero;
+    button.titleLabel.layer.shadowOpacity = 1.0;
+    button.titleLabel.layer.shadowRadius = 4.0;
     
     [button setTitleColor:UIColor.whiteColor
                  forState:UIControlStateNormal];
@@ -2607,7 +2613,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [UIView animateWithDuration:0.25
                      animations:^{
                          _digitizerTargetView.alpha = 1.0;
-                         _digitizationToolbar.alpha = 0.9;
+                         _digitizationToolbar.alpha = 1.0;
                          
                          for (HelpButton *helpButton in self.view.subviews)
                          {
