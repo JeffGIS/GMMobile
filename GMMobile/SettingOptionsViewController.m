@@ -112,9 +112,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)uploadNow
 {
-    
+    [self performSegueWithIdentifier:@"UploadData"
+                              sender:@"Auto"];
+   
 }
+- (void)uploadViewController:(UploadViewController *)controller return:(BOOL)code
+{
+    [controller dismissViewControllerAnimated:YES
+                                   completion:nil];
 
+}
 - (void)loadData
 {
     NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
@@ -177,4 +184,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSLog(@"Auto Upload Status:%d", aSwitch.on);
 }
 
+- (void)prepareForSegue:(UIStoryboardSegue *)segue
+sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"UploadData"])
+    {
+        UploadViewController *uploadViewController = segue.destinationViewController;
+        uploadViewController.delegate = self;
+    }
+}
 @end

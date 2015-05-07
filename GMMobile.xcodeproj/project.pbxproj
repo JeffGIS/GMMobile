@@ -92,6 +92,7 @@
 		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
 		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
+		EBBC203F1AFB1345004BE242 /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBC203E1AFB1345004BE242 /* UploadViewController.m */; };
 		EBCA6C211A91301F003F7FB8 /* SewerData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C201A91301F003F7FB8 /* SewerData.m */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
@@ -227,6 +228,8 @@
 		EBAB31CA1AE8200000C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
 		EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerOverridesViewController.h; sourceTree = "<group>"; };
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
+		EBBC203D1AFB1345004BE242 /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
+		EBBC203E1AFB1345004BE242 /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
 		EBCA6C1F1A91301F003F7FB8 /* SewerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SewerData.h; sourceTree = "<group>"; };
 		EBCA6C201A91301F003F7FB8 /* SewerData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SewerData.m; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
@@ -408,11 +411,11 @@
 				EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */,
 				EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */,
 				A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */,
+				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */,
 				EB4F25831A757F2000761FD5 /* FindViewController.h */,
 				EB4F25841A757F2000761FD5 /* FindViewController.m */,
 				EB5521D61A61B6A8008CE2D1 /* LayersViewController.h */,
-				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
@@ -425,6 +428,8 @@
 				A9F56EBF1A847CA8003522AE /* WebKitViewController.m */,
 				EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */,
 				EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */,
+				EBBC203D1AFB1345004BE242 /* UploadViewController.h */,
+				EBBC203E1AFB1345004BE242 /* UploadViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -644,6 +649,7 @@
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
+				EBBC203F1AFB1345004BE242 /* UploadViewController.m in Sources */,
 				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,
 				A91565631A81E76400119C21 /* FindBoundariesViewController.m in Sources */,
 				EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */,
