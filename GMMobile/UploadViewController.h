@@ -1,11 +1,5 @@
-//
 //  UploadViewController.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 5/6/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
-
 
 #import "CCodeLibrary/CCodeLibrary.h"
 
@@ -44,7 +38,6 @@ enum
 @property (nonatomic, copy) NSString *outputDirectory;
 @property (nonatomic, copy) NSString *currentFile;
 @property (weak, nonatomic) IBOutlet UILabel *numberToUploadRef;
-@property (weak, nonatomic) IBOutlet UIProgressView *progressBarRef;
 @property (weak, nonatomic) IBOutlet UIButton *returnButton;
 
 - (IBAction)listDirectory:(id)sender;

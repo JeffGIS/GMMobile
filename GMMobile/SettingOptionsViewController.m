@@ -114,14 +114,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self performSegueWithIdentifier:@"UploadData"
                               sender:@"Auto"];
-   
 }
-- (void)uploadViewController:(UploadViewController *)controller return:(BOOL)code
+
+- (void)uploadViewController:(UploadViewController *)controller
+                      return:(BOOL)code
 {
     [controller dismissViewControllerAnimated:YES
                                    completion:nil];
-
 }
+
 - (void)loadData
 {
     NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
@@ -185,7 +186,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue
-sender:(id)sender
+                 sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"UploadData"])
     {
@@ -193,4 +194,5 @@ sender:(id)sender
         uploadViewController.delegate = self;
     }
 }
+
 @end

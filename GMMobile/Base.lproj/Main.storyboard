@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="13F1077" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -2218,7 +2218,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uMv-5G-4bV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="565" y="1764"/>
+            <point key="canvasLocation" x="270.75" y="1827"/>
         </scene>
         <!--Find-->
         <scene sceneID="WyH-zB-XQR">
@@ -3532,12 +3532,9 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="MwZ-Qg-azW">
-                                <rect key="frame" x="144" y="184" width="480" height="2"/>
-                            </progressView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yrR-e1-QLa">
                                 <rect key="frame" x="344" y="20" width="80" height="80"/>
-                                <state key="normal" image="question-256x256.png"/>
+                                <state key="normal" image="greenHelpButton.png"/>
                             </button>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bQ9-lf-xmD">
                                 <rect key="frame" x="314" y="213" width="140" height="60"/>
@@ -3549,12 +3546,12 @@
                                     <action selector="cancelAction:" destination="CTI-Ml-aYM" eventType="touchUpInside" id="tbs-hF-ziH"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="09L-Q7-jni">
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="09L-Q7-jni">
                                 <rect key="frame" x="150" y="697" width="469" height="117"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="112"/>
                                 <state key="normal" title="Return">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -3569,22 +3566,21 @@
                         <outlet property="fileListRef" destination="y4x-Zv-oUe" id="yLD-bq-mpi"/>
                         <outlet property="helpButton" destination="yrR-e1-QLa" id="TnR-rd-Iaj"/>
                         <outlet property="numberToUploadRef" destination="uy6-T7-tW9" id="mHa-fT-cK0"/>
-                        <outlet property="progressBarRef" destination="MwZ-Qg-azW" id="pF6-Tu-qWU"/>
                         <outlet property="returnButton" destination="09L-Q7-jni" id="nug-fy-56j"/>
                         <outlet property="statusLabel" destination="1ND-tJ-Dko" id="vUX-vo-551"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="POd-5l-AKf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3051" y="-1635"/>
+            <point key="canvasLocation" x="891.75" y="1265.25"/>
         </scene>
     </scenes>
     <resources>
         <image name="applications.png" width="36" height="36"/>
         <image name="find.png" width="48" height="48"/>
+        <image name="greenHelpButton.png" width="256" height="256"/>
         <image name="layers.png" width="40" height="40"/>
         <image name="map.png" width="40" height="40"/>
-        <image name="question-256x256.png" width="40" height="40"/>
         <image name="settings.png" width="32" height="32"/>
     </resources>
 </document>

@@ -14,23 +14,20 @@
 @property (nonatomic, readonly) uint8_t *buffer;
 @property (nonatomic, assign) size_t bufferOffset;
 @property (nonatomic, assign) size_t bufferLimit;
-@property NSString* subdir;
+@property (nonatomic, copy) NSString *subdir, *createDirectoryFile1, *createDirectoryFile2;
+@property (nonatomic) long fileSize, totBytesWritten;
+@property (nonatomic) int numToSkip;
+@property (nonatomic) NVProgressView *progressView;
 
 @end
 
 @implementation UploadViewController
-{
-    UIColor *_label1Color, *_label2Color, *_backgroundColor, *_textColor, *_darkLabel2Color, *_lightLabel2Color;
-    long fileSize, totBytesWritten;
-    int _numToSkip;
-    NSString * _createDirectoryFile1;
-    NSString * _createDirectoryFile2;
-}
 
-- (BOOL) validUploadSubDirectory:(NSString*)subdir
+- (BOOL)validUploadSubDirectory:(NSString *)subdir
 {
     if ([subdir isEqualToString:@"AlleyWallInventory"])
         return YES;
+    
     return NO;
 }
 
@@ -48,7 +45,7 @@
     return self;
 }
 
-- (void) listFilesToUpload
+- (void)listFilesToUpload
 {
 Top:;
     int n = 0;
@@ -128,14 +125,21 @@ Top:;
     _outputDirectory = CRAPI.sharedInstance.sharedOutputDirectory;
     _helpButton.hidden = YES;
     _returnButton.hidden = YES;
+    self.view.backgroundColor = UserDefaults.defaults.appleGray;
     
-    [self setupDefaults];
     [self setupLabels];
-    [self setupTextColor];
     
-    [_progressBarRef setProgress:0];
-    [_progressBarRef setProgressViewStyle:UIProgressViewStyleBar];
-/*    _createDirectoryFile1 = [NSString stringWithFormat:@"%@/createDirectoryFile1.txt", _outputDirectory];
+    _progressView = [[NVProgressView alloc] initWithCenter:CGPointMake((self.view.frame.size.width / 2.0), 184.0)
+                                                     width:(self.view.frame.size.width - 80.0)
+                                                trackColor:UIColor.whiteColor
+                                             progressColor:UIColor.blackColor];
+    
+    _progressView.progress = 0;
+    _progressView.hidden = YES;
+    
+    [self.view addSubview:_progressView];
+    
+    /*_createDirectoryFile1 = [NSString stringWithFormat:@"%@/createDirectoryFile1.txt", _outputDirectory];
     
     [_createDirectoryFile1 writeToFile:_createDirectoryFile1
                             atomically:YES
@@ -156,49 +160,26 @@ Top:;
     [self listFilesToUpload];
 }
 
-- (void)setupDefaults
-{
-    _backgroundColor = CRAPI.sharedInstance.defaultColors.backgroundColor;
-    _label1Color = CRAPI.sharedInstance.defaultColors.enabledColor;
-    _label2Color = CRAPI.sharedInstance.defaultColors.disabledColor;
-    _textColor = CRAPI.sharedInstance.defaultColors.titleColor;
-    _darkLabel2Color = [UserDefaults.defaults darkColorForColor:_label2Color];
-    _lightLabel2Color = [UserDefaults.defaults lightColorForColor:_label2Color];
-    self.view.backgroundColor = _backgroundColor;
-}
-
 - (void)setupLabels
 {
-    float cornerRadius = 10.0;
+    CGFloat cornerRadius = 10.0;
     
     _cancelButton.layer.cornerRadius = cornerRadius;
-    _cancelButton.backgroundColor = _label1Color;
+    _cancelButton.backgroundColor = UIColor.whiteColor;
     _returnButton.layer.cornerRadius = cornerRadius;
-    _returnButton.backgroundColor = _label1Color;
+    _returnButton.backgroundColor = UIColor.whiteColor;
     
-    [_cancelButton setTitleColor:_textColor
+    [_cancelButton setTitleColor:UIColor.blackColor
                         forState:UIControlStateNormal];
     
-    [_returnButton setTitleColor:_textColor
+    [_cancelButton setTitleColor:UIColor.blackColor
                         forState:UIControlStateNormal];
-}
-
-- (void)setupTextColor
-{
-    if ([UserDefaults.defaults pickAdjustedTextColorForColor1:_backgroundColor
-                                                       color2:_label2Color])
-    {
-        _numberToUploadRef.textColor = _lightLabel2Color;
-        _fileListRef.textColor = _lightLabel2Color;
-        _statusLabel.textColor = _lightLabel2Color;
-    }
     
-    else
-    {
-        _numberToUploadRef.textColor = _darkLabel2Color;
-        _fileListRef.textColor = _darkLabel2Color;
-        _statusLabel.textColor = _darkLabel2Color;
-    }
+    [_returnButton setTitleColor:UserDefaults.defaults.appleBlue
+                        forState:UIControlStateHighlighted];
+    
+    [_cancelButton setTitleColor:UserDefaults.defaults.appleBlue
+                        forState:UIControlStateHighlighted];
 }
 
 - (IBAction)listDirectory:(id)sender
@@ -221,9 +202,11 @@ Top:;
 
 - (void)sendDidStart
 {
-    _statusLabel.text = [NSString stringWithFormat:@"Sending %@", _currentFile.lastPathComponent];
+    _statusLabel.text = [NSString stringWithFormat:@"Sending %@",
+                         _currentFile.lastPathComponent];
+    
     _cancelButton.hidden = NO;
-    [self setupLabels];
+    _progressView.hidden = NO;
     
     [AppDelegate.sharedAppDelegate didStartNetworking];
 }
@@ -322,7 +305,6 @@ Top:;
     myName = [myName stringByReplacingOccurrencesOfString:mStr
                                                withString:@""];
     
-    [_progressBarRef setProgress:0];
     _currentFile = fullPath;
     
     if (![NSFileManager.defaultManager fileExistsAtPath:fullPath])
@@ -331,10 +313,10 @@ Top:;
     NSDictionary *fileAttributes = [NSFileManager.defaultManager attributesOfItemAtPath:fullPath
                                                                                   error:nil];
     
-    fileSize = (long)fileAttributes.fileSize;
-    totBytesWritten = 0;
+    _fileSize = (long)fileAttributes.fileSize;
+    _totBytesWritten = 0;
     
-    if (fileSize == 0)
+    if (_fileSize == 0)
         return NO;
     
     if (!([filePath.pathExtension isEqualToString:@"png"] ||
@@ -508,9 +490,9 @@ Top:;
                 else
                 {
                     _bufferOffset += bytesWritten;
-                    totBytesWritten += bytesWritten;
-                    CGFloat pct = ((double)totBytesWritten / (double)fileSize);
-                    [_progressBarRef setProgress:pct];
+                    _totBytesWritten += bytesWritten;
+                    CGFloat pct = ((double)_totBytesWritten / (double)_fileSize);
+                    _progressView.progress = pct;
                 }
             }
             
