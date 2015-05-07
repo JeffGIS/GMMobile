@@ -2445,7 +2445,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)viewWallPhotos
 {
-    NVPhotoViewController *photoViewer = [NVPhotoViewController viewerWithPhotosFromDirectory:CRAPI.sharedInstance.outputDirectory
+    NVPhotoViewController *photoViewer = [NVPhotoViewController viewerWithPhotosFromDirectory:CRAPI.sharedInstance.sharedOutputDirectory
                                                                                withIdentifier:_selectedAlleyWall];
     
     [self presentViewController:photoViewer
