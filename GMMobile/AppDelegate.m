@@ -8,6 +8,11 @@ int keepProcessing = 1;
 
 @implementation AppDelegate
 
++ (AppDelegate *)sharedAppDelegate
+{
+    return (AppDelegate *)UIApplication.sharedApplication.delegate;
+}
+
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -55,6 +60,17 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     
+}
+- (void)didStartNetworking
+{
+    self.networkingCount += 1;
+    UIApplication.sharedApplication.networkActivityIndicatorVisible = YES;
+}
+
+- (void)didStopNetworking
+{
+    self.networkingCount -= 1;
+    UIApplication.sharedApplication.networkActivityIndicatorVisible = (self.networkingCount != 0);
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
