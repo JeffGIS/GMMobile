@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 @interface LayerOverridesViewController : UIViewController <NVColorWheelDelegate>
 

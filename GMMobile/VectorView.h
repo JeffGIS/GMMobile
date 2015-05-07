@@ -1,7 +1,7 @@
 //  VectorView.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import <GoogleMaps/GoogleMaps.h>
 
 #define DISPLAY_DATA_OPTION_NODISPLAY   0

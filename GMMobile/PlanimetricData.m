@@ -7,6 +7,7 @@ extern int keepProcessing;
 
 #import "PlanimetricData.h"
 #import "PropertyData.h"
+#import "AlleyWallData.h"
 #import "ConfigurationControl.h"
 
 @interface PlanimetricData ()
@@ -418,7 +419,7 @@ extern int keepProcessing;
     p1.y = pt->lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     [pd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS.id,\"Wall ID\",LATITUDE,LONGITUDE FROM ALLEYWALLS,ALLEYWALLS_index WHERE ALLEYWALLS.id=ALLEYWALLS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -514,10 +515,13 @@ extern int keepProcessing;
     NSString *query;
     sqlite3_stmt *statement;
     DPOINT BasePt;
-    CGColorRef alleyLineColor = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1].CGColor;
+    int checked;
+    CGColorRef alleyLineColor;
+    CGColorRef alleyLineColorNotChecked = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1].CGColor;
+    CGColorRef alleyLineColorChecked = [UIColor colorWithRed:1 green:1 blue:0 alpha:1].CGColor;
     int numPoints,numLoops;
     //LPSTR symName;
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -529,7 +533,7 @@ extern int keepProcessing;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM ALLEY_LINE,ALLEY_LINE_index WHERE ALLEY_LINE.id=ALLEY_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,CHECKED FROM ALLEY_LINE,ALLEY_LINE_index WHERE ALLEY_LINE.id=ALLEY_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
@@ -549,6 +553,11 @@ extern int keepProcessing;
         //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         //symName = (LPSTR)sqlite3_column_text(statement,6);
+        checked = sqlite3_column_int(statement,6);
+        if (checked)
+            alleyLineColor = alleyLineColorChecked;
+        else
+            alleyLineColor = alleyLineColorNotChecked;
         
         if (numPoints < 0)
         {
@@ -591,7 +600,7 @@ extern int keepProcessing;
                                       visibleAtZoom:zoom])
         return 0;
     
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     int nPicked = 0;
     CGFloat mind = DBL_MAX;
     DPOINT p1, pickedPoint, minpt, BasePt;
@@ -616,6 +625,7 @@ extern int keepProcessing;
     {
         int refno = sqlite3_column_int(statement, 0);
         LPSTR ALLEYSEG = (LPSTR)sqlite3_column_text(statement, 1);
+        NSInteger iALLEYSEG = sqlite3_column_int(statement, 1);
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
@@ -632,7 +642,6 @@ extern int keepProcessing;
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -640,7 +649,6 @@ extern int keepProcessing;
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         
         if (PICK_POINT_ON_LINE(p1, bnds, &pickedPoint, numPoints, llpoints))
@@ -674,8 +682,6 @@ extern int keepProcessing;
     
     return nPicked;
 }
-
-
 -(void)displayWallPoint:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
@@ -684,6 +690,8 @@ extern int keepProcessing;
     NSString *query = @"";
     sqlite3_stmt *statement;
     DPOINT BasePt;
+    CGColorRef wallPointColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.8].CGColor;
+
     //LPSTR symName;
     
     if (![self continue])
@@ -697,7 +705,7 @@ extern int keepProcessing;
         */sizeFactor /= (2.0 * (22.0 - _zoom));
     CGFloat size = 150 * sizeFactor;;
     
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -724,7 +732,7 @@ extern int keepProcessing;
         
         [self drawWallPoint:context
                     atPoint:&llpoint
-                  withColor:UIColor.greenColor.CGColor
+                  withColor:wallPointColor
                     andSize:size];
     }
     
@@ -785,7 +793,7 @@ extern int keepProcessing;
                         to:(CLLocationCoordinate2D)point
 {
     BOOL rtn = FALSE;
-    PropertyData *pd = [[PropertyData alloc] init];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
     [pd open];
     
     //rtn = sqlite3_exec(pd.database,"CREATE TABLE IF NOT EXISTS MOVEWALLPTUNDO ('id','LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))", NULL, NULL, NULL);

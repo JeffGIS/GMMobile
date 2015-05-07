@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import <sqlite3.h>
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
 
 typedef NS_ENUM(NSInteger, PropDataOption)
@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @interface PropertyData : NSObject 
 
 @property sqlite3 *database;
-@property (nonatomic) BOOL isOpen;
+@property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;
@@ -51,8 +51,10 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (int)pickPID:(LLPOINT *)pt
   highlightList:(NSMutableArray *)hlist;
+- (BOOL)getAddressForPID:(NSString *)PID houseNumAndUnit:(NSString **)houseAndUnit streetName:(NSString **)streetName;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
+- (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;
 
 - (void)displayParcels:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints

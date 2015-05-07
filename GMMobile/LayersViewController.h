@@ -1,7 +1,7 @@
 //  LayersViewController.h
 //  GMMobile
 
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 @interface LayersViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
 

@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import <Foundation/Foundation.h>
-#import "../../CCodeLibrary/CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/CCodeLibrary.h"
 
 @interface PropertyList : NSObject
 

@@ -4,6 +4,7 @@
 #import "SettingsViewController.h"
 #import "PropertyData.h"
 #import "SewerData.h"
+#import "AlleyWallData.h"
 #import "AppDelegate.h"
 
 #define GET_PROPERTY 1
@@ -13,6 +14,7 @@
 #define GET_SEWER 5
 #define GET_PLAN 6
 #define GET_CENSUS 7
+#define GET_ALLEYWALL 8
 
 #define INPUTBUFSIZE USHRT_MAX * 32
 
@@ -122,6 +124,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case GET_AREAS:
             case GET_SEWER:
             case GET_PLAN:
+            case GET_ALLEYWALL:
             case GET_CENSUS:
             {
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
@@ -158,8 +161,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         //planimetric
                         //planimetricp
                         //alleywall
-                        file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
+                        file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
                         _popover.title = @"Load Planimetric Tables";
+                    }
+                        break;
+                        
+                    case GET_ALLEYWALL:
+                    {
+                        //planimetric
+                        //planimetricp
+                        //alleywall
+                        file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
+                        _popover.title = @"Load AlleyWall Tables";
                     }
                         break;
                         
@@ -197,13 +210,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     {
                         PropertyData *pd;
                         SewerData *sd;
+                        AlleyWallData *awd;
                         
                         if (option == GET_SEWER)
                         {
                             sd = [[SewerData alloc] init];
                             [sd open];
                         }
-                        
+                        else if (option == GET_ALLEYWALL)
+                        {
+                            awd = [[AlleyWallData alloc] init];
+                            [awd open];
+                        }
                         else
                         {
                             pd = [[PropertyData alloc] init];
@@ -216,7 +234,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GET_SEWER)
                             [sd startTransaction];
-                        
+                        else if (option == GET_ALLEYWALL)
+                            [awd startTransaction];
                         else
                             [pd startTransaction];
                         
@@ -224,7 +243,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         {
                             if (option == GET_SEWER)
                                 [sd executeCmd:str];
-                            
+                            else if (option == GET_ALLEYWALL)
+                                [awd executeCmd:str];
                             else
                                 [pd executeCmd:str];
                             
@@ -236,7 +256,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GET_SEWER)
                             [sd commitTransaction];
-                        
+                        else if (option == GET_ALLEYWALL)
+                            [awd commitTransaction];
                         else
                             [pd commitTransaction];
                         
@@ -254,7 +275,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GET_SEWER)
                             [sd close];
-                        
+                        else if (option == GET_ALLEYWALL)
+                            [awd close];
                         else
                             [pd close];
                         
@@ -438,9 +460,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (IBAction)loadPlan:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    //NSString *fileName = @"MPLS_PlanimetricData.gcf";
+    NSString *fileName = @"MPLS_PlanimetricData.gcf";
     //NSString *fileName = @"MPLS_PlanimetricPointData.gcf";
-    NSString *fileName = @"MPLS_AlleyWall.gcf";
+    //NSString *fileName = @"MPLS_AlleyWall.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;
@@ -451,6 +473,28 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Planimetric File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (IBAction)loadAlleyWall:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"MPLS_AlleyWall.gcf";
+    
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GET_ALLEYWALL;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get AlleyWall File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"
@@ -793,8 +837,75 @@ didReturnTimeInterval:(NSString *)timeInterval
 
 - (IBAction)showHeadingVC:(id)sender
 {
-    NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewController:self];
+    NVHeadingViewController *headingVC = [NVHeadingViewController showHeadingViewControllerWithDelegate:self
+                                                                                        stabilityFactor:4.0
+                                                                                            numReadings:250];
 #pragma unused(headingVC)
+}
+
+- (void)headingViewController:(NVHeadingViewController *)headingViewController
+             didReturnHeading:(CGFloat)heading
+{
+    [headingViewController dismissViewControllerAnimated:YES
+                                              completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Heading View Controller"
+                           message:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (void)headingViewControllerDidCancel:(NVHeadingViewController *)headingViewController
+{
+    [headingViewController dismissViewControllerAnimated:YES
+                                              completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Heading View Controller"
+                           message:@"Heading Measurement Cancelled"
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (IBAction)showVideoHeadingVC:(id)sender
+{
+    NVVideoHeadingViewController *videoHeadingVC = [NVVideoHeadingViewController
+                                                    showVideoHeadingViewControllerWithDelegate:self
+                                                                               stabilityFactor:4.0
+                                                                                   numReadings:250];
+    #pragma unused(videoHeadingVC)
+}
+
+- (void)videoHeadingViewController:(NVVideoHeadingViewController *)headingViewController
+                  didReturnHeading:(CGFloat)heading
+{
+    [headingViewController dismissViewControllerAnimated:YES
+                                              completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
+                           message:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (void)videoHeadingViewControllerDidCancel:(NVVideoHeadingViewController *)videoHeadingViewController
+{
+    [videoHeadingViewController dismissViewControllerAnimated:YES
+                                                   completion:nil];
+    
+    [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
+                           message:@"Video Heading Measurement Cancelled"
+                 cancelButtonTitle:@"OK"
+                 otherButtonTitles:nil
+         destructiveButtonPosition:0];
+}
+
+- (IBAction)goBack:(id)sender
+{
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
 
 @end

@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "MarkerInfoWindow.h"
 
 @class MarkerButton;
 
@@ -17,7 +18,7 @@
 
 @property (nonatomic, weak) id <MarkerButtonDelegate> delegate;
 @property (nonatomic) CLLocationCoordinate2D position;
-@property (nonatomic) NSInteger type;
+@property (nonatomic) MarkerInfoWindowType type;
 @property (nonatomic) NSInteger refno;
 @property (nonatomic) NSString *title;
 @property (nonatomic) NSString *snippet;

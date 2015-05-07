@@ -4,11 +4,12 @@
 #import <UIKit/UIKit.h>
 
 #define MAX_LAYER_NAME 32
-#define NUMHardCodedConfigs 4
+#define NUMHardCodedConfigs 5
 
 typedef NS_ENUM(NSInteger, HardCodedConfigs)
 {
     HCConfigAlleyWalls,
+    HCConfigAlleyWallStatus,
     HCConfigCurbRamps,
     HCConfigSewers,
     HCConfigMetroProp,

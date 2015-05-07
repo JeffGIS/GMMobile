@@ -74,6 +74,10 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         
         [self.appList addObject:ap];
         
+        ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Status"
+                                               identifier:HCConfigAlleyWallStatus];
+        [self.appList addObject:ap];
+        
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Curb Ramp Inventory"
                                                identifier:HCConfigCurbRamps];
         
@@ -106,7 +110,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerHasSymbols[HCLayerParcels] = NO;
         layerHasSymbols[HCLayerSewers] = NO;
         layerHasSymbols[HCLayerPlanimetric] = YES;
-        layerHasSymbols[HCLayerAlleys] = NO;
+        layerHasSymbols[HCLayerAlleys] = YES;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDefault] = YES;
@@ -115,7 +119,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMarkerSwitch] = YES;
         
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDefault] = YES;
@@ -127,13 +131,22 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantLegends] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantMarkerSwitch] = YES;
         
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDefault] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDigitize] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantUserLocation] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantExtents] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantMarkerSwitch] = YES;
+        
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDefault] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMarkerSwitch] = YES;
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDefault] = YES;
@@ -142,7 +155,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapType] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMarkerSwitch] = YES;
         
         //setup layers
@@ -157,6 +170,12 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigAlleyWalls][HCLayerSewers] = NO;
         configLayers[HCConfigAlleyWalls][HCLayerPlanimetric] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerAlleys] = YES;
+        
+        configLayers[HCConfigAlleyWallStatus][HCLayerAerials] = NO;
+        configLayers[HCConfigAlleyWallStatus][HCLayerParcels] = NO;
+        configLayers[HCConfigAlleyWallStatus][HCLayerSewers] = NO;
+        configLayers[HCConfigAlleyWallStatus][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigAlleyWallStatus][HCLayerAlleys] = YES;
         
         configLayers[HCConfigCurbRamps][HCLayerAerials] = YES;
         configLayers[HCConfigCurbRamps][HCLayerParcels] = YES;
@@ -177,6 +196,8 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         }
         
         configLayerZoom[HCConfigAlleyWalls][HCLayerAerials] = 18;
+        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
+        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
     }
     
     return self;
@@ -211,6 +232,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     
     [UserDefaults.defaults saveInteger:appID
                                 forKey:@"CurrentConfig"];
+    
     return rtn;
 }
 
@@ -313,27 +335,47 @@ visibleAtZoom:(float)zoom
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID
 {
     NSMutableArray * array=[[NSMutableArray alloc]init];
-    
-    PlanimetricData * pd = [[PlanimetricData alloc]init];
-    
-    NSArray * syms = [pd getDistinctSymbols:@"PLAN_POINT"];
-    for (NSString * symName in syms)
+
+    switch (layerID)
     {
-        LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
-        [array addObject:lo];
-    }
-    syms = [pd getDistinctSymbols:@"PLAN_LINE"];
-    for (NSString * symName in syms)
-    {
-        LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
-        [array addObject:lo];
-    }
-    
-    syms = [pd getDistinctSymbols:@"PLAN_AREA"];
-    for (NSString * symName in syms)
-    {
-        LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
-        [array addObject:lo];
+        case HCLayerPlanimetric:
+        {
+            
+            PlanimetricData * pd = [[PlanimetricData alloc]init];
+            
+            NSArray * syms = [pd getDistinctSymbols:@"PLAN_POINT"];
+            for (NSString * symName in syms)
+            {
+                LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+                [array addObject:lo];
+            }
+            syms = [pd getDistinctSymbols:@"PLAN_LINE"];
+            for (NSString * symName in syms)
+            {
+                LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+                [array addObject:lo];
+            }
+            
+            syms = [pd getDistinctSymbols:@"PLAN_AREA"];
+            for (NSString * symName in syms)
+            {
+                LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+                [array addObject:lo];
+            }
+        }
+            break;
+        case HCLayerAlleys:
+        {
+            LayerObject * lo = [[LayerObject alloc]initWithName:@"ALLEYWALLPOINT" andID:-1];
+            [array addObject:lo];
+            lo = [[LayerObject alloc]initWithName:@"ALLEYWALL" andID:-1];
+            [array addObject:lo];
+            lo = [[LayerObject alloc]initWithName:@"ALLEYCENTERLINE" andID:-1];
+            [array addObject:lo];
+       
+        }
+            break;
+            
     }
     [self sortSymbolsByName:array];
     return array;

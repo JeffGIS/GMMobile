@@ -4,6 +4,16 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 
+typedef NS_ENUM(NSInteger, MarkerInfoWindowType)
+{
+    MarkerInfoWindowTypeDefault,
+    MarkerInfoWindowTypePID,
+    MarkerInfoWindowTypeStormSewer,
+    MarkerInfoWindowTypeAlleyWall,
+    MarkerInfoWindowTypeAlleyLine,
+    MarkerInfoWindowTypeCustom,
+};
+
 @class MarkerInfoWindow;
 
 @protocol MarkerInfoWindowDelegate <NSObject>
@@ -27,6 +37,6 @@
 @property (nonatomic, copy) NSString *title, *snippet;
 @property (nonatomic) NSInteger refno;
 @property (nonatomic) CLLocationCoordinate2D position;
-@property (nonatomic) NSInteger type;
+@property (nonatomic) MarkerInfoWindowType type;
 
 @end

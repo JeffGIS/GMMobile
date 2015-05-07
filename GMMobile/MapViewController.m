@@ -10,12 +10,89 @@ extern int keepProcessing;
 
 #define MAX_VECTORVIEWS 8
 
+typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
+{
+    PropertyTableViewSettingDefault,
+    PropertyTableViewSettingOptions,
+    PropertyTableViewSettingPropertyReport,
+    PropertyTableViewSettingHCWebsite,
+    PropertyTableViewSettingStreetView,
+    PropertyTableViewSettingCensusArea,
+    PropertyTableViewSettingPropList,
+    PropertyTableViewSettingDestinations,
+};
+
+typedef NS_ENUM(NSInteger, CensusZoomSetting)
+{
+    CensusZoomSettingCancel,
+    CensusZoomSettingBlock,
+    CensusZoomSettingBlockGroup,
+    CensusZoomSettingTract,
+};
+
+typedef NS_ENUM(NSInteger, SewerPipeSetting)
+{
+    SewerPipeSettingDefault,
+    SewerPipeSettingAttributes,
+    SewerPipeSettingTraceUp,
+    SewerPipeSettingTraceDown,
+    SewerPipeSettingRemoveTrace,
+    SewerPipeSettingUpdateCleanDate,
+    SewerPipeSettingUpdateNotes,
+};
+
+typedef NS_ENUM(NSInteger, CustomSetting)
+{
+    CustomSettingDefault,
+    CustomSettingSnapToNode,
+    CustomSettingSnapToLine,
+};
+
+typedef NS_ENUM(NSInteger, AlleyWallSetting)
+{
+    AlleyWallSettingDefault,
+    AlleyWallSettingMoveWallPoint,
+    AlleyWallSettingDeleteWallPoint,
+    AlleyWallSettingEditWallAttributes,
+    AlleyWallSettingViewWallPhotos,
+};
+
+typedef NS_ENUM(NSInteger, AlleyLineSetting)
+{
+    AlleyLineSettingDefault,
+    AlleyLineSettingToggleCompletionStatus,
+};
+
+typedef NS_ENUM(NSInteger, MapTypeSetting)
+{
+    MapTypeSettingStandard,
+    MapTypeSettingHybrid,
+};
+
+typedef NS_ENUM(NSInteger, DigitizationMode)
+{
+    DigitizationModeCustom,
+    DigitizationModeAlleyWallNew,
+    DigitizationModeAlleyWallMove,
+    DigitizationModeSewer,
+    DigitizationModeProperty,
+    DigitizationModeCurbRamps,
+};
+
+typedef NS_ENUM(NSInteger, AlleyStatusSetting)
+{
+    AlleyStatusSettingDefault,
+    AlleyStatusSettingCenterline,
+    AlleyStatusSettingWall,
+};
+
+
 @interface MapViewController ()
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray;
-@property (nonatomic) NSInteger tableViewSetting;
+@property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearMarkers, clearWhenDeselected, initialZoom, rotateZoom;
@@ -30,7 +107,8 @@ extern int keepProcessing;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
-@property (nonatomic) NSInteger screenSetting, gestureCount, digitizerCount;
+@property MapViewScreenSetting screenSetting;
+@property (nonatomic) NSInteger gestureCount, digitizerCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -38,8 +116,8 @@ extern int keepProcessing;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
-@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno;
-@property BOOL waitForVectorViewRefresh, inDigitizationMode;
+@property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -49,7 +127,8 @@ extern int keepProcessing;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
 @property (nonatomic) UIView *digitizationToolbar;
 @property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
-@property (nonatomic) DigitizationMode digitizationMode;
+@property DigitizationMode digitizationMode;
+@property AlleyStatusSetting alleyStatusSetting;
 
 
 @end
@@ -62,6 +141,11 @@ extern int keepProcessing;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(becameActive:)
+                                               name:@"didBecomeActive"
+                                             object:nil];
     
     _nVectorViews = 0;
     
@@ -109,7 +193,7 @@ extern int keepProcessing;
     _orangeCrosshairs = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"blackOrangeCrosshairs"
                                                                                        ofType:@"png"]];
     
-    _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 80.0, 80.0)];
+    _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 120.0, 120.0)];
     
     CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
     
@@ -121,38 +205,53 @@ extern int keepProcessing;
     
     _digitizationToolbar = [[UIView alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
                                                                     _mapView.frame.origin.y,
-                                                                    _mapView.frame.size.width, 49.0)];
+                                                                    _mapView.frame.size.width, 80.0)];
     
     _digitizationToolbar.backgroundColor = UserDefaults.defaults.appleBlue;
+    _digitizationToolbar.layer.borderColor = UIColor.darkGrayColor.CGColor;
+    _digitizationToolbar.layer.borderWidth = 1.0;
     _digitizationToolbar.alpha = 0.0;
     _digitizationToolbar.hidden = YES;
     [self.view addSubview:_digitizationToolbar];
     
-    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.2), 0.0,
-                                                                        (_digitizationToolbar.frame.size.width * 0.6),
+    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
+                                                                        (_digitizationToolbar.frame.size.width * 0.8),
                                                                         _digitizationToolbar.frame.size.height)];
     
     [self setupDigitizerToolbarButton:_cancelDigitizerButton
                              selector:@selector(cancelDigitizationMode:)
-                                title:@"Cancel Digitization"];
+                                title:@"Cancel Move/Add Mode"];
     
-    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
+    //save button on left side
+    /*_saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
                                                                       (_digitizationToolbar.frame.size.width * 0.35),
+                                                                      _digitizationToolbar.frame.size.height)];*/
+    
+    //save button in middle
+    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
+                                                                      (_digitizationToolbar.frame.size.width * 0.8),
                                                                       _digitizationToolbar.frame.size.height)];
+    
+    //"Save Digitization" title
+    /*[self setupDigitizerToolbarButton:_saveDigitizerButton
+                             selector:@selector(saveDigitizationMode:)
+                                title:@"Save Digitization"];*/
+    
     
     [self setupDigitizerToolbarButton:_saveDigitizerButton
                              selector:@selector(saveDigitizationMode:)
-                                title:@"Save Digitization"];
+                                title:@"Exit Move/Add Mode"];
     
-    _undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
+    //undo button on right side
+    /*_undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
                                                                       (_digitizationToolbar.frame.size.width * 0.35),
                                                                       _digitizationToolbar.frame.size.height)];
 
     [self setupDigitizerToolbarButton:_undoDigitizerButton
                              selector:@selector(undoDigitizationMode:)
-                                title:@"Undo Digitization"];
+                                title:@"Undo Digitization"];*/
     
-    _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
+    _saveDigitizerButton.alpha = /*_undoDigitizerButton.alpha =*/ 0.0;
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -193,8 +292,6 @@ extern int keepProcessing;
     [_mapView addGestureRecognizer:longPressGesture];
     
     GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
-        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.jp2",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
@@ -202,8 +299,6 @@ extern int keepProcessing;
     };
     
     GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        //        NSString *url = [NSString stringWithFormat:@"http://www.gssidata.com/MPLS/%lu/%lu/%lu.png",
-        //                         (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.png",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
@@ -213,10 +308,8 @@ extern int keepProcessing;
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
     //[_layer_jpeg clearTileCache];
     
-    
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
     //[_layer_png clearTileCache];
-    
     
     _markerArray = [[NSMutableArray alloc] init];
     
@@ -316,6 +409,7 @@ extern int keepProcessing;
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     sharedAppDelegate.mapToolbar = _mapToolbar;
     
+    
     NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     [ConfigurationControl.sharedInstance setApp:config];
 
@@ -329,9 +423,50 @@ extern int keepProcessing;
 #pragma unused(helpButton)
 }
 
+- (void)becameActive:(id)selector
+{
+    if (CRAPI.sharedInstance.setToAlleyWalls)
+    {
+        [UserDefaults.defaults saveNSInteger:HCConfigAlleyWalls
+                                      forKey:@"CurrentConfig"];
+        
+        [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
+        CRAPI.sharedInstance.setToAlleyWalls = NO;
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
+    {
+        for (NVLegendView *legendView in self.view.subviews)
+        {
+            if ([legendView isKindOfClass:NVLegendView.class])
+            {
+                [legendView hideLegendView:NO];
+                
+                if (_helpButtonMoved)
+                {
+                    for (HelpButton *helpButton in self.view.subviews)
+                    {
+                        if ([helpButton isKindOfClass:HelpButton.class])
+                        {
+                            helpButton.center =
+                            CGPointMake(helpButton.center.x, helpButton.center.y -
+                                        legendView.frame.size.height);
+                            
+                            _helpButtonMoved = NO;
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     for (HelpWebView *helpWebView in self.view.subviews)
     {
@@ -352,10 +487,7 @@ extern int keepProcessing;
     }
     
     if (!_firstTimeAppear)
-    {
         [self initTableView];
-        
-    }
     
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
@@ -467,6 +599,7 @@ extern int keepProcessing;
         [self extentZoom];
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
+    
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
 
     [_mapToolbar configure:_screenSetting];
@@ -526,9 +659,13 @@ extern int keepProcessing;
                               title:(NSString *)title
 {
     button.backgroundColor = UIColor.clearColor;
-    button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:48.0];
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
+    button.titleLabel.layer.shadowOffset = CGSizeZero;
+    button.titleLabel.layer.shadowOpacity = 1.0;
+    button.titleLabel.layer.shadowRadius = 4.0;
     
     [button setTitleColor:UIColor.whiteColor
                  forState:UIControlStateNormal];
@@ -624,10 +761,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llPropPt = llpickPt;
         llSewerPt = llpickPt;
         CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+        
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
-        PlanimetricData *planData = [[PlanimetricData alloc]init];
+        PlanimetricData *planData = [[PlanimetricData alloc] init];
         
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
@@ -642,7 +780,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         [planData pickAlleyWallPoint:llpickPt
                        highlightList:highlightList];
-        [planData pickAlleyLine:llpickPt atZoom:_mapView.camera.zoom highlightList:highlightList];
+        
+        [planData pickAlleyLine:llpickPt
+                         atZoom:_mapView.camera.zoom
+                  highlightList:highlightList];
+        
         if (highlightList.count)
         {
             if (_clearMarkers)
@@ -682,14 +824,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _selectedAlleySeg = pi.identifier;
                     marker.title = _selectedAlleySeg;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyLine;
                     break;
+                    
                 case PTAlleyWallPt:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
                     _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
                     break;
+                    
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
@@ -744,6 +888,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case MarkerInfoWindowTypePID:
                 _selectedPID = _infoWindow.title = marker.title;
                 _selectedPIDCoords = marker.position;
+                break;
+                
+            case MarkerInfoWindowTypeAlleyWall:
+                _selectedAlleyWall = _infoWindow.title = marker.title;
+                break;
+                
+            case MarkerInfoWindowTypeAlleyLine:
+                _selectedAlleySeg = _infoWindow.title = marker.title;
+                break;
+                
+            default:
                 break;
         }
         
@@ -846,7 +1001,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                  animations:^{
                                      _cancelDigitizerButton.alpha = 0.0;
                                      _saveDigitizerButton.alpha = 1.0;
-                                     _undoDigitizerButton.alpha = 1.0;
+                                     //_undoDigitizerButton.alpha = 1.0;
                                  }];
                 
                 [_vectorView setNeedsDisplay];
@@ -856,8 +1011,29 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case DigitizationModeAlleyWallNew:
             {
                 _digitizerCount++;
+                CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
+                                                      (_digitizerTargetView.center.y -
+                                                       [self statusBarHeight:self.interfaceOrientation]));
                 
-                MarkerButton *marker = [MarkerButton markerWithPosition:position
+                CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
+                CLLocationCoordinate2D positioncl = position;
+                CLLocationCoordinate2D positionpid = position;
+                AlleyWallData *awd = [[AlleyWallData alloc] init];
+                NSString *nearestAlley = [awd nearestAlleyLine:&positioncl];
+                NSString *newWallID = [awd getNextWallForAlley:nearestAlley];
+                PropertyData *propData = [[PropertyData alloc] init];
+                NSString* houseAndUnit = @"";
+                NSString* streetName = @"";
+                NSString * nearPID = [propData getNearestPID:&positionpid];
+                if (nearPID)
+                {
+                    [propData getAddressForPID:nearPID houseNumAndUnit:&houseAndUnit streetName:&streetName];
+                }
+                [awd createNewWall:newWallID atPoint:position withHouse:houseAndUnit andStreet:streetName];
+                [self refreshVectorView:_mapView.projection.visibleRegion
+                                 atZoom:_mapView.camera.zoom];
+                
+/*                MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view
                                                                     map:_mapView
                                                         statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
@@ -880,14 +1056,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _infoWindow.snippet = marker.snippet;
                 _infoWindow.position = marker.position;
                 _infoWindow.type = MarkerInfoWindowTypeCustom;
-                [self.view addSubview:_infoWindow];
+                [self.view addSubview:_infoWindow];*/
                 _noneSelected = NO;
                 
                 [UIView animateWithDuration:0.25
                                  animations:^{
                                      _cancelDigitizerButton.alpha = 0.0;
                                      _saveDigitizerButton.alpha = 1.0;
-                                     _undoDigitizerButton.alpha = 1.0;
+                                     //_undoDigitizerButton.alpha = 1.0;
                                  }];
             }
                 
@@ -1440,6 +1616,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
             break;
          */
+            
+        default:
+            break;
     }
 }
 
@@ -1603,6 +1782,12 @@ haveVV:
                                if ([helpWebView isKindOfClass:HelpWebView.class])
                                    [self.view bringSubviewToFront:helpWebView];
                            }
+                           
+                           for (NVLegendView *legendView in self.view.subviews)
+                           {
+                               if ([legendView isKindOfClass:NVLegendView.class])
+                                   [self.view bringSubviewToFront:legendView];
+                           }
                        }
                    });
 }
@@ -1695,6 +1880,9 @@ viewForHeaderInSection:(NSInteger)section
             headerLabel.numberOfLines = 2;
             headerLabel.text = @"Property Report for\nTaxes Payable 2014";
             break;
+            
+        default:
+            break;
     }
     
     return headerLabel;
@@ -1713,6 +1901,9 @@ viewForHeaderInSection:(NSInteger)section
             
         case PropertyTableViewSettingPropertyReport:
             numberOfRows = _propertyReport.count;
+            break;
+            
+        default:
             break;
     }
     
@@ -1793,6 +1984,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             break;
             
         case PropertyTableViewSettingPropertyReport:
+        {
             cell.textLabel.font = [UIFont systemFontOfSize:MAX((_screenSize / 28.0), 18.0)];
             
             cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
@@ -1820,6 +2012,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             
             [cell.contentView addSubview:rowHeader];
             break;
+        }
+            
+        default:
+            break;
     }
     
     return cell;
@@ -1833,7 +2029,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showPropReport];
         
-        [UserDefaults.defaults saveInteger:PropertyTableViewSettingPropertyReport
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyReport
                                     forKey:@"PIDOption"];
     }
     
@@ -1842,8 +2038,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showHCWebsite];
         
-        [UserDefaults.defaults saveInteger:PropertyTableViewSettingHCWebsite
-                                    forKey:@"PIDOption"];
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingHCWebsite
+                                      forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1851,8 +2047,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showStreetView];
         
-        [UserDefaults.defaults saveInteger:PropertyTableViewSettingStreetView
-                                    forKey:@"PIDOption"];
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetView
+                                      forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1860,8 +2056,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showCensusArea];
         
-        [UserDefaults.defaults saveInteger:PropertyTableViewSettingCensusArea
-                                    forKey:@"PIDOption"];
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
+                                      forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1869,8 +2065,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self addToPropList];
         
-        [UserDefaults.defaults saveInteger:PropertyTableViewSettingPropList
-                                    forKey:@"PIDOption"];
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropList
+                                      forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1878,8 +2074,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self addToDestinations];
         
-        [UserDefaults.defaults saveInteger:PropertyTableViewSettingDestinations
-                                    forKey:@"PIDOption"];
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingDestinations
+                                      forKey:@"PIDOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1887,8 +2083,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showPipeAttributes];
         
-        [UserDefaults.defaults saveInteger:SewerPipeSettingAttributes
-                                    forKey:@"SewerOption"];
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingAttributes
+                                      forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1900,8 +2096,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    withObject:nil
                    afterDelay:0.3];
         
-        [UserDefaults.defaults saveInteger:SewerPipeSettingTraceUp
-                                    forKey:@"SewerOption"];
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceUp
+                                      forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1913,8 +2109,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    withObject:nil
                    afterDelay:0.3];
         
-        [UserDefaults.defaults saveInteger:SewerPipeSettingTraceDown
-                                    forKey:@"SewerOption"];
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown
+                                      forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1932,8 +2128,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self updateCleaningDate];
         
-        [UserDefaults.defaults saveInteger:SewerPipeSettingUpdateCleanDate
-                                    forKey:@"SewerOption"];
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingUpdateCleanDate
+                                      forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1941,8 +2137,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self updateInspectionNotes];
         
-        [UserDefaults.defaults saveInteger:SewerPipeSettingUpdateNotes
-                                    forKey:@"SewerOption"];
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingUpdateNotes
+                                      forKey:@"SewerOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1950,8 +2146,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self snapToNode];
         
-        [UserDefaults.defaults saveInteger:CustomSettingSnapToNode
-                                    forKey:@"CustomOption"];
+        [UserDefaults.defaults saveNSInteger:CustomSettingSnapToNode
+                                      forKey:@"CustomOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1959,8 +2155,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self snapToLine];
         
-        [UserDefaults.defaults saveInteger:CustomSettingSnapToLine
-                                    forKey:@"CustomOption"];
+        [UserDefaults.defaults saveNSInteger:CustomSettingSnapToLine
+                                      forKey:@"CustomOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1972,8 +2168,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    withObject:nil
                    afterDelay:0.3];
         
-        [UserDefaults.defaults saveInteger:AlleyWallSettingMoveWallPoint
-                                    forKey:@"AlleyWallOption"];
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingMoveWallPoint
+                                      forKey:@"AlleyWallOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1981,8 +2177,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self deleteWallPoint];
         
-        [UserDefaults.defaults saveInteger:AlleyWallSettingDeleteWallPoint
-                                    forKey:@"AlleyWallOption"];
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingDeleteWallPoint
+                                      forKey:@"AlleyWallOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -1990,8 +2186,52 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self editWallAttributes];
         
-        [UserDefaults.defaults saveInteger:AlleyWallSettingEditWallAttributes
-                                    forKey:@"AlleyWallOption"];
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes
+                                      forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"View Wall Photos"])
+    {
+        [self viewWallPhotos];
+        
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewWallPhotos
+                                      forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Toggle Alley Line\nCompletion Status"])
+    {
+        [self dismissTableView];
+        
+        [self performSelector:@selector(toggleCompletionStatus)
+                   withObject:nil
+                   afterDelay:0.3];
+        
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes
+                                      forKey:@"AlleyLineOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Alley Centerline Status"])
+    {
+        [self dismissTableView];
+        _alleyStatusSetting = AlleyStatusSettingCenterline;
+        
+        [self performSelector:@selector(alleyStatus)
+                   withObject:nil
+                   afterDelay:0.3];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Alley Wall Status"])
+    {
+        [self dismissTableView];
+        _alleyStatusSetting = AlleyStatusSettingWall;
+        
+        [self performSelector:@selector(alleyStatus)
+                   withObject:nil
+                   afterDelay:0.3];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -2001,7 +2241,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Alley Wall Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Custom Marker"])
+              isEqualToString:@"Remove Custom Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Alley Line Marker"])
         
     {
         [self dismissTableView];
@@ -2181,7 +2423,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)deleteWallPoint
 {
-    //implement delete wall point here
+    NVLargeAlertView *alert = [NVLargeAlertView showLargeAlertViewinView:self.view
+                                                                delegate:self
+                                                                   title:@"Do You Wish to Delete This Alley Wall?"
+                                                           topButtonText:@"YES"
+                                                        bottomButtonText:@"NO"
+                                                        destructiveIndex:NVLargeAlertIndexTopButton];
+#pragma unused(alert)
+    
+    [self deselectTableViewRow];
 }
 
 - (void)editWallAttributes
@@ -2190,6 +2440,86 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                  forKey:@"AlleyWallEditAttributes"];
     
     [self launchAlleyWallApp];
+    [self dismissTableView];
+}
+
+- (void)viewWallPhotos
+{
+    NSString *sharedPath = CRAPI.sharedInstance.sharedFilePath;
+    
+    NSString *photoDirectory = [NSString stringWithFormat:@"%@/AlleyWallInventory/%@",
+                                sharedPath, _selectedAlleyWall];
+    
+    NVPhotoViewController *photoViewer = [NVPhotoViewController viewerWithPhotosFromDirectory:photoDirectory];
+    
+    [self presentViewController:photoViewer
+                       animated:YES
+                     completion:nil];
+}
+
+- (void)toggleCompletionStatus
+{
+    AlleyWallData *awd = [[AlleyWallData alloc] init];
+    int status = [awd getAlleyLineStatus:_selectedAlleyLineRefno];
+    
+    [awd setAlleyLineStatus:_selectedAlleyLineRefno
+                         to:!status];
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
+}
+
+- (void)alleyStatus
+{
+    [UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
+                                  forKey:@"CurrentConfig"];
+    
+    ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
+    NVLegendView *legendView;
+    
+    CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:self.interfaceOrientation] + 6.0));
+    
+    for (NVLegendView *legendView in self.view.subviews)
+    {
+        if ([legendView isKindOfClass:NVLegendView.class])
+            [legendView hideLegendView:NO];
+    }
+    
+    switch(_alleyStatusSetting)
+    {
+        case AlleyStatusSettingWall:
+            legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                       inView:self.view
+                                                        title:@"Alley Wall Status"];
+            break;
+            
+        case AlleyStatusSettingCenterline:
+            legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                       inView:self.view
+                                                        title:@"Alley Centerline Status"];
+            break;
+            
+        case AlleyStatusSettingDefault:
+            break;
+    }
+    
+    if (!_helpButtonMoved)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             for (HelpButton *helpButton in self.view.subviews)
+                             {
+                                 if ([helpButton isKindOfClass:HelpButton.class])
+                                 {
+                                     helpButton.center =
+                                     CGPointMake(helpButton.center.x, helpButton.center.y +
+                                                 legendView.frame.size.height);
+                                 }
+                             }
+                         } completion:^(BOOL finished) {
+                             _helpButtonMoved = YES;
+                         }];
+    }
 }
 
 - (void)cancelDigitizationMode:(UIButton *)button
@@ -2217,7 +2547,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [UIView animateWithDuration:0.25
                      animations:^{
                          _saveDigitizerButton.alpha = 0.0;
-                         _undoDigitizerButton.alpha = 0.0;
+                         //_undoDigitizerButton.alpha = 0.0;
                          _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
@@ -2294,7 +2624,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [UIView animateWithDuration:0.25
                      animations:^{
                          _digitizerTargetView.alpha = 1.0;
-                         _digitizationToolbar.alpha = 0.9;
+                         _digitizationToolbar.alpha = 1.0;
                          
                          for (HelpButton *helpButton in self.view.subviews)
                          {
@@ -2327,7 +2657,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      } completion:^(BOOL finished) {
                          _digitizerTargetView.hidden = YES;
                          _digitizationToolbar.hidden = YES;
-                         _saveDigitizerButton.alpha = _undoDigitizerButton.alpha = 0.0;
+                         _saveDigitizerButton.alpha = /*_undoDigitizerButton.alpha =*/ 0.0;
                          _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
@@ -2703,7 +3033,17 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectLegends
 {
-    //implement legends here
+    _options = @[@"Alley Centerline Status", @"Alley Wall Status"];
+    
+    if (_options.count > 0)
+    {
+        _tableViewSetting = PropertyTableViewSettingOptions;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+        _tableView.allowsSelection = YES;
+        _tableView.delaysContentTouches = NO;
+        [_tableView reloadData];
+        [self presentTableView];
+    }
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
@@ -3132,9 +3472,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeAlleyWall:
             _selectedAlleyWall = title;
             _selectedAlleyWallRefno= refno;
-            _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
-                         @"Remove Alley Wall Marker"];
             
+            _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
+                         @"View Wall Photos", @"Remove Alley Wall Marker"];
+            
+            break;
+            
+        case MarkerInfoWindowTypeAlleyLine:
+            _selectedAlleySeg = title;
+            _selectedAlleyLineRefno = refno;
+            _options = @[@"Toggle Alley Line\nCompletion Status", @"Remove Alley Line Marker"];
             break;
             
         case MarkerInfoWindowTypeCustom:
@@ -3157,7 +3504,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                      coords:(CLLocationCoordinate2D)coords
                                        type:(NSInteger)type
 {
-    NSInteger option;
+    NSInteger option = 0;
     
     switch (type)
     {
@@ -3188,6 +3535,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case PropertyTableViewSettingCensusArea:
                     [self showCensusArea];
                     break;
+                    
+                default:
+                    break;
             }
         }
             break;
@@ -3213,6 +3563,17 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case SewerPipeSettingTraceDown:
                     [self showPipeTraceDownstream];
                     break;
+                    
+                case SewerPipeSettingUpdateCleanDate:
+                    [self updateCleaningDate];
+                    break;
+                    
+                case SewerPipeSettingUpdateNotes:
+                    [self updateInspectionNotes];
+                    break;
+                    
+                default:
+                    break;
             }
         }
             break;
@@ -3237,6 +3598,33 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case AlleyWallSettingEditWallAttributes:
                     [self editWallAttributes];
                     break;
+                    
+                case AlleyWallSettingViewWallPhotos:
+                    [self viewWallPhotos];
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+            
+        case MarkerInfoWindowTypeAlleyLine:
+        {
+            option = [UserDefaults.defaults integerForKey:@"AlleyLineOption"];
+            
+            if (option == AlleyLineSettingDefault)
+                option = AlleyLineSettingToggleCompletionStatus;
+            
+            switch (option)
+            {
+                case AlleyLineSettingToggleCompletionStatus:
+                    [self toggleCompletionStatus];
+                    [self refreshVectorView:_mapView.projection.visibleRegion
+                                     atZoom:_mapView.camera.zoom];
+                    break;
+                    
+                default:
+                    break;
             }
         }
             
@@ -3256,8 +3644,14 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 case CustomSettingSnapToNode:
                     [self snapToNode];
                     break;
+                    
+                default:
+                    break;
             }
         }
+            
+        default:
+            break;
     }
 }
 
@@ -3393,6 +3787,26 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     return (fabs(coordinate1.latitude - coordinate2.latitude) < 0.00001) &&
            (fabs(coordinate1.longitude - coordinate2.longitude) < 0.00001);
+}
+
+- (void)largeAlertView:(NVLargeAlertView *)largeAlertView
+   didTapButtonAtIndex:(NVLargeAlertIndex)buttonIndex
+{
+    if (buttonIndex == NVLargeAlertIndexTopButton)
+    {
+        AlleyWallData *awd = [[AlleyWallData alloc] init];
+        
+        [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
+        
+        [self dismissTableView];
+        [self removePreviousInfoWindow];
+        [self removeMarker];
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
+    
+    [largeAlertView hideLargeAlertView:YES];
 }
 
 @end
