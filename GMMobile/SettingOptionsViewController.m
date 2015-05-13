@@ -72,8 +72,8 @@
             cellSwitch.tintColor = UIColor.redColor;
             cellSwitch.onTintColor = UIColor.greenColor;
             
-            cellSwitch.center = CGPointMake((cell.contentView.frame.size.width - 100.0),
-                                            (cell.contentView.frame.size.height / 2.0));
+            cellSwitch.center = CGPointMake((cell.frame.size.width - 100.0),
+                                            (cell.frame.size.height / 2.0));
             
             [cellSwitch addTarget:self
                            action:@selector(cellSwitchValueChanged:)
