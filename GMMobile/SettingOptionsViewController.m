@@ -6,7 +6,7 @@
 
 @interface SettingOptionsViewController ()
 
-@property (nonatomic) NSArray *contents;
+@property (nonatomic) NSArray *contents, *images;
 
 @end
 
@@ -17,6 +17,17 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleGray;
+    
+    UIImage *autoUpload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"autoUpload"
+                                                                                         ofType:@"png"]];
+    
+    UIImage *loadData = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"loadData"
+                                                                                       ofType:@"png"]];
+    
+    UIImage *upload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"upload"
+                                                                                     ofType:@"png"]];
+    
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, nil];
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data"];
     
     _tableView.layer.cornerRadius = 10.0;
@@ -53,8 +64,10 @@
     cell.textLabel.font = [UIFont boldSystemFontOfSize:32.0];
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.text = _contents[indexPath.row];
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    cell.imageView.image = _images[indexPath.row];
     cell.textLabel.highlightedTextColor = UserDefaults.defaults.appleBlue;
-    cell.indentationWidth = 80.0;
+    cell.indentationWidth = 10.0;
     
     BOOL containsSwitch = NO;
     
