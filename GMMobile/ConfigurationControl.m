@@ -344,12 +344,14 @@ visibleAtZoom:(float)zoom
             PlanimetricData * pd = [[PlanimetricData alloc]init];
             
             NSArray * syms = [pd getDistinctSymbols:@"PLAN_POINT"];
+            
             for (NSString * symName in syms)
             {
                 LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
                 [array addObject:lo];
             }
             syms = [pd getDistinctSymbols:@"PLAN_LINE"];
+            
             for (NSString * symName in syms)
             {
                 LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
@@ -357,6 +359,7 @@ visibleAtZoom:(float)zoom
             }
             
             syms = [pd getDistinctSymbols:@"PLAN_AREA"];
+            
             for (NSString * symName in syms)
             {
                 LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
@@ -364,6 +367,7 @@ visibleAtZoom:(float)zoom
             }
         }
             break;
+            
         case HCLayerAlleys:
         {
             LayerObject * lo = [[LayerObject alloc]initWithName:@"ALLEYWALLPOINT" andID:-1];
@@ -376,7 +380,10 @@ visibleAtZoom:(float)zoom
         }
             break;
             
+        default:
+            break;
     }
+    
     [self sortSymbolsByName:array];
     return array;
 }

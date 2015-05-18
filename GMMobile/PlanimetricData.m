@@ -801,14 +801,14 @@ extern int keepProcessing;
     //                    iTime, refno];
     
     NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = %f,LONGITUDE = %f WHERE id=%ld",
-                       point.latitude,point.longitude, refno];
+                       point.latitude,point.longitude, (long)refno];
     
     rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     
     if (!rtn)
     {
         query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_index SET minY=%f,minX=%f,maxY=%f,maxX=%f WHERE ALLEYWALLS_index.id=%ld",
-                 point.latitude,point.longitude, point.latitude,point.longitude, refno];
+                 point.latitude,point.longitude, point.latitude,point.longitude, (long)refno];
         rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     }
     

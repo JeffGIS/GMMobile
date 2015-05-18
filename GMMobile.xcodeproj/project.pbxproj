@@ -61,6 +61,9 @@
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
 		A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D269E21AE4C77C00A5C38E /* plusSign.png */; };
+		A9D281881B045BAD00523B29 /* autoUpload.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281851B045BAD00523B29 /* autoUpload.png */; };
+		A9D281891B045BAD00523B29 /* loadData.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281861B045BAD00523B29 /* loadData.png */; };
+		A9D2818A1B045BAD00523B29 /* upload.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281871B045BAD00523B29 /* upload.png */; };
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
@@ -180,6 +183,9 @@
 		A9CBF20C1A81558C006AC88E /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		A9D269E21AE4C77C00A5C38E /* plusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusSign.png; sourceTree = "<group>"; };
+		A9D281851B045BAD00523B29 /* autoUpload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = autoUpload.png; sourceTree = "<group>"; };
+		A9D281861B045BAD00523B29 /* loadData.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loadData.png; sourceTree = "<group>"; };
+		A9D281871B045BAD00523B29 /* upload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = upload.png; sourceTree = "<group>"; };
 		A9E49B421A7ECADF002B2BA2 /* FindAddressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindAddressViewController.h; sourceTree = "<group>"; };
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
 		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
@@ -285,6 +291,9 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9D281851B045BAD00523B29 /* autoUpload.png */,
+				A9D281861B045BAD00523B29 /* loadData.png */,
+				A9D281871B045BAD00523B29 /* upload.png */,
 				A9F3933B1AEA961400DF9574 /* coolArrow.png */,
 				A91F36991AE97B0500602BCE /* redSliderThumb.png */,
 				A91F36951AE97A2D00602BCE /* metalSliderLeft.png */,
@@ -411,11 +420,11 @@
 				EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */,
 				EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */,
 				A97860EF1A7FF8180019FE37 /* FindPropertyOwnerViewController.h */,
-				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				A97860F01A7FF8180019FE37 /* FindPropertyOwnerViewController.m */,
 				EB4F25831A757F2000761FD5 /* FindViewController.h */,
 				EB4F25841A757F2000761FD5 /* FindViewController.m */,
 				EB5521D61A61B6A8008CE2D1 /* LayersViewController.h */,
+				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
@@ -604,14 +613,17 @@
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
+				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
 				A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */,
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
 				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
+				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
 				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
 				A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
+				A9D281891B045BAD00523B29 /* loadData.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,

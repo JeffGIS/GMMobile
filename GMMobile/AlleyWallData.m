@@ -128,7 +128,7 @@ int SQLOKawd(int sqlReturn, char *method)
 -(void) setAlleyLineStatus:(NSInteger)refno to:(int)status
 {
     [self open];
-    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEY_LINE SET CHECKED = %i WHERE id=%ld",status,refno];
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEY_LINE SET CHECKED = %i WHERE id=%ld",status,(long)refno];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close];
 }
@@ -136,7 +136,7 @@ int SQLOKawd(int sqlReturn, char *method)
 {
     BOOL rtn=FALSE;
     [self open];
-    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = 0,LONGITUDE = 0 WHERE id=%ld",refno];
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = 0,LONGITUDE = 0 WHERE id=%ld",(long)refno];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close];
     return rtn;
@@ -171,10 +171,10 @@ SELECT max(_id) FROM MyTable*/
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,%ld,'%@','',0,0,0,'','','','%@','','','',%f,%f,1,0);",refno,wallID,iHouse,street,today,position.longitude,position.latitude];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,%ld,'%@','',0,0,0,'','','','%@','','','',%f,%f,1,0);",(long)refno,wallID,iHouse,street,today,position.longitude,position.latitude];
   //  NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',%f,%f,1,0);",refno,position.longitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_index VALUES(%ld,%f,%f,%f,%f)",refno,position.longitude,position.longitude,position.latitude,position.latitude];
+    cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close];
     return rtn;

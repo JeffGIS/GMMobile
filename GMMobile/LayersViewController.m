@@ -47,7 +47,7 @@
         _font = [UIFont boldSystemFontOfSize:36.0];
         _headerFont = [UIFont boldSystemFontOfSize:44.0];
         _headerZoomFont = [UIFont boldSystemFontOfSize:28.0];
-        _indentationLevel = 37;
+        _indentationLevel = 38;
         _segControlWidth = 160.0;
         _cellLabelWidth = 140.0;
     }
