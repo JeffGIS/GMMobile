@@ -219,7 +219,7 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     MNMXCORD bounds;
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
     [self open];
@@ -284,7 +284,7 @@ int SQLOKswr(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT STORM_PLAT.id, STORM_PLAT.PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_PLAT,STORM_PLAT_index WHERE STORM_PLAT.id=STORM_PLAT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
     
@@ -357,7 +357,7 @@ int SQLOKswr(int sqlReturn, char *method)
 - (NSString *)getPlatIDofType:(NSString*)type fromRefno:(int)refno
 {
     NSString *platID = [[NSString alloc] init];
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     NSString *query = [NSString stringWithFormat:@"SELECT STORM_PLAT.PLAT_NAME FROM STORM_PLAT WHERE STORM_PLAT.id=%i",
              refno];
@@ -384,7 +384,7 @@ int SQLOKswr(int sqlReturn, char *method)
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     //LPSTR platID;
     int numPoints,numLoops, refno;
@@ -555,7 +555,7 @@ int SQLOKswr(int sqlReturn, char *method)
    highlightList:(NSMutableArray *)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                 visibleAtZoom:_zoom])
+                                      visibleAtZoom:_zoom])
         return 0;
     
     int nPicked = 0;
@@ -574,7 +574,7 @@ int SQLOKswr(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_LINE,STORM_LINE_index WHERE STORM_LINE.SYMBOLNAME = \"STRM_PIPE\" AND STORM_LINE.id=STORM_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
     
@@ -682,7 +682,7 @@ int SQLOKswr(int sqlReturn, char *method)
     
     NSString *query = @"SELECT PLAT FROM SANPLATAREAS";
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetAllSanPlats");
     
@@ -705,7 +705,7 @@ int SQLOKswr(int sqlReturn, char *method)
     
     NSString *query = @"SELECT PLAT_NAME FROM STORM_PLAT";
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetAllSanPlats");
     
@@ -768,7 +768,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     NSString *query = @"";
     NSString *lineText = @"";
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int numPoints, startpass = 0;
     //int numLoops;
@@ -949,7 +949,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
     
     NSString *query = [NSString stringWithFormat:@"SELECT STORM_LINE.id, STORM_LINE.FACILITY_ID, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points,SYMBOLNAME FROM STORM_LINE WHERE STORM_LINE.id = %i",refno];
         
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "highlightStormLine");
         
@@ -1399,7 +1399,7 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
                viewBounds:(MNMXCORD *)pvbounds
 {
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     //int numPoints, numLoops;
     LPSTR symName;

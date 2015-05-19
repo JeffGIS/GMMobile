@@ -35,7 +35,7 @@ extern int keepProcessing;
     
     NSString *query = @"";
     //NSString *querys;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     CGColorRef color = CGColorCreateCopyWithAlpha(UIColor.redColor.CGColor, 0.5);
     int numPoints,numLoops;
@@ -205,7 +205,7 @@ extern int keepProcessing;
     
     NSString *query = @"";
     //NSString *querys;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int numPoints,numLoops;
     //LPSTR symName;
@@ -346,7 +346,7 @@ extern int keepProcessing;
              viewBounds:(MNMXCORD *)pvbounds
 {
     NSString *query = @"";
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     //int numPoints, numLoops;
     //LPSTR symName;
@@ -425,7 +425,7 @@ extern int keepProcessing;
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS.id,\"Wall ID\",LATITUDE,LONGITUDE FROM ALLEYWALLS,ALLEYWALLS_index WHERE ALLEYWALLS.id=ALLEYWALLS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
              bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "preparePickPID");
     
@@ -513,7 +513,7 @@ extern int keepProcessing;
     CGFloat width = 100 * sizeFactor;
     
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int checked;
     CGColorRef alleyLineColor;
@@ -617,7 +617,7 @@ extern int keepProcessing;
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEY_LINE.id, ALLEY_LINE.ALLEYSEG, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM ALLEY_LINE,ALLEY_LINE_index WHERE  ALLEY_LINE.id=ALLEY_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
     
@@ -688,7 +688,7 @@ extern int keepProcessing;
              viewBounds:(MNMXCORD *)pvbounds
 {
     NSString *query = @"";
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     CGColorRef wallPointColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.8].CGColor;
 
@@ -766,7 +766,7 @@ extern int keepProcessing;
 - (NSArray *)getDistinctSymbols:(NSString *)tableName
 {
     NSMutableArray *symList = [[NSMutableArray alloc] init];
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];

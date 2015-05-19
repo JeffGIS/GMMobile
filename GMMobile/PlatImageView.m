@@ -71,7 +71,7 @@
     if (platType == PLAT_TYPE_SANITARY)
         type = @"san";
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     SewerData *sd = [[SewerData alloc] init];
     [sd open];
     
@@ -276,7 +276,7 @@
     BOOL rtn = NO;
     NSString *query;
     NSString *pname = _platName;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     double imagex[32], imagey[32], worldx[32], worldy[32];
     float rsq;
     int npt = 0;

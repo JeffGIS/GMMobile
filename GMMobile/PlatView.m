@@ -138,7 +138,7 @@
     
     [sd open];
     NSString * query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = '%@';",_platType,_platName];
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
     

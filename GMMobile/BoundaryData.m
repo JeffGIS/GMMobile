@@ -23,7 +23,7 @@ extern int keepProcessing;
            viewBounds:(MNMXCORD *)pvbounds
 {
     NSString *query = @"";
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int numPoints, numLoops;
     PropertyData * pd = [[PropertyData alloc] init];
@@ -162,7 +162,7 @@ extern int keepProcessing;
 {
     NSString *query = @"";
     //NSString *querys;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int numPoints, useCode;
     //int numLoops;

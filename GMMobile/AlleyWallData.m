@@ -110,7 +110,7 @@ int SQLOKawd(int sqlReturn, char *method)
     
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEY_LINE.CHECKED FROM ALLEY_LINE WHERE  ALLEY_LINE.id=%li",(long)refno];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
     
@@ -153,7 +153,7 @@ SELECT max(_id) FROM MyTable*/
     [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM ALLEYWALLS"];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "");
     
@@ -171,7 +171,7 @@ SELECT max(_id) FROM MyTable*/
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,%ld,'%@','',0,0,0,'','','','%@','','','',%f,%f,1,0);",(long)refno,wallID,iHouse,street,today,position.longitude,position.latitude];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,%ld,'%@','',0,0,0,'','','','%@','','','',%f,%f,1,0);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude];
   //  NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',%f,%f,1,0);",refno,position.longitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
@@ -199,7 +199,7 @@ SELECT max(_id) FROM MyTable*/
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEY_LINE.id, ALLEY_LINE.ALLEYSEG, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM ALLEY_LINE,ALLEY_LINE_index WHERE  ALLEY_LINE.id=ALLEY_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
     
@@ -266,7 +266,7 @@ SELECT max(_id) FROM MyTable*/
     NSString *maxID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".99"];
     NSString *query = [NSString stringWithFormat:@"SELECT [Wall ID] FROM ALLEYWALLS WHERE  [Wall ID] >= %@ AND [Wall ID] <= %@",minID,maxID];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
     
