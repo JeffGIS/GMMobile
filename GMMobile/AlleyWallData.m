@@ -151,30 +151,27 @@ SELECT max(_id) FROM MyTable*/
     NSInteger refno=0;
     NSInteger iHouse = [house integerValue];
     [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM ALLEYWALLS"];
+    NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM ALLEYWALLS_NEW"];
     
     sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "");
-    
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         int checked = sqlite3_column_int(statement, 0);
         refno = checked+1;
     }
-    
     SQLOK(sqlite3_finalize(statement), "");
-    
+   
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,%@,%ld,'%@','',0,0,0,'','','','%@','','','',%f,%f,1,0);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude];
-  //  NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS VALUES(%ld,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',%f,%f,1,0);",refno,position.longitude,position.latitude];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[LONGITUDE],[LATITUDE]) VALUES(%ld,%@,%ld,'%@','%@',%f,%f);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
+    cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close];
     return rtn;
