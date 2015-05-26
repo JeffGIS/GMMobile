@@ -136,7 +136,7 @@ int SQLOKawd(int sqlReturn, char *method)
 {
     BOOL rtn=FALSE;
     [self open];
-    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS SET LATITUDE = 0,LONGITUDE = 0 WHERE id=%ld",(long)refno];
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW SET LATITUDE = 0,LONGITUDE = 0 WHERE id=%ld",(long)refno];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close];
     return rtn;
@@ -148,6 +148,7 @@ int SQLOKawd(int sqlReturn, char *method)
     INSERT INTO ALLEYWALLS_index VALUES(2,-93.260613,-93.260613,44.936725,44.936725);
 SELECT max(_id) FROM MyTable*/
     BOOL rtn=FALSE;
+    int iTime = NSDate.timeIntervalSinceReferenceDate;
     NSInteger refno=0;
     NSInteger iHouse = [house integerValue];
     [self open];
@@ -169,7 +170,7 @@ SELECT max(_id) FROM MyTable*/
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[LONGITUDE],[LATITUDE]) VALUES(%ld,%@,%ld,'%@','%@',%f,%f);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[LONGITUDE],[LATITUDE],[LastUpdate]) VALUES(%ld,%@,%ld,'%@','%@',%f,%f,%i);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude,iTime];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
@@ -261,7 +262,7 @@ SELECT max(_id) FROM MyTable*/
     
     NSString *minID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".0"];
     NSString *maxID = [[nearestAlley substringToIndex:4] stringByAppendingString:@".99"];
-    NSString *query = [NSString stringWithFormat:@"SELECT [Wall ID] FROM ALLEYWALLS WHERE  [Wall ID] >= %@ AND [Wall ID] <= %@",minID,maxID];
+    NSString *query = [NSString stringWithFormat:@"SELECT [Wall ID] FROM ALLEYWALLS_NEW WHERE  [Wall ID] >= %@ AND [Wall ID] <= %@",minID,maxID];
     
     sqlite3_stmt *statement = NULL;
     
@@ -301,7 +302,6 @@ SELECT max(_id) FROM MyTable*/
 -(BOOL)transferExistingTableIntoNewTable
 {
     BOOL rtn=FALSE;
-    int iTime = NSDate.timeIntervalSinceReferenceDate;
 
     [self startTransaction];
     NSString *query = @"SELECT * FROM ALLEYWALLS;";
