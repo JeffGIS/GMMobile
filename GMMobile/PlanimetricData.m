@@ -717,7 +717,7 @@ extern int keepProcessing;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM ALLEYWALLS,ALLEYWALLS_index WHERE ALLEYWALLS.id=ALLEYWALLS_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     

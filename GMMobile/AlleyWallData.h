@@ -27,5 +27,7 @@
 -(BOOL)createNewWall:(NSString*)wallID atPoint:(CLLocationCoordinate2D)position withHouse:(NSString*)house andStreet:(NSString*)street;
 -(NSString *)nearestAlleyLine:(CLLocationCoordinate2D *)pt;
 -(NSString *)getNextWallForAlley:(NSString*)nearestAlley;
+-(BOOL)createNewTable;
+-(BOOL)transferExistingTableIntoNewTable;
 
 @end

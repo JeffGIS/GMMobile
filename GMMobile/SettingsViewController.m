@@ -276,7 +276,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         if (option == GET_SEWER)
                             [sd close];
                         else if (option == GET_ALLEYWALL)
+                        {
+                            [awd createNewTable];
+                            [awd transferExistingTableIntoNewTable];
                             [awd close];
+                        }
                         else
                             [pd close];
                         

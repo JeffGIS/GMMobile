@@ -290,5 +290,125 @@ SELECT max(_id) FROM MyTable*/
     
     return nextWall;
 }
+- (BOOL)createNewTable
+{
+    BOOL rtn = TRUE;
+    NSString * cmd = @"DROP TABLE IF EXISTS ALLEYWALLS_NEW;DROP TABLE IF EXISTS ALLEYWALLS_NEW_index;CREATE VIRTUAL TABLE ALLEYWALLS_NEW_index USING rtree(id,minX, maxX, minY, maxY);DROP TABLE IF EXISTS ALLEYWALL_SEGS;CREATE TABLE IF NOT EXISTS ALLEYWALLS_NEW ('id' INT,'Wall ID' CHAR(8),'InspDate' CHAR(12),'InspBy' CHAR(16),'LastUpdate' INT,'Hse No' INT,'STREET' CHAR(64),'CityStamp' CHAR(32),'Photos' INT,'BEARING' REAL,'GroundCoverBehindWall' CHAR(255),'VisibleWeepHoles' CHAR(4),'HistAndConstYear' CHAR(255),'StructuresInWall' CHAR(255),'ItemsBehindWall' CHAR(255),'SoilSurcharge' REAL,'Deficiency' CHAR(255),'Rating' INT,'NumSegments' INT,'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('Wall ID','InspDate')); CREATE TABLE IF NOT EXISTS ALLEYWALL_SEGS ('Wall ID' CHAR(8),'InspDate' CHAR(12),'SEGMENT' INT,'SegmentLength' REAL,'SegmentMaxHeight' REAL,'SegmentOffset' REAL,'TypeConst' CHAR(32),'SementPlumbness' REAL,'PlumbnessDistance' REAL,PRIMARY KEY('Wall ID','InspDate','SEGMENT'));";
+    
+    [self executeCmd:(char *)cmd.UTF8String];
+    return rtn;
+}
+-(BOOL)transferExistingTableIntoNewTable
+{
+    BOOL rtn=FALSE;
+    int iTime = NSDate.timeIntervalSinceReferenceDate;
 
+    [self startTransaction];
+    NSString *query = @"SELECT * FROM ALLEYWALLS;";
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "");
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        NSString * newNames = @"(";
+        NSString * newVals = @"(";
+        NSString * delim = @"";
+        NSString * newSegNames = @"";
+        NSString * newSegVals = @"";
+        NSString * segdelim = @"";
+        int iref=0;
+        double longitude=0,latitude=0;
+        
+        int ncol = sqlite3_column_count(statement);
+        for (int icol = 0;icol<ncol;icol++)
+        {
+            int isSegField = 0;
+            LPSTR pFieldName = (LPSTR)sqlite3_column_name(statement,icol);
+            LPSTR pVal = (LPSTR)sqlite3_column_text(statement, icol);
+            NSString * val = [NSString stringWithUTF8String:pVal];
+            val = [val stringByReplacingOccurrencesOfString:@"'" withString:@"''"];
+            if (!strcmp (pFieldName,"Gar/Struc") || !strcmp(pFieldName," COST"))
+                continue;
+            NSString * fname = [NSString stringWithUTF8String:pFieldName];
+            if (!strcmp (pFieldName,"Wall ID"))
+            {
+                isSegField = 2;
+            }
+            if (!strcmp (pFieldName,"InspDate"))
+            {
+                isSegField = 2;
+                NSArray *array = [val componentsSeparatedByString:@"/"];
+                if ([array count] == 3)
+                    val = [NSString stringWithFormat:@"%@-%2.2li-%2.2li",array[2],(long)[array[0] integerValue],(long)[array[1] integerValue]];
+                else
+                    val = @"1970-01-01";
+            }
+            if (!strcmp (pFieldName,"id"))
+            {
+                iref = atoi (pVal);
+            }
+            if (!strcmp (pFieldName,"LONGITUDE"))
+            {
+                longitude = atof (pVal);
+            }
+            if (!strcmp (pFieldName,"LATITUDE"))
+            {
+                latitude = atof (pVal);
+            }
+            if (!strcmp (pFieldName,"City"))
+            {
+                fname = @"CityStamp";
+            }
+            if (!strcmp (pFieldName,"Length"))
+            {
+                fname = @"SegmentLength";
+                isSegField = 1;
+            }
+            if (!strcmp (pFieldName,"Max Hght"))
+            {
+                fname = @"SegmentMaxHeight";
+                isSegField = 1;
+            }
+            if (!strcmp (pFieldName,"Offset"))
+            {
+                fname = @"SegmentOffset";
+                isSegField = 1;
+            }
+            if (!strcmp (pFieldName,"Type Const"))
+            {
+                fname = @"TypeConst";
+                isSegField = 1;
+            }
+            if (isSegField)
+            {
+                NSString * newSegName = [NSString stringWithFormat:@"%@[%@]",segdelim,fname];
+                newSegNames = [newSegNames stringByAppendingString:newSegName];
+                newSegVals = [newSegVals stringByAppendingString:[NSString stringWithFormat:@"%@'%@'",segdelim,val]];
+                segdelim = @",";
+            }
+            if (!isSegField || isSegField == 2)
+            {
+                NSString * newName = [NSString stringWithFormat:@"%@[%@]",delim,fname];
+                newNames = [newNames stringByAppendingString:newName];
+                newVals = [newVals stringByAppendingString:[NSString stringWithFormat:@"%@'%@'",delim,val]];
+                delim = @",";
+            }
+        }
+        NSString* cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO ALLEYWALLS_NEW%@) VALUES%@)",newNames,newVals];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO ALLEYWALL_SEGS(SEGMENT,%@) VALUES(1,%@)",newSegNames,newSegVals];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW_index VALUES(%i,%f,%f,%f,%f);",iref,longitude,longitude,latitude,latitude];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+
+    }
+    SQLOK(sqlite3_finalize(statement), "pickAlley");
+/*    INSERT INTO ALLEYWALLS_index VALUES(14,-93.260717,-93.260717,44.910437,44.910437);
+    CREATE TABLE ALLEYWALLS ('id' INT,'Wall ID' CHAR(8),'Hse No' INT,'STREET' CHAR(64),'City' CHAR(4),'Length' REAL,'Max Hght' REAL,'Offset' REAL,'Gar/Struc' CHAR(12),' COST' CHAR(12),'Type Const' CHAR(32),'InspDate' CHAR(12),'InspBy' CHAR(8),'Rating' CHAR(16),'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,'NUMSEGMENTS' INT,'LASTUPDATE' INT,PRIMARY KEY('id' ASC))
+ */
+    [self commitTransaction];
+    return rtn;
+}
 @end
