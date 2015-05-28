@@ -2466,10 +2466,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
 }
-/*
+
 - (void)alleyStatus
 {
-    [UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
+    /*[UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
                                   forKey:@"CurrentConfig"];
     
     ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
@@ -2517,9 +2517,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          } completion:^(BOOL finished) {
                              _helpButtonMoved = YES;
                          }];
-    }
+    }*/
 }
-*/
+
 - (void)cancelDigitizationMode:(UIButton *)button
 {
     [self hideDigitizationMode];
