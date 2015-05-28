@@ -11,13 +11,13 @@ extern int keepProcessing;
 #import "AlleyWallData.h"
 
 @implementation AlleyWallData
-static AlleyWallData *_wallData;
+static AlleyWallData *_statwallData=nil;
 
 int SQLOKawd(int sqlReturn, char *method)
 {
     if (sqlReturn != SQLITE_OK)
     {
-        [_wallData logError:sqlReturn
+        [_statwallData logError:sqlReturn
                      method:method];
     }
     
@@ -42,12 +42,12 @@ int SQLOKawd(int sqlReturn, char *method)
 {
     self = [super init];
     
-    if (self)
+    if (self && !_statwallData)
     {
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"AlleyWalls.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        _wallData = (__bridge AlleyWallData *)((__bridge sqlite3 *)((AlleyWallData *)self));
+        _statwallData = (__bridge AlleyWallData *)((__bridge sqlite3 *)((AlleyWallData *)self));
         
     }
     
@@ -57,6 +57,7 @@ int SQLOKawd(int sqlReturn, char *method)
 - (void)dealloc
 {
     sqlite3_close(_database);
+    _statwallData = nil;
     NSLog(@"AlleyWall Database dealloc");
 }
 - (void)open

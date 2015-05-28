@@ -20,7 +20,7 @@ static BOOL _createDirectory = YES;
 
 @implementation SewerData
 
-static SewerData *_sewerData;
+static SewerData *_statsewerData=nil;
 
 - (BOOL)continue
 {
@@ -41,7 +41,7 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     if (sqlReturn != SQLITE_OK)
     {
-        [_sewerData logError:sqlReturn
+        [_statsewerData logError:sqlReturn
                       method:method];
     }
     
@@ -83,12 +83,12 @@ int SQLOKswr(int sqlReturn, char *method)
 {
     self = [super init];
     
-    if (self)
+    if (self &&_statsewerData)
     {
         _documentsDirectory = UserDefaults.defaults.localFilePath;
         _fileName = @"Sewer.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        _sewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
+        _statsewerData = (__bridge SewerData *)((__bridge sqlite3 *)((SewerData *)self));
         _pointsArray = [[NSMutableArray alloc] init];
         
         _darkGreen = [[UIColor alloc] initWithRed:0.0
@@ -110,6 +110,7 @@ int SQLOKswr(int sqlReturn, char *method)
     [self close];
     CloseTRANS2 (&_pTranLLtoView);
     CloseTRANS2 (&_pTranViewtoLL);
+    _statsewerData = nil;
     NSLog(@"Sewer Database dealloc");
 }
 

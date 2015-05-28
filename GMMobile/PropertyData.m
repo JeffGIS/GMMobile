@@ -20,11 +20,11 @@ extern int keepProcessing;
 
 @implementation PropertyData
 
-static PropertyData *_propData;
+static PropertyData *_propData=nil;
 
 int SQLOKpd(int sqlReturn, char *method)
 {
-    if (sqlReturn != SQLITE_OK)
+    if (sqlReturn != SQLITE_OK && _propData)
     {
         [_propData logError:sqlReturn
                      method:method];
@@ -68,6 +68,7 @@ int SQLOKpd(int sqlReturn, char *method)
     CloseTRANS2 (&_pTranLLtoView);
     CloseTRANS2 (&_pTranViewtoLL);
     sqlite3_close(_database);
+    _propData = nil;
     NSLog(@"Property Database dealloc");
 }
 - (void)open
