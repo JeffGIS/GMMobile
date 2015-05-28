@@ -140,7 +140,7 @@
     NSString * query = [NSString stringWithFormat:@"SELECT IMAGEX,IMAGEY,WORLDX,WORLDY FROM %@_PLAT_CPT WHERE PLAT_NAME = '%@';",_platType,_platName];
     sqlite3_stmt *statement = NULL;
     
-    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0),sd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -151,7 +151,7 @@
     }
     _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
     _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
-    SQLOKswr(sqlite3_finalize(statement), "pickPLAT");
+    SQLOKswr(sqlite3_finalize(statement), sd.database);
     [sd close];
     return FALSE;
 }

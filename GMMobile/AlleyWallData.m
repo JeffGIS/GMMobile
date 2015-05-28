@@ -11,24 +11,25 @@ extern int keepProcessing;
 #import "AlleyWallData.h"
 
 @implementation AlleyWallData
-static AlleyWallData *_statwallData=nil;
 
-int SQLOKawd(int sqlReturn, char *method)
+int SQLOKawd(int sqlReturn, sqlite3 *database)
 {
     if (sqlReturn != SQLITE_OK)
     {
-        [_statwallData logError:sqlReturn
-                     method:method];
+        //[self logError:sqlReturn
+        //             method:database];
+        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i = %i:%s",
+                      sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
     }
     
     return sqlReturn;
 }
 
 - (void)logError:(int)sqlReturn
-          method:(char *)method
+          method:(sqlite3*)database
 {
-    NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %s = %i:%s",
-                  sqlReturn, method, sqlite3_errcode(_database), sqlite3_errmsg(_database)]);
+    NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i = %i:%s",
+                  sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
 }
 
 - (BOOL) continue
@@ -42,12 +43,11 @@ int SQLOKawd(int sqlReturn, char *method)
 {
     self = [super init];
     
-    if (self && !_statwallData)
+    if (self)
     {
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"AlleyWalls.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        _statwallData = (__bridge AlleyWallData *)((__bridge sqlite3 *)((AlleyWallData *)self));
         
     }
     
@@ -57,7 +57,6 @@ int SQLOKawd(int sqlReturn, char *method)
 - (void)dealloc
 {
     sqlite3_close(_database);
-    _statwallData = nil;
     NSLog(@"AlleyWall Database dealloc");
 }
 - (void)open
@@ -65,7 +64,7 @@ int SQLOKawd(int sqlReturn, char *method)
     if (!_isOpen)
     {
         self.isOpen = YES;
-        self.isOpen = !SQLOKawd(sqlite3_open(self.path.UTF8String, &_database), "open(AlleyWall)");
+        self.isOpen = !SQLOKawd(sqlite3_open(self.path.UTF8String, &_database), _database);
         NSLog(@"AlleyWall Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
@@ -75,7 +74,7 @@ int SQLOKawd(int sqlReturn, char *method)
 
 - (void)close
 {
-    SQLOKawd(sqlite3_close(_database),"Close");
+    SQLOKawd(sqlite3_close(_database),_database);
     NSLog(@"AlleyWall Database close");
     self.isOpen = NO;
 }
@@ -90,19 +89,19 @@ int SQLOKawd(int sqlReturn, char *method)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOKawd(sqlite3_exec(_database, cmd, 0, 0, 0), "Execute cmd");
+    BOOL rtn = !SQLOKawd(sqlite3_exec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
     [self open];
-    SQLOKawd(sqlite3_exec(_database, "BEGIN", 0, 0, 0), "Start transaction");
+    SQLOKawd(sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOKawd(sqlite3_exec(_database, "COMMIT", 0, 0, 0), "End transaction");
+    SQLOKawd(sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
 -(int) getAlleyLineStatus:(NSInteger)refno
 {
@@ -113,7 +112,7 @@ int SQLOKawd(int sqlReturn, char *method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    SQLOKawd(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement,0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -121,7 +120,7 @@ int SQLOKawd(int sqlReturn, char *method)
         status = checked;
     }
     
-    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    SQLOKawd(sqlite3_finalize(statement), _database);
     [self close];
     
     return status;
@@ -157,13 +156,13 @@ SELECT max(_id) FROM MyTable*/
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "");
+    SQLOKawd(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), _database);
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         int checked = sqlite3_column_int(statement, 0);
         refno = checked+1;
     }
-    SQLOK(sqlite3_finalize(statement), "");
+    SQLOKawd(sqlite3_finalize(statement), _database);
    
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
@@ -200,7 +199,7 @@ SELECT max(_id) FROM MyTable*/
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    SQLOKawd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -244,7 +243,7 @@ SELECT max(_id) FROM MyTable*/
         free (llpoints);
     }
     
-    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    SQLOKawd(sqlite3_finalize(statement),_database);
     [self close];
     pt->longitude = minpt.x;
     pt->latitude = minpt.y;
@@ -267,7 +266,7 @@ SELECT max(_id) FROM MyTable*/
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    SQLOKawd(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -281,7 +280,7 @@ SELECT max(_id) FROM MyTable*/
         maxWall = max (fWall,maxWall);
     }
     
-    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    SQLOKawd(sqlite3_finalize(statement), _database);
     [self close];
     
     if (maxWall < 1)
@@ -309,7 +308,7 @@ SELECT max(_id) FROM MyTable*/
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), "");
+    SQLOKawd(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -405,7 +404,7 @@ SELECT max(_id) FROM MyTable*/
         [self executeCmd:(LPSTR)cmd.UTF8String];
 
     }
-    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    SQLOKawd(sqlite3_finalize(statement),_database);
 /*    INSERT INTO ALLEYWALLS_index VALUES(14,-93.260717,-93.260717,44.910437,44.910437);
     CREATE TABLE ALLEYWALLS ('id' INT,'Wall ID' CHAR(8),'Hse No' INT,'STREET' CHAR(64),'City' CHAR(4),'Length' REAL,'Max Hght' REAL,'Offset' REAL,'Gar/Struc' CHAR(12),' COST' CHAR(12),'Type Const' CHAR(32),'InspDate' CHAR(12),'InspBy' CHAR(8),'Rating' CHAR(16),'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,'NUMSEGMENTS' INT,'LASTUPDATE' INT,PRIMARY KEY('id' ASC))
  */

@@ -78,7 +78,7 @@
     NSString *query = [NSString stringWithFormat:@"SELECT PLAT_NAME FROM %@_PLAT WHERE id = %i;",
                        type,refno];
     
-    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "setPlatID");
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), sd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -87,7 +87,7 @@
         _platType = type;
     }
     
-    SQLOKswr(sqlite3_finalize(statement), "setPlatID");
+    SQLOKswr(sqlite3_finalize(statement), sd.database);
     [sd close];
     _imagePath = [sd platPathName:_platName platType:platType];
     self.image = [UIImage imageWithContentsOfFile:_imagePath];
@@ -297,7 +297,7 @@ top:
                        _platType, pname];
     
     
-    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), sd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -307,7 +307,7 @@ top:
         worldx[npt] = sqlite3_column_double(statement, 2);
         worldy[npt++] = sqlite3_column_double(statement, 3);
     }
-    SQLOKswr(sqlite3_finalize(statement), "");
+    SQLOKswr(sqlite3_finalize(statement), sd.database);
     if (!npt && !pass++)
     {
         pname = [SewerData getActualPlatFileName:pname];
@@ -351,7 +351,7 @@ top:
         query = [NSString stringWithFormat:@"SELECT PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops, Points FROM %@_PROFILE_PLT WHERE PLAT_NAME >= '%@' AND PLAT_NAME < '%@~';",
                  _platType, _platName,_platName];
         
-        SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), "");
+        SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), sd.database);
         
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -392,7 +392,7 @@ top:
             _numProfileAreas++;
         }
         
-        SQLOKswr(sqlite3_finalize(statement), "");
+        SQLOKswr(sqlite3_finalize(statement), sd.database);
     }
     [sd close];
     _currentTransStatus = rtn;

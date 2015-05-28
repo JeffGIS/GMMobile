@@ -16,7 +16,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <CoreText/CoreText.h>
 
-int SQLOKswr(int sqlReturn, char *method);
+int SQLOKswr(int sqlReturn, sqlite3 *database);
 
 
 @interface SewerData : NSObject<FTPDataPullDelegate>
