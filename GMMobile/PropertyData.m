@@ -118,8 +118,8 @@ int SQLOKpd(int sqlReturn, char *method)
 
 - (BOOL)getDistinctUseCodes:(NSString *)outFile
 {
-    BOOL rtn;
-    sqlite3_stmt *statement;
+    BOOL rtn = NO;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     NSString *outString = @"Distinct Use Codes";
     
@@ -155,7 +155,7 @@ int SQLOKpd(int sqlReturn, char *method)
 - (LLPOINT)getPointForPID:(NSString *)PID
 {
     LLPOINT pt = {0};
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
     [self open];
@@ -191,7 +191,7 @@ int SQLOKpd(int sqlReturn, char *method)
 {
     MNMXCORD bounds;
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
     [self open];
@@ -231,7 +231,7 @@ int SQLOKpd(int sqlReturn, char *method)
 - (NSMutableArray *)getBoundaryAreaTypes
 {
     NSMutableArray * types=[[NSMutableArray alloc] init];
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
     [self open];
@@ -262,7 +262,7 @@ int SQLOKpd(int sqlReturn, char *method)
 - (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type
 {
     NSMutableArray * data = [[NSMutableArray alloc] init];
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
     [self open];
@@ -296,7 +296,7 @@ int SQLOKpd(int sqlReturn, char *method)
 {
     MNMXCORD bounds;
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
     [self open];
@@ -339,7 +339,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT PIN FROM PROPINFO Where PIN LIKE '%@%%'",
                        matchChar];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetPIDsMatchingString");
     
@@ -367,7 +367,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT PIN,\"Owner_Name\" FROM PROPINFO Where PIN >= '%@'",
                        matchChar];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0),"prepareGetPIDsMatchingString");
     
@@ -411,7 +411,7 @@ int SQLOKpd(int sqlReturn, char *method)
             break;
     }
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), "prepareGetPIDsMatchingAddress");
     
@@ -454,7 +454,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
              bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
 
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPID");
     
@@ -511,7 +511,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "preparePickPID");
     
@@ -553,7 +553,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT [Owner_Name] FROM PROPINFO Where PIN = '%@'",
                        PID];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "prepareGetOwnerNameForPID");
     
@@ -578,7 +578,7 @@ int SQLOKpd(int sqlReturn, char *method)
     NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO] FROM PROPINFO Where PIN = '%@'",
                        PID];
     
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), "");
     
@@ -721,7 +721,7 @@ int SQLOKpd(int sqlReturn, char *method)
     UIColor *parcelLineColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
     int parcelLineWidth = 3;
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     //LPSTR pid;
     DPOINT BasePt;
     int numPoints, numLoops;
@@ -1143,7 +1143,7 @@ int SQLOKpd(int sqlReturn, char *method)
     CGFloat boundsInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
     CGFloat acresToPixelsFactor = fabs(boundsInPixels / boundsInAcres);
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     //LPSTR pid;
     DPOINT BasePt, viewPoint;
     CGFloat emvTotal, acres;
@@ -1227,7 +1227,7 @@ int SQLOKpd(int sqlReturn, char *method)
             inCensusArea:(LPSTR)cenBlockIN
                  useDesc:(LPSTR) usedesc
 {
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     double sumEMV=0;
     double sumAcres=0;
     double pctAveEMV, aveEMV;
@@ -1413,7 +1413,7 @@ int SQLOKpd(int sqlReturn, char *method)
                        forPID:(NSString *)pid
 {
     NSMutableArray *report = [[NSMutableArray alloc] init];
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     char censusBlock[32];
     char usedesc[32];
     [self open];
@@ -1686,14 +1686,16 @@ int SQLOKpd(int sqlReturn, char *method)
                 
                 SQLOKpd(sqlite3_finalize(statement), "getReportForPID");
                 
-                double stability, openSpacePCT, pctCommercial, rankTotEMV;
+                CGFloat stability, openSpacePCT, pctCommercial, rankTotEMV;
                 rankTotEMV = totalEMV;
+                
                 [self computeStability:&stability
                              openSpace:&openSpacePCT
                          commercialPCT:&pctCommercial
                             totEMVRank:&rankTotEMV
                           inCensusArea:censusBlock
                                useDesc:usedesc];
+                
                 line = [NSString stringWithFormat:@"Stability:%.1f years", stability];
                 [report addObject:line];
                 
@@ -1833,7 +1835,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     BOOL GetNext = TRUE;
     char Name[66];
     LPINT Hits = malloc(MAXHITS * sizeof(int));
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
 
     NSString *string = INstring.uppercaseString;
     strncpy(Name, string.UTF8String, 64);

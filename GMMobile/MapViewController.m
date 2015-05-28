@@ -442,7 +442,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 {
     [super viewWillAppear:animated];
     
-    if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
+    /*if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
     {
         for (NVLegendView *legendView in self.view.subviews)
         {
@@ -466,7 +466,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                 }
             }
         }
-    }
+    }*/
     
     for (HelpWebView *helpWebView in self.view.subviews)
     {
@@ -1783,11 +1783,11 @@ haveVV:
                                    [self.view bringSubviewToFront:helpWebView];
                            }
                            
-                           for (NVLegendView *legendView in self.view.subviews)
+                           /*for (NVLegendView *legendView in self.view.subviews)
                            {
                                if ([legendView isKindOfClass:NVLegendView.class])
                                    [self.view bringSubviewToFront:legendView];
-                           }
+                           }*/
                        }
                    });
 }
@@ -2388,7 +2388,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     GSSiNotesView *notesView = [GSSiNotesView showNotesViewWithView:self.view
                                                            delegate:self
-                                                       titleSubject:_selectedSewerPipe];
+                                                              title:[NSString stringWithFormat:@"Notes for %@", _selectedSewerPipe]
+                                                       currentValue:nil
+                                                   allowAutoCorrect:YES];
 #pragma unused(notesView)
 }
 
@@ -2467,7 +2469,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)alleyStatus
 {
-    [UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
+    /*[UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
                                   forKey:@"CurrentConfig"];
     
     ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
@@ -2515,7 +2517,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          } completion:^(BOOL finished) {
                              _helpButtonMoved = YES;
                          }];
-    }
+    }*/
 }
 
 - (void)cancelDigitizationMode:(UIButton *)button
@@ -3757,6 +3759,11 @@ didFindMatchBetweenNote:(NSString *)note
             otherButtonTitles:@[[NSString stringWithFormat:@"Replace %@ with %@", itemInList, note],
                                 [NSString stringWithFormat:@"Add %@ to list", note]]
     destructiveButtonPosition:0];
+}
+
+- (NSArray *)arrayOfPickableNotesItemsForNotesView:(GSSiNotesView *)notesView
+{
+    return nil;
 }
 
 - (void)launchAlleyWallApp

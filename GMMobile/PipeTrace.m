@@ -57,7 +57,7 @@ typedef struct {
                     dn:(LPSTR)dnNode
 {
     BOOL rtn = NO;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString * query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = '%s'",atFid];
     
     SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), "");
@@ -77,7 +77,7 @@ typedef struct {
 {
     BOOL rtn = FALSE;
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     query = @"SELECT SEQUENCE,NXTFID,UPPIPE,DN_NODE FROM NEXTPIPE WHERE SEQUENCE >= 0 LIMIT 1";
     
@@ -99,7 +99,7 @@ typedef struct {
 {
     BOOL rtn = FALSE;
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     query = @"SELECT SEQUENCE,NXTFID,DOWNPIPE,UP_NODE FROM NEXTPIPE WHERE SEQUENCE >= 0 LIMIT 1";
     
@@ -121,7 +121,7 @@ typedef struct {
 {
     BOOL rtn = FALSE;
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     /*CREATE TABLE STORM_MAIN ('FACILITY_ID' CHAR(12),'OBJECTID' INT,'Shape' CHAR(64),'Enabled' INT,'YEAR_BUILT' INT,'STATUS' CHAR(20),'DOCUMENT_LINK' CHAR(250),'BUILT_BY' CHAR(32),'DATA_SOURCE' CHAR(70),'DATA_SOURCE_TYPE' CHAR(16),'SOURCE_USED' CHAR(200),'OWNER' CHAR(60),'MAINTAINED_BY' CHAR(40),'CREATED_BY' CHAR(20),'CREATED_DATE' INT,'LAST_MODIFIED_BY' CHAR(20),'SUBTYPE_CODE' INT,'COMMON_NAME' CHAR(32),'MATERIAL' CHAR(60),'SOURCE_LENGTH_FT' REAL,'MANNINGS_N' REAL,'LINED' CHAR(3),'CAST_IN_PLACE' CHAR(3),'INVERT_IN_ELEV' REAL,'INVERT_OUT_ELEV' REAL,'DIAMETER_IN' REAL,'EQUIVALENT_DIAMETER_IN' REAL,'WIDTH_IN' REAL,'HEIGHT_IN' REAL,'HEIGHT_FT' REAL,'PLAT' CHAR(64),'PIPE_SHAPE' CHAR(30),'UP_NODE' CHAR(12),'DOWN_NODE' CHAR(12),'COMMENTS' CHAR(250),'CONFIDENCE' CHAR(1),'LOCATOR_NAME' CHAR(12),'GlobalID' CHAR(38),'PACP_SHAPE' CHAR(1),'PACP_HEIGHT' REAL,'PACP_CITY' CHAR(10),'PACP_LOCATION' CHAR(64),'YEAR_LINED' INT,'LAST_MODIFIED_DATE' INT,'UDI' CHAR(12),'MODELING_PIPE_SHAPE' INT,'MODELING_PIPE_SHAPE_INDEX' INT,'PACP_YEAR_BUILT' INT,'PACP_MATERIAL' CHAR(5),'Shape_STLength__' REAL,'Shape_STLength_1' REAL,'Shape_Length' REAL,PRIMARY KEY('FACILITY_ID' ASC))*/
     
     query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = %s",fid];
@@ -142,7 +142,7 @@ typedef struct {
 -(BOOL) $FETCH_PIPEDB_BYUPN:(LPSTR)UPNODE returns:(PIPEDB *)pdb
 {
     NSString *query;
-    static sqlite3_stmt *statement;
+    static sqlite3_stmt *statement = NULL;
     
     if (UPNODE)
     {
@@ -165,7 +165,7 @@ typedef struct {
 -(BOOL) $FETCH_PIPEDB_BYDNN:(LPSTR)DNNODE returns:(PIPEDB *)pdb
 {
     NSString *query;
-    static sqlite3_stmt *statement;
+    static sqlite3_stmt *statement = NULL;
     
     if (DNNODE)
     {
@@ -189,7 +189,7 @@ typedef struct {
 {
     BOOL rtn = FALSE;
     NSString *query;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     
     query = [NSString stringWithFormat:@"SELECT UPPIPE,SQ FROM PIPETRACEDB WHERE FEATURE_ID = %s",fid];
     
@@ -582,7 +582,7 @@ $RETURN(1);
 {
     DPOINT BasePt, point;
     int numPoints;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     dbounds bounds;
     
     InitDBounds(&bounds);
@@ -629,7 +629,7 @@ $RETURN(1);
 -(int) getPipeTraceCount
 {
     int nrec = 0;
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM TRACE_HIGHLIGHT;"];
     
     [_sd open];
@@ -662,7 +662,7 @@ $RETURN(1);
     int numPoints;
     CGColorRef color = UIColor.redColor.CGColor;
 
-    sqlite3_stmt *statement;
+    sqlite3_stmt *statement = NULL;
     NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
     
     _sd = [[SewerData alloc]init];
