@@ -635,6 +635,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
     NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
+    if (!organizationName || [organizationName isEqualToString:@""])
+        organizationName = @"MPLSPubWorks";
     NSString *deviceNumber = [SharedDefaults.defaults stringForKey:@"DeviceNumber"];
     
     if (!organizationName || !deviceNumber ||
@@ -645,8 +647,15 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                                   delegate:self
                                                                      title:@"Please set your Organization Name and Device Number"
                                                             topPlaceholder:@"Organization Name"
-                                                         bottomPlaceholder:@"Device Number"];
+                                                                   topText:organizationName
+                                                         bottomPlaceholder:@"Device Number"
+                                                                bottomText:nil];
 #pragma unused(textAlert)
+    }
+    else
+    {
+        CRAPI.sharedInstance.organizationName = organizationName;
+        CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
     }
 }
 
@@ -3869,7 +3878,9 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     
     [SharedDefaults.defaults saveString:bottomText
                                  forKey:@"DeviceNumber"];
-    
+    CRAPI.sharedInstance.organizationName = topText;
+    CRAPI.sharedInstance.deviceNumber = (int)[bottomText integerValue];
+
     [twoTextAlert hideTwoTextAlert:YES];
 }
 

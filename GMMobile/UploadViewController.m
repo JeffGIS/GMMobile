@@ -51,7 +51,7 @@ Top:;
     int n = 0;
     NSFileManager *fileManager = NSFileManager.defaultManager;
     NSString *firstFile;
-    
+
     _urlText = [[NSString alloc] initWithFormat:@"www.thmgis.com/GMMobileUploads/%@/", CRAPI.sharedInstance.organizationName];
     
     _usernameText = @"waypoint";
