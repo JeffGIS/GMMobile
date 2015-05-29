@@ -3,6 +3,7 @@
 
 #import "SettingOptionsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "ConfigurationControl.h"
 
 @interface SettingOptionsViewController ()
 
@@ -28,7 +29,6 @@
                                                                                      ofType:@"png"]];
     
     _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, nil];
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data"];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
@@ -36,6 +36,19 @@
     _tableView.dataSource = self;
     _tableView.bounces = NO;
     _tableView.delaysContentTouches = NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+        _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Launch Maintenance Module"];
+    
+    else
+        _contents = @[@"Auto Upload", @"Upload Now", @"Load Data"];
+    
+    [_tableView reloadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -65,7 +78,10 @@
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.text = _contents[indexPath.row];
     cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    cell.imageView.image = _images[indexPath.row];
+    
+    if (indexPath.row < _images.count)
+        cell.imageView.image = _images[indexPath.row];
+    
     cell.textLabel.highlightedTextColor = UserDefaults.defaults.appleBlue;
     cell.indentationWidth = 10.0;
     
@@ -121,6 +137,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self loadData];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Launch Maintenance Module"])
+    {
+        [self launchMaintenanceModule];
+    }
 }
 
 - (void)uploadNow
@@ -144,6 +166,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     textAlert.keyboardType = UIKeyboardTypeNumberPad;
     textAlert.minimumCharacters = 0;
+}
+
+- (void)launchMaintenanceModule
+{
+    NSString *CRISDetailURL = @"PedRampDetail://";
+    
+    [SharedDefaults.defaults saveString:@"GMMobile"
+                                 forKey:@"SourceApplication"];
+    
+    [SharedDefaults.defaults saveInteger:85
+                                  forKey:@"DetailCurrentIntersection"];
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert

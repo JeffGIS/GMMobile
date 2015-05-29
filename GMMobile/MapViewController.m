@@ -3756,13 +3756,13 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchAlleyWallApp
 {
-    NSString *CRISDetailURL = @"AlleyWallInventory://";
+    NSString *AlleyWallURL = @"AlleyWallInventory://";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
     
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:AlleyWallURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:AlleyWallURL]];
     
     else
     {
