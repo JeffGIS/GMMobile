@@ -685,8 +685,6 @@ extern int keepProcessing;
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [pd open];
-    //CREATE TABLE ALLEYWALLS ('id' INT,'Wall ID' CHAR(8),'Hse No' INT,'STREET' CHAR(64),'City' CHAR(4),'Length' REAL,'Max Hght' REAL,'Offset' REAL,'Gar/Struc' CHAR(12),' COST' CHAR(12),'Type Const' CHAR(32),'InspDate' CHAR(12),'InspBy' CHAR(8),'Rating' CHAR(16),'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
-
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
@@ -760,30 +758,6 @@ extern int keepProcessing;
     
     
     return symList;
-}
-
-- (BOOL)moveAlleyWallPoint:(NSInteger)refno
-                        to:(CLLocationCoordinate2D)point
-{
-    BOOL rtn = FALSE;
-    int iTime = NSDate.timeIntervalSinceReferenceDate;
-    AlleyWallData *pd = [[AlleyWallData alloc] init];
-    [pd open];
-    
-    NSString *query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW SET LATITUDE = %f,LONGITUDE = %f,LastUpdate = %i WHERE id=%ld",
-                       point.latitude,point.longitude, iTime,(long)refno];
-    
-    rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
-    
-    if (!rtn)
-    {
-        query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW_index SET minY=%f,minX=%f,maxY=%f,maxX=%f WHERE ALLEYWALLS_NEW_index.id=%ld",
-                 point.latitude,point.longitude, point.latitude,point.longitude, (long)refno];
-        rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
-    }
-    
-    [pd close];
-    return !rtn;
 }
 
 - (void)userSavedAlleyWallPointMove:(BOOL)saved
