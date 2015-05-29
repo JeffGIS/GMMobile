@@ -13,6 +13,7 @@ static int fileSequence = 0;
 
 @implementation AlleyWallData
 
+
 int SQLOKawd(int sqlReturn, sqlite3 *database)
 {
     if (sqlReturn != SQLITE_OK)
@@ -90,17 +91,25 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
 
 - (BOOL)executeCmd:(char *)cmd
       sendToServer:(BOOL)sendToServer
+     useUniqueFile:(BOOL)uniqueFile
 {
     BOOL rtn = !SQLOKawd(sqlite3_exec(_database, cmd, 0, 0, 0), _database);
     if (rtn && sendToServer)
     {
-        int iTime = NSDate.timeIntervalSinceReferenceDate;
-        NSString *outputDataPath = [NSString stringWithFormat:@"%@/AlleyWallInventory_SQL_%i-%i.txt",
-                                    CRAPI.sharedInstance.sharedOutputDirectory,iTime,fileSequence++];
-        rtn = [[NSString stringWithUTF8String:cmd] writeToFile:outputDataPath
-                                                    atomically:YES
-                                                      encoding:NSUTF8StringEncoding
-                                                         error:nil];
+        if (uniqueFile || !_sendToServerFile)
+        {
+            int iTime = NSDate.timeIntervalSinceReferenceDate;
+            _sendToServerFile = [NSString stringWithFormat:@"%@/AlleyWallInventory_SQL_%i-%i.txt",
+                                        CRAPI.sharedInstance.sharedOutputDirectory,iTime,fileSequence++];
+            rtn = [[NSString stringWithUTF8String:cmd] writeToFile:_sendToServerFile
+                                                        atomically:YES
+                                                          encoding:NSUTF8StringEncoding
+                                                             error:nil];
+        }
+        else
+        {
+            [CRAPI.sharedInstance appendString:[NSString stringWithUTF8String:cmd] toFile:_sendToServerFile];
+        }
     }
     return rtn;
 }
@@ -175,7 +184,8 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     [self open];
     NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEY_LINE SET CHECKED = %i, LastUpdate = %i WHERE id=%ld",status,iTime,(long)refno];
     [self executeCmd:(LPSTR)cmd.UTF8String
-        sendToServer:YES];
+        sendToServer:YES
+     useUniqueFile:YES];
     [self close];
 }
 -(BOOL)deleteAlleyWallPoint:(NSString *)wallID
@@ -185,7 +195,8 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     [self open];
     NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW SET Current = 0, Deleted = 1, LastUpdate = %i WHERE [Wall ID]=%@",iTime,wallID];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String
-              sendToServer:YES];
+              sendToServer:YES
+             useUniqueFile:YES];
     [self close];
     return rtn;
 }
@@ -244,10 +255,12 @@ SELECT max(_id) FROM MyTable*/
     
     NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[Current],[LONGITUDE],[LATITUDE],[LastUpdate]) VALUES(%ld,%@,%ld,'%@','%@',1,%f,%f,%i);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude,iTime];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String
-              sendToServer:YES];
+              sendToServer:YES
+             useUniqueFile:YES];
     cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String
-              sendToServer:YES];
+              sendToServer:YES
+             useUniqueFile:NO];
     [self close];
     return rtn;
 }
@@ -369,9 +382,11 @@ SELECT max(_id) FROM MyTable*/
 {
     BOOL rtn = TRUE;
     NSString * cmd = @"DROP TABLE IF EXISTS ALLEYWALLS_NEW;DROP TABLE IF EXISTS ALLEYWALLS_NEW_index;CREATE VIRTUAL TABLE ALLEYWALLS_NEW_index USING rtree(id,minX, maxX, minY, maxY);DROP TABLE IF EXISTS ALLEYWALL_SEGS;CREATE TABLE IF NOT EXISTS ALLEYWALLS_NEW ('id' INT,'Wall ID' CHAR(8),'InspDate' CHAR(12),'InspBy' CHAR(16),'Current' INT,'LastUpdate' INT,'Deleted' INT,'Hse No' INT,'STREET' CHAR(64),'CityStamp' CHAR(32),'Photos' INT,'BEARING' REAL,'GroundCoverBehindWall' CHAR(255),'VisibleWeepHoles' CHAR(4),'HistAndConstYear' CHAR(255),'StructuresInWall' CHAR(255),'ItemsBehindWall' CHAR(255),'SoilSurcharge' REAL,'Deficiency' CHAR(255),'Rating' INT,'NumSegments' INT,'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('Wall ID','InspDate')); CREATE TABLE IF NOT EXISTS ALLEYWALL_SEGS ('Wall ID' CHAR(8),'InspDate' CHAR(12),'SEGMENT' INT,'SegmentLength' REAL,'SegmentMaxHeight' REAL,'SegmentOffset' REAL,'TypeConst' CHAR(32),'SegmentPlumbness' REAL,'PlumbnessDistance' REAL,PRIMARY KEY('Wall ID','InspDate','SEGMENT'));";
-    
+    if (sendToServer)
+        [CRAPI.sharedInstance clearOutputDirectory];
     [self executeCmd:(char *)cmd.UTF8String
-        sendToServer:sendToServer];
+        sendToServer:sendToServer
+       useUniqueFile:YES];
     return rtn;
 }
 -(BOOL)transferExistingTableIntoNewTable:(BOOL)sendToServer
@@ -473,13 +488,16 @@ SELECT max(_id) FROM MyTable*/
         }
         NSString* cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO ALLEYWALLS_NEW([Current],%@) VALUES(1,%@)",newNames,newVals];
         [self executeCmd:(LPSTR)cmd.UTF8String
-            sendToServer:sendToServer];
+            sendToServer:sendToServer
+           useUniqueFile:NO];
         cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO ALLEYWALL_SEGS([SEGMENT],%@) VALUES(1,%@)",newSegNames,newSegVals];
         [self executeCmd:(LPSTR)cmd.UTF8String
-            sendToServer:sendToServer];
+            sendToServer:sendToServer
+           useUniqueFile:NO];
         cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW_index VALUES(%i,%f,%f,%f,%f);",iref,longitude,longitude,latitude,latitude];
         [self executeCmd:(LPSTR)cmd.UTF8String
-            sendToServer:sendToServer];
+            sendToServer:sendToServer
+           useUniqueFile:NO];
 
     }
     SQLOKawd(sqlite3_finalize(statement),_database);

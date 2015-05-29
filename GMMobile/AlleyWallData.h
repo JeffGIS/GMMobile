@@ -8,6 +8,7 @@
 @interface AlleyWallData : NSObject
 
 @property sqlite3 *database;
+@property NSString *sendToServerFile;
 @property (atomic) BOOL isOpen;
 @property (atomic) int processingID;
 @property (nonatomic, copy) NSString *documentsDirectory;
@@ -19,7 +20,8 @@
 - (void)close;
 - (void)clear;
 - (BOOL)executeCmd:(char *)cmd
-      sendToServer:(BOOL)sendToServer;
+      sendToServer:(BOOL)sendToServer
+     useUniqueFile:(BOOL)uniqueFile;
 - (void)startTransaction;
 - (void)commitTransaction;
 -(int) getAlleyLineStatus:(NSInteger)refno;

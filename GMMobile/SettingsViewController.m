@@ -245,7 +245,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                 [sd executeCmd:str];
                             else if (option == GET_ALLEYWALL)
                                 [awd executeCmd:str
-                                   sendToServer:NO];
+                                   sendToServer:NO
+                                  useUniqueFile:NO];
                             else
                                 [pd executeCmd:str];
                             
