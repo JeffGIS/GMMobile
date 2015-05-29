@@ -421,6 +421,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                               tag:HelpButtonPresenterMapVC
                                                            tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
+    
+    
 }
 
 - (void)becameActive:(id)selector
@@ -631,6 +633,21 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     }
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+    
+    NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
+    NSString *deviceNumber = [SharedDefaults.defaults stringForKey:@"DeviceNumber"];
+    
+    if (!organizationName || !deviceNumber ||
+        [organizationName isEqualToString:@""] ||
+        [deviceNumber isEqualToString:@""])
+    {
+        NVTwoTextAlert *textAlert = [NVTwoTextAlert showTwoTextAlertInView:self.view
+                                                                  delegate:self
+                                                                     title:@"Please set your Organization Name and Device Number"
+                                                            topPlaceholder:@"Organization Name"
+                                                         bottomPlaceholder:@"Device Number"];
+#pragma unused(textAlert)
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3755,13 +3772,13 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchAlleyWallApp
 {
-    NSString *CRISDetailURL = @"AlleyWallInventory://";
+    NSString *AlleyWallURL = @"AlleyWallInventory://";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
     
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:AlleyWallURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:AlleyWallURL]];
     
     else
     {
@@ -3841,6 +3858,19 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     }
     
     return title;
+}
+
+- (void)twoTextAlert:(NVTwoTextAlert *)twoTextAlert
+    didReturnTopText:(NSString *)topText
+          bottomText:(NSString *)bottomText
+{
+    [SharedDefaults.defaults saveString:topText
+                                 forKey:@"OrganizationName"];
+    
+    [SharedDefaults.defaults saveString:bottomText
+                                 forKey:@"DeviceNumber"];
+    
+    [twoTextAlert hideTwoTextAlert:YES];
 }
 
 @end
