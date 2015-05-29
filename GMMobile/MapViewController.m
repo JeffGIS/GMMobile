@@ -421,6 +421,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                               tag:HelpButtonPresenterMapVC
                                                            tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
+    
+    
 }
 
 - (void)becameActive:(id)selector
@@ -631,6 +633,13 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     }
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+    
+    NVTwoTextAlert *textAlert = [NVTwoTextAlert showTwoTextAlertInView:self.view
+                                                              delegate:self
+                                                                 title:@"Please set your Organization Name and Device Number"
+                                                        topPlaceholder:@"Organization Name"
+                                                     bottomPlaceholder:@"Device Number"];
+#pragma unused(textAlert)
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3841,6 +3850,15 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     }
     
     return title;
+}
+
+- (void)twoTextAlert:(NVTwoTextAlert *)twoTextAlert
+    didReturnTopText:(NSString *)topText
+          bottomText:(NSString *)bottomText
+{
+    NSLog(@"%@,%@", topText, bottomText);
+    
+    [twoTextAlert hideTwoTextAlert:YES];
 }
 
 @end
