@@ -442,7 +442,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 {
     [super viewWillAppear:animated];
     
-    /*if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
+    if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
     {
         for (NVLegendView *legendView in self.view.subviews)
         {
@@ -466,7 +466,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                 }
             }
         }
-    }*/
+    }
     
     for (HelpWebView *helpWebView in self.view.subviews)
     {
@@ -1783,11 +1783,11 @@ haveVV:
                                    [self.view bringSubviewToFront:helpWebView];
                            }
                            
-                           /*for (NVLegendView *legendView in self.view.subviews)
+                           for (NVLegendView *legendView in self.view.subviews)
                            {
                                if ([legendView isKindOfClass:NVLegendView.class])
                                    [self.view bringSubviewToFront:legendView];
-                           }*/
+                           }
                        }
                    });
 }
@@ -2468,37 +2468,25 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)alleyStatus
 {
-    /*[UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
+    [UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
                                   forKey:@"CurrentConfig"];
     
     ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
-    NVLegendView *legendView;
     
     CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:self.interfaceOrientation] + 6.0));
     
-    for (NVLegendView *legendView in self.view.subviews)
+    for (NVLegendView *views in self.view.subviews)
     {
-        if ([legendView isKindOfClass:NVLegendView.class])
-            [legendView hideLegendView:NO];
+        if ([views isKindOfClass:NVLegendView.class])
+            [views reloadView];
     }
     
-    switch(_alleyStatusSetting)
-    {
-        case AlleyStatusSettingWall:
-            legendView = [NVLegendView showLegendViewAtOrigin:origin
-                                                       inView:self.view
-                                                        title:@"Alley Wall Status"];
-            break;
-            
-        case AlleyStatusSettingCenterline:
-            legendView = [NVLegendView showLegendViewAtOrigin:origin
-                                                       inView:self.view
-                                                        title:@"Alley Centerline Status"];
-            break;
-            
-        case AlleyStatusSettingDefault:
-            break;
-    }
+    NVLegendView *legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                             inView:self.view
+                                                     containerFrame:_mapView.frame
+                                                           delegate:self
+                                                         selectable:NO
+                                                           animated:YES];
     
     if (!_helpButtonMoved)
     {
@@ -2516,7 +2504,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                          } completion:^(BOOL finished) {
                              _helpButtonMoved = YES;
                          }];
-    }*/
+    }
 }
 
 - (void)cancelDigitizationMode:(UIButton *)button
@@ -3809,6 +3797,50 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     }
     
     [largeAlertView hideLargeAlertView:YES];
+}
+
+- (NSUInteger)numberOfRowsInLegendView
+{
+    return 3;
+}
+
+- (NSString *)nameForRowInLegendViewAtIndex:(NSUInteger)index
+{
+    NSArray *names = @[@"Completed", @"To Be Done", @"Other"];
+    return [names objectAtIndex:index];
+}
+
+- (UIColor *)colorForRowInLegendViewAtIndex:(NSUInteger)index
+{
+    NSArray *colors = @[UserDefaults.defaults.appleBlue, UserDefaults.defaults.darkGreen, UIColor.redColor];
+    return [colors objectAtIndex:index];
+}
+
+- (NSUInteger)countForRowInLegendViewAtIndex:(NSUInteger)index
+{
+    NSUInteger array[3] = {123, 456, 789};
+    return array[index];
+}
+
+- (NSString *)titleForLegendView
+{
+    NSString *title = @"";
+    
+    switch(_alleyStatusSetting)
+    {
+        case AlleyStatusSettingWall:
+            title = @"Wall Status";
+            break;
+            
+        case AlleyStatusSettingCenterline:
+            title = @"Centerline\nStatus";
+            break;
+            
+        default:
+            break;
+    }
+    
+    return title;
 }
 
 @end
