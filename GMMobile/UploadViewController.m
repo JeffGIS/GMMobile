@@ -109,11 +109,19 @@ Top:;
     
     if (n > 0)
     {
-        if (![self startSend:firstFile])
+        [self.timer invalidate];
+        
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+                                                      target:self
+                                                    selector:@selector(startSend:)
+                                                    userInfo:firstFile
+                                                     repeats:NO];
+
+/*        if (![self startSend:firstFile])
         {
             _numToSkip++;
             goto Top;
-        }
+        }*/
     }
 }
 
@@ -207,6 +215,7 @@ Top:;
     
     _cancelButton.hidden = NO;
     _progressView.hidden = NO;
+    _progressView.progress = 0;
     
     [AppDelegate.sharedAppDelegate didStartNetworking];
 }
@@ -278,8 +287,9 @@ Top:;
     _numToSkip++;
 }
 
-- (BOOL)startSend:(NSString *)filePath
+- (BOOL)startSend:(NSTimer *)timer
 {
+    NSString *filePath = timer.userInfo;
     NSURL *url;
     CFWriteStreamRef ftpStream;
     
@@ -308,7 +318,10 @@ Top:;
     _currentFile = fullPath;
     
     if (![NSFileManager.defaultManager fileExistsAtPath:fullPath])
+    {
+        _numToSkip++;
         return NO;
+    }
     
     NSDictionary *fileAttributes = [NSFileManager.defaultManager attributesOfItemAtPath:fullPath
                                                                                   error:nil];
@@ -317,12 +330,16 @@ Top:;
     _totBytesWritten = 0;
     
     if (_fileSize == 0)
+    {
+        _numToSkip++;
         return NO;
+    }
     
     if (!([filePath.pathExtension isEqualToString:@"png"] ||
           [filePath.pathExtension isEqualToString:@"jpg"] ||
           [filePath.pathExtension isEqualToString:@"txt"]))
     {
+        _numToSkip++;
         return NO;
     }
     
@@ -352,9 +369,9 @@ Top:;
     if (!url)
     {
         _statusLabel.text = @"Invalid URL";
+        _numToSkip++;
         return NO;
     }
-    
     else
     {
         self.fileStream = [NSInputStream inputStreamWithFileAtPath:fullPath];
@@ -362,6 +379,7 @@ Top:;
         if (!self.fileStream)
         {
             _statusLabel.text = @"Unable to open stream";
+            _numToSkip++;
             return NO;
         }
         
@@ -372,6 +390,7 @@ Top:;
         if (!ftpStream)
         {
             _statusLabel.text = @"Unable to open ftpstream";
+            _numToSkip++;
             return NO;
         }
         
@@ -385,6 +404,7 @@ Top:;
             if (!success)
             {
                 _statusLabel.text = @"Unable to set username";
+                _numToSkip++;
                 return NO;
             }
             
@@ -394,6 +414,7 @@ Top:;
             if (!success)
             {
                 _statusLabel.text = @"Unable to set password";
+                _numToSkip++;
                 return NO;
             }
         }
@@ -466,9 +487,11 @@ Top:;
                 }
                 
                 else if (bytesRead == 0)
+                {
+                    _progressView.progress = 1.0;
                     [self stopSendWithStatus:nil
                                         code:-1];
-                
+                }
                 else
                 {
                     _bufferOffset = 0;

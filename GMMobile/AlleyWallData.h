@@ -18,7 +18,8 @@
 - (void)open;
 - (void)close;
 - (void)clear;
-- (BOOL)executeCmd:(char *)cmd;
+- (BOOL)executeCmd:(char *)cmd
+      sendToServer:(BOOL)sendToServer;
 - (void)startTransaction;
 - (void)commitTransaction;
 -(int) getAlleyLineStatus:(NSInteger)refno;
@@ -27,7 +28,9 @@
 -(BOOL)createNewWall:(NSString*)wallID atPoint:(CLLocationCoordinate2D)position withHouse:(NSString*)house andStreet:(NSString*)street;
 -(NSString *)nearestAlleyLine:(CLLocationCoordinate2D *)pt;
 -(NSString *)getNextWallForAlley:(NSString*)nearestAlley;
--(BOOL)createNewTable;
--(BOOL)transferExistingTableIntoNewTable;
+-(BOOL)createNewTable:(BOOL)sendToServer;
+-(BOOL)transferExistingTableIntoNewTable:(BOOL)sendToServer;
+- (BOOL)moveAlleyWallPoint:(NSInteger)refno
+                        to:(CLLocationCoordinate2D)point;
 
 @end

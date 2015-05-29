@@ -983,9 +983,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
             case DigitizationModeAlleyWallMove:
             {
-                PlanimetricData *pd = [[PlanimetricData alloc] init];
+                AlleyWallData *awd = [[AlleyWallData alloc] init];
                 
-                [pd moveAlleyWallPoint:_selectedAlleyWallRefno
+                [awd moveAlleyWallPoint:_selectedAlleyWallRefno
                                     to:position];
                 
                 MarkerButton *marker = _markerArray.lastObject;
@@ -2415,7 +2415,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (CLLocationCoordinateEqual(_mapView.camera.target, marker.position))
         [self showDigitizer:YES];
-    
     else
     {
         _moveDigitizer = YES;

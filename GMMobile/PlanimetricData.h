@@ -37,9 +37,6 @@
 - (int)pickAlleyWallPoint:(LLPOINT)pt
             highlightList:(NSMutableArray *)hlist;
 
-- (BOOL)moveAlleyWallPoint:(NSInteger)refno
-                        to:(CLLocationCoordinate2D)point;
-
 - (int)pickAlleyLine:(LLPOINT)pt
               atZoom:(CGFloat)zoom
        highlightList:(NSMutableArray *)hlist;

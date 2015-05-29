@@ -244,7 +244,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             if (option == GET_SEWER)
                                 [sd executeCmd:str];
                             else if (option == GET_ALLEYWALL)
-                                [awd executeCmd:str];
+                                [awd executeCmd:str
+                                   sendToServer:NO];
                             else
                                 [pd executeCmd:str];
                             
@@ -277,8 +278,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             [sd close];
                         else if (option == GET_ALLEYWALL)
                         {
-                            [awd createNewTable];
-                            [awd transferExistingTableIntoNewTable];
+                            [awd createNewTable:YES];
+                            [awd transferExistingTableIntoNewTable:YES];
                             [awd close];
                         }
                         else
