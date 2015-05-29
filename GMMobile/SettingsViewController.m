@@ -278,8 +278,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             [sd close];
                         else if (option == GET_ALLEYWALL)
                         {
-                            [awd createNewTable:YES];
-                            [awd transferExistingTableIntoNewTable:YES];
+                            BOOL sendToServer = NO;
+                            [awd createNewTable:sendToServer];
+                            [awd transferExistingTableIntoNewTable:sendToServer];
                             [awd close];
                         }
                         else

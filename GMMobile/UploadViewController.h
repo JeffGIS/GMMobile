@@ -29,6 +29,7 @@ enum
 @property (nonatomic, weak) id <UploadViewControllerDelegate> delegate;
 @property (nonatomic, strong) MPIntersection *currentIntersection;
 @property NSTimer * timer;
+@property BOOL uploadCancelled;
 @property (weak, nonatomic) IBOutlet UIButton *helpButton;
 @property (weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;

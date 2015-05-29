@@ -57,8 +57,9 @@ Top:;
     _usernameText = @"waypoint";
     _passwordText = @"pointway4*";
     
-    sleep(1);
-    
+    //sleep(1);
+    if (_uploadCancelled)
+        return;
     /*if ([NSFileManager.defaultManager fileExistsAtPath:_createDirectoryFile1])
     {
         firstFile = _createDirectoryFile1.lastPathComponent;
@@ -111,7 +112,7 @@ Top:;
     {
         [self.timer invalidate];
         
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05
                                                       target:self
                                                     selector:@selector(startSend:)
                                                     userInfo:firstFile
@@ -165,6 +166,7 @@ Top:;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    _uploadCancelled = NO;
     [self listFilesToUpload];
 }
 
@@ -540,7 +542,7 @@ Top:;
 
 - (IBAction)cancelAction:(id)sender
 {
-#pragma unused(sender)
+    _uploadCancelled = YES;
     [self stopSendWithStatus:@"Cancelled"
                         code:1];
 }
