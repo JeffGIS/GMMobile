@@ -634,12 +634,20 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
-    NVTwoTextAlert *textAlert = [NVTwoTextAlert showTwoTextAlertInView:self.view
-                                                              delegate:self
-                                                                 title:@"Please set your Organization Name and Device Number"
-                                                        topPlaceholder:@"Organization Name"
-                                                     bottomPlaceholder:@"Device Number"];
+    NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
+    NSString *deviceNumber = [SharedDefaults.defaults stringForKey:@"DeviceNumber"];
+    
+    if (!organizationName || !deviceNumber ||
+        [organizationName isEqualToString:@""] ||
+        [deviceNumber isEqualToString:@""])
+    {
+        NVTwoTextAlert *textAlert = [NVTwoTextAlert showTwoTextAlertInView:self.view
+                                                                  delegate:self
+                                                                     title:@"Please set your Organization Name and Device Number"
+                                                            topPlaceholder:@"Organization Name"
+                                                         bottomPlaceholder:@"Device Number"];
 #pragma unused(textAlert)
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3856,7 +3864,11 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     didReturnTopText:(NSString *)topText
           bottomText:(NSString *)bottomText
 {
-    NSLog(@"%@,%@", topText, bottomText);
+    [SharedDefaults.defaults saveString:topText
+                                 forKey:@"OrganizationName"];
+    
+    [SharedDefaults.defaults saveString:bottomText
+                                 forKey:@"DeviceNumber"];
     
     [twoTextAlert hideTwoTextAlert:YES];
 }
