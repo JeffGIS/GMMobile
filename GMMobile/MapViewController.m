@@ -635,9 +635,13 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
     NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
+    //organizationName = nil;
+    
     if (!organizationName || [organizationName isEqualToString:@""])
         organizationName = @"MPLSPubWorks";
+    
     NSString *deviceNumber = [SharedDefaults.defaults stringForKey:@"DeviceNumber"];
+    //deviceNumber = nil;
     
     if (!organizationName || !deviceNumber ||
         [organizationName isEqualToString:@""] ||
