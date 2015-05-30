@@ -72,6 +72,7 @@
 		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		A9FBFF6D1A755F7400635A72 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */; };
 		EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */; };
+		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
 		EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB398F091ABC94240043875E /* PlatProfileView.m */; };
 		EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F0D1AC04B530043875E /* censusdatadef.txt */; };
@@ -197,6 +198,8 @@
 		A9FBFF6C1A755F7400635A72 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlleyWallData.h; sourceTree = "<group>"; };
 		EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlleyWallData.m; sourceTree = "<group>"; };
+		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
+		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVDataLoader.m; sourceTree = "<group>"; };
 		EB398F061ABC61C40043875E /* landusecodes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = landusecodes.txt; sourceTree = "<group>"; };
 		EB398F081ABC94240043875E /* PlatProfileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatProfileView.h; sourceTree = "<group>"; };
 		EB398F091ABC94240043875E /* PlatProfileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatProfileView.m; sourceTree = "<group>"; };
@@ -394,6 +397,8 @@
 				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
 				EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */,
 				EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */,
+				EB3268531B19146400A7D40A /* NVDataLoader.h */,
+				EB3268541B19146400A7D40A /* NVDataLoader.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -687,6 +692,7 @@
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
+				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,20 +7,10 @@
 #import "AlleyWallData.h"
 #import "AppDelegate.h"
 
-#define GET_PROPERTY 1
-#define GET_TILES 2
-#define GET_PARCELS 3
-#define GET_AREAS 4
-#define GET_SEWER 5
-#define GET_PLAN 6
-#define GET_CENSUS 7
-#define GET_ALLEYWALL 8
-
 #define INPUTBUFSIZE USHRT_MAX * 32
 
 @interface SettingsViewController ()
 
-@property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) NSMutableArray *allPlats;
 @property (nonatomic) NSInteger nextPlat;
@@ -36,6 +26,21 @@
 @end
 
 @implementation SettingsViewController
+
+- (void) initFromDataLoader:(GSSiPopoverView*)popover
+                forDatabase:(int)db
+{
+    _fromDataLoader = YES;
+    _popover = popover;
+    _saveDelegate = popover.delegate;
+    _popover.delegate = self;
+    SEL s = @selector(loadAlleyWall:);
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                  target:self
+                                                selector:s
+                                                userInfo:nil
+                                                 repeats:NO];
+}
 
 - (void)viewDidLoad
 {
@@ -197,6 +202,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 ^{
                     FILE *fid = fopen(file.UTF8String, "rb");
                     LPSTR str = malloc(INPUTBUFSIZE);
+                    int status = 0;
                     
                     if (!str)
                     {
@@ -309,6 +315,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                NSLog(@"Could not delete %@:%@", file, error.localizedDescription);
                                            }
                                        });
+                    }
+                    if (_fromDataLoader)
+                    {
+                        if (_delegate)
+                        {
+                            if (!status)
+                                [_delegate SettingsViewControllerSuccess];
+                            else
+                                [_delegate SettingsViewControllerFailed:status];
+                        }
                     }
                 });
             }
