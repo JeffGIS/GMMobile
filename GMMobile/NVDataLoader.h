@@ -8,6 +8,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <Foundation/Foundation.h>
 #import "SettingsViewController.h"
+#import "ConfigurationControl.h"
 
 #define NVDL_USERCANCELLED  1
 #define NVDL_TRANSFERFAILED  2
@@ -28,7 +29,7 @@
 @property GSSiPopoverView* popover;
 @property SettingsViewController *svc;
 
-- (void) loadNVData:(int)application
+- (void) loadNVData:(HardCodedConfigs)appID
             popover:(GSSiPopoverView*)popover;
 
 @end

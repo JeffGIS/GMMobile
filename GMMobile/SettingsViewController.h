@@ -28,7 +28,6 @@
 @property (nonatomic) GSSiPopoverView *popover;
 @property id saveDelegate;
 @property BOOL fromDataLoader;
-@property NSTimer * timer;
 
 - (void) initFromDataLoader:(GSSiPopoverView*)popover
                 forDatabase:(int)db;

@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @interface ApplicationObject : NSObject
 
 @property NSString *appName;
-@property int appID;
+@property HardCodedConfigs appID;
 
 - (id)initWithNameAndID:(NSString *)name
              identifier:(int)identifier;

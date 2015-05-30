@@ -9,7 +9,7 @@
 #import "NVDataLoader.h"
 
 @implementation NVDataLoader
-- (void) loadNVData:(int)application
+- (void) loadNVData:(HardCodedConfigs)appID
             popover:(GSSiPopoverView*)popover
 {
     _popover = popover;
