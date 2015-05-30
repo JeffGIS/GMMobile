@@ -724,12 +724,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              completion:NULL];
 }
 
-- (IBAction)launchDetailMod:(id)sender
+
+- (IBAction)launchMaintenanceModule:(id)sender
 {
     NSString *CRISDetailURL = @"PedRampDetail://";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
+    
+    [SharedDefaults.defaults saveInteger:85
+                                  forKey:@"DetailCurrentIntersection"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
