@@ -8,5 +8,6 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property GSSiPopoverView* popover;
-
+@property int selectedApp;
+@property NSIndexPath * selectedIndexPath;
 @end

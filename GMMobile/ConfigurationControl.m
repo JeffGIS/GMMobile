@@ -277,6 +277,8 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             }
         }
     }
+    if (appID == HCConfigMetroProp)
+        [list addObject:[NSNumber numberWithInt:GET_CENSUS]];
     return list;
 }
 

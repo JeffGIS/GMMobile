@@ -173,12 +173,14 @@ Top:
             if (awd.datasetVersion >= 0)
                 rtn = YES;
         }
+            break;
         case GET_CENSUS:
         {
             PropertyData *pd = [[PropertyData alloc]init];
             if (pd.censusDatasetVersion >= 0)
                 rtn = YES;
         }
+            break;
         case GET_PLAN:
         {
             PropertyData *pd = [[PropertyData alloc]init];

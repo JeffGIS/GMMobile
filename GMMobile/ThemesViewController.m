@@ -58,26 +58,6 @@
     [_tableView reloadData];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    _nvdl = [[NVDataLoader alloc]init];
-    _nvdl.delegate = self;
-    [_nvdl loadNVData:ConfigurationControl.sharedInstance.currentApp popover:_popover];
-}
-
-- (void) NVDataLoaderFailed:(int)status
-{
-    _nvdl.popover = nil;
-    _nvdl.delegate = nil;
-    _nvdl = nil;
-}
-- (void) NVDataLoaderSuccess
-{
-    _nvdl.popover = nil;
-    _nvdl.delegate = nil;
-    _nvdl = nil;
-}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -188,11 +168,30 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ApplicationObject *app = _appList[indexPath.row];
-    [ConfigurationControl.sharedInstance setApp:app.appID];
+    _selectedApp = app.appID;
+    _selectedIndexPath = indexPath;
+   _nvdl = [[NVDataLoader alloc]init];
+    _nvdl.delegate = self;
     
-    [tableView cellForRowAtIndexPath:indexPath].accessoryView = _checkmarkView;
-    _selectedRow = indexPath.row;
-    [tableView reloadData];
+    [_nvdl loadNVData:_selectedApp popover:_popover];
+    
+}
+
+- (void) NVDataLoaderFailed:(int)status
+{
+    _nvdl.popover = nil;
+    _nvdl.delegate = nil;
+    _nvdl = nil;
+}
+- (void) NVDataLoaderSuccess
+{
+    [_tableView cellForRowAtIndexPath:_selectedIndexPath].accessoryView = _checkmarkView;
+    _selectedRow = _selectedIndexPath.row;
+    [_tableView reloadData];
+    [ConfigurationControl.sharedInstance setApp:_selectedApp];
+    _nvdl.popover = nil;
+    _nvdl.delegate = nil;
+    _nvdl = nil;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
