@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property MapViewScreenSetting screenSetting;
-@property (nonatomic) NSInteger gestureCount, digitizerCount;
+@property (nonatomic) NSInteger gestureCount, digitizerCount, config;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -410,8 +410,10 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     sharedAppDelegate.mapToolbar = _mapToolbar;
     
     
-    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
-    [ConfigurationControl.sharedInstance setApp:config];
+    _config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    
+    if (_config)
+        [ConfigurationControl.sharedInstance setApp:(_config - 1)];
 
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
                               CGPointMake(helpButtonMargin, (helpButtonMargin +
@@ -429,7 +431,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 {
     if (CRAPI.sharedInstance.setToAlleyWalls)
     {
-        [UserDefaults.defaults saveNSInteger:HCConfigAlleyWalls
+        [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1)
                                       forKey:@"CurrentConfig"];
         
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
@@ -656,11 +658,15 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                                 bottomText:nil];
 #pragma unused(textAlert)
     }
+    
     else
     {
         CRAPI.sharedInstance.organizationName = organizationName;
         CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
     }
+    
+    if (!_config)
+        self.tabBarController.selectedIndex = 3;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -2498,7 +2504,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)alleyStatus
 {
-    [UserDefaults.defaults saveNSInteger:HCConfigAlleyWallStatus
+    [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWallStatus + 1)
                                   forKey:@"CurrentConfig"];
     
     ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;

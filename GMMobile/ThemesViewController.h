@@ -4,7 +4,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "NVDataLoader.h"
 
-@interface ThemesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVDataLoaderDelegate>
+@interface ThemesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVDataLoaderDelegate,GSSiPopoverViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property GSSiPopoverView* popover;

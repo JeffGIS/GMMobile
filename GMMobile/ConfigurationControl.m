@@ -230,7 +230,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                                value:configToobarSegs[_currentApp][prop]];
     }
     
-    [UserDefaults.defaults saveInteger:appID
+    [UserDefaults.defaults saveInteger:(appID + 1)
                                 forKey:@"CurrentConfig"];
     
     return rtn;
@@ -248,12 +248,13 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     return name;
 }
 
-- (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID
+- (NSMutableArray *)getDatasetsForApp:(HardCodedConfigs)appID
 {
-    NSMutableArray *list = [[NSMutableArray alloc]init];
+    NSMutableArray *list = [[NSMutableArray alloc] init];
 
     NSNumber *dsid = [NSNumber numberWithInt:GET_AREAS];
     [list addObject:dsid];
+    
     for (int layer = 0; layer < NUMHardCodedLayers; layer++)
     {
         if (configLayers[appID][layer])
@@ -273,12 +274,13 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                 case HCLayerAlleys:
                     [list addObject:[NSNumber numberWithInt:GET_ALLEYWALL]];
                     break;
-                    
             }
         }
     }
+    
     if (appID == HCConfigMetroProp)
         [list addObject:[NSNumber numberWithInt:GET_CENSUS]];
+    
     return list;
 }
 
@@ -352,51 +354,59 @@ visibleAtZoom:(float)zoom
 {
     return NO;
 }
+
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index
 {
-    int id=-1;
+    int identifier =-1;
     HardCodedLayers i;
     
-    for (i=0;i<NUMHardCodedLayers;i++)
+    for (i = 0; i < NUMHardCodedLayers; i++)
     {
         if (configLayers[_currentApp][i])
-            id++;
-        if (id == index)
+            identifier++;
+        
+        if (identifier == index)
             break;
     }
+    
     return i;
 }
+
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID
 {
-    NSMutableArray * array=[[NSMutableArray alloc]init];
+    NSMutableArray *array=[[NSMutableArray alloc] init];
 
     switch (layerID)
     {
         case HCLayerPlanimetric:
         {
             
-            PlanimetricData * pd = [[PlanimetricData alloc]init];
+            PlanimetricData *pd = [[PlanimetricData alloc] init];
             
-            NSArray * syms = [pd getDistinctSymbols:@"PLAN_POINT"];
+            NSArray *syms = [pd getDistinctSymbols:@"PLAN_POINT"];
             
-            for (NSString * symName in syms)
+            for (NSString *symName in syms)
             {
-                LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+                LayerObject *lo = [[LayerObject alloc]initWithName:symName
+                                                             andID:-1];
                 [array addObject:lo];
             }
             syms = [pd getDistinctSymbols:@"PLAN_LINE"];
             
-            for (NSString * symName in syms)
+            for (NSString *symName in syms)
             {
-                LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+                LayerObject *lo = [[LayerObject alloc]initWithName:symName
+                                                             andID:-1];
                 [array addObject:lo];
             }
             
             syms = [pd getDistinctSymbols:@"PLAN_AREA"];
             
-            for (NSString * symName in syms)
+            for (NSString *symName in syms)
             {
-                LayerObject * lo = [[LayerObject alloc]initWithName:symName andID:-1];
+                LayerObject *lo = [[LayerObject alloc]initWithName:symName
+                                                              andID:-1];
+                
                 [array addObject:lo];
             }
         }
@@ -404,11 +414,17 @@ visibleAtZoom:(float)zoom
             
         case HCLayerAlleys:
         {
-            LayerObject * lo = [[LayerObject alloc]initWithName:@"ALLEYWALLPOINT" andID:-1];
+            LayerObject * lo = [[LayerObject alloc]initWithName:@"ALLEYWALLPOINT"
+                                                          andID:-1];
+            
             [array addObject:lo];
-            lo = [[LayerObject alloc]initWithName:@"ALLEYWALL" andID:-1];
+            
+            lo = [[LayerObject alloc]initWithName:@"ALLEYWALL"
+                                            andID:-1];
             [array addObject:lo];
-            lo = [[LayerObject alloc]initWithName:@"ALLEYCENTERLINE" andID:-1];
+            
+            lo = [[LayerObject alloc]initWithName:@"ALLEYCENTERLINE"
+                                            andID:-1];
             [array addObject:lo];
        
         }
@@ -421,6 +437,7 @@ visibleAtZoom:(float)zoom
     [self sortSymbolsByName:array];
     return array;
 }
+
 - (void)sortSymbolsByName:(NSMutableArray *)symbols
 {
     [symbols sortUsingComparator: ^(id obj1, id obj2)
@@ -431,6 +448,5 @@ visibleAtZoom:(float)zoom
          return [lo1.layerName compare:lo2.layerName];
      }];
 }
-
 
 @end

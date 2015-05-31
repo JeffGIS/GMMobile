@@ -11,13 +11,11 @@
 @property (nonatomic) NSInteger selectedRow;
 @property (nonatomic) UIImageView *checkmarkView;
 @property (nonatomic) UIFont *font;
+@property (nonatomic) NVDataLoader *nvdl;
 
 @end
 
 @implementation ThemesViewController
-{
-    NVDataLoader * _nvdl;
-}
 
 - (void)viewDidLoad
 {
@@ -170,20 +168,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ApplicationObject *app = _appList[indexPath.row];
     _selectedApp = app.appID;
     _selectedIndexPath = indexPath;
-   _nvdl = [[NVDataLoader alloc]init];
+    _nvdl = [[NVDataLoader alloc] init];
     _nvdl.delegate = self;
     
-    [_nvdl loadNVData:_selectedApp popover:_popover];
-    
+    [_nvdl loadNVData:_selectedApp
+              popover:_popover];
 }
 
-- (void) NVDataLoaderFailed:(int)status
+- (void)NVDataLoaderFailed:(int)status
 {
     _nvdl.popover = nil;
     _nvdl.delegate = nil;
     _nvdl = nil;
 }
-- (void) NVDataLoaderSuccess
+
+- (void)NVDataLoaderSuccess
 {
     [_tableView cellForRowAtIndexPath:_selectedIndexPath].accessoryView = _checkmarkView;
     _selectedRow = _selectedIndexPath.row;
@@ -198,6 +197,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
+}
+
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    
 }
 
 @end
