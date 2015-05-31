@@ -31,6 +31,11 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property long long fileSize;
 @property int processingID;
 @property CGFloat zoom;
+@property (nonatomic) int propertyDatasetVersion;
+@property (nonatomic) int parcelDatasetVersion;
+@property (nonatomic) int censusDatasetVersion;
+@property (nonatomic) int areasDatasetVersion;
+@property (nonatomic) int planDatasetVersion;
 
 - (void)open;
 - (void)close;
@@ -38,6 +43,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
 - (void)commitTransaction;
+
 - (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar;
 
 - (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar

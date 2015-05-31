@@ -248,6 +248,38 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     return name;
 }
 
+- (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID
+{
+    NSMutableArray *list = [[NSMutableArray alloc]init];
+
+    NSNumber *dsid = [NSNumber numberWithInt:GET_AREAS];
+    [list addObject:dsid];
+    for (int layer = 0; layer < NUMHardCodedLayers; layer++)
+    {
+        if (configLayers[appID][layer])
+        {
+            switch (layer)
+            {
+                case HCLayerParcels:
+                    [list addObject:[NSNumber numberWithInt:GET_PARCELS]];
+                    [list addObject:[NSNumber numberWithInt:GET_PROPERTY]];
+                    break;
+                case HCLayerSewers:
+                    [list addObject:[NSNumber numberWithInt:GET_SEWER]];
+                    break;
+                case HCLayerPlanimetric:
+                    [list addObject:[NSNumber numberWithInt:GET_PLAN]];
+                    break;
+                case HCLayerAlleys:
+                    [list addObject:[NSNumber numberWithInt:GET_ALLEYWALL]];
+                    break;
+                    
+            }
+        }
+    }
+    return list;
+}
+
 - (NSArray *)getLayers
 {
     NSMutableArray *layers = [[NSMutableArray alloc] init];

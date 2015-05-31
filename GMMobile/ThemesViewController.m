@@ -15,10 +15,15 @@
 @end
 
 @implementation ThemesViewController
+{
+    NVDataLoader * _nvdl;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _popover = [[GSSiPopoverView alloc] initWithView:self.view];
+    _popover.delegate = self;
     _appList = ConfigurationControl.sharedInstance.appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
@@ -53,6 +58,26 @@
     [_tableView reloadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    _nvdl = [[NVDataLoader alloc]init];
+    _nvdl.delegate = self;
+    [_nvdl loadNVData:ConfigurationControl.sharedInstance.currentApp popover:_popover];
+}
+
+- (void) NVDataLoaderFailed:(int)status
+{
+    _nvdl.popover = nil;
+    _nvdl.delegate = nil;
+    _nvdl = nil;
+}
+- (void) NVDataLoaderSuccess
+{
+    _nvdl.popover = nil;
+    _nvdl.delegate = nil;
+    _nvdl = nil;
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

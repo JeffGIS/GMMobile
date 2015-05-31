@@ -27,19 +27,17 @@
 
 @implementation SettingsViewController
 
+- (void) dealloc
+{
+    NSLog (@"SettingsVC released");
+}
 - (void) initFromDataLoader:(GSSiPopoverView*)popover
-                forDatabase:(int)db
 {
     _fromDataLoader = YES;
     _popover = popover;
+    _keepGoing = NO;
     _saveDelegate = popover.delegate;
     _popover.delegate = self;
-    SEL s = @selector(loadAlleyWall:);
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                  target:self
-                                                selector:s
-                                                userInfo:nil
-                                                 repeats:NO];
 }
 
 - (void)viewDidLoad
@@ -214,6 +212,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     
                     else
                     {
+                        _keepGoing = YES;
                         PropertyData *pd;
                         SewerData *sd;
                         AlleyWallData *awd;
@@ -245,7 +244,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         else
                             [pd startTransaction];
                         
-                        while (fgetstring(str, (INPUTBUFSIZE - 2), fid))
+                        while (_keepGoing && fgetstring(str, (INPUTBUFSIZE - 2), fid))
                         {
                             if (option == GET_SEWER)
                                 [sd executeCmd:str];
@@ -318,6 +317,8 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     }
                     if (_fromDataLoader)
                     {
+                        if (!_keepGoing)
+                            status = DLSTATUS_USER_CANCELLED;
                         if (_delegate)
                         {
                             if (!status)
@@ -353,8 +354,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         else
         {
             [_popover hide];
-            
-            [_gssiAlert showAlertWithTitle:@"Error getting parcel file"
+            if (_fromDataLoader)
+            {
+                [_delegate SettingsViewControllerFailed:DLSTATUS_USER_CANCELLED];
+            }
+            else
+                [_gssiAlert showAlertWithTitle:@"Error getting parcel file"
                                    message:@"Network communication error"
                          cancelButtonTitle:@"Continue"
                          otherButtonTitles:nil
@@ -646,8 +651,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    _keepGoing = NO;
     [_popover hide];
+    if (_keepGoing)
+        _keepGoing = NO;
+    else if (_delegate)
+        [_delegate SettingsViewControllerFailed:DLSTATUS_USER_CANCELLED];
+        
 }
 
 - (IBAction)showEmail:(id)sender

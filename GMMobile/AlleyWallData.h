@@ -15,6 +15,7 @@
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;
 @property NSInteger fileSize;
+@property (nonatomic) int datasetVersion;
 
 - (void)open;
 - (void)close;

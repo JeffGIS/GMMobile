@@ -88,6 +88,28 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
     //error:nil];
 }
+- (int) datasetVersion
+{
+    int rtn = -1;
+    [self open];
+    if (_isOpen && _fileSize > 0)
+    {
+        NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM ALLEYWALLS_NEW"];
+        
+        sqlite3_stmt *statement = NULL;
+        
+        SQLOKawd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            int maxID = sqlite3_column_int(statement, 0);
+            if (maxID > 0)
+                rtn = 0;
+        }
+        SQLOKawd(sqlite3_finalize(statement), _database);
+    }
+    [self close];
+    return rtn;
+}
 
 - (BOOL)executeCmd:(char *)cmd
       sendToServer:(BOOL)sendToServer

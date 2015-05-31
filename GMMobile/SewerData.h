@@ -22,6 +22,7 @@ int SQLOKswr(int sqlReturn, sqlite3 *database);
 @interface SewerData : NSObject<FTPDataPullDelegate>
 
 @property sqlite3 *database;
+@property (nonatomic) int datasetVersion;
 @property (nonatomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;

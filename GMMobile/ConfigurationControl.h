@@ -6,6 +6,15 @@
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 5
 
+#define GET_PROPERTY 1
+#define GET_TILES 2
+#define GET_PARCELS 3
+#define GET_AREAS 4
+#define GET_SEWER 5
+#define GET_PLAN 6
+#define GET_CENSUS 7
+#define GET_ALLEYWALL 8
+
 typedef NS_ENUM(NSInteger, HardCodedConfigs)
 {
     HCConfigAlleyWalls,
@@ -59,6 +68,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
+- (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID;
 - (NSArray *)getLayerSymbols;
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index;

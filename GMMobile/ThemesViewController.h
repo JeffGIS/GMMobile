@@ -7,5 +7,6 @@
 @interface ThemesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVDataLoaderDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property GSSiPopoverView* popover;
 
 @end

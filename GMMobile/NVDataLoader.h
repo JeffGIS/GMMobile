@@ -24,10 +24,11 @@
 
 @interface NVDataLoader : NSObject <GSSiPopoverViewDelegate>
 @property (nonatomic, weak) id <NVDataLoaderDelegate> delegate;
-@property NSMutableArray * dblist;
+@property NSMutableArray * dbList;
 @property id saveDelegate;
 @property GSSiPopoverView* popover;
 @property SettingsViewController *svc;
+@property NSTimer * timer;
 
 - (void) loadNVData:(HardCodedConfigs)appID
             popover:(GSSiPopoverView*)popover;
