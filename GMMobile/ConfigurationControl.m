@@ -236,12 +236,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     return rtn;
 }
 
-- (void)setup
-{
-    if (_currentApp < 0)
-        [self setApp:HCConfigMetroProp];
-}
-
 - (NSString *)getLayerName:(int)layerID
 {
     NSString *name = [NSString stringWithUTF8String:layerName[layerID]];
@@ -288,8 +282,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 {
     NSMutableArray *layers = [[NSMutableArray alloc] init];
     
-    [self setup];
-    
     for (int layer = 0; layer < NUMHardCodedLayers; layer++)
     {
         if (configLayers[_currentApp][layer])
@@ -314,8 +306,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(float)zoom
 {
-    [self setup];
-    
     if (configLayers[_currentApp][layerID] &&
         zoom >= configLayerZoom[_currentApp][layerID])
     {
@@ -328,8 +318,6 @@ visibleAtZoom:(float)zoom
 - (BOOL)symbol:(NSString*)sym inLayer:(HardCodedLayers)layerID
 visibleAtZoom:(float)zoom
 {
-    [self setup];
-    
     if (configLayers[_currentApp][layerID] &&
         zoom >= configLayerZoom[_currentApp][layerID])
     {

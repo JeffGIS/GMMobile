@@ -130,7 +130,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property DigitizationMode digitizationMode;
 @property AlleyStatusSetting alleyStatusSetting;
 
-
 @end
 
 @implementation MapViewController
@@ -423,8 +422,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                               tag:HelpButtonPresenterMapVC
                                                            tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
-    
-    
 }
 
 - (void)becameActive:(id)selector
