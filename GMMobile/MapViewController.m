@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property MapViewScreenSetting screenSetting;
-@property (nonatomic) NSInteger gestureCount, digitizerCount, config;
+@property (nonatomic) NSInteger gestureCount, digitizerCount;
 @property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
@@ -409,10 +409,10 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     sharedAppDelegate.mapToolbar = _mapToolbar;
     
     
-    _config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
-    if (_config)
-        [ConfigurationControl.sharedInstance setApp:(_config - 1)];
+    if (config)
+        [ConfigurationControl.sharedInstance setApp:(config - 1)];
 
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
                               CGPointMake(helpButtonMargin, (helpButtonMargin +
@@ -661,12 +661,13 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
         CRAPI.sharedInstance.organizationName = organizationName;
         CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
     }
-    _config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
-    if (_config)
-        [ConfigurationControl.sharedInstance setApp:(_config - 1)];
+    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
-    if (!_config)
+    if (config)
+        [ConfigurationControl.sharedInstance setApp:(config - 1)];
+    
+    if (!config)
         self.tabBarController.selectedIndex = 3;
 }
 
