@@ -264,8 +264,8 @@ SELECT max(_id) FROM MyTable*/
     SQLOKawd(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), _database);
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int checked = sqlite3_column_int(statement, 0);
-        refno = checked+1;
+        refno = sqlite3_column_int(statement, 0);
+        refno = [CRAPI.sharedInstance adjustNextRefno:refno];
     }
     SQLOKawd(sqlite3_finalize(statement), _database);
    

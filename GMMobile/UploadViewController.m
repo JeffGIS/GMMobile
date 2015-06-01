@@ -299,6 +299,7 @@ Top:;
                           _outputDirectory, filePath];
     
     NSString *myName = UIDevice.currentDevice.name;
+    int deviceNumber = CRAPI.sharedInstance.deviceNumber;
     NSString *lastpart = filePath.lastPathComponent;
     NSString *woextn = lastpart.stringByDeletingPathExtension;
     
@@ -364,8 +365,8 @@ Top:;
     {
         NSString* removeSubDir = [_subdir stringByAppendingString:@"_"];
         woextn = [woextn stringByReplacingOccurrencesOfString:removeSubDir withString:@""];
-        url = [NetworkManager.sharedInstance smartURLForString:[NSString stringWithFormat:@"%@%@/%@_%@.%@",
-                                                                  _urlText, _subdir,woextn, myName, filePath.pathExtension]];
+        url = [NetworkManager.sharedInstance smartURLForString:[NSString stringWithFormat:@"%@%@/%@_%@-%i.%@",
+                                                                  _urlText, _subdir,woextn, myName, deviceNumber,filePath.pathExtension]];
     }
     
     if (!url)
