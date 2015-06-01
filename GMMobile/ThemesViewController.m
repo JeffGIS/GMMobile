@@ -165,14 +165,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ApplicationObject *app = _appList[indexPath.row];
-    _selectedApp = app.appID;
-    _selectedIndexPath = indexPath;
-    _nvdl = [[NVDataLoader alloc] init];
-    _nvdl.delegate = self;
-    
-    [_nvdl loadNVData:_selectedApp
-              popover:_popover];
+    if (indexPath.row != _selectedRow)
+    {
+        ApplicationObject *app = _appList[indexPath.row];
+        _selectedApp = app.appID;
+        _selectedIndexPath = indexPath;
+        _nvdl = [[NVDataLoader alloc] init];
+        _nvdl.delegate = self;
+        
+        [_nvdl loadNVData:_selectedApp
+                  popover:_popover];
+    }
 }
 
 - (void)NVDataLoaderFailed:(int)status
