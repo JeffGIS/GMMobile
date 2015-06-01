@@ -284,7 +284,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             [sd close];
                         else if (option == GET_ALLEYWALL)
                         {
+                            NSString *deviceName = UIDevice.currentDevice.name;
                             BOOL sendToServer = NO;
+                            
+                            if ([deviceName isEqualToString:@"GSSi-001"])
+                                sendToServer = NO;
                             [awd createNewTable:sendToServer];
                             [awd transferExistingTableIntoNewTable:sendToServer];
                             [awd close];

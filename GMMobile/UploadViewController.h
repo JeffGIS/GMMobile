@@ -36,6 +36,8 @@ enum
 @property (nonatomic, copy) NSString *urlText;
 @property (nonatomic, copy) NSString *usernameText;
 @property (nonatomic, copy) NSString *passwordText;
+@property (nonatomic, copy) NSString *ftpSiteText;
+@property (nonatomic, copy) NSString *portText;
 @property (weak, nonatomic) IBOutlet UILabel *fileListRef;
 @property (nonatomic, copy) NSString *outputDirectory;
 @property (nonatomic, copy) NSString *currentFile;

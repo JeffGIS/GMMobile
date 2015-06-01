@@ -52,11 +52,15 @@ Top:;
     NSFileManager *fileManager = NSFileManager.defaultManager;
     NSString *firstFile;
 
-    _urlText = [[NSString alloc] initWithFormat:@"www.thmgis.com/GMMobileUploads/%@/", CRAPI.sharedInstance.organizationName];
-    
-    _usernameText = @"waypoint";
-    _passwordText = @"pointway4*";
-    
+//    _ftpSiteText = @"www.thmgis.com";
+//    _usernameText = @"waypoint";
+//    _passwordText = @"pointway4*";
+    _ftpSiteText = @"gssidata.com";
+    _usernameText = @"GSSiData";
+    _passwordText = @"GSSi";
+    _portText = @"14147";
+    _urlText = [[NSString alloc] initWithFormat:@"%@:%@/GMMobileUploads/%@/", _ftpSiteText,_portText,CRAPI.sharedInstance.organizationName];
+ 
     //sleep(1);
     if (_uploadCancelled)
         return;

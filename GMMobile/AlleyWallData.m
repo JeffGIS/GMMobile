@@ -275,7 +275,7 @@ SELECT max(_id) FROM MyTable*/
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[Current],[LONGITUDE],[LATITUDE],[LastUpdate]) VALUES(%ld,%@,%ld,'%@','%@',1,%f,%f,%i);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude,iTime];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[Current],[LONGITUDE],[LATITUDE],[LastUpdate]) VALUES(%ld,'%@',%ld,'%@','%@',1,%f,%f,%i);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude,iTime];
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String
               sendToServer:YES
              useUniqueFile:YES];
@@ -403,7 +403,49 @@ SELECT max(_id) FROM MyTable*/
 - (BOOL)createNewTable:(BOOL)sendToServer
 {
     BOOL rtn = TRUE;
-    NSString * cmd = @"DROP TABLE IF EXISTS ALLEYWALLS_NEW;DROP TABLE IF EXISTS ALLEYWALLS_NEW_index;CREATE VIRTUAL TABLE ALLEYWALLS_NEW_index USING rtree(id,minX, maxX, minY, maxY);DROP TABLE IF EXISTS ALLEYWALL_SEGS;CREATE TABLE IF NOT EXISTS ALLEYWALLS_NEW ('id' INT,'Wall ID' CHAR(8),'InspDate' CHAR(12),'InspBy' CHAR(16),'Current' INT,'LastUpdate' INT,'Deleted' INT,'Hse No' INT,'STREET' CHAR(64),'CityStamp' CHAR(32),'Photos' INT,'BEARING' REAL,'GroundCoverBehindWall' CHAR(255),'VisibleWeepHoles' CHAR(4),'HistAndConstYear' CHAR(255),'StructuresInWall' CHAR(255),'ItemsBehindWall' CHAR(255),'SoilSurcharge' REAL,'Deficiency' CHAR(255),'Rating' INT,'NumSegments' INT,'Comments' CHAR(255),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('Wall ID','InspDate')); CREATE TABLE IF NOT EXISTS ALLEYWALL_SEGS ('Wall ID' CHAR(8),'InspDate' CHAR(12),'SEGMENT' INT,'SegmentLength' REAL,'SegmentMaxHeight' REAL,'SegmentOffset' REAL,'TypeConst' CHAR(32),'SegmentPlumbness' REAL,'PlumbnessDistance' REAL,PRIMARY KEY('Wall ID','InspDate','SEGMENT'));";
+    NSString * cmd = @"\
+    DROP TABLE IF EXISTS ALLEYWALLS_NEW;\
+    DROP TABLE IF EXISTS ALLEYWALLS_NEW_index;\
+    CREATE VIRTUAL TABLE ALLEYWALLS_NEW_index USING rtree(id,minX, maxX, minY, maxY);\
+    DROP TABLE IF EXISTS ALLEYWALL_SEGS;\
+    CREATE TABLE IF NOT EXISTS ALLEYWALLS_NEW (\
+        'id' INT,\
+        'Wall ID' CHAR(8),\
+        'InspDate' CHAR(12),\
+        'InspBy' CHAR(16),\
+        'Current' INT,\
+        'LastUpdate' INT,\
+        'Deleted' INT,\
+        'Complete' INT,\
+        'Hse No' INT,\
+        'STREET' CHAR(64),\
+        'CityStamp' CHAR(32),\
+        'Photos' INT,\
+        'BEARING' REAL,\
+        'GroundCoverBehindWall' CHAR(255),\
+        'VisibleWeepHoles' CHAR(4),\
+        'HistAndConstYear' CHAR(255),\
+        'StructuresInWall' CHAR(255),\
+        'ItemsBehindWall' CHAR(255),\
+        'SoilSurcharge' REAL,\
+        'Deficiency' CHAR(255),\
+        'Rating' INT,\
+        'NumSegments' INT,\
+        'Comments' CHAR(255),\
+        'LONGITUDE' REAL,\
+        'LATITUDE' REAL,\
+        PRIMARY KEY('Wall ID','InspDate'));\
+    CREATE TABLE IF NOT EXISTS ALLEYWALL_SEGS(\
+        'Wall ID' CHAR(8),\
+        'InspDate' CHAR(12),\
+        'SEGMENT' INT,\
+        'SegmentLength' REAL,\
+        'SegmentMaxHeight' REAL,\
+        'SegmentOffset' REAL,\
+        'TypeConst' CHAR(32),\
+        'SegmentPlumbness' REAL,\
+        'PlumbnessDistance' REAL,\
+        PRIMARY KEY('Wall ID','InspDate','SEGMENT'));";
     if (sendToServer)
         [CRAPI.sharedInstance clearOutputDirectory];
     [self executeCmd:(char *)cmd.UTF8String
