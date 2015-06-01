@@ -314,6 +314,15 @@ visibleAtZoom:(float)zoom
     
     return NO;
 }
+- (BOOL)layerInConfig:(HardCodedLayers)layerID
+{
+    if (configLayers[_currentApp][layerID])
+    {
+        return YES;
+    }
+    
+    return NO;
+}
 
 - (BOOL)symbol:(NSString*)sym inLayer:(HardCodedLayers)layerID
 visibleAtZoom:(float)zoom

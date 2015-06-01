@@ -289,7 +289,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                          viewBounds:&_viewBounds];
                                                
                                            }
-                                           if (keepProcessing == self.displayID)
+                                           
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
                                            {
                                                PipeTrace *pt = [[PipeTrace alloc] init];
                                                pt.processingID = keepProcessing;

@@ -661,6 +661,10 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
         CRAPI.sharedInstance.organizationName = organizationName;
         CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
     }
+    _config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    
+    if (_config)
+        [ConfigurationControl.sharedInstance setApp:(_config - 1)];
     
     if (!_config)
         self.tabBarController.selectedIndex = 3;
