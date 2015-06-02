@@ -733,54 +733,50 @@
                         <rect key="frame" x="1" y="0.0" width="600" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="xCd-s3-0fM">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="sM4-PQ-nv3">
+                                <rect key="frame" x="16" y="28" width="568" height="463"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" id="bBQ-3I-0Z2">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" id="Hdm-Qe-PlS">
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bBQ-3I-0Z2" id="pj5-Lb-VQe">
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Hdm-Qe-PlS" id="5UX-Bv-8Ei">
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NnP-KV-z88">
+                                <rect key="frame" x="16" y="499" width="568" height="44"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="xCd-s3-0fM" firstAttribute="leading" secondItem="WRl-iL-RvF" secondAttribute="leadingMargin" constant="24" id="9B1-sy-LlU"/>
-                            <constraint firstItem="55E-rd-7Ft" firstAttribute="top" secondItem="xCd-s3-0fM" secondAttribute="bottom" constant="40" id="cHO-ml-5lC"/>
-                            <constraint firstItem="xCd-s3-0fM" firstAttribute="top" secondItem="tct-Ki-dqD" secondAttribute="bottom" constant="20" id="fRU-sA-cNA"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="xCd-s3-0fM" secondAttribute="trailing" constant="23" id="y3J-Du-el1"/>
+                            <constraint firstItem="sM4-PQ-nv3" firstAttribute="trailing" secondItem="WRl-iL-RvF" secondAttribute="trailingMargin" id="0DO-Q1-Qy2"/>
+                            <constraint firstItem="NnP-KV-z88" firstAttribute="leading" secondItem="WRl-iL-RvF" secondAttribute="leadingMargin" id="6sc-W1-nfG"/>
+                            <constraint firstItem="55E-rd-7Ft" firstAttribute="top" secondItem="sM4-PQ-nv3" secondAttribute="bottom" constant="60" id="AS9-I5-IVD"/>
+                            <constraint firstItem="NnP-KV-z88" firstAttribute="top" secondItem="sM4-PQ-nv3" secondAttribute="bottom" constant="8" id="dK4-gb-TNz"/>
+                            <constraint firstItem="sM4-PQ-nv3" firstAttribute="top" secondItem="tct-Ki-dqD" secondAttribute="bottom" constant="8" id="dc6-AQ-9YA"/>
+                            <constraint firstItem="55E-rd-7Ft" firstAttribute="top" secondItem="NnP-KV-z88" secondAttribute="bottom" constant="8" id="eVs-Py-QPN"/>
+                            <constraint firstItem="sM4-PQ-nv3" firstAttribute="leading" secondItem="WRl-iL-RvF" secondAttribute="leadingMargin" id="jJ0-fF-Fhc"/>
+                            <constraint firstItem="NnP-KV-z88" firstAttribute="trailing" secondItem="WRl-iL-RvF" secondAttribute="trailingMargin" id="jg7-l7-cJR"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="9B1-sy-LlU"/>
-                                <exclude reference="fRU-sA-cNA"/>
-                                <exclude reference="y3J-Du-el1"/>
-                                <exclude reference="cHO-ml-5lC"/>
-                            </mask>
-                        </variation>
-                        <variation key="heightClass=regular-widthClass=regular">
-                            <mask key="constraints">
-                                <include reference="9B1-sy-LlU"/>
-                                <include reference="fRU-sA-cNA"/>
-                                <include reference="y3J-Du-el1"/>
-                                <include reference="cHO-ml-5lC"/>
-                            </mask>
-                        </variation>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Settings" image="settings.png" id="lee-OE-7W2"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
-                        <outlet property="tableView" destination="xCd-s3-0fM" id="Ut0-yA-E7N"/>
+                        <outlet property="tableView" destination="sM4-PQ-nv3" id="zsf-xt-vpl"/>
+                        <outlet property="versionLabel" destination="NnP-KV-z88" id="MhH-yV-6bJ"/>
                         <segue destination="nWl-XI-pP2" kind="presentation" identifier="ShowSettings" id="ZMD-na-yMX"/>
                         <segue destination="CTI-Ml-aYM" kind="presentation" identifier="UploadData" id="MIt-Bv-aQg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CRA-4b-ixH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="891.75" y="558.75"/>
+            <point key="canvasLocation" x="891" y="558"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">

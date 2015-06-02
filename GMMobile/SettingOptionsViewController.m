@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "SettingOptionsViewController.h"
-#import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
 
 @interface SettingOptionsViewController ()
@@ -37,6 +36,8 @@
     _tableView.dataSource = self;
     _tableView.bounces = NO;
     _tableView.delaysContentTouches = NO;
+    
+    _versionLabel.text = [NSString stringWithFormat:@"GMMobile Version %@", UIApplication.appVersionBuild];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
