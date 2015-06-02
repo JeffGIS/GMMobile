@@ -288,7 +288,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             BOOL sendToServer = NO;
                             
                             if ([deviceName isEqualToString:@"GSSi-001"])
-                                sendToServer = NO;
+                                sendToServer = YES;
                             [awd createNewTable:sendToServer];
                             [awd transferExistingTableIntoNewTable:sendToServer];
                             [awd close];

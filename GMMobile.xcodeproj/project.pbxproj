@@ -365,16 +365,22 @@
 		A9C8372A1A65B2DE005EC4FA /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */,
+				EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */,
 				EB5521D01A61B6A8008CE2D1 /* AppDelegate.h */,
 				EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */,
 				EBCA6C251A934D15003F7FB8 /* BoundaryData.h */,
 				EBCA6C261A934D15003F7FB8 /* BoundaryData.m */,
+				EBF1356E1AE282A30046990F /* ConfigurationControl.h */,
+				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
 				A92964111A9B807700F3332E /* MapToolbar.h */,
 				A92964121A9B807700F3332E /* MapToolbar.m */,
 				A99661391AB0BCFF006C0106 /* MarkerButton.h */,
 				A996613A1AB0BCFF006C0106 /* MarkerButton.m */,
 				A979B0391A9EAFA20098E1C5 /* MarkerInfoWindow.h */,
 				A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */,
+				EB3268531B19146400A7D40A /* NVDataLoader.h */,
+				EB3268541B19146400A7D40A /* NVDataLoader.m */,
 				EB4A18C01AA89DE100B8B162 /* PipeTrace.h */,
 				EB4A18C11AA89DE100B8B162 /* PipeTrace.m */,
 				EBCA6C2D1A96AEC7003F7FB8 /* PlanimetricData.h */,
@@ -393,12 +399,6 @@
 				EBCA6C201A91301F003F7FB8 /* SewerData.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
-				EBF1356E1AE282A30046990F /* ConfigurationControl.h */,
-				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
-				EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */,
-				EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */,
-				EB3268531B19146400A7D40A /* NVDataLoader.h */,
-				EB3268541B19146400A7D40A /* NVDataLoader.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
