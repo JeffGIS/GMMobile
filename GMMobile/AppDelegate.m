@@ -16,6 +16,12 @@ int keepProcessing = 1;
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSString *version = UIApplication.appVersion;
+    NSString *build = UIApplication.appBuild;
+    NSString *versionBuild = UIApplication.appVersionBuild;
+    
+    NSLog(@"v:%@, b:%@, vb:%@", version, build, versionBuild);
+    
     NSString *defaultFTP = @"gssidata.com";
     
     [UserDefaults.defaults saveString:defaultFTP
