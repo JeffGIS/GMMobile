@@ -129,6 +129,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
 @property DigitizationMode digitizationMode;
 @property AlleyStatusSetting alleyStatusSetting;
+@property HardCodedConfigs config;
+@property (nonatomic) NVDataLoader *nvdl;
 
 @end
 
@@ -409,10 +411,16 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     sharedAppDelegate.mapToolbar = _mapToolbar;
     
     
-    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    _config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
-    if (config)
-        [ConfigurationControl.sharedInstance setApp:(config - 1)];
+    if (_config)
+    {
+        _nvdl = [[NVDataLoader alloc] init];
+        _nvdl.delegate = self;
+        
+        [_nvdl loadNVData:_config
+                  popover:_popover];
+    }
 
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
                               CGPointMake(helpButtonMargin, (helpButtonMargin +
@@ -3890,10 +3898,26 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     
     [SharedDefaults.defaults saveString:bottomText
                                  forKey:@"DeviceNumber"];
+    
     CRAPI.sharedInstance.organizationName = topText;
-    CRAPI.sharedInstance.deviceNumber = (int)[bottomText integerValue];
+    CRAPI.sharedInstance.deviceNumber = (int)bottomText.integerValue;
 
     [twoTextAlert hideTwoTextAlert:YES];
+}
+
+- (void)NVDataLoaderFailed:(int)status
+{
+    _nvdl.popover = nil;
+    _nvdl.delegate = nil;
+    _nvdl = nil;
+}
+
+- (void)NVDataLoaderSuccess
+{
+    [ConfigurationControl.sharedInstance setApp:(_config - 1)];
+    _nvdl.popover = nil;
+    _nvdl.delegate = nil;
+    _nvdl = nil;
 }
 
 @end

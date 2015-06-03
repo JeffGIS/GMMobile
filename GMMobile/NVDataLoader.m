@@ -66,12 +66,12 @@
     [_delegate NVDataLoaderFailed:status];
 }
 
-- (void) checkNextDataset:(NSTimer *)timer
+- (void)checkNextDataset:(NSTimer *)timer
 {
     int dataSetID;
     [self.timer invalidate];
 Top:
-    if (![_dbList count])
+    if (!_dbList.count)
     {
         _svc.popover = nil;
         _svc.delegate = nil;
@@ -83,7 +83,7 @@ Top:
     }
     
     NSNumber *dsid = _dbList[0];
-    dataSetID = (int)[dsid integerValue];
+    dataSetID = (int)dsid.integerValue;
     
     if ([self haveDataset:dataSetID])
     {
@@ -94,7 +94,7 @@ Top:
     [self getNextDataset:dataSetID];
 }
 
-- (void) getNextDataset:(int)dataSetID
+- (void)getNextDataset:(int)dataSetID
 {
     [self.timer invalidate];
     
