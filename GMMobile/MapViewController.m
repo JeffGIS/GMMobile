@@ -129,7 +129,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
 @property DigitizationMode digitizationMode;
 @property AlleyStatusSetting alleyStatusSetting;
-@property HardCodedConfigs config;
 @property (nonatomic) NVDataLoader *nvdl;
 
 @end
@@ -411,14 +410,14 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     sharedAppDelegate.mapToolbar = _mapToolbar;
     
     
-    _config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
-    if (_config)
+    if (config)
     {
         _nvdl = [[NVDataLoader alloc] init];
         _nvdl.delegate = self;
         
-        [_nvdl loadNVData:_config
+        [_nvdl loadNVData:(config - 1)
                   popover:_popover];
     }
 
@@ -610,8 +609,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     }
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
-
-    [_mapToolbar configure:_screenSetting];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -670,13 +667,15 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
         CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
     }
     
-    NSInteger config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+    HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
     if (config)
         [ConfigurationControl.sharedInstance setApp:(config - 1)];
     
-    if (!config)
+    else
         self.tabBarController.selectedIndex = 3;
+    
+    [_mapToolbar configure:_screenSetting];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3914,7 +3913,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 
 - (void)NVDataLoaderSuccess
 {
-    [ConfigurationControl.sharedInstance setApp:(_config - 1)];
     _nvdl.popover = nil;
     _nvdl.delegate = nil;
     _nvdl = nil;

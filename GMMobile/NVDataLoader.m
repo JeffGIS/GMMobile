@@ -1,10 +1,5 @@
-//
 //  NVDataLoader.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 5/29/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "NVDataLoader.h"
 #import "AlleyWallData.h"
@@ -41,9 +36,7 @@
     _popover.delegate = _saveDelegate;
     
     if (_delegate)
-    {
         [_delegate NVDataLoaderFailed:NVDL_USERCANCELLED];
-    }
 }
 
 - (void) SettingsViewControllerSuccess
@@ -68,7 +61,7 @@
 
 - (void)checkNextDataset:(NSTimer *)timer
 {
-    int dataSetID;
+    GetDatabaseSetting dataSetID = GetDatabaseSettingDefault;
     [self.timer invalidate];
 Top:
     if (!_dbList.count)
@@ -83,7 +76,7 @@ Top:
     }
     
     NSNumber *dsid = _dbList[0];
-    dataSetID = (int)dsid.integerValue;
+    dataSetID = dsid.integerValue;
     
     if ([self haveDataset:dataSetID])
     {
@@ -94,7 +87,7 @@ Top:
     [self getNextDataset:dataSetID];
 }
 
-- (void)getNextDataset:(int)dataSetID
+- (void)getNextDataset:(GetDatabaseSetting)dataSetID
 {
     [self.timer invalidate];
     
@@ -109,32 +102,35 @@ Top:
     
     switch (dataSetID)
     {
-        case GET_PARCELS:
+        case GetDatabaseSettingParcels:
             sel = @selector(loadParcels:);
             break;
             
-        case GET_PROPERTY:
+        case GetDatabaseSettingProperty:
             sel = @selector(loadDatabase:);
             break;
             
-        case GET_SEWER:
+        case GetDatabaseSettingSewer:
             sel = @selector(loadSewer:);
             break;
             
-        case GET_ALLEYWALL:
+        case GetDatabaseSettingAlleyWall:
             sel = @selector(loadAlleyWall:);
             break;
             
-        case GET_PLAN:
+        case GetDatabaseSettingPlan:
             sel = @selector(loadPlan:);
             break;
             
-        case GET_CENSUS:
+        case GetDatabaseSettingCensus:
             sel = @selector(loadCensus:);
             break;
             
-        case GET_AREAS:
+        case GetDatabaseSettingAreas:
             sel = @selector(loadAreas:);
+            break;
+            
+        default:
             break;
     }
     
@@ -147,13 +143,13 @@ Top:
     
 }
 
-- (BOOL)haveDataset:(int)dataSetID
+- (BOOL)haveDataset:(GetDatabaseSetting)dataSetID
 {
     BOOL rtn = NO;
     
     switch (dataSetID)
     {
-        case GET_PARCELS:
+        case GetDatabaseSettingParcels:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
@@ -162,7 +158,7 @@ Top:
         }
             break;
             
-        case GET_PROPERTY:
+        case GetDatabaseSettingProperty:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
@@ -171,7 +167,7 @@ Top:
         }
             break;
             
-        case GET_AREAS:
+        case GetDatabaseSettingAreas:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
@@ -180,7 +176,7 @@ Top:
         }
             break;
             
-        case GET_SEWER:
+        case GetDatabaseSettingSewer:
         {
             SewerData *sd = [[SewerData alloc] init];
             if (sd.datasetVersion >= 0)
@@ -188,7 +184,7 @@ Top:
         }
             break;
             
-        case GET_ALLEYWALL:
+        case GetDatabaseSettingAlleyWall:
         {
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             
@@ -197,7 +193,7 @@ Top:
         }
             break;
             
-        case GET_CENSUS:
+        case GetDatabaseSettingCensus:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
@@ -206,13 +202,16 @@ Top:
         }
             break;
             
-        case GET_PLAN:
+        case GetDatabaseSettingPlan:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
             if (pd.planDatasetVersion >= 0)
                 rtn = YES;
         }
+            break;
+            
+        default:
             break;
     }
     

@@ -23,7 +23,6 @@
 		A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */ = {isa = PBXBuildFile; fileRef = A91F36961AE97A2D00602BCE /* metalSliderRight.png */; };
 		A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = A91F36991AE97B0500602BCE /* redSliderThumb.png */; };
 		A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */; };
-		A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A51AD8818D0027659B /* blackCrosshairs.png */; };
 		A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
@@ -51,6 +50,7 @@
 		A99CD8DA1A9DBAC10049F271 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D91A9DBAC10049F271 /* libz.dylib */; };
 		A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */; };
 		A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = A9B6F3481AE46DC3003FD71E /* checkmark.png */; };
+		A9BB3E1B1B1FA7A3003E1BAF /* blackCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BB3E1A1B1FA7A3003E1BAF /* blackCrosshairs.png */; };
 		A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */; };
 		A9BC27F11A927D2B00FA89D8 /* help.png in Resources */ = {isa = PBXBuildFile; fileRef = A9BC27F01A927D2B00FA89D8 /* help.png */; };
 		A9C086751AE173A900E79B3E /* applications.png in Resources */ = {isa = PBXBuildFile; fileRef = A9C086741AE173A900E79B3E /* applications.png */; };
@@ -137,7 +137,6 @@
 		A91F36991AE97B0500602BCE /* redSliderThumb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumb.png; sourceTree = "<group>"; };
 		A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingOptionsViewController.h; sourceTree = "<group>"; };
 		A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingOptionsViewController.m; sourceTree = "<group>"; };
-		A92382A51AD8818D0027659B /* blackCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackCrosshairs.png; sourceTree = "<group>"; };
 		A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackOrangeCrosshairs.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
@@ -173,6 +172,7 @@
 		A99CD8D91A9DBAC10049F271 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		A9B6F3481AE46DC3003FD71E /* checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkmark.png; sourceTree = "<group>"; };
+		A9BB3E1A1B1FA7A3003E1BAF /* blackCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackCrosshairs.png; sourceTree = "<group>"; };
 		A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemesViewController.h; sourceTree = "<group>"; };
 		A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemesViewController.m; sourceTree = "<group>"; };
 		A9BC27F01A927D2B00FA89D8 /* help.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = help.png; sourceTree = "<group>"; };
@@ -294,6 +294,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A9BB3E1A1B1FA7A3003E1BAF /* blackCrosshairs.png */,
 				A9D281851B045BAD00523B29 /* autoUpload.png */,
 				A9D281861B045BAD00523B29 /* loadData.png */,
 				A9D281871B045BAD00523B29 /* upload.png */,
@@ -310,7 +311,6 @@
 				A9C086741AE173A900E79B3E /* applications.png */,
 				A97C62161AE0AD7900DA7738 /* greenHelpButton.png */,
 				A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */,
-				A92382A51AD8818D0027659B /* blackCrosshairs.png */,
 				A9128A5A1AC0C95600F4242F /* redTarget.png */,
 				A9EC205F1AB738EE004D38FA /* marker.png */,
 				EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */,
@@ -611,6 +611,7 @@
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A99CD8CA1A9DB9AA0049F271 /* GoogleMaps.bundle in Resources */,
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
+				A9BB3E1B1B1FA7A3003E1BAF /* blackCrosshairs.png in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
@@ -625,7 +626,6 @@
 				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
 				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
-				A92382A71AD8818D0027659B /* blackCrosshairs.png in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
 				A9D281891B045BAD00523B29 /* loadData.png in Resources */,

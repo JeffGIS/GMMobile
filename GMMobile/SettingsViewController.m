@@ -122,13 +122,13 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                                              repeats:NO];
                 break;
                 
-            case GET_PARCELS:
-            case GET_PROPERTY:
-            case GET_AREAS:
-            case GET_SEWER:
-            case GET_PLAN:
-            case GET_ALLEYWALL:
-            case GET_CENSUS:
+            case GetDatabaseSettingParcels:
+            case GetDatabaseSettingProperty:
+            case GetDatabaseSettingAreas:
+            case GetDatabaseSettingSewer:
+            case GetDatabaseSettingPlan:
+            case GetDatabaseSettingAlleyWall:
+            case GetDatabaseSettingCensus:
             {
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
                 NSString *file;
@@ -138,28 +138,28 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                 
                 switch (option)
                 {
-                    case GET_PARCELS:
+                    case GetDatabaseSettingParcels:
                     {
                         file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
                         _popover.title = @"Load Parcel Tables";
                     }
                         break;
                         
-                    case GET_CENSUS:
+                    case GetDatabaseSettingCensus:
                     {
                         file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
                         _popover.title = @"Load Census Tables";
                     }
                         break;
                         
-                    case GET_AREAS:
+                    case GetDatabaseSettingAreas:
                     {
                         file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
                         _popover.title = @"Load Area Tables";
                     }
                         break;
                         
-                    case GET_PLAN:
+                    case GetDatabaseSettingPlan:
                     {
                         //planimetric
                         //planimetricp
@@ -169,7 +169,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     }
                         break;
                         
-                    case GET_ALLEYWALL:
+                    case GetDatabaseSettingAlleyWall:
                     {
                         //planimetric
                         //planimetricp
@@ -179,14 +179,14 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                     }
                         break;
                         
-                    case GET_SEWER:
+                    case GetDatabaseSettingSewer:
                     {
                         file = [NSString stringWithFormat:@"%@/sewer.sqltran",toDirectory];
                         _popover.title = @"Load Sewer Tables";
                     }
                         break;
                         
-                    case GET_PROPERTY:
+                    case GetDatabaseSettingProperty:
                     {
                         file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
                         _popover.title = @"Load Property Tables";
@@ -217,16 +217,18 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         SewerData *sd;
                         AlleyWallData *awd;
                         
-                        if (option == GET_SEWER)
+                        if (option == GetDatabaseSettingSewer)
                         {
                             sd = [[SewerData alloc] init];
                             [sd open];
                         }
-                        else if (option == GET_ALLEYWALL)
+                        
+                        else if (option == GetDatabaseSettingAlleyWall)
                         {
                             awd = [[AlleyWallData alloc] init];
                             [awd open];
                         }
+                        
                         else
                         {
                             pd = [[PropertyData alloc] init];
@@ -237,21 +239,27 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         CGFloat totLen = ftell(fid);
                         fseek(fid, 0, SEEK_SET);
                         
-                        if (option == GET_SEWER)
+                        if (option == GetDatabaseSettingSewer)
                             [sd startTransaction];
-                        else if (option == GET_ALLEYWALL)
+                        
+                        else if (option == GetDatabaseSettingAlleyWall)
                             [awd startTransaction];
+                        
                         else
                             [pd startTransaction];
                         
                         while (_keepGoing && fgetstring(str, (INPUTBUFSIZE - 2), fid))
                         {
-                            if (option == GET_SEWER)
+                            if (option == GetDatabaseSettingSewer)
                                 [sd executeCmd:str];
-                            else if (option == GET_ALLEYWALL)
+                            
+                            else if (option == GetDatabaseSettingAlleyWall)
+                            {
                                 [awd executeCmd:str
                                    sendToServer:NO
                                   useUniqueFile:NO];
+                            }
+                            
                             else
                                 [pd executeCmd:str];
                             
@@ -261,14 +269,16 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                            });
                         }
                         
-                        if (option == GET_SEWER)
+                        if (option == GetDatabaseSettingSewer)
                             [sd commitTransaction];
-                        else if (option == GET_ALLEYWALL)
+                        
+                        else if (option == GetDatabaseSettingAlleyWall)
                             [awd commitTransaction];
+                        
                         else
                             [pd commitTransaction];
                         
-                        if (option == GET_PARCELS)
+                        if (option == GetDatabaseSettingParcels)
                         {
                             dispatch_async(dispatch_get_main_queue(),
                                            ^{
@@ -280,15 +290,17 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                             [pd commitTransaction];
                         }
                         
-                        if (option == GET_SEWER)
+                        if (option == GetDatabaseSettingSewer)
                             [sd close];
-                        else if (option == GET_ALLEYWALL)
+                        
+                        else if (option == GetDatabaseSettingAlleyWall)
                         {
                             NSString *deviceName = UIDevice.currentDevice.name;
                             BOOL sendToServer = NO;
                             
                             if ([deviceName isEqualToString:@"GSSi-001"])
                                 sendToServer = YES;
+                            
                             [awd createNewTable:sendToServer];
                             [awd transferExistingTableIntoNewTable:sendToServer];
                             [awd close];
@@ -319,14 +331,17 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                                            }
                                        });
                     }
+                    
                     if (_fromDataLoader)
                     {
                         if (!_keepGoing)
                             status = DLSTATUS_USER_CANCELLED;
+                        
                         if (_delegate)
                         {
                             if (!status)
                                 [_delegate SettingsViewControllerSuccess];
+                            
                             else
                                 [_delegate SettingsViewControllerFailed:status];
                         }
@@ -335,7 +350,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             }
                 break;
                 
-            case GET_TILES:
+            case GetDatabaseSettingTiles:
             {
                 //[self loadTilesFromList:path
                           //updatePopover:_popover];
@@ -381,7 +396,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_TILES;
+    pull.option = GetDatabaseSettingTiles;
     
     [_popover showAfter:0.5
               withTitle:@"Get Tilelist File"];
@@ -406,7 +421,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_PROPERTY;
+    pull.option = GetDatabaseSettingProperty;
     
     [_popover showAfter:0.5
               withTitle:@"Get Property File"];
@@ -431,7 +446,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_PARCELS;
+    pull.option = GetDatabaseSettingParcels;
     
     [_popover showAfter:0.5
               withTitle:@"Get Parcel File"];
@@ -453,7 +468,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_CENSUS;
+    pull.option = GetDatabaseSettingCensus;
     
     [_popover showAfter:0.5
               withTitle:@"Get Census File"];
@@ -477,7 +492,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_AREAS;
+    pull.option = GetDatabaseSettingAreas;
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
@@ -501,7 +516,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_PLAN;
+    pull.option = GetDatabaseSettingPlan;
     
     [_popover showAfter:0.5
               withTitle:@"Get Planimetric File"];
@@ -523,7 +538,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_ALLEYWALL;
+    pull.option = GetDatabaseSettingAlleyWall;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -544,7 +559,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GET_SEWER;
+    pull.option = GetDatabaseSettingSewer;
     
     [_popover showAfter:0.5
               withTitle:@"Get Sewer File"];

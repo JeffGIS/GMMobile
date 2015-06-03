@@ -597,9 +597,6 @@
             _wantMarkerSwitch = value;
             break;
             
-        case MapToolbarPropertyWantDefault:
-            break;
-            
         default:
             break;
     }
