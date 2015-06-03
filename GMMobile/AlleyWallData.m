@@ -148,7 +148,8 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
 {
     SQLOKawd(sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
--(int) getAlleyLineStatus:(NSInteger)refno
+
+- (int)getAlleyLineStatus:(NSInteger)refno
 {
     int status = 0;
     [self open];
@@ -170,7 +171,8 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     
     return status;
 }
--(int) getAlleyLineSeg:(NSInteger)refno
+
+- (int)getAlleyLineSeg:(NSInteger)refno
 {
     int segid = 0;
     [self open];
@@ -191,7 +193,9 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     
     return segid;
 }
--(void) setAlleyLineStatus:(NSInteger)refno to:(int)status
+
+- (void)setAlleyLineStatus:(NSInteger)refno
+                        to:(int)status
 {
     BOOL rtn;
     int iTime = NSDate.timeIntervalSinceReferenceDate;
@@ -212,15 +216,20 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
      useUniqueFile:YES];
     [self close];
 }
--(BOOL)deleteAlleyWallPoint:(NSString *)wallID
+
+- (BOOL)deleteAlleyWallPoint:(NSInteger)refno;
 {
     int iTime = NSDate.timeIntervalSinceReferenceDate;
-    BOOL rtn=FALSE;
+    BOOL rtn = NO;
     [self open];
-    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW SET Current = 0, Deleted = 1, LastUpdate = %i WHERE [Wall ID]=%@",iTime,wallID];
+    
+    NSString *cmd = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW SET Current = 0, Deleted = 1, LastUpdate = %i WHERE id=%ld",
+                     iTime, (long)refno];
+    
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String
               sendToServer:YES
              useUniqueFile:YES];
+    
     [self close];
     return rtn;
 }
@@ -242,6 +251,7 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     {
         query = [NSString stringWithFormat:@"UPDATE ALLEYWALLS_NEW_index SET minY=%f,minX=%f,maxY=%f,maxX=%f WHERE ALLEYWALLS_NEW_index.id=%ld",
                  point.latitude,point.longitude, point.latitude,point.longitude, (long)refno];
+        
         rtn = sqlite3_exec(pd.database, query.UTF8String, NULL, NULL, NULL);
     }
     
@@ -249,7 +259,10 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     return !rtn;
 }
 
--(BOOL)createNewWall:(NSString*)wallID atPoint:(CLLocationCoordinate2D)position withHouse:(NSString*)house andStreet:(NSString*)street
+- (BOOL)createNewWall:(NSString *)wallID
+              atPoint:(CLLocationCoordinate2D)position
+            withHouse:(NSString *)house
+            andStreet:(NSString *)street
 {
 /*    INSERT INTO ALLEYWALLS VALUES(1,'6119.1',3536,'10TH AVE S','Yes',100.000000,2.000000,6.500000,'',' $20,000.00 ','CONCBLOCK  POURED','1/27/1987','MB','7','GOOD.  MINOR CRACKS.  ',-93.260388,44.938210,1,0)
     INSERT INTO ALLEYWALLS_index VALUES(2,-93.260613,-93.260613,44.936725,44.936725);
