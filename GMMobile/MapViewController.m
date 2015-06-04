@@ -130,6 +130,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property DigitizationMode digitizationMode;
 @property AlleyStatusSetting alleyStatusSetting;
 @property (nonatomic) NVDataLoader *nvdl;
+@property (nonatomic) NVLegendView *legendView;
 
 @end
 
@@ -452,24 +453,21 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
     {
-        for (NVLegendView *legendView in self.view.subviews)
+        if ([self.view.subviews containsObject:_legendView])
         {
-            if ([legendView isKindOfClass:NVLegendView.class])
+            [_legendView hideLegendView:NO];
+            
+            if (_helpButtonMoved)
             {
-                [legendView hideLegendView:NO];
-                
-                if (_helpButtonMoved)
+                for (HelpButton *helpButton in self.view.subviews)
                 {
-                    for (HelpButton *helpButton in self.view.subviews)
+                    if ([helpButton isKindOfClass:HelpButton.class])
                     {
-                        if ([helpButton isKindOfClass:HelpButton.class])
-                        {
-                            helpButton.center =
-                            CGPointMake(helpButton.center.x, helpButton.center.y -
-                                        legendView.frame.size.height);
-                            
-                            _helpButtonMoved = NO;
-                        }
+                        helpButton.center =
+                        CGPointMake(helpButton.center.x, helpButton.center.y -
+                                    _legendView.frame.size.height);
+                        
+                        _helpButtonMoved = NO;
                     }
                 }
             }
@@ -1828,11 +1826,8 @@ haveVV:
                                    [self.view bringSubviewToFront:helpWebView];
                            }
                            
-                           for (NVLegendView *legendView in self.view.subviews)
-                           {
-                               if ([legendView isKindOfClass:NVLegendView.class])
-                                   [self.view bringSubviewToFront:legendView];
-                           }
+                           if ([self.view.subviews containsObject:_legendView])
+                               [self.view bringSubviewToFront:_legendView];
                        }
                    });
 }
@@ -2520,35 +2515,35 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:self.interfaceOrientation] + 6.0));
     
-    for (NVLegendView *views in self.view.subviews)
-    {
-        if ([views isKindOfClass:NVLegendView.class])
-            [views reloadView];
-    }
+    if ([self.view.subviews containsObject:_legendView])
+        [_legendView reloadView];
     
-    NVLegendView *legendView = [NVLegendView showLegendViewAtOrigin:origin
-                                                             inView:self.view
-                                                     containerFrame:_mapView.frame
-                                                           delegate:self
-                                                         selectable:NO
-                                                           animated:YES];
-    
-    if (!_helpButtonMoved)
+    else
     {
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             for (HelpButton *helpButton in self.view.subviews)
-                             {
-                                 if ([helpButton isKindOfClass:HelpButton.class])
+        _legendView = [NVLegendView showLegendViewAtOrigin:origin
+                                                    inView:self.view
+                                            containerFrame:_mapView.frame
+                                                  delegate:self
+                                                selectable:NO
+                                                  animated:YES];
+        
+        if (!_helpButtonMoved)
+        {
+            [UIView animateWithDuration:0.25
+                             animations:^{
+                                 for (HelpButton *helpButton in self.view.subviews)
                                  {
-                                     helpButton.center =
-                                     CGPointMake(helpButton.center.x, helpButton.center.y +
-                                                 legendView.frame.size.height);
+                                     if ([helpButton isKindOfClass:HelpButton.class])
+                                     {
+                                         helpButton.center =
+                                         CGPointMake(helpButton.center.x, helpButton.center.y +
+                                                     _legendView.frame.size.height);
+                                     }
                                  }
-                             }
-                         } completion:^(BOOL finished) {
-                             _helpButtonMoved = YES;
-                         }];
+                             } completion:^(BOOL finished) {
+                                 _helpButtonMoved = YES;
+                             }];
+        }
     }
 }
 
