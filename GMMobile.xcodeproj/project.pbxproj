@@ -36,6 +36,7 @@
 		A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */ = {isa = PBXBuildFile; fileRef = A97C62161AE0AD7900DA7738 /* greenHelpButton.png */; };
 		A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */ = {isa = PBXBuildFile; fileRef = A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */; };
 		A97DFB741AAE5E6E00F225DD /* compass.png in Resources */ = {isa = PBXBuildFile; fileRef = A97DFB731AAE5E6E00F225DD /* compass.png */; };
+		A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */ = {isa = PBXBuildFile; fileRef = A98A57AD1B20AFBE00906FBC /* calibrate.png */; };
 		A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A996613A1AB0BCFF006C0106 /* MarkerButton.m */; };
 		A997EE221AB28F8300E26D6D /* PlatImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A997EE211AB28F8300E26D6D /* PlatImageView.m */; };
 		A99CD8C81A9DB99E0049F271 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8C71A9DB99E0049F271 /* GoogleMaps.framework */; };
@@ -156,6 +157,7 @@
 		A97C62161AE0AD7900DA7738 /* greenHelpButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenHelpButton.png; sourceTree = "<group>"; };
 		A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ManageMyLocationMap.pdf; sourceTree = "<group>"; };
 		A97DFB731AAE5E6E00F225DD /* compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass.png; sourceTree = "<group>"; };
+		A98A57AD1B20AFBE00906FBC /* calibrate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calibrate.png; sourceTree = "<group>"; };
 		A99661391AB0BCFF006C0106 /* MarkerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerButton.h; sourceTree = "<group>"; };
 		A996613A1AB0BCFF006C0106 /* MarkerButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerButton.m; sourceTree = "<group>"; };
 		A997EE201AB28F8300E26D6D /* PlatImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatImageView.h; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A98A57AD1B20AFBE00906FBC /* calibrate.png */,
 				A9BB3E1A1B1FA7A3003E1BAF /* blackCrosshairs.png */,
 				A9D281851B045BAD00523B29 /* autoUpload.png */,
 				A9D281861B045BAD00523B29 /* loadData.png */,
@@ -624,6 +627,7 @@
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
 				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
+				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
 				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,

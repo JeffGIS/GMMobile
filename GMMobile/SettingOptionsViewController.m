@@ -3,6 +3,7 @@
 
 #import "SettingOptionsViewController.h"
 #import "ConfigurationControl.h"
+#import "CCodeLibrary/NVCalibrationController.h"
 
 @interface SettingOptionsViewController ()
 
@@ -27,8 +28,11 @@
     UIImage *upload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"upload"
                                                                                      ofType:@"png"]];
     
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, nil];
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data"];
+    UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
+                                                                                        ofType:@"png"]];
+    
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, calibrate, nil];
+    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Calibrate Device"];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
@@ -126,6 +130,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self loadData];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Calibrate Device"])
+    {
+        [self calibrateDevice];
+    }
 }
 
 - (void)uploadNow
@@ -149,6 +159,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     textAlert.keyboardType = UIKeyboardTypeNumberPad;
     textAlert.minimumCharacters = 0;
+}
+
+- (void)calibrateDevice
+{
+    NVCalibrationController *calibrationController = [[NVCalibrationController alloc] init];
+    
+    [self presentViewController:calibrationController
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert
