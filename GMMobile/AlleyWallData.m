@@ -88,10 +88,12 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
     //error:nil];
 }
-- (int) datasetVersion
+
+- (int)datasetVersion
 {
     int rtn = -1;
     [self open];
+    
     if (_isOpen && _fileSize > 0)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT max(Version) FROM ALLEYWALLS_VERSION"];
@@ -99,16 +101,18 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
         sqlite3_stmt *statement = NULL;
         
         SQLOKawd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             LPSTR version = (LPSTR)sqlite3_column_text(statement, 0);
+            
             if (version)
-            {
-                rtn = atoi (version);
-            }
+                rtn = atoi(version);
         }
+        
         SQLOKawd(sqlite3_finalize(statement), _database);
     }
+    
     [self close];
     return rtn;
 }

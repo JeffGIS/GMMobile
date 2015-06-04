@@ -41,8 +41,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                                                                               ofType:@"jpg"];
     
     [UserDefaults.defaults disableWebKitDiskImageCache];
-    
-    NSLog(@"Shared File Path: %@", CRAPI.sharedInstance.sharedFilePath);
+    CRAPI.sharedInstance.defaultColors = UserDefaults.defaults.defaultColors;
 
     return YES;
 }
@@ -61,6 +60,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     
 }
+
 - (void)didStartNetworking
 {
     self.networkingCount += 1;

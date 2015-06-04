@@ -3,11 +3,10 @@
 
 #import "CCodeLibrary/CCodeLibrary.h"
 
-#define NUMMapToolbarProperty 8
+#define NUMMapToolbarProperty 7
 
 typedef NS_ENUM(NSInteger, MapToolbarProperty)
 {
-    MapToolbarPropertyWantDefault,
     MapToolbarPropertyWantPlat,
     MapToolbarPropertyWantDigitize,
     MapToolbarPropertyWantMapType,

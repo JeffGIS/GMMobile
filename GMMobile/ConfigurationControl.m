@@ -113,7 +113,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerHasSymbols[HCLayerAlleys] = YES;
         
         //setup toolbar properties
-        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDefault] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMapType] = NO;
@@ -122,7 +121,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantMarkerSwitch] = YES;
         
-        configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDefault] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantMapType] = NO;
@@ -131,7 +129,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantLegends] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantMarkerSwitch] = YES;
         
-        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDefault] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantMapType] = NO;
@@ -140,7 +137,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantLegends] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantMarkerSwitch] = YES;
         
-        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDefault] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMapType] = NO;
@@ -149,7 +145,6 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMarkerSwitch] = YES;
         
-        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDefault] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapType] = YES;
@@ -246,7 +241,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 {
     NSMutableArray *list = [[NSMutableArray alloc] init];
 
-    NSNumber *dsid = [NSNumber numberWithInt:GET_AREAS];
+    NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingAreas];
     [list addObject:dsid];
     
     for (int layer = 0; layer < NUMHardCodedLayers; layer++)
@@ -256,24 +251,27 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             switch (layer)
             {
                 case HCLayerParcels:
-                    [list addObject:[NSNumber numberWithInt:GET_PARCELS]];
-                    [list addObject:[NSNumber numberWithInt:GET_PROPERTY]];
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingProperty]];
                     break;
+                    
                 case HCLayerSewers:
-                    [list addObject:[NSNumber numberWithInt:GET_SEWER]];
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingSewer]];
                     break;
+                    
                 case HCLayerPlanimetric:
-                    [list addObject:[NSNumber numberWithInt:GET_PLAN]];
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
                     break;
+                    
                 case HCLayerAlleys:
-                    [list addObject:[NSNumber numberWithInt:GET_ALLEYWALL]];
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAlleyWall]];
                     break;
             }
         }
     }
     
     if (appID == HCConfigMetroProp)
-        [list addObject:[NSNumber numberWithInt:GET_CENSUS]];
+        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
     
     return list;
 }
@@ -324,7 +322,8 @@ visibleAtZoom:(float)zoom
     return NO;
 }
 
-- (BOOL)symbol:(NSString*)sym inLayer:(HardCodedLayers)layerID
+- (BOOL)symbol:(NSString *)sym
+       inLayer:(HardCodedLayers)layerID
 visibleAtZoom:(float)zoom
 {
     if (configLayers[_currentApp][layerID] &&
