@@ -128,6 +128,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingSewer:
             case GetDatabaseSettingPlan:
             case GetDatabaseSettingAlleyWall:
+            case GetDatabaseSettingCurbRamp:
             case GetDatabaseSettingCensus:
             {
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
@@ -161,9 +162,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                     case GetDatabaseSettingPlan:
                     {
-                        //planimetric
-                        //planimetricp
-                        //alleywall
                         file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
                         _popover.title = @"Load Planimetric Tables";
                     }
@@ -171,11 +169,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                     case GetDatabaseSettingAlleyWall:
                     {
-                        //planimetric
-                        //planimetricp
-                        //alleywall
                         file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
                         _popover.title = @"Load AlleyWall Tables";
+                    }
+                        break;
+                        
+                    case GetDatabaseSettingCurbRamp:
+                    {
+                        file = [NSString stringWithFormat:@"%@/CurbRamp.sqltran",toDirectory];
+                        _popover.title = @"Load Curb Ramp Tables";
                     }
                         break;
                         
@@ -216,6 +218,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         PropertyData *pd;
                         SewerData *sd;
                         AlleyWallData *awd;
+                        CurbRampData *crd;
                         
                         if (option == GetDatabaseSettingSewer)
                         {
@@ -227,6 +230,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         {
                             awd = [[AlleyWallData alloc] init];
                             [awd open];
+                        }
+                        else if (option == GetDatabaseSettingCurbRamp)
+                        {
+                            crd = [[CurbRampData alloc] init];
+                            [crd open];
                         }
                         
                         else
@@ -245,6 +253,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         else if (option == GetDatabaseSettingAlleyWall)
                             [awd startTransaction];
                         
+                        else if (option == GetDatabaseSettingCurbRamp)
+                            [crd startTransaction];
+                        
                         else
                             [pd startTransaction];
                         
@@ -252,6 +263,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         {
                             if (option == GetDatabaseSettingSewer)
                                 [sd executeCmd:str];
+                            
+                            else if (option == GetDatabaseSettingCurbRamp)
+                                [crd executeCmd:str
+                                   sendToServer:NO
+                                  useUniqueFile:NO];
                             
                             else if (option == GetDatabaseSettingAlleyWall)
                             {
@@ -275,6 +291,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         else if (option == GetDatabaseSettingAlleyWall)
                             [awd commitTransaction];
                         
+                        else if (option == GetDatabaseSettingCurbRamp)
+                            [crd commitTransaction];
+                        
                         else
                             [pd commitTransaction];
                         
@@ -292,6 +311,9 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GetDatabaseSettingSewer)
                             [sd close];
+                        
+                        if (option == GetDatabaseSettingCurbRamp)
+                            [crd close];
                         
                         else if (option == GetDatabaseSettingAlleyWall)
                         {
@@ -542,6 +564,29 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+
+- (IBAction)loadCurbRamps:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"MPLS_CurbRamp.gcf";
+    
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GetDatabaseSettingCurbRamp;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Curb Ramp File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"

@@ -58,7 +58,7 @@ extern int keepProcessing;
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -102,7 +102,7 @@ extern int keepProcessing;
                   andWidth:3];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close];
 }
 - (void)fillPlanArea:(CGContextRef)context
@@ -226,7 +226,7 @@ extern int keepProcessing;
             
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepare PLAN_LINE");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -270,7 +270,7 @@ extern int keepProcessing;
                   andWidth:3];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close];
 }
 
@@ -369,7 +369,7 @@ extern int keepProcessing;
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -383,7 +383,7 @@ extern int keepProcessing;
                  withColor:UIColor.greenColor.CGColor];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close];
 
 }
@@ -427,7 +427,7 @@ extern int keepProcessing;
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "preparePickPID");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -449,7 +449,7 @@ extern int keepProcessing;
         }
     }
     
-    SQLOK(sqlite3_finalize(statement), "pickPID");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
@@ -512,7 +512,7 @@ extern int keepProcessing;
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "displayAlleyLine");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -561,7 +561,7 @@ extern int keepProcessing;
                   andWidth:width];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayAlleyLine");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close];
 }
 
@@ -592,7 +592,7 @@ extern int keepProcessing;
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "preparePickPLAT");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -636,7 +636,7 @@ extern int keepProcessing;
         free (llpoints);
     }
     
-    SQLOK(sqlite3_finalize(statement), "pickAlley");
+    SQLOK(sqlite3_finalize(statement), pd.database);
     [pd close];
     pt.lon = minpt.x;
     pt.lat = minpt.y;
@@ -692,7 +692,7 @@ extern int keepProcessing;
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareWallPt");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -707,7 +707,7 @@ extern int keepProcessing;
                     andSize:size];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayWallPt");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close];
     
 }
@@ -744,7 +744,7 @@ extern int keepProcessing;
     
     NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT SYMBOLNAME FROM %@", tableName];
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDistinctSymbols");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -752,7 +752,7 @@ extern int keepProcessing;
         [symList addObject:symName];
     }
     
-    SQLOK(sqlite3_finalize(statement), "distinctSymbols");
+    SQLOK(sqlite3_finalize(statement),pd.database);
     
     [pd close];
     
