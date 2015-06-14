@@ -52,7 +52,9 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 @end
 
 @interface ConfigurationControl ()
+
 @property BOOL firstCall;
+
 @end
 
 @implementation ConfigurationControl
