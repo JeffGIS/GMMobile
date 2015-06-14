@@ -12,6 +12,7 @@ typedef NS_ENUM(NSInteger, MarkerInfoWindowType)
     MarkerInfoWindowTypeAlleyWall,
     MarkerInfoWindowTypeAlleyLine,
     MarkerInfoWindowTypeCustom,
+    MarkerInfoWindowTypeCRInt
 };
 
 @class MarkerInfoWindow;

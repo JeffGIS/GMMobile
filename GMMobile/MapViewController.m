@@ -115,7 +115,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
-@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg;
+@property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
@@ -828,6 +828,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                          atZoom:_mapView.camera.zoom
                   highlightList:highlightList];
         
+        [planData pickCurbRampIntersectionPoint:llpickPt
+                                  highlightList:highlightList];
+        
         if (highlightList.count)
         {
             if (_clearMarkers)
@@ -875,6 +878,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
                     _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    break;
+                    
+                case PTCRIntersectionPt:
+                    _selectedCRIntPt = pi.identifier;
+                    marker.title = _selectedCRIntPt;
+                    marker.snippet = pi.symbolName;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeCRInt;
                     break;
                     
                 case PTStormSewerLine:

@@ -99,18 +99,21 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         strcpy(layerName[HCLayerSewers], "Sewer Data");
         strcpy(layerName[HCLayerPlanimetric], "Planimetric Data");
         strcpy(layerName[HCLayerAlleys], "Alleys");
+        strcpy(layerName[HCLayerCurbRamps], "Curb Ramps");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
         layerDefaultZoom[HCLayerSewers] = 17;
         layerDefaultZoom[HCLayerPlanimetric] = 18;
         layerDefaultZoom[HCLayerAlleys] = 14;
+        layerDefaultZoom[HCLayerAlleys] = 13;
         
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
         layerHasSymbols[HCLayerSewers] = NO;
         layerHasSymbols[HCLayerPlanimetric] = YES;
         layerHasSymbols[HCLayerAlleys] = YES;
+        layerHasSymbols[HCLayerAlleys] = NO;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
@@ -159,30 +162,35 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigSewers][HCLayerSewers] = YES;
         configLayers[HCConfigSewers][HCLayerPlanimetric] = NO;
         configLayers[HCConfigSewers][HCLayerAlleys] = NO;
+        configLayers[HCConfigSewers][HCLayerCurbRamps] = NO;
         
         configLayers[HCConfigAlleyWalls][HCLayerAerials] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerParcels] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerSewers] = NO;
         configLayers[HCConfigAlleyWalls][HCLayerPlanimetric] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerAlleys] = YES;
-        
+        configLayers[HCConfigAlleyWalls][HCLayerCurbRamps] = NO;
+       
         configLayers[HCConfigAlleyWallStatus][HCLayerAerials] = NO;
         configLayers[HCConfigAlleyWallStatus][HCLayerParcels] = NO;
         configLayers[HCConfigAlleyWallStatus][HCLayerSewers] = NO;
         configLayers[HCConfigAlleyWallStatus][HCLayerPlanimetric] = NO;
         configLayers[HCConfigAlleyWallStatus][HCLayerAlleys] = YES;
+        configLayers[HCConfigAlleyWallStatus][HCLayerCurbRamps] = NO;
         
         configLayers[HCConfigCurbRamps][HCLayerAerials] = YES;
-        configLayers[HCConfigCurbRamps][HCLayerParcels] = YES;
+        configLayers[HCConfigCurbRamps][HCLayerParcels] = NO;
         configLayers[HCConfigCurbRamps][HCLayerSewers] = NO;
         configLayers[HCConfigCurbRamps][HCLayerPlanimetric] = NO;
         configLayers[HCConfigCurbRamps][HCLayerAlleys] = NO;
+        configLayers[HCConfigCurbRamps][HCLayerCurbRamps] = YES;
         
         configLayers[HCConfigMetroProp][HCLayerAerials] = NO;
         configLayers[HCConfigMetroProp][HCLayerParcels] = YES;
         configLayers[HCConfigMetroProp][HCLayerSewers] = NO;
         configLayers[HCConfigMetroProp][HCLayerPlanimetric] = NO;
         configLayers[HCConfigMetroProp][HCLayerAlleys] = NO;
+        configLayers[HCConfigMetroProp][HCLayerCurbRamps] = NO;
         
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
@@ -265,6 +273,10 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                     
                 case HCLayerAlleys:
                     [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAlleyWall]];
+                    break;
+                    
+                case HCLayerCurbRamps:
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCurbRamp]];
                     break;
             }
         }
@@ -422,7 +434,17 @@ visibleAtZoom:(float)zoom
             lo = [[LayerObject alloc]initWithName:@"ALLEYCENTERLINE"
                                             andID:-1];
             [array addObject:lo];
-       
+            
+        }
+            break;
+            
+        case HCLayerCurbRamps:
+        {
+            LayerObject * lo = [[LayerObject alloc]initWithName:@"CRINTPT"
+                                                          andID:-1];
+            
+            [array addObject:lo];
+            
         }
             break;
             

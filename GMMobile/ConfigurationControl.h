@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigMetroProp,
 };
 
-#define NUMHardCodedLayers 5
+#define NUMHardCodedLayers 6
 
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerSewers,
     HCLayerPlanimetric,
     HCLayerAlleys,
+    HCLayerCurbRamps,
 };
 
 @interface ApplicationObject : NSObject

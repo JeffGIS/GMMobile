@@ -25,6 +25,9 @@ extern int keepProcessing;
     
     return NO;
 }
+
+#pragma mark - Plan Areas
+
 -(void)displayPlanArea:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
@@ -193,6 +196,8 @@ extern int keepProcessing;
         }
     }
 }
+
+#pragma mark - Plan Lines
 
 -(void)displayPlanLine:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -387,7 +392,6 @@ extern int keepProcessing;
     [pd close];
 
 }
-
 - (void) drawPlanPoint:(CGContextRef)context
                atPoint:(DPOINT*)pPoint
              withColor:(CGColorRef)color
@@ -402,72 +406,8 @@ extern int keepProcessing;
     //CGContextFillPath(context);
     
 }
-- (int)pickAlleyWallPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
-{
-    if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
-                                      visibleAtZoom:_zoom])
-        return 0;
-    
-    NSString *minID = [[NSString alloc] init];
-    CGFloat d, mind = DBL_MAX;
-    DPOINT p1, p2, minpt;
-    LPLLPOINT pt = &point;
-    int minref = 0;
-    int npicked = 0;
-    
-    p1.x = pt->lon;
-    p1.y = pt->lat;
-    minpt = p1;
-    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    AlleyWallData *pd = [[AlleyWallData alloc] init];
-    [pd open];
-    
-    NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS_NEW.id,[Wall ID],LATITUDE,LONGITUDE FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.Current=1 AND ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-             bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
-    
-    sqlite3_stmt *statement = NULL;
-    
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        int refno = sqlite3_column_int(statement, 0);
-        LPSTR wallID = (LPSTR)sqlite3_column_text(statement, 1);
-        CGFloat lat = sqlite3_column_double(statement, 2);
-        CGFloat lon = sqlite3_column_double(statement, 3);
-        p2.x = lon;
-        p2.y = lat;
-        d = ArcDistance(p1, p2);
-        
-        if (d < mind)
-        {
-            npicked++;
-            minref = refno;
-            mind = d;
-            minpt = p2;
-            minID = [NSString stringWithUTF8String:wallID];
-        }
-    }
-    
-    SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
-    pt->lon = minpt.x;
-    pt->lat = minpt.y;
-    
-    if (npicked)
-    {
-        PickedItem *pi = [[PickedItem alloc]init];
-        pi.itemType = PTAlleyWallPt;
-        pi.distance = mind;
-        pi.pickedPoint = minpt;
-        pi.identifier = minID;
-        pi.symbolName = @"ALLEYWALLPT";
-        pi.refno = minref;
-        [hlist addObject:pi];
-    }
-    
-    return npicked;
-}
+
+#pragma mark - Alley Centerlines
 
 -(void)displayAlleyLine:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -655,6 +595,76 @@ extern int keepProcessing;
     
     return nPicked;
 }
+
+#pragma mark - Alley Walls
+
+- (int)pickAlleyWallPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
+{
+    if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                      visibleAtZoom:_zoom])
+        return 0;
+    
+    NSString *minID = [[NSString alloc] init];
+    CGFloat d, mind = DBL_MAX;
+    DPOINT p1, p2, minpt;
+    LPLLPOINT pt = &point;
+    int minref = 0;
+    int npicked = 0;
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
+    AlleyWallData *pd = [[AlleyWallData alloc] init];
+    [pd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS_NEW.id,[Wall ID],LATITUDE,LONGITUDE FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.Current=1 AND ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR wallID = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lat = sqlite3_column_double(statement, 2);
+        CGFloat lon = sqlite3_column_double(statement, 3);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1, p2);
+        
+        if (d < mind)
+        {
+            npicked++;
+            minref = refno;
+            mind = d;
+            minpt = p2;
+            minID = [NSString stringWithUTF8String:wallID];
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement),pd.database);
+    [pd close];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    
+    if (npicked)
+    {
+        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTAlleyWallPt;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minID;
+        pi.symbolName = @"ALLEYWALLPT";
+        pi.refno = minref;
+        [hlist addObject:pi];
+    }
+    
+    return npicked;
+}
+
 -(void)displayWallPoint:(CGContextRef)context
               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
@@ -713,6 +723,150 @@ extern int keepProcessing;
 }
 
 - (void)drawWallPoint:(CGContextRef)context
+              atPoint:(DPOINT *)pPoint
+            withColor:(CGColorRef)color
+              andSize:(CGFloat)size
+{
+    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
+                                  (pPoint->y - size / 2.0), size, size);
+    
+    CGContextSetFillColorWithColor(context,color);
+    CGContextFillEllipseInRect(context, pointRect);
+    CGContextSetLineWidth(context, 2);
+    
+    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+        CGContextSetRGBStrokeColor(context, 1, 1, 0, 1);
+    
+    else
+        CGContextSetRGBStrokeColor(context, 0, 0, 0, 1);
+    
+    CGContextStrokeEllipseInRect(context, pointRect);
+    //CGContextFillPath(context);
+}
+
+#pragma mark - Curb Ramp Intersections
+
+- (int)pickCurbRampIntersectionPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
+{
+    if (![ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
+                                      visibleAtZoom:_zoom])
+        return 0;
+    
+    NSString *minID = [[NSString alloc] init];
+    CGFloat d, mind = DBL_MAX;
+    DPOINT p1, p2, minpt;
+    LPLLPOINT pt = &point;
+    int minref = 0;
+    int npicked = 0;
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
+    CurbRampData *crd = [[CurbRampData alloc] init];
+    [crd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT INTERSECTION_POINT.id,INTERSECTION_ID,LATITUDE,LONGITUDE FROM INTERSECTION_POINT,INTERSECTION_POINT_index WHERE INTERSECTION_POINT.id=INTERSECTION_POINT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR intersectionID = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lat = sqlite3_column_double(statement, 2);
+        CGFloat lon = sqlite3_column_double(statement, 3);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1, p2);
+        
+        if (d < mind)
+        {
+            npicked++;
+            minref = refno;
+            mind = d;
+            minpt = p2;
+            minID = [NSString stringWithUTF8String:intersectionID];
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement),crd.database);
+    [crd close];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    
+    if (npicked)
+    {
+        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTCRIntersectionPt;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minID;
+        pi.symbolName = @"CRINTPT";
+        pi.refno = minref;
+        [hlist addObject:pi];
+    }
+    
+    return npicked;
+}
+
+-(void)displayCurRampIntersectionPoint:(CGContextRef)context
+              llCorners:(CORNERPOINTS *) latlonCornerPoints
+               LLBounds:(MNMXCORD *)platlonBounds
+             viewBounds:(MNMXCORD *)pvbounds
+{
+    NSString *query = @"";
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    CGColorRef intersectionPointColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.8].CGColor;
+    
+    //LPSTR symName;
+    
+    if (![self continue])
+        return;
+    CGFloat sizeFactor = 1;
+    
+    sizeFactor /= (2.0 * (22.0 - _zoom));
+    CGFloat size = 150 * sizeFactor;;
+    
+    CurbRampData *crd = [[CurbRampData alloc] init];
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    
+    [crd open];
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM INTERSECTION_POINT,INTERSECTION_POINT_index WHERE INTERSECTION_POINT.id=INTERSECTION_POINT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
+    
+    SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+    
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        
+        DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        
+        [self drawCurbRampIntersection:context
+                    atPoint:&llpoint
+                  withColor:intersectionPointColor
+                    andSize:size];
+    }
+    
+    SQLOK(sqlite3_finalize(statement),crd.database);
+    [crd close];
+    
+}
+
+- (void)drawCurbRampIntersection:(CGContextRef)context
               atPoint:(DPOINT *)pPoint
             withColor:(CGColorRef)color
               andSize:(CGFloat)size

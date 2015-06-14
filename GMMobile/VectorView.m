@@ -262,6 +262,29 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                               llCorners:&_latlonCornerPoints
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];
+                                               if (keepProcessing == self.displayID)
+                                               {
+                                                   [pd displayCurRampIntersectionPoint:_context
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];
+                                               }
+                                           }
+                                           if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
+                                                                            visibleAtZoom:_zoom])
+                                           {
+                                               PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                               pd.processingID = keepProcessing;
+                                               pd.zoom = _zoom;
+                                               
+                                               if (keepProcessing == self.displayID)
+                                               {
+                                                   [pd displayCurRampIntersectionPoint:_context
+                                                                             llCorners:&_latlonCornerPoints
+                                                                              LLBounds:&_latlonBounds
+                                                                            viewBounds:&_viewBounds];
+                                               }
                                            }
                                            if (keepProcessing == self.displayID &&
                                                [ConfigurationControl.sharedInstance layer:HCLayerSewers

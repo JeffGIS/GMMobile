@@ -41,7 +41,19 @@
               atZoom:(CGFloat)zoom
        highlightList:(NSMutableArray *)hlist;
 
+- (int)pickCurbRampIntersectionPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist;
+
+-(void)displayCurRampIntersectionPoint:(CGContextRef)context
+                             llCorners:(CORNERPOINTS *) latlonCornerPoints
+                              LLBounds:(MNMXCORD *)platlonBounds
+                            viewBounds:(MNMXCORD *)pvbounds;
+
 - (NSArray *)getDistinctSymbols:(NSString *)tableName;
+
+- (void)drawCurbRampIntersection:(CGContextRef)context
+                         atPoint:(DPOINT *)pPoint
+                       withColor:(CGColorRef)color
+                         andSize:(CGFloat)size;
 
 - (void)userSavedAlleyWallPointMove:(BOOL)saved;
 

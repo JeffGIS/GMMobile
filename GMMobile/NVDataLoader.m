@@ -118,6 +118,10 @@ Top:
             sel = @selector(loadAlleyWall:);
             break;
             
+        case GetDatabaseSettingCurbRamp:
+            sel = @selector(loadCurbRamps:);
+            break;
+            
         case GetDatabaseSettingPlan:
             sel = @selector(loadPlan:);
             break;
@@ -189,6 +193,15 @@ Top:
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             
             if (awd.datasetVersion >= 1)
+                rtn = YES;
+        }
+            break;
+            
+        case GetDatabaseSettingCurbRamp:
+        {
+            CurbRampData *crd = [[CurbRampData alloc] init];
+            
+            if (crd.datasetVersion >= 1)
                 rtn = YES;
         }
             break;
