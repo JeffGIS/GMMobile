@@ -572,12 +572,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
-
 - (IBAction)loadCurbRamps:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_CurbRamp.gcf";
-    
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;

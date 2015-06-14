@@ -901,6 +901,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
                     break;
             }
+            
             marker.refno = pi.refno;
             
             [_markerArray addObject:marker];
@@ -945,6 +946,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
             case MarkerInfoWindowTypeAlleyWall:
                 _selectedAlleyWall = _infoWindow.title = marker.title;
+                break;
+                
+            case MarkerInfoWindowTypeCRInt:
+                _selectedCRIntPt = _infoWindow.title = marker.title;
                 break;
                 
             case MarkerInfoWindowTypeAlleyLine:
@@ -2285,6 +2290,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Edit Intersection Attributes"])
+    {
+        [self editIntersectionAttributes];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Marker"] ||
@@ -2293,7 +2304,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Custom Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Alley Line Marker"])
+              isEqualToString:@"Remove Alley Line Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Intersection Marker"])
         
     {
         [self dismissTableView];
@@ -2514,6 +2527,29 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
+}
+
+- (void)editIntersectionAttributes
+{
+    NSString *CRISDetailURL = @"PedRampDetail://";
+    
+    [SharedDefaults.defaults saveString:@"GMMobile"
+                                 forKey:@"SourceApplication"];
+    
+    [SharedDefaults.defaults saveInteger:_selectedCRIntPt.intValue
+                                  forKey:@"DetailCurrentIntersection"];
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    
+    else
+    {
+        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch CRIS Detail"
+                               message:nil
+                     cancelButtonTitle:@"OK"
+                     otherButtonTitles:nil
+             destructiveButtonPosition:0];
+    }
 }
 
 - (void)alleyStatus
@@ -3517,6 +3553,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleySeg = title;
             _selectedAlleyLineRefno = refno;
             _options = @[@"Toggle Alley Line\nCompletion Status", @"Remove Alley Line Marker"];
+            break;
+            
+        case MarkerInfoWindowTypeCRInt:
+            _selectedCRIntPt = title;
+            _options = @[@"Edit Intersection Attributes", @"Remove Intersection Marker"];
             break;
             
         case MarkerInfoWindowTypeCustom:
