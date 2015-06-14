@@ -47,7 +47,7 @@ extern int keepProcessing;
                      refno];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayParcels");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -89,7 +89,7 @@ extern int keepProcessing;
                withColor:UIColor.redColor.CGColor];
     }
  
-    SQLOK(sqlite3_finalize(statement), "displayParcels");
+    SQLOK(sqlite3_finalize(statement), pd.database);
     [pd close];
 }
 
@@ -183,7 +183,7 @@ extern int keepProcessing;
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), "prepareDisplayLandUse");
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -231,7 +231,7 @@ extern int keepProcessing;
                 withColor:UIColor.redColor.CGColor];
     }
     
-    SQLOK(sqlite3_finalize(statement), "displayLandUse");
+    SQLOK(sqlite3_finalize(statement), pd.database);
     [pd close];
 }
 
