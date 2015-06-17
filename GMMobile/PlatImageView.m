@@ -474,9 +474,9 @@ top:
     
     if (_delegate)
     {
-        CGFloat pBearing;
-        CLLocationCoordinate2D pTarget;
-        DPOINT minYpt, maxYpt;
+        CGFloat pBearing=0;
+        CLLocationCoordinate2D pTarget={0};
+        DPOINT minYpt={0}, maxYpt={0};
         
         CGFloat pZoom = [self zoomForMapBounds:self.frame
                                        bearing:&pBearing
@@ -520,8 +520,8 @@ top:
     if (_delegate)
     {
         CGFloat pBearing;
-        CLLocationCoordinate2D pTarget;
-        DPOINT minYpt, maxYpt;
+        CLLocationCoordinate2D pTarget={0};
+        DPOINT minYpt={0}, maxYpt={0};
         
         CGFloat pZoom = [self zoomForMapBounds:self.frame
                                        bearing:&pBearing
