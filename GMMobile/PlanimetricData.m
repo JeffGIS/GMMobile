@@ -538,7 +538,7 @@ extern int keepProcessing;
     {
         int refno = sqlite3_column_int(statement, 0);
         LPSTR ALLEYSEG = (LPSTR)sqlite3_column_text(statement, 1);
-        NSInteger iALLEYSEG = sqlite3_column_int(statement, 1);
+        //NSInteger iALLEYSEG = sqlite3_column_int(statement, 1);
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
@@ -916,8 +916,6 @@ extern int keepProcessing;
 
 - (void)userSavedAlleyWallPointMove:(BOOL)saved
 {
-    int ii = 1;
-    ii = 2;
 }
 
 @end

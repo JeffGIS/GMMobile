@@ -64,6 +64,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     if (!_isDrilledDown)
         _layerList = ConfigurationControl.sharedInstance.getLayers;
     

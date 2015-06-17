@@ -980,62 +980,60 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
-        //numLoops = sqlite3_column_int(statement,5);
-        //int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-        //int nBlobBytes = sqlite3_column_bytes(statement,6);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-        //nBlobBytes = sqlite3_column_bytes(statement,7);
-        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-        symName = (LPSTR)sqlite3_column_text(statement,8);
-        
-        if (numPoints < 0)
+        if (numPoints != 0)
         {
-            numPoints = -numPoints;
-            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-            
-            for (int i = 0; i < numPoints; i++)
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
+            LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+            symName = (LPSTR)sqlite3_column_text(statement,8);
+            if (numPoints < 0)
             {
-                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
+                {
+                    llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                }
+            }
+            
+            else for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-        }
-        
-        else for (int i = 0; i < numPoints; i++)
-        {
-            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-        }
             
-        if (!strcasecmp(symName, "STRM_PIPE"))
-        {
-            CGFloat pattern[2] = {40.0, 10.0};
-            addPointers = YES;
-            width = (9.0 * sizeFactor);
-            CGContextSetLineDash (context, 5, pattern, 2);
-            color = _red.CGColor;
+            if (!strcasecmp(symName, "STRM_PIPE"))
+            {
+                CGFloat pattern[2] = {40.0, 10.0};
+                addPointers = YES;
+                width = (9.0 * sizeFactor);
+                CGContextSetLineDash (context, 5, pattern, 2);
+                color = _red.CGColor;
+                
+            }
+            else
+            {
+                addPointers = NO;
+                lineText = @"";
+                width = (3 * sizeFactor);
+                CGContextSetLineDash (context, 1, NULL, 0);
+                color = UIColor.greenColor.CGColor;
+            }
             
+            [self drawStormLine:context
+                           pass:LINE_PASS
+                        nPoints:numPoints
+                         points:llpoints
+                      withColor:color
+                       andWidth:width
+                        andText:lineText
+                    andPointers:addPointers];
+            
+            free(llpoints);
         }
-        else
-        {
-            addPointers = NO;
-            lineText = @"";
-            width = (3 * sizeFactor);
-            CGContextSetLineDash (context, 1, NULL, 0);
-            color = UIColor.greenColor.CGColor;
-        }
-        
-        [self drawStormLine:context
-                       pass:LINE_PASS
-                    nPoints:numPoints
-                     points:llpoints
-                  withColor:color
-                   andWidth:width
-                    andText:lineText
-                andPointers:addPointers];
-        
-        free(llpoints);
     }
     
     SQLOKswr(sqlite3_finalize(statement), _database);

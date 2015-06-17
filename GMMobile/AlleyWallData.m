@@ -201,7 +201,6 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
 - (void)setAlleyLineStatus:(NSInteger)refno
                         to:(int)status
 {
-    BOOL rtn;
     int iTime = NSDate.timeIntervalSinceReferenceDate;
     int segid = [self getAlleyLineSeg:refno];
     NSString *outputDataPath = [NSString stringWithFormat:@"%@/AlleyWallInventory_Alley_%i_%i.txt",
@@ -209,7 +208,7 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
     NSMutableString *outData = [[NSMutableString alloc]init];
     [outData appendString:[NSString stringWithFormat:@"$GMDUPDATE([ALLEYSEGFILE],SEGID=%i,Status=%i;LastUpdate=%i,",segid,status,iTime]];
     [outData appendString:@");"];
-    rtn = [outData writeToFile:outputDataPath
+    [outData writeToFile:outputDataPath
                     atomically:YES
                       encoding:NSUTF8StringEncoding
                          error:nil];
@@ -295,7 +294,7 @@ SELECT max(_id) FROM MyTable*/
     NSString *today = [dateFormatter stringFromDate:[[NSDate alloc] init]];
     
     NSString *cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW([id],[Wall ID],[Hse No],[STREET],[InspDate],[Current],[LONGITUDE],[LATITUDE],[LastUpdate]) VALUES(%ld,'%@',%ld,'%@','%@',1,%f,%f,%i);",(long)refno,wallID,(long)iHouse,street,today,position.longitude,position.latitude,iTime];
-    rtn = [self executeCmd:(LPSTR)cmd.UTF8String
+    [self executeCmd:(LPSTR)cmd.UTF8String
               sendToServer:YES
              useUniqueFile:YES];
     cmd = [NSString stringWithFormat:@"INSERT INTO ALLEYWALLS_NEW_index VALUES(%ld,%f,%f,%f,%f)",(long)refno,position.longitude,position.longitude,position.latitude,position.latitude];
@@ -312,7 +311,6 @@ SELECT max(_id) FROM MyTable*/
     CGFloat mind = DBL_MAX;
     DPOINT p1, pickedPoint, minpt, BasePt;
     NSString *minFid = @"";
-    int minref = 0;
     int numPoints;
     
     p1.x = pt->longitude;
@@ -330,9 +328,9 @@ SELECT max(_id) FROM MyTable*/
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int refno = sqlite3_column_int(statement, 0);
+        //int refno = sqlite3_column_int(statement, 0);
         LPSTR ALLEYSEG = (LPSTR)sqlite3_column_text(statement, 1);
-        NSInteger iALLEYSEG = sqlite3_column_int(statement, 1);
+        //NSInteger iALLEYSEG = sqlite3_column_int(statement, 1);
         BasePt.x = sqlite3_column_double(statement, 2);
         BasePt.y = sqlite3_column_double(statement, 3);
         numPoints = sqlite3_column_int(statement,4);
@@ -363,7 +361,6 @@ SELECT max(_id) FROM MyTable*/
             if (findClosestPoint (&pickedPoint, &minpt, &mind, &p1))
             {
                 nPicked++;
-                minref = refno;
                 minFid = [NSString stringWithUTF8String:ALLEYSEG];
             }
         }

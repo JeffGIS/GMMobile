@@ -203,6 +203,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayerZoom[HCConfigAlleyWalls][HCLayerAerials] = 18;
         configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
         configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
+        configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
     }
     
     return self;

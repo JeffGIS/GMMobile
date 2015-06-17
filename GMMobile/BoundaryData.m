@@ -54,39 +54,42 @@ extern int keepProcessing;
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
-        numLoops = sqlite3_column_int(statement,3);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-        //int nBlobBytes = sqlite3_column_bytes(statement,4);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
-        //nBlobBytes = sqlite3_column_bytes(statement,5);
-        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-        
-        if (numPoints < 0)
+        if (numPoints != 0)
         {
-            numPoints = -numPoints;
-            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            numLoops = sqlite3_column_int(statement,3);
+            int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+            //int nBlobBytes = sqlite3_column_bytes(statement,4);
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
+            //nBlobBytes = sqlite3_column_bytes(statement,5);
+            LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             
-            for (int i = 0; i < numPoints; i++)
+            if (numPoints < 0)
             {
-                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                numPoints = -numPoints;
+                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                
+                for (int i = 0; i < numPoints; i++)
+                {
+                    llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                    llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                }
+            }
+            
+            else for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
+            
+            [self drawBoundary:context
+                       nPoints:numPoints
+                        nLoops:numLoops
+                       partLen:polyPartLen
+                        points:llpoints
+                     withColor:UIColor.redColor.CGColor];
         }
-        
-        else for (int i = 0; i < numPoints; i++)
-        {
-            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-        }
-        
-        [self drawBoundary:context
-                 nPoints:numPoints
-                  nLoops:numLoops
-                 partLen:polyPartLen
-                  points:llpoints
-               withColor:UIColor.redColor.CGColor];
     }
  
     SQLOK(sqlite3_finalize(statement), pd.database);

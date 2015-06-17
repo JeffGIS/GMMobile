@@ -245,9 +245,9 @@ Top:;
         NSString *newName = [NSString stringWithFormat:@"%@/Uploaded_%@",
                              _outputDirectory, _currentFile.lastPathComponent];
         
-        BOOL rtn = [NSFileManager.defaultManager removeItemAtPath:newName
+        [NSFileManager.defaultManager removeItemAtPath:newName
                                                  error:nil];
-        rtn = [NSFileManager.defaultManager moveItemAtPath:_currentFile
+        [NSFileManager.defaultManager moveItemAtPath:_currentFile
                                                     toPath:newName
                                                      error:nil];
 
