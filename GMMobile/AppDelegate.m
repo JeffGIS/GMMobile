@@ -85,6 +85,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     else if ([sourceApp isEqualToString:@"AlleyWallInventory"])
         CRAPI.sharedInstance.setToAlleyWalls = YES;
     
+    CRAPI.sharedInstance.sourceApp = sourceApp;
+    
     [SharedDefaults.defaults saveString:@""
                                  forKey:@"SourceApplication"];
     
