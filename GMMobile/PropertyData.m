@@ -2283,6 +2283,7 @@ LPSTR OneSpace(LPSTR Arg1)
     
     *OutLoc = 0;
     strcpy(SaveArg1, SaveOutLoc);
+    free (SaveOutLoc);
     return (Arg1);
 }
 
