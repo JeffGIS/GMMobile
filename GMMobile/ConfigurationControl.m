@@ -7,8 +7,8 @@
 #import "PlanimetricData.h"
 
 static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
-static BOOL layerVisible[NUMHardCodedLayers]={0};
-static BOOL layerPickable[NUMHardCodedLayers]={0};
+//static BOOL layerVisible[NUMHardCodedLayers]={0};
+//static BOOL layerPickable[NUMHardCodedLayers]={0};
 static float layerDefaultZoom[NUMHardCodedLayers]={0};
 static BOOL layerHasSymbols[NUMHardCodedLayers]={0};
 static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};

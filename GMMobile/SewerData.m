@@ -285,7 +285,7 @@ int SQLOKswr(int sqlReturn,sqlite3 *database)
     LPSTR platID;
     int numPoints, refno;
     //int numLoops;
-    CGFloat mind = DBL_MAX;
+    double mind = DBL_MAX;
     //CGFloat d;
     CGFloat pickap = 0.005;
     DPOINT p1, minpt;
@@ -579,7 +579,7 @@ int SQLOKswr(int sqlReturn,sqlite3 *database)
         return 0;
     
     int nPicked = 0;
-    CGFloat mind = DBL_MAX;
+    double mind = DBL_MAX;
     DPOINT p1, pickedPoint, minpt, BasePt;
     NSString *minFid = @"";
     int minref = 0;
