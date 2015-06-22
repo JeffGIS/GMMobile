@@ -67,7 +67,6 @@
     [super viewWillAppear:animated];
     if (!_isDrilledDown)
         _layerList = ConfigurationControl.sharedInstance.getLayers;
-    
     if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
     {
         [self initializeTableViewComponentValues];
@@ -85,7 +84,7 @@
         layer.segControlIndex = GMLayerSettingAuto;
         layer.stepperEnabled = YES;
         layer.cellButtonColor = UserDefaults.defaults.darkGreen;
-        layer.zoomLevel = DEFAULT_ZOOM_LEVEL;
+        //layer.zoomLevel = DEFAULT_ZOOM_LEVEL;
     }
 }
 
