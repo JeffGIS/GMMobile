@@ -67,7 +67,7 @@
     [super viewWillAppear:animated];
     if (!_isDrilledDown)
         _layerList = ConfigurationControl.sharedInstance.getLayers;
-    if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
+//    if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
     {
         [self initializeTableViewComponentValues];
         _lastSelectedApp = ConfigurationControl.sharedInstance.currentApp;
@@ -81,8 +81,16 @@
     for (int i = 0; i < _layerList.count; i++)
     {
         LayerObject *layer = (LayerObject *)_layerList[i];
-        layer.segControlIndex = GMLayerSettingAuto;
-        layer.stepperEnabled = YES;
+        if (layer.zoomLevel < 22)
+        {
+            layer.stepperEnabled = YES;
+            layer.segControlIndex = GMLayerSettingAuto;
+        }
+        else
+        {
+            layer.stepperEnabled = NO;
+            layer.segControlIndex = GMLayerSettingOff;
+        }
         layer.cellButtonColor = UserDefaults.defaults.darkGreen;
         //layer.zoomLevel = DEFAULT_ZOOM_LEVEL;
     }
@@ -500,6 +508,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                     break;
                     
                 case GMLayerSettingAuto:
+                    stepper.value = CRAPI.sharedInstance.currentZoom;
                     [self enableStepper:stepper];
                     
                     [self layerVisibilityWasSetToZoomLevel:stepper.value
@@ -544,7 +553,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         stepper.enabled = YES;
         stepper.layer.borderColor = UIColor.blackColor.CGColor;
         stepper.tintColor = UIColor.blackColor;
-        stepper.value = DEFAULT_ZOOM_LEVEL;
         
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:stepper.tag
                                                     inSection:0];
@@ -559,7 +567,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 cellLabel.textColor = UIColor.blackColor;
                 
                 cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %d",
-                                  DEFAULT_ZOOM_LEVEL];
+                                  (int)stepper.value];
             }
         }
     }

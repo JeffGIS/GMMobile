@@ -262,13 +262,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                               llCorners:&_latlonCornerPoints
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];
-                                               if (keepProcessing == self.displayID)
-                                               {
-                                                   [pd displayCurRampIntersectionPoint:_context
-                                                              llCorners:&_latlonCornerPoints
-                                                               LLBounds:&_latlonBounds
-                                                             viewBounds:&_viewBounds];
-                                               }
                                            }
                                            if (keepProcessing == self.displayID &&
                                                [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
