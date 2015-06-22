@@ -14,7 +14,7 @@
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *path;
-@property NSInteger fileSize;
+@property unsigned long long fileSize;
 @property (nonatomic) int datasetVersion;
 
 - (void)open;
