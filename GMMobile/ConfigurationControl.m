@@ -238,7 +238,22 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     
     [UserDefaults.defaults saveInteger:(appID + 1)
                                 forKey:@"CurrentConfig"];
-    
+    switch (_currentApp)
+    {
+        case HCConfigMetroProp:
+            
+            CRAPI.sharedInstance.parcelTextOption = 1;
+            break;
+            
+        case HCConfigAlleyWalls:
+            
+            CRAPI.sharedInstance.parcelTextOption = 2;
+            break;
+            
+        default:
+            CRAPI.sharedInstance.parcelTextOption = 0;
+            break;
+    }
     return rtn;
 }
 
@@ -303,6 +318,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             lo.layerID = layer;
             lo.layerName = [NSString stringWithUTF8String:layerName[layer]];
             lo.hasSymbols = layerHasSymbols[layer];
+            lo.zoomLevel = configLayerZoom[_currentApp][layer];
             [layers addObject:lo];
         }
     }

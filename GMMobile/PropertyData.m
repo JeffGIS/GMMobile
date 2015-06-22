@@ -1084,21 +1084,30 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 }
 
 - (void)displayText:(NSString *)text
-            atPoint:(LPDPOINT)pviewPoint
+            atPoint:(LPDPOINT)pviewPointx
+             inRect:(CGRect*)ptextRect
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
-    CGFloat fontSize = 48.0;
-    CGFloat minFontSize = 12.0;
-    CGFloat size = sqrtf(maxPixels);
+    CGFloat fontSize = 32.0;
+    CGFloat minFontSize = 10.0;
+    //CGFloat size = sqrtf(maxPixels);
     NSAttributedString *attString;
     UIColor *textColor;
    
+    text = [text stringByReplacingOccurrencesOfString:@"&"
+                                           withString:@"\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"/"
+                                           withString:@"\n"];
+//add border to rect
+    int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
+    ptextRect->origin.x += border;
+    ptextRect->origin.y += border;
+    ptextRect->size.width -= border * 2;
+    ptextRect->size.height -= border * 2;
     while (fontSize > minFontSize)
     {
         CGContextSaveGState(context);
-        text = [text stringByReplacingOccurrencesOfString:@"&"
-                                               withString:@"\n&\n"];
         
         CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
                                                  fontSize, NULL);
@@ -1128,24 +1137,24 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         
         CGSize textSize = [text sizeWithAttributes:attributes];
         
-        if (textSize.width < size)
+        if (textSize.width < ptextRect->size.width)
         {
-            CGFloat yoffset = (textSize.height / 2.0);
+            ptextRect->origin.y -= (ptextRect->size.height - textSize.height) / 2;
+           //CGFloat yoffset = (textSize.height / 2.0);
             
-            CGRect rect = CGRectMake((pviewPoint->x - (size / 2.0)),
-                                     (pviewPoint->y - size + yoffset), size, size);
+           // CGRect rect = CGRectMake((pviewPoint->x - (size / 2.0)), (pviewPoint->y - size + yoffset), size, size);
             
             if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
             {
                 attString = [[NSAttributedString alloc] initWithString:text
                                                             attributes:shadowAttributes];
                 
-                [self drawTextShadowForRect:rect
+                [self drawTextShadowForRect:*ptextRect
                                   attString:attString
                                     context:context];
             }
             
-            CGPathRef path = CGPathCreateWithRect(rect, NULL);
+            CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
             
             attString = [[NSAttributedString alloc] initWithString:text
                                                         attributes:attributes];
@@ -1240,6 +1249,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     DPOINT p1, p2;
+    MNMXCORD bnds, bndsScreen;
     CGFloat boundsWidthInMeters, boundsHeightInMeters;
     p1.x = platlonBounds->xmn;
     p1.y = platlonBounds->ymn;
@@ -1258,7 +1268,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     DPOINT BasePt, viewPoint;
     CGFloat emvTotal, acres;
     //CGFloat specAssmt;
-    LPSTR owner;
+    LPSTR owner, bldgNum;
     //LPSTR homeStead, useCode, useDesc, taxExempt;
     //char homeSteadCode = 'H';
     //char taxExemptCode = 'E';
@@ -1282,8 +1292,14 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         case PROJECT_METROGIS:
             //homeSteadCode = 'Y';
             //taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME,BLDG_NUM, \
+                     PARCELPOLY_index.minX,PARCELPOLY_index.maxX,PARCELPOLY_index.minY,PARCELPOLY_index.maxY\
+                     FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PROPINFO_index.maxX>=%f AND PROPINFO_index.minX<=%f AND PROPINFO_index.maxY>=%f AND PROPINFO_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+           /* query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME,BLDG_NUM FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",*/
+
     }
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
@@ -1301,6 +1317,11 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         emvTotal = (CGFloat)sqlite3_column_double(statement, 8);
         //specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
         owner = (LPSTR)sqlite3_column_text(statement, 10);
+        bldgNum = (LPSTR)sqlite3_column_text(statement, 11);
+        bnds.xmn = (CGFloat)sqlite3_column_double(statement, 12);
+        bnds.xmx = (CGFloat)sqlite3_column_double(statement, 13);
+        bnds.ymn = (CGFloat)sqlite3_column_double(statement, 14);
+        bnds.ymx = (CGFloat)sqlite3_column_double(statement, 15);
 
         //CGFloat alpha = 0.0;
         //UIColor *color;
@@ -1313,15 +1334,19 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 num = [[NSNumber alloc] initWithDouble:emvTotal];
                 text = [NSString stringWithFormat:@"%s\n%@", owner, [dollarFmt stringFromNumber:num]];
                 break;
-            
+            case 2://building num
+                text = [NSString stringWithUTF8String:bldgNum];
+                break;
             default:
                 break;
         }
         
         viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-        
+        TranMNMXCORD(&bnds, &bndsScreen, _pTranLLtoView);
+        CGRect textRect = MNMXCORDtoCGRect(&bndsScreen);
         [self displayText:text
                   atPoint:&viewPoint
+                   inRect:(CGRect*)&textRect
                 maxPixels:acres *acresToPixelsFactor
                   context:context];
     }
