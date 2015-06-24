@@ -34,6 +34,12 @@
                forState:UIControlStateNormal];
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    for (UIView *subviews in self.view.subviews)
+        [subviews removeFromSuperview];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -262,6 +268,24 @@
 - (void)sliderViewDidCancel:(NVSliderView *)sliderView
 {
     [sliderView hideSliderView:YES];
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return UIInterfaceOrientationMaskPortrait;
+    
+    else
+        return UIInterfaceOrientationMaskAll;
+}
+
+- (BOOL)shouldAutorotate
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return NO;
+    
+    else
+        return YES;
 }
 
 @end

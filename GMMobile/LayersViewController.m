@@ -642,12 +642,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                duration:(NSTimeInterval)duration
-{
-    [_tableView reloadData];
-}
-
 - (void)layerWasTurnedOnAtIndex:(NSInteger)index
 {
     LayerObject *layer = (LayerObject *)_layerList[index];
