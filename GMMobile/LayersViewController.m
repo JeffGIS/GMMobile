@@ -32,18 +32,20 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _rowHeight = 60.0;
-        _font = [UIFont boldSystemFontOfSize:22.0];
+        _rowHeight = 120.0;
+        _headerHeight = (_rowHeight * 0.6);
+        _font = [UIFont boldSystemFontOfSize:16.0];
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
         _headerZoomFont = [UIFont boldSystemFontOfSize:18.0];
-        _indentationLevel = 10;
+        _indentationLevel = 17;
         _segControlWidth = 120.0;
-        _cellLabelWidth = 100.0;
+        _cellLabelWidth = _segControlWidth;
     }
     
     else
     {
         _rowHeight = 76.0;
+        _headerHeight = (_rowHeight * 1.2);
         _font = [UIFont boldSystemFontOfSize:36.0];
         _headerFont = [UIFont boldSystemFontOfSize:44.0];
         _headerZoomFont = [UIFont boldSystemFontOfSize:28.0];
@@ -51,8 +53,6 @@
         _segControlWidth = 160.0;
         _cellLabelWidth = 140.0;
     }
-    
-    _headerHeight = (_rowHeight * 1.2);
     
     [self setupTableView];
 }
@@ -65,8 +65,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     if (!_isDrilledDown)
         _layerList = ConfigurationControl.sharedInstance.getLayers;
+    
     if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
     {
         [self initializeTableViewComponentValues];
@@ -234,6 +236,9 @@ viewForHeaderInSection:(NSInteger)section
         CGFloat cornerRadius = 4.0, borderWidth = 3.0;
         CGFloat xCount = margin;
         
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            xCount = margin = topMargin = 8.0;
+        
         BOOL containsSegControl = NO, containsStepper = NO;
         BOOL containsCellLabel = NO, containsCellButton = NO;
         
@@ -254,22 +259,35 @@ viewForHeaderInSection:(NSInteger)section
             subviews.tag = indexPath.row;
         }
         
-        UISegmentedControl *segControl;
-        UIStepper *stepper;
-        TableViewCellLabel *cellLabel;
-        TableViewCellButton *cellButton;
+        UISegmentedControl *segControl = nil;
+        UIStepper *stepper = nil;
+        TableViewCellLabel *cellLabel = nil;
+        TableViewCellButton *cellButton = nil;
         
         if (!containsSegControl)
         {
             UIFont *scFont = [UIFont boldSystemFontOfSize:18.0];
             
-            NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
-                                                                   forKey:NSFontAttributeName];
-            
             segControl = [[UISegmentedControl alloc] initWithItems:@[@"On", @"Off", @"Auto"]];
             
-            segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
-                                          (cell.frame.size.height - (topMargin * 2.0)));
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            {
+                segControl.frame = CGRectMake(xCount, margin, _segControlWidth,
+                                              ((cell.frame.size.height - (margin * 3.0)) / 2.0));
+                
+                scFont = [UIFont boldSystemFontOfSize:14.0];
+            }
+            
+            else
+            {
+                segControl.frame = CGRectMake(xCount, topMargin, _segControlWidth,
+                                              (cell.frame.size.height - (topMargin * 2.0)));
+                
+                xCount += (_segControlWidth + margin);
+            }
+            
+            NSDictionary *attributes = [NSDictionary dictionaryWithObject:scFont
+                                                                   forKey:NSFontAttributeName];
             
             segControl.layer.borderColor = UIColor.blackColor.CGColor;
             segControl.layer.borderWidth = borderWidth;
@@ -294,12 +312,21 @@ viewForHeaderInSection:(NSInteger)section
                 segControls.selectedSegmentIndex = layer.segControlIndex;
         }
         
-        xCount += (_segControlWidth + margin);
-        
         if (!containsStepper)
         {
-            stepper = [[UIStepper alloc] initWithFrame:
-                       CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0)];
+            stepper = [[UIStepper alloc] init];
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            {
+                stepper.center = CGPointMake(segControl.center.x,
+                                             ((segControl.frame.origin.y + segControl.frame.size.height) +
+                                              (margin + (stepper.frame.size.height / 2.0))));
+            }
+            
+            else
+            {
+                stepper.frame = CGRectMake((xCount + 23.0), topMargin, 0.0, 0.0);
+            }
             
             _stepperHeight = stepper.frame.size.height;
             
@@ -358,12 +385,24 @@ viewForHeaderInSection:(NSInteger)section
         
         if (!containsCellLabel)
         {
-            cellLabel = [[TableViewCellLabel alloc] initWithFrame:
-                         CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            {
+                cellLabel = [[TableViewCellLabel alloc] initWithFrame:
+                             CGRectMake(xCount, (stepper.frame.origin.y + stepper.frame.size.height),
+                                        _segControlWidth, (((cell.frame.size.height - (margin * 3.0)) -
+                                                            segControl.frame.size.height) - stepper.frame.size.height))];
+            }
+            
+            else
+            {
+                cellLabel = [[TableViewCellLabel alloc] initWithFrame:
+                             CGRectMake(xCount, (topMargin + _stepperHeight), _cellLabelWidth, _stepperHeight)];
+            }
             
             cellLabel.layer.cornerRadius = cornerRadius;
             cellLabel.font = [UIFont boldSystemFontOfSize:16.0];
             cellLabel.textAlignment = NSTextAlignmentCenter;
+            cellLabel.adjustsFontSizeToFitWidth = YES;
             cellLabel.tag = row;
             
             cellLabel.text = [NSString stringWithFormat:@"Show at Zoom %ld", (long)layer.zoomLevel];
