@@ -4,6 +4,35 @@
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
 
+@interface NSString (NSNumber)
+- (BOOL) isNumberWithLocale:(NSLocale *) stringLocale;
+- (BOOL) isNumber;
+- (NSNumber *) getNumber;
+- (NSNumber *) getNumberWithLocale:(NSLocale*) stringLocale;
+@end
+
+@implementation NSString (NSNumber)
+- (BOOL) isNumberWithLocale:(NSLocale *) stringLocale
+{
+    return [self getNumberWithLocale:stringLocale] != nil;
+}
+- (BOOL) isNumber
+{
+    return [ self getNumber ] != nil;
+}
+- (NSNumber *) getNumber
+{
+    NSLocale *l_en = [[NSLocale alloc] initWithLocaleIdentifier: @"en_US"] ;
+    return [self getNumberWithLocale:l_en];
+}
+
+- (NSNumber *) getNumberWithLocale:(NSLocale*) stringLocale
+{
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc ] init];
+    [formatter setLocale: stringLocale ];
+    return [ formatter numberFromString:self ];
+}
+@end
 #define COORDINATE_FACTOR 10000000.0
 
 extern int keepProcessing;
@@ -1090,15 +1119,20 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
             context:(CGContextRef)context
 {
     CGFloat fontSize = 32.0;
-    CGFloat minFontSize = 10.0;
+    CGFloat minFontSize = 8.0;
     //CGFloat size = sqrtf(maxPixels);
     NSAttributedString *attString;
     UIColor *textColor;
+    BOOL haveFit = NO;
    
     text = [text stringByReplacingOccurrencesOfString:@"&"
-                                           withString:@"\n"];
+                                           withString:@"&\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"1/2"
+                                           withString:@"!@#"];
     text = [text stringByReplacingOccurrencesOfString:@"/"
-                                           withString:@"\n"];
+                                           withString:@"/\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"!@#"
+                                           withString:@"1/2"];
 //add border to rect
     int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
@@ -1137,40 +1171,48 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         
         CGSize textSize = [text sizeWithAttributes:attributes];
         
-        if (textSize.width < ptextRect->size.width)
+        if (textSize.width  < ptextRect->size.width &&
+            textSize.height < ptextRect->size.height)
         {
-            ptextRect->origin.y -= (ptextRect->size.height - textSize.height) / 2;
-           //CGFloat yoffset = (textSize.height / 2.0);
-            
-           // CGRect rect = CGRectMake((pviewPoint->x - (size / 2.0)), (pviewPoint->y - size + yoffset), size, size);
-            
-            if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
+            if (haveFit)
             {
-                attString = [[NSAttributedString alloc] initWithString:text
-                                                            attributes:shadowAttributes];
+                ptextRect->origin.y -= (ptextRect->size.height - textSize.height) / 2;
+                //CGFloat yoffset = (textSize.height / 2.0);
                 
-                [self drawTextShadowForRect:*ptextRect
-                                  attString:attString
-                                    context:context];
+                // CGRect rect = CGRectMake((pviewPoint->x - (size / 2.0)), (pviewPoint->y - size + yoffset), size, size);
+                
+                if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
+                {
+                    attString = [[NSAttributedString alloc] initWithString:text
+                                                                attributes:shadowAttributes];
+                    
+                    [self drawTextShadowForRect:*ptextRect
+                                      attString:attString
+                                        context:context];
+                }
+                
+                CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
+                
+                attString = [[NSAttributedString alloc] initWithString:text
+                                                            attributes:attributes];
+                
+                CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+                CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+                
+                CTFrameDraw(frame, context);
+                CFRelease(frame);
+                CFRelease(path);
+                CFRelease(framesetter);
+                CGContextRestoreGState(context);
+                return;
             }
-            
-            CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
-            
-            attString = [[NSAttributedString alloc] initWithString:text
-                                                        attributes:attributes];
-            
-            CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-            CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
-            
-            CTFrameDraw(frame, context);
-            CFRelease(frame);
-            CFRelease(path);
-            CFRelease(framesetter);
-            CGContextRestoreGState(context);
-            return;
+            else
+                haveFit = YES;
         }
-        
-        fontSize -= 2.0;
+        if (haveFit)
+            fontSize -= 1.0;
+        else
+            fontSize -= 2.0;
         CGContextRestoreGState(context);
     }
 }
