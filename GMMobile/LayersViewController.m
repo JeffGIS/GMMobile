@@ -69,7 +69,7 @@
     if (!_isDrilledDown)
         _layerList = ConfigurationControl.sharedInstance.getLayers;
     
-    if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
+    //if (_isFirstTime || _lastSelectedApp != ConfigurationControl.sharedInstance.currentApp)
     {
         [self initializeTableViewComponentValues];
         _lastSelectedApp = ConfigurationControl.sharedInstance.currentApp;
@@ -96,6 +96,12 @@
         layer.cellButtonColor = UserDefaults.defaults.darkGreen;
         //layer.zoomLevel = DEFAULT_ZOOM_LEVEL;
     }
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    [_tableView reloadData];
 }
 
 - (void)setupTableView
