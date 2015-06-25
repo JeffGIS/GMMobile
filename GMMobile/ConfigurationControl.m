@@ -244,7 +244,8 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             
             CRAPI.sharedInstance.parcelTextOption = 1;
             break;
-            
+         
+        case HCConfigSewers:
         case HCConfigAlleyWalls:
             
             CRAPI.sharedInstance.parcelTextOption = 2;

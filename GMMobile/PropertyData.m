@@ -1801,6 +1801,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
                 [report addObject:line];
                 
+               /* if (acresPoly > 0 && landEMV > 0)
+                {
+                    line = [NSString stringWithFormat:@"Land EMV per Acre:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV/acresPoly]]];
+                    [report addObject:line];
+                }
+                */
                 line = [NSString stringWithFormat:@"Last Sale Date:%s", saleDate];
                 [report addObject:line];
                 
