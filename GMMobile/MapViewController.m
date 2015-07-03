@@ -95,7 +95,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property BOOL clearMarkers, clearWhenDeselected, initialZoom, rotateZoom;
+@property BOOL clearMarkers, clearWhenDeselected, rotateZoom, blockVectorView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
@@ -1080,14 +1080,22 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 NSString *nearestAlley = [awd nearestAlleyLine:&positioncl];
                 NSString *newWallID = [awd getNextWallForAlley:nearestAlley];
                 PropertyData *propData = [[PropertyData alloc] init];
-                NSString* houseAndUnit = @"";
-                NSString* streetName = @"";
-                NSString * nearPID = [propData getNearestPID:&positionpid];
+                NSString *houseAndUnit = @"";
+                NSString *streetName = @"";
+                NSString *nearPID = [propData getNearestPID:&positionpid];
+                
                 if (nearPID)
                 {
-                    [propData getAddressForPID:nearPID houseNumAndUnit:&houseAndUnit streetName:&streetName];
+                    [propData getAddressForPID:nearPID
+                               houseNumAndUnit:&houseAndUnit
+                                    streetName:&streetName];
                 }
-                [awd createNewWall:newWallID atPoint:position withHouse:houseAndUnit andStreet:streetName];
+                
+                [awd createNewWall:newWallID
+                           atPoint:position
+                         withHouse:houseAndUnit
+                         andStreet:streetName];
+                
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 
@@ -1722,14 +1730,17 @@ haveVV:
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom
 {
-    [self clearVectorView];
-    _vectorViewZoom = zoom;
-    
-    _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                        target:self
-                                                      selector:@selector(startVectorView:)
-                                                      userInfo:nil
-                                                       repeats:NO];
+    if (!_blockVectorView)
+    {
+        [self clearVectorView];
+        _vectorViewZoom = zoom;
+        
+        _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                            target:self
+                                                          selector:@selector(startVectorView:)
+                                                          userInfo:nil
+                                                           repeats:NO];
+    }
 }
 
 - (void)startVectorView:(NSTimer *)timer
@@ -3018,9 +3029,11 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     if (CLLocationManager.headingAvailable)
         [_locationManager startUpdatingLocation];
     
+    [self clearVectorView];
+    
+    _blockVectorView = YES;
     _mapView.myLocationEnabled = YES;
     _mapView.settings.rotateGestures = NO;
-    _initialZoom = YES;
 }
 
 - (void)stopTrackingUserLocation:(BOOL)refresh
@@ -3030,6 +3043,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     _mapView.myLocationEnabled = NO;
     _mapView.settings.rotateGestures = YES;
     [_mapToolbar deselectMyLocationButton];
+    _blockVectorView = NO;
     
     if (refresh)
     {
@@ -3042,12 +3056,6 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
      didUpdateLocations:(NSArray *)locations
 {
     [_mapView animateToLocation:[locations.firstObject coordinate]];
-    
-    if (_initialZoom)
-    {
-        [_mapView animateToZoom:20.0];
-        _initialZoom = NO;
-    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager
