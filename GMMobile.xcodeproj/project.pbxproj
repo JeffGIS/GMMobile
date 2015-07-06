@@ -14,6 +14,7 @@
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
 		A90506491A75E24100288850 /* layers.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506471A75E24100288850 /* layers.png */; };
 		A905064C1A75E28E00288850 /* themes.png in Resources */ = {isa = PBXBuildFile; fileRef = A905064B1A75E28E00288850 /* themes.png */; };
+		A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90C6E981B4A3AC300D87DB8 /* MessageUI.framework */; };
 		A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A90D1FAA1AE5D67B00CBFEE7 /* backArrow.png */; };
 		A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */; };
 		A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */ = {isa = PBXBuildFile; fileRef = A91076BB1AC46D3A0096EFFD /* PropertyList.m */; };
@@ -128,6 +129,7 @@
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		A90506471A75E24100288850 /* layers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = layers.png; sourceTree = "<group>"; };
 		A905064B1A75E28E00288850 /* themes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = themes.png; sourceTree = "<group>"; };
+		A90C6E981B4A3AC300D87DB8 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		A90D1FAA1AE5D67B00CBFEE7 /* backArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backArrow.png; sourceTree = "<group>"; };
 		A90D1FAC1AE5E2DF00CBFEE7 /* backArrowHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backArrowHighlighted.png; sourceTree = "<group>"; };
 		A91076BA1AC46D3A0096EFFD /* PropertyList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyList.h; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */,
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				A99CD8DA1A9DBAC10049F271 /* libz.dylib in Frameworks */,
 				A99CD8D81A9DBABC0049F271 /* libicucore.dylib in Frameworks */,
@@ -348,6 +351,7 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A90C6E981B4A3AC300D87DB8 /* MessageUI.framework */,
 				A97B72751ADB4668001ACFAE /* AudioToolbox.framework */,
 				A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */,
 				A99CD8D91A9DBAC10049F271 /* libz.dylib */,
