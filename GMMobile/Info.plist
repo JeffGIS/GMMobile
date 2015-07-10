@@ -29,6 +29,10 @@
 			</array>
 		</dict>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>NVMapKitFlyover</string>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1.2</string>
 	<key>LSRequiresIPhoneOS</key>

@@ -2145,6 +2145,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Perform 3D Fly Around"])
+    {
+        [SharedDefaults.defaults saveCoordinate:_selectedPIDCoords
+                                         forKey:@"FlyOverCoords"];
+        
+        [self perform3DFlyAround];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Display Pipe Attributes"])
     {
         [self showPipeAttributes];
@@ -2408,6 +2417,26 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)addToDestinations
 {
     //implement add to destinations here
+}
+
+- (void)perform3DFlyAround
+{
+    NSString *flyOverURL = @"NVMapKitFlyover://";
+    
+    [SharedDefaults.defaults saveString:@"GMMobile"
+                                 forKey:@"SourceApplication"];
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
+    
+    else
+    {
+        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch Flyover App"
+                               message:nil
+                     cancelButtonTitle:@"OK"
+                     otherButtonTitles:nil
+             destructiveButtonPosition:0];
+    }
 }
 
 - (void)showPipeAttributes
@@ -3552,14 +3581,32 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             if ([self isHennepinCountyPID:_selectedPID])
             {
-                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
-                             @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
+                if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
+                {
+                    _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
+                                 @"Add to Property List", @"Add to Desinations", @"Perform 3D Fly Around", @"Remove Property Marker"];
+                }
+                
+                else
+                {
+                    _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
+                                 @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
+                }
             }
             
             else
             {
-                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",
-                             @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
+                if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
+                {
+                    _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",
+                                 @"Add to Property List", @"Add to Desinations", @"Perform 3D Fly Around", @"Remove Property Marker"];
+                }
+                
+                else
+                {
+                    _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",
+                                 @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
+                }
             }
             
             break;
