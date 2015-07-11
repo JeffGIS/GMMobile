@@ -2150,6 +2150,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [SharedDefaults.defaults saveCoordinate:_selectedPIDCoords
                                          forKey:@"FlyOverCoords"];
         
+        PropertyData *propData = [[PropertyData alloc] init];
+        
+        MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
+        CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
+        CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
+        
+        [SharedDefaults.defaults saveCoordinate:northeast
+                                         forKey:@"FlyOverBounds_NE"];
+        
+        [SharedDefaults.defaults saveCoordinate:southwest
+                                         forKey:@"FlyOverBounds_SW"];
+        
         [self perform3DFlyAround];
     }
     
