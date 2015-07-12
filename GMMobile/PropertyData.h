@@ -81,4 +81,8 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 - (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type;
 - (MNMXCORD) getBoundaryAreaBounds:(int)refno;
 
+- (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
+                               numPoints:(int *)numPoints
+                                numLoops:(int *)numLoops;
+
 @end

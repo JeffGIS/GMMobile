@@ -2147,20 +2147,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Perform 3D Fly Around"])
     {
-        [SharedDefaults.defaults saveCoordinate:_selectedPIDCoords
-                                         forKey:@"FlyOverCoords"];
+        int numPointsLoops[2];
+        CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
         
         PropertyData *propData = [[PropertyData alloc] init];
         
         MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
-        CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
-        CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
         
-        [SharedDefaults.defaults saveCoordinate:northeast
-                                         forKey:@"FlyOverBounds_NE"];
+        LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
+                                                         numPoints:&numPointsLoops[0]
+                                                          numLoops:&numPointsLoops[1]];
         
-        [SharedDefaults.defaults saveCoordinate:southwest
-                                         forKey:@"FlyOverBounds_SW"];
+        const char *filePath = [NSString stringWithFormat:@"%@/pid_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
+        
+        FILE *pidPolyFile = fopen(filePath, "wb");
+        
+        fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
+        fwrite(numPointsLoops, sizeof(int), 2, pidPolyFile);
+        fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
+        fwrite(llpoints, sizeof(DPOINT), numPointsLoops[0], pidPolyFile);
+        fclose(pidPolyFile);
+        
+        free(llpoints);
         
         [self perform3DFlyAround];
     }

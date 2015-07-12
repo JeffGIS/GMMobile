@@ -20,6 +20,14 @@
 #import "NVDataLoader.h"
 #import <MessageUI/MessageUI.h>
 
+typedef struct NVPolygonData {
+    MNMXCORD bounds;
+    DPOINT basePoint;
+    int numPoints;
+    int numLoops;
+    LPDPOINT llpoints;
+} NVPolygonData;
+
 @interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLargeAlertViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate, NVDataLoaderDelegate,MFMailComposeViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
