@@ -859,7 +859,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     
     UIColor *parcelLineColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
     int parcelLineWidth = 3;
-    NSString *query;
+    NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     //LPSTR pid;
     DPOINT BasePt;
@@ -1007,7 +1007,55 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     SQLOKpd(sqlite3_finalize(statement), _database);
     [self close];
 }
-                             
+
+- (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
+                               numPoints:(int *)numPoints
+                                numLoops:(int *)numLoops
+{
+    DPOINT basePoint;
+    LPDPOINT llpoints = NULL;
+    sqlite3_stmt *statement = NULL;
+    
+    [self open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        basePoint.x = sqlite3_column_double(statement, 0);
+        basePoint.y = sqlite3_column_double(statement, 1);
+        *numPoints = sqlite3_column_int(statement, 2);
+        *numLoops = sqlite3_column_int(statement, 3);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 4);
+        llpoints = malloc(abs(*numPoints) * sizeof(DPOINT) + 4);
+        
+        if (*numPoints < 0)
+        {
+            *numPoints = -*numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < *numPoints; i++)
+            {
+                llpoints[i].x = (basePoint.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (basePoint.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+            }
+        }
+        
+        else for (int i = 0; i < *numPoints; i++)
+        {
+            llpoints[i].x = (basePoint.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (basePoint.y + offsetPoints[i].y / COORDINATE_FACTOR);
+        }
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), _database);
+    [self close];
+    
+    return llpoints;
+}
+
 - (UIColor *)resComColor:(char *)useCode
 {
     UIColor *color = nil;
