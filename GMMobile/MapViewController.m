@@ -3657,13 +3657,21 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             break;
             
         case MarkerInfoWindowTypeStormSewer:
+        {
             _selectedSewerPipe = title;
             
-            if (UIDevice.currentDevice.systemVersion.floatValue > 7.99)
+            _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
+                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
+                         @"Update Inspection Notes", @"Remove Pipe Marker"];
+           
+            PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+            
+            if (UIDevice.currentDevice.systemVersion.floatValue > 7.99 && [pipeTrace havePipeTrace])
             {
-                _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream",
-                             @"Perform Downstream 3D Fly Over", @"Remove Pipe Trace", @"Update Cleaning Date",
-                             @"Update Inspection Notes", @"Remove Pipe Marker"];
+                NSMutableArray *newArray = [[NSMutableArray alloc]init];
+                [newArray addObjectsFromArray:_options];
+                [newArray insertObject: @"Perform Downstream 3D Fly Over" atIndex:3];
+                _options = newArray;
             }
             
             else
@@ -3672,6 +3680,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
                              @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
                              @"Update Inspection Notes", @"Remove Pipe Marker"];
             }
+        }
             
             break;
             

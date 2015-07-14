@@ -803,6 +803,31 @@ $RETURN(1);
     return rtn;
 }
 
+- (BOOL)havePipeTrace
+{
+    BOOL rtn = FALSE;
+    sqlite3_stmt *statement = NULL;
+    
+    NSString * query = @"SELECT count(*) FROM TRACE_HIGHLIGHT";
+    
+    _sd = [[SewerData alloc] init];
+    [_sd open];
+    
+    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int numRows = sqlite3_column_int(statement,0);
+        if (numRows > 0)
+            rtn = TRUE;
+    }
+    
+    SQLOKswr(sqlite3_finalize(statement), _sd.database);
+    [_sd close];
+    
+    return rtn;
+}
+
 /*
  [PIPEDB]=$SYMATTRFILE(#[%ARG(1)]);
  [ATTRLOC]=LOCAL;[%AUTOPAN]=F;

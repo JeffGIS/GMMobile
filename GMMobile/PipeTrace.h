@@ -30,5 +30,6 @@
               viewBounds:(MNMXCORD *)pvbounds;
 
 - (BOOL)outputPipeTrace:(NSString *)toPath;
+- (BOOL)havePipeTrace;
 
 @end
