@@ -688,18 +688,7 @@ $RETURN(1);
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                
-                if (CRAPI.sharedInstance.pipeTraceFlyoverSelected)
-                {
-                    CLLocation *location = [[CLLocation alloc] initWithLatitude:llpoints[i].y
-                                                                      longitude:llpoints[i].x];
-                    
-                    if (![CRAPI.sharedInstance.pipeCoordsArray containsObject:location])
-                        [CRAPI.sharedInstance.pipeCoordsArray addObject:location];
-                }
-                
-                else
-                    llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+                llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
             }
         }
         
@@ -707,31 +696,19 @@ $RETURN(1);
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            
-            if (CRAPI.sharedInstance.pipeTraceFlyoverSelected)
-            {
-                CLLocation *location = [[CLLocation alloc] initWithLatitude:llpoints[i].y
-                                                                  longitude:llpoints[i].x];
-                
-                if (![CRAPI.sharedInstance.pipeCoordsArray containsObject:location])
-                    [CRAPI.sharedInstance.pipeCoordsArray addObject:location];
-            }
-            
-            else
-                llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+            llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
         }
         
-        if (!CRAPI.sharedInstance.pipeTraceFlyoverSelected)
-        {
-            [_sd drawStormLine:context
-                          pass:LINE_PASS
-                       nPoints:numPoints
-                        points:llpoints
-                     withColor:color
-                      andWidth:15
-                       andText:nil
-                   andPointers:YES];
-        }
+        [_sd drawStormLine:context
+                      pass:LINE_PASS
+                   nPoints:numPoints
+                    points:llpoints
+                 withColor:color
+                  andWidth:15
+                   andText:nil
+               andPointers:YES];
+        
+        free(llpoints);
     }
     
     SQLOKswr(sqlite3_finalize(statement),_sd.database);

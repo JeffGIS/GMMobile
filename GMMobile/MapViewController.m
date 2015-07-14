@@ -434,8 +434,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 
 - (void)becameActive:(id)selector
 {
-    CRAPI.sharedInstance.pipeTraceFlyoverSelected = NO;
-    
     if (CRAPI.sharedInstance.setToAlleyWalls)
     {
         [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1)
@@ -1856,16 +1854,6 @@ haveVV:
                            if ([self.view.subviews containsObject:_legendView])
                                [self.view bringSubviewToFront:_legendView];
                        }
-                       
-                       if (CRAPI.sharedInstance.pipeTraceFlyoverSelected)
-                       {
-                           NSData *pipeCoordsArrayData = [NSKeyedArchiver archivedDataWithRootObject:CRAPI.sharedInstance.pipeCoordsArray];
-                           
-                           [SharedDefaults.defaults saveNSData:pipeCoordsArrayData
-                                                        forKey:@"PipeCoordsArrayData"];
-                           
-                           [self perform3DFlyAround];
-                       }
                    });
 }
 
@@ -2199,8 +2187,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Upstream"])
     {
-        CRAPI.sharedInstance.pipeTraceFlyoverSelected = NO;
-        
         [self dismissTableView];
         
         [self performSelector:@selector(showPipeTraceUpstream)
@@ -2214,8 +2200,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Downstream"])
     {
-        CRAPI.sharedInstance.pipeTraceFlyoverSelected = NO;
-        
         [self dismissTableView];
         
         [self performSelector:@selector(showPipeTraceDownstream)
@@ -2232,9 +2216,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
                                         forKey:@"FlyOverType"];
         
-        CRAPI.sharedInstance.pipeTraceFlyoverSelected = YES;
-        CRAPI.sharedInstance.pipeCoordsArray = [[NSMutableArray alloc] init];
-        
         [self dismissTableView];
         
         [self performSelector:@selector(showPipeTraceUpstream)
@@ -2247,9 +2228,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
                                         forKey:@"FlyOverType"];
-        
-        CRAPI.sharedInstance.pipeTraceFlyoverSelected = YES;
-        CRAPI.sharedInstance.pipeCoordsArray = [[NSMutableArray alloc] init];
         
         [self dismissTableView];
         
