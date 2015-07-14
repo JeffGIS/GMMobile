@@ -199,7 +199,7 @@ Top:
             
         case GetDatabaseSettingCurbRamp:
         {
-            CurbRampData *crd = [[CurbRampData alloc] init];
+            CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
             
             if (crd.datasetVersion >= 1)
                 rtn = YES;

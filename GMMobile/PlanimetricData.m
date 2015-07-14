@@ -763,10 +763,10 @@ extern int keepProcessing;
     p1.y = pt->lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    CurbRampData *crd = [[CurbRampData alloc] init];
+    CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
     [crd open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT INTERSECTION_POINT.id,INTERSECTION_ID,LATITUDE,LONGITUDE FROM INTERSECTION_POINT,INTERSECTION_POINT_index WHERE INTERSECTION_POINT.id=INTERSECTION_POINT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+    NSString *query = [NSString stringWithFormat:@"SELECT Intersections.intID,LATITUDE,LONGITUDE FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
     sqlite3_stmt *statement = NULL;
@@ -775,10 +775,11 @@ extern int keepProcessing;
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int refno = sqlite3_column_int(statement, 0);
-        LPSTR intersectionID = (LPSTR)sqlite3_column_text(statement, 1);
-        CGFloat lat = sqlite3_column_double(statement, 2);
-        CGFloat lon = sqlite3_column_double(statement, 3);
+        int refno;
+        LPSTR intersectionID = (LPSTR)sqlite3_column_text(statement, 0);
+        CGFloat lat = sqlite3_column_double(statement, 1);
+        CGFloat lon = sqlite3_column_double(statement, 2);
+        refno = atoi (intersectionID);
         p2.x = lon;
         p2.y = lat;
         d = ArcDistance(p1, p2);
@@ -832,7 +833,7 @@ extern int keepProcessing;
     sizeFactor /= (2.0 * (22.0 - _zoom));
     CGFloat size = 150 * sizeFactor;;
     
-    CurbRampData *crd = [[CurbRampData alloc] init];
+    CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -842,8 +843,9 @@ extern int keepProcessing;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM INTERSECTION_POINT,INTERSECTION_POINT_index WHERE INTERSECTION_POINT.id=INTERSECTION_POINT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            //query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections"];
     }
     
     SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
