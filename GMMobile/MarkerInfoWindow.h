@@ -3,17 +3,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
-
-typedef NS_ENUM(NSInteger, MarkerInfoWindowType)
-{
-    MarkerInfoWindowTypeDefault,
-    MarkerInfoWindowTypePID,
-    MarkerInfoWindowTypeStormSewer,
-    MarkerInfoWindowTypeAlleyWall,
-    MarkerInfoWindowTypeAlleyLine,
-    MarkerInfoWindowTypeCustom,
-    MarkerInfoWindowTypeCRInt
-};
+#import "CCodeLibrary/GSSiEnums.h"
 
 @class MarkerInfoWindow;
 

@@ -9,6 +9,7 @@
 @protocol PipeTraceDelegate <NSObject>
 
 - (void)zoomToPipeTraceBounds:(MNMXCORD)bounds;
+- (void)perform3DFlyAround;
 
 @end
 

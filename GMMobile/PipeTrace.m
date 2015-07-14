@@ -651,14 +651,12 @@ $RETURN(1);
     return NO;
 }
 
-
 - (void)displayPipeTrace:(CGContextRef)context
                llCorners:(CORNERPOINTS *)latlonCornerPoints
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
     DPOINT BasePt;
-    //DPOINT point;
     int numPoints;
     CGColorRef color = UIColor.redColor.CGColor;
 
@@ -690,7 +688,18 @@ $RETURN(1);
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+                
+                if (CRAPI.sharedInstance.pipeTraceFlyoverSelected)
+                {
+                    CLLocation *location = [[CLLocation alloc] initWithLatitude:llpoints[i].y
+                                                                      longitude:llpoints[i].x];
+                    
+                    if (![CRAPI.sharedInstance.pipeCoordsArray containsObject:location])
+                        [CRAPI.sharedInstance.pipeCoordsArray addObject:location];
+                }
+                
+                else
+                    llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
             }
         }
         
@@ -698,23 +707,36 @@ $RETURN(1);
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+            
+            if (CRAPI.sharedInstance.pipeTraceFlyoverSelected)
+            {
+                CLLocation *location = [[CLLocation alloc] initWithLatitude:llpoints[i].y
+                                                                  longitude:llpoints[i].x];
+                
+                if (![CRAPI.sharedInstance.pipeCoordsArray containsObject:location])
+                    [CRAPI.sharedInstance.pipeCoordsArray addObject:location];
+            }
+            
+            else
+                llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
         }
-        [_sd drawStormLine:context
-                       pass:LINE_PASS
-                    nPoints:numPoints
-                     points:llpoints
-                  withColor:color
-                   andWidth:15
-                    andText:nil
-                andPointers:YES];
+        
+        if (!CRAPI.sharedInstance.pipeTraceFlyoverSelected)
+        {
+            [_sd drawStormLine:context
+                          pass:LINE_PASS
+                       nPoints:numPoints
+                        points:llpoints
+                     withColor:color
+                      andWidth:15
+                       andText:nil
+                   andPointers:YES];
+        }
     }
     
     SQLOKswr(sqlite3_finalize(statement),_sd.database);
     [_sd close];
-    
 }
-
 
 /*
  [PIPEDB]=$SYMATTRFILE(#[%ARG(1)]);

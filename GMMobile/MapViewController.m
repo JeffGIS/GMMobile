@@ -434,6 +434,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 
 - (void)becameActive:(id)selector
 {
+    CRAPI.sharedInstance.pipeTraceFlyoverSelected = NO;
+    
     if (CRAPI.sharedInstance.setToAlleyWalls)
     {
         [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1)
@@ -769,7 +771,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
     [_mapView animateToCameraPosition:camera];
-    
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -1855,6 +1856,16 @@ haveVV:
                            if ([self.view.subviews containsObject:_legendView])
                                [self.view bringSubviewToFront:_legendView];
                        }
+                       
+                       if (CRAPI.sharedInstance.pipeTraceFlyoverSelected)
+                       {
+                           NSData *pipeCoordsArrayData = [NSKeyedArchiver archivedDataWithRootObject:CRAPI.sharedInstance.pipeCoordsArray];
+                           
+                           [SharedDefaults.defaults saveNSData:pipeCoordsArrayData
+                                                        forKey:@"PipeCoordsArrayData"];
+                           
+                           [self perform3DFlyAround];
+                       }
                    });
 }
 
@@ -2147,6 +2158,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Perform 3D Fly Around"])
     {
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
+                                        forKey:@"FlyOverType"];
+        
         int numPointsLoops[2];
         CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
         
@@ -2185,6 +2199,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Upstream"])
     {
+        CRAPI.sharedInstance.pipeTraceFlyoverSelected = NO;
+        
         [self dismissTableView];
         
         [self performSelector:@selector(showPipeTraceUpstream)
@@ -2198,6 +2214,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Trace Pipe Downstream"])
     {
+        CRAPI.sharedInstance.pipeTraceFlyoverSelected = NO;
+        
         [self dismissTableView];
         
         [self performSelector:@selector(showPipeTraceDownstream)
@@ -2206,6 +2224,38 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown
                                       forKey:@"SewerOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Perform Upstream Pipe 3D Fly Over"])
+    {
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
+                                        forKey:@"FlyOverType"];
+        
+        CRAPI.sharedInstance.pipeTraceFlyoverSelected = YES;
+        CRAPI.sharedInstance.pipeCoordsArray = [[NSMutableArray alloc] init];
+        
+        [self dismissTableView];
+        
+        [self performSelector:@selector(showPipeTraceUpstream)
+                   withObject:nil
+                   afterDelay:0.3];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Perform Downstream Pipe 3D Fly Over"])
+    {
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
+                                        forKey:@"FlyOverType"];
+        
+        CRAPI.sharedInstance.pipeTraceFlyoverSelected = YES;
+        CRAPI.sharedInstance.pipeCoordsArray = [[NSMutableArray alloc] init];
+        
+        [self dismissTableView];
+        
+        [self performSelector:@selector(showPipeTraceDownstream)
+                   withObject:nil
+                   afterDelay:0.3];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -3634,9 +3684,20 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeStormSewer:
             _selectedSewerPipe = title;
             
-            _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
-                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
-                         @"Update Inspection Notes", @"Remove Pipe Marker"];
+            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
+            {
+                _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream",
+                             @"Perform Upstream Pipe 3D Fly Over", @"Perform Downstream Pipe 3D Fly Over",
+                             @"Remove Pipe Trace", @"Update Cleaning Date",
+                             @"Update Inspection Notes", @"Remove Pipe Marker"];
+            }
+            
+            else
+            {
+                _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
+                             @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
+                             @"Update Inspection Notes", @"Remove Pipe Marker"];
+            }
             
             break;
             
