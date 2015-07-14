@@ -17,7 +17,7 @@
 
 @property (nonatomic, weak) id <PipeTraceDelegate> delegate;
 @property int processingID;
-@property GSSiPopoverView* popover;
+@property GSSiPopoverView *popover;
 
 + (void)removeTrace;
 - (void)tracePipeDownstream:(NSString *)fromFacilityID;
@@ -25,9 +25,10 @@
 - (int) getPipeTraceBounds;
 
 - (void)displayPipeTrace:(CGContextRef)context
-               llCorners:(CORNERPOINTS *) latlonCornerPoints
-               LLBounds:(MNMXCORD *)platlonBounds
-             viewBounds:(MNMXCORD *)pvbounds;
+               llCorners:(CORNERPOINTS *)latlonCornerPoints
+                LLBounds:(MNMXCORD *)platlonBounds
+              viewBounds:(MNMXCORD *)pvbounds;
 
+- (BOOL)outputPipeTrace:(NSString *)toPath;
 
 @end

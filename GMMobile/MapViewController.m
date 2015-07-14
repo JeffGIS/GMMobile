@@ -2211,27 +2211,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Perform Upstream Pipe 3D Fly Over"])
+              isEqualToString:@"Perform Downstream 3D Fly Over"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
                                         forKey:@"FlyOverType"];
         
         [self dismissTableView];
         
-        [self performSelector:@selector(showPipeTraceUpstream)
-                   withObject:nil
-                   afterDelay:0.3];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Perform Downstream Pipe 3D Fly Over"])
-    {
-        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
-                                        forKey:@"FlyOverType"];
-        
-        [self dismissTableView];
-        
-        [self performSelector:@selector(showPipeTraceDownstream)
+        [self performSelector:@selector(performDownstreamFlyOver)
                    withObject:nil
                    afterDelay:0.3];
     }
@@ -2518,6 +2505,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                        pipeTrace.popover = _popover;
                        [pipeTrace tracePipeDownstream:_selectedSewerPipe];
                    });
+}
+
+- (void)performDownstreamFlyOver
+{
+    PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+    
+    NSString *path = [NSString stringWithFormat:@"%@/pipetrace_polydata.bin", UserDefaults.defaults.sharedFilePath];
+    
+    if ([pipeTrace outputPipeTrace:path])
+        [self perform3DFlyAround];
 }
 
 - (void)removePipeTrace
@@ -3665,8 +3662,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
             {
                 _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream",
-                             @"Perform Upstream Pipe 3D Fly Over", @"Perform Downstream Pipe 3D Fly Over",
-                             @"Remove Pipe Trace", @"Update Cleaning Date",
+                             @"Perform Downstream 3D Fly Over", @"Remove Pipe Trace", @"Update Cleaning Date",
                              @"Update Inspection Notes", @"Remove Pipe Marker"];
             }
             
