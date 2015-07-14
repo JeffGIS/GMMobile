@@ -700,6 +700,7 @@ $RETURN(1);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
         }
+        
         [_sd drawStormLine:context
                        pass:LINE_PASS
                     nPoints:numPoints
@@ -708,28 +709,26 @@ $RETURN(1);
                    andWidth:15
                     andText:nil
                 andPointers:YES];
+        
         free(llpoints);
-
     }
     
-    SQLOKswr(sqlite3_finalize(statement),_sd.database);
+    SQLOKswr(sqlite3_finalize(statement), _sd.database);
     [_sd close];
-    
 }
 
-- (bool)outputPipeTrace:(NSString*)toPath
+- (BOOL)outputPipeTrace:(NSString *)toPath
 {
-    bool rtn = FALSE;
+    BOOL rtn = FALSE;
     DPOINT BasePt;
-    //DPOINT point;
     int numPoints;
-    LPDPOINT outputArray=nil;
+    LPDPOINT outputArray = nil;
     int numOutputPoints = 0;
     
     sqlite3_stmt *statement = NULL;
-    NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
+    NSString *query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
     
-    _sd = [[SewerData alloc]init];
+    _sd = [[SewerData alloc] init];
     [_sd open];
     
     
@@ -752,7 +751,7 @@ $RETURN(1);
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-             }
+            }
         }
         
         else for (int i = 0; i < numPoints; i++)
@@ -760,32 +759,39 @@ $RETURN(1);
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
         }
+        
         if (outputArray == nil)
         {
             outputArray = llpoints;
             numOutputPoints = numPoints;
         }
+        
         else
         {
             int np = numOutputPoints;
             LPDPOINT pdp = llpoints;
-            if (sameDPoint(&outputArray[numOutputPoints-1],&llpoints[0],0.00000001))
+            
+            if (sameDPoint(&outputArray[numOutputPoints - 1], &llpoints[0], 0.00000001))
             {
                 np--;
                 pdp++;
             }
-            realloc (outputArray,(numOutputPoints + np)*sizeof(DPOINT)+4);
-            memmove (&outputArray[numOutputPoints],pdp,np*sizeof(DPOINT));
+            
+            realloc(outputArray,(numOutputPoints + np) * sizeof(DPOINT)+4);
+            memmove(&outputArray[numOutputPoints], pdp, np * sizeof(DPOINT));
+            
             numOutputPoints += np;
             free (llpoints);
         }
     }
-    SQLOKswr(sqlite3_finalize(statement),_sd.database);
+    
+    SQLOKswr(sqlite3_finalize(statement), _sd.database);
     [_sd close];
     
     if (numOutputPoints)
     {
         FILE *fid = fopen(toPath.UTF8String, "wb");
+        
         if (fid)
         {
             fwrite (&numOutputPoints,sizeof(int),1,fid);
@@ -793,12 +799,12 @@ $RETURN(1);
             fclose (fid);
             rtn = TRUE;
         }
+        
         free (outputArray);
     }
-    return rtn;
     
+    return rtn;
 }
-
 
 /*
  [PIPEDB]=$SYMATTRFILE(#[%ARG(1)]);
