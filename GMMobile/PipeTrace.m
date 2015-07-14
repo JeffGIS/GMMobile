@@ -766,16 +766,16 @@ $RETURN(1);
         
         else
         {
-            int np = numOutputPoints;
+            int np = numPoints;
             LPDPOINT pdp = llpoints;
             
-            if (sameDPoint(&outputArray[numOutputPoints - 1], &llpoints[0], 0.00000001))
+            if (sameDPoint(&outputArray[numOutputPoints - 1], &llpoints[0], 0.0000001))
             {
                 np--;
                 pdp++;
             }
             
-            realloc(outputArray, (numOutputPoints + np) * sizeof(DPOINT) + 4);
+            outputArray = realloc(outputArray, (numOutputPoints + np) * sizeof(DPOINT) + 4);
             memmove(&outputArray[numOutputPoints], pdp, np * sizeof(DPOINT));
             numOutputPoints += np;
             free (llpoints);

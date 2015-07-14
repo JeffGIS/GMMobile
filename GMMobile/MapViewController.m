@@ -3659,7 +3659,7 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeStormSewer:
             _selectedSewerPipe = title;
             
-            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
+            if (UIDevice.currentDevice.systemVersion.floatValue > 7.99)
             {
                 _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream",
                              @"Perform Downstream 3D Fly Over", @"Remove Pipe Trace", @"Update Cleaning Date",
