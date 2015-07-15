@@ -214,11 +214,11 @@ typedef struct {
     sprintf (cmd,"INSERT INTO PIPETRACEDB VALUES('%s','%s',%i,%i)",ptdb->FID,ptdb->UPPIPE,ptdb->SQ,ptdb->NFOUND);
     [_sd executeCmd:cmd];
 }
--(void)INSERT_HIGHLIGHT:(LPSTR)fid
+-(void)INSERT_HIGHLIGHT:(LPSTR)fid insertSequence:(int)seq
 {
     char cmd[256];
     
-    sprintf (cmd,"INSERT INTO TRACE_HIGHLIGHT VALUES('%s')",fid);
+    sprintf (cmd,"INSERT INTO TRACE_HIGHLIGHT VALUES('%s',%i)",fid,seq);
     [_sd executeCmd:cmd];
 }
 -(void) $DELETE_NEXTPIPE:(int)ATSEQ
@@ -245,7 +245,7 @@ LPSTR $TRUNCATE(LPSTR text)
     NEXTPIPEdn NEXTPIPE;
     PIPEDB PIPEDB, PIPEDB_BYUPN;
     PIPETRACEDB PIPETRACEDB;
-    int ATSEQ, SEQ=1;
+    int ATSEQ, SEQ=1, insertSequence=0;
     
     _sd = [[SewerData alloc]init];
     
@@ -256,7 +256,7 @@ LPSTR $TRUNCATE(LPSTR text)
                           dn:DNNODE])
     {
         [_sd executeCmd:"CREATE TEMP TABLE NEXTPIPE (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),UPPIPE CHAR(12),DN_NODE CHAR(12));"];
-        [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FACILITY_ID CHAR(12) PRIMARY KEY);"];
+        [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FACILITY_ID CHAR(12) PRIMARY KEY, INSERT_SEQUENCE INT);"];
         
         sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(1,'%s','%s','%s');",
                  fromFacilityID.UTF8String, "", DNNODE);
@@ -287,7 +287,7 @@ LPSTR $TRUNCATE(LPSTR text)
                         strcpy (PIPETRACEDB.UPPIPE,NEXTPIPE.UPPIPE);
                         NPIPES++;
                         [self INSERT_FOUND:&PIPETRACEDB];
-                        [self INSERT_HIGHLIGHT:PIPETRACEDB.FID];
+                        [self INSERT_HIGHLIGHT:PIPETRACEDB.FID insertSequence:insertSequence++];
                         strcpy (UPNODE,PIPEDB.DOWN_NODE);
                         strcpy (LASTFID,PIPEDB.FACILITY_ID);
                         if(*$TRUNCATE(UPNODE))
@@ -340,7 +340,7 @@ LPSTR $TRUNCATE(LPSTR text)
     NEXTPIPEup NEXTPIPE;
     PIPEDB PIPEDB, PIPEDB_BYDNN;
     PIPETRACEDB PIPETRACEDB;
-    int ATSEQ, SEQ=1;
+    int ATSEQ, SEQ=1, insertSequence=0;
     
     _processingID = 1;
     _popover.delegate = self;
@@ -353,7 +353,7 @@ LPSTR $TRUNCATE(LPSTR text)
                           dn:DNNODE])
     {
         [_sd executeCmd:"CREATE TEMP TABLE NEXTPIPE (SEQUENCE INT PRIMARY KEY,NXTFID CHAR(12),DOWNPIPE CHAR(12),UP_NODE CHAR(12));"];
-        [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FACILITY_ID CHAR(12) PRIMARY KEY);"];
+        [_sd executeCmd:"DROP TABLE IF EXISTS TRACE_HIGHLIGHT;CREATE TABLE TRACE_HIGHLIGHT (FACILITY_ID CHAR(12) PRIMARY KEY, INSERT_SEQUENCE INT);"];
         
         sprintf (cmd,"INSERT INTO NEXTPIPE VALUES(1,'%s','%s','%s');",
                  fromFacilityID.UTF8String, "",UPNODE);
@@ -384,7 +384,7 @@ LPSTR $TRUNCATE(LPSTR text)
                         strcpy (PIPETRACEDB.UPPIPE,NEXTPIPE.DNPIPE);
                         NPIPES++;
                         [self INSERT_FOUND:&PIPETRACEDB];
-                        [self INSERT_HIGHLIGHT:PIPETRACEDB.FID];
+                        [self INSERT_HIGHLIGHT:PIPETRACEDB.FID insertSequence:insertSequence++];
                         strcpy (DNNODE,PIPEDB.UP_NODE);
                         strcpy (LASTFID,PIPEDB.FACILITY_ID);
                         if(*$TRUNCATE(DNNODE))
@@ -725,7 +725,7 @@ $RETURN(1);
     int numOutputPoints = 0;
     
     sqlite3_stmt *statement = NULL;
-    NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
+    NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID ORDER BY INSERT_SEQUENCE ASC";
     
     _sd = [[SewerData alloc] init];
     [_sd open];
