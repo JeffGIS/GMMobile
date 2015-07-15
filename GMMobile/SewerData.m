@@ -940,10 +940,10 @@ LPSTR $RND(int i,double val,int ndec,BOOL addCommas,BOOL removeZ)
 }
 
 - (void)highlightStormLine:(CGContextRef)context
-                    refno:(int)refno
-               llCorners:(CORNERPOINTS *)latlonCornerPoints
-                LLBounds:(MNMXCORD *)platlonBounds
-              viewBounds:(MNMXCORD *)pvbounds
+                     refno:(int)refno
+                 llCorners:(CORNERPOINTS *)latlonCornerPoints
+                  LLBounds:(MNMXCORD *)platlonBounds
+                viewBounds:(MNMXCORD *)pvbounds
 {
     DPOINT BasePt;
     int numPoints;

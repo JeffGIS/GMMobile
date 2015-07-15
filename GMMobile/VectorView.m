@@ -330,10 +330,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    sd.zoom = _zoom;
                                                    
                                                    [sd highlightStormLine:_context
-                                                    refno:_pickedItem.refno
-                                                    llCorners:&_latlonCornerPoints
-                                                    LLBounds:&_latlonBounds
-                                                    viewBounds:&_viewBounds];
+                                                                    refno:_pickedItem.refno
+                                                                llCorners:&_latlonCornerPoints
+                                                                 LLBounds:&_latlonBounds
+                                                               viewBounds:&_viewBounds];
+                                                   
                                                   /* [sd displayStormLine:_context
                                                                    pass:LINE_PASS
                                                               llCorners:&_latlonCornerPoints

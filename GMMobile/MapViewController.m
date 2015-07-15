@@ -769,7 +769,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
     [_mapView animateToCameraPosition:camera];
-    
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -2147,6 +2146,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Perform 3D Fly Around"])
     {
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
+                                        forKey:@"FlyOverType"];
+        
         int numPointsLoops[2];
         CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
         
@@ -2206,6 +2208,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown
                                       forKey:@"SewerOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Perform Downstream 3D Fly Over"])
+    {
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
+                                        forKey:@"FlyOverType"];
+        
+        [self dismissTableView];
+        
+        [self performSelector:@selector(performDownstreamFlyOver)
+                   withObject:nil
+                   afterDelay:0.3];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -2490,6 +2505,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                        pipeTrace.popover = _popover;
                        [pipeTrace tracePipeDownstream:_selectedSewerPipe];
                    });
+}
+
+- (void)performDownstreamFlyOver
+{
+    PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+    
+    NSString *path = [NSString stringWithFormat:@"%@/pipetrace_polydata.bin", UserDefaults.defaults.sharedFilePath];
+    
+    if ([pipeTrace outputPipeTrace:path])
+        [self perform3DFlyAround];
 }
 
 - (void)removePipeTrace
@@ -3632,11 +3657,30 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             break;
             
         case MarkerInfoWindowTypeStormSewer:
+        {
             _selectedSewerPipe = title;
             
             _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
                          @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
                          @"Update Inspection Notes", @"Remove Pipe Marker"];
+           
+            PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+            
+            if (UIDevice.currentDevice.systemVersion.floatValue > 7.99 && [pipeTrace havePipeTrace])
+            {
+                NSMutableArray *newArray = [[NSMutableArray alloc]init];
+                [newArray addObjectsFromArray:_options];
+                [newArray insertObject: @"Perform Downstream 3D Fly Over" atIndex:3];
+                _options = newArray;
+            }
+            
+            else
+            {
+                _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
+                             @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
+                             @"Update Inspection Notes", @"Remove Pipe Marker"];
+            }
+        }
             
             break;
             
