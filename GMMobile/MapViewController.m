@@ -3670,7 +3670,10 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             {
                 NSMutableArray *newArray = [[NSMutableArray alloc]init];
                 [newArray addObjectsFromArray:_options];
-                [newArray insertObject: @"Perform Downstream 3D Fly Over" atIndex:3];
+                
+                [newArray insertObject: @"Perform Downstream 3D Fly Over"
+                               atIndex:3];
+                
                 _options = newArray;
             }
             
