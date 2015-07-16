@@ -89,14 +89,14 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 
 @interface MapViewController ()
 
-@property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords;
+@property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearMarkers, clearWhenDeselected, rotateZoom, blockVectorView;
-@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer;
+@property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
@@ -117,7 +117,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
-@property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved, animateToLocation;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -131,6 +131,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property AlleyStatusSetting alleyStatusSetting;
 @property (nonatomic) NVDataLoader *nvdl;
 @property (nonatomic) NVLegendView *legendView;
+@property (nonatomic) NSInteger locationCount;
+@property (nonatomic) GMSPolyline *polyline;
 
 @end
 
@@ -149,6 +151,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                              object:nil];
     
     _nVectorViews = 0;
+    _animateToLocation = YES;
+    _routeTraceExists = NO;
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
@@ -157,6 +161,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     _firstTimeAppear = _firstTimeMap = YES;
     _digitizationMode = DigitizationModeCustom;
+    _locationCount = 0;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -2144,6 +2149,55 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Trace Route From\nCurrent Location"])
+    {
+        [self dismissTableView];
+        
+        [self performSelector:@selector(traceRouteFromCurrentLocation)
+                   withObject:nil
+                   afterDelay:0.3];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Perform 3D Route Flyover"])
+    {
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
+                                        forKey:@"FlyOverType"];
+        
+        GMSPath *path = _polyline.path;
+        int numPoints = (int)path.count;
+        
+        LPDPOINT llpoints = malloc(numPoints * sizeof(DPOINT) + 4);
+        
+        for (int i = 0; i < numPoints; i++)
+        {
+            CLLocationCoordinate2D coord = [path coordinateAtIndex:i];
+            DPOINT point;
+            point.x = coord.longitude;
+            point.y = coord.latitude;
+            llpoints[i] = point;
+        }
+        
+        if (path.count)
+        {
+            const char *filePath = [NSString stringWithFormat:@"%@/pipetrace_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
+            
+            FILE *fid = fopen(filePath, "wb");
+            
+            if (fid)
+            {
+                fwrite(&numPoints, sizeof(int), 1, fid);
+                fwrite(llpoints, (numPoints * sizeof(DPOINT)), 1, fid);
+                fclose(fid);
+            }
+            
+            free (llpoints);
+        }
+        
+        [self perform3DFlyAround];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Perform 3D Fly Around"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
@@ -2211,7 +2265,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Perform Downstream 3D Fly Over"])
+              isEqualToString:@"Perform Downstream\n3D Fly Over"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
                                         forKey:@"FlyOverType"];
@@ -2452,6 +2506,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)addToDestinations
 {
     //implement add to destinations here
+}
+
+- (void)traceRouteFromCurrentLocation
+{
+    _animateToLocation = NO;
+    
+    if (CLLocationManager.headingAvailable)
+        [_locationManager startUpdatingLocation];
 }
 
 - (void)perform3DFlyAround
@@ -3129,7 +3191,73 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
-    [_mapView animateToLocation:[locations.firstObject coordinate]];
+    _currentLocation = [locations.firstObject coordinate];
+    _locationCount++;
+    
+    if (_animateToLocation)
+        [_mapView animateToLocation:_currentLocation];
+    
+    else if (_locationCount > 2)
+    {
+        [_locationManager stopUpdatingLocation];
+        _animateToLocation = YES;
+        [self beginLocationRouteTrace];
+    }
+}
+
+- (void)beginLocationRouteTrace
+{
+    NSString *urlString =
+    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=driving",
+     _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    urlRequest.timeoutInterval = 15;
+    
+    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:urlRequest
+                                                                  delegate:self];
+#pragma unused(connection)
+}
+
+- (void)connection:(nonnull NSURLConnection *)connection
+    didReceiveData:(nonnull NSData *)data
+{
+    NSError *error;
+    
+    NSDictionary *json =[NSJSONSerialization JSONObjectWithData:data
+                                                        options:NSJSONReadingMutableContainers
+                                                          error:&error];
+    
+    if (!error)
+    {
+        _polyline.map = nil;
+        _polyline = nil;
+        
+        GMSPath *path = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
+        _polyline = [GMSPolyline polylineWithPath:path];
+        _polyline.strokeWidth = 10.0;
+        _polyline.strokeColor = UIColor.greenColor;
+        _polyline.map = _mapView;
+        
+        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
+        
+        GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                                 withPadding:40];
+        
+        [_mapView moveCamera:update];
+        [self updateMarkerPosition];
+        
+        _routeTraceExists = YES;
+    }
+
+    else
+        NSLog(@"JSON Error:%@", error.localizedDescription);
+}
+
+- (void)connection:(nonnull NSURLConnection *)connection
+  didFailWithError:(nonnull NSError *)error
+{
+    NSLog(@"NSURL Error:%@", error.localizedDescription);
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -3626,31 +3754,48 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
             
             if ([self isHennepinCountyPID:_selectedPID])
             {
+                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
+                             @"Add to Property List", @"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
+                
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {
-                    _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
-                                 @"Add to Property List", @"Add to Desinations", @"Perform 3D Fly Around", @"Remove Property Marker"];
-                }
-                
-                else
-                {
-                    _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
-                                 @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
+                    NSMutableArray *newArray = [[NSMutableArray alloc] init];
+                    [newArray addObjectsFromArray:_options];
+                    
+                    [newArray insertObject:@"Perform 3D Fly Around"
+                                   atIndex:7];
+                    
+                    if (_routeTraceExists)
+                    {
+                        [newArray insertObject:@"Perform 3D Route Flyover"
+                                       atIndex:7];
+                    }
+                    
+                    _options = newArray;
                 }
             }
             
             else
             {
+                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area", @"Add to Property List",
+                             @"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
+
+                
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {
-                    _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",
-                                 @"Add to Property List", @"Add to Desinations", @"Perform 3D Fly Around", @"Remove Property Marker"];
-                }
-                
-                else
-                {
-                    _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",
-                                 @"Add to Property List", @"Add to Desinations", @"Remove Property Marker"];
+                    NSMutableArray *newArray = [[NSMutableArray alloc] init];
+                    [newArray addObjectsFromArray:_options];
+                    
+                    [newArray insertObject:@"Perform 3D Fly Around"
+                                   atIndex:6];
+                    
+                    if (_routeTraceExists)
+                    {
+                        [newArray insertObject:@"Perform 3D Route Flyover"
+                                       atIndex:6];
+                    }
+                    
+                    _options = newArray;
                 }
             }
             
@@ -3666,22 +3811,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
            
             PipeTrace *pipeTrace = [[PipeTrace alloc] init];
             
-            if (UIDevice.currentDevice.systemVersion.floatValue > 7.99 && [pipeTrace havePipeTrace])
+            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99 && [pipeTrace havePipeTrace])
             {
-                NSMutableArray *newArray = [[NSMutableArray alloc]init];
+                NSMutableArray *newArray = [[NSMutableArray alloc] init];
                 [newArray addObjectsFromArray:_options];
                 
-                [newArray insertObject: @"Perform Downstream 3D Fly Over"
+                [newArray insertObject:@"Perform Downstream\n3D Fly Over"
                                atIndex:3];
                 
                 _options = newArray;
-            }
-            
-            else
-            {
-                _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
-                             @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
-                             @"Update Inspection Notes", @"Remove Pipe Marker"];
             }
         }
             
