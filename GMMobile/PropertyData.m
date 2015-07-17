@@ -1166,7 +1166,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
-    CGFloat fontSize = 32.0;
+    CGFloat fontSize = 48.0;
     CGFloat minFontSize = 8.0;
     //CGFloat size = sqrtf(maxPixels);
     NSAttributedString *attString;
