@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "PlatImageView.h"
-#import "SewerData.h"
 
 #define MAX_PROFILE_AREAS 8
 

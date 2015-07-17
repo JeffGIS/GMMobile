@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "PlatView.h"
-#import "SewerData.h"
 
 #define TESTMODE YES
 

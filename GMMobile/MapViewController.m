@@ -821,9 +821,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [propData pickPID:&llPropPt
             highlightList:highlightList];
         
-        [sewerData pickSewer:&llSewerPt
-                      atZoom:_mapView.camera.zoom
-               highlightList:highlightList];
+        if ([ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                         visibleAtZoom:_vectorViewZoom])
+        {
+            [sewerData pickSewer:&llSewerPt
+                          atZoom:_mapView.camera.zoom
+                   highlightList:highlightList];
+        }
         
         [planData pickAlleyWallPoint:llpickPt
                        highlightList:highlightList];

@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "PipeTrace.h"
-#import "SewerData.h"
 
 extern int keepProcessing;
 
