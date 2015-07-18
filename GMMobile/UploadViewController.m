@@ -63,7 +63,10 @@ Top:;
  
     //sleep(1);
     if (_uploadCancelled)
+    {
+        [UIApplication.sharedApplication setIdleTimerDisabled:NO];
         return;
+    }
     /*if ([NSFileManager.defaultManager fileExistsAtPath:_createDirectoryFile1])
     {
         firstFile = _createDirectoryFile1.lastPathComponent;
@@ -109,6 +112,7 @@ Top:;
             _statusLabel.text = [NSString stringWithFormat:@"%i files skipped", _numToSkip];
         
         [self setupLabels];
+        [UIApplication.sharedApplication setIdleTimerDisabled:NO];
         return;
     }
     
@@ -128,6 +132,9 @@ Top:;
             goto Top;
         }*/
     }
+    else
+        [UIApplication.sharedApplication setIdleTimerDisabled:NO];
+
 }
 
 - (void)viewDidLoad
@@ -171,6 +178,7 @@ Top:;
 {
     [super viewDidAppear:animated];
     _uploadCancelled = NO;
+    [UIApplication.sharedApplication setIdleTimerDisabled:YES];
     [self listFilesToUpload];
 }
 
