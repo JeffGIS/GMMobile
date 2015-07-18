@@ -4,7 +4,6 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "FindViewController.h"
 #import "PropertyData.h"
-#import "SewerData.h"
 #import "PlanimetricData.h"
 #import "AlleyWallData.h" 
 #import "PipeTrace.h"
@@ -20,7 +19,7 @@
 #import "NVDataLoader.h"
 #import <MessageUI/MessageUI.h>
 
-@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLargeAlertViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate, NVDataLoaderDelegate,MFMailComposeViewControllerDelegate>
+@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,GSSiAlertDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLargeAlertViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate, NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;

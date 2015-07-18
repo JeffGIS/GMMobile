@@ -9,11 +9,11 @@
 static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
 //static BOOL layerVisible[NUMHardCodedLayers]={0};
 //static BOOL layerPickable[NUMHardCodedLayers]={0};
-static float layerDefaultZoom[NUMHardCodedLayers]={0};
+static CGFloat layerDefaultZoom[NUMHardCodedLayers]={0};
 static BOOL layerHasSymbols[NUMHardCodedLayers]={0};
 static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};
 static int  configLayers[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
-static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
+static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 
 @implementation ApplicationObject
 
@@ -334,7 +334,7 @@ static float  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 }
 
 - (BOOL)layer:(HardCodedLayers)layerID
-visibleAtZoom:(float)zoom
+visibleAtZoom:(CGFloat)zoom
 {
     if (configLayers[_currentApp][layerID] &&
         zoom >= configLayerZoom[_currentApp][layerID])
@@ -356,7 +356,7 @@ visibleAtZoom:(float)zoom
 
 - (BOOL)symbol:(NSString *)sym
        inLayer:(HardCodedLayers)layerID
-visibleAtZoom:(float)zoom
+ visibleAtZoom:(CGFloat)zoom
 {
     if (configLayers[_currentApp][layerID] &&
         zoom >= configLayerZoom[_currentApp][layerID])

@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "PipeTrace.h"
-#import "SewerData.h"
 
 extern int keepProcessing;
 
@@ -700,32 +699,31 @@ $RETURN(1);
         }
         
         [_sd drawStormLine:context
-                      pass:LINE_PASS
-                   nPoints:numPoints
-                    points:llpoints
-                 withColor:color
-                  andWidth:15
-                   andText:nil
-               andPointers:YES];
+                       pass:LINE_PASS
+                    nPoints:numPoints
+                     points:llpoints
+                  withColor:color
+                   andWidth:15
+                    andText:nil
+                andPointers:YES];
         
         free(llpoints);
-
     }
     
-    SQLOKswr(sqlite3_finalize(statement),_sd.database);
+    SQLOKswr(sqlite3_finalize(statement), _sd.database);
     [_sd close];
 }
 
 - (BOOL)outputPipeTrace:(NSString *)toPath
 {
-    BOOL rtn = NO;
+    BOOL rtn = FALSE;
     DPOINT BasePt;
     int numPoints;
     LPDPOINT outputArray = nil;
     int numOutputPoints = 0;
     
     sqlite3_stmt *statement = NULL;
-    NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID ORDER BY INSERT_SEQUENCE ASC";
+    NSString *query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
     
     _sd = [[SewerData alloc] init];
     [_sd open];
@@ -769,14 +767,15 @@ $RETURN(1);
             int np = numPoints;
             LPDPOINT pdp = llpoints;
             
-            if (sameDPoint(&outputArray[numOutputPoints - 1], &llpoints[0], 0.0000001))
+            if (sameDPoint(&outputArray[numOutputPoints - 1], &llpoints[0], 0.00000001))
             {
                 np--;
                 pdp++;
             }
             
-            outputArray = realloc(outputArray, (numOutputPoints + np) * sizeof(DPOINT) + 4);
+            realloc(outputArray,(numOutputPoints + np) * sizeof(DPOINT)+4);
             memmove(&outputArray[numOutputPoints], pdp, np * sizeof(DPOINT));
+            
             numOutputPoints += np;
             free (llpoints);
         }
@@ -799,31 +798,6 @@ $RETURN(1);
         
         free (outputArray);
     }
-    
-    return rtn;
-}
-
-- (BOOL)havePipeTrace
-{
-    BOOL rtn = FALSE;
-    sqlite3_stmt *statement = NULL;
-    
-    NSString * query = @"SELECT count(*) FROM TRACE_HIGHLIGHT";
-    
-    _sd = [[SewerData alloc] init];
-    [_sd open];
-    
-    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
-    
-    if (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        int numRows = sqlite3_column_int(statement,0);
-        if (numRows > 0)
-            rtn = TRUE;
-    }
-    
-    SQLOKswr(sqlite3_finalize(statement), _sd.database);
-    [_sd close];
     
     return rtn;
 }

@@ -7,7 +7,6 @@ extern int keepProcessing;
 #import "BoundaryData.h"
 #import "PlanimetricData.h"
 #import "PropertyData.h"
-#import "SewerData.h"
 #import "PipeTrace.h"
 #import "ConfigurationControl.h"
 
