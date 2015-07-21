@@ -52,13 +52,13 @@ Top:;
     NSFileManager *fileManager = NSFileManager.defaultManager;
     NSString *firstFile;
 
-//    _ftpSiteText = @"www.thmgis.com";
-//    _usernameText = @"waypoint";
-//    _passwordText = @"pointway4*";
-    _ftpSiteText = @"gssidata.com";
-    _usernameText = @"GSSiData";
-    _passwordText = @"GSSi";
-    _portText = @"14147";
+    _ftpSiteText = @"www.thmgis.com";
+    _usernameText = @"waypoint";
+    _passwordText = @"pointway4*";
+//    _ftpSiteText = @"gssidata.com";
+//  _usernameText = @"GSSiData";
+//    _passwordText = @"GSSi";
+//    _portText = @"14147";
     _urlText = [[NSString alloc] initWithFormat:@"%@:%@/GMMobileUploads/%@/", _ftpSiteText,_portText,CRAPI.sharedInstance.organizationName];
  
     //sleep(1);
@@ -573,5 +573,20 @@ Top:;
     [self.delegate uploadViewController:self
                                     return:YES];
 }
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
 
 @end
