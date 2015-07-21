@@ -270,9 +270,18 @@
     [sliderView hideSliderView:YES];
 }
 
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return UIInterfaceOrientationMaskPortrait;
+    
+    else
+        return UIInterfaceOrientationMaskAll;
+}
+
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
-    return UIInterfaceOrientationPortrait;
+        return UIInterfaceOrientationPortrait;
 }
 
 - (BOOL)shouldAutorotate
