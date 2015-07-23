@@ -681,11 +681,11 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     [_mapToolbar configure:_screenSetting];
     
-    _dirList = [FTPDirectoryList getListingFromFTPDomain:@"thmgis.com"
+    _dirList = [FTPDirectoryList getListingFromFTPDomain:@"gssidata.com"
                                                directory:@"PedRampSurvey/CrystalLakeIL"
-                                                username:@"waypoint"
-                                                password:@"pointway4*"
-                                                    port:nil
+                                                username:@"GSSiData"
+                                                password:@"GSSi"
+                                                    port:@"14147"
                                                 delegate:self];
 }
 
