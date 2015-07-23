@@ -133,6 +133,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) NVLegendView *legendView;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
+@property (nonatomic) FTPDirectoryList *dirList;
 
 @end
 
@@ -679,6 +680,23 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
         self.tabBarController.selectedIndex = 3;
     
     [_mapToolbar configure:_screenSetting];
+    
+    _dirList = [FTPDirectoryList getListingFromFTPDomain:@"thmgis.com"
+                                               directory:@"GMMobileUploads/MPLSPubWorks/AlleyWallInventory"
+                                                username:@"waypoint"
+                                                password:@"pointway4*"
+                                                    port:nil
+                                                delegate:self];
+}
+
+- (void)FTPDirectoryListDidCompleteWithStatus:(FTPStatus)status
+                                 statusString:(NSString *)statusString
+                                directoryList:(NSData *)directoryList
+{
+    NSString *dirListString = [[NSString alloc] initWithData:directoryList
+                                                    encoding:NSUTF8StringEncoding];
+    
+    NSLog(@"%@", dirListString);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
