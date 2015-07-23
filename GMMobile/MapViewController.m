@@ -682,7 +682,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     [_mapToolbar configure:_screenSetting];
     
     _dirList = [FTPDirectoryList getListingFromFTPDomain:@"gssidata.com"
-                                               directory:@"PedRampSurvey/CrystalLakeIL"
+                                               directory:@"Bill/PlaceAreas"
                                                 username:@"GSSiData"
                                                 password:@"GSSi"
                                                     port:@"14147"
@@ -693,10 +693,15 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                  statusString:(NSString *)statusString
                                 directoryList:(NSData *)directoryList
 {
-    NSString *dirListString = [[NSString alloc] initWithData:directoryList
-                                                    encoding:NSUTF8StringEncoding];
+    if (status == FTPStatusOK && directoryList)
+    {
+        NSString *dirListString = [[NSString alloc] initWithData:directoryList
+                                                        encoding:NSUTF8StringEncoding];
+        
+        NSLog(@"%@", dirListString);
+    }
     
-    NSLog(@"%@", dirListString);
+    NSLog(@"FTP Status:%li:%@", (long)status, statusString);
 }
 
 - (void)viewWillDisappear:(BOOL)animated
