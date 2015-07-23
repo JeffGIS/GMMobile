@@ -682,7 +682,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     [_mapToolbar configure:_screenSetting];
     
     _dirList = [FTPDirectoryList getListingFromFTPDomain:@"thmgis.com"
-                                               directory:@"GMMobileUploads/MPLSPubWorks/AlleyWallInventory"
+                                               directory:@"PedRampSurvey/CrystalLakeIL"
                                                 username:@"waypoint"
                                                 password:@"pointway4*"
                                                     port:nil
