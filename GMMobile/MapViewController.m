@@ -134,6 +134,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
 @property (nonatomic) FTPDirectoryList *dirList;
+@property (nonatomic) FTPDirectoryCreate *dirCreate;
 
 @end
 
@@ -681,12 +682,30 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     [_mapToolbar configure:_screenSetting];
     
-    _dirList = [FTPDirectoryList getListingFromFTPDomain:@"gssidata.com"
+    /*_dirList = [FTPDirectoryList getListingFromFTPDomain:@"gssidata.com"
                                                directory:@"Bill/PlaceAreas"
                                                 username:@"GSSiData"
                                                 password:@"GSSi"
                                                     port:@"14147"
-                                                delegate:self];
+                                                delegate:self];*/
+    
+    NSArray *directories = @[@"Test1", @"Test2", @"Test3", @"Test4", @"Test5"];
+    
+    _dirCreate = [FTPDirectoryCreate createDirectories:directories
+                                           inFTPDomain:@"thmgis.com"
+                                             directory:@"Bill"
+                                              username:@"waypoint"
+                                              password:@"pointway4*"
+                                                  port:nil
+                                              delegate:self];
+}
+
+- (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
+                                   statusString:(NSString *)statusString
+                                      directory:(NSString *)directory
+{
+    if (status == FTPStatusOK || status == FTPStatusStop)
+        NSLog(@"CREATE DIR LIST complete for FTP directory %@", directory);
 }
 
 - (void)FTPDirectoryListDidCompleteWithStatus:(FTPStatus)status
