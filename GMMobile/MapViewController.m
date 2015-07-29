@@ -133,8 +133,8 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) NVLegendView *legendView;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
-@property (nonatomic) FTPDirectoryList *dirList;
-@property (nonatomic) FTPDirectoryCreate *dirCreate;
+//@property (nonatomic) FTPDirectoryList *dirList;
+//@property (nonatomic) FTPDirectoryCreate *dirCreate;
 
 @end
 
@@ -687,7 +687,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                                 username:@"GSSiData"
                                                 password:@"GSSi"
                                                     port:@"14147"
-                                                delegate:self];*/
+                                                delegate:self];
     
     NSArray *directories = @[@"Test1", @"Test2", @"Test3", @"Test4", @"Test5"];
     
@@ -697,7 +697,7 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
                                               username:@"waypoint"
                                               password:@"pointway4*"
                                                   port:nil
-                                              delegate:self];
+                                              delegate:self];*/
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -2238,6 +2238,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             }
             
         }
+        free (llpoints);
+        
         free (llpoints);
         
         [self perform3DFlyAround];
