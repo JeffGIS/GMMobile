@@ -36,6 +36,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
+    
     for (UIView *subviews in self.view.subviews)
         [subviews removeFromSuperview];
 }
