@@ -2240,8 +2240,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
         free (llpoints);
         
-        free (llpoints);
-        
         [self perform3DFlyAround];
     }
     
