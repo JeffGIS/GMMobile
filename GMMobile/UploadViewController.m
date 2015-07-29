@@ -347,14 +347,17 @@ Top:;
     if (_fileSize == 0)
     {
         _numToSkip++;
+        [self listFilesToUpload];
         return NO;
     }
     
     if (!([filePath.pathExtension isEqualToString:@"png"] ||
           [filePath.pathExtension isEqualToString:@"jpg"] ||
+          [filePath.pathExtension isEqualToString:@"sql"] ||
           [filePath.pathExtension isEqualToString:@"txt"]))
     {
         _numToSkip++;
+        [self listFilesToUpload];
         return NO;
     }
     
@@ -385,6 +388,7 @@ Top:;
     {
         _statusLabel.text = @"Invalid URL";
         _numToSkip++;
+        [self listFilesToUpload];
         return NO;
     }
     else
@@ -395,6 +399,7 @@ Top:;
         {
             _statusLabel.text = @"Unable to open stream";
             _numToSkip++;
+            [self listFilesToUpload];
             return NO;
         }
         
@@ -406,6 +411,7 @@ Top:;
         {
             _statusLabel.text = @"Unable to open ftpstream";
             _numToSkip++;
+            [self listFilesToUpload];
             return NO;
         }
         
@@ -420,6 +426,7 @@ Top:;
             {
                 _statusLabel.text = @"Unable to set username";
                 _numToSkip++;
+                [self listFilesToUpload];
                 return NO;
             }
             
@@ -430,6 +437,7 @@ Top:;
             {
                 _statusLabel.text = @"Unable to set password";
                 _numToSkip++;
+                [self listFilesToUpload];
                 return NO;
             }
         }
