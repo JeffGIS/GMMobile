@@ -2237,8 +2237,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 fclose(fid);
             }
             
-            free (llpoints);
         }
+        free (llpoints);
         
         [self perform3DFlyAround];
     }

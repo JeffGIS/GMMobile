@@ -758,7 +758,7 @@ $RETURN(1);
         
         if (outputArray == nil)
         {
-            outputArray = llpoints;
+            outputArray = malloc (numPoints * sizeof(DPOINT)+4);
             numOutputPoints = numPoints;
         }
         
@@ -772,13 +772,14 @@ $RETURN(1);
                 np--;
                 pdp++;
             }
-            
-            realloc(outputArray,(numOutputPoints + np) * sizeof(DPOINT)+4);
-            memmove(&outputArray[numOutputPoints], pdp, np * sizeof(DPOINT));
-            
-            numOutputPoints += np;
-            free (llpoints);
+            if (np > 0)
+            {
+                outputArray = realloc(outputArray,(numOutputPoints + np) * sizeof(DPOINT)+4);
+                memmove(&outputArray[numOutputPoints], pdp, np * sizeof(DPOINT));
+                numOutputPoints += np;
+            }
         }
+        free (llpoints);
     }
     
     SQLOKswr(sqlite3_finalize(statement), _sd.database);
@@ -796,8 +797,9 @@ $RETURN(1);
             rtn = YES;
         }
         
-        free (outputArray);
     }
+    if (outputArray)
+        free (outputArray);
     
     return rtn;
 }

@@ -1022,7 +1022,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    if (sqlite3_step(statement) == SQLITE_ROW)
     {
         basePoint.x = sqlite3_column_double(statement, 0);
         basePoint.y = sqlite3_column_double(statement, 1);

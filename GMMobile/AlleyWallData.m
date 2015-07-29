@@ -127,7 +127,7 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
         if (uniqueFile || !_sendToServerFile)
         {
             int iTime = NSDate.timeIntervalSinceReferenceDate;
-            _sendToServerFile = [NSString stringWithFormat:@"%@/AlleyWallInventory_SQL_%i-%i.txt",
+            _sendToServerFile = [NSString stringWithFormat:@"%@/AlleyWallInventory_%i-%i.sql",
                                         CRAPI.sharedInstance.sharedOutputDirectory,iTime,fileSequence++];
             rtn = [[NSString stringWithUTF8String:cmd] writeToFile:_sendToServerFile
                                                         atomically:YES
