@@ -26,6 +26,7 @@
 		A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */; };
 		A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */; };
 		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
+		A934A73F1B72AFF0000EB9F9 /* update.png in Resources */ = {isa = PBXBuildFile; fileRef = A934A73E1B72AFF0000EB9F9 /* update.png */; };
 		A9355C401B694AE100205E53 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A9355C3F1B694AE100205E53 /* Launch Screen.xib */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
@@ -150,6 +151,7 @@
 		A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackOrangeCrosshairs.png; sourceTree = "<group>"; };
 		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
 		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
+		A934A73E1B72AFF0000EB9F9 /* update.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = update.png; sourceTree = "<group>"; };
 		A9355C3F1B694AE100205E53 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
@@ -317,6 +319,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A934A73E1B72AFF0000EB9F9 /* update.png */,
 				A95EC7E11B224BFC0031B903 /* downloadCloud.png */,
 				A95EC7E21B224BFC0031B903 /* uploadCloud.png */,
 				A95EC7DF1B21FC280031B903 /* greenPlusSign.png */,
@@ -654,6 +657,7 @@
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
+				A934A73F1B72AFF0000EB9F9 /* update.png in Resources */,
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
 				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
