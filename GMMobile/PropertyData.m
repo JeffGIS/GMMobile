@@ -1160,6 +1160,17 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     return '?';
 }
 
+- (int) numLinesInText:(const char *)txt
+{
+    int numLines = 1;
+    
+    while (*txt)
+    {
+        if (*txt++ == '\n')
+            numLines++;
+    }
+    return numLines;
+}
 - (void)displayText:(NSString *)text
             atPoint:(LPDPOINT)pviewPointx
              inRect:(CGRect*)ptextRect
@@ -1172,6 +1183,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     NSAttributedString *attString;
     UIColor *textColor;
     BOOL haveFit = NO;
+    BOOL didDraw = NO;
+    int numTextLines;
    
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
@@ -1187,6 +1200,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     ptextRect->origin.y += border;
     ptextRect->size.width -= border * 2;
     ptextRect->size.height -= border * 2;
+    numTextLines = [self numLinesInText:text.UTF8String];
     while (fontSize > minFontSize)
     {
         CGContextSaveGState(context);
@@ -1247,21 +1261,31 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
                 CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
                 
-                CTFrameDraw(frame, context);
+                CFArrayRef lines = CTFrameGetLines(frame);
+                if (CFArrayGetCount(lines) >= numTextLines)
+                {
+                    CTFrameDraw(frame, context);
+                    didDraw = YES;
+                }
                 CFRelease(frame);
                 CFRelease(path);
                 CFRelease(framesetter);
-                CGContextRestoreGState(context);
-                return;
+                if (didDraw)
+                {
+                    CGContextRestoreGState(context);
+                    return;
+                }
             }
             else
                 haveFit = YES;
         }
         if (haveFit)
-            fontSize -= 1.0;
+            fontSize -= 1;
         else
-            fontSize -= 2.0;
+            fontSize -= 2;
         CGContextRestoreGState(context);
+        if (fontSize < minFontSize)
+            return;
     }
 }
 
