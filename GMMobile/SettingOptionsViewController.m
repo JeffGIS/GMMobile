@@ -28,11 +28,14 @@
     UIImage *upload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"upload"
                                                                                      ofType:@"png"]];
     
+    UIImage *update = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"update"
+                                                                                     ofType:@"png"]];
+    
     UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
                                                                                         ofType:@"png"]];
     
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, calibrate, nil];
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Calibrate Device"];
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, nil];
+    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device"];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
