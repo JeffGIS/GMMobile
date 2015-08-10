@@ -109,7 +109,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
 @property (nonatomic) UIView *firstView, *secondView;
 @property MapViewScreenSetting screenSetting;
 @property (nonatomic) NSInteger gestureCount, digitizerCount;
-@property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
@@ -329,8 +328,6 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     
     self.view.backgroundColor = UIColor.whiteColor;
     
-    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
-    _gssiAlert.delegate = self;
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0
@@ -1328,11 +1325,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         [_popover hide];
         
-        [_gssiAlert showAlertWithTitle:@"Error getting plat file"
-                               message:statusString
-                     cancelButtonTitle:@"Continue"
-                     otherButtonTitles:nil
-             destructiveButtonPosition:0];
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:[NSString stringWithFormat:@"Error getting plat file:%@", statusString]
+                                                   buttonTextArray:@[@"Continue"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
     }
 
 }
@@ -2535,11 +2533,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showCensusArea
 {
-    [_gssiAlert showAlertWithTitle:@"Zoom to Census Area"
-                           message:[NSString stringWithFormat:@"Parcel %@", _selectedPID]
-                 cancelButtonTitle:@"Cancel"
-                 otherButtonTitles:@[@"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
-         destructiveButtonPosition:0];
+    NSString *title = [NSString stringWithFormat:@"Zoom to Census Area for Parcel %@", _selectedPID];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:title
+                                               buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (void)addToPropList
@@ -2574,11 +2575,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
     {
-        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch Flyover App"
-                               message:nil
-                     cancelButtonTitle:@"OK"
-                     otherButtonTitles:nil
-             destructiveButtonPosition:0];
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"GMMobile cannot launch Flyover App"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
     }
 }
 
@@ -2737,11 +2739,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
     {
-        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch CRIS Detail"
-                               message:nil
-                     cancelButtonTitle:@"OK"
-                     otherButtonTitles:nil
-             destructiveButtonPosition:0];
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"GMMobile cannot launch CRIS Detail"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
     }
 }
 
@@ -2926,15 +2929,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      }];
 }
 
-- (void)gssiAlert:(GSSiAlertController *)gssiAlert
-clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
 {
+    [alertView hideLargeAlertView:YES];
+    
     switch (buttonIndex)
     {
         case CensusZoomSettingCancel:
             [self deselectTableViewRow];
-            
-            break;
+        break;
             
         case CensusZoomSettingBlock:
             [self dismissTableView];
@@ -4159,15 +4163,15 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
 didFindMatchBetweenNote:(NSString *)note
     andItemInList:(NSString *)itemInList;
 {
-    GSSiAlertController *alert = [[GSSiAlertController alloc] initWithViewController:self];
-    alert.delegate = notesView;
+    NSString *text1 = [NSString stringWithFormat:@"Replace %@ with %@", itemInList, note];
+    NSString *text2 = [NSString stringWithFormat:@"Add %@ to list", note];
     
-    [alert showAlertWithTitle:[NSString stringWithFormat:@"List already contains %@", itemInList]
-                      message:nil
-            cancelButtonTitle:@"Cancel"
-            otherButtonTitles:@[[NSString stringWithFormat:@"Replace %@ with %@", itemInList, note],
-                                [NSString stringWithFormat:@"Add %@ to list", note]]
-    destructiveButtonPosition:0];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:notesView
+                                                         title:[NSString stringWithFormat:@"List already contains %@", itemInList]
+                                               buttonTextArray:@[@"Cancel", text1, text2]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (NSArray *)arrayOfPickableNotesItemsForNotesView:(GSSiNotesView *)notesView
@@ -4187,11 +4191,12 @@ didFindMatchBetweenNote:(NSString *)note
     
     else
     {
-        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch Alley Wall Inventory"
-                               message:nil
-                     cancelButtonTitle:@"OK"
-                     otherButtonTitles:nil
-             destructiveButtonPosition:0];
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"GMMobile cannot launch Alley Wall Inventory"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
     }
 }
 

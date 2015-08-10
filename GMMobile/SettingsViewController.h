@@ -4,6 +4,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <MessageUI/MessageUI.h>
 #import "ConfigurationControl.h"
+#import "CCodeLibrary/NVAlertView.h"
 
 #define DLSTATUS_USER_CANCELLED 1
 #define DLSTATUS_FTP_FAILED 2
@@ -18,7 +19,7 @@
 @end
 
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,GSSiAlertDelegate,MFMailComposeViewControllerDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,MFMailComposeViewControllerDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
 @property (nonatomic, weak) id <SettingsViewControllerDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
 @property id saveDelegate;
