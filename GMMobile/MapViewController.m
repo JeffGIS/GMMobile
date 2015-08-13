@@ -1328,7 +1328,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
                                                              title:[NSString stringWithFormat:@"Error getting plat file:%@", statusString]
-                                                   buttonTextArray:@[@"Continue"]
+                                                   buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
 #pragma unused(alert)
     }
@@ -2540,7 +2540,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                          title:title
                                                buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
                                               destructiveIndex:0];
-#pragma unused(alert)
+    
+    alert.tag = 777;
 }
 
 - (void)addToPropList
@@ -2682,14 +2683,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)deleteWallPoint
 {
-    NVLargeAlertView *alert = [NVLargeAlertView showLargeAlertViewinView:self.view
-                                                                delegate:self
-                                                                   title:@"Do You Wish to Delete This Alley Wall?"
-                                                           topButtonText:@"YES"
-                                                        bottomButtonText:@"NO"
-                                                        destructiveIndex:NVLargeAlertIndexTopButton];
-#pragma unused(alert)
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Do You Wish to Delete This Alley Wall?"
+                                               buttonTextArray:@[@"YES", @"NO"]
+                                              destructiveIndex:1];
     
+    alert.tag = 666;
     [self deselectTableViewRow];
 }
 
@@ -2744,7 +2744,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              title:@"GMMobile cannot launch CRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
     }
 }
 
@@ -2934,26 +2933,46 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [alertView hideLargeAlertView:YES];
     
-    switch (buttonIndex)
+    if (alertView.tag == 666)//delete wall point
     {
-        case CensusZoomSettingCancel:
-            [self deselectTableViewRow];
-        break;
+        if (buttonIndex == 0)
+        {
+            AlleyWallData *awd = [[AlleyWallData alloc] init];
             
-        case CensusZoomSettingBlock:
-            [self dismissTableView];
-            //implement zoom to block here
-            break;
+            [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
             
-        case CensusZoomSettingBlockGroup:
             [self dismissTableView];
-            //implement zoom to block group here
-            break;
+            [self removePreviousInfoWindow];
+            [self removeMarker];
             
-        case CensusZoomSettingTract:
-            [self dismissTableView];
-            //implement zoom to tract here
-            break;
+            [self refreshVectorView:_mapView.projection.visibleRegion
+                             atZoom:_mapView.camera.zoom];
+        }
+    }
+    
+    else if (alertView.tag == 777)//census zoom setting
+    {
+        switch (buttonIndex)
+        {
+            case CensusZoomSettingCancel:
+                [self deselectTableViewRow];
+                break;
+                
+            case CensusZoomSettingBlock:
+                [self dismissTableView];
+                //implement zoom to block here
+                break;
+                
+            case CensusZoomSettingBlockGroup:
+                [self dismissTableView];
+                //implement zoom to block group here
+                break;
+                
+            case CensusZoomSettingTract:
+                [self dismissTableView];
+                //implement zoom to tract here
+                break;
+        }
     }
 }
 
@@ -3300,14 +3319,29 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _routeTraceExists = YES;
     }
 
-    else
-        NSLog(@"JSON Error:%@", error.localizedDescription);
+    else if (![self.view viewWithTag:888])
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:error.localizedDescription
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+        alert.tag = 888;
+    }
 }
 
 - (void)connection:(nonnull NSURLConnection *)connection
   didFailWithError:(nonnull NSError *)error
 {
-    NSLog(@"NSURL Error:%@", error.localizedDescription);
+    if (![self.view viewWithTag:999])
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:error.localizedDescription
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+        alert.tag = 999;
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -3330,6 +3364,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         [self removePreviousInfoWindow];
         _clearMarkers = YES;
     }
+    
+    _polyline.map = nil;
+    _polyline = nil;
 }
 
 - (void)mapToolbarDidSelectDigitize
@@ -4204,26 +4241,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     return (fabs(coordinate1.latitude - coordinate2.latitude) < 0.00001) &&
            (fabs(coordinate1.longitude - coordinate2.longitude) < 0.00001);
-}
-
-- (void)largeAlertView:(NVLargeAlertView *)largeAlertView
-   didTapButtonAtIndex:(NVLargeAlertIndex)buttonIndex
-{
-    if (buttonIndex == NVLargeAlertIndexTopButton)
-    {
-        AlleyWallData *awd = [[AlleyWallData alloc] init];
-        
-        [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
-        
-        [self dismissTableView];
-        [self removePreviousInfoWindow];
-        [self removeMarker];
-        
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
-    }
-    
-    [largeAlertView hideLargeAlertView:YES];
 }
 
 - (NSUInteger)numberOfRowsInLegendView
