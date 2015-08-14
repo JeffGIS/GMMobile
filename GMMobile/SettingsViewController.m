@@ -10,7 +10,6 @@
 
 @interface SettingsViewController ()
 
-@property (nonatomic) GSSiAlertController *gssiAlert;
 @property (nonatomic) NSMutableArray *allPlats;
 @property (nonatomic) NSInteger nextPlat;
 
@@ -45,9 +44,6 @@
     [super viewDidLoad];
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
-
-    _gssiAlert = [[GSSiAlertController alloc] initWithViewController:self];
-    _gssiAlert.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -80,16 +76,19 @@
 
 - (IBAction)deleteDatabase:(id)sender
 {
-    [_gssiAlert showAlertWithTitle:@"Delete Property Records Database"
-                           message:nil
-                 cancelButtonTitle:@"Cancel"
-                 otherButtonTitles:@[@"OK"]
-         destructiveButtonPosition:1];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Delete Property Records Database"
+                                               buttonTextArray:@[@"Cancel", @"OK"]
+                                              destructiveIndex:1];
+#pragma unused(alert)
 }
 
-- (void)gssiAlert:(GSSiAlertController *)gssiAlert
-clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
 {
+    [alertView hideLargeAlertView:YES];
+    
     if (buttonIndex == 1)
         [self databaseDeletion];
 }
@@ -398,16 +397,19 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
         else
         {
             [_popover hide];
+            
             if (_fromDataLoader)
-            {
                 [_delegate SettingsViewControllerFailed:DLSTATUS_USER_CANCELLED];
-            }
+            
             else
-                [_gssiAlert showAlertWithTitle:@"Error getting parcel file"
-                                   message:@"Network communication error"
-                         cancelButtonTitle:@"Continue"
-                         otherButtonTitles:nil
-                 destructiveButtonPosition:0];
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                  delegate:self
+                                                                     title:@"Error getting parcel file. Network communication error."
+                                                           buttonTextArray:@[@"OK"]
+                                                          destructiveIndex:0];
+#pragma unused(alert)
+            }
         }
     }
 }
@@ -814,11 +816,12 @@ clickedButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        [_gssiAlert showAlertWithTitle:@"GMMobile cannot launch CRIS Detail"
-                               message:nil
-                     cancelButtonTitle:@"OK"
-                     otherButtonTitles:nil
-             destructiveButtonPosition:0];
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"GMMobile cannot launch CRIS Detail"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
     }
 }
 
@@ -836,11 +839,14 @@ didReturnTimeInterval:(NSString *)timeInterval
 {
     [bumpDetector hideBumpDetector:YES];
     
-    [_gssiAlert showAlertWithTitle:@"Collision Detection Manager"
-                           message:[NSString stringWithFormat:@"Elapsed Time\n%@ seconds", timeInterval]
-                 cancelButtonTitle:@"OK"
-                 otherButtonTitles:nil
-         destructiveButtonPosition:0];
+    NSString *title = [NSString stringWithFormat:@"Collision Detection\nElapsed Time\n%@ seconds", timeInterval];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:title
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (void)bumpDetectorDidCancel:(GSSiBumpDetector *)bumpDetector;
@@ -950,11 +956,12 @@ didReturnTimeInterval:(NSString *)timeInterval
     [headingViewController dismissViewControllerAnimated:YES
                                               completion:nil];
     
-    [_gssiAlert showAlertWithTitle:@"Heading View Controller"
-                           message:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
-                 cancelButtonTitle:@"OK"
-                 otherButtonTitles:nil
-         destructiveButtonPosition:0];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (void)headingViewControllerDidCancel:(NVHeadingViewController *)headingViewController
@@ -962,11 +969,12 @@ didReturnTimeInterval:(NSString *)timeInterval
     [headingViewController dismissViewControllerAnimated:YES
                                               completion:nil];
     
-    [_gssiAlert showAlertWithTitle:@"Heading View Controller"
-                           message:@"Heading Measurement Cancelled"
-                 cancelButtonTitle:@"OK"
-                 otherButtonTitles:nil
-         destructiveButtonPosition:0];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Heading Measurement Cancelled"
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (IBAction)showVideoHeadingVC:(id)sender
@@ -984,11 +992,12 @@ didReturnTimeInterval:(NSString *)timeInterval
     [headingViewController dismissViewControllerAnimated:YES
                                               completion:nil];
     
-    [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
-                           message:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
-                 cancelButtonTitle:@"OK"
-                 otherButtonTitles:nil
-         destructiveButtonPosition:0];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:[NSString stringWithFormat:@"Average Heading: %.1f", heading]
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (void)videoHeadingViewControllerDidCancel:(NVVideoHeadingViewController *)videoHeadingViewController
@@ -996,11 +1005,12 @@ didReturnTimeInterval:(NSString *)timeInterval
     [videoHeadingViewController dismissViewControllerAnimated:YES
                                                    completion:nil];
     
-    [_gssiAlert showAlertWithTitle:@"Video Heading View Controller"
-                           message:@"Video Heading Measurement Cancelled"
-                 cancelButtonTitle:@"OK"
-                 otherButtonTitles:nil
-         destructiveButtonPosition:0];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Video Heading Measurement Cancelled"
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
 }
 
 - (IBAction)goBack:(id)sender

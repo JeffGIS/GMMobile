@@ -194,20 +194,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
     {
-        NVLargeAlertView *largeAlert = [NVLargeAlertView showLargeAlertViewinView:self.view
-                                                                         delegate:self
-                                                                            title:@"Password Not Correct"
-                                                                    topButtonText:@"OK"
-                                                                 bottomButtonText:@"Try Again"
-                                                                 destructiveIndex:NVLargeAlertIndexNone];
-#pragma unused(largeAlert)
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"Password Not Correct"
+                                                   buttonTextArray:@[@"OK", @"Try Again"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
     }
 }
 
-- (void)largeAlertView:(NVLargeAlertView *)largeAlertView
-   didTapButtonAtIndex:(NVLargeAlertIndex)buttonIndex
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == NVLargeAlertIndexBottomButton)
+    [alertView hideLargeAlertView:YES];
+    
+    if (buttonIndex == 1)
     {
         NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
                                                          delegate:self
@@ -216,8 +217,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         textAlert.keyboardType = UIKeyboardTypeNumberPad;
         textAlert.minimumCharacters = 0;
     }
-    
-    [largeAlertView hideLargeAlertView:YES];
 }
 
 - (void)cellSwitchValueChanged:(UISwitch *)aSwitch

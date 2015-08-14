@@ -94,6 +94,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [NSNotificationCenter.defaultCenter postNotificationName:@"didBecomeActive"
                                                       object:nil
                                                     userInfo:nil];
+    
+    NSLog(@"Vendor UUID:%@", UIDevice.currentDevice.identifierForVendor.UUIDString);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
