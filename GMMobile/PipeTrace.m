@@ -51,6 +51,13 @@ typedef struct {
     return 0;
 }
 
+- (BOOL)havePipeTrace
+{
+    BOOL rtn = [self getPipeTraceCount] > 0;
+    
+    return rtn;
+}
+
 - (BOOL)getUpDownNodes:(LPSTR)atFid
                     up:(LPSTR)upNode
                     dn:(LPSTR)dnNode
