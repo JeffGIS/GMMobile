@@ -3,89 +3,19 @@
 
 extern int keepProcessing;
 
+#define CENSUS_ZOOM_ALERT   1
+#define DELETE_WALL_ALERT   2
+#define PARCEL_TEXT_ALERT   3
+#define PARCEL_COLOR_ALERT  4
+
+
 #import "MapViewController.h"
 #import "WebKitViewController.h"
 #import "AppDelegate.h"
 #import "ConfigurationControl.h"
+#import "MapViewENUMS.h"
 
 #define MAX_VECTORVIEWS 8
-
-typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
-{
-    PropertyTableViewSettingDefault,
-    PropertyTableViewSettingOptions,
-    PropertyTableViewSettingPropertyReport,
-    PropertyTableViewSettingHCWebsite,
-    PropertyTableViewSettingStreetView,
-    PropertyTableViewSettingCensusArea,
-    PropertyTableViewSettingPropList,
-    PropertyTableViewSettingDestinations,
-};
-
-typedef NS_ENUM(NSInteger, CensusZoomSetting)
-{
-    CensusZoomSettingCancel,
-    CensusZoomSettingBlock,
-    CensusZoomSettingBlockGroup,
-    CensusZoomSettingTract,
-};
-
-typedef NS_ENUM(NSInteger, SewerPipeSetting)
-{
-    SewerPipeSettingDefault,
-    SewerPipeSettingAttributes,
-    SewerPipeSettingTraceUp,
-    SewerPipeSettingTraceDown,
-    SewerPipeSettingRemoveTrace,
-    SewerPipeSettingUpdateCleanDate,
-    SewerPipeSettingUpdateNotes,
-};
-
-typedef NS_ENUM(NSInteger, CustomSetting)
-{
-    CustomSettingDefault,
-    CustomSettingSnapToNode,
-    CustomSettingSnapToLine,
-};
-
-typedef NS_ENUM(NSInteger, AlleyWallSetting)
-{
-    AlleyWallSettingDefault,
-    AlleyWallSettingMoveWallPoint,
-    AlleyWallSettingDeleteWallPoint,
-    AlleyWallSettingEditWallAttributes,
-    AlleyWallSettingViewWallPhotos,
-};
-
-typedef NS_ENUM(NSInteger, AlleyLineSetting)
-{
-    AlleyLineSettingDefault,
-    AlleyLineSettingToggleCompletionStatus,
-};
-
-typedef NS_ENUM(NSInteger, MapTypeSetting)
-{
-    MapTypeSettingStandard,
-    MapTypeSettingHybrid,
-};
-
-typedef NS_ENUM(NSInteger, DigitizationMode)
-{
-    DigitizationModeCustom,
-    DigitizationModeAlleyWallNew,
-    DigitizationModeAlleyWallMove,
-    DigitizationModeSewer,
-    DigitizationModeProperty,
-    DigitizationModeCurbRamps,
-};
-
-typedef NS_ENUM(NSInteger, AlleyStatusSetting)
-{
-    AlleyStatusSettingDefault,
-    AlleyStatusSettingCenterline,
-    AlleyStatusSettingWall,
-};
-
 
 @interface MapViewController ()
 
@@ -2175,6 +2105,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Color Parcels"])
+    {
+        [self showCensusArea];
+        
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
+                                      forKey:@"PIDOption"];
+    }
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Parcel Text"])
+    {
+        [self selectParcelText];
+        
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
+                                      forKey:@"PIDOption"];
+    }
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Add to Property List"])
     {
         [self addToPropList];
@@ -2541,7 +2487,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
                                               destructiveIndex:0];
     
-    alert.tag = 777;
+    alert.tag = CENSUS_ZOOM_ALERT;
+}
+
+- (void)selectParcelText
+{
+    NSString *title = [NSString stringWithFormat:@"Parcel Text Options %@", _selectedPID];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:title
+                                               buttonTextArray:@[@"Cancel", @"Owner/Total Tax", @"Building Number",@"Land EMV", @"Land EMV per Acre"]
+                                              destructiveIndex:0];
+    
+    alert.tag = PARCEL_TEXT_ALERT;
 }
 
 - (void)addToPropList
@@ -2689,7 +2648,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"YES", @"NO"]
                                               destructiveIndex:1];
     
-    alert.tag = 666;
+    alert.tag = DELETE_WALL_ALERT;
     [self deselectTableViewRow];
 }
 
@@ -2933,7 +2892,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [alertView hideLargeAlertView:YES];
     
-    if (alertView.tag == 666)//delete wall point
+    if (alertView.tag == DELETE_WALL_ALERT)//delete wall point
     {
         if (buttonIndex == 0)
         {
@@ -2950,7 +2909,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
     
-    else if (alertView.tag == 777)//census zoom setting
+    else if (alertView.tag == CENSUS_ZOOM_ALERT)
     {
         switch (buttonIndex)
         {
@@ -2974,6 +2933,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 break;
         }
     }
+    else if (alertView.tag == PARCEL_TEXT_ALERT)
+    {
+        switch (buttonIndex)
+        {
+            case ParcelTextSettingCancel:
+                [self deselectTableViewRow];
+                break;
+                
+            case ParcelTextSettingOwnerTax:
+            case ParcelTextSettingBuildingNum:
+            case ParcelTextSettingEMVLand:
+            case ParcelTextSettingEMVLandPerAcre:
+                [self dismissTableView];
+                CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
+                [self refreshVectorView:_mapView.projection.visibleRegion
+                                 atZoom:_mapView.camera.zoom];
+                break;
+                
+        }
+    }
+
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -3841,7 +3821,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             if ([self isHennepinCountyPID:_selectedPID])
             {
-                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",
+                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",@"Parcel Text",@"Color Parcels",
                              @"Add to Property List", @"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
@@ -3864,8 +3844,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             else
             {
-                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area", @"Add to Property List",
-                             @"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
+                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",@"Parcel Text",@"Color Parcels",
+                              @"Add to Property List",@"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
 
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)

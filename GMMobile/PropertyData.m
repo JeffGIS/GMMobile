@@ -3,6 +3,7 @@
 
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
+#import "MapViewENUMS.h"
 
 @interface NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale;
@@ -1380,13 +1381,13 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     sqlite3_stmt *statement = NULL;
     //LPSTR pid;
     DPOINT BasePt, viewPoint;
-    CGFloat emvTotal, acres;
+    CGFloat emvTotal, emvLand,acres;
     //CGFloat specAssmt;
-    LPSTR owner, bldgNum;
+    LPSTR owner, taxName,bldgNum;
     //LPSTR homeStead, useCode, useDesc, taxExempt;
     //char homeSteadCode = 'H';
     //char taxExemptCode = 'E';
-    NSString *text = @"Test Text\nLine 2";
+    NSString *text = @"";
     NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
     dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
     dollarFmt.groupingSeparator = @"'";
@@ -1406,7 +1407,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         case PROJECT_METROGIS:
             //homeSteadCode = 'Y';
             //taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME,BLDG_NUM, \
+            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES,OWNER_NAME,TAX_NAME,BLDG_NUM, \
                      PARCELPOLY_index.minX,PARCELPOLY_index.maxX,PARCELPOLY_index.minY,PARCELPOLY_index.maxY\
                      FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PROPINFO_index.maxX>=%f AND PROPINFO_index.minX<=%f AND PROPINFO_index.maxY>=%f AND PROPINFO_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -1429,13 +1430,15 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         //useDesc = (LPSTR)sqlite3_column_text(statement, 6);
         //taxExempt = (LPSTR)sqlite3_column_text(statement, 7);
         emvTotal = (CGFloat)sqlite3_column_double(statement, 8);
-        //specAssmt = (CGFloat)sqlite3_column_double(statement, 9);
-        owner = (LPSTR)sqlite3_column_text(statement, 10);
-        bldgNum = (LPSTR)sqlite3_column_text(statement, 11);
-        bnds.xmn = (CGFloat)sqlite3_column_double(statement, 12);
-        bnds.xmx = (CGFloat)sqlite3_column_double(statement, 13);
-        bnds.ymn = (CGFloat)sqlite3_column_double(statement, 14);
-        bnds.ymx = (CGFloat)sqlite3_column_double(statement, 15);
+        emvLand = (CGFloat)sqlite3_column_double(statement, 9);
+        //specAssmt = (CGFloat)sqlite3_column_double(statement, 10);
+        owner = (LPSTR)sqlite3_column_text(statement, 11);
+        taxName = (LPSTR)sqlite3_column_text(statement, 12);
+        bldgNum = (LPSTR)sqlite3_column_text(statement, 13);
+        bnds.xmn = (CGFloat)sqlite3_column_double(statement, 14);
+        bnds.xmx = (CGFloat)sqlite3_column_double(statement, 15);
+        bnds.ymn = (CGFloat)sqlite3_column_double(statement, 16);
+        bnds.ymx = (CGFloat)sqlite3_column_double(statement, 17);
 
         //CGFloat alpha = 0.0;
         //UIColor *color;
@@ -1444,12 +1447,23 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         
         switch (CRAPI.sharedInstance.parcelTextOption)
         {
-            case 1://homestead
+            case ParcelTextSettingOwnerTax://homestead
+            {
+                LPSTR name = owner;
+                if (!*name)
+                    name = taxName;
                 num = [[NSNumber alloc] initWithDouble:emvTotal];
-                text = [NSString stringWithFormat:@"%s\n%@", owner, [dollarFmt stringFromNumber:num]];
+                text = [NSString stringWithFormat:@"%s\n%@", name, [dollarFmt stringFromNumber:num]];
+            }
                 break;
-            case 2://building num
+            case ParcelTextSettingBuildingNum:
                 text = [NSString stringWithUTF8String:bldgNum];
+                break;
+            case ParcelTextSettingEMVLand:
+                text = [NSString stringWithFormat:@"%.0f",emvLand];
+                break;
+            case ParcelTextSettingEMVLandPerAcre:                if (acres > 0)
+                    text = [NSString stringWithFormat:@"%.0f",emvLand/acres];
                 break;
             default:
                 break;
@@ -1799,7 +1813,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
             
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
@@ -1837,6 +1851,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 LPSTR saleDate = (LPSTR)sqlite3_column_text(statement, 26);
                 CGFloat saleValue = sqlite3_column_double(statement, 27);
                 LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement,28);
+                LPSTR taxName = (LPSTR)sqlite3_column_text(statement, 29);
+                LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 30);
                 strcpy (censusBlock,cenBlock);
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
@@ -1867,7 +1883,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 line = [NSString stringWithFormat:@"Owner:%s", ownerName];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Owner more:%s", ownerMore];
+                line = [NSString stringWithFormat:@"Tax Payer:%s", taxName];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
@@ -1898,6 +1914,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Tax Capacity:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)taxCapac]]];
+                [report addObject:line];
+                
+                line = [NSString stringWithFormat:@"Homestead:%s", homestead];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"City USPS:%s", cityUSPS];

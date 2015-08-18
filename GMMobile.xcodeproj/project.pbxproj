@@ -216,6 +216,7 @@
 		A9F56EBE1A847CA8003522AE /* WebKitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitViewController.h; sourceTree = "<group>"; };
 		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
 		A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bmomxcqdduclkngeclsnuwqvhudu/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
+		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
 		EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlleyWallData.h; sourceTree = "<group>"; };
 		EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlleyWallData.m; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
@@ -503,6 +504,7 @@
 		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
 			isa = PBXGroup;
 			children = (
+				EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */,
 				A9C8372A1A65B2DE005EC4FA /* Model */,
 				A9C8372B1A65B2E4005EC4FA /* View */,
 				A9C8372C1A65B2E8005EC4FA /* Controller */,
