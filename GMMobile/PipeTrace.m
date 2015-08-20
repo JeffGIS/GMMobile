@@ -638,15 +638,16 @@ $RETURN(1);
     sqlite3_stmt *statement = NULL;
     NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM TRACE_HIGHLIGHT;"];
     
-    [_sd open];
-    SQLOKswr(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
+    SewerData *sd = [[SewerData alloc]init];
+    [sd open];
+    SQLOKswr(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), sd.database);
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         nrec = sqlite3_column_int(statement,0);
     }
     
-    SQLOKswr(sqlite3_finalize(statement),_sd.database);
-    [_sd close];
+    SQLOKswr(sqlite3_finalize(statement),sd.database);
+    [sd close];
     return nrec;
 }
 
