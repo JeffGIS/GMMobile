@@ -641,7 +641,6 @@ extern int keepProcessing;
         CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
         
         fromCoords[i] = CLLocationCoordinate2DMake(44.0 + latFactor, -(93.0 + lonFactor));
-        NSLog(@"%f,%f", fromCoords[i].latitude, fromCoords[i].longitude);
     }
     
     for (int i = 0; i < numToCoords; i++)
