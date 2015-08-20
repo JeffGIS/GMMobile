@@ -634,10 +634,13 @@ extern int keepProcessing;
     
     for (int i = 0; i < numFromCoords; i++)
     {
-        NSUInteger random = arc4random_uniform(100000);
-        CGFloat coordFactor = (CGFloat)(random / 100000.0);
+        NSUInteger latRandom = arc4random_uniform(100000);
+        CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
         
-        fromCoords[i] = CLLocationCoordinate2DMake(44.0 + coordFactor, -(93.0 + coordFactor));
+        NSUInteger lonRandom = arc4random_uniform(100000);
+        CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
+        
+        fromCoords[i] = CLLocationCoordinate2DMake(44.0 + latFactor, -(93.0 + lonFactor));
         NSLog(@"%f,%f", fromCoords[i].latitude, fromCoords[i].longitude);
     }
     
