@@ -627,12 +627,10 @@ extern int keepProcessing;
                                                   port:nil
                                               delegate:self];*/
     
-    NSUInteger numFromCoords = 10.0, numToCoords = 5.0;
+    NSMutableArray *fromCoords = [[NSMutableArray alloc] init];
+    NSMutableArray *toCoords = [[NSMutableArray alloc] init];
     
-    CLLocationCoordinate2D *fromCoords = (CLLocationCoordinate2D *)malloc(sizeof(CLLocationCoordinate2D) * numFromCoords);
-    CLLocationCoordinate2D *toCoords = (CLLocationCoordinate2D *)malloc(sizeof(CLLocationCoordinate2D) * numToCoords);
-    
-    for (int i = 0; i < numFromCoords; i++)
+    for (int i = 0; i < 10; i++)
     {
         NSUInteger latRandom = arc4random_uniform(100000);
         CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
@@ -640,10 +638,13 @@ extern int keepProcessing;
         NSUInteger lonRandom = arc4random_uniform(100000);
         CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
         
-        fromCoords[i] = CLLocationCoordinate2DMake(44.0 + latFactor, -(93.0 + lonFactor));
+        CLLocation *randomLocation = [[CLLocation alloc] initWithLatitude:(44.0 + latFactor)
+                                                                longitude:-(93.0 + lonFactor)];
+        
+        [fromCoords addObject:randomLocation];
     }
     
-    for (int i = 0; i < numToCoords; i++)
+    for (int i = 0; i < 5; i++)
     {
         NSUInteger latRandom = arc4random_uniform(100000);
         CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
@@ -651,18 +652,16 @@ extern int keepProcessing;
         NSUInteger lonRandom = arc4random_uniform(100000);
         CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
         
-        toCoords[i] = CLLocationCoordinate2DMake(44.0 + latFactor, -(93.0 + lonFactor));
+        CLLocation *randomLocation = [[CLLocation alloc] initWithLatitude:(44.0 + latFactor)
+                                                                longitude:-(93.0 + lonFactor)];
+        
+        [toCoords addObject:randomLocation];
     }
     
     NVRoutes *routes = [NVRoutes getTotalDistanceArrayFromCoords:fromCoords
-                                                   numFromCoords:numFromCoords
                                                         toCoords:toCoords
-                                                     numToCoords:numToCoords
                                                         delegate:self];
 #pragma unused(routes)
-    
-    free(fromCoords);
-    free(toCoords);
 }
 
 - (void)NVRoutesDidReturnDistanceArray:(NSArray *)distanceArray
