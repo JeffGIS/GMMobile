@@ -14,6 +14,7 @@ extern int keepProcessing;
 #import "AppDelegate.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
+#import <MapKit/MapKit.h>
 
 #define MAX_VECTORVIEWS 8
 

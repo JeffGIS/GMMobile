@@ -21,7 +21,6 @@
 #import "CCodeLibrary/NVAlertView.h"
 //#import "CCodeLibrary/FTPDirectoryList.h"
 //#import "CCodeLibrary/FTPDirectoryCreate.h"
-#import <MapKit/MapKit.h>
 
 @interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate, NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate/*,FTPDirectoryListDelegate,FTPDirectoryCreateDelegate*/>
 
