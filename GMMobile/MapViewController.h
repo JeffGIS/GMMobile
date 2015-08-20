@@ -21,8 +21,9 @@
 #import "CCodeLibrary/NVAlertView.h"
 //#import "CCodeLibrary/FTPDirectoryList.h"
 //#import "CCodeLibrary/FTPDirectoryCreate.h"
+#import "CCodeLibrary/NVRoutes.h"
 
-@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate, NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate/*,FTPDirectoryListDelegate,FTPDirectoryCreateDelegate*/>
+@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate, NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate,NVRoutesDelegate/*,FTPDirectoryListDelegate,FTPDirectoryCreateDelegate*/>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;

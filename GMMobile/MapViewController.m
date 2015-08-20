@@ -626,6 +626,43 @@ extern int keepProcessing;
                                               password:@"pointway4*"
                                                   port:nil
                                               delegate:self];*/
+    
+    NSUInteger numFromCoords = 10.0, numToCoords = 5.0;
+    
+    CLLocationCoordinate2D *fromCoords = (CLLocationCoordinate2D *)malloc(sizeof(CLLocationCoordinate2D) * numFromCoords);
+    CLLocationCoordinate2D *toCoords = (CLLocationCoordinate2D *)malloc(sizeof(CLLocationCoordinate2D) * numToCoords);
+    
+    for (int i = 0; i < numFromCoords; i++)
+    {
+        NSUInteger random = arc4random_uniform(100000);
+        CGFloat coordFactor = (CGFloat)(random / 100000.0);
+        
+        fromCoords[i] = CLLocationCoordinate2DMake(44.0 + coordFactor, -(93.0 + coordFactor));
+        NSLog(@"%f,%f", fromCoords[i].latitude, fromCoords[i].longitude);
+    }
+    
+    for (int i = 0; i < numToCoords; i++)
+    {
+        NSUInteger random = arc4random_uniform(100000);
+        CGFloat coordFactor = (CGFloat)(random / 100000.0);
+        
+        toCoords[i] = CLLocationCoordinate2DMake(44.0 + coordFactor, -(93.0 + coordFactor));
+    }
+    
+    NVRoutes *routes = [NVRoutes getTotalDistanceArrayFromCoords:fromCoords
+                                                   numFromCoords:numFromCoords
+                                                        toCoords:toCoords
+                                                     numToCoords:numToCoords
+                                                        delegate:self];
+#pragma unused(routes)
+    
+    free(fromCoords);
+    free(toCoords);
+}
+
+- (void)NVRoutesDidReturnDistanceArray:(NSArray *)distanceArray
+{
+    NSLog(@"%@", distanceArray);
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
