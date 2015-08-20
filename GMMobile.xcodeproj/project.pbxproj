@@ -409,6 +409,7 @@
 				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
 				A92964111A9B807700F3332E /* MapToolbar.h */,
 				A92964121A9B807700F3332E /* MapToolbar.m */,
+				EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */,
 				A99661391AB0BCFF006C0106 /* MarkerButton.h */,
 				A996613A1AB0BCFF006C0106 /* MarkerButton.m */,
 				A979B0391A9EAFA20098E1C5 /* MarkerInfoWindow.h */,
@@ -504,7 +505,6 @@
 		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
 			isa = PBXGroup;
 			children = (
-				EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */,
 				A9C8372A1A65B2DE005EC4FA /* Model */,
 				A9C8372B1A65B2E4005EC4FA /* View */,
 				A9C8372C1A65B2E8005EC4FA /* Controller */,
@@ -601,7 +601,7 @@
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};

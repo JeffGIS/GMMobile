@@ -2139,7 +2139,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Trace Route From\nCurrent Location"])
+              isEqualToString:@"Route From Current Location"])
     {
         [self dismissTableView];
         
@@ -3250,10 +3250,87 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         [_locationManager stopUpdatingLocation];
         _animateToLocation = YES;
-        [self beginLocationRouteTrace];
+        
+        //[self beginLocationRouteTrace];
+        
+        [self getPathDirections:_currentLocation
+                withDestination:_selectedPIDCoords];
     }
 }
 
+- (void)getPathDirections:(CLLocationCoordinate2D)source
+          withDestination:(CLLocationCoordinate2D)destination
+{
+    
+    MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:source
+                                                      addressDictionary:nil];
+    
+    MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
+    
+    MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:destination
+                                                       addressDictionary:nil];
+    
+    MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
+    
+    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+    request.source = mapItemSrc;
+    request.destination = mapItemDest;
+    request.transportType = MKDirectionsTransportTypeAutomobile;
+    request.requestsAlternateRoutes = NO;
+    
+    MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
+    
+    [directions calculateDirectionsWithCompletionHandler:
+     ^(MKDirectionsResponse *response, NSError *error) {
+         if (error && ![self.view viewWithTag:888])
+         {
+             NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                               delegate:self
+                                                                  title:error.localizedDescription
+                                                        buttonTextArray:@[@"OK"]
+                                                       destructiveIndex:0];
+             alert.tag = 888;
+         }
+         
+         else
+         {
+             MKRoute *theRoute = response.routes[0];
+             NSUInteger pointCount = theRoute.polyline.pointCount;
+             
+             CLLocationCoordinate2D *routeCoordinates = malloc(pointCount * sizeof(CLLocationCoordinate2D) + 4);
+             
+             [theRoute.polyline getCoordinates:routeCoordinates
+                                         range:NSMakeRange(0, pointCount)];
+             
+             _polyline.map = nil;
+             _polyline = nil;
+             
+             GMSMutablePath *path = [[GMSMutablePath alloc] init];
+             
+             for (int i = 0; i < pointCount; i++)
+                 [path addCoordinate:routeCoordinates[i]];
+             
+             free(routeCoordinates);
+             
+             _polyline = [GMSPolyline polylineWithPath:path];
+             _polyline.strokeWidth = 10.0;
+             _polyline.strokeColor = UIColor.greenColor;
+             _polyline.map = _mapView;
+             
+             GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
+             
+             GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                                      withPadding:40];
+             
+             [_mapView moveCamera:update];
+             [self updateMarkerPosition];
+             
+             _routeTraceExists = YES;
+         }
+     }];
+}
+
+/*
 - (void)beginLocationRouteTrace
 {
     NSString *urlString =
@@ -3271,7 +3348,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)connection:(nonnull NSURLConnection *)connection
     didReceiveData:(nonnull NSData *)data
 {
-    NSError *error;
+    NSError *error = nil;
     
     NSDictionary *json =[NSJSONSerialization JSONObjectWithData:data
                                                         options:NSJSONReadingMutableContainers
@@ -3323,6 +3400,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         alert.tag = 999;
     }
 }
+*/
 
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
@@ -3821,8 +3899,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             if ([self isHennepinCountyPID:_selectedPID])
             {
-                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area",@"Parcel Text",@"Color Parcels",
-                             @"Add to Property List", @"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
+                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
+                             @"Add to Property List", @"Add to Desinations", @"Route From Current Location", @"Remove Property Marker"];
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {
@@ -3844,8 +3922,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             else
             {
-                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area",@"Parcel Text",@"Color Parcels",
-                              @"Add to Property List",@"Add to Desinations", @"Trace Route From\nCurrent Location", @"Remove Property Marker"];
+                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
+                              @"Add to Property List",@"Add to Desinations", @"Route From Current Location", @"Remove Property Marker"];
 
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
