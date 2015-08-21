@@ -14,6 +14,7 @@ extern int keepProcessing;
 #import "AppDelegate.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
+#import <MapKit/MapKit.h>
 
 #define MAX_VECTORVIEWS 8
 
@@ -625,6 +626,88 @@ extern int keepProcessing;
                                               password:@"pointway4*"
                                                   port:nil
                                               delegate:self];*/
+    
+    NSMutableArray *fromCoords = [[NSMutableArray alloc] init];
+    NSMutableArray *toCoords = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < 10; i++)
+    {
+        NSUInteger latRandom = arc4random_uniform(100000);
+        CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
+        
+        NSUInteger lonRandom = arc4random_uniform(100000);
+        CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
+        
+        CLLocation *randomLocation = [[CLLocation alloc] initWithLatitude:(44.0 + latFactor)
+                                                                longitude:-(93.0 + lonFactor)];
+        
+        [fromCoords addObject:randomLocation];
+    }
+    
+    for (int i = 0; i < 5; i++)
+    {
+        NSUInteger latRandom = arc4random_uniform(100000);
+        CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
+        
+        NSUInteger lonRandom = arc4random_uniform(100000);
+        CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
+        
+        CLLocation *randomLocation = [[CLLocation alloc] initWithLatitude:(44.0 + latFactor)
+                                                                longitude:-(93.0 + lonFactor)];
+        
+        [toCoords addObject:randomLocation];
+    }
+    
+    NVRoutes *routes = [NVRoutes getTotalDistanceArrayFromCoords:fromCoords
+                                                        toCoords:toCoords
+                                                        delegate:self];
+#pragma unused(routes)
+}
+
+- (void)NVRoutesDidReturnDistanceArray:(NSArray *)distanceArray
+                             forCoords:(NSArray *)coords
+{
+    SpreadsheetView *spreadsheet = nil;
+    
+    if (![self.view viewWithTag:444])
+    {
+        spreadsheet = [SpreadsheetView spreadsheetViewWithRows:distanceArray.count
+                                                       columns:3
+                                                          view:self.view];
+        spreadsheet.tag = 444;
+    }
+    
+    else
+        spreadsheet = (SpreadsheetView *)[self.view viewWithTag:444];
+    
+    NSMutableArray *distanceStringArray = [[NSMutableArray alloc] init];
+    NSMutableArray *latStringArray = [[NSMutableArray alloc] init];
+    NSMutableArray *lonStringArray = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < distanceArray.count; i++)
+    {
+        NSString *distanceString = [distanceArray[i] stringValue];
+        [distanceStringArray addObject:distanceString];
+    }
+    
+    for (int i = 0; i < coords.count; i++)
+    {
+        CLLocationCoordinate2D coord = [coords[i] coordinate];
+        NSString *latString = [NSString stringWithFormat:@"%f", coord.latitude];
+        [latStringArray addObject:latString];
+        
+        NSString *lonString = [NSString stringWithFormat:@"%f", coord.longitude];
+        [lonStringArray addObject:lonString];
+    }
+    
+    [spreadsheet setTextArray:latStringArray
+             forColumnAtIndex:1];
+    
+    [spreadsheet setTextArray:lonStringArray
+             forColumnAtIndex:2];
+    
+    [spreadsheet setTextArray:distanceStringArray
+             forColumnAtIndex:3];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
