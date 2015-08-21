@@ -627,7 +627,7 @@ extern int keepProcessing;
                                                   port:nil
                                               delegate:self];*/
     
-    NSMutableArray *fromCoords = [[NSMutableArray alloc] init];
+    /*NSMutableArray *fromCoords = [[NSMutableArray alloc] init];
     NSMutableArray *toCoords = [[NSMutableArray alloc] init];
     
     for (int i = 0; i < 10; i++)
@@ -707,7 +707,7 @@ extern int keepProcessing;
              forColumnAtIndex:2];
     
     [spreadsheet setTextArray:distanceStringArray
-             forColumnAtIndex:3];
+             forColumnAtIndex:3];*/
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
