@@ -665,8 +665,49 @@ extern int keepProcessing;
 }
 
 - (void)NVRoutesDidReturnDistanceArray:(NSArray *)distanceArray
+                             forCoords:(NSArray *)coords
 {
-    NSLog(@"%@", distanceArray);
+    SpreadsheetView *spreadsheet = nil;
+    
+    if (![self.view viewWithTag:444])
+    {
+        spreadsheet = [SpreadsheetView spreadsheetViewWithRows:distanceArray.count
+                                                       columns:3
+                                                          view:self.view];
+        spreadsheet.tag = 444;
+    }
+    
+    else
+        spreadsheet = (SpreadsheetView *)[self.view viewWithTag:444];
+    
+    NSMutableArray *distanceStringArray = [[NSMutableArray alloc] init];
+    NSMutableArray *latStringArray = [[NSMutableArray alloc] init];
+    NSMutableArray *lonStringArray = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < distanceArray.count; i++)
+    {
+        NSString *distanceString = [distanceArray[i] stringValue];
+        [distanceStringArray addObject:distanceString];
+    }
+    
+    for (int i = 0; i < coords.count; i++)
+    {
+        CLLocationCoordinate2D coord = [coords[i] coordinate];
+        NSString *latString = [NSString stringWithFormat:@"%f", coord.latitude];
+        [latStringArray addObject:latString];
+        
+        NSString *lonString = [NSString stringWithFormat:@"%f", coord.longitude];
+        [lonStringArray addObject:lonString];
+    }
+    
+    [spreadsheet setTextArray:latStringArray
+             forColumnAtIndex:1];
+    
+    [spreadsheet setTextArray:lonStringArray
+             forColumnAtIndex:2];
+    
+    [spreadsheet setTextArray:distanceStringArray
+             forColumnAtIndex:3];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
