@@ -4,6 +4,7 @@
 #import "SettingOptionsViewController.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/NVCalibrationController.h"
+#import "StoreKit/StoreKit.h"
 
 @interface SettingOptionsViewController ()
 
@@ -34,8 +35,11 @@
     UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
                                                                                         ofType:@"png"]];
     
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, nil];
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device"];
+    UIImage *shopping = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"shoppingCart"
+                                                                                       ofType:@"png"]];
+    
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, shopping, nil];
+    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device", @"Purchase Data"];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
@@ -139,6 +143,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self calibrateDevice];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Purchase Data"])
+    {
+        [self purchaseData];
+    }
 }
 
 - (void)uploadNow
@@ -171,6 +181,33 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self presentViewController:calibrationController
                        animated:YES
                      completion:nil];
+}
+
+- (void)purchaseData
+{
+    NSDictionary *parametersDict = @{SKStoreProductParameterITunesItemIdentifier:@(1033650392)};
+    
+    SKStoreProductViewController *spvc = [[SKStoreProductViewController alloc] init];
+    spvc.delegate = self;
+    
+    [spvc loadProductWithParameters:parametersDict
+                    completionBlock:^(BOOL result, NSError *error)
+     {
+         if (result)
+         {
+             [self presentViewController:spvc
+                                animated:YES
+                              completion:nil];
+         }
+         
+         else
+             NSLog(@"Error message: %@", error.localizedDescription);
+     }];
+}
+
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController
+{
+    
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert

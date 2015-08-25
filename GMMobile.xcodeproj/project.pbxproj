@@ -11,6 +11,8 @@
 		1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1FF417FE1AB3724D000650FD /* S-55S-2.jpg */; };
 		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
+		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
+		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		A905063A1A75DF5A00288850 /* map.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506391A75DF5A00288850 /* map.png */; };
 		A90506451A75E12B00288850 /* find.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506431A75E12B00288850 /* find.png */; };
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
@@ -132,6 +134,8 @@
 		1FF417FE1AB3724D000650FD /* S-55S-2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-55S-2.jpg"; sourceTree = "<group>"; };
 		692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
 		A90506391A75DF5A00288850 /* map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map.png; sourceTree = "<group>"; };
 		A90506431A75E12B00288850 /* find.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = find.png; sourceTree = "<group>"; };
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
@@ -292,6 +296,7 @@
 				A99CD8D61A9DBAB60049F271 /* libc++.dylib in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
+				698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */,
 				A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */,
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
 				A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */,
@@ -322,6 +327,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				698F95F41B8CD633007D32A5 /* shoppingCart.png */,
 				A934A73E1B72AFF0000EB9F9 /* update.png */,
 				A95EC7E11B224BFC0031B903 /* downloadCloud.png */,
 				A95EC7E21B224BFC0031B903 /* uploadCloud.png */,
@@ -369,6 +375,7 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				698F95F21B8CD319007D32A5 /* StoreKit.framework */,
 				A9A1C0A51B55661500A3DFD8 /* Accelerate.framework */,
 				A9A1C0A31B55660E00A3DFD8 /* CoreBluetooth.framework */,
 				A9A1C0A11B55652200A3DFD8 /* GoogleMaps.bundle */,
@@ -606,6 +613,9 @@
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
 							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
 							com.apple.Maps.iOS = {
 								enabled = 1;
 							};
@@ -663,6 +673,7 @@
 				EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
 				A934A73F1B72AFF0000EB9F9 /* update.png in Resources */,
+				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */,
 				EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */,
 				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
