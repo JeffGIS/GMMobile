@@ -42,7 +42,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"PropertyList.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        
+        [self createTables];
     }
     
     return self;
@@ -80,7 +80,24 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
     //error:nil];
 }
-
+- (void) createTables
+{
+    NSString *cmd = @"CREATE TABLE IF NOT EXISTS PropertyList (\
+    id INTEGER PRIMARY KEY,\
+    ListName CHAR(64),\
+    status INTEGER,\
+    assignedTo INTEGER,\
+    latitude double,\
+    longitude double,\
+    intX INTEGER,\
+    intY INTEGER,\
+";
+    
+    [self open];
+    BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    [self close];
+    
+}
 - (int)datasetVersion
 {
     int rtn = -1;
@@ -146,7 +163,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 }
 
 
-- (BOOL)addParcel:(NSString *)PID
+- (BOOL)addParcelToPropertyList:(NSString *)PID
 {
     return NO;
 }

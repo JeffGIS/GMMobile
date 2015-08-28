@@ -2590,7 +2590,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     PropertyList *pl = [[PropertyList alloc] init];
     
-    [pl addParcel:_selectedPID];
+    [pl addParcelToPropertyList:_selectedPID];
 }
 
 - (void)addToDestinations
