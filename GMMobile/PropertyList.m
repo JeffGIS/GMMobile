@@ -83,8 +83,8 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 - (void) createTables
 {
     NSString *cmd = @"CREATE TABLE IF NOT EXISTS PropertyList (\
-    intID INTEGER PRIMARY KEY,\
-    lastUpdateTime INTEGER,\
+    id INTEGER PRIMARY KEY,\
+    ListName CHAR(64),\
     status INTEGER,\
     assignedTo INTEGER,\
     latitude double,\
@@ -163,7 +163,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 }
 
 
-- (BOOL)addParcel:(NSString *)PID
+- (BOOL)addParcelToPropertyList:(NSString *)PID
 {
     return NO;
 }

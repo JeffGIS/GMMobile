@@ -1173,6 +1173,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     return numLines;
 }
 - (void)displayText:(NSString *)text
+             forPID:(NSString*)PID
             atPoint:(LPDPOINT)pviewPointx
              inRect:(CGRect*)ptextRect
           maxPixels:(CGFloat)maxPixels
@@ -1186,6 +1187,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     BOOL haveFit = NO;
     BOOL didDraw = NO;
     int numTextLines;
+    int numPoints, numLoops;
    
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
@@ -1195,6 +1197,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                                            withString:@"/\n"];
     text = [text stringByReplacingOccurrencesOfString:@"!@#"
                                            withString:@"1/2"];
+    LPDPOINT llpoints = [self getParcelPolygonPointsForPID:PID
+                                                     numPoints:&numPoints
+                                                      numLoops:&numLoops];
 //add border to rect
     int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
@@ -1286,8 +1291,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
             fontSize -= 2;
         CGContextRestoreGState(context);
         if (fontSize < minFontSize)
-            return;
+            goto Exit;
     }
+Exit:
+    free (llpoints);
 }
 
 - (void)drawTextShadowForRect:(CGRect)rect
@@ -1388,6 +1395,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     //char homeSteadCode = 'H';
     //char taxExemptCode = 'E';
     NSString *text = @"";
+    NSString *PID = @"";
     NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
     dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
     dollarFmt.groupingSeparator = @"'";
@@ -1421,7 +1429,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        //pid = (LPSTR)sqlite3_column_text(statement, 0);
+        LPSTR pid = (LPSTR)sqlite3_column_text(statement, 0);
+        PID = [NSString stringWithUTF8String:pid];
         BasePt.y = sqlite3_column_double(statement,1);
         BasePt.x = sqlite3_column_double(statement,2);
         acres = (CGFloat)sqlite3_column_double(statement, 3);
@@ -1473,6 +1482,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         TranMNMXCORD(&bnds, &bndsScreen, _pTranLLtoView);
         CGRect textRect = MNMXCORDtoCGRect(&bndsScreen);
         [self displayText:text
+                   forPID:PID
                   atPoint:&viewPoint
                    inRect:(CGRect*)&textRect
                 maxPixels:acres *acresToPixelsFactor
