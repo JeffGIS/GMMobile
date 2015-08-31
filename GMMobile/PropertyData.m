@@ -85,7 +85,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         _documentsDirectory = UserDefaults.defaults.localFilePath;
         _fileName = @"Property.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-
+        
     }
     return self;
 }
@@ -103,7 +103,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     {
         self.isOpen = YES;
         self.isOpen = !SQLOKpd(sqlite3_open(self.path.UTF8String, &_database), _database);
-        NSLog(@"Property Database open");
+        //NSLog(@"Property Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -112,8 +112,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 
 - (void)close
 {
-    SQLOKpd(sqlite3_close(_database),_database);
-    NSLog(@"Property Database close");
+    SQLOKpd(sqlite3_close(_database), _database);
+    //NSLog(@"Property Database close");
     self.isOpen = NO;
 }
 
@@ -122,7 +122,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     [self close];
     
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
-                                                       //error:nil];
+    //error:nil];
 }
 
 - (BOOL)executeCmd:(char *)cmd
@@ -141,7 +141,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 {
     SQLOKpd(sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database);
 }
-- (int) propertyDatasetVersion
+
+- (int)propertyDatasetVersion
 {
     int rtn = -1;
     [self open];
@@ -152,22 +153,26 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         sqlite3_stmt *statement = NULL;
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             int maxID = sqlite3_column_int(statement, 0);
             if (maxID > 0)
                 rtn = 0;
         }
+        
         SQLOKpd(sqlite3_finalize(statement), _database);
     }
+    
     [self close];
     return rtn;
 }
 
-- (int) areasDatasetVersion
+- (int)areasDatasetVersion
 {
     int rtn = -1;
     [self open];
+    
     if (_isOpen && _fileSize > 0)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM BOUNDARYAREA"];
@@ -175,14 +180,18 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         sqlite3_stmt *statement = NULL;
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             int maxID = sqlite3_column_int(statement, 0);
+            
             if (maxID > 0)
                 rtn = 0;
         }
+        
         SQLOKpd(sqlite3_finalize(statement), _database);
     }
+    
     [self close];
     return rtn;
 }
@@ -191,6 +200,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 {
     int rtn = -1;
     [self open];
+    
     if (_isOpen && _fileSize > 0)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM PARCELPOLY"];
@@ -204,8 +214,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
             if (maxID > 0)
                 rtn = 0;
         }
+        
         SQLOKpd(sqlite3_finalize(statement), _database);
     }
+    
     [self close];
     return rtn;
 }
@@ -214,6 +226,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 {
     int rtn = -1;
     [self open];
+    
     if (_isOpen && _fileSize > 0)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT max(GEOG_UNIT) FROM CENSUSBLOCKGROUPDATA"];
@@ -221,14 +234,17 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         sqlite3_stmt *statement = NULL;
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             LPSTR maxID = (LPSTR)sqlite3_column_text(statement, 0);
             if (maxID && *maxID != 0)
                 rtn = 0;
         }
+        
         SQLOKpd(sqlite3_finalize(statement), _database);
     }
+    
     [self close];
     return rtn;
 }
@@ -237,6 +253,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 {
     int rtn = -1;
     [self open];
+    
     if (_isOpen && _fileSize > 0)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM PLAN_LINE"];
@@ -244,14 +261,17 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         sqlite3_stmt *statement = NULL;
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             int maxID = sqlite3_column_int(statement, 0);
             if (maxID > 0)
                 rtn = 0;
         }
+        
         SQLOKpd(sqlite3_finalize(statement), _database);
     }
+    
     [self close];
     return rtn;
 }
@@ -321,7 +341,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         pt.lon = sqlite3_column_double(statement, 1);
     }
     
-   SQLOKpd(sqlite3_finalize(statement), _database);
+    SQLOKpd(sqlite3_finalize(statement), _database);
     
     [self close];
     return pt;
@@ -434,7 +454,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 
 - (MNMXCORD)getBoundaryAreaBounds:(int)refno
 {
-    MNMXCORD bounds;
+    MNMXCORD bounds = {0};
     
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
@@ -533,7 +553,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                                 streetName:(NSString *)matchChar
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
-    NSString *query;
+    NSString *query = @"";
     NSString *lastName = [NSString stringWithFormat:@"%@%@", matchChar, @"Z"];
     [self open];
     //NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC4 Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i",matchChar,houseNumber];
@@ -574,11 +594,13 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     return array;
 }
 
-- (int)pickPID:(LLPOINT *)pt highlightList:(NSMutableArray*)hlist
+- (int)pickPID:(LLPOINT *)pt
+ highlightList:(NSMutableArray*)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
-                                 visibleAtZoom:_zoom])
+                                      visibleAtZoom:_zoom])
         return 0;
+    
     NSString *minPID = [[NSString alloc] init];
     CGFloat d, mind = DBL_MAX;
     DPOINT p1, p2, minpt;
@@ -590,10 +612,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
     [self open];
-
+    
     NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-             bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
-
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
     sqlite3_stmt *statement = NULL;
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
@@ -789,7 +811,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
          withColor:(CGColorRef)color
           andWidth:(int)width;
 {
-
+    
     CGContextSetLineWidth(context, width);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
@@ -843,9 +865,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
 }
 -(void) datadef
 {
-/*
- CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
- */
+    /*
+     CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
+     */
 }
 
 - (void)displayParcels:(CGContextRef)context
@@ -880,16 +902,16 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     {
         case PROJECT_MPLS:
             query = [NSString stringWithFormat:@"SELECT PROPINFO.PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USECODE,USE_DESC,TAX_EXEMPT,TOTAL_VALUE FROM PARCELPOLY,PARCELPOLY_index, PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                       platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             break;
             
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
             query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                       platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
-   
+    
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     NSLog (@"Prepared");
     
@@ -971,9 +993,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                         alpha = 0.6;
                     
                     /*color = [[UIColor alloc]initWithRed:0.0
-                                                  green:1.0
-                                                   blue:0.0
-                                                  alpha:alpha];*/
+                     green:1.0
+                     blue:0.0
+                     alpha:alpha];*/
                 case 6://tax_forfeit
                     if (!strcasecmp (owner,"HENNEPIN FORFEITED LAND"))
                         alpha = 0.8;
@@ -1013,7 +1035,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                                numPoints:(int *)numPoints
                                 numLoops:(int *)numLoops
 {
-    DPOINT basePoint;
+    DPOINT basePoint = {0};
     LPDPOINT llpoints = NULL;
     sqlite3_stmt *statement = NULL;
     
@@ -1172,41 +1194,49 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
     }
     return numLines;
 }
+
 - (void)displayText:(NSString *)text
-             forPID:(NSString*)PID
+             forPID:(NSString *)PID
             atPoint:(LPDPOINT)pviewPointx
-             inRect:(CGRect*)ptextRect
+             inRect:(CGRect *)ptextRect
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 8.0;
     //CGFloat size = sqrtf(maxPixels);
-    NSAttributedString *attString;
-    UIColor *textColor;
-    BOOL haveFit = NO;
-    BOOL didDraw = NO;
-    int numTextLines;
-    int numPoints, numLoops;
-   
+    NSAttributedString *attString = nil;
+    UIColor *textColor = nil;
+    BOOL haveFit = NO, didDraw = NO;
+    int numTextLines = 0, numPoints = 0, numLoops = 0;
+    
+    LPDPOINT llpoints = [self getParcelPolygonPointsForPID:PID
+                                                 numPoints:&numPoints
+                                                  numLoops:&numLoops];
+    
+    for (int i = 0; i < numPoints; i++)
+        llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+    
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"1/2"
                                            withString:@"!@#"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"/"
                                            withString:@"/\n"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"!@#"
                                            withString:@"1/2"];
-    LPDPOINT llpoints = [self getParcelPolygonPointsForPID:PID
-                                                     numPoints:&numPoints
-                                                      numLoops:&numLoops];
-//add border to rect
-    int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
+    
+    //add border to rect
+    int border = max(ptextRect->size.width,ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
     ptextRect->origin.y += border;
     ptextRect->size.width -= border * 2;
     ptextRect->size.height -= border * 2;
     numTextLines = [self numLinesInText:text.UTF8String];
+    
     while (fontSize > minFontSize)
     {
         CGContextSaveGState(context);
@@ -1222,7 +1252,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
         
         else
             textColor = UIColor.blackColor;
-
+        
         NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                     (__bridge id)fontRef, kCTFontAttributeName,
                                     style, kCTParagraphStyleAttributeName,
@@ -1259,7 +1289,14 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                                         context:context];
                 }
                 
-                CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
+                CGMutablePathRef path = CGPathCreateMutable();
+                
+                CGPathMoveToPoint(path, 0, llpoints[0].x, llpoints[0].y);
+                
+                for (int i = 1; i < numPoints; i++)
+                    CGPathAddLineToPoint(path, 0, llpoints[i].x, llpoints[i].y);
+                
+                CGPathAddLineToPoint(path, 0, llpoints[0].x, llpoints[0].y);
                 
                 attString = [[NSAttributedString alloc] initWithString:text
                                                             attributes:attributes];
@@ -1268,33 +1305,42 @@ int SQLOKpd(int sqlReturn, sqlite3 *database)
                 CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
                 
                 CFArrayRef lines = CTFrameGetLines(frame);
+                
                 if (CFArrayGetCount(lines) >= numTextLines)
                 {
                     CTFrameDraw(frame, context);
                     didDraw = YES;
                 }
+                
                 CFRelease(frame);
-                CFRelease(path);
+                CGPathRelease(path);
                 CFRelease(framesetter);
+                
                 if (didDraw)
                 {
                     CGContextRestoreGState(context);
-                    return;
+                    goto Exit;
                 }
             }
+            
             else
                 haveFit = YES;
         }
+        
         if (haveFit)
             fontSize -= 1;
+        
         else
             fontSize -= 2;
+        
         CGContextRestoreGState(context);
+        
         if (fontSize < minFontSize)
             goto Exit;
     }
+    
 Exit:
-    free (llpoints);
+    free(llpoints);
 }
 
 - (void)drawTextShadowForRect:(CGRect)rect
@@ -1419,10 +1465,10 @@ Exit:
                      PARCELPOLY_index.minX,PARCELPOLY_index.maxX,PARCELPOLY_index.minY,PARCELPOLY_index.maxY\
                      FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PROPINFO_index.maxX>=%f AND PROPINFO_index.minX<=%f AND PROPINFO_index.maxY>=%f AND PROPINFO_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-           /* query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME,BLDG_NUM FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",*/
-
+            /* query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME,BLDG_NUM FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+             query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",*/
+            
     }
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
@@ -1448,7 +1494,7 @@ Exit:
         bnds.xmx = (CGFloat)sqlite3_column_double(statement, 15);
         bnds.ymn = (CGFloat)sqlite3_column_double(statement, 16);
         bnds.ymx = (CGFloat)sqlite3_column_double(statement, 17);
-
+        
         //CGFloat alpha = 0.0;
         //UIColor *color;
         //int opt = CRAPI.sharedInstance.parcelTextOption;
@@ -1459,21 +1505,28 @@ Exit:
             case ParcelTextSettingOwnerTax://homestead
             {
                 LPSTR name = owner;
+                
                 if (!*name)
                     name = taxName;
+                
                 num = [[NSNumber alloc] initWithDouble:emvTotal];
                 text = [NSString stringWithFormat:@"%s\n%@", name, [dollarFmt stringFromNumber:num]];
             }
                 break;
+                
             case ParcelTextSettingBuildingNum:
                 text = [NSString stringWithUTF8String:bldgNum];
                 break;
+                
             case ParcelTextSettingEMVLand:
                 text = [NSString stringWithFormat:@"%.0f",emvLand];
                 break;
-            case ParcelTextSettingEMVLandPerAcre:                if (acres > 0)
+                
+            case ParcelTextSettingEMVLandPerAcre:
+                if (acres > 0)
                     text = [NSString stringWithFormat:@"%.0f",emvLand/acres];
                 break;
+                
             default:
                 break;
         }
@@ -1481,6 +1534,7 @@ Exit:
         viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
         TranMNMXCORD(&bnds, &bndsScreen, _pTranLLtoView);
         CGRect textRect = MNMXCORDtoCGRect(&bndsScreen);
+        
         [self displayText:text
                    forPID:PID
                   atPoint:&viewPoint
@@ -1523,8 +1577,8 @@ Exit:
     *openSpacePCT = 0;
     *pctCommercial = 0;
     *rankTotEMV = 0;
-/*    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK='%s'",
-                       cenBlock];*/
+    /*    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK='%s'",
+     cenBlock];*/
     
     NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK>='%s000' AND CENBLOCK<='%s999'",
                        cenBlock,cenBlock];
@@ -1548,8 +1602,8 @@ Exit:
         totAcres += acres;
         if (*openSpace != 'N')
         {
-        if (*openSpace == 'y' || *openSpace == 'Y')
-            totOSAcres += acres;
+            if (*openSpace == 'y' || *openSpace == 'Y')
+                totOSAcres += acres;
         }
         if (!strcasecmp (useDesc,usedesc))
         {
@@ -1593,20 +1647,20 @@ Exit:
          }];
         
         /*int median = (nAge / 2);
-        NSNumber *age1 = (NSNumber *)ageArray[median];
-        
-        if (nAge %2)
-        {
-            NSNumber *age2 = (NSNumber *)ageArray[median + 1];
-            medianAge = ((age1.floatValue + age2.floatValue) / 2.0);
-        }
-        
-        else
-            medianAge = age1.intValue;*/
+         NSNumber *age1 = (NSNumber *)ageArray[median];
+         
+         if (nAge %2)
+         {
+         NSNumber *age2 = (NSNumber *)ageArray[median + 1];
+         medianAge = ((age1.floatValue + age2.floatValue) / 2.0);
+         }
+         
+         else
+         medianAge = age1.intValue;*/
     }
     
     [array sortUsingComparator: ^(id obj1, id obj2)
-    {
+     {
          NSNumber *v1 = obj1;
          NSNumber *v2 = obj2;
          
@@ -1651,20 +1705,23 @@ Exit:
         //pctMedEMV = ((double)myTotEMV / medianEMV) * 100;
         *rankTotEMV = pctAveEMV;
     }
+    
     SQLOKpd(sqlite3_finalize(statement),_database);
+    
     if (totOSAcres)
         *openSpacePCT = (100.0 * totOSAcres) / totAcres;
+    
     query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",
              cenBlockIN];
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     /*while (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        float medianAge = sqlite3_column_double(statement,0);
-        float homeOwnPct = sqlite3_column_double(statement,1);
-        
-    }*/
+     {
+     float medianAge = sqlite3_column_double(statement,0);
+     float homeOwnPct = sqlite3_column_double(statement,1);
+     
+     }*/
     
     SQLOKpd(sqlite3_finalize(statement), _database);
     query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKGROUPDATA WHERE GEOG_UNIT ='%s'",
@@ -1673,11 +1730,11 @@ Exit:
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     /*while (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        float medianAge = sqlite3_column_double(statement,0);
-        float homeOwnPct = sqlite3_column_double(statement,1);
-        
-    }*/
+     {
+     float medianAge = sqlite3_column_double(statement,0);
+     float homeOwnPct = sqlite3_column_double(statement,1);
+     
+     }*/
     
     SQLOKpd(sqlite3_finalize(statement), _database);
 }
@@ -1696,8 +1753,8 @@ Exit:
         case PROJECT_MPLS:
         {
             NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,HOUSEFRACT,STREET,UNITNUM,ZIPCODE,\"OWNER NAME\",\"TAXPAYER NAME\",\"TAXPAYER ADDR1\",\"TAXPAYER ADDR2\",\"TAXPAYER ADDR3\",PARCEL_DEPTH,PARCEL_FRONTAGE,AREA_SQFT,USECODE,USE_DESC,TAX_EXEMPT,LAND_VALUE,BLDG_VALUE,TOTAL_VALUE,TOTAL_TAX,HOMESTEAD,WTRSHD,PARCELZONE.ZONETYPE,ASSESSMENT_YEAR,Date_of_Query FROM PROPINFO,PARCELZONE WHERE PROPINFO.PID='%s' AND PARCELZONE.PID='%s'",
-                       pid.UTF8String,pid.UTF8String];
-    
+                               pid.UTF8String,pid.UTF8String];
+            
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
             
             if (sqlite3_step(statement) == SQLITE_ROW)
@@ -1816,6 +1873,7 @@ Exit:
                 
                 line = [NSString stringWithFormat:@"Date of Query:%s", dateOfQuery];
                 [report addObject:line];
+                
                 SQLOKpd(sqlite3_finalize(statement), _database);
             }
         }
@@ -1827,9 +1885,9 @@ Exit:
                                pid.UTF8String];
             
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
-/*
-    CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
- */
+            /*
+             CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
+             */
             if (sqlite3_step(statement) == SQLITE_ROW)
             {
                 LPSTR house = (LPSTR)sqlite3_column_text(statement,0);
@@ -1899,12 +1957,12 @@ Exit:
                 line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
                 [report addObject:line];
                 
-               /* if (acresPoly > 0 && landEMV > 0)
-                {
-                    line = [NSString stringWithFormat:@"Land EMV per Acre:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV/acresPoly]]];
-                    [report addObject:line];
-                }
-                */
+                /* if (acresPoly > 0 && landEMV > 0)
+                 {
+                 line = [NSString stringWithFormat:@"Land EMV per Acre:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV/acresPoly]]];
+                 [report addObject:line];
+                 }
+                 */
                 line = [NSString stringWithFormat:@"Last Sale Date:%s", saleDate];
                 [report addObject:line];
                 
@@ -1937,7 +1995,7 @@ Exit:
                 else
                     line = [NSString stringWithFormat:@"Zipcode:%s", zipcode];
                 [report addObject:line];
-           
+                
                 line = [NSString stringWithFormat:@"Plat:%s", platName];
                 [report addObject:line];
                 
@@ -1996,11 +2054,10 @@ Exit:
                 [report addObject:line];
             }
             
-            else
-                SQLOKpd(sqlite3_finalize(statement), _database);
+            SQLOKpd(sqlite3_finalize(statement), _database);
         }
     }
-   
+    
     [self close];
     return report;
 }
@@ -2042,7 +2099,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         }
         
         Order[ipart] = ipart;
- 
+        
     Inserted:;
     }
     
@@ -2090,12 +2147,12 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         Hits[nHits++] = *pOff1;
         
         //if (!*pOff1)
-            //ii = 1;
+        //ii = 1;
         
     NextOff:
         pOff1++;
-       // if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-       //     break;
+        // if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
+        //     break;
     }
     
     return nHits;
@@ -2120,7 +2177,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     char Name[66];
     LPINT Hits = malloc(MAXHITS * sizeof(int));
     sqlite3_stmt *statement = NULL;
-
+    
     NSString *string = INstring.uppercaseString;
     strncpy(Name, string.UTF8String, 64);
     nParts = GetNameParts(Name, PartLoc, PartLen, MAXPARTS);
@@ -2180,7 +2237,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     
     if (GetNext && nParts > 1)
         nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
-
+    
     for (ipart = 0; ipart < nParts; ipart++)
     {
         if (partOffsets[ipart])
@@ -2244,82 +2301,82 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         SQLOKpd(sqlite3_finalize(statement), _database);
     }
     /*
-GSSiGlobFree (&hPartOffsets[ipart]);
-GlobalUnlock (FilePtrNameIndex->FileHandle);
-GlobalUnlock (SQLPtrNameIndex->OFHandle);
-GlobalUnlock (hDBNameIndex);
-CloseDataFile (TRUE,&hDBNameIndex);
-GetGlobalCVal ("[%NAMEDB]",str,"[%DL]attribut\\name.gmd");
-OpenDataFile (str, "",BT_READ, &hDBName);
-SQLPtrName = (LPOPENSQLDATA) GlobalLock (hDBName);
-FilePtrName = (LPOPENFILEDATA) GlobalLock (SQLPtrName->OFHandle);
-lpGWDHeadName = (LPGWDHEADER)GlobalLock (FilePtrName->FileHandle);
-    nowner = 0;
-while (GetNext && nHits--)
-{
-    BOOL	ShowThisOwner = TRUE;
-    
-    if (Hits[nHits] <= sizeof (GWDHEADER16))
-        continue;
-    FillGWDData (lpGWDHeadName,Hits[nHits]);
-    SQLPtrName->st = 0;
-    SQLPtrName->Offset = Hits[nHits];
-    SQLPtrName->lastreadtime = ULONG_MAX;
-    if (ShowThisOwner)
-    {
-        if (nowner == 81)
-            idx = 0;
-        GetGlobalCVal ("[%NAMEDISPLAY]",str,"[NAMETAXPAYER]$CHR(1)[NAMEADDR1] [NAMEADDR2] [NAMECITY],[NAMESTATE]$CHR(1)[NAMEACCTOWNER]");
-        ExpandText (str);
-        OneSpace (str);
-        ReplaceChar (str,0x01,0x09);
-        strcpy (teststr,str);
-        if ((pTab = strchr (teststr,'\t')))
-            *pTab = 0;
-        nPartsTest = GetNameParts (teststr,PartLocTest,PartLenTest,MAXPARTS);
-        for (ipart = 0;ipart < nParts;ipart++)
-        {
-            for (iparttest=0;iparttest<nPartsTest;iparttest++)
-            {
-                if (!strnicmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
-                {
-                    *PartLocTest[iparttest] = 0;
-                    goto FoundPart;
-                }
-            }
-            ShowThisOwner = FALSE;
-            break;
-        FoundPart:							;
-        }
-        if (ShowThisOwner)
-        {
-            nowner++;
-            strcpy (lastowner,str);
-            if ((idx=SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_ADDSTRING,0,(LPARAM)str)) ==
-                LB_ERRSPACE)
-                GetNext = FALSE;
-        }
-    }
-    if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-        GetNext = FALSE;
-}
-GlobalUnlock (FilePtrName->FileHandle);
-GlobalUnlock (SQLPtrName->OFHandle);
-GlobalUnlock (hDBName);
-CloseDataFile (TRUE,&hDBName);
-if (GetNext)
-{
-    nOwners=SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETCOUNT,0,0);
-    sprintf (str,"%ld selected",nOwners);
-}
-else
-strcpy (str,"Search cancelled");
-SetDlgItemText (hWndDlg,IDC_NUMOWNERS,str);
-}
-if (First && SaveProperty >= 0)
-PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
-First = FALSE;
-*/
+     GSSiGlobFree (&hPartOffsets[ipart]);
+     GlobalUnlock (FilePtrNameIndex->FileHandle);
+     GlobalUnlock (SQLPtrNameIndex->OFHandle);
+     GlobalUnlock (hDBNameIndex);
+     CloseDataFile (TRUE,&hDBNameIndex);
+     GetGlobalCVal ("[%NAMEDB]",str,"[%DL]attribut\\name.gmd");
+     OpenDataFile (str, "",BT_READ, &hDBName);
+     SQLPtrName = (LPOPENSQLDATA) GlobalLock (hDBName);
+     FilePtrName = (LPOPENFILEDATA) GlobalLock (SQLPtrName->OFHandle);
+     lpGWDHeadName = (LPGWDHEADER)GlobalLock (FilePtrName->FileHandle);
+     nowner = 0;
+     while (GetNext && nHits--)
+     {
+     BOOL	ShowThisOwner = TRUE;
+     
+     if (Hits[nHits] <= sizeof (GWDHEADER16))
+     continue;
+     FillGWDData (lpGWDHeadName,Hits[nHits]);
+     SQLPtrName->st = 0;
+     SQLPtrName->Offset = Hits[nHits];
+     SQLPtrName->lastreadtime = ULONG_MAX;
+     if (ShowThisOwner)
+     {
+     if (nowner == 81)
+     idx = 0;
+     GetGlobalCVal ("[%NAMEDISPLAY]",str,"[NAMETAXPAYER]$CHR(1)[NAMEADDR1] [NAMEADDR2] [NAMECITY],[NAMESTATE]$CHR(1)[NAMEACCTOWNER]");
+     ExpandText (str);
+     OneSpace (str);
+     ReplaceChar (str,0x01,0x09);
+     strcpy (teststr,str);
+     if ((pTab = strchr (teststr,'\t')))
+     *pTab = 0;
+     nPartsTest = GetNameParts (teststr,PartLocTest,PartLenTest,MAXPARTS);
+     for (ipart = 0;ipart < nParts;ipart++)
+     {
+     for (iparttest=0;iparttest<nPartsTest;iparttest++)
+     {
+     if (!strnicmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
+     {
+     *PartLocTest[iparttest] = 0;
+     goto FoundPart;
+     }
+     }
+     ShowThisOwner = FALSE;
+     break;
+     FoundPart:							;
+     }
+     if (ShowThisOwner)
+     {
+     nowner++;
+     strcpy (lastowner,str);
+     if ((idx=SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_ADDSTRING,0,(LPARAM)str)) ==
+     LB_ERRSPACE)
+     GetNext = FALSE;
+     }
+     }
+     if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
+     GetNext = FALSE;
+     }
+     GlobalUnlock (FilePtrName->FileHandle);
+     GlobalUnlock (SQLPtrName->OFHandle);
+     GlobalUnlock (hDBName);
+     CloseDataFile (TRUE,&hDBName);
+     if (GetNext)
+     {
+     nOwners=SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETCOUNT,0,0);
+     sprintf (str,"%ld selected",nOwners);
+     }
+     else
+     strcpy (str,"Search cancelled");
+     SetDlgItemText (hWndDlg,IDC_NUMOWNERS,str);
+     }
+     if (First && SaveProperty >= 0)
+     PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
+     First = FALSE;
+     */
     free (Hits);
     [self close];
     return ownerArray;
@@ -2486,7 +2543,7 @@ int GetNameParts(LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)
 {
     int	nParts = 0;
     LPSTR pWord, pEnd;
-
+    
     pWord = Field;
     ReplaceChar(Field,'-',' ');
     ReplaceChar(Field,'/',' ');
