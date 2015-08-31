@@ -90,7 +90,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_close(_database);
     NSLog(@"Property Database dealloc");
 }
-- (void)open
+- (BOOL)open
 {
     if (!_isOpen)
     {
@@ -100,7 +100,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
+        return TRUE;
     }
+    else
+        return FALSE;
 }
 
 - (void)close:(int)method
@@ -1032,7 +1035,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     LPDPOINT llpoints = NULL;
     sqlite3_stmt *statement = NULL;
     
-    [self open];
+    BOOL didOpen = [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
     
@@ -1067,7 +1070,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 45);
-    [self close:22];
+    if (didOpen)
+        [self close:22];
     
     return llpoints;
 }
