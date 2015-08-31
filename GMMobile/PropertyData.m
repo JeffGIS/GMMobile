@@ -1208,6 +1208,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     BOOL didDraw = NO;
     int numTextLines;
     int numPoints, numLoops;
+    int nTextPoints;
     
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
@@ -1245,10 +1246,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
     
-    [NVTextDrawing getTextContainerPoints:textPoints
+    nTextPoints = [NVTextDrawing getTextContainerPoints:textPoints
                          attributedString:textPointString];
     
-    for (int i = 0; i < textPointString.length; i++)
+    for (int i = 0; i < nTextPoints; i++)
     {
         DPOINT textPoint = textPoints[i];
         NSLog(@"PID %@, (%f,%f)", PID, textPoint.x, textPoint.y);
