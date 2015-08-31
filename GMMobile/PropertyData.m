@@ -91,7 +91,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_close(_database);
     NSLog(@"Property Database dealloc");
 }
-- (void)open
+- (BOOL)open
 {
     if (!_isOpen)
     {
@@ -101,7 +101,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
+        return TRUE;
     }
+    else
+        return FALSE;
 }
 
 - (void)close:(int)method
