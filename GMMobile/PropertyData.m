@@ -4,6 +4,7 @@
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
+#import "CCodeLibrary/NVTextDrawing.h"
 
 @interface NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale;
@@ -90,7 +91,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_close(_database);
     NSLog(@"Property Database dealloc");
 }
-- (BOOL)open
+- (void)open
 {
     if (!_isOpen)
     {
@@ -100,10 +101,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
-        return TRUE;
     }
-    else
-        return FALSE;
 }
 
 - (void)close:(int)method
@@ -1035,7 +1033,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     LPDPOINT llpoints = NULL;
     sqlite3_stmt *statement = NULL;
     
-    BOOL didOpen = [self open];
+    [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
     
@@ -1070,8 +1068,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 45);
-    if (didOpen)
-        [self close:22];
+    [self close:22];
     
     return llpoints;
 }
@@ -1229,15 +1226,39 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     ptextRect->size.height -= border * 2;
     numTextLines = [self numLinesInText:text.UTF8String];
     
+    CTFontRef textPointFontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                                      fontSize, NULL);
+    
+    NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+    style.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *textPointAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                         (__bridge id)textPointFontRef, kCTFontAttributeName,
+                                         style, kCTParagraphStyleAttributeName,
+                                         nil];
+    
+    NSAttributedString *textPointString = [[NSAttributedString alloc] initWithString:text
+                                                                          attributes:textPointAttributes];
+    
+    LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * textPointString.length) + 4);
+    
+    [NVTextDrawing getTextContainerPoints:textPoints
+                         attributedString:textPointString];
+    
+    for (int i = 0; i < attString.length; i++)
+    {
+        DPOINT textPoint = llpoints[i];
+        NSLog(@"%f,%f", textPoint.x, textPoint.y);
+    }
+    
+    free(textPoints);
+    
     while (fontSize > minFontSize)
     {
         CGContextSaveGState(context);
         
         CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
                                                  fontSize, NULL);
-        
-        NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
-        style.alignment = NSTextAlignmentCenter;
         
         if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
             textColor = UIColor.redColor;
