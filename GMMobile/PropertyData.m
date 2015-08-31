@@ -4,6 +4,7 @@
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
+#import "CCodeLibrary/NVTextDrawing.h"
 
 @interface NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale;
@@ -1229,15 +1230,39 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     ptextRect->size.height -= border * 2;
     numTextLines = [self numLinesInText:text.UTF8String];
     
+    CTFontRef textPointFontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                                      fontSize, NULL);
+    
+    NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+    style.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *textPointAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                         (__bridge id)textPointFontRef, kCTFontAttributeName,
+                                         style, kCTParagraphStyleAttributeName,
+                                         nil];
+    
+    NSAttributedString *textPointString = [[NSAttributedString alloc] initWithString:text
+                                                                          attributes:textPointAttributes];
+    
+    LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
+    
+    [NVTextDrawing getTextContainerPoints:textPoints
+                         attributedString:textPointString];
+    
+    for (int i = 0; i < textPointString.length; i++)
+    {
+        DPOINT textPoint = textPoints[i];
+        NSLog(@"PID %@, (%f,%f)", PID, textPoint.x, textPoint.y);
+    }
+    
+    free(textPoints);
+    
     while (fontSize > minFontSize)
     {
         CGContextSaveGState(context);
         
         CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
                                                  fontSize, NULL);
-        
-        NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
-        style.alignment = NSTextAlignmentCenter;
         
         if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
             textColor = UIColor.redColor;
