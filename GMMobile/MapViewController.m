@@ -708,6 +708,8 @@ extern int keepProcessing;
     
     [spreadsheet setTextArray:distanceStringArray
              forColumnAtIndex:3];*/
+    
+    
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
