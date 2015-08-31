@@ -1193,41 +1193,36 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 }
 
 - (void)displayText:(NSString *)text
-             forPID:(NSString *)PID
+             forPID:(NSString*)PID
             atPoint:(LPDPOINT)pviewPointx
-             inRect:(CGRect *)ptextRect
+             inRect:(CGRect*)ptextRect
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 8.0;
     //CGFloat size = sqrtf(maxPixels);
-    NSAttributedString *attString = nil;
-    UIColor *textColor = nil;
-    BOOL haveFit = NO, didDraw = NO;
-    int numTextLines = 0, numPoints = 0, numLoops = 0;
+    NSAttributedString *attString;
+    UIColor *textColor;
+    BOOL haveFit = NO;
+    BOOL didDraw = NO;
+    int numTextLines;
+    int numPoints, numLoops;
+    
+    text = [text stringByReplacingOccurrencesOfString:@"&"
+                                           withString:@"&\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"1/2"
+                                           withString:@"!@#"];
+    text = [text stringByReplacingOccurrencesOfString:@"/"
+                                           withString:@"/\n"];
+    text = [text stringByReplacingOccurrencesOfString:@"!@#"
+                                           withString:@"1/2"];
     
     LPDPOINT llpoints = [self getParcelPolygonPointsForPID:PID
                                                  numPoints:&numPoints
                                                   numLoops:&numLoops];
-    
-    for (int i = 0; i < numPoints; i++)
-        llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-    
-    text = [text stringByReplacingOccurrencesOfString:@"&"
-                                           withString:@"&\n"];
-    
-    text = [text stringByReplacingOccurrencesOfString:@"1/2"
-                                           withString:@"!@#"];
-    
-    text = [text stringByReplacingOccurrencesOfString:@"/"
-                                           withString:@"/\n"];
-    
-    text = [text stringByReplacingOccurrencesOfString:@"!@#"
-                                           withString:@"1/2"];
-    
     //add border to rect
-    int border = max(ptextRect->size.width,ptextRect->size.height) * 0.05;
+    int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
     ptextRect->origin.y += border;
     ptextRect->size.width -= border * 2;
@@ -1286,14 +1281,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                         context:context];
                 }
                 
-                CGMutablePathRef path = CGPathCreateMutable();
-                
-                CGPathMoveToPoint(path, 0, llpoints[0].x, llpoints[0].y);
-                
-                for (int i = 1; i < numPoints; i++)
-                    CGPathAddLineToPoint(path, 0, llpoints[i].x, llpoints[i].y);
-                
-                CGPathAddLineToPoint(path, 0, llpoints[0].x, llpoints[0].y);
+                CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
                 
                 attString = [[NSAttributedString alloc] initWithString:text
                                                             attributes:attributes];
@@ -1302,21 +1290,19 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                 CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
                 
                 CFArrayRef lines = CTFrameGetLines(frame);
-                
                 if (CFArrayGetCount(lines) >= numTextLines)
                 {
                     CTFrameDraw(frame, context);
                     didDraw = YES;
                 }
-                
                 CFRelease(frame);
-                CGPathRelease(path);
+                CFRelease(path);
                 CFRelease(framesetter);
                 
                 if (didDraw)
                 {
                     CGContextRestoreGState(context);
-                    goto Exit;
+                    return;
                 }
             }
             
