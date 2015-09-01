@@ -1202,13 +1202,13 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 8.0;
     //CGFloat size = sqrtf(maxPixels);
-    NSAttributedString *attString;
-    UIColor *textColor;
+    NSAttributedString *attString = nil;
+    UIColor *textColor = nil;
     BOOL haveFit = NO;
     BOOL didDraw = NO;
-    int numTextLines;
-    int numPoints, numLoops;
-    int nTextPoints;
+    int numTextLines = 0;
+    int numPoints = 0, numLoops = 0;
+    NSUInteger nTextPoints = 0;
     
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
@@ -1247,7 +1247,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
     
     nTextPoints = [NVTextDrawing getTextContainerPoints:textPoints
-                         attributedString:textPointString];
+                                       attributedString:textPointString];
     
     for (int i = 0; i < nTextPoints; i++)
     {
