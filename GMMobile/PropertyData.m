@@ -1217,6 +1217,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     int numPoints, numLoops;
     int nTextPoints;
     int *polyPartLen=0;
+    CGFloat textArea;
+    CGFloat aveCharWidth, aveCharHeight;
     
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
@@ -1227,12 +1229,23 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     text = [text stringByReplacingOccurrencesOfString:@"!@#"
                                            withString:@"1/2"];
     
-    LPDPOINT llpoints = [self getParcelPolygonPointsForPID:PID
+    LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                  numPoints:&numPoints
                                                   numLoops:&numLoops
                                                polyPartLen:&polyPartLen];
     //viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-
+    PointInArea *pia = [[PointInArea alloc]init];
+    for (int i=0;i < numPoints;i++)
+        pPoints[i] = TranDPOINT(&pPoints[i],_pTranLLtoView);
+  
+    CGFloat areaSize = ComputeAreaAreaD (pPoints,numPoints,0);
+    MNMXCORD areaBounds = PolyBounds (pPoints,numPoints);
+   
+    [pia loadArea:numPoints numLoops:numLoops polyPartLen:polyPartLen points:pPoints];
+    if (polyPartLen)
+        free (polyPartLen);
+    free(pPoints);
+    
     //add border to rect
     int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
@@ -1259,20 +1272,81 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
     
-    nTextPoints = [NVTextDrawing getTextContainerPoints:textPoints
+    nTextPoints = (int)[NVTextDrawing getTextContainerPoints:textPoints
+                                                     totArea:&textArea
+                                       averageCharacterWidth:&aveCharWidth
+                                      averageCharacterHeight:&aveCharHeight
                                        attributedString:textPointString];
-    
-    for (int i = 0; i < nTextPoints; i++)
+    MNMXCORD textBounds = PolyBounds (textPoints,nTextPoints);
+    for (int i = 0;i<nTextPoints; i++)
     {
-        DPOINT textPoint = textPoints[i];
-        NSLog(@"PID %@, (%f,%f)", PID, textPoint.x, textPoint.y);
+        textPoints[i].x -= textBounds.xmn;
+        textPoints[i].y -= textBounds.ymn;
     }
+    CGFloat textWidth = MNMXCORDWidth (&textBounds);
+    CGFloat textHeight = MNMXCORDHeight (&textBounds);
     
+    LPDPOINT testPoints = malloc (nTextPoints * sizeof (DPOINT));
+    
+    if (areaSize && textArea)
+    {
+        CGFloat desiredTextFactor = textArea / areaSize;
+        CGFloat textFactor = areaSize / textArea;
+        CGFloat minTextFactor = desiredTextFactor * ((CGFloat)minFontSize / (CGFloat)fontSize) * ((CGFloat)minFontSize / (CGFloat)fontSize);
+        CGFloat shrink = 0.9;
+        NSInteger numFit = 0;
+#define MAXFIT  64
+        CGFloat fitX[MAXFIT], fitY[MAXFIT];
+        CGFloat xoffset, yoffset;
+        
+        while (!numFit && textFactor > minTextFactor)
+        {
+            yoffset=areaBounds.ymn;
+            CGFloat xinc = aveCharWidth * textFactor;
+            CGFloat yinc = aveCharHeight * textFactor;
+            
+            while (yoffset < areaBounds.ymx - textHeight * textFactor)
+            {
+                xoffset = areaBounds.xmn;
+                while (xoffset < areaBounds.xmx - textWidth * textFactor)
+                {
+                    for (int i = 0;i<nTextPoints; i++)
+                    {
+                        testPoints[i].x = textPoints[i].x * textFactor + xoffset;
+                        testPoints[i].y = textPoints[i].y * textFactor + yoffset;
+                        if (![pia DPointInArea:&testPoints[i]])
+                            goto NextX;
+                    }
+                    if (numFit < MAXFIT)
+                    {
+                        fitX[numFit] = xoffset;
+                        fitY[numFit++] = yoffset;
+                    }
+                NextX:
+                    xoffset += xinc;
+                }
+                yoffset += yinc;
+            }
+            textFactor *= shrink;
+        }
+        if (numFit)
+        {
+            xoffset = fitX[numFit/2];
+            yoffset = fitY[numFit/2];
+            textFactor = min (textFactor,desiredTextFactor);
+            textFactor /= desiredTextFactor;
+            fontSize *= textFactor;
+            if (fontSize >= minFontSize)
+            {
+            //Bill - plot the text with the current xoffset, yoffset and fontSize.
+            //The offsets are from the areaBounds.
+            }
+        }
+    }
     free(textPoints);
-    if (polyPartLen)
-        free (polyPartLen);
+    free(testPoints);
     
-    while (fontSize > minFontSize)
+/*    while (fontSize > minFontSize)
     {
         CGContextSaveGState(context);
         
@@ -1360,10 +1434,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         if (fontSize < minFontSize)
             goto Exit;
-    }
+    }*/
     
 Exit:
-    free(llpoints);
+    return;
 }
 
 - (void)drawTextShadowForRect:(CGRect)rect
