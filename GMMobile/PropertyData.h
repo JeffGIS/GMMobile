@@ -83,6 +83,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
                                numPoints:(int *)numPoints
-                                numLoops:(int *)numLoops;
+                                numLoops:(int *)numLoops
+                             polyPartLen:(int **)polyPartLen;
 
 @end

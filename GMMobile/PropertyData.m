@@ -1031,14 +1031,16 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
                                numPoints:(int *)numPoints
                                 numLoops:(int *)numLoops
+                             polyPartLen:(int **)polyPartLen
 {
     DPOINT basePoint = {0};
     LPDPOINT llpoints = NULL;
     sqlite3_stmt *statement = NULL;
-    
+    if (polyPartLen)
+        *polyPartLen = 0;
     BOOL didOpen = [self open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
+    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 44);
     
@@ -1048,7 +1050,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         basePoint.y = sqlite3_column_double(statement, 1);
         *numPoints = sqlite3_column_int(statement, 2);
         *numLoops = sqlite3_column_int(statement, 3);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 4);
+        if (*numLoops > 1 && polyPartLen)
+        {
+            *polyPartLen = malloc (*numLoops * sizeof (int));
+            memcpy (*polyPartLen,(int *)sqlite3_column_blob(statement,4),*numLoops * sizeof(int));
+        }
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 5);
         llpoints = malloc(abs(*numPoints) * sizeof(DPOINT) + 4);
         
         if (*numPoints < 0)
@@ -1209,6 +1216,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     int numTextLines;
     int numPoints, numLoops;
     int nTextPoints;
+    int *polyPartLen=0;
     
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
@@ -1221,7 +1229,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     LPDPOINT llpoints = [self getParcelPolygonPointsForPID:PID
                                                  numPoints:&numPoints
-                                                  numLoops:&numLoops];
+                                                  numLoops:&numLoops
+                                               polyPartLen:&polyPartLen];
+    //viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
+
     //add border to rect
     int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
@@ -1256,6 +1267,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     free(textPoints);
+    if (polyPartLen)
+        free (polyPartLen);
     
     while (fontSize > minFontSize)
     {

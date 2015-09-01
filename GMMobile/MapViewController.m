@@ -2287,7 +2287,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
                                                          numPoints:&numPointsLoops[0]
-                                                          numLoops:&numPointsLoops[1]];
+                                                          numLoops:&numPointsLoops[1]
+                                                       polyPartLen:0];
         
         const char *filePath = [NSString stringWithFormat:@"%@/pid_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
         
