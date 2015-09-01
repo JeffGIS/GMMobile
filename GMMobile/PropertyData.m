@@ -1241,6 +1241,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                          style, kCTParagraphStyleAttributeName,
                                          nil];
     
+    CFRelease(textPointFontRef);
+    
     NSAttributedString *textPointString = [[NSAttributedString alloc] initWithString:text
                                                                           attributes:textPointAttributes];
     
