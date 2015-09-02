@@ -1200,58 +1200,62 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 }
 
 - (void)displayText:(NSString *)text
-             forPID:(NSString*)PID
+             forPID:(NSString *)PID
             atPoint:(LPDPOINT)pviewPointx
-             inRect:(CGRect*)ptextRect
+             inRect:(CGRect *)ptextRect
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 8.0;
-    //CGFloat size = sqrtf(maxPixels);
-    NSAttributedString *attString = nil;
-    UIColor *textColor = nil;
-    BOOL haveFit = NO;
-    BOOL didDraw = NO;
-    int numTextLines;
-    int numPoints, numLoops;
-    int nTextPoints;
-    int *polyPartLen=0;
-    CGFloat textArea;
-    CGFloat aveCharWidth, aveCharHeight;
+    int numTextLines = 0;
+    int numPoints = 0, numLoops = 0;
+    int nTextPoints = 0;
+    int *polyPartLen = 0;
+    CGFloat textArea = 0.0;
+    CGFloat aveCharWidth = 0.0, aveCharHeight = 0.0;
     
     text = [text stringByReplacingOccurrencesOfString:@"&"
                                            withString:@"&\n"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"1/2"
                                            withString:@"!@#"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"/"
                                            withString:@"/\n"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"!@#"
                                            withString:@"1/2"];
     
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
-                                                 numPoints:&numPoints
-                                                  numLoops:&numLoops
-                                               polyPartLen:&polyPartLen];
+                                                numPoints:&numPoints
+                                                 numLoops:&numLoops
+                                              polyPartLen:&polyPartLen];
+
     //viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-    PointInArea *pia = [[PointInArea alloc]init];
-    for (int i=0;i < numPoints;i++)
-        pPoints[i] = TranDPOINT(&pPoints[i],_pTranLLtoView);
+    PointInArea *pia = [[PointInArea alloc] init];
+    
+    for (int i = 0; i < numPoints; i++)
+        pPoints[i] = TranDPOINT(&pPoints[i], _pTranLLtoView);
   
-    CGFloat areaSize = ComputeAreaAreaD (pPoints,numPoints,0);
-    MNMXCORD areaBounds = PolyBounds (pPoints,numPoints);
+    CGFloat areaSize = ComputeAreaAreaD(pPoints, numPoints, 0);
+    MNMXCORD areaBounds = PolyBounds(pPoints, numPoints);
    
-    [pia loadArea:numPoints numLoops:numLoops polyPartLen:polyPartLen points:pPoints];
+    [pia loadArea:numPoints
+         numLoops:numLoops
+      polyPartLen:polyPartLen
+           points:pPoints];
+    
     if (polyPartLen)
         free (polyPartLen);
+    
     free(pPoints);
     
-    //add border to rect
-    int border = max (ptextRect->size.width,ptextRect->size.height) * 0.05;
+    int border = max(ptextRect->size.width, ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
     ptextRect->origin.y += border;
-    ptextRect->size.width -= border * 2;
-    ptextRect->size.height -= border * 2;
+    ptextRect->size.width -= (border * 2);
+    ptextRect->size.height -= (border * 2);
     numTextLines = [self numLinesInText:text.UTF8String];
     
     CTFontRef textPointFontRef = CTFontCreateWithName((CFStringRef)NULL,
@@ -1276,73 +1280,135 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                                      totArea:&textArea
                                        averageCharacterWidth:&aveCharWidth
                                       averageCharacterHeight:&aveCharHeight
-                                       attributedString:textPointString];
-    MNMXCORD textBounds = PolyBounds (textPoints,nTextPoints);
-    for (int i = 0;i<nTextPoints; i++)
+                                            attributedString:textPointString];
+    
+    MNMXCORD textBounds = PolyBounds(textPoints, nTextPoints);
+    
+    for (int i = 0; i < nTextPoints; i++)
     {
         textPoints[i].x -= textBounds.xmn;
         textPoints[i].y -= textBounds.ymn;
     }
-    CGFloat textWidth = MNMXCORDWidth (&textBounds);
-    CGFloat textHeight = MNMXCORDHeight (&textBounds);
     
-    LPDPOINT testPoints = malloc (nTextPoints * sizeof (DPOINT));
+    CGFloat textWidth = MNMXCORDWidth(&textBounds);
+    CGFloat textHeight = MNMXCORDHeight(&textBounds);
+    
+    LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
     
     if (areaSize && textArea)
     {
-        CGFloat desiredTextFactor = textArea / areaSize;
-        CGFloat textFactor = areaSize / textArea;
-        CGFloat minTextFactor = desiredTextFactor * ((CGFloat)minFontSize / (CGFloat)fontSize) * ((CGFloat)minFontSize / (CGFloat)fontSize);
+        CGFloat desiredTextFactor = (textArea / areaSize);
+        CGFloat textFactor = (areaSize / textArea);
+        CGFloat minTextFactor = (desiredTextFactor * ((CGFloat)minFontSize / (CGFloat)fontSize) * ((CGFloat)minFontSize / (CGFloat)fontSize));
         CGFloat shrink = 0.9;
         NSInteger numFit = 0;
 #define MAXFIT  64
-        CGFloat fitX[MAXFIT], fitY[MAXFIT];
-        CGFloat xoffset, yoffset;
+        CGFloat fitX[MAXFIT] = {0}, fitY[MAXFIT] = {0};
+        CGFloat xoffset = 0.0, yoffset = 0.0;
         
         while (!numFit && textFactor > minTextFactor)
         {
-            yoffset=areaBounds.ymn;
-            CGFloat xinc = aveCharWidth * textFactor;
-            CGFloat yinc = aveCharHeight * textFactor;
+            yoffset = areaBounds.ymn;
+            CGFloat xinc = (aveCharWidth * textFactor);
+            CGFloat yinc = (aveCharHeight * textFactor);
             
             while (yoffset < areaBounds.ymx - textHeight * textFactor)
             {
                 xoffset = areaBounds.xmn;
+                
                 while (xoffset < areaBounds.xmx - textWidth * textFactor)
                 {
-                    for (int i = 0;i<nTextPoints; i++)
+                    for (int i = 0; i < nTextPoints; i++)
                     {
-                        testPoints[i].x = textPoints[i].x * textFactor + xoffset;
-                        testPoints[i].y = textPoints[i].y * textFactor + yoffset;
+                        testPoints[i].x = (textPoints[i].x * textFactor + xoffset);
+                        testPoints[i].y = (textPoints[i].y * textFactor + yoffset);
+                        
                         if (![pia DPointInArea:&testPoints[i]])
                             goto NextX;
                     }
+                    
                     if (numFit < MAXFIT)
                     {
                         fitX[numFit] = xoffset;
                         fitY[numFit++] = yoffset;
                     }
+                    
                 NextX:
                     xoffset += xinc;
                 }
+                
                 yoffset += yinc;
             }
+            
             textFactor *= shrink;
         }
+        
         if (numFit)
         {
-            xoffset = fitX[numFit/2];
-            yoffset = fitY[numFit/2];
-            textFactor = min (textFactor,desiredTextFactor);
+            xoffset = fitX[numFit / 2];
+            yoffset = fitY[numFit / 2];
+            textFactor = min(textFactor, desiredTextFactor);
             textFactor /= desiredTextFactor;
             fontSize *= textFactor;
+            
             if (fontSize >= minFontSize)
             {
-            //Bill - plot the text with the current xoffset, yoffset and fontSize.
-            //The offsets are from the areaBounds.
+                UIColor *textColor = nil;
+                NSAttributedString *attString = nil;
+                
+                CGContextSaveGState(context);
+                
+                CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
+                                                         fontSize, NULL);
+                
+                if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
+                    textColor = UIColor.redColor;
+                
+                else
+                    textColor = UIColor.blackColor;
+                
+                NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                            (__bridge id)fontRef, kCTFontAttributeName,
+                                            style, kCTParagraphStyleAttributeName,
+                                            textColor.CGColor, kCTForegroundColorAttributeName,
+                                            nil];
+                
+                NSDictionary *shadowAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                  (__bridge id)fontRef, kCTFontAttributeName,
+                                                  style, kCTParagraphStyleAttributeName,
+                                                  UIColor.whiteColor.CGColor, kCTForegroundColorAttributeName,
+                                                  nil];
+                
+                CFRelease(fontRef);
+                
+                if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
+                {
+                    attString = [[NSAttributedString alloc] initWithString:text
+                                                                attributes:shadowAttributes];
+                    
+                    [self drawTextShadowForRect:*ptextRect
+                                      attString:attString
+                                        context:context];
+                }
+                
+                CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
+                
+                attString = [[NSAttributedString alloc] initWithString:text
+                                                            attributes:attributes];
+                
+                CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
+                CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
+                CTFrameDraw(frame, context);
+                
+                CFRelease(frame);
+                CFRelease(path);
+                CFRelease(framesetter);
+                
+                CGContextRestoreGState(context);
             }
         }
     }
+    
     free(textPoints);
     free(testPoints);
     
