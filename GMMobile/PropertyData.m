@@ -1274,8 +1274,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     NSAttributedString *textPointString = [[NSAttributedString alloc] initWithString:text
                                                                           attributes:textPointAttributes];
     
-    LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
-    
+   // LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
+    DPOINT textPoints[256];
     nTextPoints = (int)[NVTextDrawing getTextContainerPoints:textPoints
                                                      totArea:&textArea
                                        averageCharacterWidth:&aveCharWidth
@@ -1293,8 +1293,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     CGFloat textWidth = MNMXCORDWidth(&textBounds);
     CGFloat textHeight = MNMXCORDHeight(&textBounds);
     
-    LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
-    
+    //LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
+    DPOINT testPoints[256];
     if (areaSize && textArea)
     {
         CGFloat desiredTextFactor = (textArea / areaSize);
@@ -1312,11 +1312,11 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             CGFloat xinc = (aveCharWidth * textFactor);
             CGFloat yinc = (aveCharHeight * textFactor);
             
-            while (yoffset < areaBounds.ymx - textHeight * textFactor)
+            while (yoffset < areaBounds.ymx)// - textHeight * textFactor)
             {
                 xoffset = areaBounds.xmn;
                 
-                while (xoffset < areaBounds.xmx - textWidth * textFactor)
+                while (xoffset < areaBounds.xmx)// - textWidth * textFactor)
                 {
                     for (int i = 0; i < nTextPoints; i++)
                     {
@@ -1329,8 +1329,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     
                     if (numFit < MAXFIT)
                     {
-                        fitX[numFit] = xoffset;
-                        fitY[numFit++] = yoffset;
+                        fitX[numFit] = xoffset + (textWidth * textFactor)/2;
+                        fitY[numFit++] = yoffset - (textHeight * textFactor)/2;
                     }
                     
                 NextX:
@@ -1345,17 +1345,20 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         if (numFit)
         {
-            xoffset = fitX[numFit / 2];
-            yoffset = fitY[numFit / 2];
-            textFactor = min(textFactor, desiredTextFactor);
-            textFactor /= desiredTextFactor;
-            fontSize *= textFactor;
-            
+            CGFloat fontFactor = min(textFactor, desiredTextFactor);
+            fontFactor /= desiredTextFactor;
+            fontSize *= fontFactor;
+            textFactor = fontFactor;
             if (fontSize >= minFontSize)
             {
+                CGRect rect;
                 UIColor *textColor = nil;
                 NSAttributedString *attString = nil;
                 
+                rect.size.height = textHeight * textFactor * 2;
+                rect.size.width  = textWidth  * textFactor;
+                rect.origin.x = fitX[numFit / 2] - rect.size.width  / 2;
+                rect.origin.y = fitY[numFit / 2] - textHeight * textFactor / 2;
                 CGContextSaveGState(context);
                 
                 CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
@@ -1386,12 +1389,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     attString = [[NSAttributedString alloc] initWithString:text
                                                                 attributes:shadowAttributes];
                     
-                    [self drawTextShadowForRect:*ptextRect
+                    [self drawTextShadowForRect:rect
                                       attString:attString
                                         context:context];
                 }
                 
-                CGPathRef path = CGPathCreateWithRect(*ptextRect, NULL);
+                CGPathRef path = CGPathCreateWithRect(rect, NULL);
                 
                 attString = [[NSAttributedString alloc] initWithString:text
                                                             attributes:attributes];
@@ -1409,8 +1412,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         }
     }
     
-    free(textPoints);
-    free(testPoints);
+    //free(textPoints);
+    //free(testPoints);
     
 /*    while (fontSize > minFontSize)
     {
