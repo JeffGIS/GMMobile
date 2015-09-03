@@ -1275,7 +1275,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                                                           attributes:textPointAttributes];
     
    // LPDPOINT textPoints = (LPDPOINT)malloc((sizeof(DPOINT) * (textPointString.length + 32)) + 4);//enough memory for 16 lines
-    DPOINT textPoints[256];
+    DPOINT textPoints[256] = {0};
+    
     nTextPoints = (int)[NVTextDrawing getTextContainerPoints:textPoints
                                                      totArea:&textArea
                                        averageCharacterWidth:&aveCharWidth
@@ -1295,6 +1296,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     //LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
     DPOINT testPoints[256];
+    
     if (areaSize && textArea)
     {
         CGFloat desiredTextFactor = (textArea / areaSize);
@@ -1338,6 +1340,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                 }
                 
                 yoffset += yinc;
+                
             }
             
             textFactor *= shrink;
