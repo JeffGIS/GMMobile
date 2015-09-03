@@ -1215,7 +1215,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     CGFloat textArea = 0.0;
     CGFloat aveCharWidth = 0.0, aveCharHeight = 0.0;
     
-    text = [text stringByReplacingOccurrencesOfString:@"&"
+    text = [text stringByReplacingOccurrencesOfString:@"& "
                                            withString:@"&\n"];
     
     text = [text stringByReplacingOccurrencesOfString:@"1/2"
@@ -1224,8 +1224,36 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     text = [text stringByReplacingOccurrencesOfString:@"/"
                                            withString:@"/\n"];
     
+    text = [text stringByReplacingOccurrencesOfString:@"/ "
+                                           withString:@"/\n"];
+    
     text = [text stringByReplacingOccurrencesOfString:@"!@#"
                                            withString:@"1/2"];
+    
+    text = [text stringByReplacingOccurrencesOfString:@"\n "
+                                           withString:@"\n"];
+    
+    text = [text stringByReplacingOccurrencesOfString:@" \n "
+                                           withString:@"\n"];
+    
+    
+    if ([text characterAtIndex:0] == ' ')
+    {
+        NSMutableString *tempString = text.mutableCopy;
+        NSRange firstCharRange = {0,1};
+        [tempString deleteCharactersInRange:firstCharRange];
+        text = tempString;
+    }
+    
+    if ([text characterAtIndex:(text.length - 1)] == ' ' ||
+        [text characterAtIndex:(text.length - 1)] == '\n' ||
+        [text characterAtIndex:(text.length - 1)] == '\r')
+    {
+        NSMutableString *tempString = text.mutableCopy;
+        NSRange firstCharRange = {0,1};
+        [tempString deleteCharactersInRange:firstCharRange];
+        text = tempString;
+    }
     
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
