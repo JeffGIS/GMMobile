@@ -63,7 +63,7 @@
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
     _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld", pd.fileSize];
-    [pd close];
+    [pd close:777];
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 
@@ -328,7 +328,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             [awd close];
                         }
                         else
-                            [pd close];
+                            [pd close:888];
                         
                         fclose(fid);
                         free(str);

@@ -106,7 +106,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
+    [pd close:333];
 }
 - (void)fillPlanArea:(CGContextRef)context
              nPoints:(int)np
@@ -276,7 +276,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
+    [pd close:444];
 }
 
 - (void)drawPlanLine:(CGContextRef)context
@@ -389,7 +389,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
+    [pd close:555];
 
 }
 - (void) drawPlanPoint:(CGContextRef)context
@@ -910,7 +910,7 @@ extern int keepProcessing;
     
     SQLOK(sqlite3_finalize(statement),pd.database);
     
-    [pd close];
+    [pd close:666];
     
     
     return symList;

@@ -93,7 +93,7 @@ extern int keepProcessing;
     }
  
     SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close];
+    [pd close:111];
 }
 
 - (void)drawBoundary:(CGContextRef)context
@@ -235,7 +235,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close];
+    [pd close:222];
 }
 
 - (void)drawUseCode:(CGContextRef)context

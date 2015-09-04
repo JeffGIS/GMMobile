@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property (nonatomic) int planDatasetVersion;
 
 - (BOOL)open;
-- (void)close;
+- (void)close:(int)method;
 - (void)clear;
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
