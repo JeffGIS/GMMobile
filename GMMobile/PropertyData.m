@@ -1212,6 +1212,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     int numPoints = 0, numLoops = 0;
     int nTextPoints = 0;
     int *polyPartLen = 0;
+    int ii;
     CGFloat textArea = 0.0;
     CGFloat aveCharWidth = 0.0, aveCharHeight = 0.0;
     
@@ -1254,7 +1255,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [tempString deleteCharactersInRange:firstCharRange];
         text = tempString;
     }
-    
+    if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
+        ii=1;
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
                                                  numLoops:&numLoops
@@ -1327,12 +1329,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     if (areaSize && textArea)
     {
-        CGFloat desiredTextFactor = (textArea / areaSize);
+        CGFloat desiredTextFactor = 1;//(textArea / areaSize);
         CGFloat textFactor = (areaSize / textArea);
         CGFloat minTextFactor = (desiredTextFactor * ((CGFloat)minFontSize / (CGFloat)fontSize) * ((CGFloat)minFontSize / (CGFloat)fontSize));
         CGFloat shrink = 0.9;
         NSInteger numFit = 0;
-#define MAXFIT  64
+#define MAXFIT  256
         CGFloat fitX[MAXFIT] = {0}, fitY[MAXFIT] = {0};
         CGFloat xoffset = 0.0, yoffset = 0.0;
         
@@ -1379,17 +1381,16 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             CGFloat fontFactor = min(textFactor, desiredTextFactor);
             fontFactor /= desiredTextFactor;
             fontSize *= fontFactor;
-            textFactor = fontFactor;
             if (fontSize >= minFontSize)
             {
                 CGRect rect;
                 UIColor *textColor = nil;
                 NSAttributedString *attString = nil;
                 
-                rect.size.height = textHeight * textFactor * 2;
-                rect.size.width  = textWidth  * textFactor;
+                rect.size.height = textHeight * fontFactor * 2;
+                rect.size.width  = textWidth  * fontFactor;
                 rect.origin.x = fitX[numFit / 2] - rect.size.width  / 2;
-                rect.origin.y = fitY[numFit / 2] - textHeight * textFactor / 2;
+                rect.origin.y = fitY[numFit / 2] - textHeight * fontFactor / 2;
                 CGContextSaveGState(context);
                 
                 CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
