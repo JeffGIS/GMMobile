@@ -1212,7 +1212,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     int numPoints = 0, numLoops = 0;
     int nTextPoints = 0;
     int *polyPartLen = 0;
-    int ii;
     CGFloat textArea = 0.0;
     CGFloat aveCharWidth = 0.0, aveCharHeight = 0.0;
     
@@ -1237,7 +1236,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     text = [text stringByReplacingOccurrencesOfString:@" \n "
                                            withString:@"\n"];
     
-    
     if ([text characterAtIndex:0] == ' ')
     {
         NSMutableString *tempString = text.mutableCopy;
@@ -1255,8 +1253,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [tempString deleteCharactersInRange:firstCharRange];
         text = tempString;
     }
-    if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
-        ii=1;
+
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
                                                  numLoops:&numLoops
@@ -1329,16 +1326,16 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     if (areaSize && textArea)
     {
-        CGFloat desiredTextFactor = 1;//(textArea / areaSize);
+        CGFloat desiredTextFactor = 1.0;//(textArea / areaSize);
         CGFloat textFactor = (areaSize / textArea);
         CGFloat minTextFactor = (desiredTextFactor * ((CGFloat)minFontSize / (CGFloat)fontSize) * ((CGFloat)minFontSize / (CGFloat)fontSize));
         CGFloat shrink = 0.9;
         NSInteger numFit = 0;
-#define MAXFIT  256
+#define MAXFIT 256
         CGFloat fitX[MAXFIT] = {0}, fitY[MAXFIT] = {0};
         CGFloat xoffset = 0.0, yoffset = 0.0;
         
-        while (!numFit && textFactor > minTextFactor)
+        while (!numFit && (textFactor > minTextFactor))
         {
             yoffset = areaBounds.ymn;
             CGFloat xinc = (aveCharWidth * textFactor);
@@ -1352,8 +1349,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                 {
                     for (int i = 0; i < nTextPoints; i++)
                     {
-                        testPoints[i].x = (textPoints[i].x * textFactor + xoffset);
-                        testPoints[i].y = (textPoints[i].y * textFactor + yoffset);
+                        testPoints[i].x = ((textPoints[i].x * textFactor) + xoffset);
+                        testPoints[i].y = ((textPoints[i].y * textFactor) + yoffset);
                         
                         if (![pia DPointInArea:&testPoints[i]])
                             goto NextX;
@@ -1361,8 +1358,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     
                     if (numFit < MAXFIT)
                     {
-                        fitX[numFit] = xoffset + (textWidth * textFactor)/2;
-                        fitY[numFit++] = yoffset - (textHeight * textFactor)/2;
+                        fitX[numFit] = xoffset;
+                        fitY[numFit++] = yoffset;
                     }
                     
                 NextX:
@@ -1370,7 +1367,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                 }
                 
                 yoffset += yinc;
-                
             }
             
             textFactor *= shrink;
@@ -1379,18 +1375,20 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         if (numFit)
         {
             CGFloat fontFactor = min(textFactor, desiredTextFactor);
-            fontFactor /= desiredTextFactor;
             fontSize *= fontFactor;
+            fontSize *= 0.9;
+            
             if (fontSize >= minFontSize)
             {
-                CGRect rect;
+                CGRect rect = CGRectZero;
                 UIColor *textColor = nil;
                 NSAttributedString *attString = nil;
                 
-                rect.size.height = textHeight * fontFactor * 2;
-                rect.size.width  = textWidth  * fontFactor;
-                rect.origin.x = fitX[numFit / 2] - rect.size.width  / 2;
-                rect.origin.y = fitY[numFit / 2] - textHeight * fontFactor / 2;
+                rect.size.height = (textHeight * fontFactor);
+                rect.size.width  = (textWidth  * fontFactor);
+                rect.origin.x = fitX[numFit / 2];
+                rect.origin.y = fitY[numFit / 2];
+                
                 CGContextSaveGState(context);
                 
                 CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
@@ -1403,10 +1401,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     textColor = UIColor.blackColor;
                 
                 NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                            (__bridge id)fontRef, kCTFontAttributeName,
-                                            style, kCTParagraphStyleAttributeName,
-                                            textColor.CGColor, kCTForegroundColorAttributeName,
-                                            nil];
+                                  (__bridge id)fontRef, kCTFontAttributeName,
+                                  style, kCTParagraphStyleAttributeName,
+                                  textColor.CGColor, kCTForegroundColorAttributeName,
+                                  nil];
                 
                 NSDictionary *shadowAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                                   (__bridge id)fontRef, kCTFontAttributeName,
@@ -1436,9 +1434,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                 CTFrameDraw(frame, context);
                 
                 CFRelease(frame);
-                CFRelease(path);
                 CFRelease(framesetter);
-                
+                CGPathRelease(path);
                 CGContextRestoreGState(context);
             }
         }
