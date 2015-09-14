@@ -1198,7 +1198,15 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     return numLines;
 }
-
+BOOL DPointInBounds (LPDPOINT pt,LPMNMXCORD pbounds)
+{
+    if (pt->x < pbounds->xmn ||
+        pt->x > pbounds->xmx ||
+        pt->y < pbounds->ymn ||
+        pt->y > pbounds->ymx)
+        return FALSE;
+    return TRUE;
+}
 - (void)displayText:(NSString *)text
              forPID:(NSString *)PID
             atPoint:(LPDPOINT)pviewPointx
@@ -1206,8 +1214,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
-    BOOL dbug = YES;
-    CGFloat fontSize = 48.0;
+    extern MNMXCORD curbounds;
+    BOOL dbug = NO;
+    CGFloat fontSize = 32.0;
     CGFloat minFontSize = 8.0;
     int numTextLines = 0;
     int numPoints = 0, numLoops = 0;
@@ -1238,6 +1247,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     text = [text stringByReplacingOccurrencesOfString:@" \n "
                                            withString:@"\n"];
+    
+    text = [text stringByReplacingOccurrencesOfString:@" ET AL"
+                                           withString:@"\nET AL"];
     
     if ([text characterAtIndex:0] == ' ')
     {
@@ -1270,6 +1282,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
   
     CGFloat areaSize = ComputeAreaAreaD(pPoints, numPoints, 0);
     MNMXCORD areaBounds = PolyBounds(pPoints, numPoints);
+    areaBounds.xmn = max (areaBounds.xmn,curbounds.xmn);
+    areaBounds.ymn = max (areaBounds.ymn,curbounds.ymn);
+    areaBounds.xmx = min (areaBounds.xmx,curbounds.xmx);
+    areaBounds.ymx = min (areaBounds.ymx,curbounds.ymx);
     DPOINT areaMid = DBoundsMid(&areaBounds);
     CGFloat areaWidth = MNMXCORDWidth(&areaBounds);
     CGFloat areaHeight = MNMXCORDHeight(&areaBounds);
@@ -1332,7 +1348,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     DPOINT testPoints[256];
  
     if (ii){ //debug stuff
-        extern MNMXCORD curbounds;
         int ir=0, ic;
         CGFloat xoffset = 0.0, yoffset = 0.0;
         CGFloat xinc = 1;
@@ -1381,7 +1396,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             
             while (yoffset < areaBounds.ymx)
             {
-                xoffset = areaMid.x - areaWidth + textWidth * textFactor/2;
+                xoffset = areaMid.x - areaWidth/2 + textWidth * textFactor/2;
                 
                 while (xoffset < areaBounds.xmx)
                 {
@@ -1389,7 +1404,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     {
                         testPoints[i].x = textPoints[i].x * textFactor * textFactor2 + xoffset;
                         testPoints[i].y = yoffset - textPoints[i].y * textFactor * textFactor2;
-                        
+                        if (!DPointInBounds (&testPoints[i],&curbounds))
+                            goto NextX;
                         if (![pia DPointInArea:&testPoints[i]])
                             goto NextX;
                     }
