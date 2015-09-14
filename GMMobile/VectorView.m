@@ -155,7 +155,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
                                //_bitmapData = bmData;
                                _context = CGLayerGetContext(_vectorLayer);
-                               
                                if (keepProcessing == self.displayID && CRAPI.sharedInstance.showPlats)
                                {
                                    SewerData *sd = [[SewerData alloc] init];

@@ -1,10 +1,10 @@
 //  PropertyData.m
 //  GMMobile
-
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
 #import "CCodeLibrary/NVTextDrawing.h"
+MNMXCORD curbounds;
 
 @interface NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale;
@@ -1206,12 +1206,15 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
           maxPixels:(CGFloat)maxPixels
             context:(CGContextRef)context
 {
+    BOOL dbug = YES;
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 8.0;
     int numTextLines = 0;
     int numPoints = 0, numLoops = 0;
     int nTextPoints = 0;
     int *polyPartLen = 0;
+    int ii=0;
+    NSInteger nLines;
     CGFloat textArea = 0.0;
     CGFloat aveCharWidth = 0.0, aveCharHeight = 0.0;
     
@@ -1253,13 +1256,13 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [tempString deleteCharactersInRange:firstCharRange];
         text = tempString;
     }
-
+    if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
+        ii=0;
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
                                                  numLoops:&numLoops
                                               polyPartLen:&polyPartLen];
 
-    //viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
     PointInArea *pia = [[PointInArea alloc] init];
     
     for (int i = 0; i < numPoints; i++)
@@ -1267,6 +1270,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
   
     CGFloat areaSize = ComputeAreaAreaD(pPoints, numPoints, 0);
     MNMXCORD areaBounds = PolyBounds(pPoints, numPoints);
+    DPOINT areaMid = DBoundsMid(&areaBounds);
+    CGFloat areaWidth = MNMXCORDWidth(&areaBounds);
+    CGFloat areaHeight = MNMXCORDHeight(&areaBounds);
    
     [pia loadArea:numPoints
          numLoops:numLoops
@@ -1305,59 +1311,106 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     DPOINT textPoints[256] = {0};
     
     nTextPoints = (int)[NVTextDrawing getTextContainerPoints:textPoints
+                                                    numLines:&nLines
                                                      totArea:&textArea
                                        averageCharacterWidth:&aveCharWidth
                                       averageCharacterHeight:&aveCharHeight
                                             attributedString:textPointString];
     
     MNMXCORD textBounds = PolyBounds(textPoints, nTextPoints);
-    
-    for (int i = 0; i < nTextPoints; i++)
-    {
-        textPoints[i].x -= textBounds.xmn;
-        textPoints[i].y -= textBounds.ymn;
-    }
-    
     CGFloat textWidth = MNMXCORDWidth(&textBounds);
     CGFloat textHeight = MNMXCORDHeight(&textBounds);
+    DPOINT textMid = DBoundsMid(&textBounds);
+    for (int i = 0; i < nTextPoints; i++)
+    {
+        textPoints[i].x -= textMid.x;
+        textPoints[i].y -= textMid.y;
+    }
+    
     
     //LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
     DPOINT testPoints[256];
-    
+ 
+    if (ii){ //debug stuff
+        extern MNMXCORD curbounds;
+        int ir=0, ic;
+        CGFloat xoffset = 0.0, yoffset = 0.0;
+        CGFloat xinc = 1;
+        CGFloat yinc = 1;
+        CGRect areaRect = CGRectMake(areaBounds.xmn, areaBounds.ymn, areaWidth, areaHeight);
+        while (yoffset < curbounds.ymx)
+        {
+            xoffset = curbounds.xmn;
+            ic = 0;
+            while (xoffset < curbounds.xmx)
+            {
+                DPOINT pt = {xoffset,yoffset};
+                if ([pia DPointInArea:&pt])
+                {
+                    CGRect rect = CGRectMake(xoffset, yoffset, 2, 2);
+                    CGContextSetGrayFillColor(context, 0.5, 0.5);
+
+                    CGContextFillRect(context, rect);
+                }
+                xoffset += xinc;
+            }
+            ir++;
+            yoffset += yinc;
+        }
+        CGContextSetGrayFillColor(context, 1, 1);
+        CGContextFillRect(context, areaRect);
+    }
     if (areaSize && textArea)
     {
-        CGFloat desiredTextFactor = 1.0;//(textArea / areaSize);
+        CGFloat desiredTextFactor = 1.0;
         CGFloat textFactor = (areaSize / textArea);
+        CGFloat textFactor2 = 1;
         CGFloat minTextFactor = (desiredTextFactor * ((CGFloat)minFontSize / (CGFloat)fontSize) * ((CGFloat)minFontSize / (CGFloat)fontSize));
-        CGFloat shrink = 0.9;
+        CGFloat shrink = 0.95;
         NSInteger numFit = 0;
 #define MAXFIT 256
         CGFloat fitX[MAXFIT] = {0}, fitY[MAXFIT] = {0};
         CGFloat xoffset = 0.0, yoffset = 0.0;
-        
+        BOOL firstFit = YES;
+    Top:
         while (!numFit && (textFactor > minTextFactor))
         {
-            yoffset = areaBounds.ymn;
-            CGFloat xinc = (aveCharWidth * textFactor);
-            CGFloat yinc = (aveCharHeight * textFactor);
+            yoffset = areaMid.y - areaHeight + textHeight * textFactor/2;
+            CGFloat xinc = (aveCharWidth * textFactor)/2;
+            CGFloat yinc = (aveCharHeight * textFactor)/2;
             
-            while (yoffset < areaBounds.ymx)// - textHeight * textFactor)
+            while (yoffset < areaBounds.ymx)
             {
-                xoffset = areaBounds.xmn;
+                xoffset = areaMid.x - areaWidth + textWidth * textFactor/2;
                 
-                while (xoffset < areaBounds.xmx)// - textWidth * textFactor)
+                while (xoffset < areaBounds.xmx)
                 {
                     for (int i = 0; i < nTextPoints; i++)
                     {
-                        testPoints[i].x = ((textPoints[i].x * textFactor) + xoffset);
-                        testPoints[i].y = ((textPoints[i].y * textFactor) + yoffset);
+                        testPoints[i].x = textPoints[i].x * textFactor * textFactor2 + xoffset;
+                        testPoints[i].y = yoffset - textPoints[i].y * textFactor * textFactor2;
                         
                         if (![pia DPointInArea:&testPoints[i]])
                             goto NextX;
                     }
-                    
+                    if (ii)
+                    {
+                        for (int i = 0; i < nTextPoints; i++)
+                        {
+                            static CGFloat pctBlack = 0;
+                            CGRect rect = CGRectMake(testPoints[i].x, testPoints[i].y, 16, 16);
+                            CGContextSetGrayFillColor(context, pctBlack, 1);
+                            CGContextFillRect(context, rect);
+                        }
+                    }
                     if (numFit < MAXFIT)
                     {
+                        if (firstFit)
+                        {
+                            firstFit = NO;
+                            textFactor2 = 0.95;
+                            goto Top;
+                        }
                         fitX[numFit] = xoffset;
                         fitY[numFit++] = yoffset;
                     }
@@ -1374,23 +1427,38 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         if (numFit)
         {
-            CGFloat fontFactor = min(textFactor, desiredTextFactor);
+            CGFloat fontFactor = min(textFactor*textFactor2, desiredTextFactor);
             fontSize *= fontFactor;
             fontSize *= 0.9;
             
             if (fontSize >= minFontSize)
             {
-                CGRect rect = CGRectZero;
+                CGRect rect;
                 UIColor *textColor = nil;
                 NSAttributedString *attString = nil;
+                NSInteger iFit = numFit / 2;
                 
-                rect.size.height = (textHeight * fontFactor);
-                rect.size.width  = (textWidth  * fontFactor);
-                rect.origin.x = fitX[numFit / 2];
-                rect.origin.y = fitY[numFit / 2];
-                
+                if (!(numFit%2))
+                {
+                    fitX[iFit] += fitX[iFit-1];
+                    fitX[iFit] /= 2;
+                    fitY[iFit] += fitY[iFit-1];
+                    fitY[iFit] /= 2;
+                }
+                rect.size.height = -textHeight * fontFactor * 1.1;
+                rect.size.width  = textWidth  * fontFactor * 1.1;
+                rect.origin.x = fitX[iFit] - rect.size.width  / 2;
+                rect.origin.y = fitY[iFit] + (textHeight * fontFactor) / 2;
                 CGContextSaveGState(context);
-                
+
+                if (dbug)
+                {
+                    CGRect rectmp = CGRectMake(fitX[iFit]-8, fitY[iFit],16, 2);
+                    CGContextSetGrayFillColor(context, 0.5, 0.5);
+                    CGContextFillRect(context, rect);
+                    CGContextSetGrayFillColor(context, 0, 0.8);
+                    CGContextFillRect(context, rectmp);
+                }
                 CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
                                                          fontSize, NULL);
                 
@@ -1605,7 +1673,7 @@ Exit:
 {
     if (!CRAPI.sharedInstance.parcelTextOption)
         return;
-    
+    curbounds = *pvbounds;//db
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -1658,7 +1726,7 @@ Exit:
             //taxExemptCode = 'Y';
             query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES,OWNER_NAME,TAX_NAME,BLDG_NUM, \
                      PARCELPOLY_index.minX,PARCELPOLY_index.maxX,PARCELPOLY_index.minY,PARCELPOLY_index.maxY\
-                     FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PROPINFO_index.maxX>=%f AND PROPINFO_index.minX<=%f AND PROPINFO_index.maxY>=%f AND PROPINFO_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
+                     FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PARCELPOLY_index.maxX>=%f AND PARCELPOLY_index.minX<=%f AND PARCELPOLY_index.maxY>=%f AND PARCELPOLY_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             /* query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME,BLDG_NUM FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -1706,6 +1774,7 @@ Exit:
                 
                 num = [[NSNumber alloc] initWithDouble:emvTotal];
                 text = [NSString stringWithFormat:@"%s\n%@", name, [dollarFmt stringFromNumber:num]];
+//                text = [NSString stringWithFormat:@"%s", name];
             }
                 break;
                 

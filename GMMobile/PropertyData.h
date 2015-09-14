@@ -3,6 +3,7 @@
 
 #import <sqlite3.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+@import CoreGraphics;
 #import <CoreText/CoreText.h>
 
 typedef NS_ENUM(NSInteger, PropDataOption)
