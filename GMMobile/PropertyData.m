@@ -1198,15 +1198,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     return numLines;
 }
-BOOL DPointInBounds (LPDPOINT pt,LPMNMXCORD pbounds)
-{
-    if (pt->x < pbounds->xmn ||
-        pt->x > pbounds->xmx ||
-        pt->y < pbounds->ymn ||
-        pt->y > pbounds->ymx)
-        return FALSE;
-    return TRUE;
-}
 - (void)displayText:(NSString *)text
              forPID:(NSString *)PID
             atPoint:(LPDPOINT)pviewPointx
@@ -1276,6 +1267,7 @@ BOOL DPointInBounds (LPDPOINT pt,LPMNMXCORD pbounds)
                                               polyPartLen:&polyPartLen];
 
     PointInArea *pia = [[PointInArea alloc] init];
+    pia.maxDimension = 256;
     
     for (int i = 0; i < numPoints; i++)
         pPoints[i] = TranDPOINT(&pPoints[i], _pTranLLtoView);
