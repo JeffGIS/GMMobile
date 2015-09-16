@@ -2848,4 +2848,103 @@ int GetNameParts(LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)
     return nParts;
 }
 
+BOOL LINFIT (HPDPOINT pPoint,LONG N,LPDOUBLE A,LPDOUBLE B,LPDOUBLE MAXDIF,LPLONG LOFMDF)
+#if ENABLETRACE
+{GSSiEnterProg (1200);
+#endif
+    {
+        /*C******* SPECIFICATIONS ************************************************
+         C*                                                                     *
+         C*       PROGRAM SUMMARY                                               *
+         C*       ------- -------                                               *
+         C*    LINFIT (LINE FIT) FINDS, THROUGH A LEAST SQUARES TECHNIQUE, THE  *
+         C*    PARAMETERS A AND B OF THE EQUATION                               *
+         C*                                                                     *
+         C*                 RAWELV = A + B * RAWDIS                             *
+         C*                                                                     *
+         C*    WHICH DESCRIBES THE LINE OF BEST FIT FOR THE N VALUES OF         *
+         C*    RAWDIS, RAWELV. THE MAXIMUM VERTICAL DISTANCE FROM ANY RAWELV    *
+         C*    TO THE LINE IS ALSO COMPUTED AND RETURNED ALONG THE LOCATION OF  *
+         C*    THAT RAWELV IN THE RAWELV ARRAY.                                 *
+         C*                                                                     *
+         C*       ARGUMENT DESCRIPTION                                          *
+         C*       -------- -----------                                          *
+         C*    X       R*8 (N)  DISTANCES,OR RAWDIS VALUES, OF DATA TO BE FIT.  *
+         C*    Y       R*8 (N)  ELEVATIONS, OR RAWELV VALUES, OF DATA TO BE FIT.*
+         C*    N       I*4      NUMBER OF POINTS TO BE FIT                      *
+         C*    A       R*8      0 DEGREE COEFFICIENT OF THE LINER EQUATION      *
+         C*    B       R*8      1ST DEGREE COEFFICIENT OF THE LINEAR EQUATION   *
+         C*    MAXDIF  R*8      THE MAXIMUM DISTANCE DISCUSSED ABOVE            *
+         C*    LOFMDF  I*4      THE LOCATION OF THE MAXIMUM DIFFERENCE          *
+         C*                                                                     *
+         C*       AUTHOR                                                        *
+         C*       ------                                                        *
+         C*      JEFF SMITH                                                     *
+         C*                                                                     *
+         C***********************************************************************  */
+        double SUMX=0, SUMY=0, XAVE, YAVE, SMXDYD, SMXDSQ, SUMXY=0, SUMXSQ=0, DIFF;
+        double	SUMxy=0, SUMx2=0;
+        long	I;
+        HPDPOINT	pPointIn=pPoint;
+        
+        for (I=0;I<N;I++,pPoint++)
+        {
+            SUMX   += pPoint->x;
+            SUMY   += pPoint->y;
+            SUMXY  += pPoint->x * pPoint->y;
+            SUMXSQ += pPoint->x * pPoint->x;
+        }
+        XAVE   = SUMX / N;
+        YAVE   = SUMY / N;
+        SMXDSQ = SUMXSQ - (SUMX * SUMX) / N;
+        SMXDYD = SUMXY  - (SUMX * SUMY) / N;
+        if (!SMXDSQ)
+        {
+#if ENABLETRACE
+            GSSiExitProg (1200);
+#endif
+            return FALSE;
+        }
+        *B      = SMXDYD / SMXDSQ;
+        *A      = YAVE - *B * XAVE;
+        if (MAXDIF)
+        {
+            *LOFMDF = 0;
+            *MAXDIF = 0;
+        }
+        pPoint = pPointIn;
+        for (I=0;I<N;I++,pPoint++)
+        {
+            SUMxy += (pPoint->x - XAVE) * (pPoint->y - YAVE);
+            SUMx2 += pow (pPoint->x - XAVE,2);
+        } 
+        if (!SUMx2)
+        {
+#if ENABLETRACE
+            GSSiExitProg (1200);
+#endif
+            return FALSE;
+        }
+        *B = SUMxy / SUMx2;
+        pPoint = pPointIn;
+        for (I=0;I<N;I++,pPoint++)
+        {
+            DIFF = fabs (pPoint->y - (*A + *B * pPoint->x));
+            if (MAXDIF && DIFF > *MAXDIF)
+            {
+                *MAXDIF = DIFF;
+                *LOFMDF = I;
+            }
+        }
+        {
+#if ENABLETRACE
+            GSSiExitProg (1200);
+#endif
+            return TRUE;
+        }
+#if ENABLETRACE
+    }
+#endif
+}
+
 @end
