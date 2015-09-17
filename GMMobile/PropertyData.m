@@ -1290,11 +1290,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
       polyPartLen:polyPartLen
            points:pPoints];
     
-    if (polyPartLen)
-        free (polyPartLen);
-    
-    free(pPoints);
-    
     int border = max(ptextRect->size.width, ptextRect->size.height) * 0.05;
     ptextRect->origin.x += border;
     ptextRect->origin.y += border;
@@ -1349,6 +1344,11 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     {
         
     }
+    if (polyPartLen)
+        free (polyPartLen);
+    
+    free(pPoints);
+    
     
     //LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
     DPOINT testPoints[256];
