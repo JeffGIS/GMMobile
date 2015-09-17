@@ -1339,7 +1339,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if ([NVTextDrawing getRotation:&rotation
              ofLongestStraightLine:numPoints
                             points:pPoints
-                         maxOffset:1000.0
+                         maxOffset:20.0
                          minLength:textWidth])
     {
         
