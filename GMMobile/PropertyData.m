@@ -1188,17 +1188,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     return '?';
 }
 
-- (int) numLinesInText:(const char *)txt
-{
-    int numLines = 1;
-    
-    while (*txt)
-    {
-        if (*txt++ == '\n')
-            numLines++;
-    }
-    return numLines;
-}
 - (void)displayText:(NSString *)text
              forPID:(NSString *)PID
             atPoint:(LPDPOINT)pviewPointx
@@ -1210,15 +1199,16 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     BOOL dbug = NO;
     CGFloat fontSize = 32.0;
     CGFloat minFontSize = 8.0;
-    int numTextLines = 0;
     int numPoints = 0, numLoops = 0;
-    int nTextPoints = 0;
     int *polyPartLen = 0;
     int ii=0;
-    NSInteger nLines;
-    CGFloat textArea = 0.0;
-    CGFloat aveCharWidth = 0.0, aveCharHeight = 0.0;
+     UIColor *textColor = nil;
+     if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
+         textColor = UIColor.redColor;
+     else
+         textColor = UIColor.blackColor;
     
+   
     text = [text stringByReplacingOccurrencesOfString:@"& "
                                            withString:@"&\n"];
     
@@ -1268,9 +1258,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                                 numPoints:&numPoints
                                                  numLoops:&numLoops
                                               polyPartLen:&polyPartLen];
-    
-    PointInArea *pia = [[PointInArea alloc] init];
-    pia.maxDimension = 256;
     
     for (int i = 0; i < numPoints; i++)
         pPoints[i] = TranDPOINT(&pPoints[i], _pTranLLtoView);
