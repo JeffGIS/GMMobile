@@ -1260,13 +1260,15 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [tempString deleteCharactersInRange:firstCharRange];
         text = tempString;
     }
+    
     if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
         ii=0;
+    
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
                                                  numLoops:&numLoops
                                               polyPartLen:&polyPartLen];
-
+    
     PointInArea *pia = [[PointInArea alloc] init];
     pia.maxDimension = 256;
     
@@ -1330,12 +1332,23 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     CGFloat textWidth = MNMXCORDWidth(&textBounds);
     CGFloat textHeight = MNMXCORDHeight(&textBounds);
     DPOINT textMid = DBoundsMid(&textBounds);
+    
     for (int i = 0; i < nTextPoints; i++)
     {
         textPoints[i].x -= textMid.x;
         textPoints[i].y -= textMid.y;
     }
     
+    CGFloat rotation = 0.0;
+    
+    if ([NVTextDrawing getRotation:&rotation
+             ofLongestStraightLine:numPoints
+                            points:pPoints
+                         maxOffset:10.0
+                         minLength:textWidth])
+    {
+        
+    }
     
     //LPDPOINT testPoints = (LPDPOINT)malloc(nTextPoints * sizeof(DPOINT) + 4);
     DPOINT testPoints[256];
@@ -1461,12 +1474,11 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                           inRotatedRect:context
                                rectMidX:fitX[iFit]
                                rectMidY:fitY[iFit]
-                                  width:textWidth * fontFactor
-                                 height:textHeight * fontFactor
+                                  width:(textWidth * fontFactor)
+                                 height:(textHeight * fontFactor)
                                rotation:HALFPI
                                fontSize:fontSize
                               textColor:textColor];
-
             }
         }
     }
