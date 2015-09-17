@@ -1442,11 +1442,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             
             if (fontSize >= minFontSize)
             {
-                CGRect rect;
-                UIColor *textColor = nil;
-                NSAttributedString *attString = nil;
                 NSInteger iFit = numFit / 2;
-                
                 if (!(numFit%2))
                 {
                     fitX[iFit] += fitX[iFit-1];
@@ -1454,66 +1450,23 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     fitY[iFit] += fitY[iFit-1];
                     fitY[iFit] /= 2;
                 }
-                rect.size.height = -textHeight * fontFactor * 1.1;
-                rect.size.width  = textWidth  * fontFactor * 1.1;
-                rect.origin.x = fitX[iFit] - rect.size.width  / 2;
-                rect.origin.y = fitY[iFit] + (textHeight * fontFactor) / 2;
-                CGContextSaveGState(context);
-
-                if (dbug)
-                {
-                    CGRect rectmp = CGRectMake(fitX[iFit]-8, fitY[iFit],16, 2);
-                    CGContextSetGrayFillColor(context, 0.5, 0.5);
-                    CGContextFillRect(context, rect);
-                    CGContextSetGrayFillColor(context, 0, 0.8);
-                    CGContextFillRect(context, rectmp);
-                }
-                CTFontRef fontRef = CTFontCreateWithName((CFStringRef)NULL,
-                                                         fontSize, NULL);
-                
+                UIColor *textColor = nil;
                 if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
                     textColor = UIColor.redColor;
                 
                 else
                     textColor = UIColor.blackColor;
                 
-                NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  (__bridge id)fontRef, kCTFontAttributeName,
-                                  style, kCTParagraphStyleAttributeName,
-                                  textColor.CGColor, kCTForegroundColorAttributeName,
-                                  nil];
-                
-                NSDictionary *shadowAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                  (__bridge id)fontRef, kCTFontAttributeName,
-                                                  style, kCTParagraphStyleAttributeName,
-                                                  UIColor.whiteColor.CGColor, kCTForegroundColorAttributeName,
-                                                  nil];
-                
-                CFRelease(fontRef);
-                
-                if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
-                {
-                    attString = [[NSAttributedString alloc] initWithString:text
-                                                                attributes:shadowAttributes];
-                    
-                    [self drawTextShadowForRect:rect
-                                      attString:attString
-                                        context:context];
-                }
-                
-                CGPathRef path = CGPathCreateWithRect(rect, NULL);
-                
-                attString = [[NSAttributedString alloc] initWithString:text
-                                                            attributes:attributes];
-                
-                CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attString);
-                CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attString.length), path, NULL);
-                CTFrameDraw(frame, context);
-                
-                CFRelease(frame);
-                CFRelease(framesetter);
-                CGPathRelease(path);
-                CGContextRestoreGState(context);
+                [NVTextDrawing drawText:text
+                          inRotatedRect:context
+                               rectMidX:fitX[iFit]
+                               rectMidY:fitY[iFit]
+                                  width:textWidth * fontFactor
+                                 height:textHeight * fontFactor
+                               rotation:HALFPI
+                               fontSize:fontSize
+                              textColor:textColor];
+
             }
         }
     }
