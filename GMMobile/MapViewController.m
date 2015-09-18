@@ -710,7 +710,6 @@ extern int keepProcessing;
              forColumnAtIndex:3];*/
     
     NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0?format=json"];
-    
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     
     NSData *urlData = nil;
@@ -3362,15 +3361,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         [_locationManager stopUpdatingLocation];
         _animateToLocation = YES;
         
-        //[self beginLocationRouteTrace];
+        [self beginLocationRouteTrace];
         
-        [self getPathDirections:_currentLocation
-                withDestination:_selectedPIDCoords];
+        /*[self getPathDirections:_currentLocation
+                withDestination:_selectedPIDCoords
+                  transportType:MKDirectionsTransportTypeTransit
+                     routeColor:UserDefaults.defaults.appleBlue];*/
     }
 }
 
 - (void)getPathDirections:(CLLocationCoordinate2D)source
           withDestination:(CLLocationCoordinate2D)destination
+            transportType:(MKDirectionsTransportType)transportType
+               routeColor:(UIColor *)routeColor
 {
     
     MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:source
@@ -3386,7 +3389,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
     request.source = mapItemSrc;
     request.destination = mapItemDest;
-    request.transportType = MKDirectionsTransportTypeAutomobile;
+    request.transportType = transportType;
     request.requestsAlternateRoutes = NO;
     
     MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
@@ -3413,9 +3416,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
              [theRoute.polyline getCoordinates:routeCoordinates
                                          range:NSMakeRange(0, pointCount)];
              
-             _polyline.map = nil;
-             _polyline = nil;
-             
              GMSMutablePath *path = [[GMSMutablePath alloc] init];
              
              for (int i = 0; i < pointCount; i++)
@@ -3425,7 +3425,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
              
              _polyline = [GMSPolyline polylineWithPath:path];
              _polyline.strokeWidth = 10.0;
-             _polyline.strokeColor = UIColor.greenColor;
+             _polyline.strokeColor = routeColor;
              _polyline.map = _mapView;
              
              GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
@@ -3441,21 +3441,61 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
      }];
 }
 
-/*
+
 - (void)beginLocationRouteTrace
 {
     NSString *urlString =
-    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=driving",
+    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=transit",
      _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     urlRequest.timeoutInterval = 15;
     
-    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:urlRequest
-                                                                  delegate:self];
-#pragma unused(connection)
+    NSData *urlData = nil;
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    urlData = [NSURLConnection sendSynchronousRequest:urlRequest
+                                    returningResponse:&response
+                                                error:&error];
+    
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&error];
+    
+    GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
+    
+    NSDictionary *legs = json[@"routes"][0][@"legs"][0];
+    
+    NSArray *steps = legs[@"steps"];
+    
+    for (int i = 0; i < steps.count; i++)
+    {
+        NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+        
+        GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
+        GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+        polyline.strokeWidth = 10.0;
+        
+        if ([travelMode isEqualToString:@"WALKING"])
+            polyline.strokeColor = UserDefaults.defaults.darkGreen;
+        
+        else
+            polyline.strokeColor = UserDefaults.defaults.appleBlue;
+        
+        polyline.map = _mapView;
+        
+        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
+        
+        GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                                 withPadding:40];
+        
+        [_mapView moveCamera:update];
+        [self updateMarkerPosition];
+    }
 }
 
+/*
 - (void)connection:(nonnull NSURLConnection *)connection
     didReceiveData:(nonnull NSData *)data
 {
@@ -3497,6 +3537,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         alert.tag = 888;
     }
 }
+*/
 
 - (void)connection:(nonnull NSURLConnection *)connection
   didFailWithError:(nonnull NSError *)error
@@ -3511,7 +3552,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         alert.tag = 999;
     }
 }
-*/
+
 
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
