@@ -709,7 +709,7 @@ extern int keepProcessing;
     [spreadsheet setTextArray:distanceStringArray
              forColumnAtIndex:3];*/
     
-    NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0"];
+    NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0?format=json"];
     
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     
@@ -721,10 +721,11 @@ extern int keepProcessing;
                                     returningResponse:&response
                                                 error:&error];
     
-    NSString *dataString = [[NSString alloc] initWithData:urlData
-                                                 encoding:NSUTF8StringEncoding];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&error];
     
-    NSLog(@"%@", dataString);
+    NSLog(@"%@", json);
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
