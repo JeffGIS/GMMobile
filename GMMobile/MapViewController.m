@@ -108,7 +108,7 @@ extern int keepProcessing;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                               zoom:10.0];
+                                                               zoom:12.0];
     
     _mapView = [GMSMapView mapWithFrame:mapViewFrame
                                  camera:camera];
@@ -712,7 +712,7 @@ extern int keepProcessing;
     [spreadsheet setTextArray:distanceStringArray
              forColumnAtIndex:3];*/
     
-    NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0?format=json"];
+    /*NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0?format=json"];
     NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
     
     NSData *urlData = nil;
@@ -736,7 +736,7 @@ extern int keepProcessing;
         
         GMSMarker *vehicleMarker = [GMSMarker markerWithPosition:position];
         vehicleMarker.map = _mapView;
-    }
+    }*/
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -3447,6 +3447,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)beginLocationRouteTrace
 {
+    _currentLocation.latitude = 44.979190;
+    _currentLocation.longitude = -93.266184;
+    
     NSString *urlString =
     [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=transit",
      _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
@@ -3466,41 +3469,52 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                          options:NSJSONReadingMutableContainers
                                                            error:&error];
     
-    GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
+    NSString *status = json[@"status"];
     
-    for (GMSPolyline *polylines in _polylines)
-        polylines.map = nil;
+    if (error)
+        NSLog(@"JSON error:%@", error.localizedDescription);
     
-    [_polylines removeAllObjects];
+    else if (![status isEqualToString:@"OK"])
+        NSLog(@"JSON error:%@", status);
     
-    NSDictionary *legs = json[@"routes"][0][@"legs"][0];
-    
-    NSArray *steps = legs[@"steps"];
-    
-    for (int i = 0; i < steps.count; i++)
+    else
     {
-        NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+        GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
         
-        GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
-        GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
-        [_polylines addObject:polyline];
-        polyline.strokeWidth = 10.0;
+        for (GMSPolyline *polylines in _polylines)
+            polylines.map = nil;
         
-        if ([travelMode isEqualToString:@"WALKING"])
-            polyline.strokeColor = UserDefaults.defaults.darkGreen;
+        [_polylines removeAllObjects];
         
-        else
-            polyline.strokeColor = UserDefaults.defaults.appleBlue;
+        NSDictionary *legs = json[@"routes"][0][@"legs"][0];
         
-        polyline.map = _mapView;
+        NSArray *steps = legs[@"steps"];
         
-        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
-        
-        GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                 withPadding:40];
-        
-        [_mapView moveCamera:update];
-        [self updateMarkerPosition];
+        for (int i = 0; i < steps.count; i++)
+        {
+            NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+            
+            GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
+            GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+            [_polylines addObject:polyline];
+            polyline.strokeWidth = 10.0;
+            
+            if ([travelMode isEqualToString:@"TRANSIT"])
+                polyline.strokeColor = UserDefaults.defaults.appleBlue;
+            
+            else
+                polyline.strokeColor = UserDefaults.defaults.darkGreen;
+            
+            polyline.map = _mapView;
+            
+            GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
+            
+            GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                                     withPadding:40];
+            
+            [_mapView moveCamera:update];
+            [self updateMarkerPosition];
+        }
     }
 }
 
@@ -3546,7 +3560,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         alert.tag = 888;
     }
 }
-*/
+
 
 - (void)connection:(nonnull NSURLConnection *)connection
   didFailWithError:(nonnull NSError *)error
@@ -3561,7 +3575,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         alert.tag = 999;
     }
 }
-
+*/
 
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
