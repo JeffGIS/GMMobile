@@ -63,6 +63,7 @@ extern int keepProcessing;
 @property (nonatomic) NVLegendView *legendView;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
+@property (nonatomic) NSMutableSet *polylines;
 //@property (nonatomic) FTPDirectoryList *dirList;
 //@property (nonatomic) FTPDirectoryCreate *dirCreate;
 
@@ -85,6 +86,8 @@ extern int keepProcessing;
     _nVectorViews = 0;
     _animateToLocation = YES;
     _routeTraceExists = NO;
+    
+    _polylines = [[NSMutableSet alloc] init];
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
@@ -3465,6 +3468,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
     
+    for (GMSPolyline *polylines in _polylines)
+        polylines.map = nil;
+    
+    [_polylines removeAllObjects];
+    
     NSDictionary *legs = json[@"routes"][0][@"legs"][0];
     
     NSArray *steps = legs[@"steps"];
@@ -3475,6 +3483,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
         GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+        [_polylines addObject:polyline];
         polyline.strokeWidth = 10.0;
         
         if ([travelMode isEqualToString:@"WALKING"])
