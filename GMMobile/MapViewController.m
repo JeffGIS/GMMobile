@@ -709,7 +709,22 @@ extern int keepProcessing;
     [spreadsheet setTextArray:distanceStringArray
              forColumnAtIndex:3];*/
     
+    NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0"];
     
+    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
+    
+    NSData *urlData = nil;
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    urlData = [NSURLConnection sendSynchronousRequest:urlRequest
+                                    returningResponse:&response
+                                                error:&error];
+    
+    NSString *dataString = [[NSString alloc] initWithData:urlData
+                                                 encoding:NSUTF8StringEncoding];
+    
+    NSLog(@"%@", dataString);
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
