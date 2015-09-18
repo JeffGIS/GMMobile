@@ -105,7 +105,7 @@ extern int keepProcessing;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                               zoom:12.0];
+                                                               zoom:10.0];
     
     _mapView = [GMSMapView mapWithFrame:mapViewFrame
                                  camera:camera];
@@ -721,11 +721,20 @@ extern int keepProcessing;
                                     returningResponse:&response
                                                 error:&error];
     
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
-                                                         options:NSJSONReadingMutableContainers
-                                                           error:&error];
+    NSArray *json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                    options:NSJSONReadingMutableContainers
+                                                      error:&error];
     
-    NSLog(@"%@", json);
+    for (int i = 0; i < json.count; i++)
+    {
+        NSDictionary *record = json[i];
+        
+        CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[record objectForKey:@"VehicleLatitude"] floatValue],
+                                                                     [[record objectForKey:@"VehicleLongitude"] floatValue]);
+        
+        GMSMarker *vehicleMarker = [GMSMarker markerWithPosition:position];
+        vehicleMarker.map = _mapView;
+    }
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
