@@ -740,6 +740,8 @@ extern int keepProcessing;
     }*/
     
     const char *encodedString = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
+    NSLog(@"%s", encodedString);
+    
     int numPoints = 0;
     
     LPDPOINT llpoints = DecodeString(encodedString, &numPoints);
@@ -747,10 +749,24 @@ extern int keepProcessing;
     for (int i = 0; i < numPoints; i++)
     {
         DPOINT point = llpoints[i];
-        NSLog(@"%i:(%f,%f)", i, point.x, point.y);
+        NSLog(@"%i:(%f,%f)", i, point.y, point.x);
     }
     
+    char *testString = EncodeString(llpoints, numPoints);
+    NSLog(@"%s", testString);
+    
     free(llpoints);
+    
+    LPDPOINT llpoints2 = DecodeString(testString, &numPoints);
+    
+    for (int i = 0; i < numPoints; i++)
+    {
+        DPOINT point = llpoints2[i];
+        NSLog(@"%i:(%f,%f)", i, point.y, point.x);
+    }
+    
+    free(testString);
+    free(llpoints2);
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
