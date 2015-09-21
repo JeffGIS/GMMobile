@@ -739,7 +739,7 @@ extern int keepProcessing;
         vehicleMarker.map = _mapView;
     }*/
     
-    const char *encodedString = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
+    char *encodedString = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
     NSLog(@"%s", encodedString);
     
     int numPoints = 0;
