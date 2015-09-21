@@ -15,6 +15,7 @@ extern int keepProcessing;
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
 #import <MapKit/MapKit.h>
+#import "CCodeLibrary/PolylineCompression.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -737,6 +738,19 @@ extern int keepProcessing;
         GMSMarker *vehicleMarker = [GMSMarker markerWithPosition:position];
         vehicleMarker.map = _mapView;
     }*/
+    
+    const char *encodedString = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
+    int numPoints = 0;
+    
+    LPDPOINT llpoints = DecodeString(encodedString, &numPoints);
+    
+    for (int i = 0; i < numPoints; i++)
+    {
+        DPOINT point = llpoints[i];
+        NSLog(@"%i:(%f,%f)", i, point.x, point.y);
+    }
+    
+    free(llpoints);
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -3447,9 +3461,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)beginLocationRouteTrace
 {
-    _currentLocation.latitude = 44.979190;
-    _currentLocation.longitude = -93.266184;
-    
     NSString *urlString =
     [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=transit",
      _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
