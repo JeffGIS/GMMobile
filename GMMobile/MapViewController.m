@@ -739,17 +739,31 @@ extern int keepProcessing;
         vehicleMarker.map = _mapView;
     }*/
     
-    char *encodedString = "_p~iF~ps|U_ulLnnqC_mqNvxq`@";
-    NSLog(@"%s", encodedString);
+    LPDPOINT llpoints = (LPDPOINT)malloc(sizeof(DPOINT) * 8);
+    int numPoints = 8;
     
-    int numPoints = 0;
+    DPOINT point0 = {-93.039212, 44.515349};
+    DPOINT point1 = {-93.039215, 44.515739};
+    DPOINT point2 = {-93.039241, 44.519630};
+    DPOINT point3 = {-93.039243, 44.519924};
+    DPOINT point4 = {-93.039250, 44.521104};
+    DPOINT point5 = {-93.039260, 44.522586};
+    DPOINT point6 = {-93.039275, 44.527370};
+    DPOINT point7 = {-93.039282, 44.529689};
     
-    LPDPOINT llpoints = DecodeString(encodedString, &numPoints);
+    llpoints[0] = point0;
+    llpoints[1] = point1;
+    llpoints[2] = point2;
+    llpoints[3] = point3;
+    llpoints[4] = point4;
+    llpoints[5] = point5;
+    llpoints[6] = point6;
+    llpoints[7] = point7;
     
     for (int i = 0; i < numPoints; i++)
     {
         DPOINT point = llpoints[i];
-        NSLog(@"%i:(%f,%f)", i, point.y, point.x);
+        NSLog(@"%i:(%f,%f)", i, point.x, point.y);
     }
     
     char *testString = EncodeString(llpoints, numPoints);
@@ -762,7 +776,7 @@ extern int keepProcessing;
     for (int i = 0; i < numPoints; i++)
     {
         DPOINT point = llpoints2[i];
-        NSLog(@"%i:(%f,%f)", i, point.y, point.x);
+        NSLog(@"%i:(%f,%f)", i, point.x, point.y);
     }
     
     free(testString);
