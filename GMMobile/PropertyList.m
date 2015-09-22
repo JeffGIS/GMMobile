@@ -40,7 +40,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     if (self)
     {
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
-        _fileName = @"PropertyList.sqlite";
+        _fileName = @"DefaultPropList.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         [self createTables];
     }
@@ -80,23 +80,15 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
     //error:nil];
 }
-- (void) createTables
+- (BOOL) createTables
 {
-    NSString *cmd = @"CREATE TABLE IF NOT EXISTS PropertyList (\
-    id INTEGER PRIMARY KEY,\
-    ListName CHAR(64),\
-    status INTEGER,\
-    assignedTo INTEGER,\
-    latitude double,\
-    longitude double,\
-    intX INTEGER,\
-    intY INTEGER,\
-";
+    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropID INTEGER,FieldType INTEGER,FieldValue BLOB(33554432))";
+    NSString *cmd2 = @"CREATE TABLE IF NOT EXISTS DestinationList (id INTEGER PRIMARY KEY,FieldName CHAR(100),FieldValue BLOB(33554432))";
     
     [self open];
     BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     [self close];
-    
+    return rtn;
 }
 - (int)datasetVersion
 {
@@ -162,7 +154,83 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     SQLOKpl(sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
+- (NSArray*)availablePropertyFields
+{
+    NSMutableArray *fields = [[NSMutableArray alloc]init];
+    for (int i = 1;i<PFT_END;i++)
+    {
+        NSNumber *field = [NSNumber numberWithInteger:i];
+        [fields addObject:field];
+    }
+    return fields;
+}
 
+- (NSString*) propertyFieldName:(PropFieldType)fieldType
+{
+    NSString *name = @"";
+    switch(fieldType)
+    {
+        case PFT_ID:
+            name = @"Property ID";
+            break;
+        case PFT_PctOpenSpace_halfMile:
+            name = @"PCT Open space (Half Mile)";
+            break;
+        case PFT_PctOpenSpace_Mile:
+            name = @"PCT Open space (Mile)";
+            break;
+        case PFT_PctIndustrial_halfMile:
+            name = @"PCT Industrial (Half Mile)";
+            break;
+        case PFT_PctIndustrial_Mile:
+            name = @"PCT Industrial (Mile)";
+            break;
+        case PFT_Stability_block:
+            name = @"Stability (5 year Block)";
+            break;
+        case PFT_Stability_blockgroup:
+            name = @"Stability (5 year Block Group)";
+            break;
+        case PFT_Stability_halfMile:
+            name = @"Stability (5 year Half Mile)";
+            break;
+        case PFT_TimeToDestinations:
+            name = @"Time to Destinations";
+            break;
+        case PFT_PctHomestead_block:
+            name = @"PCT Homestead (Block)";
+            break;
+        case PFT_MedianAge_block:
+            name = @"Median Age (Block)";
+            break;
+        case PFT_MedianAge_blockgroup:
+            name = @"Median Age (Block Group)";
+            break;
+        case PFT_Children_block:
+            name = @"PCT Children (Block)";
+            break;
+        case PFT_MedianAgeChildren_block:
+            name = @"Median Child Age (Block)";
+            break;
+        case PFT_MedianAgeAdults_block:
+            name = @"Median Adult Age (Block)";
+            break;
+        case PFT_Seniors_block:
+            name = @"PCT Seniors (Block)";
+            break;
+    }
+    return name;
+}
+- (NSArray*) getPropertyNumbers
+{
+    NSMutableArray * propNums = [[NSMutableArray alloc]init];;
+    return propNums;
+}
+- (void) getPropertyFieldValueOfType:(PropFieldType)type
+                   forPropertyNumber:(NSInteger)propNum;
+{
+    return;
+}
 - (BOOL)addParcelToPropertyList:(NSString *)PID
 {
     return NO;
