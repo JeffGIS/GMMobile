@@ -16,6 +16,7 @@ extern int keepProcessing;
 #import "MapViewENUMS.h"
 #import <MapKit/MapKit.h>
 #import "CCodeLibrary/PolylineCompression.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -78,6 +79,19 @@ extern int keepProcessing;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+                 removeItemAtIndex:2
+                          animated:NO];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
+                                                         bundle:NSBundle.mainBundle];
+    
+    UIViewController *ssvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+      replaceViewControllerAtIndex:1
+                withViewController:ssvc];
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -781,11 +795,6 @@ extern int keepProcessing;
     
     free(testString);
     free(llpoints2);*/
-    
-    /*NSArray *tabBarVCs = self.tabBarController.viewControllers;
-    NSMutableArray *newTabBarVCs = tabBarVCs.mutableCopy;
-    [newTabBarVCs removeObjectAtIndex:1];
-    self.tabBarController.viewControllers = newTabBarVCs;*/
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
