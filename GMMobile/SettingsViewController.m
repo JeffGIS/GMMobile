@@ -858,7 +858,9 @@ didReturnTimeInterval:(NSString *)timeInterval
 {
     SpreadsheetView *spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:24
                                                                         columns:8
-                                                                           view:self.view];
+                                                                           view:self.view
+                                                                          frame:CGRectZero
+                                                                   returnHidden:NO];
     
     [self.view addSubview:spreadsheetView];
 }

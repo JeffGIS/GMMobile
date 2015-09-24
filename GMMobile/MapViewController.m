@@ -739,7 +739,7 @@ extern int keepProcessing;
         vehicleMarker.map = _mapView;
     }*/
     
-    LPDPOINT llpoints = (LPDPOINT)malloc(sizeof(DPOINT) * 8);
+    /*LPDPOINT llpoints = (LPDPOINT)malloc(sizeof(DPOINT) * 8);
     int numPoints = 8;
     
     DPOINT point0 = {-93.039212, 44.515349};
@@ -780,7 +780,12 @@ extern int keepProcessing;
     }
     
     free(testString);
-    free(llpoints2);
+    free(llpoints2);*/
+    
+    /*NSArray *tabBarVCs = self.tabBarController.viewControllers;
+    NSMutableArray *newTabBarVCs = tabBarVCs.mutableCopy;
+    [newTabBarVCs removeObjectAtIndex:1];
+    self.tabBarController.viewControllers = newTabBarVCs;*/
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status

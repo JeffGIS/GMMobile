@@ -13,6 +13,8 @@
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
+		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; settings = {ASSET_TAGS = (); }; };
+		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; settings = {ASSET_TAGS = (); }; };
 		A905063A1A75DF5A00288850 /* map.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506391A75DF5A00288850 /* map.png */; };
 		A90506451A75E12B00288850 /* find.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506431A75E12B00288850 /* find.png */; };
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
@@ -136,6 +138,9 @@
 		692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
+		69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpreadsheetViewController.h; sourceTree = "<group>"; };
+		69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetViewController.m; sourceTree = "<group>"; };
+		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
 		A90506391A75DF5A00288850 /* map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map.png; sourceTree = "<group>"; };
 		A90506431A75E12B00288850 /* find.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = find.png; sourceTree = "<group>"; };
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
@@ -327,6 +332,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */,
 				698F95F41B8CD633007D32A5 /* shoppingCart.png */,
 				A934A73E1B72AFF0000EB9F9 /* update.png */,
 				A95EC7E11B224BFC0031B903 /* downloadCloud.png */,
@@ -483,6 +489,8 @@
 				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
 				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
+				69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */,
+				69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */,
 				A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */,
 				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
@@ -654,6 +662,7 @@
 				A90506461A75E12B00288850 /* settings.png in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
+				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
@@ -737,6 +746,7 @@
 				A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */,
+				69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */,
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
 				A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */,
 				EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */,
