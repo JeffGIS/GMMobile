@@ -20,8 +20,8 @@
     CGRect ssFrame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
                                 self.view.frame.size.height - statusBarHeight - tabBarHeight);
     
-    _spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:32
-                                                        columns:6
+    _spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:40
+                                                        columns:12
                                                            view:self.view
                                                           frame:ssFrame
                                                    returnHidden:YES];
