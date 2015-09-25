@@ -4,6 +4,12 @@
 #import "SpreadsheetViewController.h"
 #import "CCodeLibrary/SpreadsheetView.h"
 
+@interface SpreadsheetViewController ()
+
+@property (nonatomic) SpreadsheetView *spreadsheetView;
+
+@end
+
 @implementation SpreadsheetViewController
 
 - (void)viewDidLoad
@@ -14,13 +20,13 @@
     CGRect ssFrame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
                                 self.view.frame.size.height - statusBarHeight - tabBarHeight);
     
-    SpreadsheetView *spreadsheet = [SpreadsheetView spreadsheetViewWithRows:32
-                                                                    columns:6
-                                                                       view:self.view
-                                                                      frame:ssFrame
-                                                               returnHidden:YES];
+    _spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:32
+                                                        columns:6
+                                                           view:self.view
+                                                          frame:ssFrame
+                                                   returnHidden:YES];
     
-    [self.view addSubview:spreadsheet];
+    [self.view addSubview:_spreadsheetView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -45,6 +51,16 @@
     }
     
     return 20.0;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+duration:(NSTimeInterval)duration
+{
+    if (_spreadsheetView)
+    {
+        [_spreadsheetView willRotateWithDuration:duration
+                                    tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+    }
 }
 
 @end
