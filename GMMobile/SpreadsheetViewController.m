@@ -27,8 +27,28 @@
                                                    returnHidden:YES];
     
     [self.view addSubview:_spreadsheetView];
+    PropertyList * proplist = [[PropertyList alloc]init];
+    proplist.delegate = self;
+    NSArray * props = [proplist getPropertyNumbers];
+    NSArray * fields = [proplist availablePropertyFields];
+    for (NSNumber *pnum in props)
+    {
+        NSInteger iprop = [pnum integerValue];
+        for (NSNumber *field in fields)
+        {
+            [proplist getPropertyFieldValueOfType:[field integerValue]
+                                forPropertyNumber:iprop];
+        }
+    }
 }
-
+- (void) PropertyList:(PropertyList*)propList
+         returnsValue:(NSString*)value
+    forPropertyNumber:(NSInteger)propNum
+         andFieldType:(PropFieldType)type
+           withStatus:(long)status;
+{
+    return;
+}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

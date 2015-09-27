@@ -36,8 +36,6 @@ typedef NS_ENUM(NSInteger, PropFieldType)
          andFieldType:(PropFieldType)type
        withStatus:(long)status;
 
-- (void) GMServerDidOpen:(GeoMasterServer *)server;
-
 @end
 
 @interface PropertyList : NSObject
