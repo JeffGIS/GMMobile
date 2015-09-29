@@ -14,6 +14,8 @@
 
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
+    
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
@@ -27,27 +29,47 @@
                                                    returnHidden:YES];
     
     [self.view addSubview:_spreadsheetView];
-    PropertyList * proplist = [[PropertyList alloc]init];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    PropertyList *proplist = [[PropertyList alloc] init];
     proplist.delegate = self;
-    NSArray * props = [proplist getPropertyNumbers];
-    NSArray * fields = [proplist availablePropertyFields];
+    NSArray *props = [proplist getPropertyNumbers];
+    NSArray *fields = [proplist availablePropertyFields];
+    
+    NSMutableArray *fieldNames = [[NSMutableArray alloc] init];
+    
+    for (NSNumber *field in fields)
+    {
+        NSInteger ifield = field.integerValue;
+        NSString *fieldName = [proplist propertyFieldName:ifield];
+        [fieldNames addObject:fieldName];
+    }
+    
+    [_spreadsheetView setTextArray:fieldNames
+                  forColumnAtIndex:0];
+    
     for (NSNumber *pnum in props)
     {
-        NSInteger iprop = [pnum integerValue];
-        for (NSNumber *field in fields)
-        {
-            [proplist getPropertyFieldValueOfType:[field integerValue]
-                                forPropertyNumber:iprop];
-        }
+        NSInteger iprop = pnum.integerValue;
+        
+        [proplist getPropertyFieldValueOfType:PFT_ID
+                            forPropertyNumber:iprop];
     }
 }
-- (void) PropertyList:(PropertyList*)propList
-         returnsValue:(NSString*)value
-    forPropertyNumber:(NSInteger)propNum
-         andFieldType:(PropFieldType)type
-           withStatus:(long)status;
+
+- (void)PropertyList:(PropertyList *)propList
+        returnsValue:(NSString *)value
+   forPropertyNumber:(NSInteger)propNum
+        andFieldType:(PropFieldType)type
+          withStatus:(long)status;
 {
-    return;
+    [_spreadsheetView setText:value
+                 forCellAtRow:type
+                       column:propNum];
 }
 - (void)didReceiveMemoryWarning
 {

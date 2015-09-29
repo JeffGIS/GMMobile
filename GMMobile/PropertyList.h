@@ -30,11 +30,11 @@ typedef NS_ENUM(NSInteger, PropFieldType)
 
 @protocol PropertyListDelegate <NSObject>
 
-- (void) PropertyList:(PropertyList*)propList
-         returnsValue:(NSString*)value
-    forPropertyNumber:(NSInteger)propNum
-         andFieldType:(PropFieldType)type
-       withStatus:(long)status;
+- (void)PropertyList:(PropertyList *)propList
+        returnsValue:(NSString *)value
+   forPropertyNumber:(NSInteger)propNum
+        andFieldType:(PropFieldType)type
+          withStatus:(long)status;
 
 @end
 

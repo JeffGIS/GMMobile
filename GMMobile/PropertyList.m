@@ -157,6 +157,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 - (NSString*) propertyFieldName:(PropFieldType)fieldType
 {
     NSString *name = @"";
+    
     switch(fieldType)
     {
         case PFT_ID:
@@ -207,7 +208,11 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_Seniors_block:
             name = @"PCT Seniors (Block)";
             break;
+            
+        default:
+            break;
     }
+    
     return name;
 }
 - (NSArray*) getPropertyNumbers
@@ -222,7 +227,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int propid = sqlite3_column_int(statement, 0) + 1;
+        int propid = sqlite3_column_int(statement, 0);
         NSNumber * propNum = [NSNumber numberWithInt:propid];
         [propNums addObject:propNum];
     }
@@ -236,6 +241,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 {
     NSString * value = [self getFieldValue:propNum
                                       type:type];
+    
     if (value)
     {
         [self.delegate PropertyList:self
@@ -251,8 +257,11 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 - (NSString*) getFieldValue:(NSInteger)propNum
                        type:(NSInteger)fieldType
 {
-    NSString * value = nil;
-    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE PropID = %li AND FieldType = %li",propNum,fieldType];
+    NSString *value = nil;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE PropID = %li AND FieldType = %li",
+                       propNum, fieldType];
+    
     BOOL opened = [self open];
     
     sqlite3_stmt *statement = NULL;
@@ -267,6 +276,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     SQLOK(sqlite3_finalize(statement), _database);
     [self close:opened];
+    
     return value;
 }
 

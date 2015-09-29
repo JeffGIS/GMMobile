@@ -2676,8 +2676,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)addToPropList
 {
-    PropertyList *pl = [[PropertyList alloc] init];
+    [self dismissTableView];
     
+    PropertyList *pl = [[PropertyList alloc] init];
     [pl addParcelToPropertyList:_selectedPID];
 }
 
