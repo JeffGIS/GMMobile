@@ -6,7 +6,7 @@
 
 @interface SpreadsheetViewController ()
 
-@property (nonatomic) SpreadsheetView *spreadsheetView;
+@property (nonatomic) SpreadsheetView *spreadsheetView, *headerView;
 
 @end
 
@@ -15,6 +15,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = UIColor.blackColor;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
@@ -29,6 +31,15 @@
                                                    returnHidden:YES];
     
     [self.view addSubview:_spreadsheetView];
+    
+    ssFrame = CGRectMake(0.0, statusBarHeight, _spreadsheetView.columnWidth,
+                         self.view.frame.size.height - statusBarHeight - tabBarHeight);
+    
+    _headerView = [SpreadsheetView spreadsheetViewWithRows:40
+                                                   columns:0
+                                                      view:self.view
+                                                     frame:ssFrame
+                                              returnHidden:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -49,8 +60,8 @@
         [fieldNames addObject:fieldName];
     }
     
-    [_spreadsheetView setTextArray:fieldNames
-                  forColumnAtIndex:0];
+    [_headerView setTextArray:fieldNames
+             forColumnAtIndex:0];
     
     for (NSNumber *pnum in props)
     {
@@ -58,8 +69,6 @@
         
         for (NSNumber *field in fields)
         {
-            NSLog(@"%li:%li", (long)iprop, (long)field.integerValue);
-            
             [proplist getPropertyFieldValueOfType:field.integerValue
                                 forPropertyNumber:iprop];
         }
