@@ -56,8 +56,13 @@
     {
         NSInteger iprop = pnum.integerValue;
         
-        [proplist getPropertyFieldValueOfType:PFT_ID
-                            forPropertyNumber:iprop];
+        for (NSNumber *field in fields)
+        {
+            NSLog(@"%li:%li", (long)iprop, (long)field.integerValue);
+            
+            [proplist getPropertyFieldValueOfType:field.integerValue
+                                forPropertyNumber:iprop];
+        }
     }
 }
 
@@ -71,6 +76,7 @@
                  forCellAtRow:type
                        column:propNum];
 }
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
