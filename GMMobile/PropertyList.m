@@ -250,7 +250,16 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
                        andFieldType:type
                          withStatus:0];
     }
-
+    else
+    {
+        switch (type)
+        {
+            case PFT_PctOpenSpace_halfMile:
+                break;
+            default:
+                break;
+        }
+    }
     return;
 }
 
