@@ -2,11 +2,11 @@
 //  GMMobile
 
 #import "SpreadsheetViewController.h"
-#import "CCodeLibrary/SpreadsheetView.h"
+#import "CCodeLibrary/NVSpreadsheetView.h"
 
 @interface SpreadsheetViewController ()
 
-@property (nonatomic) SpreadsheetView *spreadsheetView, *headerView;
+@property (nonatomic) NVSpreadsheetView *ssv;
 
 @end
 
@@ -24,22 +24,12 @@
     CGRect ssFrame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
                                 self.view.frame.size.height - statusBarHeight - tabBarHeight);
     
-    _spreadsheetView = [SpreadsheetView spreadsheetViewWithRows:40
-                                                        columns:12
-                                                           view:self.view
-                                                          frame:ssFrame
-                                                   returnHidden:YES];
-    
-    [self.view addSubview:_spreadsheetView];
-    
-    ssFrame = CGRectMake(0.0, statusBarHeight, _spreadsheetView.columnWidth,
-                         self.view.frame.size.height - statusBarHeight - tabBarHeight);
-    
-    _headerView = [SpreadsheetView spreadsheetViewWithRows:40
-                                                   columns:0
-                                                      view:self.view
-                                                     frame:ssFrame
-                                              returnHidden:YES];
+    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:40
+                                              columns:26
+                                                 view:self.view
+                                                frame:ssFrame
+                                             editable:NO
+                                           selectable:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -60,8 +50,7 @@
         [fieldNames addObject:fieldName];
     }
     
-    [_headerView setTextArray:fieldNames
-             forColumnAtIndex:0];
+    [_ssv setRowHeaderText:fieldNames];
     
     for (NSNumber *pnum in props)
     {
@@ -81,9 +70,9 @@
         andFieldType:(PropFieldType)type
           withStatus:(long)status;
 {
-    [_spreadsheetView setText:value
-                 forCellAtRow:type
-                       column:propNum];
+    [_ssv setText:value
+     forCellAtRow:type
+           column:propNum];
 }
 
 - (void)didReceiveMemoryWarning
@@ -113,10 +102,10 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 duration:(NSTimeInterval)duration
 {
-    if (_spreadsheetView)
+    if (_ssv)
     {
-        [_spreadsheetView willRotateWithDuration:duration
-                                    tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+        [_ssv willRotateWithDuration:duration
+                        tabBarHeight:self.tabBarController.tabBar.frame.size.height];
     }
 }
 
