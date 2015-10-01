@@ -102,10 +102,10 @@
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 duration:(NSTimeInterval)duration
 {
-    //if (_spreadsheetView)
+    if (_ssv)
     {
-        //[_spreadsheetView willRotateWithDuration:duration
-                                    //tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+        [_ssv willRotateWithDuration:duration
+                        tabBarHeight:self.tabBarController.tabBar.frame.size.height];
     }
 }
 
