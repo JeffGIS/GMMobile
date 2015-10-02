@@ -7,7 +7,7 @@
 @interface ThemesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVDataLoaderDelegate,GSSiPopoverViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property GSSiPopoverView* popover;
+@property GSSiPopoverView *popover;
 @property int selectedApp;
-@property NSIndexPath * selectedIndexPath;
+@property NSIndexPath *selectedIndexPath;
 @end

@@ -3,6 +3,7 @@
 
 #import "SpreadsheetViewController.h"
 #import "CCodeLibrary/NVSpreadsheetView.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 @interface SpreadsheetViewController ()
 
@@ -32,9 +33,19 @@
                                            selectable:YES];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
+    
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
+                                                         bundle:NSBundle.mainBundle];
+    
+    UIViewController *fovc = [storyboard instantiateViewControllerWithIdentifier:@"FieldOptionsVC"];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+      replaceViewControllerAtIndex:2
+                withViewController:fovc];
     
     PropertyList *proplist = [[PropertyList alloc] init];
     proplist.delegate = self;

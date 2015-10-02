@@ -16,6 +16,8 @@
 		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; settings = {ASSET_TAGS = (); }; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; settings = {ASSET_TAGS = (); }; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; settings = {ASSET_TAGS = (); }; };
+		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; settings = {ASSET_TAGS = (); }; };
+		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; settings = {ASSET_TAGS = (); }; };
 		A905063A1A75DF5A00288850 /* map.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506391A75DF5A00288850 /* map.png */; };
 		A90506451A75E12B00288850 /* find.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506431A75E12B00288850 /* find.png */; };
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
@@ -143,6 +145,9 @@
 		69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetViewController.m; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
 		69E62D4A1BBF073F0018390B /* diagonalArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = diagonalArrow.png; sourceTree = "<group>"; };
+		69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldOptionsViewController.h; sourceTree = "<group>"; };
+		69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldOptionsViewController.m; sourceTree = "<group>"; };
+		69E62D4F1BBF276B0018390B /* fieldOptions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fieldOptions.png; sourceTree = "<group>"; };
 		A90506391A75DF5A00288850 /* map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = map.png; sourceTree = "<group>"; };
 		A90506431A75E12B00288850 /* find.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = find.png; sourceTree = "<group>"; };
 		A90506441A75E12B00288850 /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
@@ -334,6 +339,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69E62D4F1BBF276B0018390B /* fieldOptions.png */,
 				69E62D4A1BBF073F0018390B /* diagonalArrow.png */,
 				69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */,
 				698F95F41B8CD633007D32A5 /* shoppingCart.png */,
@@ -494,6 +500,8 @@
 				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
 				69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */,
 				69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */,
+				69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */,
+				69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */,
 				A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */,
 				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
@@ -693,6 +701,7 @@
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
+				69E62D501BBF276B0018390B /* fieldOptions.png in Resources */,
 				A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
@@ -746,6 +755,7 @@
 				A9BC27EF1A9276CD00FA89D8 /* ThemesViewController.m in Sources */,
 				EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */,
 				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,
+				69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */,
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
