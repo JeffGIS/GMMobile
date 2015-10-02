@@ -1622,17 +1622,16 @@ Exit:
              return (NSComparisonResult)NSOrderedSame;
          }];
         
-        /*int median = (nAge / 2);
+         int median = (nAge / 2);
          NSNumber *age1 = (NSNumber *)ageArray[median];
          
          if (nAge %2)
          {
-         NSNumber *age2 = (NSNumber *)ageArray[median + 1];
-         medianAge = ((age1.floatValue + age2.floatValue) / 2.0);
+             NSNumber *age2 = (NSNumber *)ageArray[median + 1];
+             values->medianAgeHomes = ((age1.floatValue + age2.floatValue) / 2.0);
          }
-         
          else
-         medianAge = age1.intValue;*/
+             values->medianAgeHomes = age1.intValue;
     }
     
     [array sortUsingComparator: ^(id obj1, id obj2)
@@ -1672,8 +1671,6 @@ Exit:
                     myStartRank = n;
                 myEndRank = n;
             }
-            else if (myStartRank >= 0)
-                myEndRank = n - 1;
             n++;
         }
         aveEMV = sumEMV / [array count];

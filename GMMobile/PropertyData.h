@@ -16,10 +16,11 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 typedef struct {int nMatchingProperties;
                 int stability5yr,
                     stability15yr,
-                    pctHomestead,
                     rankTotEMV,
-                    medianAgePop,
+                    pctHomestead,
                     homeOwnPct,
+                    medianAgeHomes,
+                    medianAgePop,
                     pctChildren,
                     pctSenior;
                 }DATA_FROM_TABLES;

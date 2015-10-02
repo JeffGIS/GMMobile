@@ -4,7 +4,7 @@
 #import "PropertyList.h"
 #import "PropertyData.h"
 
-#define CURRENT_VERSION 2
+#define CURRENT_VERSION 6
 @implementation PropertyList
 {
     NSString *_documentsDirectory;
@@ -164,11 +164,20 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     switch(fieldType)
     {
+        case PFT_LatLon:
+        case PFT_END:
+            break;
         case PFT_ID:
             name = @"Property ID";
             break;
         case PFT_Address:
             name = @"Address";
+            break;
+        case PFT_RankEMV_block:
+            name = @"EMV Rank (Block)";
+            break;
+        case PFT_RankEMV_blockgroup:
+            name = @"EMV Rank (Block Group)";
             break;
         case PFT_PctOpenSpace_halfMile:
             name = @"PCT Open space (Half Mile)";
@@ -203,27 +212,53 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_PctHomestead_block:
             name = @"PCT Homestead (Block)";
             break;
-        case PFT_MedianAge_block:
-            name = @"Median Age (Block)";
+        case PFT_PctHomestead_blockgroup:
+            name = @"PCT Homestead (Block Group)";
             break;
-        case PFT_MedianAge_blockgroup:
-            name = @"Median Age (Block Group)";
+        case PFT_PctHomeOwn_block:
+            name = @"PCT Home Ownership (Block)";
             break;
-        case PFT_Children_block:
+        case PFT_PctHomeOwn_blockgroup:
+            name = @"PCT Home Ownership (Block Group)";
+            break;
+        case PFT_MedianAgePop_block:
+            name = @"Median Age Population (Block)";
+            break;
+        case PFT_MedianAgePop_blockgroup:
+            name = @"Median Age Population (Block Group)";
+            break;
+        case PFT_MedianAgeHomes_block:
+            name = @"Median Age Homes (Block)";
+            break;
+        case PFT_MedianAgeHomes_blockgroup:
+            name = @"Median Age Homes (Block Group)";
+            break;
+        case PFT_PctChildren_block:
             name = @"PCT Children (Block)";
+            break;
+        case PFT_PctChildren_blockgroup:
+            name = @"PCT Children (Block Group)";
             break;
         case PFT_MedianAgeChildren_block:
             name = @"Median Child Age (Block)";
             break;
+        case PFT_MedianAgeChildren_blockgroup:
+            name = @"Median Child Age (Block Group)";
+            break;
         case PFT_MedianAgeAdults_block:
             name = @"Median Adult Age (Block)";
             break;
-        case PFT_Seniors_block:
+        case PFT_MedianAgeAdults_blockgroup:
+            name = @"Median Adult Age (Block Group)";
+            break;
+        case PFT_PctSenior_block:
             name = @"PCT Seniors (Block)";
             break;
-            
-        default:
+        case PFT_PctSenior_blockgroup:
+            name = @"PCT Seniors (Block Group)";
             break;
+        
+            
     }
     
     return name;
@@ -499,7 +534,29 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
                          inCensusArea:(LPSTR)cenblock.UTF8String
                                totEMV:(int)totEMV
                               useDesc:(LPSTR)usedesc.UTF8String];
-    NSString *dataBlob = [self intToBlob:values.stability5yr];
+    NSString *dataBlob = [self intToBlob:values.rankTotEMV];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_RankEMV_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.pctHomestead];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctHomestead_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.homeOwnPct];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctHomeOwn_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.medianAgeHomes];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_MedianAgeHomes_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.medianAgePop];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_MedianAgePop_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.pctChildren];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctChildren_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.pctSenior];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctSenior_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+
+    dataBlob = [self intToBlob:values.stability5yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Stability5yr_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values.stability15yr];
@@ -513,6 +570,27 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
                                totEMV:(int)totEMV
                               useDesc:(LPSTR)usedesc.UTF8String];
     
+    dataBlob = [self intToBlob:values.rankTotEMV];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_RankEMV_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.pctHomestead];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctHomestead_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.homeOwnPct];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctHomeOwn_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.medianAgeHomes];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_MedianAgeHomes_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.medianAgePop];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_MedianAgePop_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.pctChildren];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctChildren_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.pctSenior];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_PctSenior_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values.stability5yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Stability5yr_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
