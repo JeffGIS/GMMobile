@@ -33,7 +33,7 @@ extern int keepProcessing;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL pdopened = [pd open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -93,7 +93,7 @@ extern int keepProcessing;
     }
  
     SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close:111];
+    [pd close:pdopened];
 }
 
 - (void)drawBoundary:(CGContextRef)context
@@ -176,7 +176,7 @@ extern int keepProcessing;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL pdopened = [pd open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -235,7 +235,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close:222];
+    [pd close:pdopened];
 }
 
 - (void)drawUseCode:(CGContextRef)context

@@ -108,16 +108,19 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         return FALSE;
 }
 
-- (void)close:(int)method
+- (void)close:(BOOL)opened
 {
-    SQLOKpd(sqlite3_close(_database), _database, (2000 + method));
-    //NSLog(@"Property Database close");
-    _isOpen = NO;
+    if (opened)
+    {
+        SQLOKpd(sqlite3_close(_database), _database, 0);
+        //NSLog(@"Property Database close");
+        _isOpen = NO;
+    }
 }
 
 - (void)clear
 {
-    [self close:1];
+    [self close:YES];
     
     //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
     //error:nil];
@@ -143,7 +146,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 - (int)propertyDatasetVersion
 {
     int rtn = -1;
-    [self open];
+    BOOL opened = [self open];
     if (_isOpen && _fileSize > 0)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM PROPINFO"];
@@ -162,14 +165,14 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         SQLOKpd(sqlite3_finalize(statement), _database, 7);
     }
     
-    [self close:2];
+    [self close:opened];
     return rtn;
 }
 
 - (int)areasDatasetVersion
 {
     int rtn = -1;
-    [self open];
+    BOOL opened = [self open];
     
     if (_isOpen && _fileSize > 0)
     {
@@ -190,14 +193,14 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         SQLOKpd(sqlite3_finalize(statement), _database, 9);
     }
     
-    [self close:3];
+    [self close:opened];
     return rtn;
 }
 
 - (int) parcelDatasetVersion
 {
     int rtn = -1;
-    [self open];
+    BOOL opened = [self open];
     
     if (_isOpen && _fileSize > 0)
     {
@@ -216,14 +219,14 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         SQLOKpd(sqlite3_finalize(statement), _database, 11);
     }
     
-    [self close:4];
+    [self close:opened];
     return rtn;
 }
 
 - (int) censusDatasetVersion
 {
     int rtn = -1;
-    [self open];
+    BOOL opened = [self open];
     
     if (_isOpen && _fileSize > 0)
     {
@@ -243,14 +246,14 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         SQLOKpd(sqlite3_finalize(statement), _database, 13);
     }
     
-    [self close:5];
+    [self close:opened];
     return rtn;
 }
 
 - (int) planDatasetVersion
 {
     int rtn = -1;
-    [self open];
+    BOOL opened = [self open];
     
     if (_isOpen && _fileSize > 0)
     {
@@ -270,7 +273,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         SQLOKpd(sqlite3_finalize(statement), _database, 15);
     }
     
-    [self close:6];
+    [self close:opened];
     return rtn;
 }
 
@@ -281,7 +284,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     NSString *query = [[NSString alloc] init];
     NSString *outString = @"Distinct Use Codes";
     
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -300,7 +303,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 17);
     
-    [self close:7];
+    [self close:opened];
     
     rtn = [outString writeToFile:outFile
                       atomically:YES
@@ -316,7 +319,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -341,7 +344,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 19);
     
-    [self close:8];
+    [self close:opened];
     return pt;
 }
 
@@ -352,7 +355,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
-    [self open];
+    BOOL opened = [self open];
     [self startTransaction];
     [self executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
     [self commitTransaction];
@@ -382,7 +385,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 21);
     
-    [self close:9];
+    [self close:opened];
     return bounds;
 }
 
@@ -392,7 +395,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -412,7 +415,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 23);
     
-    [self close:10];
+    [self close:opened];
     
     return types;
 }
@@ -423,7 +426,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -446,7 +449,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 25);
     
-    [self close:11];
+    [self close:opened];
     return data;
 }
 
@@ -457,7 +460,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
     
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -484,7 +487,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 27);
     
-    [self close:12];
+    [self close:opened];
     return bounds;
 }
 
@@ -492,7 +495,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
     
-    [self open];
+    BOOL opened = [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT PIN FROM PROPINFO Where PIN LIKE '%@%%'",
                        matchChar];
@@ -510,7 +513,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 29);
     
-    [self close:13];
+    [self close:opened];
     return array;
 }
 
@@ -520,7 +523,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     NSMutableArray *array = [[NSMutableArray alloc] init];
     int n = 0;
     
-    [self open];
+    BOOL opened = [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT PIN,\"Owner_Name\" FROM PROPINFO Where PIN >= '%@'",
                        matchChar];
@@ -543,7 +546,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 31);
     
-    [self close:14];
+    [self close:opened];
     return array;
 }
 
@@ -553,7 +556,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     NSMutableArray *array = [[NSMutableArray alloc] init];
     NSString *query = @"";
     NSString *lastName = [NSString stringWithFormat:@"%@%@", matchChar, @"Z"];
-    [self open];
+    BOOL opened = [self open];
     //NSString *query = [NSString stringWithFormat:@"SELECT HOUSE_NUM,STREET_NAME,UDIValue,AdditionalValue FROM ADDLOC4 Where STREET_NAME LIKE '%@%%' AND HOUSE_NUM = %i",matchChar,houseNumber];
     
     switch (CRAPI.sharedInstance.project)
@@ -588,7 +591,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     SQLOKpd(sqlite3_finalize(statement), _database, 33);
     
-    [self close:15];
+    [self close:opened];
     return array;
 }
 
@@ -609,7 +612,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     p1.y = pt->lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    [self open];
+    BOOL opened = [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
@@ -639,7 +642,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 35);
-    [self close:16];
+    [self close:opened];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
     if (npicked)
@@ -666,7 +669,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     p1.y = pt->latitude;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getBoundsAtPoint:pt andDist:500];
-    [self open];
+    BOOL opened = [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
@@ -694,7 +697,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 37);
-    [self close:17];
+    [self close:opened];
     pt->longitude = minpt.x;
     pt->latitude = minpt.y;
     if (npicked)
@@ -709,7 +712,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     NSString *ownerName = @"";
     
-    [self open];
+    BOOL opened = [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT [Owner_Name] FROM PROPINFO Where PIN = '%@'",
                        PID];
     
@@ -724,18 +727,31 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 39);
-    [self close:18];
+    [self close:opened];
     return ownerName;
 }
 
-- (BOOL)getAddressForPID:(NSString *)PID houseNumAndUnit:(NSString **)houseAndUnit streetName:(NSString **)streetName
+- (BOOL)getAddressForPID:(NSString *)PID
+         houseNumAndUnit:(NSString **)houseAndUnit
+              streetName:(NSString **)streetName
+                    city:(NSString **)city
+             censusBlock:(NSString **)cenblock
+                 useDesc:(NSString **)usedesc
+                  totEMV:(CGFloat *)totEMV
 {
     BOOL rtn = FALSE;
     *houseAndUnit = @"";
     *streetName = @"";
-    
-    [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO] FROM PROPINFO Where PIN = '%@'",
+    if (city)
+        *city = @"";
+    if (cenblock)
+        *cenblock = @"";
+    if (usedesc)
+        *usedesc = @"";
+    if (totEMV)
+        *totEMV = 0;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL] FROM PROPINFO Where PIN = '%@'",
                        PID];
     
     sqlite3_stmt *statement = NULL;
@@ -747,13 +763,25 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         LPSTR bldgnum = (LPSTR)sqlite3_column_text(statement, 0);
         LPSTR street = (LPSTR)sqlite3_column_text(statement, 1);
         LPSTR unit = (LPSTR)sqlite3_column_text(statement, 2);
+        LPSTR cityc = (LPSTR)sqlite3_column_text(statement, 3);
+        LPSTR cenblockc = (LPSTR)sqlite3_column_text(statement, 4);
+        LPSTR usedescc = (LPSTR)sqlite3_column_text(statement, 5);
+        double emvtot = sqlite3_column_double(statement, 6);
         *houseAndUnit = [NSString stringWithFormat:@"%s%s",bldgnum,unit];
         *streetName = [NSString stringWithUTF8String:street];
+        if (city)
+            *city = [NSString stringWithUTF8String:cityc];
+        if (cenblock)
+            *cenblock = [NSString stringWithUTF8String:cenblockc];
+        if (usedesc)
+            *usedesc = [NSString stringWithUTF8String:usedescc];
+        if (totEMV)
+            *totEMV = emvtot;
         rtn = TRUE;
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 41);
-    [self close:19];
+    [self close:opened];
     return rtn;
 }
 
@@ -766,12 +794,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     BOOL rtn = NO;
     
-    [self open];
+    BOOL opened = [self open];
     
     NSString *cmd = @"CREATE VIRTUAL TABLE demo_index USING rtree(id,minX,maxX,minY,maxY);";
     
     [self executeCmd:(char *)cmd.UTF8String];
-    [self close:20];
+    [self close:opened];
     return rtn;
 }
 
@@ -892,7 +920,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     //LPSTR useDesc;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
-    [self open];
+    BOOL opened = [self open];
     
     if (ConfigurationControl.sharedInstance.GMTilesVisible)
         parcelLineColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:1];
@@ -1026,7 +1054,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 43);
-    [self close:21];
+    [self close:opened];
 }
 
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
@@ -1039,7 +1067,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     sqlite3_stmt *statement = NULL;
     if (polyPartLen)
         *polyPartLen = 0;
-    BOOL didOpen = [self open];
+    BOOL opened = [self open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
     
@@ -1079,8 +1107,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 45);
-    if (didOpen)
-        [self close:22];
+   
+    [self close:opened];
     
     return llpoints;
 }
@@ -1382,7 +1410,7 @@ Exit:
     dollarFmt.alwaysShowsDecimalSeparator = NO;
     dollarFmt.usesGroupingSeparator = YES;
     dollarFmt.maximumFractionDigits = 0;
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -1478,46 +1506,43 @@ Exit:
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 47);
-    [self close:23];
+    [self close:opened];
 }
 
-- (void)computeStability:(CGFloat *)stability
-               openSpace:(CGFloat *)openSpacePCT
-           commercialPCT:(CGFloat *)pctCommercial
-              totEMVRank:(CGFloat *)rankTotEMV
-            inCensusArea:(LPSTR)cenBlockIN
-                 useDesc:(LPSTR) usedesc
+- (void)computeValuesFromTables:(DATA_FROM_TABLES *)values
+                   inCensusArea:(LPSTR)cenBlockIN
+                         totEMV:(int)totEMV
+                        useDesc:(LPSTR) usedescIN
 {
     sqlite3_stmt *statement = NULL;
+    int nHomestead=0;
+    int totProp = 0;
     double sumEMV=0;
     double sumAcres=0;
     double pctAveEMV, aveEMV;
+    double pctMedianEMV;
+    int medianEMV=0;
+    
     //double pctMedEMV;
-    int myTotEMV = *rankTotEMV;
-    int nAge = 0, nSales = 0;
+    int myTotEMV = totEMV;
+    int nAge = 0, nSales5yr = 0, nSales15yr = 0;
     int minSale = INT_MAX;
     CGFloat totYears = 0;
     //CGFloat medianAge = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
-    char cenBlock[20];
-    int l = (int)strlen(cenBlockIN);
-    
-    strcpy (cenBlock, cenBlockIN);
-    
-    if (l)
-        cenBlock[12] = 0;
-    
-    *stability = 0;
-    *openSpacePCT = 0;
-    *pctCommercial = 0;
-    *rankTotEMV = 0;
+
+    memset (values,0,sizeof(DATA_FROM_TABLES));
     /*    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK='%s'",
      cenBlock];*/
+    NSString *query;
+    if (strlen (cenBlockIN) == 12)
+        query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK>='%s000' AND CENBLOCK<='%s999'",cenBlockIN,cenBlockIN];
+    else if (strlen (cenBlockIN) > 12)
+        query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK='%s'",cenBlockIN];
+    else
+        return;
     
-    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK>='%s000' AND CENBLOCK<='%s999'",
-                       cenBlock,cenBlock];
-    
-    [self open];
+    BOOL opened = [self open];
     NSMutableArray * array=[[NSMutableArray alloc]init];
     NSMutableArray * ageArray=[[NSMutableArray alloc]init];
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 48);
@@ -1532,20 +1557,28 @@ Exit:
         LPSTR yearBuilt = (LPSTR)sqlite3_column_text(statement, 6);
         LPSTR openSpace = (LPSTR)sqlite3_column_text(statement, 7);
         
+        totProp++;
         int yrBuilt = atoi (yearBuilt);
+        if (*homestead == 'y' || *homestead == 'Y')
+            nHomestead++;
         totAcres += acres;
         if (*openSpace != 'N')
         {
             if (*openSpace == 'y' || *openSpace == 'Y')
                 totOSAcres += acres;
         }
-        if (!strcasecmp (useDesc,usedesc))
+        if (!strcasecmp (useDesc,usedescIN))
         {
+            values->nMatchingProperties++;
             if (*saleDate)
             {
                 int date = atoi (saleDate);
                 minSale = min (minSale,date);
-                nSales++;
+                date /= 10000;
+                if (date >= 2010)
+                    nSales5yr++;
+                if (date >= 2005)
+                    nSales15yr++;
             }
             if (yrBuilt > 1800)
             {
@@ -1554,7 +1587,7 @@ Exit:
                 NSNumber *age = [[NSNumber alloc]initWithInt:yrBuilt];
                 [ageArray addObject:age];
             }
-            if (*homestead == 'Y')
+            if (totEMV > 0)
             {
                 NSNumber * emv = [NSNumber numberWithInteger:totEMV];
                 [array addObject:emv];
@@ -1562,6 +1595,15 @@ Exit:
                 sumEMV += totEMV;
             }
         }
+    }
+    if (values->nMatchingProperties)
+    {
+        values->stability5yr  = IDNINT(100.0-(100.0 * nSales5yr) / values->nMatchingProperties);
+        values->stability15yr = IDNINT(100.0-(100.0 * nSales15yr) / values->nMatchingProperties);
+    }
+    if (totProp)
+    {
+        values->pctHomestead  = IDNINT((100.0 * nHomestead) / totProp);
     }
     if (nAge)
     {
@@ -1611,10 +1653,9 @@ Exit:
     {
         int n=1;
         int myStartRank= -1;
-        //int myEndRank= -1;
+        int myEndRank= -1;
         int medianN = (int)array.count / 2;
         int medianM = array.count % 2;
-        int medianEMV = 0;
         //NSNumber *minEMV = array[0];
         //NSNumber *maxEMV = array[array.count - 1];
         for (NSNumber *EMVvalue in array)
@@ -1629,48 +1670,44 @@ Exit:
             {
                 if (myStartRank < 0)
                     myStartRank = n;
-                
-                //myEndRank = n;
+                myEndRank = n;
             }
+            else if (myStartRank >= 0)
+                myEndRank = n - 1;
             n++;
         }
         aveEMV = sumEMV / [array count];
         pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
-        //pctMedEMV = ((double)myTotEMV / medianEMV) * 100;
-        *rankTotEMV = pctAveEMV;
+        pctMedianEMV = ((double)myTotEMV / medianEMV) * 100;
+        values->rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[array count]);
     }
     
     SQLOKpd(sqlite3_finalize(statement),_database, 49);
     
-    if (totOSAcres)
-        *openSpacePCT = (100.0 * totOSAcres) / totAcres;
     
-    query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",
-             cenBlockIN];
-    
+    if (strlen (cenBlockIN) > 12)
+        query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT,HHTOTAL,HH_UNDER18,HH_65OVER FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",cenBlockIN];
+    else
+        query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT,HHTOTAL,HH_UNDER18,HH_65OVER FROM CENSUSBLOCKGROUPDATA WHERE GEOG_UNIT ='%s'",cenBlockIN];
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 50);
     
-    /*while (sqlite3_step(statement) == SQLITE_ROW)
-     {
-     float medianAge = sqlite3_column_double(statement,0);
-     float homeOwnPct = sqlite3_column_double(statement,1);
-     
-     }*/
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        values->medianAgePop = sqlite3_column_double(statement,0);
+        values->homeOwnPct = 100.0 * sqlite3_column_double(statement,1);
+        int hhTot = sqlite3_column_int(statement,2);
+        int hh18 = sqlite3_column_int(statement,3);
+        int hh65 = sqlite3_column_int(statement,4);
+        if (hhTot > 0)
+        {
+            values->pctChildren = (100.0 * hh18)/hhTot;
+            values->pctSenior   = (100.0 * hh65)/hhTot;
+        }
+    }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 51);
-    query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT FROM CENSUSBLOCKGROUPDATA WHERE GEOG_UNIT ='%s'",
-             cenBlock];
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 52);
-    
-    /*while (sqlite3_step(statement) == SQLITE_ROW)
-     {
-     float medianAge = sqlite3_column_double(statement,0);
-     float homeOwnPct = sqlite3_column_double(statement,1);
-     
-     }*/
-    
-    SQLOKpd(sqlite3_finalize(statement), _database, 53);
+    [self close:opened];
 }
 
 - (NSMutableArray *)getReport:(PropDataOption)option
@@ -1680,7 +1717,7 @@ Exit:
     sqlite3_stmt *statement = NULL;
     char censusBlock[32];
     char usedesc[32];
-    [self open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -1962,26 +1999,19 @@ Exit:
                 
                 SQLOKpd(sqlite3_finalize(statement),_database, 57);
                 
-                CGFloat stability, openSpacePCT, pctCommercial, rankTotEMV;
-                rankTotEMV = totalEMV;
+                DATA_FROM_TABLES values;
+                [self computeValuesFromTables:&values
+                                 inCensusArea:(LPSTR)censusBlock
+                                       totEMV:(int)totalEMV
+                                      useDesc:(LPSTR)usedesc];
                 
-                [self computeStability:&stability
-                             openSpace:&openSpacePCT
-                         commercialPCT:&pctCommercial
-                            totEMVRank:&rankTotEMV
-                          inCensusArea:censusBlock
-                               useDesc:usedesc];
-                
-                line = [NSString stringWithFormat:@"Stability:%.1f years", stability];
+                line = [NSString stringWithFormat:@"Stability:%.i%%", values.stability5yr];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Open Space:%.1f%%", openSpacePCT];
+                line = [NSString stringWithFormat:@"Percent Commercial:%i%%", values.pctHomestead];
                 [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Percent Commercial:%.1f%%", pctCommercial];
-                [report addObject:line];
-                
-                line = [NSString stringWithFormat:@"EMV Rank:%.1f%%", rankTotEMV];
+                line = [NSString stringWithFormat:@"EMV Rank:%i%%", values.rankTotEMV];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Census Block:%s", cenBlock];
@@ -1992,7 +2022,7 @@ Exit:
         }
     }
     
-    [self close:24];
+    [self close:opened];
     return report;
 }
 

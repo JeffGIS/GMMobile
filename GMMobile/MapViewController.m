@@ -1235,7 +1235,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 {
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
-                                    streetName:&streetName];
+                                    streetName:&streetName
+                                          city:nil
+                                   censusBlock:nil
+                                       useDesc:nil
+                                        totEMV:nil];
                 }
                 
                 [awd createNewWall:newWallID

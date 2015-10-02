@@ -13,6 +13,17 @@ typedef NS_ENUM(NSInteger, PropDataOption)
     PDSettingComputed,
 };
 
+typedef struct {int nMatchingProperties;
+                int stability5yr,
+                    stability15yr,
+                    pctHomestead,
+                    rankTotEMV,
+                    medianAgePop,
+                    homeOwnPct,
+                    pctChildren,
+                    pctSenior;
+                }DATA_FROM_TABLES;
+
 @interface BoundaryAreaData : NSObject
 
 @property NSString *name;
@@ -39,7 +50,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 @property (nonatomic) int planDatasetVersion;
 
 - (BOOL)open;
-- (void)close:(int)method;
+- (void)close:(BOOL)opened;
 - (void)clear;
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
@@ -58,7 +69,18 @@ typedef NS_ENUM(NSInteger, PropDataOption)
 
 - (int)pickPID:(LLPOINT *)pt
   highlightList:(NSMutableArray *)hlist;
-- (BOOL)getAddressForPID:(NSString *)PID houseNumAndUnit:(NSString **)houseAndUnit streetName:(NSString **)streetName;
+- (BOOL)getAddressForPID:(NSString *)PID
+         houseNumAndUnit:(NSString **)houseAndUnit
+              streetName:(NSString **)streetName
+                    city:(NSString **)city
+             censusBlock:(NSString **)cenblock
+                 useDesc:(NSString **)usedesc
+                  totEMV:(CGFloat *)totEMV;
+
+- (void)computeValuesFromTables:(DATA_FROM_TABLES *)values
+                   inCensusArea:(LPSTR)cenBlockIN
+                         totEMV:(int)totEMV
+                        useDesc:(LPSTR) usedescIN;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 - (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;

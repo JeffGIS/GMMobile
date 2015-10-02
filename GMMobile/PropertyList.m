@@ -4,6 +4,7 @@
 #import "PropertyList.h"
 #import "PropertyData.h"
 
+#define CURRENT_VERSION 2
 @implementation PropertyList
 {
     NSString *_documentsDirectory;
@@ -43,6 +44,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"DefaultPropList.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+        int version = [self datasetVersion];
+        if (version != CURRENT_VERSION)
+            [NSFileManager.defaultManager removeItemAtPath:_path error:nil];
+
         [self createTables];
     }
     
@@ -96,6 +101,8 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
    // NSString *cmd2 = @"CREATE TABLE IF NOT EXISTS DestinationList (id INTEGER PRIMARY KEY,FieldName CHAR(100),FieldValue BLOB(33554432))";
     
     BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS PropertyList_VERSION (id INT,Version INT);INSERT INTO PropertyList_VERSION VALUES (1,%i);",CURRENT_VERSION];
+    SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     [self close:opened];
     return rtn;
 }
@@ -106,7 +113,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     if (_isOpen && _fileSize > 0)
     {
-        NSString *query = [NSString stringWithFormat:@"SELECT max(Version) FROM PROPERTYLIST_VERSION"];
+        NSString *query = [NSString stringWithFormat:@"SELECT Version FROM PropertyList_VERSION"];
         
         sqlite3_stmt *statement = NULL;
         
@@ -114,10 +121,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
-            LPSTR version = (LPSTR)sqlite3_column_text(statement, 0);
-            
-            if (version)
-                rtn = atoi(version);
+            rtn = sqlite3_column_int(statement, 0);
         }
         
         SQLOKpl(sqlite3_finalize(statement), _database);
@@ -163,6 +167,9 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_ID:
             name = @"Property ID";
             break;
+        case PFT_Address:
+            name = @"Address";
+            break;
         case PFT_PctOpenSpace_halfMile:
             name = @"PCT Open space (Half Mile)";
             break;
@@ -175,11 +182,17 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_PctIndustrial_Mile:
             name = @"PCT Industrial (Mile)";
             break;
-        case PFT_Stability_block:
+        case PFT_Stability5yr_block:
             name = @"Stability (5 year Block)";
             break;
-        case PFT_Stability_blockgroup:
+        case PFT_Stability5yr_blockgroup:
             name = @"Stability (5 year Block Group)";
+            break;
+        case PFT_Stability15yr_block:
+            name = @"Stability (15 year Block)";
+            break;
+        case PFT_Stability15yr_blockgroup:
+            name = @"Stability (15 year Block Group)";
             break;
         case PFT_Stability_halfMile:
             name = @"Stability (5 year Half Mile)";
@@ -264,12 +277,12 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 }
 
 - (NSString*) getFieldValue:(NSInteger)propNum
-                       type:(NSInteger)fieldType
+                       type:(PropFieldType)fieldType
 {
     NSString *value = nil;
     
     NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE PropID = %li AND FieldType = %li",
-                       propNum, fieldType];
+                       propNum, (long)fieldType];
     
     BOOL opened = [self open];
     
@@ -279,8 +292,21 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        LPSTR val = (LPSTR)sqlite3_column_blob(statement, 0);
-        value = [NSString stringWithUTF8String:val];
+        LPSTR val;
+        int ival;
+        
+        switch (fieldType)
+        {
+            case PFT_ID:
+            case PFT_Address:
+                val = (LPSTR)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithUTF8String:val];
+                break;
+            default:
+                ival = *(int*)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithFormat:@"%i",ival];
+               break;
+        }
     }
     
     SQLOK(sqlite3_finalize(statement), _database);
@@ -351,7 +377,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 }
 
 -(NSString *) llpointsToBlob:(LLPOINT*)pPoints
-                  numPoints:(NSInteger)nPnts
+                   numPoints:(NSInteger)nPnts
 {
     NSString * blob=@"";
     NSInteger lBlob = 0;
@@ -372,6 +398,60 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     free (pBlob);
     return blob;
 }
+-(NSString *) doubleToBlob:(double)val
+{
+    NSString * blob=@"";
+    NSInteger lBlob = 0;
+    LPSTR pBlob = malloc(sizeof(double)*2+4);
+    NSInteger  j;
+    LPBYTE pInts = (LPBYTE)&val;
+    unsigned char c;
+    for (j = 0; j < 8; j++, pInts++, lBlob += 2)
+    {
+        c = *pInts;
+        sprintf(&pBlob[lBlob], "%2.2x", *pInts);
+    }
+    pBlob[lBlob] = 0;
+    blob = [NSString stringWithUTF8String:pBlob];
+    free (pBlob);
+    return blob;
+}
+-(NSString *) floatToBlob:(float)val
+{
+    NSString * blob=@"";
+    NSInteger lBlob = 0;
+    LPSTR pBlob = malloc(sizeof(float)*2+4);
+    NSInteger  j;
+    LPBYTE pInts = (LPBYTE)&val;
+    unsigned char c;
+    for (j = 0; j < sizeof(float); j++, pInts++, lBlob += 2)
+    {
+        c = *pInts;
+        sprintf(&pBlob[lBlob], "%2.2x", *pInts);
+    }
+    pBlob[lBlob] = 0;
+    blob = [NSString stringWithUTF8String:pBlob];
+    free (pBlob);
+    return blob;
+}
+-(NSString *) intToBlob:(int)val
+{
+    NSString * blob=@"";
+    NSInteger lBlob = 0;
+    LPSTR pBlob = malloc(sizeof(int)*2+4);
+    NSInteger  j;
+    LPBYTE pInts = (LPBYTE)&val;
+    unsigned char c;
+    for (j = 0; j < sizeof(int); j++, pInts++, lBlob += 2)
+    {
+        c = *pInts;
+        sprintf(&pBlob[lBlob], "%2.2x", *pInts);
+    }
+    pBlob[lBlob] = 0;
+    blob = [NSString stringWithUTF8String:pBlob];
+    free (pBlob);
+    return blob;
+}
 - (BOOL)addParcelToPropertyList:(NSString *)PID
 {
     BOOL rtn = NO;
@@ -383,13 +463,63 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     int dbid = [self next_id];
     int PropID = [self nextPropID];
 
+    //add PID to Proplist
     NSString *PIDBlob = [self stringToBlob:PID];
     NSString *pointBlob = [self llpointsToBlob:&pidPoint
                                     numPoints:1];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid,PropID,(int)PFT_ID,PIDBlob];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_ID,PIDBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid+1,PropID,(int)PFT_LatLon,pointBlob];
+
+    //add LatLon to Proplist
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_LatLon,pointBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
+
+    //add address to Proplist
+    NSString * houseAndUnit;
+    NSString * streetName;
+    NSString * city;
+    NSString * cenblock;
+    NSString * usedesc;
+    CGFloat totEMV;
+    [propData getAddressForPID:PID
+               houseNumAndUnit:&houseAndUnit
+                    streetName:&streetName
+                          city:&city
+                   censusBlock:&cenblock
+                       useDesc:&usedesc
+                        totEMV:&totEMV];
+    NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
+    NSString *addressBlob = [self stringToBlob:address];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Address,addressBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+
+    //add values from tables to Proplist
+    DATA_FROM_TABLES values;
+    [propData computeValuesFromTables:&values
+                         inCensusArea:(LPSTR)cenblock.UTF8String
+                               totEMV:(int)totEMV
+                              useDesc:(LPSTR)usedesc.UTF8String];
+    NSString *dataBlob = [self intToBlob:values.stability5yr];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Stability5yr_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.stability15yr];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Stability15yr_block,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    char cenBlock[20];
+    strcpy (cenBlock, cenblock.UTF8String);
+    cenBlock[12] = 0;
+    [propData computeValuesFromTables:&values
+                         inCensusArea:(LPSTR)cenBlock
+                               totEMV:(int)totEMV
+                              useDesc:(LPSTR)usedesc.UTF8String];
+    
+    dataBlob = [self intToBlob:values.stability5yr];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Stability5yr_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self intToBlob:values.stability15yr];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropID,(int)PFT_Stability15yr_blockgroup,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    
     [self close:opened];
     return rtn;
 }
