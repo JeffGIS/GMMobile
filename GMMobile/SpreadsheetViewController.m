@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "SpreadsheetViewController.h"
-#import "CCodeLibrary/NVSpreadsheetView.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 
 @interface SpreadsheetViewController ()
@@ -30,7 +29,8 @@
                                                  view:self.view
                                                 frame:ssFrame
                                              editable:NO
-                                           selectable:YES];
+                                           selectable:YES
+                                             delegate:self];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -118,6 +118,11 @@ duration:(NSTimeInterval)duration
         [_ssv willRotateWithDuration:duration
                         tabBarHeight:self.tabBarController.tabBar.frame.size.height];
     }
+}
+
+- (void)ssvDidEditColumnHeaderAtIndex:(NSUInteger)index
+{
+    PropertyList *proplist = [[PropertyList alloc] init];
 }
 
 @end
