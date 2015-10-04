@@ -7,7 +7,8 @@
 typedef NS_ENUM(NSInteger, PropFieldType)
 {
     PFT_LatLon,
-    PFT_ID,
+    PFT_UserID,
+    PFT_PIN,
     PFT_Address,
     PFT_Stability5yr_block,
     PFT_Stability5yr_blockgroup,
@@ -21,8 +22,8 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctHomeOwn_blockgroup,
     PFT_MedianAgePop_block,
     PFT_MedianAgePop_blockgroup,
-    PFT_MedianAgeHomes_block,
-    PFT_MedianAgeHomes_blockgroup,
+    PFT_MedianBuiltYear_block,
+    PFT_MedianBuiltYear_blockgroup,
     PFT_MedianAgeChildren_block,
     PFT_MedianAgeAdults_block,
     PFT_PctChildren_block,

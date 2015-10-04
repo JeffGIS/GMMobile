@@ -19,7 +19,7 @@ typedef struct {int nMatchingProperties;
                     rankTotEMV,
                     pctHomestead,
                     homeOwnPct,
-                    medianAgeHomes,
+                    medianBuiltYear,
                     medianAgePop,
                     pctChildren,
                     pctSenior;
