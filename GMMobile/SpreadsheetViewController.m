@@ -52,6 +52,8 @@
     NSArray *props = [proplist getPropertyNumbers];
     NSArray *fields = [proplist availablePropertyFields];
     
+    _ssv.activeColumns = props.count;
+    
     NSMutableArray *fieldNames = [[NSMutableArray alloc] init];
     
     for (NSNumber *field in fields)

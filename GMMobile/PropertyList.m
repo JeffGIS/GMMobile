@@ -495,6 +495,8 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 - (void)updatePropertyUserID:(NSInteger)propNum
                       userID:(NSString*)userID
 {
+    NSLog(@"%li, %@", (long)propNum, userID);
+    
     BOOL opened = [self open];
     
     NSString *PIDBlob = [self stringToBlob:userID];
