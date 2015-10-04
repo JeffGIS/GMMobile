@@ -120,9 +120,17 @@ duration:(NSTimeInterval)duration
     }
 }
 
-- (void)ssvDidEditColumnHeaderAtIndex:(NSUInteger)index
+- (void)ssvDidEditText:(NSString *)text
+          forCellAtRow:(NSUInteger)row
+                column:(NSUInteger)column
 {
-    PropertyList *proplist = [[PropertyList alloc] init];
+    if (row == PFT_UserID)
+    {
+        PropertyList *proplist = [[PropertyList alloc] init];
+        
+        [proplist updatePropertyUserID:column
+                                userID:text];
+    }
 }
 
 @end
