@@ -37,7 +37,6 @@
 {
     [super viewDidAppear:animated];
     
-    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
@@ -46,6 +45,12 @@
     [NVTabBarEdit tabBarController:self.tabBarController
       replaceViewControllerAtIndex:2
                 withViewController:fovc];
+    
+    UIViewController *dvc = [storyboard instantiateViewControllerWithIdentifier:@"DestinationsVC"];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+      replaceViewControllerAtIndex:3
+                withViewController:dvc];
     
     PropertyList *proplist = [[PropertyList alloc] init];
     proplist.delegate = self;
