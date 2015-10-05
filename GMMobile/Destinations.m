@@ -7,8 +7,10 @@
 //
 
 #import "Destinations.h"
+#import "PropertyData.h"
+#import "PropertyList.h"
 
-#define CURRENT_VERSION 1
+#define CURRENT_VERSION 4
 
 @implementation Destination
 - (id)init
@@ -42,7 +44,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     {
         //[self logError:sqlReturn
         //             method:database];
-        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error in PropertyList %i = %i:%s",
+        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error in Destinations %i = %i:%s",
                       sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
     }
     
@@ -78,7 +80,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 - (void)dealloc
 {
     sqlite3_close(_database);
-    NSLog(@"PropertyList Database dealloc");
+    NSLog(@"Destinations Database dealloc");
 }
 - (BOOL)open
 {
@@ -87,7 +89,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     {
         _isOpen = YES;
         _isOpen = !SQLOKdst(sqlite3_open(_path.UTF8String, &_database), _database);
-        NSLog(@"PropertyList Database open");
+        NSLog(@"Destinations Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -101,7 +103,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     if (opened)
     {
         SQLOKdst(sqlite3_close(_database),_database);
-        NSLog(@"PropertyList Database close");
+        NSLog(@"Destinations Database close");
         _isOpen = NO;
     }
 }
@@ -117,13 +119,12 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     BOOL opened = [self open];
     
-    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS Destinations (DestinationNumber INT PRIMARY KEY,GroupNumber INT,DestinationName CHAR(200),LATITUDE REAL,LONGITUDE REAL);\
-    CREATE INDEX IF NOT EXISTS Destinations_index ON Destinations (PropNum ASC);\
-    CREATE TABLE IF NOT EXISTS RouteToDestination (RouteNum INT,PropertyNum INT,DestinationNum INT,Distance REAL,Time REAL);";
-    // NSString *cmd2 = @"CREATE TABLE IF NOT EXISTS DestinationList (id INTEGER PRIMARY KEY,FieldName CHAR(100),FieldValue BLOB(33554432))";
+    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS Destinations (DestinationNumber INT PRIMARY KEY,GroupNumber INT,DestinationName CHAR(200),LATITUDE REAL,LONGITUDE REAL,Frequency REAL,TimeDepart INT,TimeReturn INT);\
+    CREATE TABLE IF NOT EXISTS Routes (RouteNum INT,PropertyNum INT,DestinationNum INT,Direction INT,Distance REAL,Time REAL);\
+                      CREATE INDEX IF NOT EXISTS PropNum_index ON Routes (PropertyNum ASC);";
     
     BOOL rtn = !SQLOKdst(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
-    cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS PropertyList_VERSION (id INT,Version INT);INSERT INTO PropertyList_VERSION VALUES (1,%i);",CURRENT_VERSION];
+    cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS Destinations_VERSION (id INT,Version INT);INSERT INTO Destinations_VERSION VALUES (1,%i);",CURRENT_VERSION];
     SQLOKdst(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     [self close:opened];
     return rtn;
@@ -135,7 +136,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     if (_isOpen && _fileSize > 0)
     {
-        NSString *query = [NSString stringWithFormat:@"SELECT Version FROM PropertyList_VERSION"];
+        NSString *query = [NSString stringWithFormat:@"SELECT Version FROM Destinations_VERSION"];
         
         sqlite3_stmt *statement = NULL;
         
@@ -169,41 +170,145 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     SQLOKdst(sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
+- (int)next_id
+{
+    int rtn = 1;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT max(DestinationNumber) FROM Destinations"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = sqlite3_column_int(statement, 0) + 1;
+    }
+    
+    SQLOK(sqlite3_finalize(statement), _database);
+    
+    return rtn;
+}
+
+- (int)nextRouteNum
+{
+    int rtn = 1;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT max(RouteNum) FROM Routes"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = sqlite3_column_int(statement, 0) + 1;
+    }
+    
+    SQLOK(sqlite3_finalize(statement), _database);
+    
+    return rtn;
+}
+
 -(NSArray*)getIndividualDestinations
 {
-    NSMutableArray* dest = [[NSMutableArray alloc]init];
-    return dest;
+    NSArray* dests = [self getDestinationsWithinGroup:0];
+    return dests;
 }
 -(NSArray*)getGroupDestinations
 {
-    NSMutableArray* dest = [[NSMutableArray alloc]init];
-    return dest;
+    NSArray* dests = [self getDestinationsWithinGroup:-1];
+    return dests;
 }
 -(NSArray*)getDestinationsWithinGroup:(NSInteger)groupID
 {
-    NSMutableArray* dest = [[NSMutableArray alloc]init];
-    return dest;
+    NSMutableArray* dests = [[NSMutableArray alloc]init];
+
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT DestinationNumber,GroupNumber,DestinationName,LATITUDE,LONGITUDE,Frequency,TimeDepart,TimeReturn FROM Destinations WHERE GroupNumber = %li",groupID];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        Destination * dest = [[Destination alloc]init];
+        
+        dest.destinationID = sqlite3_column_int(statement, 0);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, 2);
+        dest.destinationName = [NSString stringWithUTF8String:name];
+        LLPOINT pt;
+        pt.lat = sqlite3_column_double(statement, 3);
+        pt.lon = sqlite3_column_double(statement, 4);
+        dest.latlon = pt;
+        dest.frequency = sqlite3_column_double(statement, 5);
+        dest.timeDepart = sqlite3_column_int(statement, 6);
+        dest.timeReturn = sqlite3_column_int(statement, 7);
+        [dests addObject:dest];
+    }
+    
+    SQLOK(sqlite3_finalize(statement), _database);
+    [self close:opened];
+    return dests;
 }
--(void)addIndividualDestination:(Destination*)destination
+
+-(int)addIndividualDestination:(Destination*)dest
 {
-    return;
+    int destNum = [self addDestination:dest toGroup:0];
+
+    dest.destinationID = destNum;
+    [self addRoutesForDestination:dest];
+    return destNum;
 }
--(void)addGroupDestination:(Destination*)destination
+-(int)addGroupDestination:(Destination*)dest
 {
-    return;
+    BOOL opened = [self open];
+    int destnum = [self next_id];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%i,'%@',%f,%f,%f,%li,%li);",destnum,-1,dest.destinationName,dest.latlon.lat,dest.latlon.lon,dest.frequency,dest.timeDepart,dest.timeReturn];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    
+    [self close:opened];
+    return destnum;
 }
--(void)addDestination:(Destination*)destination toGroup:(NSInteger)groupID
+-(int)addDestination:(Destination*)dest toGroup:(NSInteger)groupID
 {
-    return;
+    BOOL opened = [self open];
+    
+    int destnum = [self next_id];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%li,'%@',%f,%f,1.0,0,0);",destnum,groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    
+    [self close:opened];
+    return destnum;
 }
 -(void)removeDestination:(NSInteger)destinationID
 {
+    BOOL opened = [self open];
+    
+    NSString * cmd = [NSString stringWithFormat:@"DELETE FROM Destinations WHERE DestinationNumber = %li;",destinationID];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    
+    [self close:opened];
     return;
 }
 - (BOOL)addParcelToDestinations:(NSString *)PID
 {
     BOOL rtn = NO;
+    PropertyData *propData = [[PropertyData alloc] init];
+    LLPOINT pidPoint = [propData getPointForPID:PID];
     
+    BOOL opened = [self open];
+    Destination * dest = [[Destination alloc]init];
+    int destnum = [self next_id];
+    dest.latlon = pidPoint;
+    dest.destinationName = PID;
+    dest.destinationID = destnum;
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%i,'%@',%f,%f,1.0,0,0);",destnum,0,PID,dest.latlon.lat,dest.latlon.lon];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+   
+    rtn = YES;
+    [self close:opened];
     return rtn;
 }
 
@@ -215,4 +320,41 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     return route;
 }
 
+- (void)addRoutesForProperty:(NSInteger)propNum
+{
+    PropertyList *propList = [[PropertyList alloc]init];
+    LLPOINT propPt = [propList getPropertyLatLon:propNum];
+    
+    NSArray * individDests = [self getIndividualDestinations];
+    
+    BOOL opened = [self open];
+
+    for (Destination *dest in individDests)
+    {
+        Route * route = [self getRouteFrom:propPt to:dest.latlon];
+        NSInteger routeNum = [self nextRouteNum];
+        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%f,%f);",routeNum,propNum,dest.destinationID,route.distanceInMiles,route.timeInMinutes];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+    }
+    [self close:opened];
+}
+
+- (void)addRoutesForDestination:(Destination*)dest
+{
+    PropertyList *propList = [[PropertyList alloc]init];
+    NSArray* propNums = [propList getPropertyNumbers];
+    
+    BOOL opened = [self open];
+    for (NSNumber* pnum in propNums)
+    {
+        NSInteger propNum = [pnum integerValue];
+        LLPOINT propPt = [propList getPropertyLatLon:propNum];
+    
+        Route * route = [self getRouteFrom:propPt to:dest.latlon];
+        NSInteger routeNum = [self nextRouteNum];
+        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%f,%f);",routeNum,propNum,dest.destinationID,route.distanceInMiles,route.timeInMinutes];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+    }
+    [self close:opened];
+}
 @end

@@ -3,6 +3,7 @@
 
 #import "PropertyList.h"
 #import "PropertyData.h"
+#import "Destinations.h"
 
 #define CURRENT_VERSION 8
 @implementation PropertyList
@@ -505,6 +506,12 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
+- (LLPOINT)getPropertyLatLon:(NSInteger)propNum
+{
+    LLPOINT pt;
+    
+    return pt;
+}
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
 {
@@ -549,6 +556,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,addressBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
+    //add routes from property to destinations
+    Destinations *dests = [[Destinations alloc]init];
+    [dests addRoutesForProperty:PropNum];
+    
     //add values from tables to Proplist
     DATA_FROM_TABLES values;
     [propData computeValuesFromTables:&values
@@ -620,6 +631,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
     [self close:opened];
+    
     return rtn;
 }
 

@@ -65,5 +65,6 @@ typedef NS_ENUM(NSInteger, PropFieldType)
                        forPropertyNumber:(NSInteger)propNum;
 - (void)updatePropertyUserID:(NSInteger)propNum
                       userID:(NSString*)userID;
+- (LLPOINT)getPropertyLatLon:(NSInteger)propNum;
 
 @end

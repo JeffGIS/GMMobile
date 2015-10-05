@@ -30,10 +30,12 @@
 -(NSArray*)getIndividualDestinations;
 -(NSArray*)getGroupDestinations;
 -(NSArray*)getDestinationsWithinGroup:(NSInteger)groupID;
--(void)addIndividualDestination:(Destination*)destination;
--(void)addGroupDestination:(Destination*)destination;
--(void)addDestination:(Destination*)destination toGroup:(NSInteger)groupID;
+-(int)addIndividualDestination:(Destination*)destination;
+-(int)addGroupDestination:(Destination*)destination;
+-(int)addDestination:(Destination*)destination toGroup:(NSInteger)groupID;
 -(void)removeDestination:(NSInteger)destinationID;
+
+-(void)addRoutesForProperty:(NSInteger)propNum;
 
 -(Route*)getRouteFrom:(LLPOINT)fromPoint
                    to:(LLPOINT)toPoint;
