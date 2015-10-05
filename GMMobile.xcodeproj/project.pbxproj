@@ -13,11 +13,11 @@
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
-		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; settings = {ASSET_TAGS = (); }; };
-		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; settings = {ASSET_TAGS = (); }; };
-		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; settings = {ASSET_TAGS = (); }; };
-		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; settings = {ASSET_TAGS = (); }; };
-		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; settings = {ASSET_TAGS = (); }; };
+		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; };
+		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
+		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
+		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
+		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
 		A905063A1A75DF5A00288850 /* map.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506391A75DF5A00288850 /* map.png */; };
 		A90506451A75E12B00288850 /* find.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506431A75E12B00288850 /* find.png */; };
 		A90506461A75E12B00288850 /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = A90506441A75E12B00288850 /* settings.png */; };
@@ -120,6 +120,7 @@
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C291A937F06003F7FB8 /* S-2A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
+		EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */; };
 		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */; };
 /* End PBXBuildFile section */
@@ -287,6 +288,8 @@
 		EBCA6C281A937F06003F7FB8 /* S-2A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-2A-10.jpg"; sourceTree = "<group>"; };
 		EBCA6C2D1A96AEC7003F7FB8 /* PlanimetricData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlanimetricData.h; sourceTree = "<group>"; };
 		EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlanimetricData.m; sourceTree = "<group>"; };
+		EBD6B8A91BC1CE1200BACC89 /* Destinations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Destinations.h; sourceTree = "<group>"; };
+		EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Destinations.m; sourceTree = "<group>"; };
 		EBF1356E1AE282A30046990F /* ConfigurationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationControl.h; sourceTree = "<group>"; };
 		EBF1356F1AE282A30046990F /* ConfigurationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationControl.m; sourceTree = "<group>"; };
 		EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "SD-30A-10.jpg"; sourceTree = "<group>"; };
@@ -460,6 +463,8 @@
 				A91076BB1AC46D3A0096EFFD /* PropertyList.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
+				EBD6B8A91BC1CE1200BACC89 /* Destinations.h */,
+				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -742,6 +747,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */,
+				EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
