@@ -22,24 +22,9 @@
 
 @end
 
-@class Destinations;
-
-@protocol DestinationsDelegate <NSObject>
-
-- (void)destinationsDidReturnRoute:(Route *)route;
-
-@end
-
 @interface Destinations : NSObject
 
-@property (nonatomic, weak) id <DestinationsDelegate> delegate;
-
-- (BOOL)addParcelToDestinations:(NSString *)PID;
-- (NSArray *)getIndividualDestinations;
-- (NSArray *)getGroupDestinations;
-- (NSArray *)getDestinationsWithinGroup:(NSInteger)groupID;
-- (void)addIndividualDestination:(Destination *)destination;
-- (void)addGroupDestination:(Destination *)destination;
+- (int)addParcelToDestinations:(NSString *)PID;
 
 -(NSArray*)getIndividualDestinations;
 -(NSArray*)getGroupDestinations;
@@ -51,6 +36,8 @@
 
 -(void)addRoutesForProperty:(NSInteger)propNum;
 
--(Route*)getRouteFrom:(LLPOINT)fromPoint
-                   to:(LLPOINT)toPoint;
+- (Route *)getRouteFrom:(LLPOINT)fromPoint
+                  to:(LLPOINT)toPoint
+        tranportType:(MKDirectionsTransportType)transportType;
+
 @end

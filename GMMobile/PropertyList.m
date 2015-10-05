@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 8
+#define CURRENT_VERSION 9
 @implementation PropertyList
 {
     NSString *_documentsDirectory;
@@ -336,6 +336,12 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         
         switch (fieldType)
         {
+            case PFT_LatLon:
+            {
+                LLPOINT pt = *(LLPOINT*)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithFormat:@"%f %f",pt.lat,pt.lon];
+            }
+                break;
             case PFT_UserID:
             case PFT_PIN:
             case PFT_Address:
@@ -345,7 +351,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
                 value = [NSString stringWithFormat:@"%i",ival];
-               break;
+                break;
         }
     }
     
@@ -427,7 +433,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         NSInteger  j;
         LPBYTE pInts = (LPBYTE)&pPoints[i];
         unsigned char c;
-        for (j = 0; j < 8; j++, pInts++, lBlob += 2)
+        for (j = 0; j < sizeof(DPOINT); j++, pInts++, lBlob += 2)
         {
             c = *pInts;
             sprintf(&pBlob[lBlob], "%2.2x", *pInts);
@@ -506,10 +512,30 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
+LLPOINT LLPOINTFromString (NSString* string)
+{
+    LLPOINT pt;
+    LPSTR str = malloc (string.length+4);
+    strcpy (str,string.UTF8String);
+    LPSTR space = strchr (str,' ');
+    if (space)
+        *space++ = 0;
+    else
+        space = str;
+    pt.lat = atof (str);
+    pt.lon = atof (space);
+    free (str);
+    return pt;
+}
 - (LLPOINT)getPropertyLatLon:(NSInteger)propNum
 {
     LLPOINT pt;
+    BOOL opened = [self open];
+    NSString * value = [self getFieldValue:propNum
+                                      type:PFT_LatLon];
     
+    pt = LLPOINTFromString (value);
+    [self close:opened];
     return pt;
 }
 

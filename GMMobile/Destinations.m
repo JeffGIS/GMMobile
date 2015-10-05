@@ -5,7 +5,19 @@
 #import "PropertyData.h"
 #import "PropertyList.h"
 
-#define CURRENT_VERSION 4
+#define CURRENT_VERSION 2
+#define METERS_PER_MILE 1609.344
+
+@interface Destinations ()
+
+@property (nonatomic, copy) NSString *documentsDirectory;
+@property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, copy) NSString *path;
+@property (nonatomic) sqlite3 *database;
+@property BOOL isOpen;
+@property (nonatomic) unsigned long long fileSize;
+
+@end
 
 @implementation Destination
 
@@ -185,6 +197,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     int rtn = 1;
     
+    BOOL opened = [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT max(RouteNum) FROM Routes"];
     
     sqlite3_stmt *statement = NULL;
@@ -197,6 +210,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     }
     
     SQLOK(sqlite3_finalize(statement), _database);
+    [self close:opened];
     
     return rtn;
 }
@@ -283,31 +297,28 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     [self close:opened];
     return;
 }
-- (BOOL)addParcelToDestinations:(NSString *)PID
+- (int)addParcelToDestinations:(NSString *)PID
 {
     BOOL rtn = NO;
     PropertyData *propData = [[PropertyData alloc] init];
     LLPOINT pidPoint = [propData getPointForPID:PID];
     
-    BOOL opened = [self open];
     Destination * dest = [[Destination alloc]init];
-    int destnum = [self next_id];
     dest.latlon = pidPoint;
     dest.destinationName = PID;
-    dest.destinationID = destnum;
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%i,'%@',%f,%f,1.0,0,0);",destnum,0,PID,dest.latlon.lat,dest.latlon.lon];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-   
-    rtn = YES;
-    [self close:opened];
+    rtn = [self addIndividualDestination:dest];
     return rtn;
 }
 
-- (void)getRouteFrom:(LLPOINT)fromPoint
-                  to:(LLPOINT)toPoint
-        tranportType:(MKDirectionsTransportType)transportType
+- (void) getRoute:(NSInteger)routeNum
+         fromProp:(NSInteger)propNum
+    fromPropPoint:(LLPOINT)fromPoint
+           toDest:(NSInteger)destinationID
+      toDestPoint:(LLPOINT)toPoint
+     tranportType:(MKDirectionsTransportType)transportType
 {
     Route *route = [[Route alloc] init];
+    int direction = 1;
     
     CLLocationCoordinate2D fromCoord = CLLocationCoordinate2DMake(fromPoint.lat, fromPoint.lon);
     
@@ -343,8 +354,10 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              route.distanceInMiles = (theRoute.distance / METERS_PER_MILE);
              route.timeInMinutes = (theRoute.expectedTravelTime / 60.0);
              
-             if (_delegate)
-                 [_delegate destinationsDidReturnRoute:route];
+             BOOL opened = [self open];
+             NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",routeNum,propNum,destinationID,direction,route.distanceInMiles,route.timeInMinutes];
+             [self executeCmd:(LPSTR)cmd.UTF8String];
+             [self close:opened];
          }
      }];
 }
@@ -356,16 +369,16 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     NSArray * individDests = [self getIndividualDestinations];
     
-    BOOL opened = [self open];
-
+    NSInteger routeNum = [self nextRouteNum];
     for (Destination *dest in individDests)
     {
-        Route * route = [self getRouteFrom:propPt to:dest.latlon];
-        NSInteger routeNum = [self nextRouteNum];
-        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%f,%f);",routeNum,propNum,dest.destinationID,route.distanceInMiles,route.timeInMinutes];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+        [self getRoute:routeNum++
+              fromProp:propNum
+         fromPropPoint:propPt
+                toDest:dest.destinationID
+           toDestPoint:dest.latlon
+          tranportType:MKDirectionsTransportTypeAny];
     }
-    [self close:opened];
 }
 
 - (void)addRoutesForDestination:(Destination*)dest
@@ -373,17 +386,18 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     PropertyList *propList = [[PropertyList alloc]init];
     NSArray* propNums = [propList getPropertyNumbers];
     
-    BOOL opened = [self open];
+    NSInteger routeNum = [self nextRouteNum];
     for (NSNumber* pnum in propNums)
     {
         NSInteger propNum = [pnum integerValue];
         LLPOINT propPt = [propList getPropertyLatLon:propNum];
     
-        Route * route = [self getRouteFrom:propPt to:dest.latlon];
-        NSInteger routeNum = [self nextRouteNum];
-        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%f,%f);",routeNum,propNum,dest.destinationID,route.distanceInMiles,route.timeInMinutes];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+        [self getRoute:routeNum++
+              fromProp:propNum
+         fromPropPoint:propPt
+                toDest:dest.destinationID
+           toDestPoint:dest.latlon
+          tranportType:MKDirectionsTransportTypeAny];
     }
-    [self close:opened];
 }
 @end
