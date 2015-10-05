@@ -24,6 +24,9 @@
 @end
 
 @interface Destinations : NSObject
+
+- (BOOL)addParcelToDestinations:(NSString *)PID;
+
 -(NSArray*)getIndividualDestinations;
 -(NSArray*)getGroupDestinations;
 -(NSArray*)getDestinationsWithinGroup:(NSInteger)groupID;

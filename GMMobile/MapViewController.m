@@ -2711,7 +2711,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)addToDestinations
 {
-    //implement add to destinations here
+    [self dismissTableView];
+    
+    Destinations *pl = [[Destinations alloc] init];
+    [pl addParcelToDestinations:_selectedPID];
 }
 
 - (void)traceRouteFromCurrentLocation
@@ -4158,7 +4161,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             if ([self isHennepinCountyPID:_selectedPID])
             {
                 _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                             @"Add to Property List", @"Add to Desinations", @"Route From Current Location", @"Remove Property Marker"];
+                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Remove Property Marker"];
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {

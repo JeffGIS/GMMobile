@@ -16,6 +16,7 @@
 #import "MarkerInfoWindow.h"
 #import "MarkerButton.h"
 #import "PropertyList.h"
+#import "Destinations.h"
 #import "NVDataLoader.h"
 #import <MessageUI/MessageUI.h>
 #import "CCodeLibrary/NVAlertView.h"
