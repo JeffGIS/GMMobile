@@ -8,9 +8,7 @@
 @interface DestinationsViewController ()
 
 @property (nonatomic) CGFloat rowHeight;
-@property (nonatomic) UIImage *checkmark;
 @property (nonatomic) UIFont *font;
-@property (nonatomic) NSArray *propNames;
 
 @end
 
@@ -34,31 +32,29 @@
         _font = [UIFont boldSystemFontOfSize:36.0];
     }
     
-    PropertyList *proplist = [[PropertyList alloc] init];
-    _propNames = [proplist getPropertyNumbers];
-    
-    [self setupTableView];
+    [self setupTableView:_topTableView];
+    [self setupTableView:_bottomTableView];
 }
 
-- (void)setupTableView
+- (void)setupTableView:(UITableView *)tableView
 {
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.separatorInset = UIEdgeInsetsZero;
-    _tableView.separatorColor = UIColor.blackColor;
-    _tableView.backgroundColor = UserDefaults.defaults.green;
-    _tableView.bounces = NO;
-    _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    _tableView.layer.borderWidth = (_rowHeight / 24.0);
-    _tableView.layer.cornerRadius = 10.0;
-    _tableView.rowHeight = _rowHeight;
-    _tableView.sectionHeaderHeight = _rowHeight;
+    tableView.delegate = self;
+    tableView.dataSource = self;
+    tableView.separatorInset = UIEdgeInsetsZero;
+    tableView.separatorColor = UIColor.blackColor;
+    tableView.backgroundColor = UserDefaults.defaults.green;
+    tableView.bounces = NO;
+    tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    tableView.layer.borderWidth = (_rowHeight / 24.0);
+    tableView.layer.cornerRadius = 10.0;
+    tableView.rowHeight = _rowHeight;
+    tableView.sectionHeaderHeight = _rowHeight;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return _propNames.count;
+    return 12;
 }
 
 - (UIView *)tableView:(UITableView *)tableView
@@ -70,7 +66,12 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.font = _font;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = @"Destinations List";
+    
+    if (tableView == _topTableView)
+        headerLabel.text = @"Individual Destinations";
+    
+    else
+        headerLabel.text = @"Group Destinations";
     
     UIView *headerView = [[UIView alloc] initWithFrame:
                           CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
@@ -92,7 +93,12 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
-    cell.textLabel.text = [_propNames[indexPath.row] stringValue];
+    if (tableView == _topTableView)
+        cell.textLabel.text = [NSString stringWithFormat:@"TopTableView%li", (long)indexPath.row];
+    
+    else
+        cell.textLabel.text = [NSString stringWithFormat:@"BottomTableView%li", (long)indexPath.row];
+    
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.textColor = UIColor.blackColor;
     cell.userInteractionEnabled = YES;
@@ -100,16 +106,14 @@ viewForHeaderInSection:(NSInteger)section
     cell.textLabel.font = _font;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:_checkmark];
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        checkmarkView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
-    
-    else
-        checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
-    
-    cell.accessoryView = checkmarkView;
     return cell;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    [_topTableView reloadData];
+    [_bottomTableView reloadData];
 }
 
 @end
