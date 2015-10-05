@@ -88,6 +88,10 @@ extern int keepProcessing;
                  removeItemAtIndex:2
                           animated:NO];
     
+    [NVTabBarEdit tabBarController:self.tabBarController
+                 removeItemAtIndex:2
+                          animated:NO];
+    
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
@@ -578,6 +582,12 @@ extern int keepProcessing;
     [NVTabBarEdit tabBarController:self.tabBarController
       replaceViewControllerAtIndex:2
                 withViewController:findvc];
+    
+    UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+      replaceViewControllerAtIndex:3
+                withViewController:avc];
     
     if (_firstTimeAppear)
     {
