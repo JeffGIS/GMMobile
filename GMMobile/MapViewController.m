@@ -17,6 +17,7 @@ extern int keepProcessing;
 #import <MapKit/MapKit.h>
 #import "CCodeLibrary/PolylineCompression.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
+#import "Destinations.h"
 
 #define MAX_VECTORVIEWS 8
 

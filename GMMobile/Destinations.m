@@ -1,40 +1,43 @@
-//
 //  Destinations.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 10/4/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import "Destinations.h"
 
 #define CURRENT_VERSION 1
+#define METERS_PER_MILE 1609.344
+
+@interface Destinations ()
+
+@property (nonatomic, copy) NSString *documentsDirectory;
+@property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, copy) NSString *path;
+@property (nonatomic) sqlite3 *database;
+@property BOOL isOpen;
+@property (nonatomic) unsigned long long fileSize;
+
+@end
 
 @implementation Destination
+
 - (id)init
 {
     self = [super init];
     return self;
 }
+
 @end
 
 @implementation Route
+
 - (id)init
 {
     self = [super init];
     return self;
 }
+
 @end
 
 @implementation Destinations
-{
-    NSString *_documentsDirectory;
-    NSString *_fileName;
-    NSString *_path;
-    sqlite3 *_database;
-    BOOL _isOpen;
-    unsigned long long _fileSize;
-}
 
 int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
@@ -207,12 +210,50 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     return rtn;
 }
 
--(Route*)getRouteFrom:(LLPOINT)fromPoint
-                   to:(LLPOINT)toPoint
+- (void)getRouteFrom:(LLPOINT)fromPoint
+                  to:(LLPOINT)toPoint
+        tranportType:(MKDirectionsTransportType)transportType
 {
-    Route * route = [[Route alloc]init];
+    Route *route = [[Route alloc] init];
     
-    return route;
+    CLLocationCoordinate2D fromCoord = CLLocationCoordinate2DMake(fromPoint.lat, fromPoint.lon);
+    
+    MKPlacemark *fpm = [[MKPlacemark alloc] initWithCoordinate:fromCoord
+                                             addressDictionary:nil];
+    
+    MKMapItem *fmi = [[MKMapItem alloc] initWithPlacemark:fpm];
+    
+    CLLocationCoordinate2D toCoord = CLLocationCoordinate2DMake(toPoint.lat, toPoint.lon);
+    
+    MKPlacemark *tpm = [[MKPlacemark alloc] initWithCoordinate:toCoord
+                                             addressDictionary:nil];
+    
+    MKMapItem *tmi = [[MKMapItem alloc] initWithPlacemark:tpm];
+    
+    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+    request.source = fmi;
+    request.destination = tmi;
+    request.transportType = transportType;
+    request.requestsAlternateRoutes = NO;
+    
+    MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
+    
+    [directions calculateDirectionsWithCompletionHandler:
+     ^(MKDirectionsResponse *response, NSError *error) {
+         if (error)
+             NSLog(@"MKDIR ERROR:%@", error.localizedDescription);
+         
+         else
+         {
+             MKRoute *theRoute = response.routes[0];
+             route.routePolyline = theRoute.steps;
+             route.distanceInMiles = (theRoute.distance / METERS_PER_MILE);
+             route.timeInMinutes = (theRoute.expectedTravelTime / 60.0);
+             
+             if (_delegate)
+                 [_delegate destinationsDidReturnRoute:route];
+         }
+     }];
 }
 
 @end
