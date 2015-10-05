@@ -1,31 +1,45 @@
-//
 //  Destinations.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 10/4/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import <MapKit/MapKit.h>
 
 @interface Destination : NSObject
-@property NSInteger destinationID;
-@property NSString* destinationName;
-@property LLPOINT latlon;
-@property CGFloat frequency;
-@property NSInteger timeDepart, timeReturn;
+
+@property NSInteger destinationID, timeDepart, timeReturn;
+@property (nonatomic, copy) NSString *destinationName;
+@property (nonatomic) LLPOINT latlon;
+@property (nonatomic) CGFloat frequency;
+
 @end
 
 @interface Route : NSObject
-@property CGFloat distanceInMiles;
-@property CGFloat timeInMinutes;
-@property NSArray* routePolyline;
+
+@property (nonatomic) CGFloat distanceInMiles;
+@property (nonatomic) CGFloat timeInMinutes;
+@property (nonatomic) NSArray *routePolyline;
+
+@end
+
+@class Destinations;
+
+@protocol DestinationsDelegate <NSObject>
+
+- (void)destinationsDidReturnRoute:(Route *)route;
+
 @end
 
 @interface Destinations : NSObject
 
+@property (nonatomic, weak) id <DestinationsDelegate> delegate;
+
 - (BOOL)addParcelToDestinations:(NSString *)PID;
+- (NSArray *)getIndividualDestinations;
+- (NSArray *)getGroupDestinations;
+- (NSArray *)getDestinationsWithinGroup:(NSInteger)groupID;
+- (void)addIndividualDestination:(Destination *)destination;
+- (void)addGroupDestination:(Destination *)destination;
 
 -(NSArray*)getIndividualDestinations;
 -(NSArray*)getGroupDestinations;
