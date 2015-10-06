@@ -39,8 +39,5 @@
                      newName:(NSString*)name;
 -(void)addRoutesForProperty:(NSInteger)propNum;
 
-- (Route *)getRouteFrom:(LLPOINT)fromPoint
-                  to:(LLPOINT)toPoint
-        tranportType:(MKDirectionsTransportType)transportType;
 - (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type;
 @end

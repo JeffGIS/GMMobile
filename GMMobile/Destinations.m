@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "PropertyList.h"
 
-#define CURRENT_VERSION 8
+#define CURRENT_VERSION 10
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -16,6 +16,7 @@
 @property (nonatomic) sqlite3 *database;
 @property BOOL isOpen;
 @property (nonatomic) unsigned long long fileSize;
+@property NSCondition *condition;
 
 @end
 
@@ -24,6 +25,7 @@
 - (id)init
 {
     self = [super init];
+    self.frequency = 1.0;
     return self;
 }
 
@@ -75,6 +77,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
             [NSFileManager.defaultManager removeItemAtPath:_path error:nil];
         
         [self createTables];
+        self.condition = [[NSCondition alloc] init];
     }
     
     return self;
@@ -260,7 +263,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 
 -(NSInteger)addIndividualDestination:(Destination*)dest
 {
-    int destNum = [self addDestination:dest toGroup:0];
+    NSInteger destNum = [self addDestination:dest toGroup:0];
 
     dest.destinationID = destNum;
     [self addRoutesForDestination:dest];
@@ -281,7 +284,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     BOOL opened = [self open];
     
     int destnum = [self next_id];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%li,'%@',%f,%f,1.0,0,0);",destnum,groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%li,'%@',%f,%f,%f,%li,%li);",destnum,groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon,dest.frequency,dest.timeDepart,dest.timeReturn];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
     [self close:opened];
@@ -358,10 +361,13 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              route.distanceInMiles = frequency * (theRoute.distance / METERS_PER_MILE);
              route.timeInMinutes = frequency * (theRoute.expectedTravelTime / 60.0);
              
+             [_condition lock];
              BOOL opened = [self open];
              NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",routeNum,propNum,destinationID,direction,route.distanceInMiles,route.timeInMinutes];
              [self executeCmd:(LPSTR)cmd.UTF8String];
              [self close:opened];
+             //[_condition signal];
+             [_condition unlock];
          }
      }];
 }

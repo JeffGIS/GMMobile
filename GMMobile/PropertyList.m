@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 15
+#define CURRENT_VERSION 16
 @implementation PropertyList
 {
     NSString *_documentsDirectory;
