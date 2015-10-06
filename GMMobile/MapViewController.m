@@ -4185,7 +4185,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             else
             {
                 _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                              @"Add to Property List",@"Add to Desinations", @"Route From Current Location", @"Remove Property Marker"];
+                              @"Add to Property List",@"Add to Destinations", @"Route From Current Location", @"Remove Property Marker"];
 
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)

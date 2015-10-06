@@ -1627,7 +1627,7 @@ Exit:
          
          if (!(nAge %2))
          {
-             NSNumber *age2 = (NSNumber *)ageArray[median + 1];
+             NSNumber *age2 = (NSNumber *)ageArray[median - 1];
              values->medianBuiltYear = ((age1.floatValue + age2.floatValue) / 2.0);
          }
          else

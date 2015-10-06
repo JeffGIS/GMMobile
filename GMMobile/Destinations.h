@@ -9,10 +9,11 @@
 
 @interface Destination : NSObject
 
-@property NSInteger destinationID, timeDepart, timeReturn;
+@property NSInteger destinationID, groupID, timeDepart, timeReturn;
 @property (nonatomic, copy) NSString *destinationName;
 @property (nonatomic) LLPOINT latlon;
 @property (nonatomic) CGFloat frequency;
+@property (nonatomic) NSUInteger tranportType;
 
 @end
 
