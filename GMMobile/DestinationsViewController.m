@@ -11,6 +11,7 @@
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIFont *font;
 @property (nonatomic) NSArray *individualDestinations, *groupDestinations;
+@property (nonatomic) UIButton *topHeaderButton, *bottomHeaderButton;
 
 @end
 
@@ -33,6 +34,31 @@
         _rowHeight = 76.0;
         _font = [UIFont boldSystemFontOfSize:36.0];
     }
+    
+    _topHeaderButton = [[UIButton alloc] init];
+    _bottomHeaderButton = [[UIButton alloc] init];
+    
+    [_topHeaderButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                              ofType:@"png"]]
+                      forState:UIControlStateNormal];
+    
+    [_bottomHeaderButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                                 ofType:@"png"]]
+                         forState:UIControlStateNormal];
+    
+    CGFloat imageInset = (_rowHeight / 10.0);
+    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(imageInset, imageInset, imageInset, imageInset);
+    
+    _topHeaderButton.imageEdgeInsets = edgeInsets;
+    _bottomHeaderButton.imageEdgeInsets = edgeInsets;
+    
+    [_topHeaderButton addTarget:self
+                         action:@selector(addIndividual:)
+               forControlEvents:UIControlEventTouchUpInside];
+    
+    [_bottomHeaderButton addTarget:self
+                            action:@selector(addGroup:)
+                  forControlEvents:UIControlEventTouchUpInside];
     
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
@@ -80,7 +106,7 @@
 viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
+                            CGRectMake(_rowHeight, 0.0, (tableView.frame.size.width - (_rowHeight * 2.0)), _rowHeight)];
     
     headerLabel.font = _font;
     headerLabel.textColor = UIColor.whiteColor;
@@ -97,6 +123,29 @@ viewForHeaderInSection:(NSInteger)section
     
     [headerView addSubview:headerLabel];
     headerView.backgroundColor = UIColor.blackColor;
+    
+    if (tableView == _topTableView)
+    {
+        if (![headerView.subviews containsObject:_topHeaderButton])
+        {
+            _topHeaderButton.frame = CGRectMake((headerView.frame.size.width - _rowHeight),
+                                                0.0, _rowHeight, _rowHeight);
+            
+            [headerView addSubview:_topHeaderButton];
+        }
+    }
+    
+    else
+    {
+        if (![headerView.subviews containsObject:_bottomHeaderButton])
+        {
+            _bottomHeaderButton.frame = CGRectMake((headerView.frame.size.width - _rowHeight),
+                                                   0.0, _rowHeight, _rowHeight);
+            
+            [headerView addSubview:_bottomHeaderButton];
+        }
+    }
+    
     return headerView;
 }
 
@@ -133,6 +182,16 @@ viewForHeaderInSection:(NSInteger)section
 {
     [_topTableView reloadData];
     [_bottomTableView reloadData];
+}
+
+- (void)addIndividual:(UIButton *)button
+{
+    
+}
+
+- (void)addGroup:(UIButton *)button
+{
+    
 }
 
 @end
