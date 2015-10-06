@@ -29,16 +29,21 @@
 
 -(NSInteger)addParcelToDestinations:(NSString *)PID;
 
--(NSArray*)getIndividualDestinations;
--(NSArray*)getGroupDestinations;
--(NSArray*)getDestinationsWithinGroup:(NSInteger)groupID;
--(NSInteger)addIndividualDestination:(Destination*)destination;
--(NSInteger)addGroupDestination:(Destination*)destination;
--(NSInteger)addDestination:(Destination*)destination toGroup:(NSInteger)groupID;
--(void)removeDestination:(NSInteger)destinationID;
--(void)updateDestinationName:(NSInteger)destinationID
-                     newName:(NSString*)name;
--(void)addRoutesForProperty:(NSInteger)propNum;
+- (NSArray *)getIndividualDestinations;
+- (NSArray *)getGroupDestinations;
+- (NSArray *)getDestinationsWithinGroup:(NSInteger)groupID;
+- (NSInteger)addIndividualDestination:(Destination *)destination;
+- (NSInteger)addGroupDestination:(Destination *)destination;
+- (void)removeDestination:(NSInteger)destinationID;
+- (void)addRoutesForProperty:(NSInteger)propNum;
 
-- (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type;
+- (NSInteger)addDestination:(Destination *)destination
+                    toGroup:(NSInteger)groupID;
+
+- (void)updateDestinationName:(NSInteger)destinationID
+                      newName:(NSString *)name;
+
+- (CGFloat)totalValueForProperty:(NSInteger)propNum
+                          ofType:(PropFieldType)type;
+
 @end

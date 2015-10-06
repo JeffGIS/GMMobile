@@ -6,7 +6,7 @@
 #import "PropertyList.h"
 #import "GoogleMaps/GoogleMaps.h"
 
-#define CURRENT_VERSION 10
+#define CURRENT_VERSION 11
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -405,9 +405,9 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
             mode = @"driving";
             break;
             
-        case MKDirectionsTransportTypeTransit:
-            mode = @"transit";
-            break;
+        //case MKDirectionsTransportTypeTransit:
+        //    mode = @"transit";
+        //    break;
             
         case MKDirectionsTransportTypeWalking:
             mode = @"walking";
