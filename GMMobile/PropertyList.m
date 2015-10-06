@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 9
+#define CURRENT_VERSION 11
 @implementation PropertyList
 {
     NSString *_documentsDirectory;
@@ -210,8 +210,11 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_Stability_halfMile:
             name = @"Stability (5 year Half Mile)";
             break;
+        case PFT_DistanceToDestinations:
+            name = @"Distance to Destinations (Miles)";
+            break;
         case PFT_TimeToDestinations:
-            name = @"Time to Destinations";
+            name = @"Time to Destinations (Minutes)";
             break;
         case PFT_PctHomestead_block:
             name = @"PCT Homestead (Block)";
@@ -291,7 +294,17 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
                    forPropertyNumber:(NSInteger)propNum;
 {
-    NSString * value = [self getFieldValue:propNum
+    NSString * value = nil;
+    
+    if (type == PFT_TimeToDestinations || type == PFT_DistanceToDestinations)
+    {
+        Destinations *dest = [[Destinations alloc]init];
+        
+        CGFloat val = [dest totalValueForProperty:propNum ofType:type];
+        value = [NSString stringWithFormat:@"%.1f",val];
+    }
+    else
+        value = [self getFieldValue:propNum
                                       type:type];
     
     if (value)

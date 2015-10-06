@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import <Foundation/Foundation.h>
+#import "PropertyList.h"
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <MapKit/MapKit.h>
 
@@ -39,5 +40,5 @@
 - (Route *)getRouteFrom:(LLPOINT)fromPoint
                   to:(LLPOINT)toPoint
         tranportType:(MKDirectionsTransportType)transportType;
-
+- (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type;
 @end

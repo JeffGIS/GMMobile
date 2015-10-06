@@ -1625,7 +1625,7 @@ Exit:
          int median = (nAge / 2);
          NSNumber *age1 = (NSNumber *)ageArray[median];
          
-         if (nAge %2)
+         if (!(nAge %2))
          {
              NSNumber *age2 = (NSNumber *)ageArray[median + 1];
              values->medianBuiltYear = ((age1.floatValue + age2.floatValue) / 2.0);
@@ -1994,7 +1994,7 @@ Exit:
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
                 
-                SQLOKpd(sqlite3_finalize(statement),_database, 57);
+                //SQLOKpd(sqlite3_finalize(statement),_database, 57);
                 
                 DATA_FROM_TABLES values;
                 [self computeValuesFromTables:&values

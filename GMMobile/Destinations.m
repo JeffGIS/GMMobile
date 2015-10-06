@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "PropertyList.h"
 
-#define CURRENT_VERSION 2
+#define CURRENT_VERSION 4
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -236,7 +236,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
-    if (sqlite3_step(statement) == SQLITE_ROW)
+    while (sqlite3_step(statement) == SQLITE_ROW)
     {
         Destination * dest = [[Destination alloc]init];
         
@@ -399,5 +399,30 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
            toDestPoint:dest.latlon
           tranportType:MKDirectionsTransportTypeAny];
     }
+}
+
+- (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type
+{
+    CGFloat totval = 0;
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT Distance,Time FROM Routes WHERE PropertyNum = %li",propNum];
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        CGFloat dist = sqlite3_column_double(statement, 0);
+        CGFloat time = sqlite3_column_double(statement, 1);
+        if (type == PFT_TimeToDestinations)
+            totval += time;
+        else
+            totval += dist;
+    }
+    
+    SQLOK(sqlite3_finalize(statement), _database);
+    [self close:opened];
+    
+    return totval;
 }
 @end
