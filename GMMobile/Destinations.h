@@ -6,21 +6,22 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <MapKit/MapKit.h>
 
+
 @interface Destination : NSObject
 
 @property NSInteger destinationID, groupID, timeDepart, timeReturn;
-@property (nonatomic, copy) NSString *destinationName;
-@property (nonatomic) LLPOINT latlon;
-@property (nonatomic) CGFloat frequency;
-@property (nonatomic) NSUInteger tranportType;
+@property NSString *destinationName;
+@property LLPOINT latlon;
+@property CGFloat frequency;
+@property NSUInteger tranportType;
 
 @end
 
 @interface Route : NSObject
 
-@property (nonatomic) CGFloat distanceInMiles;
-@property (nonatomic) CGFloat timeInMinutes;
-@property (nonatomic) NSArray *routePolyline;
+@property CGFloat distanceInMiles;
+@property CGFloat timeInMinutes;
+@property NSArray *routePolyline;
 
 @end
 

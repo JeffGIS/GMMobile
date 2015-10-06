@@ -7,14 +7,6 @@
 
 #define CURRENT_VERSION 16
 @implementation PropertyList
-{
-    NSString *_documentsDirectory;
-    NSString *_fileName;
-    NSString *_path;
-    sqlite3 *_database;
-    BOOL _isOpen;
-    unsigned long long _fileSize;
-}
 
 int SQLOKpl(int sqlReturn, sqlite3 *database)
 {

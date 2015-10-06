@@ -4,16 +4,15 @@
 #import "Destinations.h"
 #import "PropertyData.h"
 #import "PropertyList.h"
+#import "GoogleMaps/GoogleMaps.h"
 
 #define CURRENT_VERSION 10
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
 
-@property (nonatomic, copy) NSString *documentsDirectory;
-@property (nonatomic, copy) NSString *fileName;
-@property (nonatomic, copy) NSString *path;
-@property (nonatomic) sqlite3 *database;
+@property NSString *documentsDirectory, *fileName, *path;
+@property sqlite3 *database;
 @property BOOL isOpen;
 @property (nonatomic) unsigned long long fileSize;
 @property NSCondition *condition;
@@ -315,15 +314,15 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     return rtn;
 }
 
-- (void) getRoute:(NSInteger)routeNum
-         fromProp:(NSInteger)propNum
-        fromPoint:(LLPOINT)fromPoint
-           toDest:(NSInteger)destinationID
-          toPoint:(LLPOINT)toPoint
-           atTime:(NSInteger)time
-    withFrequency:(CGFloat)frequency
-      inDirection:(int)direction
-     tranportType:(MKDirectionsTransportType)transportType
+- (void)getRoute:(NSInteger)routeNum
+        fromProp:(NSInteger)propNum
+       fromPoint:(LLPOINT)fromPoint
+          toDest:(NSInteger)destinationID
+         toPoint:(LLPOINT)toPoint
+          atTime:(NSInteger)time
+   withFrequency:(CGFloat)frequency
+     inDirection:(int)direction
+    tranportType:(MKDirectionsTransportType)transportType
 {
     Route *route = [[Route alloc] init];
     
@@ -352,7 +351,19 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     [directions calculateDirectionsWithCompletionHandler:
      ^(MKDirectionsResponse *response, NSError *error) {
          if (error)
-             NSLog(@"MKDIR ERROR:%@", error.localizedDescription);
+         {
+             NSLog(@"MKDIR ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+             
+             [self getRouteFromGoogle:routeNum
+                             fromProp:propNum
+                            fromPoint:fromPoint
+                               toDest:destinationID
+                              toPoint:toPoint
+                               atTime:time
+                        withFrequency:frequency
+                          inDirection:direction
+                         tranportType:transportType];
+         }
          
          else
          {
@@ -363,7 +374,10 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              
              [_condition lock];
              BOOL opened = [self open];
-             NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",routeNum,propNum,destinationID,direction,route.distanceInMiles,route.timeInMinutes];
+             
+             NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
+                              routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+             
              [self executeCmd:(LPSTR)cmd.UTF8String];
              [self close:opened];
              //[_condition signal];
@@ -372,14 +386,90 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
      }];
 }
 
+- (void)getRouteFromGoogle:(NSInteger)routeNum
+                  fromProp:(NSInteger)propNum
+                 fromPoint:(LLPOINT)fromPoint
+                    toDest:(NSInteger)destinationID
+                   toPoint:(LLPOINT)toPoint
+                    atTime:(NSInteger)time
+             withFrequency:(CGFloat)frequency
+               inDirection:(int)direction
+              tranportType:(MKDirectionsTransportType)transportType
+{
+    NSString *mode = @"";
+    
+    switch (transportType)
+    {
+        case MKDirectionsTransportTypeAny:
+        case MKDirectionsTransportTypeAutomobile:
+            mode = @"driving";
+            break;
+            
+        case MKDirectionsTransportTypeTransit:
+            mode = @"transit";
+            break;
+            
+        case MKDirectionsTransportTypeWalking:
+            mode = @"walking";
+            break;
+            
+        default:
+            mode = @"driving";
+            break;
+    }
+    
+    NSString *urlString =
+    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=%@",
+     fromPoint.lat, fromPoint.lon, toPoint.lat, toPoint.lon, mode];
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    urlRequest.timeoutInterval = 15;
+    
+    NSData *urlData = nil;
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    urlData = [NSURLConnection sendSynchronousRequest:urlRequest
+                                    returningResponse:&response
+                                                error:&error];
+    
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&error];
+    
+    NSString *status = json[@"status"];
+    
+    if (error)
+        NSLog(@"JSON ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+    
+    else if (![status isEqualToString:@"OK"])
+        NSLog(@"JSON ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, status);
+    
+    else
+    {
+        GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
+        NSDictionary *legs = json[@"routes"][0][@"legs"][0];
+        NSArray *steps = legs[@"steps"];
+        
+        for (int i = 0; i < steps.count; i++)
+        {
+            NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+            
+            GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
+            GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+        }
+    }
+}
+
 - (void)addRoutesForProperty:(NSInteger)propNum
 {
     PropertyList *propList = [[PropertyList alloc]init];
     LLPOINT propPt = [propList getPropertyLatLon:propNum];
     
-    NSArray * individDests = [self getIndividualDestinations];
+    NSArray *individDests = [self getIndividualDestinations];
     
     NSInteger routeNum = [self nextRouteNum];
+    
     for (Destination *dest in individDests)
     {
         [self getRoute:routeNum++
@@ -404,13 +494,14 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     }
 }
 
-- (void)addRoutesForDestination:(Destination*)dest
+- (void)addRoutesForDestination:(Destination *)dest
 {
     PropertyList *propList = [[PropertyList alloc]init];
-    NSArray* propNums = [propList getPropertyNumbers];
+    NSArray *propNums = [propList getPropertyNumbers];
     
     NSInteger routeNum = [self nextRouteNum];
-    for (NSNumber* pnum in propNums)
+    
+    for (NSNumber *pnum in propNums)
     {
         NSInteger propNum = [pnum integerValue];
         LLPOINT propPt = [propList getPropertyLatLon:propNum];
@@ -434,11 +525,11 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
          withFrequency:dest.frequency
            inDirection:2
           tranportType:MKDirectionsTransportTypeAny];
-
     }
 }
 
-- (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type
+- (CGFloat)totalValueForProperty:(NSInteger)propNum
+                          ofType:(PropFieldType)type
 {
     CGFloat totval = 0;
     BOOL opened = [self open];
@@ -451,6 +542,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     {
         CGFloat dist = sqlite3_column_double(statement, 0);
         CGFloat time = sqlite3_column_double(statement, 1);
+        
         if (type == PFT_TimeToDestinations)
             totval += time;
         else
@@ -462,6 +554,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     return totval;
 }
+
 -(void)updateDestinationName:(NSInteger)destinationID
                      newName:(NSString*)name
 {
