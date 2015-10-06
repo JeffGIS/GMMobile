@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "PropertyList.h"
 
-#define CURRENT_VERSION 7
+#define CURRENT_VERSION 8
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -319,10 +319,10 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
           toPoint:(LLPOINT)toPoint
            atTime:(NSInteger)time
     withFrequency:(CGFloat)frequency
+      inDirection:(int)direction
      tranportType:(MKDirectionsTransportType)transportType
 {
     Route *route = [[Route alloc] init];
-    int direction = 1;
     
     CLLocationCoordinate2D fromCoord = CLLocationCoordinate2DMake(fromPoint.lat, fromPoint.lon);
     
@@ -383,6 +383,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                toPoint:dest.latlon
                 atTime:dest.timeDepart
          withFrequency:dest.frequency
+           inDirection:1
           tranportType:MKDirectionsTransportTypeAny];
         
         [self getRoute:routeNum++
@@ -392,6 +393,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                toPoint:propPt
                 atTime:dest.timeReturn
          withFrequency:dest.frequency
+           inDirection:2
           tranportType:MKDirectionsTransportTypeAny];
     }
 }
@@ -414,6 +416,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                toPoint:dest.latlon
                 atTime:dest.timeDepart
          withFrequency:dest.frequency
+           inDirection:1
           tranportType:MKDirectionsTransportTypeAny];
         
         [self getRoute:routeNum++
@@ -423,6 +426,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                toPoint:propPt
                 atTime:dest.timeReturn
          withFrequency:dest.frequency
+           inDirection:2
           tranportType:MKDirectionsTransportTypeAny];
 
     }
