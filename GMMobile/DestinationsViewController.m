@@ -4,11 +4,13 @@
 #import "DestinationsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "PropertyList.h"
+#import "Destinations.h"
 
 @interface DestinationsViewController ()
 
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIFont *font;
+@property (nonatomic) NSArray *individualDestinations, *groupDestinations;
 
 @end
 
@@ -36,6 +38,19 @@
     [self setupTableView:_bottomTableView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    Destinations *destinations = [[Destinations alloc] init];
+    
+    _individualDestinations = [destinations getIndividualDestinations];
+    [_topTableView reloadData];
+    
+    _groupDestinations = [destinations getGroupDestinations];
+    [_bottomTableView reloadData];
+}
+
 - (void)setupTableView:(UITableView *)tableView
 {
     tableView.delegate = self;
@@ -54,7 +69,11 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return 12;
+    if (tableView == _topTableView)
+        return _individualDestinations.count;
+    
+    else
+        return _groupDestinations.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView
@@ -94,10 +113,10 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     if (tableView == _topTableView)
-        cell.textLabel.text = [NSString stringWithFormat:@"TopTableView%li", (long)indexPath.row];
+        cell.textLabel.text = [_individualDestinations[indexPath.row] destinationName];
     
     else
-        cell.textLabel.text = [NSString stringWithFormat:@"BottomTableView%li", (long)indexPath.row];
+        cell.textLabel.text = [_groupDestinations[indexPath.row] destinationName];
     
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.textColor = UIColor.blackColor;
