@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "PropertyList.h"
 
-#define CURRENT_VERSION 4
+#define CURRENT_VERSION 7
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -258,7 +258,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     return dests;
 }
 
--(int)addIndividualDestination:(Destination*)dest
+-(NSInteger)addIndividualDestination:(Destination*)dest
 {
     int destNum = [self addDestination:dest toGroup:0];
 
@@ -266,7 +266,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     [self addRoutesForDestination:dest];
     return destNum;
 }
--(int)addGroupDestination:(Destination*)dest
+-(NSInteger)addGroupDestination:(Destination*)dest
 {
     BOOL opened = [self open];
     int destnum = [self next_id];
@@ -276,7 +276,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     [self close:opened];
     return destnum;
 }
--(int)addDestination:(Destination*)dest toGroup:(NSInteger)groupID
+-(NSInteger)addDestination:(Destination*)dest toGroup:(NSInteger)groupID
 {
     BOOL opened = [self open];
     
@@ -293,13 +293,15 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     NSString * cmd = [NSString stringWithFormat:@"DELETE FROM Destinations WHERE DestinationNumber = %li;",destinationID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
+    cmd = [NSString stringWithFormat:@"DELETE FROM Routes WHERE DestinationNum = %li;",destinationID];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
     
     [self close:opened];
     return;
 }
-- (int)addParcelToDestinations:(NSString *)PID
+- (NSInteger)addParcelToDestinations:(NSString *)PID
 {
-    BOOL rtn = NO;
+    NSInteger rtn = NO;
     PropertyData *propData = [[PropertyData alloc] init];
     LLPOINT pidPoint = [propData getPointForPID:PID];
     
@@ -312,9 +314,11 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 
 - (void) getRoute:(NSInteger)routeNum
          fromProp:(NSInteger)propNum
-    fromPropPoint:(LLPOINT)fromPoint
+        fromPoint:(LLPOINT)fromPoint
            toDest:(NSInteger)destinationID
-      toDestPoint:(LLPOINT)toPoint
+          toPoint:(LLPOINT)toPoint
+           atTime:(NSInteger)time
+    withFrequency:(CGFloat)frequency
      tranportType:(MKDirectionsTransportType)transportType
 {
     Route *route = [[Route alloc] init];
@@ -351,8 +355,8 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
          {
              MKRoute *theRoute = response.routes[0];
              route.routePolyline = theRoute.steps;
-             route.distanceInMiles = (theRoute.distance / METERS_PER_MILE);
-             route.timeInMinutes = (theRoute.expectedTravelTime / 60.0);
+             route.distanceInMiles = frequency * (theRoute.distance / METERS_PER_MILE);
+             route.timeInMinutes = frequency * (theRoute.expectedTravelTime / 60.0);
              
              BOOL opened = [self open];
              NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",routeNum,propNum,destinationID,direction,route.distanceInMiles,route.timeInMinutes];
@@ -374,9 +378,20 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     {
         [self getRoute:routeNum++
               fromProp:propNum
-         fromPropPoint:propPt
+             fromPoint:propPt
                 toDest:dest.destinationID
-           toDestPoint:dest.latlon
+               toPoint:dest.latlon
+                atTime:dest.timeDepart
+         withFrequency:dest.frequency
+          tranportType:MKDirectionsTransportTypeAny];
+        
+        [self getRoute:routeNum++
+              fromProp:propNum
+             fromPoint:dest.latlon
+                toDest:dest.destinationID
+               toPoint:propPt
+                atTime:dest.timeReturn
+         withFrequency:dest.frequency
           tranportType:MKDirectionsTransportTypeAny];
     }
 }
@@ -394,10 +409,22 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
         [self getRoute:routeNum++
               fromProp:propNum
-         fromPropPoint:propPt
+             fromPoint:propPt
                 toDest:dest.destinationID
-           toDestPoint:dest.latlon
+               toPoint:dest.latlon
+                atTime:dest.timeDepart
+         withFrequency:dest.frequency
           tranportType:MKDirectionsTransportTypeAny];
+        
+        [self getRoute:routeNum++
+              fromProp:propNum
+             fromPoint:dest.latlon
+                toDest:dest.destinationID
+               toPoint:propPt
+                atTime:dest.timeReturn
+         withFrequency:dest.frequency
+          tranportType:MKDirectionsTransportTypeAny];
+
     }
 }
 
@@ -425,4 +452,26 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     return totval;
 }
+-(void)updateDestinationName:(NSInteger)destinationID
+                     newName:(NSString*)name
+{
+    BOOL opened = [self open];
+    
+    NSString * cmd = [NSString stringWithFormat:@"UPDATE Destinations SET DestinationName = '%@' WHERE DestinationNumber = %li",name,destinationID];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self close:opened];
+}
+
+-(void)updateDestination:(Destination*)dest
+{
+    BOOL opened = [self open];
+    
+    [self startTransaction];
+    [self removeDestination:dest.destinationID];
+    dest.destinationID = [self addDestination:dest toGroup:dest.groupID];
+    [self addRoutesForDestination:dest];
+    [self commitTransaction];
+    [self close:opened];
+}
+
 @end
