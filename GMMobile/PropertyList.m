@@ -5,16 +5,18 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 15
+#define CURRENT_VERSION 18
+
+@interface PropertyList ()
+
+@property NSString *documentsDirectory, *fileName, *path;
+@property sqlite3 *database;
+@property BOOL isOpen;
+@property unsigned long long fileSize;
+
+@end
+
 @implementation PropertyList
-{
-    NSString *_documentsDirectory;
-    NSString *_fileName;
-    NSString *_path;
-    sqlite3 *_database;
-    BOOL _isOpen;
-    unsigned long long _fileSize;
-}
 
 int SQLOKpl(int sqlReturn, sqlite3 *database)
 {

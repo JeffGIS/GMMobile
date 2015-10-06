@@ -10,36 +10,40 @@
 @interface Destination : NSObject
 
 @property NSInteger destinationID, groupID, timeDepart, timeReturn;
-@property (nonatomic, copy) NSString *destinationName;
-@property (nonatomic) LLPOINT latlon;
-@property (nonatomic) CGFloat frequency;
-@property (nonatomic) NSUInteger tranportType;
+@property NSString *destinationName;
+@property LLPOINT latlon;
+@property CGFloat frequency;
+@property NSUInteger tranportType;
 
 @end
 
 @interface Route : NSObject
 
-@property (nonatomic) CGFloat distanceInMiles;
-@property (nonatomic) CGFloat timeInMinutes;
-@property (nonatomic) NSArray *routePolyline;
+@property CGFloat distanceInMiles;
+@property CGFloat timeInMinutes;
+@property NSArray *routePolyline;
 
 @end
 
 @interface Destinations : NSObject
 
-- (int)addParcelToDestinations:(NSString *)PID;
+-(NSInteger)addParcelToDestinations:(NSString *)PID;
+
 - (NSArray *)getIndividualDestinations;
 - (NSArray *)getGroupDestinations;
 - (NSArray *)getDestinationsWithinGroup:(NSInteger)groupID;
-- (int)addIndividualDestination:(Destination *)destination;
-- (int)addGroupDestination:(Destination *)destination;
+- (NSInteger)addIndividualDestination:(Destination *)destination;
+- (NSInteger)addGroupDestination:(Destination *)destination;
 - (void)removeDestination:(NSInteger)destinationID;
 - (void)addRoutesForProperty:(NSInteger)propNum;
 
+- (NSInteger)addDestination:(Destination *)destination
+                    toGroup:(NSInteger)groupID;
+
+- (void)updateDestinationName:(NSInteger)destinationID
+                      newName:(NSString *)name;
+
 - (CGFloat)totalValueForProperty:(NSInteger)propNum
                           ofType:(PropFieldType)type;
-
-- (int)addDestination:(Destination *)destination
-              toGroup:(NSInteger)groupID;
 
 @end

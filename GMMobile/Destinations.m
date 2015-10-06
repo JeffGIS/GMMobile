@@ -6,17 +6,15 @@
 #import "PropertyList.h"
 #import "GoogleMaps/GoogleMaps.h"
 
-#define CURRENT_VERSION 8
+#define CURRENT_VERSION 11
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
 
-@property (nonatomic, copy) NSString *documentsDirectory;
-@property (nonatomic, copy) NSString *fileName;
-@property (nonatomic, copy) NSString *path;
-@property (nonatomic) sqlite3 *database;
+@property NSString *documentsDirectory, *fileName, *path;
+@property sqlite3 *database;
 @property BOOL isOpen;
-@property (nonatomic) unsigned long long fileSize;
+@property unsigned long long fileSize;
 
 @end
 
@@ -315,9 +313,12 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 
 - (void)getRoute:(NSInteger)routeNum
         fromProp:(NSInteger)propNum
-   fromPropPoint:(LLPOINT)fromPoint
+       fromPoint:(LLPOINT)fromPoint
           toDest:(NSInteger)destinationID
-     toDestPoint:(LLPOINT)toPoint
+         toPoint:(LLPOINT)toPoint
+          atTime:(NSInteger)time
+   withFrequency:(CGFloat)frequency
+     inDirection:(int)direction
     tranportType:(MKDirectionsTransportType)transportType
 {
     Route *route = [[Route alloc] init];
@@ -352,9 +353,12 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              
              [self getRouteFromGoogle:routeNum
                              fromProp:propNum
-                        fromPropPoint:fromPoint
+                            fromPoint:fromPoint
                                toDest:destinationID
-                          toDestPoint:toPoint
+                              toPoint:toPoint
+                               atTime:time
+                        withFrequency:frequency
+                          inDirection:direction
                          tranportType:transportType];
          }
          
@@ -378,9 +382,12 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 
 - (void)getRouteFromGoogle:(NSInteger)routeNum
                   fromProp:(NSInteger)propNum
-             fromPropPoint:(LLPOINT)fromPoint
+                 fromPoint:(LLPOINT)fromPoint
                     toDest:(NSInteger)destinationID
-               toDestPoint:(LLPOINT)toPoint
+                   toPoint:(LLPOINT)toPoint
+                    atTime:(NSInteger)time
+             withFrequency:(CGFloat)frequency
+               inDirection:(int)direction
               tranportType:(MKDirectionsTransportType)transportType
 {
     NSString *mode = @"";
@@ -453,9 +460,10 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     PropertyList *propList = [[PropertyList alloc]init];
     LLPOINT propPt = [propList getPropertyLatLon:propNum];
     
-    NSArray * individDests = [self getIndividualDestinations];
+    NSArray *individDests = [self getIndividualDestinations];
     
     NSInteger routeNum = [self nextRouteNum];
+    
     for (Destination *dest in individDests)
     {
         [self getRoute:routeNum++
@@ -480,13 +488,14 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     }
 }
 
-- (void)addRoutesForDestination:(Destination*)dest
+- (void)addRoutesForDestination:(Destination *)dest
 {
     PropertyList *propList = [[PropertyList alloc]init];
-    NSArray* propNums = [propList getPropertyNumbers];
+    NSArray *propNums = [propList getPropertyNumbers];
     
     NSInteger routeNum = [self nextRouteNum];
-    for (NSNumber* pnum in propNums)
+    
+    for (NSNumber *pnum in propNums)
     {
         NSInteger propNum = [pnum integerValue];
         LLPOINT propPt = [propList getPropertyLatLon:propNum];
@@ -510,11 +519,11 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
          withFrequency:dest.frequency
            inDirection:2
           tranportType:MKDirectionsTransportTypeAny];
-
     }
 }
 
-- (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type
+- (CGFloat)totalValueForProperty:(NSInteger)propNum
+                          ofType:(PropFieldType)type
 {
     CGFloat totval = 0;
     BOOL opened = [self open];
@@ -527,6 +536,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     {
         CGFloat dist = sqlite3_column_double(statement, 0);
         CGFloat time = sqlite3_column_double(statement, 1);
+        
         if (type == PFT_TimeToDestinations)
             totval += time;
         else
@@ -538,6 +548,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     return totval;
 }
+
 -(void)updateDestinationName:(NSInteger)destinationID
                      newName:(NSString*)name
 {
