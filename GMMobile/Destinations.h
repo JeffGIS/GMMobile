@@ -6,6 +6,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <MapKit/MapKit.h>
 
+
 @interface Destination : NSObject
 
 @property NSInteger destinationID, timeDepart, timeReturn;
@@ -26,19 +27,18 @@
 @interface Destinations : NSObject
 
 - (int)addParcelToDestinations:(NSString *)PID;
+- (NSArray *)getIndividualDestinations;
+- (NSArray *)getGroupDestinations;
+- (NSArray *)getDestinationsWithinGroup:(NSInteger)groupID;
+- (int)addIndividualDestination:(Destination *)destination;
+- (int)addGroupDestination:(Destination *)destination;
+- (void)removeDestination:(NSInteger)destinationID;
+- (void)addRoutesForProperty:(NSInteger)propNum;
 
--(NSArray*)getIndividualDestinations;
--(NSArray*)getGroupDestinations;
--(NSArray*)getDestinationsWithinGroup:(NSInteger)groupID;
--(int)addIndividualDestination:(Destination*)destination;
--(int)addGroupDestination:(Destination*)destination;
--(int)addDestination:(Destination*)destination toGroup:(NSInteger)groupID;
--(void)removeDestination:(NSInteger)destinationID;
+- (CGFloat)totalValueForProperty:(NSInteger)propNum
+                          ofType:(PropFieldType)type;
 
--(void)addRoutesForProperty:(NSInteger)propNum;
+- (int)addDestination:(Destination *)destination
+              toGroup:(NSInteger)groupID;
 
-- (Route *)getRouteFrom:(LLPOINT)fromPoint
-                  to:(LLPOINT)toPoint
-        tranportType:(MKDirectionsTransportType)transportType;
-- (CGFloat)totalValueForProperty:(NSInteger)propNum ofType:(PropFieldType)type;
 @end

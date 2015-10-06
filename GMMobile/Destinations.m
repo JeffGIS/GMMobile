@@ -4,6 +4,7 @@
 #import "Destinations.h"
 #import "PropertyData.h"
 #import "PropertyList.h"
+#import "GoogleMaps/GoogleMaps.h"
 
 #define CURRENT_VERSION 4
 #define METERS_PER_MILE 1609.344
@@ -310,12 +311,12 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     return rtn;
 }
 
-- (void) getRoute:(NSInteger)routeNum
-         fromProp:(NSInteger)propNum
-    fromPropPoint:(LLPOINT)fromPoint
-           toDest:(NSInteger)destinationID
-      toDestPoint:(LLPOINT)toPoint
-     tranportType:(MKDirectionsTransportType)transportType
+- (void)getRoute:(NSInteger)routeNum
+        fromProp:(NSInteger)propNum
+   fromPropPoint:(LLPOINT)fromPoint
+          toDest:(NSInteger)destinationID
+     toDestPoint:(LLPOINT)toPoint
+    tranportType:(MKDirectionsTransportType)transportType
 {
     Route *route = [[Route alloc] init];
     int direction = 1;
@@ -345,7 +346,16 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     [directions calculateDirectionsWithCompletionHandler:
      ^(MKDirectionsResponse *response, NSError *error) {
          if (error)
-             NSLog(@"MKDIR ERROR:%@", error.localizedDescription);
+         {
+             NSLog(@"MKDIR ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+             
+             [self getRouteFromGoogle:routeNum
+                             fromProp:propNum
+                        fromPropPoint:fromPoint
+                               toDest:destinationID
+                          toDestPoint:toPoint
+                         tranportType:transportType];
+         }
          
          else
          {
@@ -355,11 +365,86 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              route.timeInMinutes = (theRoute.expectedTravelTime / 60.0);
              
              BOOL opened = [self open];
-             NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",routeNum,propNum,destinationID,direction,route.distanceInMiles,route.timeInMinutes];
+             
+             NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
+                              routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+             
              [self executeCmd:(LPSTR)cmd.UTF8String];
              [self close:opened];
          }
      }];
+}
+
+- (void)getRouteFromGoogle:(NSInteger)routeNum
+                  fromProp:(NSInteger)propNum
+             fromPropPoint:(LLPOINT)fromPoint
+                    toDest:(NSInteger)destinationID
+               toDestPoint:(LLPOINT)toPoint
+              tranportType:(MKDirectionsTransportType)transportType
+{
+    NSString *mode = @"";
+    
+    switch (transportType)
+    {
+        case MKDirectionsTransportTypeAny:
+        case MKDirectionsTransportTypeAutomobile:
+            mode = @"driving";
+            break;
+            
+        case MKDirectionsTransportTypeTransit:
+            mode = @"transit";
+            break;
+            
+        case MKDirectionsTransportTypeWalking:
+            mode = @"walking";
+            break;
+            
+        default:
+            mode = @"driving";
+            break;
+    }
+    
+    NSString *urlString =
+    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=%@",
+     fromPoint.lat, fromPoint.lon, toPoint.lat, toPoint.lon, mode];
+    
+    NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    urlRequest.timeoutInterval = 15;
+    
+    NSData *urlData = nil;
+    NSURLResponse *response = nil;
+    NSError *error = nil;
+    
+    urlData = [NSURLConnection sendSynchronousRequest:urlRequest
+                                    returningResponse:&response
+                                                error:&error];
+    
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&error];
+    
+    NSString *status = json[@"status"];
+    
+    if (error)
+        NSLog(@"JSON ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+    
+    else if (![status isEqualToString:@"OK"])
+        NSLog(@"JSON ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, status);
+    
+    else
+    {
+        GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
+        NSDictionary *legs = json[@"routes"][0][@"legs"][0];
+        NSArray *steps = legs[@"steps"];
+        
+        for (int i = 0; i < steps.count; i++)
+        {
+            NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+            
+            GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
+            GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+        }
+    }
 }
 
 - (void)addRoutesForProperty:(NSInteger)propNum
