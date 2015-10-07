@@ -6,8 +6,7 @@
 #import "PropertyList.h"
 #import "GoogleMaps/GoogleMaps.h"
 
-#define MKDirectionsTransportTypeTransit 11 //temp
-#define CURRENT_VERSION 14
+#define CURRENT_VERSION 15
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -401,7 +400,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
      ^(MKDirectionsResponse *response, NSError *error) {
          if (error)
          {
-             NSLog(@"MKDIR ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+             NSLog(@"MKDIR ERROR(from %li to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
              
              [self getRouteFromGoogle:routeNum
                              fromProp:propNum
@@ -503,10 +502,10 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     NSString *status = json[@"status"];
     
     if (error)
-        NSLog(@"JSON ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
+        NSLog(@"JSON ERROR(from %li to %li):%@", (long)propNum, (long)destinationID, error.localizedDescription);
     
     else if (![status isEqualToString:@"OK"])
-        NSLog(@"JSON ERROR(from %li, to %li):%@", (long)propNum, (long)destinationID, status);
+        NSLog(@"JSON ERROR(from %li to %li):%@", (long)propNum, (long)destinationID, status);
     
     else
     {
