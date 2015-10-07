@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 18
+#define CURRENT_VERSION 20
 
 @interface PropertyList ()
 
@@ -579,12 +579,12 @@ LLPOINT LLPOINTFromString (NSString* string)
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
     //add address to Proplist
-    NSString * houseAndUnit;
-    NSString * streetName;
-    NSString * city;
-    NSString * cenblock;
-    NSString * usedesc;
-    CGFloat totEMV;
+    NSString * houseAndUnit=@"";
+    NSString * streetName=@"";
+    NSString * city=@"";
+    NSString * cenblock=@"";
+    NSString * usedesc=@"";
+    CGFloat totEMV=0;
     [propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
                     streetName:&streetName

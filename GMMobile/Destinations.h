@@ -29,6 +29,7 @@
 
 -(NSInteger)addParcelToDestinations:(NSString *)PID;
 
+- (Destination *)getDestination:(NSInteger)destinationID;
 - (NSArray *)getIndividualDestinations;
 - (NSArray *)getGroupDestinations;
 - (NSArray *)getDestinationsWithinGroup:(NSInteger)groupID;
@@ -42,6 +43,7 @@
 
 - (void)updateDestinationName:(NSInteger)destinationID
                       newName:(NSString *)name;
+- (void)updateDestination:(Destination*)dest;
 
 - (CGFloat)totalValueForProperty:(NSInteger)propNum
                           ofType:(PropFieldType)type;

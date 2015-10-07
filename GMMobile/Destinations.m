@@ -6,7 +6,7 @@
 #import "PropertyList.h"
 #import "GoogleMaps/GoogleMaps.h"
 
-#define CURRENT_VERSION 11
+#define CURRENT_VERSION 13
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -227,6 +227,35 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     NSArray* dests = [self getDestinationsWithinGroup:-1];
     return dests;
 }
+
+- (Destination *)getDestination:(NSInteger)destinationID
+{
+    Destination * dest = [[Destination alloc]init];
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT DestinationNumber,GroupNumber,DestinationName,LATITUDE,LONGITUDE,Frequency,TimeDepart,TimeReturn FROM Destinations WHERE DestinationNumber = %li",destinationID];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        dest.destinationID = sqlite3_column_int(statement, 0);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, 2);
+        dest.destinationName = [NSString stringWithUTF8String:name];
+        LLPOINT pt;
+        pt.lat = sqlite3_column_double(statement, 3);
+        pt.lon = sqlite3_column_double(statement, 4);
+        dest.latlon = pt;
+        dest.frequency = sqlite3_column_double(statement, 5);
+        dest.timeDepart = sqlite3_column_int(statement, 6);
+        dest.timeReturn = sqlite3_column_int(statement, 7);
+    }
+    SQLOK(sqlite3_finalize(statement), _database);
+    [self close:opened];
+    return dest;
+}
+
 -(NSArray*)getDestinationsWithinGroup:(NSInteger)groupID
 {
     NSMutableArray* dests = [[NSMutableArray alloc]init];
@@ -254,7 +283,6 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
         dest.timeReturn = sqlite3_column_int(statement, 7);
         [dests addObject:dest];
     }
-    
     SQLOK(sqlite3_finalize(statement), _database);
     [self close:opened];
     return dests;
@@ -345,7 +373,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     request.destination = tmi;
     request.transportType = transportType;
     request.requestsAlternateRoutes = NO;
-    
+   
     MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
     
     [directions calculateDirectionsWithCompletionHandler:
@@ -373,6 +401,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              route.timeInMinutes = frequency * (theRoute.expectedTravelTime / 60.0);
              
              [_condition lock];
+             //[_condition wait];
              BOOL opened = [self open];
              
              NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
