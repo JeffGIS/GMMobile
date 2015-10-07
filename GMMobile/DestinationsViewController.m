@@ -168,9 +168,6 @@ viewForHeaderInSection:(NSInteger)section
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:@"Cell"];
-        
-        cell.userInteractionEnabled = YES;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     for (UIView *views in cell.contentView.subviews)
@@ -237,6 +234,9 @@ viewForHeaderInSection:(NSInteger)section
     [editOptions addTarget:self
                     action:@selector(editOptionsTapped:)
           forControlEvents:UIControlEventTouchUpInside];
+    
+    cell.userInteractionEnabled = YES;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     return cell;
 }
