@@ -207,6 +207,9 @@ viewForHeaderInSection:(NSInteger)section
     
     editName.tag = (indexPath.row + 100);
     
+    if (tableView == _bottomTableView)
+        editName.tag += 1000;
+    
     [editName setImage:_editNameImage
               forState:UIControlStateNormal];
     
@@ -221,7 +224,10 @@ viewForHeaderInSection:(NSInteger)section
                                                    (cell.contentView.frame.size.height - 10.0),
                                                    (cell.contentView.frame.size.height - 10.0))];
     
-    editOptions.tag = (indexPath.row + 200);
+    editOptions.tag = (indexPath.row + 500);
+    
+    if (tableView == _bottomTableView)
+        editOptions.tag += 1000;
     
     [editOptions setImage:_editOptionsImage
                  forState:UIControlStateNormal];
@@ -247,14 +253,26 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete)
     {
+        Destination *destination = nil;
+        
         if (tableView == _topTableView)
-        {
-            Destinations *destinations = [[Destinations alloc] init];
-            [destinations removeDestination:(indexPath.row + 1)];
+            destination= _individualDestinations[indexPath.row];
+        
+        else
+            destination= _groupDestinations[indexPath.row];
+        
+        Destinations *destinations = [[Destinations alloc] init];
+        [destinations removeDestination:destination.destinationID];
             
+        _individualDestinations = [destinations getIndividualDestinations];
+        
+        if (tableView == _topTableView)
             _individualDestinations = [destinations getIndividualDestinations];
-            [tableView reloadData];
-        }
+        
+        else
+            _groupDestinations = [destinations getGroupDestinations];
+        
+        [tableView reloadData];
     }
 }
 
@@ -284,15 +302,30 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (text && ![text isEqualToString:@""])
     {
-        NSUInteger row = (textAlert.tag - 100);
+        Destination *destination = nil;
+        
+        if (textAlert.tag < 1000)
+            destination = _individualDestinations[(textAlert.tag - 100)];
+        
+        else
+            destination = _groupDestinations[(textAlert.tag - 1100)];
+        
+        destination.destinationName = text;
         
         Destinations *destinations = [[Destinations alloc] init];
-        Destination *destination = [destinations getDestination:(row + 1)];
-        destination.destinationName = text;
         [destinations updateDestination:destination];
         
-        _individualDestinations = [destinations getIndividualDestinations];
-        [_topTableView reloadData];
+        if (textAlert.tag < 1000)
+        {
+            _individualDestinations = [destinations getIndividualDestinations];
+            [_topTableView reloadData];
+        }
+        
+        else
+        {
+            _groupDestinations = [destinations getGroupDestinations];
+            [_bottomTableView reloadData];
+        }
     }
         
     [textAlert hideTextAlert:YES];
