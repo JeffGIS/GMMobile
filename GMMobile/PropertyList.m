@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 20
+#define CURRENT_VERSION 21
 
 @interface PropertyList ()
 
@@ -561,6 +561,36 @@ LLPOINT LLPOINTFromString (NSString* string)
     PropertyData *propData = [[PropertyData alloc] init];
     LLPOINT pidPoint = [propData getPointForPID:PID];
     
+    //add address to Proplist
+    NSString * houseAndUnit=@"";
+    NSString * streetName=@"";
+    NSString * city=@"";
+    NSString * cenblock=@"";
+    NSString * usedesc=@"";
+    CGFloat totEMV=0;
+    [propData getAddressForPID:PID
+               houseNumAndUnit:&houseAndUnit
+                    streetName:&streetName
+                          city:&city
+                   censusBlock:&cenblock
+                       useDesc:&usedesc
+                        totEMV:&totEMV];
+    
+    char cenBlock[20];
+    strcpy (cenBlock, cenblock.UTF8String);
+    cenBlock[12] = 0;
+    DATA_FROM_TABLES values_blockgroup;
+
+    [propData computeValuesFromTables:&values_blockgroup
+                         inCensusArea:(LPSTR)cenBlock
+                               totEMV:(int)totEMV
+                              useDesc:(LPSTR)usedesc.UTF8String];
+    DATA_FROM_TABLES values_block;
+    [propData computeValuesFromTables:&values_block
+                         inCensusArea:(LPSTR)cenblock.UTF8String
+                               totEMV:(int)totEMV
+                              useDesc:(LPSTR)usedesc.UTF8String];
+    
     BOOL opened = [self open];
     int dbid = [self next_id];
     int PropNum = [self nextPropNum];
@@ -578,92 +608,66 @@ LLPOINT LLPOINTFromString (NSString* string)
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_LatLon,pointBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
-    //add address to Proplist
-    NSString * houseAndUnit=@"";
-    NSString * streetName=@"";
-    NSString * city=@"";
-    NSString * cenblock=@"";
-    NSString * usedesc=@"";
-    CGFloat totEMV=0;
-    [propData getAddressForPID:PID
-               houseNumAndUnit:&houseAndUnit
-                    streetName:&streetName
-                          city:&city
-                   censusBlock:&cenblock
-                       useDesc:&usedesc
-                        totEMV:&totEMV];
     NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
     NSString *addressBlob = [self stringToBlob:address];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,addressBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
     //add values from tables to Proplist
-    DATA_FROM_TABLES values;
-    [propData computeValuesFromTables:&values
-                         inCensusArea:(LPSTR)cenblock.UTF8String
-                               totEMV:(int)totEMV
-                              useDesc:(LPSTR)usedesc.UTF8String];
-    NSString *dataBlob = [self intToBlob:values.rankTotEMV];
+    NSString *dataBlob = [self intToBlob:values_block.rankTotEMV];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.pctHomestead];
+    dataBlob = [self intToBlob:values_block.pctHomestead];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.homeOwnPct];
+    dataBlob = [self intToBlob:values_block.homeOwnPct];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.medianBuiltYear];
+    dataBlob = [self intToBlob:values_block.medianBuiltYear];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.medianAgePop];
+    dataBlob = [self intToBlob:values_block.medianAgePop];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.pctChildren];
+    dataBlob = [self intToBlob:values_block.pctChildren];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.pctSenior];
+    dataBlob = [self intToBlob:values_block.pctSenior];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
-    dataBlob = [self intToBlob:values.stability5yr];
+    dataBlob = [self intToBlob:values_block.stability5yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.stability15yr];
+    dataBlob = [self intToBlob:values_block.stability15yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_block,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    char cenBlock[20];
-    strcpy (cenBlock, cenblock.UTF8String);
-    cenBlock[12] = 0;
-    [propData computeValuesFromTables:&values
-                         inCensusArea:(LPSTR)cenBlock
-                               totEMV:(int)totEMV
-                              useDesc:(LPSTR)usedesc.UTF8String];
     
-    dataBlob = [self intToBlob:values.rankTotEMV];
+    dataBlob = [self intToBlob:values_blockgroup.rankTotEMV];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.pctHomestead];
+    dataBlob = [self intToBlob:values_blockgroup.pctHomestead];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.homeOwnPct];
+    dataBlob = [self intToBlob:values_blockgroup.homeOwnPct];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.medianBuiltYear];
+    dataBlob = [self intToBlob:values_blockgroup.medianBuiltYear];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.medianAgePop];
+    dataBlob = [self intToBlob:values_blockgroup.medianAgePop];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.pctChildren];
+    dataBlob = [self intToBlob:values_blockgroup.pctChildren];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.pctSenior];
+    dataBlob = [self intToBlob:values_blockgroup.pctSenior];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.stability5yr];
+    dataBlob = [self intToBlob:values_blockgroup.stability5yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values.stability15yr];
+    dataBlob = [self intToBlob:values_blockgroup.stability15yr];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;

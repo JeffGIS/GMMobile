@@ -6,7 +6,8 @@
 #import "PropertyList.h"
 #import "GoogleMaps/GoogleMaps.h"
 
-#define CURRENT_VERSION 13
+#define MKDirectionsTransportTypeTransit 11 //temp
+#define CURRENT_VERSION 14
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
