@@ -14,7 +14,7 @@
 @property (nonatomic) UIFont *font;
 @property (nonatomic) NSArray *individualDestinations, *groupDestinations;
 @property (nonatomic) UIButton *topHeaderButton, *bottomHeaderButton;
-@property (nonatomic) UIImage *editNameImage, *editOptionsImage;
+@property (nonatomic) UIImage *editNameImage, *editOptionsImage, *googleImage;
 
 @end
 
@@ -31,6 +31,10 @@
     
     _editOptionsImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"editOptions"
                                                                                        ofType:@"png"]];
+    
+    _googleImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"googleIcon"
+                                                                                  ofType:@"png"]];
+
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -180,7 +184,7 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     TableViewCellLabel *cellTextLabel = [[TableViewCellLabel alloc] initWithFrame:
-                                         CGRectMake(16.0, 0.0, ((cell.contentView.frame.size.width - (cell.contentView.frame.size.height * 2.0)) - 32.0),
+                                         CGRectMake(16.0, 0.0, (cell.contentView.frame.size.width - ((cell.contentView.frame.size.height + 16.0) * 3.0)),
                                                     cell.contentView.frame.size.height)];
     
     cellTextLabel.adjustsFontSizeToFitWidth = YES;;
@@ -198,7 +202,7 @@ viewForHeaderInSection:(NSInteger)section
     
     
     TableViewCellButton *editName = [[TableViewCellButton alloc] initWithFrame:
-                                     CGRectMake((cell.contentView.frame.size.width - (cell.contentView.frame.size.height * 2.0)), 5.0,
+                                     CGRectMake((cell.contentView.frame.size.width - (cell.contentView.frame.size.height * 3.0)), 5.0,
                                                 (cell.contentView.frame.size.height - 10.0),
                                                 (cell.contentView.frame.size.height - 10.0))];
     
@@ -217,11 +221,11 @@ viewForHeaderInSection:(NSInteger)section
        forControlEvents:UIControlEventTouchUpInside];
     
     TableViewCellButton *editOptions = [[TableViewCellButton alloc] initWithFrame:
-                                        CGRectMake((cell.contentView.frame.size.width - cell.contentView.frame.size.height), 5.0,
+                                        CGRectMake((cell.contentView.frame.size.width - (cell.contentView.frame.size.height * 2.0)), 5.0,
                                                    (cell.contentView.frame.size.height - 10.0),
                                                    (cell.contentView.frame.size.height - 10.0))];
     
-    editOptions.tag = (indexPath.row + 500);
+    editOptions.tag = (indexPath.row + 400);
     
     if (tableView == _bottomTableView)
         editOptions.tag += 1000;
@@ -234,6 +238,25 @@ viewForHeaderInSection:(NSInteger)section
     [editOptions addTarget:self
                     action:@selector(editOptionsTapped:)
           forControlEvents:UIControlEventTouchUpInside];
+    
+    TableViewCellButton *mapIt = [[TableViewCellButton alloc] initWithFrame:
+                                  CGRectMake((cell.contentView.frame.size.width - cell.contentView.frame.size.height), 5.0,
+                                             (cell.contentView.frame.size.height - 10.0),
+                                             (cell.contentView.frame.size.height - 10.0))];
+    
+    mapIt.tag = (indexPath.row + 700);
+    
+    if (tableView == _bottomTableView)
+        mapIt.tag += 1000;
+    
+    [mapIt setImage:_googleImage
+           forState:UIControlStateNormal];
+    
+    [cell.contentView addSubview:mapIt];
+    
+    [mapIt addTarget:self
+              action:@selector(mapItTapped:)
+    forControlEvents:UIControlEventTouchUpInside];
     
     cell.userInteractionEnabled = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -294,7 +317,12 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)editOptionsTapped:(TableViewCellButton *)button
 {
-    NSUInteger row = (button.tag - 200);
+    //(button.tag - 400);
+}
+
+- (void)mapItTapped:(TableViewCellButton *)button
+{
+    //(button.tag - 700);
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert
