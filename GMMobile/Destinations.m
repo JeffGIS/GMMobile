@@ -40,6 +40,26 @@
 
 @end
 
+@implementation RouteStep
+
++ (RouteStep *)routeStepWithPolyline:(MKPolyline *)polyline
+                       transportType:(MKDirectionsTransportType)transportType
+{
+    RouteStep *rs = [[RouteStep alloc] init];
+    rs.polyline = polyline;
+    rs.transportType = transportType;
+    
+    return rs;
+}
+
+- (id)init
+{
+    self = [super init];
+    return self;
+}
+
+@end
+
 @implementation Destinations
 
 int SQLOKdst(int sqlReturn, sqlite3 *database)
@@ -396,7 +416,20 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
          else
          {
              MKRoute *theRoute = response.routes[0];
-             route.routePolyline = theRoute.steps;
+             NSArray *routeSteps = theRoute.steps;
+             NSMutableArray *routePoly = [[NSMutableArray alloc] init];
+             
+             for (int i = 0; i < routeSteps.count; i++)
+             {
+                 MKRouteStep *mkrs = routeSteps[i];
+                 
+                 RouteStep *rs = [RouteStep routeStepWithPolyline:mkrs.polyline
+                                                    transportType:mkrs.transportType];
+                 
+                 [routePoly addObject:rs];
+             }
+             
+             route.routePolyline = routePoly;
              route.distanceInMiles = frequency * (theRoute.distance / METERS_PER_MILE);
              route.timeInMinutes = frequency * (theRoute.expectedTravelTime / 60.0);
              
@@ -434,9 +467,9 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
             mode = @"driving";
             break;
             
-        //case MKDirectionsTransportTypeTransit:
-        //    mode = @"transit";
-        //    break;
+        case MKDirectionsTransportTypeTransit:
+            mode = @"transit";
+            break;
             
         case MKDirectionsTransportTypeWalking:
             mode = @"walking";
@@ -476,17 +509,61 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     else
     {
-        GMSPath *overviewPath = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
-        NSDictionary *legs = json[@"routes"][0][@"legs"][0];
-        NSArray *steps = legs[@"steps"];
+        NSDictionary *leg = json[@"routes"][0][@"legs"][0];
+        NSArray *steps = leg[@"steps"];
+        
+        Route *route = [[Route alloc] init];
+        
+        NSMutableArray *routePoly = [[NSMutableArray alloc] init];
         
         for (int i = 0; i < steps.count; i++)
         {
-            NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+            NSString *travelMode = steps[i][@"travel_mode"];
+            MKDirectionsTransportType transType = MKDirectionsTransportTypeAutomobile;
             
-            GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
-            GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+            if ([travelMode isEqualToString:@"TRANSIT"])
+                transType = MKDirectionsTransportTypeTransit;
+            
+            else if ([travelMode isEqualToString:@"WALKING"])
+                transType = MKDirectionsTransportTypeWalking;
+            
+            GMSPath *path = [GMSPath pathFromEncodedPath:steps[i][@"polyline"][@"points"]];
+            
+            CLLocationCoordinate2D *coords = (CLLocationCoordinate2D *)malloc((sizeof(CLLocationCoordinate2D) * path.count) + 4);
+           
+            for (int i = 0; i < (int)path.count; i++)
+                coords[i] = [path coordinateAtIndex:i];
+            
+            MKPolyline *polyline = [MKPolyline polylineWithCoordinates:coords
+                                                                 count:path.count];
+            
+            free(coords);
+            
+            RouteStep *routeStep = [RouteStep routeStepWithPolyline:polyline
+                                                      transportType:transType];
+            
+            [routePoly addObject:routeStep];
         }
+        
+        route.routePolyline = routePoly;
+        
+        NSString *distance = leg[@"distance"][@"value"];
+        NSString *duration = leg[@"duration"][@"value"];
+        
+        route.distanceInMiles = frequency * (distance.integerValue / METERS_PER_MILE);
+        route.timeInMinutes = frequency * (duration.integerValue / 60.0);
+        
+        [_condition lock];
+        //[_condition wait];
+        BOOL opened = [self open];
+        
+        NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
+                         routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+        
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        [self close:opened];
+        //[_condition signal];
+        [_condition unlock];
     }
 }
 

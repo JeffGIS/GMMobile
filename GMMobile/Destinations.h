@@ -25,6 +25,16 @@
 
 @end
 
+@interface RouteStep : NSObject
+
+@property MKPolyline *polyline;
+@property MKDirectionsTransportType transportType;
+
++ (RouteStep *)routeStepWithPolyline:(MKPolyline *)polyline
+                       transportType:(MKDirectionsTransportType)transportType;
+
+@end
+
 @interface Destinations : NSObject
 
 -(NSInteger)addParcelToDestinations:(NSString *)PID;
