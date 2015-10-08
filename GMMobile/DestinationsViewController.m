@@ -332,7 +332,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
                                             timeDepart:destination.timeDepart
                                             timeReturn:destination.timeReturn
                                          destinationID:destination.destinationID];
-#pragma unused(destOpt)
+
+    destOpt.tag = button.tag;
 }
 
 - (void)destinationOptions:(NVDestinationOptions *)destinationOptions
@@ -342,6 +343,27 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
              destinationID:(NSInteger)destinationID
 {
     [destinationOptions hideDestinationOptions:YES];
+    
+    Destinations *destinations = [[Destinations alloc] init];
+    
+    Destination *destination = [destinations getDestination:destinationID];
+    destination.frequency = frequency;
+    destination.timeDepart = timeDepart;
+    destination.timeReturn = timeReturn;
+    
+    [destinations updateDestination:destination];
+    
+    if (destinationOptions.tag < 1000)
+    {
+        _individualDestinations = [destinations getIndividualDestinations];
+        [_topTableView reloadData];
+    }
+    
+    else
+    {
+        _groupDestinations = [destinations getGroupDestinations];
+        [_bottomTableView reloadData];
+    }
 }
 
 - (void)mapItTapped:(TableViewCellButton *)button
