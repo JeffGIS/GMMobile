@@ -317,20 +317,13 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)editOptionsTapped:(TableViewCellButton *)button
 {
-    //(button.tag - 400);
-}
-
-- (void)mapItTapped:(TableViewCellButton *)button
-{
-    //(button.tag - 700);
-    
     Destination *destination = nil;
     
     if (button.tag < 1000)
-        destination = _individualDestinations[(button.tag - 700)];
+        destination = _individualDestinations[(button.tag - 400)];
     
     else
-        destination = _groupDestinations[(button.tag - 1700)];
+        destination = _groupDestinations[(button.tag - 1400)];
     
     NVDestinationOptions *destOpt =
     [NVDestinationOptions showDestinationOptionsInView:self.view
@@ -340,6 +333,11 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
                                             timeReturn:destination.timeReturn
                                          destinationID:destination.destinationID];
 #pragma unused(destOpt)
+}
+
+- (void)mapItTapped:(TableViewCellButton *)button
+{
+    //(button.tag - 700);
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert
