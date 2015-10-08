@@ -423,7 +423,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     NSInteger lblb = 0;
     if (sln)
     {
-        LPSTR blb = malloc (sln*2);
+        LPSTR blb = malloc (sln*2+4);
         LPSTR cstr = (LPSTR)str.UTF8String;
         for (NSInteger i = 0;i<sln;i++)
         {
@@ -467,7 +467,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     NSInteger  j;
     LPBYTE pInts = (LPBYTE)&val;
     unsigned char c;
-    for (j = 0; j < 8; j++, pInts++, lBlob += 2)
+    for (j = 0; j < sizeof(double); j++, pInts++, lBlob += 2)
     {
         c = *pInts;
         sprintf(&pBlob[lBlob], "%2.2x", *pInts);
