@@ -335,6 +335,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(destOpt)
 }
 
+- (void)destinationOptions:(NVDestinationOptions *)destinationOptions
+        didReturnFrequency:(NSInteger)frequency
+                timeDepart:(NSInteger)timeDepart
+                timeReturn:(NSInteger)timeReturn
+             destinationID:(NSInteger)destinationID
+{
+    [destinationOptions hideDestinationOptions:YES];
+}
+
 - (void)mapItTapped:(TableViewCellButton *)button
 {
     //(button.tag - 700);

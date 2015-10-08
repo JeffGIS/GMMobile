@@ -320,7 +320,11 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     BOOL opened = [self open];
     int destnum = [self next_id];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%i,'%@',%f,%f,%f,%li,%li);",destnum,-1,dest.destinationName,dest.latlon.lat,dest.latlon.lon,dest.frequency,dest.timeDepart,dest.timeReturn];
+    
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%i,'%@',%f,%f,%li,%li,%li);",
+                     destnum,-1,dest.destinationName,dest.latlon.lat,dest.latlon.lon,(long)dest.frequency,
+                     (long)dest.timeDepart,(long)dest.timeReturn];
+    
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
     [self close:opened];
@@ -331,7 +335,11 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     BOOL opened = [self open];
     
     int destnum = [self next_id];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%li,'%@',%f,%f,%f,%li,%li);",destnum,groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon,dest.frequency,dest.timeDepart,dest.timeReturn];
+    
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%li,'%@',%f,%f,%li,%li,%li);",
+                     destnum,groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon,(long)dest.frequency,
+                     (long)dest.timeDepart,(long)dest.timeReturn];
+    
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
     [self close:opened];
