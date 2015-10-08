@@ -323,6 +323,23 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)mapItTapped:(TableViewCellButton *)button
 {
     //(button.tag - 700);
+    
+    Destination *destination = nil;
+    
+    if (button.tag < 1000)
+        destination = _individualDestinations[(button.tag - 700)];
+    
+    else
+        destination = _groupDestinations[(button.tag - 1700)];
+    
+    NVDestinationOptions *destOpt =
+    [NVDestinationOptions showDestinationOptionsInView:self.view
+                                              delegate:self
+                                             frequency:destination.frequency
+                                            timeDepart:destination.timeDepart
+                                            timeReturn:destination.timeReturn
+                                         destinationID:destination.destinationID];
+#pragma unused(destOpt)
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert
