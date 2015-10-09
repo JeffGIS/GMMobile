@@ -83,10 +83,14 @@
     
     Destinations *destinations = [[Destinations alloc] init];
     
-    _individualDestinations = [destinations getIndividualDestinations];
+    _individualDestinations = [self sortedDestinationsArray:
+                               [destinations getIndividualDestinations]];
+    
     [_topTableView reloadData];
     
-    _groupDestinations = [destinations getGroupDestinations];
+    _groupDestinations = [self sortedDestinationsArray:
+                          [destinations getGroupDestinations]];
+    
     [_bottomTableView reloadData];
 }
 
@@ -287,13 +291,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         Destinations *destinations = [[Destinations alloc] init];
         [destinations removeDestination:destination.destinationID];
             
-        _individualDestinations = [destinations getIndividualDestinations];
-        
         if (tableView == _topTableView)
-            _individualDestinations = [destinations getIndividualDestinations];
+        {
+            _individualDestinations = [self sortedDestinationsArray:
+                                       [destinations getIndividualDestinations]];
+        }
         
         else
-            _groupDestinations = [destinations getGroupDestinations];
+        {
+            _groupDestinations = [self sortedDestinationsArray:
+                                  [destinations getGroupDestinations]];
+        }
         
         [tableView reloadData];
     }
@@ -355,13 +363,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (destinationOptions.tag < 1000)
     {
-        _individualDestinations = [destinations getIndividualDestinations];
+        _individualDestinations = [self sortedDestinationsArray:
+                                   [destinations getIndividualDestinations]];
+        
         [_topTableView reloadData];
     }
     
     else
     {
-        _groupDestinations = [destinations getGroupDestinations];
+        _groupDestinations = [self sortedDestinationsArray:
+                              [destinations getGroupDestinations]];
+        
         [_bottomTableView reloadData];
     }
 }
@@ -391,13 +403,17 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         
         if (textAlert.tag < 1000)
         {
-            _individualDestinations = [destinations getIndividualDestinations];
+            _individualDestinations = [self sortedDestinationsArray:
+                                       [destinations getIndividualDestinations]];
+            
             [_topTableView reloadData];
         }
         
         else
         {
-            _groupDestinations = [destinations getGroupDestinations];
+            _groupDestinations = [self sortedDestinationsArray:
+                                  [destinations getGroupDestinations]];
+            
             [_bottomTableView reloadData];
         }
     }
@@ -413,6 +429,46 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)addGroup:(UIButton *)button
 {
     
+}
+
+- (NSArray *)sortedDestinationsArray:(NSArray *)destinationsArray
+{
+    NSMutableArray *sortedArray = NSMutableArray.array;
+    NSUInteger index = 0;
+    
+    for (int i = 0; i < destinationsArray.count; i++)
+    {
+        if (sortedArray.count == 0)
+            [sortedArray addObject:destinationsArray[0]];
+        
+        else
+        {
+            NSLog(@"%@", [destinationsArray[i] destinationName]);
+            
+            NSComparisonResult result = [[destinationsArray[i] destinationName]
+                                         compare:[sortedArray[index] destinationName]
+                                         options:(NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch)];
+            
+            while (result == NSOrderedDescending)
+            {
+                index++;
+                
+                if (index == sortedArray.count)
+                    break;
+                
+                result = [[destinationsArray[i] destinationName]
+                          compare:[sortedArray[index] destinationName]
+                          options:(NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch)];
+            }
+            
+            [sortedArray insertObject:destinationsArray[i]
+                              atIndex:index];
+            
+            index = 0;
+        }
+    }
+    
+    return sortedArray;
 }
 
 @end
