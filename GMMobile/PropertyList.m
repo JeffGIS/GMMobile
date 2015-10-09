@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 25
+#define CURRENT_VERSION 26
 
 @interface PropertyList ()
 
@@ -213,10 +213,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
             name = @"Stability (5 year Half Mile)";
             break;
         case PFT_DistanceToDestinations:
-            name = @"Distance to Destinations (Miles)";
+            name = @"Distance to Destinations (Miles per Month)";
             break;
         case PFT_TimeToDestinations:
-            name = @"Time to Destinations (Minutes)";
+            name = @"Time to Destinations (Hours per Month)";
             break;
         case PFT_PctHomestead_block:
             name = @"PCT Homestead (Block)";
@@ -298,7 +298,14 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 {
     NSString * value = nil;
     
-    if (type == PFT_TimeToDestinations || type == PFT_DistanceToDestinations)
+    if (type == PFT_TimeToDestinations)
+    {
+        Destinations *dest = [[Destinations alloc]init];
+        
+        CGFloat val = [dest totalValueForProperty:propNum ofType:type];
+        value = [NSString stringWithFormat:@"%.1f",val/60.0];
+    }
+    else if (type == PFT_DistanceToDestinations)
     {
         Destinations *dest = [[Destinations alloc]init];
         
@@ -442,7 +449,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 {
     NSString * blob=@"";
     NSInteger lBlob = 0;
-    LPSTR pBlob = malloc(nPnts * 2 * sizeof(DPOINT)+4);
+    LPSTR pBlob = malloc(nPnts * sizeof(DPOINT)*2 +4);
     for (NSInteger i = 0; i < nPnts; i++)
     {
         NSInteger  j;
