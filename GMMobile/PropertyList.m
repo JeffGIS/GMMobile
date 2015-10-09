@@ -158,7 +158,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         NSNumber *field = [NSNumber numberWithInteger:i];
         [fields addObject:field];
     }
-    return fields;
+    return fields.copy;
 }
 
 - (NSString*) propertyFieldName:(PropFieldType)fieldType
@@ -291,7 +291,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     SQLOK(sqlite3_finalize(statement), _database);
     [self close:opened];
-    return propNums;
+    return propNums.copy;
 }
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
                    forPropertyNumber:(NSInteger)propNum;

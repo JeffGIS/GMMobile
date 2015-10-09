@@ -305,7 +305,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     }
     SQLOK(sqlite3_finalize(statement), _database);
     [self close:opened];
-    return dests;
+    return dests.copy;
 }
 
 -(NSInteger)addIndividualDestination:(Destination*)dest
