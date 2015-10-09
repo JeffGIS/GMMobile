@@ -504,7 +504,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
-    return sortedArray;
+    return sortedArray.copy;
 }
 
 @end
