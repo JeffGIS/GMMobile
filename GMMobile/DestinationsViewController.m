@@ -11,7 +11,7 @@
 @interface DestinationsViewController ()
 
 @property (nonatomic) CGFloat rowHeight;
-@property (nonatomic) UIFont *font;
+@property (nonatomic) UIFont *font, *subFont;
 @property (nonatomic) NSArray *individualDestinations, *groupDestinations;
 @property (nonatomic) UIButton *topHeaderButton, *bottomHeaderButton;
 @property (nonatomic) UIImage *editNameImage, *editOptionsImage, *googleImage;
@@ -40,12 +40,14 @@
     {
         _rowHeight = 60.0;
         _font = [UIFont boldSystemFontOfSize:22.0];
+        _subFont = [UIFont systemFontOfSize:12.0];
     }
     
     else
     {
         _rowHeight = 76.0;
         _font = [UIFont boldSystemFontOfSize:36.0];
+        _subFont = [UIFont systemFontOfSize:20.0];
     }
     
     _topHeaderButton = [[UIButton alloc] init];
@@ -189,20 +191,42 @@ viewForHeaderInSection:(NSInteger)section
     
     TableViewCellLabel *cellTextLabel = [[TableViewCellLabel alloc] initWithFrame:
                                          CGRectMake(16.0, 0.0, (cell.contentView.frame.size.width - ((cell.contentView.frame.size.height + 16.0) * 3.0)),
-                                                    cell.contentView.frame.size.height)];
+                                                    cell.contentView.frame.size.height * 0.7)];
     
-    cellTextLabel.adjustsFontSizeToFitWidth = YES;;
+    cellTextLabel.adjustsFontSizeToFitWidth = YES;
     cellTextLabel.textColor = UIColor.blackColor;
     cellTextLabel.textAlignment = NSTextAlignmentLeft;
     cellTextLabel.font = _font;
     
     [cell.contentView addSubview:cellTextLabel];
     
+    TableViewCellLabel *cellSubTextLabel = [[TableViewCellLabel alloc] initWithFrame:
+                                            CGRectMake(16.0, (cell.contentView.frame.size.height * 0.7),
+                                                       (cell.contentView.frame.size.width - ((cell.contentView.frame.size.height + 16.0) * 3.0)),
+                                                       (cell.contentView.frame.size.height * 0.3))];
+    
+    cellSubTextLabel.adjustsFontSizeToFitWidth = YES;
+    cellSubTextLabel.textColor = UIColor.blackColor;
+    cellSubTextLabel.textAlignment = NSTextAlignmentLeft;
+    cellSubTextLabel.font = _subFont;
+    
+    [cell.contentView addSubview:cellSubTextLabel];
+    
+    Destination *destination = nil;
+    
     if (tableView == _topTableView)
-        cellTextLabel.text = [_individualDestinations[indexPath.row] destinationName];
+    {
+        destination = _individualDestinations[indexPath.row];
+        cellTextLabel.text = destination.destinationName;
+        cellSubTextLabel.text = [[NVDestinationOptions frequencyTitleForFrequency:destination.frequency] uppercaseString];
+    }
     
     else
-        cellTextLabel.text = [_groupDestinations[indexPath.row] destinationName];
+    {
+        destination = _groupDestinations[indexPath.row];
+        cellTextLabel.text = destination.destinationName;
+        cellSubTextLabel.text = [[NVDestinationOptions frequencyTitleForFrequency:destination.frequency] uppercaseString];
+    }
     
     
     TableViewCellButton *editName = [[TableViewCellButton alloc] initWithFrame:
@@ -443,8 +467,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         
         else
         {
-            NSLog(@"%@", [destinationsArray[i] destinationName]);
-            
             NSComparisonResult result = [[destinationsArray[i] destinationName]
                                          compare:[sortedArray[index] destinationName]
                                          options:(NSCaseInsensitiveSearch|NSDiacriticInsensitiveSearch)];
