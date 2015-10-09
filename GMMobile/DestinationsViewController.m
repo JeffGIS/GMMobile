@@ -7,6 +7,7 @@
 #import "Destinations.h"
 #import "CCodeLibrary/TableViewCellButton.h"
 #import "CCodeLibrary/TableViewCellLabel.h"
+#import "CCodeLibrary/NVStaticMapView.h"
 
 @interface DestinationsViewController ()
 
@@ -404,7 +405,20 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)mapItTapped:(TableViewCellButton *)button
 {
-    //(button.tag - 700);
+    Destination *destination = nil;
+    
+    if (button.tag < 1000)
+        destination = _individualDestinations[(button.tag - 700)];
+    
+    else
+        destination = _groupDestinations[(button.tag - 1700)];
+    
+    NVStaticMapView *staticMap = [NVStaticMapView showStaticMapInView:self.view
+                                                       withCoordinate:destination.latlon
+                                                                 zoom:17.0
+                                                               tabBar:self.tabBarController.tabBar
+                                                                label:destination.destinationName];
+#pragma unused(staticMap) 
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert
