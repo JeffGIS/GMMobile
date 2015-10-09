@@ -433,11 +433,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         
         else
             destination = _groupDestinations[(textAlert.tag - 1100)];
-        
-        destination.destinationName = text;
+        NSInteger destNum = destination.destinationID;
         
         Destinations *destinations = [[Destinations alloc] init];
-        [destinations updateDestination:destination];
+        [destinations updateDestinationName:destNum newName:text];
         
         if (textAlert.tag < 1000)
         {

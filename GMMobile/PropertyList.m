@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 26
+#define CURRENT_VERSION 28
 
 @interface PropertyList ()
 
