@@ -5,6 +5,7 @@
 #import "PropertyData.h"
 #import "PropertyList.h"
 #import "GoogleMaps/GoogleMaps.h"
+#import "CCodeLibrary/NVDestinationOptions.h"
 
 #define CURRENT_VERSION 22
 #define METERS_PER_MILE 1609.344
@@ -401,19 +402,9 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     request.destination = tmi;
     request.transportType = transportType;
     request.requestsAlternateRoutes = NO;
+    request.departureDate = [NVDestinationOptions getDateForTime:time];
     
-    NSInteger hours = (time / 100);
-    NSInteger minutes = (time - (hours * 100));
-    
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    
-    NSDate *departureDate = [calendar dateBySettingHour:hours
-                                                 minute:minutes
-                                                 second:0
-                                                 ofDate:NSDate.date
-                                                options:0];
-    
-    request.departureDate = departureDate;
+    NSLog(@"%@", request.departureDate.description);
     
     MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
     
