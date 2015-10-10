@@ -404,8 +404,6 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     request.requestsAlternateRoutes = NO;
     request.departureDate = [NVDestinationOptions getDateForTime:time];
     
-    NSLog(@"%@", request.departureDate.description);
-    
     MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
     
     [directions calculateDirectionsWithCompletionHandler:
