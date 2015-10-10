@@ -43,7 +43,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [UserDefaults.defaults disableWebKitDiskImageCache];
     CRAPI.sharedInstance.defaultColors = UserDefaults.defaults.defaultColors;
     CRAPI.sharedInstance.currentGeoid = 2743000;
-
+    CRAPI.sharedInstance.resetPropList = NO;
+    CRAPI.sharedInstance.resetDestinations = NO;
+    CRAPI.sharedInstance.clearSpreadsheet = NO;
+    
     return YES;
 }
 

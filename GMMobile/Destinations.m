@@ -7,7 +7,7 @@
 #import "GoogleMaps/GoogleMaps.h"
 #import "CCodeLibrary/NVDestinationOptions.h"
 
-#define CURRENT_VERSION 22
+//#define CURRENT_VERSION 22
 #define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
@@ -92,9 +92,21 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"DefaultDestinations.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        int version = [self datasetVersion];
-        if (version != CURRENT_VERSION)
-            [NSFileManager.defaultManager removeItemAtPath:_path error:nil];
+        
+        //int version = [self datasetVersion];
+        
+        if (CRAPI.sharedInstance.resetDestinations)
+        {
+            NSError *error = nil;
+            
+            [NSFileManager.defaultManager removeItemAtPath:_path
+                                                     error:&error];
+            
+            if (error)
+                NSLog(@"%@ file removal error", _fileName);
+            
+            CRAPI.sharedInstance.resetDestinations = NO;
+        }
         
         [self createTables];
         self.condition = [[NSCondition alloc] init];
@@ -150,11 +162,15 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                       CREATE INDEX IF NOT EXISTS PropNum_index ON Routes (PropertyNum ASC);";
     
     BOOL rtn = !SQLOKdst(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
-    cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS Destinations_VERSION (id INT,Version INT);INSERT INTO Destinations_VERSION VALUES (1,%i);",CURRENT_VERSION];
-    SQLOKdst(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    /*cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS Destinations_VERSION (id INT,Version INT);INSERT INTO Destinations_VERSION VALUES (1,%i);",CURRENT_VERSION];
+    SQLOKdst(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);*/
+    
     [self close:opened];
     return rtn;
 }
+
+/*
 - (int)datasetVersion
 {
     int rtn = -1;
@@ -179,6 +195,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     [self close:opened];
     return rtn;
 }
+*/
 
 - (BOOL)executeCmd:(char *)cmd
 {

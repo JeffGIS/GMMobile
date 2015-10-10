@@ -5,7 +5,7 @@
 #import "PropertyData.h"
 #import "Destinations.h"
 
-#define CURRENT_VERSION 28
+//#define CURRENT_VERSION 28
 
 @interface PropertyList ()
 
@@ -47,9 +47,21 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"DefaultPropList.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        int version = [self datasetVersion];
-        if (version != CURRENT_VERSION)
-            [NSFileManager.defaultManager removeItemAtPath:_path error:nil];
+        
+        //int version = [self datasetVersion];
+        
+        if (CRAPI.sharedInstance.resetPropList)
+        {
+            NSError *error = nil;
+            
+            [NSFileManager.defaultManager removeItemAtPath:_path
+                                                     error:&error];
+            
+            if (error)
+                NSLog(@"%@ file removal error", _fileName);
+            
+            CRAPI.sharedInstance.resetPropList = NO;
+        }
 
         [self createTables];
     }
@@ -104,11 +116,15 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
    // NSString *cmd2 = @"CREATE TABLE IF NOT EXISTS DestinationList (id INTEGER PRIMARY KEY,FieldName CHAR(100),FieldValue BLOB(33554432))";
     
     BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
-    cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS PropertyList_VERSION (id INT,Version INT);INSERT INTO PropertyList_VERSION VALUES (1,%i);",CURRENT_VERSION];
-    SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    /*cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS PropertyList_VERSION (id INT,Version INT);INSERT INTO PropertyList_VERSION VALUES (1,%i);",CURRENT_VERSION];
+    SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);*/
+    
     [self close:opened];
     return rtn;
 }
+
+/*
 - (int)datasetVersion
 {
     int rtn = -1;
@@ -133,6 +149,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     [self close:opened];
     return rtn;
 }
+*/
 
 - (BOOL)executeCmd:(char *)cmd
 {
