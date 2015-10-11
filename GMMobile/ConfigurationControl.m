@@ -94,6 +94,11 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                                                identifier:HCConfigMetroProp];
         
         [self.appList addObject:ap];
+        
+        ap = [[ApplicationObject alloc] initWithNameAndID:@"Minneapolis Crime Data"
+                                               identifier:HCConfigCrimes];
+        
+        [self.appList addObject:ap];
         self.currentApp = -1;
         
         strcpy(layerName[HCLayerAerials], "Aerial Photos");
@@ -102,6 +107,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         strcpy(layerName[HCLayerPlanimetric], "Planimetric Data");
         strcpy(layerName[HCLayerAlleys], "Alleys");
         strcpy(layerName[HCLayerCurbRamps], "Curb Ramps");
+        strcpy(layerName[HCLayerCrimes], "Crimes");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
@@ -109,6 +115,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerDefaultZoom[HCLayerPlanimetric] = 18;
         layerDefaultZoom[HCLayerAlleys] = 14;
         layerDefaultZoom[HCLayerAlleys] = 13;
+        layerDefaultZoom[HCLayerCrimes] = 12;
         
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
@@ -116,6 +123,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerHasSymbols[HCLayerPlanimetric] = YES;
         layerHasSymbols[HCLayerAlleys] = YES;
         layerHasSymbols[HCLayerAlleys] = NO;
+        layerHasSymbols[HCLayerCrimes] = NO;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
@@ -158,6 +166,14 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMarkerSwitch] = YES;
         
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantUserLocation] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantExtents] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantMarkerSwitch] = YES;
+        
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
         configLayers[HCConfigSewers][HCLayerParcels] = YES;
@@ -194,6 +210,14 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigMetroProp][HCLayerAlleys] = NO;
         configLayers[HCConfigMetroProp][HCLayerCurbRamps] = NO;
         
+        configLayers[HCConfigCrimes][HCLayerAerials] = YES;
+        configLayers[HCConfigCrimes][HCLayerParcels] = YES;
+        configLayers[HCConfigCrimes][HCLayerSewers] = NO;
+        configLayers[HCConfigCrimes][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigCrimes][HCLayerAlleys] = NO;
+        configLayers[HCConfigCrimes][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigCrimes][HCLayerCrimes] = YES;
+        
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
             for (int layer = 0; layer < NUMHardCodedLayers; layer++)
@@ -204,6 +228,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
         configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
         configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
+        configLayerZoom[HCConfigCrimes][HCLayerAerials] = 17;
     }
     
     return self;

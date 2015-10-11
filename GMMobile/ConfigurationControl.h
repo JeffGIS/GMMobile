@@ -4,7 +4,7 @@
 #import <UIKit/UIKit.h>
 
 #define MAX_LAYER_NAME 32
-#define NUMHardCodedConfigs 5
+#define NUMHardCodedConfigs 6
 
 typedef NS_ENUM(NSInteger, GetDatabaseSetting)
 {
@@ -28,9 +28,10 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigCurbRamps,
     HCConfigSewers,
     HCConfigMetroProp,
+    HCConfigCrimes,
 };
 
-#define NUMHardCodedLayers 6
+#define NUMHardCodedLayers 7
 
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
@@ -40,6 +41,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerPlanimetric,
     HCLayerAlleys,
     HCLayerCurbRamps,
+    HCLayerCrimes,
 };
 
 @interface ApplicationObject : NSObject

@@ -278,6 +278,22 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                }
                                            }
                                            if (keepProcessing == self.displayID &&
+                                               [ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                                                            visibleAtZoom:_zoom])
+                                           {
+                                               CrimeData *cd = [[CrimeData alloc] init];
+                                               cd.processingID = keepProcessing;
+                                               cd.zoom = _zoom;
+                                               
+                                               if (keepProcessing == self.displayID)
+                                               {
+                                                   [cd displayCrimePoints:_context
+                                                                             llCorners:&_latlonCornerPoints
+                                                                              LLBounds:&_latlonBounds
+                                                                            viewBounds:&_viewBounds];
+                                               }
+                                           }
+                                           if (keepProcessing == self.displayID &&
                                                [ConfigurationControl.sharedInstance layer:HCLayerSewers
                                                                             visibleAtZoom:_zoom])
                                            {
