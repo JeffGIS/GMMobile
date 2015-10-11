@@ -129,6 +129,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingAlleyWall:
             case GetDatabaseSettingCurbRamp:
             case GetDatabaseSettingCensus:
+            case GetDatabaseSettingCrimes:
             {
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
                 NSString *file;
@@ -149,6 +150,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     {
                         file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
                         _popover.title = @"Load Census Tables";
+                    }
+                        break;
+                    case GetDatabaseSettingCrimes:
+                    {
+                        file = [NSString stringWithFormat:@"%@/crimes_latlon.sqltran",toDirectory];
+                        _popover.title = @"Load Crime Tables";
                     }
                         break;
                         
@@ -218,6 +225,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         SewerData *sd;
                         AlleyWallData *awd;
                         CurbRampData *crd;
+                        CrimeData *crimed;
                         
                         if (option == GetDatabaseSettingSewer)
                         {
@@ -229,6 +237,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         {
                             awd = [[AlleyWallData alloc] init];
                             [awd open];
+                        }
+                        else if (option == GetDatabaseSettingCrimes)
+                        {
+                            crimed = [[CrimeData alloc] init];
+                            [crimed open];
                         }
                         else if (option == GetDatabaseSettingCurbRamp)
                         {
@@ -256,6 +269,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         else if (option == GetDatabaseSettingCurbRamp)
                             [crd startTransaction];
                         
+                        else if (option == GetDatabaseSettingCrimes)
+                            [crimed startTransaction];
+                        
                         else
                             [pd startTransaction];
                         
@@ -263,6 +279,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         {
                             if (option == GetDatabaseSettingSewer)
                                 [sd executeCmd:str];
+                            
+                            else if (option == GetDatabaseSettingCrimes)
+                                [crimed executeCmd:str];
                             
                             else if (option == GetDatabaseSettingCurbRamp)
                                 [crd executeCmd:str
@@ -291,6 +310,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         else if (option == GetDatabaseSettingAlleyWall)
                             [awd commitTransaction];
                         
+                        else if (option == GetDatabaseSettingCrimes)
+                            [crimed commitTransaction];
+                        
                         else if (option == GetDatabaseSettingCurbRamp)
                             [crd commitTransaction];
                         
@@ -311,6 +333,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GetDatabaseSettingSewer)
                             [sd close];
+                        
+                        if (option == GetDatabaseSettingCrimes)
+                            [crimed close];
                         
                         if (option == GetDatabaseSettingCurbRamp)
                             [crd close];
@@ -506,7 +531,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
-
 - (IBAction)loadAreas:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
@@ -523,6 +547,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (IBAction)loadCrimeData:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"Crimes_ll.gcf";
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GetDatabaseSettingCrimes;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Crime File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"

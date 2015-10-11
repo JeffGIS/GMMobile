@@ -1031,7 +1031,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                                 map:_mapView
                                                     statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
                                                            delegate:self];
-            
             [self removePreviousInfoWindow];
             _infoWindow = [[MarkerInfoWindow alloc] init];
             
@@ -4153,6 +4152,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type
 {
+    keepProcessing++;
+
     switch (type)
     {
         case MarkerInfoWindowTypePID:
