@@ -33,6 +33,17 @@
                                              delegate:self];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    if (CRAPI.sharedInstance.clearSpreadsheet)
+    {
+        [_ssv clearContents];
+        CRAPI.sharedInstance.clearSpreadsheet = NO;
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];

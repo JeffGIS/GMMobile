@@ -39,7 +39,6 @@
                                                                                        ofType:@"png"]];
     
     _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, shopping, nil];
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device", @"Purchase Data"];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
@@ -49,6 +48,22 @@
     _tableView.delaysContentTouches = NO;
     
     _versionLabel.text = [NSString stringWithFormat:@"GMMobile Version %@", UIApplication.appVersionBuild];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device", @"Purchase Data"];
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        NSMutableArray *tempArray = _contents.mutableCopy;
+        [tempArray addObject:@"Clear Prop List & Destinations"];
+        _contents = tempArray.copy;
+    }
+    
+    [_tableView reloadData];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -148,6 +163,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Purchase Data"])
     {
         [self purchaseData];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Clear Prop List & Destinations"])
+    {
+        CRAPI.sharedInstance.resetPropList = YES;
+        CRAPI.sharedInstance.resetDestinations = YES;
+        CRAPI.sharedInstance.clearSpreadsheet = YES;
     }
 }
 
