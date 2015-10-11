@@ -9,6 +9,7 @@
 #import "CCodeLibrary/TableViewCellLabel.h"
 #import "CCodeLibrary/NVStaticMapView.h"
 
+
 @interface DestinationsViewController ()
 
 @property (nonatomic) CGFloat rowHeight;
