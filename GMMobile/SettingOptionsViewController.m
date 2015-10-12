@@ -197,6 +197,9 @@ didReturnFromDate:(NSInteger)fromDate
 {
     [dateRange hideDateRange:YES];
     
+    CRAPI.sharedInstance.fromDate = fromDate;
+    CRAPI.sharedInstance.toDate = toDate;
+    
     NSLog(@"fromDate:%li, toDate:%li", (long)fromDate, (long)toDate);
 }
 
