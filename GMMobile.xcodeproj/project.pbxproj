@@ -649,6 +649,7 @@
 				TargetAttributes = {
 					EB5521C81A61B6A8008CE2D1 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = AJKEHK4Z77;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -657,6 +658,9 @@
 								enabled = 1;
 							};
 							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+							com.apple.Push = {
 								enabled = 1;
 							};
 						};

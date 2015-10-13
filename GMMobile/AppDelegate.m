@@ -47,7 +47,37 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.resetDestinations = NO;
     CRAPI.sharedInstance.clearSpreadsheet = NO;
     
+    UIUserNotificationType nTypes =
+    UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
+    
+    UIUserNotificationSettings *nSettings = [UIUserNotificationSettings settingsForTypes:nTypes
+                                                                              categories:nil];
+    
+    [UIApplication.sharedApplication registerUserNotificationSettings:nSettings];
+    [UIApplication.sharedApplication registerForRemoteNotifications];
+    
     return YES;
+}
+
+- (void)application:(UIApplication *)app
+didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken
+{
+    const char *data = devToken.bytes;
+    NSMutableString *token = NSMutableString.string;
+    
+    for (int i = 0; i < devToken.length; i++)
+        [token appendFormat:@"%02.2hhX", data[i]];
+    
+    NSString *deviceToken = token.copy;
+    NSLog(@"Token for Push Notifications:%@", deviceToken);
+    
+    //this is where we send the device token to our notification server(s)
+}
+
+- (void)application:(UIApplication *)app
+didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
+{
+    NSLog(@"Remote Notification Registration ERROR:%@", err);
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -97,8 +127,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [NSNotificationCenter.defaultCenter postNotificationName:@"didBecomeActive"
                                                       object:nil
                                                     userInfo:nil];
-    
-    NSLog(@"Vendor UUID:%@", UIDevice.currentDevice.identifierForVendor.UUIDString);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
