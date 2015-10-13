@@ -93,15 +93,6 @@ extern int keepProcessing;
                  removeItemAtIndex:2
                           animated:NO];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
-                                                         bundle:NSBundle.mainBundle];
-    
-    UIViewController *ssvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-      replaceViewControllerAtIndex:1
-                withViewController:ssvc];
-    
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
                                                name:@"didBecomeActive"
@@ -649,6 +640,24 @@ extern int keepProcessing;
     
     else
         self.tabBarController.selectedIndex = 3;
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        UIViewController *ssvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+          replaceViewControllerAtIndex:1
+                    withViewController:ssvc];
+    }
+    
+    else
+    {
+        UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+          replaceViewControllerAtIndex:1
+                    withViewController:lvc];
+    }
     
     [_mapToolbar configure:_screenSetting];
     
