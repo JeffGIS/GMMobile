@@ -54,13 +54,13 @@
     UIViewController *fovc = [storyboard instantiateViewControllerWithIdentifier:@"FieldOptionsVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-      replaceViewControllerAtIndex:2
+       replaceViewControllerWithID:@"FindVC"
                 withViewController:fovc];
     
     UIViewController *dvc = [storyboard instantiateViewControllerWithIdentifier:@"DestinationsVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-      replaceViewControllerAtIndex:3
+       replaceViewControllerWithID:@"ApplicationsVC"
                 withViewController:dvc];
     
     PropertyList *proplist = [[PropertyList alloc] init];

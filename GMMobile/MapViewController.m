@@ -81,11 +81,21 @@ extern int keepProcessing;
 {
     [super viewDidLoad];
     
-    for (int i = 0; i < 4; i++)
-    {
-        [NVTabBarEdit tabBarController:self.tabBarController
-                     removeItemAtIndex:2];
-    }
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"CrimeDataOptionsVC"
+                          animated:NO];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"FieldOptionsVC"
+                          animated:NO];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"DestinationsVC"
+                          animated:NO];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"SpreadsheetVC"
+                          animated:NO];
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -560,9 +570,6 @@ extern int keepProcessing;
 {
     [super viewDidAppear:animated];
     
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
-                                                         bundle:NSBundle.mainBundle];
-    
     if (_firstTimeAppear)
     {
         CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
@@ -623,13 +630,33 @@ extern int keepProcessing;
     else
         self.tabBarController.selectedIndex = 3;
     
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
+                                                         bundle:NSBundle.mainBundle];
+    
+    UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:cdovc
+                               atIndex:1
+                              animated:YES];
+    }
+    
+    else
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"CrimeDataOptionsVC"
+                              animated:YES];
+    }
+    
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         UIViewController *ssvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-              replaceViewControllerAtIndex:1
-                        withViewController:ssvc];
+           replaceViewControllerWithID:@"LayersVC"
+                    withViewController:ssvc];
     }
     
     else
@@ -637,21 +664,21 @@ extern int keepProcessing;
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-              replaceViewControllerAtIndex:1
-                        withViewController:lvc];
+           replaceViewControllerWithID:@"SpreadsheetVC"
+                    withViewController:lvc];
     }
     
     UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-          replaceViewControllerAtIndex:2
-                    withViewController:findvc];
+       replaceViewControllerWithID:@"FieldOptionsVC"
+                withViewController:findvc];
     
     UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-          replaceViewControllerAtIndex:3
-                    withViewController:avc];
+       replaceViewControllerWithID:@"DestinationsVC"
+                withViewController:avc];
     
     [_mapToolbar configure:_screenSetting];
     

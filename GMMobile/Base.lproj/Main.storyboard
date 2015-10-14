@@ -9,7 +9,7 @@
         <!--Destinations-->
         <scene sceneID="tVj-6s-RIR">
             <objects>
-                <viewController storyboardIdentifier="DestinationsVC" id="do3-kC-FQs" customClass="DestinationsViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DestinationsVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="do3-kC-FQs" customClass="DestinationsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="TOq-GB-ayx"/>
                         <viewControllerLayoutGuide type="bottom" id="xA1-ib-3rZ"/>
@@ -173,6 +173,7 @@
                             </mask>
                         </variation>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Destinations" image="destinations.png" id="soj-jy-KzI"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
@@ -187,7 +188,7 @@
         <!--Crime Options-->
         <scene sceneID="ucn-6J-f4B">
             <objects>
-                <viewController storyboardIdentifier="CrimeDataOptionsVC" id="JyG-yu-lnh" customClass="CrimeDataOptions" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CrimeDataOptionsVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="JyG-yu-lnh" customClass="CrimeDataOptions" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jDj-a9-MPM"/>
                         <viewControllerLayoutGuide type="bottom" id="iVo-cf-IIg"/>
@@ -198,6 +199,7 @@
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Crime Options" image="fieldOptions.png" id="Kgl-AS-MPl"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                 </viewController>
@@ -389,7 +391,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Map" image="map.png" id="acW-dT-cKf"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
@@ -404,7 +406,7 @@
         <!--Layers-->
         <scene sceneID="wg7-f3-ORb">
             <objects>
-                <viewController storyboardIdentifier="LayersVC" id="8rJ-Kc-sve" customClass="LayersViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LayersVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="8rJ-Kc-sve" customClass="LayersViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="L7p-HK-0SC"/>
                         <viewControllerLayoutGuide type="bottom" id="Djb-ko-YwX"/>
@@ -497,7 +499,9 @@
                             </mask>
                         </variation>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Layers" image="layers.png" id="cPa-gy-q4n"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
                         <outlet property="tableView" destination="Jff-DT-1OW" id="yAq-mj-IZT"/>
                         <segue destination="1Va-SO-cwP" kind="presentation" identifier="ShowLayerOverrides" id="Jfj-Sl-J2m"/>
@@ -1137,7 +1141,7 @@
                             <constraint firstItem="NnP-KV-z88" firstAttribute="trailing" secondItem="WRl-iL-RvF" secondAttribute="trailingMargin" id="jg7-l7-cJR"/>
                         </constraints>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Settings" image="settings.png" id="lee-OE-7W2"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
@@ -1154,7 +1158,7 @@
         <!--Field Options-->
         <scene sceneID="joI-pr-44B">
             <objects>
-                <viewController storyboardIdentifier="FieldOptionsVC" id="12j-A1-RmV" customClass="FieldOptionsViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FieldOptionsVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="12j-A1-RmV" customClass="FieldOptionsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="6bJ-lI-jSf"/>
                         <viewControllerLayoutGuide type="bottom" id="JIO-8K-sos"/>
@@ -1238,6 +1242,7 @@
                             </mask>
                         </variation>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Field Options" image="fieldOptions.png" id="iTv-S3-x7H"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
@@ -1251,7 +1256,7 @@
         <!--Spreadsheet-->
         <scene sceneID="eFF-7w-ZfT">
             <objects>
-                <viewController storyboardIdentifier="SpreadsheetVC" id="LGd-oQ-f5l" customClass="SpreadsheetViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SpreadsheetVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="LGd-oQ-f5l" customClass="SpreadsheetViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ecw-Em-qjm"/>
                         <viewControllerLayoutGuide type="bottom" id="Gsn-Zu-CG8"/>
@@ -1262,6 +1267,7 @@
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Spreadsheet" image="spreadsheetIcon.png" id="T4d-I3-N5l"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                 </viewController>
@@ -1273,7 +1279,7 @@
         <scene sceneID="yl2-sM-qoP">
             <objects>
                 <tabBarController id="49e-Tb-3d3" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" translucent="NO" id="W28-zg-YXA">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
@@ -2021,7 +2027,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gIR-4E-Kzk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1419" y="1743"/>
+            <point key="canvasLocation" x="-1231" y="1551"/>
         </scene>
         <!--Find Property Owner View Controller-->
         <scene sceneID="5DZ-dQ-s9M">
@@ -2764,12 +2770,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uMv-5G-4bV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="270.75" y="1827"/>
+            <point key="canvasLocation" x="194" y="1611"/>
         </scene>
         <!--Find-->
         <scene sceneID="WyH-zB-XQR">
             <objects>
-                <viewController storyboardIdentifier="FindVC" id="T0p-0H-jNa" customClass="FindViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FindVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="T0p-0H-jNa" customClass="FindViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jf8-9B-NmO"/>
                         <viewControllerLayoutGuide type="bottom" id="Lax-ZZ-84B"/>
@@ -3289,7 +3295,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Find" image="find.png" id="Qdi-5K-Zt9"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
@@ -3573,7 +3579,7 @@
         <!--Applications-->
         <scene sceneID="FVq-oc-ude">
             <objects>
-                <viewController storyboardIdentifier="ApplicationsVC" id="l7a-Ov-wFN" customClass="ThemesViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ApplicationsVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="l7a-Ov-wFN" customClass="ThemesViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="oY5-tM-o91"/>
                         <viewControllerLayoutGuide type="bottom" id="ww3-nF-H4q"/>
@@ -3659,7 +3665,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <tabBarItem key="tabBarItem" title="Applications" image="applications.png" id="8bX-3Q-E00"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
@@ -3679,7 +3685,7 @@
                         <viewControllerLayoutGuide type="bottom" id="xRW-eV-u7n"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="vfs-d6-hhH">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yyq-Sk-wTL">
@@ -4098,7 +4104,6 @@
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <tabBarItem key="tabBarItem" title="Settings" image="settings.png" id="1r3-yz-hR4"/>
-                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
                         <outlet property="databaseSize" destination="XW7-yu-RzI" id="XW1-SS-fcc"/>
                         <outlet property="digtSwitch" destination="wx8-7i-8he" id="seK-0I-G31"/>
