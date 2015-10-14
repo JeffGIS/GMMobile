@@ -16,6 +16,7 @@
 @property (nonatomic) UIFont *font;
 @property (nonatomic) UIImageView *checkmarkView;
 @property (nonatomic) NSArray *legends, *areaTypes;
+@property NSInteger selectedAreaType, selectedLegend;
 
 @end
 
@@ -26,6 +27,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    _selectedAreaType = 0, _selectedLegend = 0;
     
     _areaTypes = @[@"Entire City", @"Neighborhoods", @"Wards", @"Precincts", @"Sectors",
                    @"Broadway Area", @"Downtown Improvement District", @"NorthWest L",
@@ -44,10 +46,10 @@
     [_dateRangeButton setTitle:@"Date Range"
                       forState:UIControlStateNormal];
     
-    [_areaTypeButton setTitle:@"Area Type"
+    [_areaTypeButton setTitle:_areaTypes[_selectedAreaType]
                      forState:UIControlStateNormal];
     
-    [_legendButton setTitle:@"Legend"
+    [_legendButton setTitle:_legends[_selectedLegend]
                    forState:UIControlStateNormal];
     
     _legendButton.selected = YES;
@@ -77,6 +79,13 @@
     [self setupTableView];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [_tableView reloadData];
+}
+
 - (void)setupButton:(UIButton *)button
 {
     button.backgroundColor = UIColor.blackColor;
@@ -97,11 +106,15 @@
         button.titleLabel.font = [UIFont boldSystemFontOfSize:22.0];
     
     else
-        button.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+        button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
     
+    button.titleLabel.numberOfLines = 2;
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.layer.cornerRadius = 10.0;
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    button.contentEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
 }
 
 - (void)setupTableView
@@ -117,6 +130,7 @@
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = _rowHeight;
     _tableView.sectionHeaderHeight = _rowHeight;
+    _tableView.delaysContentTouches = NO;
 }
 
 - (IBAction)dateRange:(UIButton *)sender
@@ -136,6 +150,12 @@ didReturnFromDate:(NSInteger)fromDate
     
     CRAPI.sharedInstance.fromDate = fromDate;
     CRAPI.sharedInstance.toDate = toDate;
+    
+    NSString *fromString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:fromDate]];
+    NSString *toString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:toDate]];
+    
+    [_dateRangeButton setTitle:[NSString stringWithFormat:@"%@-%@", fromString, toString]
+                      forState:UIControlStateNormal];
 }
 
 - (IBAction)areaType:(UIButton *)sender
@@ -206,27 +226,73 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     if (_areaTypeButton.selected)
+    {
         cell.textLabel.text = _areaTypes[indexPath.row];
+        
+        if (indexPath.row == _selectedAreaType)
+            cell.accessoryView = _checkmarkView;
+        
+        else
+            cell.accessoryView = nil;
+    }
     
     else
+    {
         cell.textLabel.text = _legends[indexPath.row];
+        
+        if (indexPath.row == _selectedLegend)
+            cell.accessoryView = _checkmarkView;
+        
+        else
+            cell.accessoryView = nil;
+    }
     
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.textColor = UIColor.blackColor;
     cell.userInteractionEnabled = YES;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.font = _font;
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    //cell.accessoryView = _checkmarkView;
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (_areaTypeButton.selected)
+    {
+        _selectedAreaType = indexPath.row;
+        
+        [_areaTypeButton setTitle:_areaTypes[_selectedAreaType]
+                         forState:UIControlStateNormal];
+    }
+    
+    else
+    {
+        _selectedLegend = indexPath.row;
+        
+        [_legendButton setTitle:_legends[_selectedLegend]
+                       forState:UIControlStateNormal];
+    }
+    
+    [_tableView reloadData];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
+}
+
+- (NSString *)formattedDate:(NSDate *)date
+{
+    NSString *formattedDate = @"";
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"MM/dd/YYYY";
+    formattedDate = [dateFormatter stringFromDate:date];
+    
+    return formattedDate;
 }
 
 @end
