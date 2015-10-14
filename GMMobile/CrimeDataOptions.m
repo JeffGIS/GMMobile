@@ -3,6 +3,7 @@
 
 #import "CrimeDataOptions.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "CCodeLibrary/CRAPI.h"
 
 @interface CrimeDataOptions ()
 
@@ -26,7 +27,7 @@
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
-    _areaTypes = @[@"Entire City", @"Neighborhoods", @"Wards", @"Precints", @"Sectors",
+    _areaTypes = @[@"Entire City", @"Neighborhoods", @"Wards", @"Precincts", @"Sectors",
                    @"Broadway Area", @"Downtown Improvement District", @"NorthWest L",
                    @"Midtown", @"Midtown (expanded)", @"Violent Crime Hotspots"];
     
@@ -69,8 +70,8 @@
     
     else
     {
-        _rowHeight = 76.0;
-        _font = [UIFont boldSystemFontOfSize:36.0];
+        _rowHeight = 60.0;
+        _font = [UIFont boldSystemFontOfSize:30.0];
     }
     
     [self setupTableView];
@@ -120,7 +121,21 @@
 
 - (IBAction)dateRange:(UIButton *)sender
 {
+    NVDateRange *nvdr = [NVDateRange showDateRangeInView:self.view
+                                                delegate:self
+                                                fromDate:CRAPI.sharedInstance.fromDate
+                                                  toDate:CRAPI.sharedInstance.toDate];
+#pragma unused(nvdr)
+}
+
+- (void)dateRange:(NVDateRange *)dateRange
+didReturnFromDate:(NSInteger)fromDate
+           toDate:(NSInteger)toDate
+{
+    [dateRange hideDateRange:YES];
     
+    CRAPI.sharedInstance.fromDate = fromDate;
+    CRAPI.sharedInstance.toDate = toDate;
 }
 
 - (IBAction)areaType:(UIButton *)sender

@@ -2,7 +2,8 @@
 //  GMMobile
 
 #import <UIKit/UIKit.h>
+#import "CCodeLibrary/NVDateRange.h"
 
-@interface CrimeDataOptions : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface CrimeDataOptions : UIViewController <UITableViewDataSource,UITableViewDelegate,NVDateRangeDelegate>
 
 @end
