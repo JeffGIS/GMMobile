@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1FF417FF1AB3724D000650FD /* S-N-54.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1FF417FD1AB3724D000650FD /* S-N-54.jpg */; };
 		1FF418001AB3724D000650FD /* S-55S-2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1FF417FE1AB3724D000650FD /* S-55S-2.jpg */; };
+		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; settings = {ASSET_TAGS = (); }; };
 		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
@@ -143,6 +144,8 @@
 /* Begin PBXFileReference section */
 		1FF417FD1AB3724D000650FD /* S-N-54.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-N-54.jpg"; sourceTree = "<group>"; };
 		1FF417FE1AB3724D000650FD /* S-55S-2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "S-55S-2.jpg"; sourceTree = "<group>"; };
+		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
+		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
 		692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -498,6 +501,8 @@
 		A9C8372C1A65B2E8005EC4FA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */,
+				6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */,
 				69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */,
 				69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */,
 				69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */,
@@ -805,6 +810,7 @@
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
+				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

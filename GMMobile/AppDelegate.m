@@ -71,7 +71,15 @@ didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)devToken
     NSString *deviceToken = token.copy;
     NSLog(@"Token for Push Notifications:%@", deviceToken);
     
-    //this is where we send the device token to our notification server(s)
+    NSString *previousDeviceToken = [UserDefaults.defaults stringForKey:@"DeviceToken"];
+    
+    if (![deviceToken isEqualToString:previousDeviceToken])
+    {
+        //this is where we send the device token to our notification server(s)
+        
+        [UserDefaults.defaults saveString:deviceToken
+                                   forKey:@"DeviceToken"];
+    }
 }
 
 - (void)application:(UIApplication *)app

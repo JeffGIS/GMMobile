@@ -81,17 +81,11 @@ extern int keepProcessing;
 {
     [super viewDidLoad];
     
-    [NVTabBarEdit tabBarController:self.tabBarController
-                 removeItemAtIndex:2
-                          animated:NO];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-                 removeItemAtIndex:2
-                          animated:NO];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-                 removeItemAtIndex:2
-                          animated:NO];
+    for (int i = 0; i < 4; i++)
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController
+                     removeItemAtIndex:2];
+    }
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -569,18 +563,6 @@ extern int keepProcessing;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
-    UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-      replaceViewControllerAtIndex:2
-                withViewController:findvc];
-    
-    UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-      replaceViewControllerAtIndex:3
-                withViewController:avc];
-    
     if (_firstTimeAppear)
     {
         CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
@@ -646,8 +628,8 @@ extern int keepProcessing;
         UIViewController *ssvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-          replaceViewControllerAtIndex:1
-                    withViewController:ssvc];
+              replaceViewControllerAtIndex:1
+                        withViewController:ssvc];
     }
     
     else
@@ -655,9 +637,21 @@ extern int keepProcessing;
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-          replaceViewControllerAtIndex:1
-                    withViewController:lvc];
+              replaceViewControllerAtIndex:1
+                        withViewController:lvc];
     }
+    
+    UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+          replaceViewControllerAtIndex:2
+                    withViewController:findvc];
+    
+    UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController
+          replaceViewControllerAtIndex:3
+                    withViewController:avc];
     
     [_mapToolbar configure:_screenSetting];
     

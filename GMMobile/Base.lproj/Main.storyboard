@@ -174,6 +174,7 @@
                         </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="Destinations" image="destinations.png" id="soj-jy-KzI"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
                         <outlet property="bottomTableView" destination="eX2-Me-BVe" id="avk-f3-WBe"/>
                         <outlet property="topTableView" destination="BSr-Uk-SPF" id="Quw-lx-PdJ"/>
@@ -182,6 +183,27 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HJO-MC-Xk3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="378" y="-1123.5"/>
+        </scene>
+        <!--Crime Options-->
+        <scene sceneID="ucn-6J-f4B">
+            <objects>
+                <viewController storyboardIdentifier="CrimeDataOptionsVC" id="JyG-yu-lnh" customClass="CrimeDataOptions" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jDj-a9-MPM"/>
+                        <viewControllerLayoutGuide type="bottom" id="iVo-cf-IIg"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Nui-8n-U4o">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <animations/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Crime Options" image="fieldOptions.png" id="Kgl-AS-MPl"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="QQP-oU-TyR" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1028" y="-1228"/>
         </scene>
         <!--Map-->
         <scene sceneID="hNz-n2-bh7">
@@ -1262,6 +1284,7 @@
                     <connections>
                         <segue destination="9pv-A4-QxB" kind="relationship" relationship="viewControllers" id="u7Y-xg-7CH"/>
                         <segue destination="8rJ-Kc-sve" kind="relationship" relationship="viewControllers" id="lzU-1b-eKA"/>
+                        <segue destination="JyG-yu-lnh" kind="relationship" relationship="viewControllers" id="SIZ-7h-ITP"/>
                         <segue destination="12j-A1-RmV" kind="relationship" relationship="viewControllers" id="Dx2-lm-06C"/>
                         <segue destination="do3-kC-FQs" kind="relationship" relationship="viewControllers" id="Nqh-nM-kkl"/>
                         <segue destination="LGd-oQ-f5l" kind="relationship" relationship="viewControllers" id="3Gd-gJ-BE4"/>
