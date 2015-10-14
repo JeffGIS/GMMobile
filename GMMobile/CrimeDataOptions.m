@@ -63,8 +63,8 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _rowHeight = 60.0;
-        _font = [UIFont boldSystemFontOfSize:22.0];
+        _rowHeight = 40.0;
+        _font = [UIFont boldSystemFontOfSize:20.0];
     }
     
     else
@@ -92,7 +92,12 @@
     [button setTitleColor:UIColor.grayColor
                  forState:(UIControlStateHighlighted|UIControlStateSelected)];
     
-    button.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        button.titleLabel.font = [UIFont boldSystemFontOfSize:22.0];
+    
+    else
+        button.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+    
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.layer.cornerRadius = 10.0;
@@ -201,6 +206,12 @@ viewForHeaderInSection:(NSInteger)section
     //cell.accessoryView = _checkmarkView;
     
     return cell;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    [_tableView reloadData];
 }
 
 @end
