@@ -3,6 +3,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CrimeDataOptions : UIViewController
+@interface CrimeDataOptions : UIViewController <UITableViewDataSource,UITableViewDelegate>
 
 @end

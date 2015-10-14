@@ -89,6 +89,7 @@ viewForHeaderInSection:(NSInteger)section
     
     [headerView addSubview:headerLabel];
     headerView.backgroundColor = UIColor.blackColor;
+    
     return headerView;
 }
 
@@ -121,6 +122,7 @@ viewForHeaderInSection:(NSInteger)section
         checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
     
     cell.accessoryView = checkmarkView;
+    
     return cell;
 }
 
