@@ -3,6 +3,7 @@
 
 #import "SpreadsheetViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
+#import "MapViewController.h"
 
 @interface SpreadsheetViewController ()
 
@@ -69,6 +70,7 @@
     NSArray *fields = [proplist availablePropertyFields];
     
     _ssv.activeColumns = props.count;
+    _ssv.activeRows = fields.count;
     
     NSMutableArray *fieldNames = [[NSMutableArray alloc] init];
     
@@ -149,6 +151,27 @@ duration:(NSTimeInterval)duration
         [proplist updatePropertyUserID:column
                                 userID:text];
     }
+}
+
+- (void)ssvCellWasTappedAtRowIndex:(NSUInteger)rowIndex
+                       columnIndex:(NSUInteger)columnIndex
+{
+    PropertyList *proplist = [[PropertyList alloc] init];
+    LLPOINT llpoint = [proplist getPropertyLatLon:columnIndex];
+    CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
+    NSUInteger index = 0;
+    
+    MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
+                                                                    inTabBarController:self.tabBarController
+                                                                                 index:&index];
+    
+    if (mapVC)
+    {
+        mapVC.fromSpreadsheet = YES;
+        mapVC.spreadsheetCoords = ssCoords;
+    }
+    
+    self.tabBarController.selectedIndex = index;
 }
 
 @end

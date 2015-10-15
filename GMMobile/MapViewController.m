@@ -100,9 +100,9 @@ extern int keepProcessing;
                                                name:@"didBecomeActive"
                                              object:nil];
     
-    _nVectorViews = 0;
+    _nVectorViews = 0,
     _animateToLocation = YES;
-    _routeTraceExists = NO;
+    _routeTraceExists = _fromSpreadsheet = NO;
     
     _polylines = [[NSMutableSet alloc] init];
     
@@ -118,8 +118,7 @@ extern int keepProcessing;
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
-    CGRect mapViewFrame = CGRectMake(0.0, statusBarHeight,
-                                     self.view.frame.size.width,
+    CGRect mapViewFrame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
                                      (tabBarTop - statusBarHeight));
     
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
@@ -541,6 +540,109 @@ extern int keepProcessing;
     }
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
+    
+    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    
+    if (_fromSpreadsheet)
+    {
+        self.tabBarController.tabBar.hidden = YES;
+        self.view.frame = UIScreen.mainScreen.bounds;
+        
+        _mapView.frame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
+                                         (self.view.frame.size.height - statusBarHeight));
+        
+        _mapView.userInteractionEnabled = NO;
+       
+        for (HelpButton *helpButton in self.view.subviews)
+        {
+            if ([helpButton isKindOfClass:HelpButton.class])
+                helpButton.hidden = YES;
+        }
+        
+        _mapToolbar.hidden = YES;
+        _compass.hidden = YES;
+        
+        UIButton *returnButton = [[UIButton alloc] initWithFrame:CGRectMake(10.0, (statusBarHeight + 10.0),
+                                                                            160.0, 44.0)];
+        
+        [returnButton setTitle:@"< Return"
+                      forState:UIControlStateNormal];
+        
+        [self setupTempButton:returnButton];
+        returnButton.tag = 123456;
+        
+        [returnButton addTarget:self
+                         action:@selector(returnToSSV:)
+               forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.view addSubview:returnButton];
+        
+        UIButton *emailButton = [[UIButton alloc] initWithFrame:CGRectMake(10.0, (statusBarHeight + 64.0),
+                                                                           160.0, 44.0)];
+        
+        [emailButton setTitle:@"Email PDF"
+                      forState:UIControlStateNormal];
+        
+        [self setupTempButton:emailButton];
+        emailButton.tag = 654321;
+        
+        [self.view addSubview:emailButton];
+    }
+    
+    else
+    {
+        self.tabBarController.tabBar.hidden = NO;
+        self.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, tabBarTop);
+        
+        _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
+                                    (tabBarTop - statusBarHeight));
+        
+        _mapView.userInteractionEnabled = YES;
+        
+        for (HelpButton *helpButton in self.view.subviews)
+        {
+            if ([helpButton isKindOfClass:HelpButton.class])
+                helpButton.hidden = NO;
+        }
+        
+        _mapToolbar.hidden = NO;
+        _compass.hidden = NO;
+    }
+}
+
+- (void)setupTempButton:(UIButton *)button
+{
+    [button setTitleColor:UIColor.whiteColor
+                       forState:UIControlStateNormal];
+    
+    [button setTitleColor:UIColor.grayColor
+                       forState:UIControlStateHighlighted];
+    
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+    
+    button.backgroundColor = UIColor.blackColor;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    button.layer.cornerRadius = 10.0;
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+}
+
+- (void)returnToSSV:(UIButton *)button
+{
+    [button removeFromSuperview];
+    _fromSpreadsheet = NO;
+    
+    NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"SpreadsheetVC"
+                                              inTabBarController:self.tabBarController];
+    
+    [[self.view viewWithTag:654321] removeFromSuperview];
+    
+    if (index != -1)
+    {
+        self.tabBarController.selectedIndex = index;
+        self.tabBarController.tabBar.hidden = NO;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -1802,6 +1904,16 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_legendView])
                                [self.view bringSubviewToFront:_legendView];
+                       }
+                       
+                       if([self.view viewWithTag:123456])
+                       {
+                           [self.view bringSubviewToFront:[self.view viewWithTag:123456]];
+                       }
+                       
+                       if([self.view viewWithTag:654321])
+                       {
+                           [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
                        }
                    });
 }

@@ -27,5 +27,7 @@
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property (nonatomic) int currentZoom;
 @property (weak, nonatomic) IBOutlet UIButton *exitStreetView;
+@property BOOL fromSpreadsheet;
+@property (nonatomic) CLLocationCoordinate2D spreadsheetCoords;
 
 @end
