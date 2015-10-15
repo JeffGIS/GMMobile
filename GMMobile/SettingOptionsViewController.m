@@ -63,13 +63,6 @@
         _contents = tempArray.copy;
     }
     
-    else if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
-    {
-        NSMutableArray *tempArray = _contents.mutableCopy;
-        [tempArray addObject:@"Set Date Range"];
-        _contents = tempArray.copy;
-    }
-    
     [_tableView reloadData];
 }
 
@@ -179,28 +172,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.resetDestinations = YES;
         CRAPI.sharedInstance.clearSpreadsheet = YES;
     }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Set Date Range"])
-    {
-        NVDateRange *nvdr = [NVDateRange showDateRangeInView:self.view
-                                                    delegate:self
-                                                    fromDate:0
-                                                      toDate:0];
-#pragma unused(nvdr)
-    }
-}
-
-- (void)dateRange:(NVDateRange *)dateRange
-didReturnFromDate:(NSInteger)fromDate
-           toDate:(NSInteger)toDate
-{
-    [dateRange hideDateRange:YES];
-    
-    CRAPI.sharedInstance.fromDate = fromDate;
-    CRAPI.sharedInstance.toDate = toDate;
-    
-    NSLog(@"fromDate:%li, toDate:%li", (long)fromDate, (long)toDate);
 }
 
 - (void)uploadNow

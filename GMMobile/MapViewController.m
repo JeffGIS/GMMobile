@@ -67,8 +67,6 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
 @property (nonatomic) NSMutableSet *polylines;
-//@property (nonatomic) FTPDirectoryList *dirList;
-//@property (nonatomic) FTPDirectoryCreate *dirCreate;
 
 @end
 
@@ -182,36 +180,15 @@ extern int keepProcessing;
                              selector:@selector(cancelDigitizationMode:)
                                 title:@"Cancel Move/Add Mode"];
     
-    //save button on left side
-    /*_saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.05), 0.0,
-                                                                      (_digitizationToolbar.frame.size.width * 0.35),
-                                                                      _digitizationToolbar.frame.size.height)];*/
-    
-    //save button in middle
     _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
                                                                       (_digitizationToolbar.frame.size.width * 0.8),
                                                                       _digitizationToolbar.frame.size.height)];
-    
-    //"Save Digitization" title
-    /*[self setupDigitizerToolbarButton:_saveDigitizerButton
-                             selector:@selector(saveDigitizationMode:)
-                                title:@"Save Digitization"];*/
-    
     
     [self setupDigitizerToolbarButton:_saveDigitizerButton
                              selector:@selector(saveDigitizationMode:)
                                 title:@"Exit Move/Add Mode"];
     
-    //undo button on right side
-    /*_undoDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.6), 0.0,
-                                                                      (_digitizationToolbar.frame.size.width * 0.35),
-                                                                      _digitizationToolbar.frame.size.height)];
-
-    [self setupDigitizerToolbarButton:_undoDigitizerButton
-                             selector:@selector(undoDigitizationMode:)
-                                title:@"Undo Digitization"];*/
-    
-    _saveDigitizerButton.alpha = /*_undoDigitizerButton.alpha =*/ 0.0;
+    _saveDigitizerButton.alpha = 0.0;
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
@@ -681,174 +658,6 @@ extern int keepProcessing;
                 withViewController:avc];
     
     [_mapToolbar configure:_screenSetting];
-    
-    /*_dirList = [FTPDirectoryList getListingFromFTPDomain:@"gssidata.com"
-                                               directory:@"Bill/PlaceAreas"
-                                                username:@"GSSiData"
-                                                password:@"GSSi"
-                                                    port:@"14147"
-                                                delegate:self];
-    
-    NSArray *directories = @[@"Test1", @"Test2", @"Test3", @"Test4", @"Test5"];
-    
-    _dirCreate = [FTPDirectoryCreate createDirectories:directories
-                                           inFTPDomain:@"thmgis.com"
-                                             directory:@"Bill"
-                                              username:@"waypoint"
-                                              password:@"pointway4*"
-                                                  port:nil
-                                              delegate:self];*/
-    
-    /*NSMutableArray *fromCoords = [[NSMutableArray alloc] init];
-    NSMutableArray *toCoords = [[NSMutableArray alloc] init];
-    
-    for (int i = 0; i < 10; i++)
-    {
-        NSUInteger latRandom = arc4random_uniform(100000);
-        CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
-        
-        NSUInteger lonRandom = arc4random_uniform(100000);
-        CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
-        
-        CLLocation *randomLocation = [[CLLocation alloc] initWithLatitude:(44.0 + latFactor)
-                                                                longitude:-(93.0 + lonFactor)];
-        
-        [fromCoords addObject:randomLocation];
-    }
-    
-    for (int i = 0; i < 5; i++)
-    {
-        NSUInteger latRandom = arc4random_uniform(100000);
-        CGFloat latFactor = (CGFloat)(latRandom / 100000.0);
-        
-        NSUInteger lonRandom = arc4random_uniform(100000);
-        CGFloat lonFactor = (CGFloat)(lonRandom / 100000.0);
-        
-        CLLocation *randomLocation = [[CLLocation alloc] initWithLatitude:(44.0 + latFactor)
-                                                                longitude:-(93.0 + lonFactor)];
-        
-        [toCoords addObject:randomLocation];
-    }
-    
-    NVRoutes *routes = [NVRoutes getTotalDistanceArrayFromCoords:fromCoords
-                                                        toCoords:toCoords
-                                                        delegate:self];
-#pragma unused(routes)
-}
-
-- (void)NVRoutesDidReturnDistanceArray:(NSArray *)distanceArray
-                             forCoords:(NSArray *)coords
-{
-    SpreadsheetView *spreadsheet = nil;
-    
-    if (![self.view viewWithTag:444])
-    {
-        spreadsheet = [SpreadsheetView spreadsheetViewWithRows:distanceArray.count
-                                                       columns:3
-                                                          view:self.view];
-        spreadsheet.tag = 444;
-    }
-    
-    else
-        spreadsheet = (SpreadsheetView *)[self.view viewWithTag:444];
-    
-    NSMutableArray *distanceStringArray = [[NSMutableArray alloc] init];
-    NSMutableArray *latStringArray = [[NSMutableArray alloc] init];
-    NSMutableArray *lonStringArray = [[NSMutableArray alloc] init];
-    
-    for (int i = 0; i < distanceArray.count; i++)
-    {
-        NSString *distanceString = [distanceArray[i] stringValue];
-        [distanceStringArray addObject:distanceString];
-    }
-    
-    for (int i = 0; i < coords.count; i++)
-    {
-        CLLocationCoordinate2D coord = [coords[i] coordinate];
-        NSString *latString = [NSString stringWithFormat:@"%f", coord.latitude];
-        [latStringArray addObject:latString];
-        
-        NSString *lonString = [NSString stringWithFormat:@"%f", coord.longitude];
-        [lonStringArray addObject:lonString];
-    }
-    
-    [spreadsheet setTextArray:latStringArray
-             forColumnAtIndex:1];
-    
-    [spreadsheet setTextArray:lonStringArray
-             forColumnAtIndex:2];
-    
-    [spreadsheet setTextArray:distanceStringArray
-             forColumnAtIndex:3];*/
-    
-    /*NSURL *url = [NSURL URLWithString:@"http://svc.metrotransit.org/NexTrip/VehicleLocations/0?format=json"];
-    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:url];
-    
-    NSData *urlData = nil;
-    NSURLResponse *response = nil;
-    NSError *error = nil;
-    
-    urlData = [NSURLConnection sendSynchronousRequest:urlRequest
-                                    returningResponse:&response
-                                                error:&error];
-    
-    NSArray *json = [NSJSONSerialization JSONObjectWithData:urlData
-                                                    options:NSJSONReadingMutableContainers
-                                                      error:&error];
-    
-    for (int i = 0; i < json.count; i++)
-    {
-        NSDictionary *record = json[i];
-        
-        CLLocationCoordinate2D position = CLLocationCoordinate2DMake([[record objectForKey:@"VehicleLatitude"] floatValue],
-                                                                     [[record objectForKey:@"VehicleLongitude"] floatValue]);
-        
-        GMSMarker *vehicleMarker = [GMSMarker markerWithPosition:position];
-        vehicleMarker.map = _mapView;
-    }*/
-    
-    /*LPDPOINT llpoints = (LPDPOINT)malloc(sizeof(DPOINT) * 8);
-    int numPoints = 8;
-    
-    DPOINT point0 = {-93.039212, 44.515349};
-    DPOINT point1 = {-93.039215, 44.515739};
-    DPOINT point2 = {-93.039241, 44.519630};
-    DPOINT point3 = {-93.039243, 44.519924};
-    DPOINT point4 = {-93.039250, 44.521104};
-    DPOINT point5 = {-93.039260, 44.522586};
-    DPOINT point6 = {-93.039275, 44.527370};
-    DPOINT point7 = {-93.039282, 44.529689};
-    
-    llpoints[0] = point0;
-    llpoints[1] = point1;
-    llpoints[2] = point2;
-    llpoints[3] = point3;
-    llpoints[4] = point4;
-    llpoints[5] = point5;
-    llpoints[6] = point6;
-    llpoints[7] = point7;
-    
-    for (int i = 0; i < numPoints; i++)
-    {
-        DPOINT point = llpoints[i];
-        NSLog(@"%i:(%f,%f)", i, point.x, point.y);
-    }
-    
-    char *testString = EncodeString(llpoints, numPoints);
-    NSLog(@"%s", testString);
-    
-    free(llpoints);
-    
-    LPDPOINT llpoints2 = DecodeString(testString, &numPoints);
-    
-    for (int i = 0; i < numPoints; i++)
-    {
-        DPOINT point = llpoints2[i];
-        NSLog(@"%i:(%f,%f)", i, point.x, point.y);
-    }
-    
-    free(testString);
-    free(llpoints2);*/
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -1303,37 +1112,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 
-/*                MarkerButton *marker = [MarkerButton markerWithPosition:position
-                                                                   view:self.view
-                                                                    map:_mapView
-                                                        statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
-                                                               delegate:self];
-                
-                marker.center = CGPointMake(_digitizerTargetView.center.x,
-                                            (_digitizerTargetView.center.y -
-                                             (marker.frame.size.height / 2.0)));
-                
-                [self removePreviousInfoWindow];
-                _infoWindow = [[MarkerInfoWindow alloc] init];
-                
-                marker.title = [NSString stringWithFormat:@"New Alley Wall %ld", (long)_digitizerCount];
-                marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
-                [_markerArray addObject:marker];
-                
-                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
-                _infoWindow.delegate = self;
-                _infoWindow.title = marker.title;
-                _infoWindow.snippet = marker.snippet;
-                _infoWindow.position = marker.position;
-                _infoWindow.type = MarkerInfoWindowTypeCustom;
-                [self.view addSubview:_infoWindow];*/
                 _noneSelected = NO;
                 
                 [UIView animateWithDuration:0.25
                                  animations:^{
                                      _cancelDigitizerButton.alpha = 0.0;
                                      _saveDigitizerButton.alpha = 1.0;
-                                     //_undoDigitizerButton.alpha = 1.0;
                                  }];
             }
                 
@@ -1691,12 +1475,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                (self.view.frame.size.height + _tabBarHeight),
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
     
-    /*CGRect frame3 = CGRectMake(0.0, statusBarHeight +
-                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
-                               ((self.view.frame.size.height + _tabBarHeight) / 2.0),
-                               ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));*/
-    
-    CGRect frame4 = CGRectMake(0.0, statusBarHeight,
+    CGRect frame3 = CGRectMake(0.0, statusBarHeight,
                                (self.view.frame.size.height + _tabBarHeight),
                                (self.view.frame.size.width - _tabBarHeight - statusBarHeight));
     
@@ -1767,7 +1546,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         {
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _mapView.frame = _vectorView.frame = frame4;
+                                 _mapView.frame = _vectorView.frame = frame3;
                                  [self updateMarkerPosition];
                              }];
         }
@@ -1842,31 +1621,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         {
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _firstView.frame = frame4;
-                             }];
-            
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
-                                                                (_firstView.frame.size.height / 2.0));
-                             }];
-        }
-            
-            /*
-         case MapViewScreenSettingSplitBottomScreen:
-        {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0, statusBarHeight,
-                                            (self.view.frame.size.height + _tabBarHeight),
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5));
-                                 
-                                 [self updateMarkerPosition];
-                             }];
-            
-            [UIView animateWithDuration:duration
-                             animations:^{
                                  _firstView.frame = frame3;
                              }];
             
@@ -1875,18 +1629,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
                              }];
-            
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 _secondView.frame =
-                                 CGRectMake(((self.view.frame.size.height + _tabBarHeight) / 2.0),
-                                            statusBarHeight + ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 1.5),
-                                            ((self.view.frame.size.height + _tabBarHeight) / 2.0),
-                                            ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
-                             }];
         }
-            break;
-         */
             
         default:
             break;
@@ -3990,48 +3733,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             _screenSetting = MapViewScreenSettingPlatView;
         }
-            
-            /*
-        case MapViewScreenSettingSplitBottomScreen:
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
-                                 
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 1.5));
-                                 
-                                 [self updateMarkerPosition];
-                             }
-                             completion:^(BOOL finished) {
-                                 [self refreshVectorView:_mapView.projection.visibleRegion
-                                                  atZoom:_mapView.camera.zoom];
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _firstView.frame = frame3;
-                             }];
-            
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 _secondView.frame =
-                                 CGRectMake((self.view.frame.size.width / 2.0),
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
-                                            (self.view.frame.size.width / 2.0),
-                                            ((tabBarTop - statusBarHeight) / 3.0));
-                             }];
-            
-            _screenSetting = MapViewScreenSettingSplitBottomScreen;
-        }
-            break;
-             */
     }
     
-            
     if (setting != MapViewScreenSettingFullscreen)
     {
         CGRect frame = CGRectZero;

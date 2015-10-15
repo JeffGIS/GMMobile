@@ -336,6 +336,39 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
+                                <exclude reference="B9w-3Z-fja"/>
+                                <exclude reference="GMv-RM-UZM"/>
+                                <exclude reference="Gwu-pE-FsA"/>
+                                <exclude reference="JdL-WT-Go8"/>
+                                <exclude reference="MJD-dS-tRN"/>
+                                <exclude reference="Olj-31-ow7"/>
+                                <exclude reference="P9A-Hv-s0y"/>
+                                <exclude reference="Ppo-KX-Tx7"/>
+                                <exclude reference="VT6-Z1-e63"/>
+                                <exclude reference="ZAm-cP-tmh"/>
+                                <exclude reference="blQ-yA-BH2"/>
+                                <exclude reference="fXf-z2-mXa"/>
+                                <exclude reference="grs-U0-CFy"/>
+                                <exclude reference="mx1-N7-GH6"/>
+                                <exclude reference="qPS-1N-Ypz"/>
+                                <exclude reference="0hX-Ll-t77"/>
+                                <exclude reference="2N3-Pf-PN9"/>
+                                <exclude reference="3tc-c2-esl"/>
+                                <exclude reference="4KB-E3-OVb"/>
+                                <exclude reference="AjR-Lx-cVX"/>
+                                <exclude reference="IT6-rj-i49"/>
+                                <exclude reference="NdN-Ng-IMH"/>
+                                <exclude reference="QIN-dZ-vzR"/>
+                                <exclude reference="QTi-Kc-yHD"/>
+                                <exclude reference="R8A-Fk-9Y6"/>
+                                <exclude reference="b1L-HA-5bf"/>
+                                <exclude reference="fa9-BN-a1B"/>
+                                <exclude reference="gn7-jJ-F8J"/>
+                                <exclude reference="jEs-Ye-wfH"/>
+                                <exclude reference="oUe-JJ-M4v"/>
+                                <exclude reference="q5E-f0-GLN"/>
+                                <exclude reference="tjP-6B-tn1"/>
+                                <exclude reference="x5g-ON-fFi"/>
                                 <exclude reference="0fi-EA-wqM"/>
                                 <exclude reference="1ND-Xt-ihT"/>
                                 <exclude reference="521-uQ-yFm"/>
@@ -357,39 +390,6 @@
                                 <exclude reference="t1l-73-wP7"/>
                                 <exclude reference="xMb-hK-nC3"/>
                                 <exclude reference="yOC-Zw-jFn"/>
-                                <exclude reference="0hX-Ll-t77"/>
-                                <exclude reference="2N3-Pf-PN9"/>
-                                <exclude reference="3tc-c2-esl"/>
-                                <exclude reference="4KB-E3-OVb"/>
-                                <exclude reference="AjR-Lx-cVX"/>
-                                <exclude reference="IT6-rj-i49"/>
-                                <exclude reference="NdN-Ng-IMH"/>
-                                <exclude reference="QIN-dZ-vzR"/>
-                                <exclude reference="QTi-Kc-yHD"/>
-                                <exclude reference="R8A-Fk-9Y6"/>
-                                <exclude reference="b1L-HA-5bf"/>
-                                <exclude reference="fa9-BN-a1B"/>
-                                <exclude reference="gn7-jJ-F8J"/>
-                                <exclude reference="jEs-Ye-wfH"/>
-                                <exclude reference="oUe-JJ-M4v"/>
-                                <exclude reference="q5E-f0-GLN"/>
-                                <exclude reference="tjP-6B-tn1"/>
-                                <exclude reference="x5g-ON-fFi"/>
-                                <exclude reference="B9w-3Z-fja"/>
-                                <exclude reference="GMv-RM-UZM"/>
-                                <exclude reference="Gwu-pE-FsA"/>
-                                <exclude reference="JdL-WT-Go8"/>
-                                <exclude reference="MJD-dS-tRN"/>
-                                <exclude reference="Olj-31-ow7"/>
-                                <exclude reference="P9A-Hv-s0y"/>
-                                <exclude reference="Ppo-KX-Tx7"/>
-                                <exclude reference="VT6-Z1-e63"/>
-                                <exclude reference="ZAm-cP-tmh"/>
-                                <exclude reference="blQ-yA-BH2"/>
-                                <exclude reference="fXf-z2-mXa"/>
-                                <exclude reference="grs-U0-CFy"/>
-                                <exclude reference="mx1-N7-GH6"/>
-                                <exclude reference="qPS-1N-Ypz"/>
                                 <exclude reference="JOn-bp-69a"/>
                                 <exclude reference="W9T-gU-HU3"/>
                                 <exclude reference="aI8-qw-0xK"/>
@@ -397,6 +397,18 @@
                         </variation>
                         <variation key="heightClass=compact">
                             <mask key="constraints">
+                                <include reference="GMv-RM-UZM"/>
+                                <include reference="JdL-WT-Go8"/>
+                                <include reference="Olj-31-ow7"/>
+                                <include reference="VT6-Z1-e63"/>
+                                <include reference="grs-U0-CFy"/>
+                                <include reference="3tc-c2-esl"/>
+                                <include reference="AjR-Lx-cVX"/>
+                                <include reference="IT6-rj-i49"/>
+                                <include reference="b1L-HA-5bf"/>
+                                <include reference="fa9-BN-a1B"/>
+                                <include reference="oUe-JJ-M4v"/>
+                                <include reference="x5g-ON-fFi"/>
                                 <include reference="0fi-EA-wqM"/>
                                 <include reference="521-uQ-yFm"/>
                                 <include reference="Fgm-kE-mfV"/>
@@ -405,27 +417,14 @@
                                 <include reference="Lev-h5-ErR"/>
                                 <include reference="bbG-Ut-J7U"/>
                                 <include reference="yOC-Zw-jFn"/>
-                                <include reference="3tc-c2-esl"/>
-                                <include reference="AjR-Lx-cVX"/>
-                                <include reference="IT6-rj-i49"/>
-                                <include reference="b1L-HA-5bf"/>
-                                <include reference="fa9-BN-a1B"/>
-                                <include reference="oUe-JJ-M4v"/>
-                                <include reference="x5g-ON-fFi"/>
-                                <include reference="GMv-RM-UZM"/>
-                                <include reference="JdL-WT-Go8"/>
-                                <include reference="Olj-31-ow7"/>
-                                <include reference="VT6-Z1-e63"/>
-                                <include reference="grs-U0-CFy"/>
                                 <include reference="aI8-qw-0xK"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="constraints">
-                                <include reference="1ND-Xt-ihT"/>
-                                <include reference="tVD-Ql-geu"/>
-                                <include reference="0PW-oW-vJN"/>
-                                <include reference="6FK-gI-z76"/>
+                                <include reference="MJD-dS-tRN"/>
+                                <include reference="Ppo-KX-Tx7"/>
+                                <include reference="fXf-z2-mXa"/>
                                 <include reference="0hX-Ll-t77"/>
                                 <include reference="4KB-E3-OVb"/>
                                 <include reference="NdN-Ng-IMH"/>
@@ -433,14 +432,26 @@
                                 <include reference="R8A-Fk-9Y6"/>
                                 <include reference="gn7-jJ-F8J"/>
                                 <include reference="tjP-6B-tn1"/>
-                                <include reference="MJD-dS-tRN"/>
-                                <include reference="Ppo-KX-Tx7"/>
-                                <include reference="fXf-z2-mXa"/>
+                                <include reference="1ND-Xt-ihT"/>
+                                <include reference="tVD-Ql-geu"/>
+                                <include reference="0PW-oW-vJN"/>
+                                <include reference="6FK-gI-z76"/>
                                 <include reference="JOn-bp-69a"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=regular">
                             <mask key="constraints">
+                                <include reference="B9w-3Z-fja"/>
+                                <include reference="Gwu-pE-FsA"/>
+                                <include reference="P9A-Hv-s0y"/>
+                                <include reference="ZAm-cP-tmh"/>
+                                <include reference="blQ-yA-BH2"/>
+                                <include reference="mx1-N7-GH6"/>
+                                <include reference="qPS-1N-Ypz"/>
+                                <include reference="2N3-Pf-PN9"/>
+                                <include reference="QIN-dZ-vzR"/>
+                                <include reference="jEs-Ye-wfH"/>
+                                <include reference="q5E-f0-GLN"/>
                                 <include reference="6YG-uy-spm"/>
                                 <include reference="XgO-0M-QyX"/>
                                 <include reference="kcb-Ua-eWP"/>
@@ -450,17 +461,6 @@
                                 <include reference="pFj-fd-kHU"/>
                                 <include reference="t1l-73-wP7"/>
                                 <include reference="xMb-hK-nC3"/>
-                                <include reference="2N3-Pf-PN9"/>
-                                <include reference="QIN-dZ-vzR"/>
-                                <include reference="jEs-Ye-wfH"/>
-                                <include reference="q5E-f0-GLN"/>
-                                <include reference="B9w-3Z-fja"/>
-                                <include reference="Gwu-pE-FsA"/>
-                                <include reference="P9A-Hv-s0y"/>
-                                <include reference="ZAm-cP-tmh"/>
-                                <include reference="blQ-yA-BH2"/>
-                                <include reference="mx1-N7-GH6"/>
-                                <include reference="qPS-1N-Ypz"/>
                                 <include reference="W9T-gU-HU3"/>
                             </mask>
                         </variation>
@@ -4071,32 +4071,6 @@
                                     <action selector="launchMaintenanceModule:" destination="nWl-XI-pP2" eventType="touchUpInside" id="IhW-za-1Y9"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="DIl-G4-L9W">
-                                <rect key="frame" x="241" y="28" width="118" height="49"/>
-                                <animations/>
-                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
-                                <state key="normal" title="Show Bump Detector">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="showBumpDetector:" destination="nWl-XI-pP2" eventType="touchUpInside" id="aRI-Nh-Ppp"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="hhZ-vu-QnI">
-                                <rect key="frame" x="367" y="29" width="118" height="49"/>
-                                <animations/>
-                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
-                                <state key="normal" title="Show Spreadsheet">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="showSpreadsheetView:" destination="nWl-XI-pP2" eventType="touchUpInside" id="96g-F2-qlr"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="jxh-ei-OYO">
                                 <rect key="frame" x="145" y="362" width="127" height="53"/>
                                 <animations/>
@@ -4332,6 +4306,19 @@
                                 </state>
                                 <connections>
                                     <action selector="loadCrimeData:" destination="nWl-XI-pP2" eventType="touchUpInside" id="q2p-GZ-wjB"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="DIl-G4-L9W">
+                                <rect key="frame" x="241" y="20" width="118" height="49"/>
+                                <animations/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <state key="normal" title="Show Bump Detector">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="showBumpDetector:" destination="nWl-XI-pP2" eventType="touchUpInside" id="aRI-Nh-Ppp"/>
                                 </connections>
                             </button>
                         </subviews>

@@ -20,6 +20,7 @@
 
 
 @interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,MFMailComposeViewControllerDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
+
 @property (nonatomic, weak) id <SettingsViewControllerDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
 @property id saveDelegate;
