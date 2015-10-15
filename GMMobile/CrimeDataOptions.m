@@ -43,8 +43,8 @@
     [self setupButton:_areaTypeButton];
     [self setupButton:_legendButton];
     
-    [_dateRangeButton setTitle:@"Date Range"
-                      forState:UIControlStateNormal];
+    [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
+                                  toDate:CRAPI.sharedInstance.toDate];
     
     [_areaTypeButton setTitle:_areaTypes[_selectedAreaType]
                      forState:UIControlStateNormal];
@@ -151,6 +151,13 @@ didReturnFromDate:(NSInteger)fromDate
     CRAPI.sharedInstance.fromDate = fromDate;
     CRAPI.sharedInstance.toDate = toDate;
     
+    [self setDateRangeButtonTextFromDate:fromDate
+                                  toDate:toDate];
+}
+
+- (void)setDateRangeButtonTextFromDate:(NSInteger)fromDate
+                                toDate:(NSInteger)toDate
+{
     NSString *fromString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:fromDate]];
     NSString *toString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:toDate]];
     

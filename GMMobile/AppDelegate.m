@@ -5,6 +5,7 @@ int keepProcessing = 1;
 
 #import "AppDelegate.h"
 #import <GoogleMaps/GoogleMaps.h>
+#import "CCodeLibrary/NVDateRange.h"
 
 @implementation AppDelegate
 
@@ -46,6 +47,14 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.resetPropList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
     CRAPI.sharedInstance.clearSpreadsheet = NO;
+    
+    NSInteger fromDate = 0, toDate = 0;
+    
+    [NVDateRange getPastWeekFromDate:&fromDate
+                              toDate:&toDate];
+    
+    CRAPI.sharedInstance.fromDate = fromDate;
+    CRAPI.sharedInstance.toDate = toDate;
     
     UIUserNotificationType nTypes =
     UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
