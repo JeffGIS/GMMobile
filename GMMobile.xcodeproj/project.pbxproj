@@ -12,14 +12,14 @@
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; settings = {ASSET_TAGS = (); }; };
 		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
+		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; };
+		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; settings = {ASSET_TAGS = (); }; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; settings = {ASSET_TAGS = (); }; };
 		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; settings = {ASSET_TAGS = (); }; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; settings = {ASSET_TAGS = (); }; };
-		69DFE39F1BD0AE090006D4C9 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; };
-		69DFE3A11BD0AE0E0006D4C9 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; settings = {ASSET_TAGS = (); }; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; settings = {ASSET_TAGS = (); }; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; settings = {ASSET_TAGS = (); }; };
@@ -150,6 +150,8 @@
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
 		692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
+		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
@@ -318,8 +320,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69DFE3A11BD0AE0E0006D4C9 /* AddressBookUI.framework in Frameworks */,
-				69DFE39F1BD0AE090006D4C9 /* AddressBook.framework in Frameworks */,
+				69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */,
+				69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */,
 				A9A1C0A61B55661500A3DFD8 /* Accelerate.framework in Frameworks */,
 				A9A1C0A41B55660E00A3DFD8 /* CoreBluetooth.framework in Frameworks */,
 				A9CF61A91B4C580200ADE8DB /* libNVCoordinateLibrary.a in Frameworks */,
@@ -417,6 +419,8 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				69307FE71BD0B6910036D936 /* Contacts.framework */,
+				69307FE81BD0B6910036D936 /* ContactsUI.framework */,
 				69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */,
 				69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */,
 				698F95F21B8CD319007D32A5 /* StoreKit.framework */,

@@ -4,7 +4,6 @@
 #import "SettingOptionsViewController.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/NVCalibrationController.h"
-#import "StoreKit/StoreKit.h"
 
 @interface SettingOptionsViewController ()
 
@@ -54,7 +53,7 @@
 {
     [super viewWillAppear:animated];
     
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device", @"Purchase Data"];
+    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device", @"Purchase Data", @"Access Contacts"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -172,6 +171,26 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.resetDestinations = YES;
         CRAPI.sharedInstance.clearSpreadsheet = YES;
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Access Contacts"])
+    {
+        CNContactPickerViewController *cpvc = [[CNContactPickerViewController alloc] init];
+        cpvc.delegate = self;
+        
+        [self presentViewController:cpvc
+                           animated:YES
+                         completion:nil];
+    }
+}
+
+- (void)contactPicker:(CNContactPickerViewController *)picker
+     didSelectContact:(CNContact *)contact
+{
+    NSLog(@"Name:%@ %@", contact.givenName, contact.familyName);
+    
+    for (int i = 0; i < contact.emailAddresses.count; i++)
+        NSLog(@"Email Address:%@", contact.emailAddresses[i].value);
 }
 
 - (void)uploadNow
