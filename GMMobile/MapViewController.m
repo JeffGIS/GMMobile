@@ -553,6 +553,11 @@ extern int keepProcessing;
                                          (self.view.frame.size.height - statusBarHeight));
         
         _mapView.userInteractionEnabled = NO;
+        
+        GMSCameraUpdate *camUpdate = [GMSCameraUpdate setTarget:_spreadsheetCoords
+                                                           zoom:16.0];
+        
+        [_mapView moveCamera:camUpdate];
        
         for (HelpButton *helpButton in self.view.subviews)
         {
@@ -586,6 +591,10 @@ extern int keepProcessing;
         
         [self setupTempButton:emailButton];
         emailButton.tag = 654321;
+        
+        [emailButton addTarget:self
+                        action:@selector(emailPDF:)
+              forControlEvents:UIControlEventTouchUpInside];
         
         [self.view addSubview:emailButton];
     }
@@ -643,6 +652,64 @@ extern int keepProcessing;
         self.tabBarController.selectedIndex = index;
         self.tabBarController.tabBar.hidden = NO;
     }
+}
+
+- (void)emailPDF:(UIButton *)button
+{
+    NSData *pdf = [NVPDFSnapshotter pdfFromViews:[NSArray arrayWithObjects:_mapView, _vectorView, nil]];
+    
+    if (MFMailComposeViewController.canSendMail)
+    {
+        MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
+        composer.mailComposeDelegate = self;
+        composer.subject = @"PDF from GMMobile";
+        
+        [composer setMessageBody:@"The PDF attached to this email was rendered by GMMobile."
+                          isHTML:NO];
+        
+        [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
+        
+        [composer addAttachmentData:pdf
+                           mimeType:@"application/pdf"
+                           fileName:@"testPDF.pdf"];
+        
+        [self presentViewController:composer
+                           animated:YES
+                         completion:nil];
+    }
+    
+    else
+        NSLog(@"ERROR:No mail account setup on device.");
+}
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            NSLog(@"Mail cancelled");
+            break;
+            
+        case MFMailComposeResultSaved:
+            NSLog(@"Mail saved");
+            break;
+            
+        case MFMailComposeResultSent:
+            NSLog(@"Mail sent");
+            break;
+            
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail sent failure:%@", error.localizedDescription);
+            break;
+            
+        default:
+            break;
+    }
+    
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -3605,32 +3672,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectLegends
 {
-    NSData *pdf = [NVPDFSnapshotter pdfFromViews:[NSArray arrayWithObjects:_mapView, _vectorView, nil]];
-    
-    if (MFMailComposeViewController.canSendMail)
-    {
-        MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
-        composer.mailComposeDelegate = self;
-        composer.subject = @"PDF from GMMobile";
-        
-        [composer setMessageBody:@"Hello from GSSi! The PDF attached to this email was rendered by GMMobile."
-                          isHTML:NO];
-        
-        [composer setToRecipients:[NSArray arrayWithObjects:@"wildbillmunson@gmail.com", @"jeffgis@aol.com", nil]];
-        
-        [composer addAttachmentData:pdf
-                           mimeType:@"application/pdf"
-                           fileName:@"testPDF.pdf"];
-        
-        [self presentViewController:composer
-                           animated:YES
-                         completion:nil];
-    }
-    
-    else
-        NSLog(@"ERROR:No mail account setup on device.");
-    
-    /*_options = @[@"Alley Centerline Status", @"Alley Wall Status"];
+    _options = @[@"Alley Centerline Status", @"Alley Wall Status"];
     
     if (_options.count > 0)
     {
@@ -3640,7 +3682,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _tableView.delaysContentTouches = NO;
         [_tableView reloadData];
         [self presentTableView];
-    }*/
+    }
 }
 
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType
@@ -4481,36 +4523,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     _nvdl.popover = nil;
     _nvdl.delegate = nil;
     _nvdl = nil;
-}
-
-- (void)mailComposeController:(MFMailComposeViewController *)controller
-          didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError *)error
-{
-    switch (result)
-    {
-        case MFMailComposeResultCancelled:
-            NSLog(@"Mail cancelled");
-            break;
-            
-        case MFMailComposeResultSaved:
-            NSLog(@"Mail saved");
-            break;
-            
-        case MFMailComposeResultSent:
-            NSLog(@"Mail sent");
-            break;
-            
-        case MFMailComposeResultFailed:
-            NSLog(@"Mail sent failure: %@", error.localizedDescription);
-            break;
-            
-        default:
-            break;
-    }
-    
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
 }
 
 @end
