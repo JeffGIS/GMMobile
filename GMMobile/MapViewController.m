@@ -4106,7 +4106,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
            
             PipeTrace *pipeTrace = [[PipeTrace alloc] init];
             
-            if (/*UIDevice.currentDevice.systemVersion.floatValue > 8.99 && */[pipeTrace havePipeTrace])
+            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99 && [pipeTrace havePipeTrace])
             {
                 NSMutableArray *newArray = [[NSMutableArray alloc] init];
                 [newArray addObjectsFromArray:_options];

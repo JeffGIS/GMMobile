@@ -175,12 +175,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Access Contacts"])
     {
-        CNContactPickerViewController *cpvc = [[CNContactPickerViewController alloc] init];
-        cpvc.delegate = self;
+        if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
+        {
+            CNContactPickerViewController *cpvc = [[CNContactPickerViewController alloc] init];
+            cpvc.delegate = self;
+            
+            [self presentViewController:cpvc
+                               animated:YES
+                             completion:nil];
+        }
         
-        [self presentViewController:cpvc
-                           animated:YES
-                         completion:nil];
+        else
+            NSLog(@"Contacts API requires iOS 9.0 and above");
     }
 }
 
