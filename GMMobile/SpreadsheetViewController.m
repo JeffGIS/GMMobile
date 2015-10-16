@@ -8,6 +8,7 @@
 @interface SpreadsheetViewController ()
 
 @property (nonatomic) NVSpreadsheetView *ssv;
+@property NSUInteger selectedRow, selectedColumn;
 
 @end
 
@@ -18,6 +19,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UIColor.blackColor;
+    _selectedRow = _selectedColumn = 0;
     
     CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
@@ -156,22 +158,41 @@ duration:(NSTimeInterval)duration
 - (void)ssvCellWasTappedAtRowIndex:(NSUInteger)rowIndex
                        columnIndex:(NSUInteger)columnIndex
 {
-    PropertyList *proplist = [[PropertyList alloc] init];
-    LLPOINT llpoint = [proplist getPropertyLatLon:columnIndex];
-    CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
-    NSUInteger index = 0;
+    _selectedRow = rowIndex;
+    _selectedColumn = columnIndex;
     
-    MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
-                                                                    inTabBarController:self.tabBarController
-                                                                                 index:&index];
-    
-    if (mapVC)
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Spreadsheet Options"
+                                               buttonTextArray:@[@"Map It!", @"Cancel"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0)
     {
-        mapVC.fromSpreadsheet = YES;
-        mapVC.spreadsheetCoords = ssCoords;
+        PropertyList *proplist = [[PropertyList alloc] init];
+        LLPOINT llpoint = [proplist getPropertyLatLon:_selectedColumn];
+        CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
+        NSUInteger index = 0;
+        
+        MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
+                                                                        inTabBarController:self.tabBarController
+                                                                                     index:&index];
+        
+        if (mapVC)
+        {
+            mapVC.fromSpreadsheet = YES;
+            mapVC.spreadsheetCoords = ssCoords;
+        }
+        
+        self.tabBarController.selectedIndex = index;
     }
     
-    self.tabBarController.selectedIndex = index;
+    [alertView hideLargeAlertView:YES];
 }
 
 @end
