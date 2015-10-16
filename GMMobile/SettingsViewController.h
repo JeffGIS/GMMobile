@@ -19,7 +19,7 @@
 @end
 
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,MFMailComposeViewControllerDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
 
 @property (nonatomic, weak) id <SettingsViewControllerDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
@@ -32,7 +32,6 @@
 - (IBAction)preloadTiles:(id)sender;
 - (IBAction)loadParcels:(id)sender;
 - (IBAction)deleteDatabase:(id)sender;
-- (IBAction)showEmail:(id)sender;
 - (IBAction)loadAreas:(id)sender;
 - (IBAction)loadSewer:(id)sender;
 - (IBAction)loadPlats:(id)sender;
