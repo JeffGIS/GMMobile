@@ -246,7 +246,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         else if (option == GetDatabaseSettingCurbRamp)
                         {
                             crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
-                            [crd createIntersectionsTable];
+                            [crd createIntersectionsTable:YES];
                             [crd open];
                         }
                         

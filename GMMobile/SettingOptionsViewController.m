@@ -8,6 +8,7 @@
 @interface SettingOptionsViewController ()
 
 @property (nonatomic) NSArray *contents, *images;
+@property (nonatomic) NVContactPicker *nvcp;
 
 @end
 
@@ -175,28 +176,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Access Contacts"])
     {
-        if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
-        {
-            CNContactPickerViewController *cpvc = [[CNContactPickerViewController alloc] init];
-            cpvc.delegate = self;
-            
-            [self presentViewController:cpvc
-                               animated:YES
-                             completion:nil];
-        }
-        
-        else
-            NSLog(@"Contacts API requires iOS 9.0 and above");
+        _nvcp = [NVContactPicker presentContactPickerInDelegate:self];
     }
 }
 
-- (void)contactPicker:(CNContactPickerViewController *)picker
-     didSelectContact:(CNContact *)contact
+- (void)contactPicker:(NVContactPicker *)contactPicker
+       didReturnEmail:(NSString *)email
+       forContactName:(NSString *)contactName
 {
-    NSLog(@"Name:%@ %@", contact.givenName, contact.familyName);
-    
-    for (int i = 0; i < contact.emailAddresses.count; i++)
-        NSLog(@"Email Address:%@", contact.emailAddresses[i].value);
+    NSLog(@"Name:%@", contactName);
+    NSLog(@"Email:%@", email);
+    _nvcp = nil;
 }
 
 - (void)uploadNow
