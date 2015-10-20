@@ -12,8 +12,10 @@
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; settings = {ASSET_TAGS = (); }; };
 		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
-		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; };
-		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; };
+		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; settings = {ASSET_TAGS = (); }; };
@@ -320,6 +322,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */,
+				69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */,
 				69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */,
 				69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */,
 				A9A1C0A61B55661500A3DFD8 /* Accelerate.framework in Frameworks */,
