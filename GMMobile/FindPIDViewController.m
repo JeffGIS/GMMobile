@@ -173,8 +173,8 @@ cellForRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (_pidList.count != 0)
     {
-        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]];
-        cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterTab:_pidList[indexPath.row]];
+        cell.textLabel.text = textBeforeTab(_pidList[indexPath.row]);
+        cell.detailTextLabel.text = textAfterTab(_pidList[indexPath.row]);
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
@@ -206,7 +206,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         [_delegate findPIDViewController:self
-                            didSelectPID:[UserDefaults.defaults includeTextBeforeTab:_pidList[indexPath.row]]];
+                            didSelectPID:textBeforeTab(_pidList[indexPath.row])];
         
     }
 }

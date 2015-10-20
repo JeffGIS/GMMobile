@@ -1,0 +1,11 @@
+//  GMMobile-Prefix.pch
+//  GMMobile
+
+#ifdef __OBJC__
+    @import UIKit;
+    #import "CCodeLibrary/StringFunctions.h"
+#endif
+
+#ifndef DEBUG
+#define NSLog(...);
+#endif

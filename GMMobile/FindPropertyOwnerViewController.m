@@ -155,8 +155,8 @@
     
     if (_propOwnerList.count != 0)
     {
-        cell.textLabel.text = [UserDefaults.defaults includeTextBeforeTab:_propOwnerList[indexPath.row]];
-        cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterLastTab:_propOwnerList[indexPath.row]];
+        cell.textLabel.text = textBeforeTab(_propOwnerList[indexPath.row]);
+        cell.detailTextLabel.text = textAfterLastTab(_propOwnerList[indexPath.row]);
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
@@ -188,9 +188,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         [_delegate findPropOwnerViewController:self
-                            didSelectPropOwner:[UserDefaults.defaults includeTextBeforeTab:_propOwnerList[indexPath.row]]
-                                           PID:[UserDefaults.defaults includeTextBeforeTab:
-                                                [UserDefaults.defaults includeTextAfterTab:_propOwnerList[indexPath.row]]]];
+                            didSelectPropOwner:textBeforeTab(_propOwnerList[indexPath.row])
+                                           PID:textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]))];
     }
 }
 

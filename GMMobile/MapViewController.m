@@ -2129,7 +2129,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
     {
-        NSString *textLabelText = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
+        NSString *textLabelText = textAfterFirstColon(_propertyReport[indexPath.row]);
         
         CGSize textSize = [textLabelText sizeWithAttributes:@{NSFontAttributeName:
                                                                   [UIFont systemFontOfSize:
@@ -2179,12 +2179,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
         case PropertyTableViewSettingPropertyReport:
         {
             cell.textLabel.font = [UIFont systemFontOfSize:MAX((_screenSize / 28.0), 18.0)];
-            
-            cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
-                                   [UserDefaults.defaults includeTextAfterFirstColon:
-                                    _propertyReport[indexPath.row]]];
-            
-            
+            cell.textLabel.text = removeOpeningSpaces(textAfterFirstColon(_propertyReport[indexPath.row]));
             cell.textLabel.textAlignment = NSTextAlignmentLeft;
             cell.indentationWidth = (cell.frame.size.width * 0.3);
             
@@ -2192,7 +2187,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
                                                                            (cell.indentationWidth - 4.0),
                                                                            cell.frame.size.height)];
             
-            rowHeader.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
+            rowHeader.text = textBeforeColon(_propertyReport[indexPath.row]);
             rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 48.0), 11.5)];
             rowHeader.textAlignment = NSTextAlignmentRight;
             
@@ -2588,7 +2583,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)showHCWebsite
 {
     WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
-                                  [UserDefaults.defaults removePIDPrefix:_selectedPID]];
+                                  removePIDPrefix(_selectedPID)];
     
     [self presentViewController:wkvc
                        animated:YES

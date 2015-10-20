@@ -259,7 +259,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [dateFormatter setDateFormat:@"MMdd"];
     
     NSString *dateString = [dateFormatter stringFromDate:NSDate.date];
-    dateString = [UserDefaults.defaults reverseString:dateString];
+    dateString = reverseString(dateString);
     
     if ([dateString isEqualToString:text])
     {
