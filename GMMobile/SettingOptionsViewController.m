@@ -5,6 +5,7 @@
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/NVCalibrationController.h"
 #import "CCodeLibrary/GSSiPopoverView.h"
+#import "CCodeLibrary/NSData+Compression.h"
 
 @interface SettingOptionsViewController ()
 
@@ -194,9 +195,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [_push.popover showAfter:0.0
                        withTitle:@"Upload Property.sqlite"];
         
-        if (![_push sendFile:@"Property.sqlite"
-               fromDirectory:UserDefaults.defaults.localFilePath
-                      toFile:@"Property.sqlite"
+        NSString *filePath = [NSString stringWithFormat:@"%@/AlleyWalls.sqlite",
+                              UserDefaults.defaults.sharedFilePath];
+        
+        NSData *compressedData = [NSData compressFileAtPath:filePath];
+        
+        if (![_push sendFile:@"AlleyWalls.sqlite"
+               fromDirectory:UserDefaults.defaults.sharedFilePath
+                      toFile:@"AlleyWalls.sqlite"
                  toDirectory:@"GMMobileUploads"
               deleteWhenDone:NO])
         {
