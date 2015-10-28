@@ -58,7 +58,7 @@
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Purchase Data", @"Access Contacts", @"Upload Property.sqlite"];
+                  @"Purchase Data", @"Access Contacts", @"Test Compression & Upload"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -184,9 +184,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Upload Property.sqlite"])
+              isEqualToString:@"Test Compression & Upload"])
     {
-        _push = FTPDataPush.push;
+        NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
+                              UserDefaults.defaults.sharedFilePath];
+        
+        NSData *compressedData = [NSData compressFileAtPath:filePath];
+        compressedData = [NSData lzCompressFileAtPath:filePath];
+        
+        /*_push = FTPDataPush.push;
         _push.delegate = self;
         
         GSSiPopoverView *popover = [[GSSiPopoverView alloc] initWithView:self.view];
@@ -194,11 +200,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [_push.popover showAfter:0.0
                        withTitle:@"Upload Property.sqlite"];
-        
-        NSString *filePath = [NSString stringWithFormat:@"%@/AlleyWalls.sqlite",
-                              UserDefaults.defaults.sharedFilePath];
-        
-        NSData *compressedData = [NSData compressFileAtPath:filePath];
         
         if (![_push sendFile:@"AlleyWalls.sqlite"
                fromDirectory:UserDefaults.defaults.sharedFilePath
@@ -214,7 +215,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:NVLargeAlertIndexNone];
 #pragma unused(alert)
-        }
+        }*/
     }
 }
 
