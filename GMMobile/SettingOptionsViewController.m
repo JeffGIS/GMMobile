@@ -190,8 +190,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                               UserDefaults.defaults.sharedFilePath];
         
         NSData *rawFile = [NSData dataWithContentsOfFile:filePath];
-        NSString *checksum = rawFile.MD5;
-        NSLog(@"%@", checksum);
+        NSString *md5 = rawFile.MD5;
+        NSString *sha256 = rawFile.SHA256;
+        NSLog(@"MD5:%@", md5);
+        NSLog(@"SHA256:%@", sha256);
         
         NSData *compressedData = [NSData compressFileAtPath:filePath];
         compressedData = [NSData lzCompressFileAtPath:filePath];
