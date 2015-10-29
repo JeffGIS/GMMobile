@@ -62,7 +62,7 @@
     
     PropertyData *pd = [[PropertyData alloc] init];
     [pd open];
-    _databaseSize.text = [NSString stringWithFormat:@"Database Size: %lld", pd.fileSize];
+    _databaseSize.text = [NSString stringWithFormat:@"DB Size: %lld", pd.fileSize];
     [pd close:777];
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
@@ -574,6 +574,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (IBAction)compressDatabase:(id)sender {
+    PropertyData *pd = [[PropertyData alloc] init];
+    [pd open];
+    [pd executeCmd:"VACUUM"];
+    [pd close:777];
+    [pd open];
+        _databaseSize.text = [NSString stringWithFormat:@"DB Size: %lld", pd.fileSize];
+    [pd close:777];
+    [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 
 - (IBAction)loadPlan:(id)sender
