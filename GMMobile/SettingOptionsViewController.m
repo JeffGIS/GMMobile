@@ -196,7 +196,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSData *compressedData = [NSData compressFileAtPath:filePath];
         compressedData = [NSData lzCompressFileAtPath:filePath];
         
-        _push = FTPDataPush.push;
+        /*_push = FTPDataPush.push;
         _push.delegate = self;
         
         GSSiPopoverView *popover = [[GSSiPopoverView alloc] initWithView:self.view];
@@ -219,7 +219,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:NVLargeAlertIndexNone];
 #pragma unused(alert)
-        }
+        }*/
     }
 }
 
