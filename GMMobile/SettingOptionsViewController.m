@@ -189,10 +189,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
                               UserDefaults.defaults.sharedFilePath];
         
+        NSData *rawFile = [NSData dataWithContentsOfFile:filePath];
+        NSString *checksum = rawFile.MD5;
+        NSLog(@"%@", checksum);
+        
         NSData *compressedData = [NSData compressFileAtPath:filePath];
         compressedData = [NSData lzCompressFileAtPath:filePath];
         
-        /*_push = FTPDataPush.push;
+        _push = FTPDataPush.push;
         _push.delegate = self;
         
         GSSiPopoverView *popover = [[GSSiPopoverView alloc] initWithView:self.view];
@@ -201,9 +205,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [_push.popover showAfter:0.0
                        withTitle:@"Upload Property.sqlite"];
         
-        if (![_push sendFile:@"AlleyWalls.sqlite"
+        if (![_push sendFile:@"Sewer.sqlite"
                fromDirectory:UserDefaults.defaults.sharedFilePath
-                      toFile:@"AlleyWalls.sqlite"
+                      toFile:@"Sewer.sqlite"
                  toDirectory:@"GMMobileUploads"
               deleteWhenDone:NO])
         {
@@ -215,7 +219,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:NVLargeAlertIndexNone];
 #pragma unused(alert)
-        }*/
+        }
     }
 }
 
