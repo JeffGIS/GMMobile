@@ -23,6 +23,13 @@
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
 		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
+		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
+		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
+		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
+		69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */; };
+		69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */; };
+		69DB8AE31BE3D8DE009372AC /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */; };
+		69DB8AE41BE3D8DE009372AC /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
@@ -69,9 +76,6 @@
 		A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8CF1A9DBAA00049F271 /* CoreLocation.framework */; };
 		A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D11A9DBAA50049F271 /* GLKit.framework */; };
 		A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D31A9DBAAB0049F271 /* ImageIO.framework */; };
-		A99CD8D61A9DBAB60049F271 /* libc++.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D51A9DBAB60049F271 /* libc++.dylib */; };
-		A99CD8D81A9DBABC0049F271 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D71A9DBABC0049F271 /* libicucore.dylib */; };
-		A99CD8DA1A9DBAC10049F271 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8D91A9DBAC10049F271 /* libz.dylib */; };
 		A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */; };
 		A9A1C0A01B55651300A3DFD8 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9A1C09F1B55651300A3DFD8 /* GoogleMaps.framework */; };
 		A9A1C0A21B55652200A3DFD8 /* GoogleMaps.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A9A1C0A11B55652200A3DFD8 /* GoogleMaps.bundle */; };
@@ -89,8 +93,6 @@
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
 		A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */ = {isa = PBXBuildFile; fileRef = A9CF61A41B4C576B00ADE8DB /* NVShapeFileDatabase.c */; };
-		A9CF61A91B4C580200ADE8DB /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9CF61A71B4C580200ADE8DB /* libNVCoordinateLibrary.a */; };
-		A9CF61AA1B4C580200ADE8DB /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9CF61A81B4C580200ADE8DB /* libNVShapefileLibrary.a */; };
 		A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D269E21AE4C77C00A5C38E /* plusSign.png */; };
 		A9D281881B045BAD00523B29 /* autoUpload.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281851B045BAD00523B29 /* autoUpload.png */; };
 		A9D281891B045BAD00523B29 /* loadData.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281861B045BAD00523B29 /* loadData.png */; };
@@ -100,7 +102,6 @@
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
 		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
 		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
-		A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */; };
 		EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
@@ -123,7 +124,6 @@
 		EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226F1A7523E6008CE2D1 /* Foundation.framework */; };
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
-		EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */; };
 		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBBC203F1AFB1345004BE242 /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBC203E1AFB1345004BE242 /* UploadViewController.m */; };
@@ -166,6 +166,13 @@
 		69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpreadsheetViewController.h; sourceTree = "<group>"; };
 		69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetViewController.m; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
+		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		69DB8AD91BE3D83D009372AC /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
+		69DB8ADB1BE3D862009372AC /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bfmlqbezrzptsdflvcijajdyhbld/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
+		69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVCoordinateLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bfmlqbezrzptsdflvcijajdyhbld/Build/Products/Debug-iphoneos/libNVCoordinateLibrary.a"; sourceTree = "<group>"; };
+		69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVShapefileLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bfmlqbezrzptsdflvcijajdyhbld/Build/Products/Debug-iphoneos/libNVShapefileLibrary.a"; sourceTree = "<group>"; };
 		69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		69E62D4A1BBF073F0018390B /* diagonalArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = diagonalArrow.png; sourceTree = "<group>"; };
@@ -227,9 +234,6 @@
 		A99CD8CF1A9DBAA00049F271 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		A99CD8D11A9DBAA50049F271 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		A99CD8D31A9DBAAB0049F271 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
-		A99CD8D51A9DBAB60049F271 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
-		A99CD8D71A9DBABC0049F271 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
-		A99CD8D91A9DBAC10049F271 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		A9A1C09F1B55651300A3DFD8 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		A9A1C0A11B55652200A3DFD8 /* GoogleMaps.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleMaps.bundle; path = GoogleMaps.framework/Versions/A/Resources/GoogleMaps.bundle; sourceTree = "<group>"; };
@@ -249,8 +253,6 @@
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
 		A9CF61A41B4C576B00ADE8DB /* NVShapeFileDatabase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NVShapeFileDatabase.c; sourceTree = "<group>"; };
 		A9CF61A51B4C576B00ADE8DB /* NVShapeFileDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVShapeFileDatabase.h; sourceTree = "<group>"; };
-		A9CF61A71B4C580200ADE8DB /* libNVCoordinateLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVCoordinateLibrary.a; path = "../nvcoordinatelibrary/build/Debug-iphoneos/libNVCoordinateLibrary.a"; sourceTree = "<group>"; };
-		A9CF61A81B4C580200ADE8DB /* libNVShapefileLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVShapefileLibrary.a; path = "../nvshapefilelibrary/build/Debug-iphoneos/libNVShapefileLibrary.a"; sourceTree = "<group>"; };
 		A9D269E21AE4C77C00A5C38E /* plusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusSign.png; sourceTree = "<group>"; };
 		A9D281851B045BAD00523B29 /* autoUpload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = autoUpload.png; sourceTree = "<group>"; };
 		A9D281861B045BAD00523B29 /* loadData.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loadData.png; sourceTree = "<group>"; };
@@ -262,7 +264,6 @@
 		A9F56EBC1A847B47003522AE /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A9F56EBE1A847CA8003522AE /* WebKitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitViewController.h; sourceTree = "<group>"; };
 		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
-		A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCCodeLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bmomxcqdduclkngeclsnuwqvhudu/Build/Products/Debug-iphoneos/libCCodeLibrary.a"; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
 		EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlleyWallData.h; sourceTree = "<group>"; };
 		EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlleyWallData.m; sourceTree = "<group>"; };
@@ -301,7 +302,6 @@
 		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
-		EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		EBAB31CA1AE8200000C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
 		EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerOverridesViewController.h; sourceTree = "<group>"; };
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
@@ -326,6 +326,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69DB8AE31BE3D8DE009372AC /* libNVCoordinateLibrary.a in Frameworks */,
+				69DB8AE41BE3D8DE009372AC /* libNVShapefileLibrary.a in Frameworks */,
+				69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */,
+				69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */,
+				69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */,
+				69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */,
+				69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */,
 				6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */,
 				69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */,
 				69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */,
@@ -333,13 +340,8 @@
 				69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */,
 				A9A1C0A61B55661500A3DFD8 /* Accelerate.framework in Frameworks */,
 				A9A1C0A41B55660E00A3DFD8 /* CoreBluetooth.framework in Frameworks */,
-				A9CF61A91B4C580200ADE8DB /* libNVCoordinateLibrary.a in Frameworks */,
-				A9CF61AA1B4C580200ADE8DB /* libNVShapefileLibrary.a in Frameworks */,
 				A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */,
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
-				A99CD8DA1A9DBAC10049F271 /* libz.dylib in Frameworks */,
-				A99CD8D81A9DBABC0049F271 /* libicucore.dylib in Frameworks */,
-				A99CD8D61A9DBAB60049F271 /* libc++.dylib in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
 				698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */,
@@ -348,8 +350,6 @@
 				A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */,
 				A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */,
 				A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */,
-				EB55227C1A755F44008CE2D1 /* libsqlite3.dylib in Frameworks */,
-				A9FBFF6B1A75531200635A72 /* libCCodeLibrary.a in Frameworks */,
 				EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */,
 				EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */,
 				EB55226C1A7523BC008CE2D1 /* QuartzCore.framework in Frameworks */,
@@ -428,6 +428,13 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
+				69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */,
+				69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */,
+				69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */,
+				69DB8ADB1BE3D862009372AC /* libc++.tbd */,
+				69DB8AD91BE3D83D009372AC /* libicucore.tbd */,
+				69DB8AD71BE3D82A009372AC /* libz.tbd */,
 				69A06CA01BE1C62800B6AD6C /* libcommonCrypto.tbd */,
 				6992A88A1BE00C4900FB53F0 /* libcompression.tbd */,
 				69307FE71BD0B6910036D936 /* Contacts.framework */,
@@ -439,22 +446,15 @@
 				A9A1C0A31B55660E00A3DFD8 /* CoreBluetooth.framework */,
 				A9A1C0A11B55652200A3DFD8 /* GoogleMaps.bundle */,
 				A9A1C09F1B55651300A3DFD8 /* GoogleMaps.framework */,
-				A9CF61A71B4C580200ADE8DB /* libNVCoordinateLibrary.a */,
-				A9CF61A81B4C580200ADE8DB /* libNVShapefileLibrary.a */,
 				A90C6E981B4A3AC300D87DB8 /* MessageUI.framework */,
 				A97B72751ADB4668001ACFAE /* AudioToolbox.framework */,
 				A99CD8DB1A9DBAC60049F271 /* OpenGLES.framework */,
-				A99CD8D91A9DBAC10049F271 /* libz.dylib */,
-				A99CD8D71A9DBABC0049F271 /* libicucore.dylib */,
-				A99CD8D51A9DBAB60049F271 /* libc++.dylib */,
 				A99CD8D31A9DBAAB0049F271 /* ImageIO.framework */,
 				A99CD8D11A9DBAA50049F271 /* GLKit.framework */,
 				A99CD8CF1A9DBAA00049F271 /* CoreLocation.framework */,
 				A99CD8CD1A9DBA9A0049F271 /* CoreData.framework */,
 				A99CD8CB1A9DBA940049F271 /* AVFoundation.framework */,
 				A9476B461A9C358A0082476B /* CoreText.framework */,
-				EB55227B1A755F44008CE2D1 /* libsqlite3.dylib */,
-				A9FBFF6A1A75531200635A72 /* libCCodeLibrary.a */,
 				A9F56EBC1A847B47003522AE /* WebKit.framework */,
 				EB55226F1A7523E6008CE2D1 /* Foundation.framework */,
 				EB55226D1A7523D5008CE2D1 /* UIKit.framework */,
