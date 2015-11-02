@@ -19,8 +19,7 @@
     _popover = popover;
     _saveDelegate = popover.delegate;
     _popover.delegate = self;
-    ConfigurationControl *cfc = [[ConfigurationControl alloc] init];
-    _dbList = [cfc getDatasetsForApp:appID];
+    _dbList = [ConfigurationControl.sharedInstance getDatasetsForApp:appID];
     
     self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05
                                                   target:self

@@ -250,11 +250,17 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 - (BOOL)setApp:(HardCodedConfigs)appID
 {
     BOOL rtn = YES;
+    
+    if (_currentApp == appID)
+        return FALSE;
+
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     MapToolbar *tb = sharedAppDelegate.mapToolbar;
    
     _currentApp = appID;
     
+    [self destroyCurrentThemes];
+    [self setAppThemes];
     for (int prop = 0; prop < NUMMapToolbarProperty; prop++)
     {
         [tb setConfigurationProperty:prop
@@ -512,4 +518,69 @@ visibleAtZoom:(CGFloat)zoom
      }];
 }
 
+#pragma mark Themes Section
+
+- (void) setAppThemes
+{
+    Theme * thm;
+    self.themeList = [[NSMutableArray alloc]init];
+    
+    switch (_currentApp)
+    {
+        case HCConfigCrimes:
+            thm = [Theme createTheme:YearTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:MonthTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:DayofWeekTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:HourTheme];
+            [_themeList addObject:thm];
+            break;
+        default:
+            break;
+    }
+}
+- (BOOL) addTheme:(Theme *)theme
+{
+    BOOL rtn = FALSE;
+    
+    return rtn;
+}
+
+- (void) destroyCurrentThemes
+{
+    
+}
+
+- (BOOL) themesNeedDataPass
+{
+    BOOL rtn = FALSE;
+    
+    return rtn;
+}
+
+- (void) themesEndDataPass
+{
+}
+
+- (void) themesBeginDisplayPass
+{
+    
+}
+
+- (void) themesEndDisplayPass
+{
+    for (Theme *thm in _themeList)
+    {
+        
+    }
+}
+
+- (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
+{
+    int rtn = 0;
+    
+    return rtn;
+}
 @end

@@ -134,6 +134,10 @@
 		EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */; };
 		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */; };
+		EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A201BE791C400E0C1B3 /* Theme.m */; };
+		EBFC2A241BE7921700E0C1B3 /* DisplayCharacteristics.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A231BE7921700E0C1B3 /* DisplayCharacteristics.m */; };
+		EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */; };
+		EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A291BE79DCA00E0C1B3 /* ThemeClass.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -319,6 +323,14 @@
 		EBF1356E1AE282A30046990F /* ConfigurationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationControl.h; sourceTree = "<group>"; };
 		EBF1356F1AE282A30046990F /* ConfigurationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationControl.m; sourceTree = "<group>"; };
 		EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "SD-30A-10.jpg"; sourceTree = "<group>"; };
+		EBFC2A1F1BE791C400E0C1B3 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
+		EBFC2A201BE791C400E0C1B3 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
+		EBFC2A221BE7921700E0C1B3 /* DisplayCharacteristics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisplayCharacteristics.h; sourceTree = "<group>"; };
+		EBFC2A231BE7921700E0C1B3 /* DisplayCharacteristics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayCharacteristics.m; sourceTree = "<group>"; };
+		EBFC2A251BE7954700E0C1B3 /* ThemeLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeLegend.h; sourceTree = "<group>"; };
+		EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegend.m; sourceTree = "<group>"; };
+		EBFC2A281BE79DCA00E0C1B3 /* ThemeClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeClass.h; sourceTree = "<group>"; };
+		EBFC2A291BE79DCA00E0C1B3 /* ThemeClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeClass.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -524,6 +536,7 @@
 		A9C8372C1A65B2E8005EC4FA /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				EBFC2A1E1BE668BD00E0C1B3 /* Themes */,
 				6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */,
 				6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */,
 				69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */,
@@ -627,6 +640,21 @@
 				EB5521EA1A61B6A8008CE2D1 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EBFC2A1E1BE668BD00E0C1B3 /* Themes */ = {
+			isa = PBXGroup;
+			children = (
+				EBFC2A1F1BE791C400E0C1B3 /* Theme.h */,
+				EBFC2A201BE791C400E0C1B3 /* Theme.m */,
+				EBFC2A221BE7921700E0C1B3 /* DisplayCharacteristics.h */,
+				EBFC2A231BE7921700E0C1B3 /* DisplayCharacteristics.m */,
+				EBFC2A251BE7954700E0C1B3 /* ThemeLegend.h */,
+				EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */,
+				EBFC2A281BE79DCA00E0C1B3 /* ThemeClass.h */,
+				EBFC2A291BE79DCA00E0C1B3 /* ThemeClass.m */,
+			);
+			name = Themes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -801,6 +829,7 @@
 			files = (
 				A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */,
 				EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */,
+				EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
@@ -815,6 +844,7 @@
 				EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */,
 				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,
 				69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */,
+				EBFC2A241BE7921700E0C1B3 /* DisplayCharacteristics.m in Sources */,
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
@@ -832,6 +862,8 @@
 				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
+				EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */,
+				EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */,
 				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,

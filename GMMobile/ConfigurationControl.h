@@ -2,6 +2,8 @@
 //  GMMobile
 
 #import <UIKit/UIKit.h>
+#import "DisplayCharacteristics.h"
+#import "Theme.h"
 
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 6
@@ -72,6 +74,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 + (ConfigurationControl *)sharedInstance;
 
 @property NSMutableArray *appList;
+@property NSMutableArray *themeList;
 @property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible;
 
