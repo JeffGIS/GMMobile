@@ -80,7 +80,7 @@ extern int keepProcessing;
     [super viewDidLoad];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CrimeDataOptionsVC"
+        removeViewControllerWithID:@"CrimeDataPageVC"
                           animated:NO];
     
     [NVTabBarEdit tabBarController:self.tabBarController
@@ -779,7 +779,7 @@ extern int keepProcessing;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
-    UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
+    UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
@@ -792,7 +792,7 @@ extern int keepProcessing;
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CrimeDataOptionsVC"
+            removeViewControllerWithID:@"CrimeDataPageVC"
                               animated:YES];
     }
     
