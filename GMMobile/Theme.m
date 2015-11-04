@@ -24,6 +24,12 @@
     thm.legend.pctInnerMargin = 2;
     thm.legend.pctSymbol = 30;
     thm.legend.pctTitle = 12;
+    thm.legend.borderColor = [UIColor blackColor];
+    thm.legend.labelBkColor = [UIColor yellowColor];
+    thm.legend.titleTxColor = [UIColor blackColor];
+    thm.legend.titleBkColor = [UIColor whiteColor];
+    thm.legend.labelTxColor = [UIColor blueColor];
+    thm.legend.symbolDefaultColor = [UIColor blueColor];
     switch (type)
     {
         case YearTheme:
@@ -119,12 +125,7 @@
             break;
     }
     thm.numClasses = (int)[thm.classes count];
-    thm.legend.numClasses = thm.numClasses;
-    thm.legend.borderColor = [UIColor blackColor];
-    thm.legend.classBkColor = [UIColor yellowColor];
-    thm.legend.titleTxColor = [UIColor blackColor];
-    thm.legend.titleBkColor = [UIColor whiteColor];
-    thm.legend.classTxColor = [UIColor blueColor];
+    thm.legend.numCells = thm.numClasses;
     return thm;
 }
 
@@ -206,6 +207,15 @@
             {
                 cls.symbolWidth = cls.pctOfTotal / maxPct;
             }
+        _legend.cells = [[NSMutableArray alloc]init];
+        for (ThemeClass *cls in _classes)
+        {
+            ThemeLegendCell * tlc = [ThemeLegendCell createWithLabel:cls.title];
+            tlc.symbolColor = cls.color;
+            tlc.symbolWidth = cls.symbolWidth;
+            tlc.count = cls.numItems;
+            [_legend.cells addObject:tlc];
+        }
     }
 }
 
