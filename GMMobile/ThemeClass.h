@@ -12,6 +12,11 @@
 
 @property NSString* title;
 @property double count;
+@property int numItems;
+@property double pctOfTotal;
+@property double symbolWidth;
 @property UIColor * color;
+
++ (ThemeClass*) createWithTitle:(NSString*)title;
 
 @end

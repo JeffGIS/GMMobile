@@ -3,6 +3,7 @@
 
 #import "CrimeOptions1.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "ConfigurationControl.h"
 
 @implementation CrimeOptions1
 
@@ -16,6 +17,7 @@
 {
     [super viewDidLoad];
     
+    NSLog ([NSString stringWithFormat:@"%i legends available",(int)ConfigurationControl.sharedInstance.legendList.count]);
     self.view.backgroundColor = UserDefaults.defaults.green;
 }
 

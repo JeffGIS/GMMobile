@@ -10,4 +10,10 @@
 
 @implementation ThemeClass
 
++ (ThemeClass*) createWithTitle:(NSString*)title
+{
+    ThemeClass *class = [[ThemeClass alloc]init];
+    class.title = title;
+    return class;
+}
 @end

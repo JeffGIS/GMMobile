@@ -138,9 +138,9 @@
 		EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF1356F1AE282A30046990F /* ConfigurationControl.m */; };
 		EBFB549C1AB709D700B33053 /* SD-30A-10.jpg in Resources */ = {isa = PBXBuildFile; fileRef = EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */; };
 		EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A201BE791C400E0C1B3 /* Theme.m */; };
-		EBFC2A241BE7921700E0C1B3 /* DisplayCharacteristics.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A231BE7921700E0C1B3 /* DisplayCharacteristics.m */; };
 		EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */; };
 		EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A291BE79DCA00E0C1B3 /* ThemeClass.m */; };
+		EBFC2A341BE9186900E0C1B3 /* CrimeDataDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -334,12 +334,12 @@
 		EBFB549B1AB709D700B33053 /* SD-30A-10.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "SD-30A-10.jpg"; sourceTree = "<group>"; };
 		EBFC2A1F1BE791C400E0C1B3 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
 		EBFC2A201BE791C400E0C1B3 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Theme.m; sourceTree = "<group>"; };
-		EBFC2A221BE7921700E0C1B3 /* DisplayCharacteristics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisplayCharacteristics.h; sourceTree = "<group>"; };
-		EBFC2A231BE7921700E0C1B3 /* DisplayCharacteristics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayCharacteristics.m; sourceTree = "<group>"; };
 		EBFC2A251BE7954700E0C1B3 /* ThemeLegend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeLegend.h; sourceTree = "<group>"; };
 		EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegend.m; sourceTree = "<group>"; };
 		EBFC2A281BE79DCA00E0C1B3 /* ThemeClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeClass.h; sourceTree = "<group>"; };
 		EBFC2A291BE79DCA00E0C1B3 /* ThemeClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeClass.m; sourceTree = "<group>"; };
+		EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataDisplay.h; sourceTree = "<group>"; };
+		EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataDisplay.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -527,6 +527,8 @@
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
 				EBD6B8A91BC1CE1200BACC89 /* Destinations.h */,
 				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
+				EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */,
+				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -662,8 +664,6 @@
 			children = (
 				EBFC2A1F1BE791C400E0C1B3 /* Theme.h */,
 				EBFC2A201BE791C400E0C1B3 /* Theme.m */,
-				EBFC2A221BE7921700E0C1B3 /* DisplayCharacteristics.h */,
-				EBFC2A231BE7921700E0C1B3 /* DisplayCharacteristics.m */,
 				EBFC2A251BE7954700E0C1B3 /* ThemeLegend.h */,
 				EBFC2A261BE7954700E0C1B3 /* ThemeLegend.m */,
 				EBFC2A281BE79DCA00E0C1B3 /* ThemeClass.h */,
@@ -861,7 +861,6 @@
 				699D3A6A1BE883EB00BD6660 /* CrimeOptions2.m in Sources */,
 				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,
 				69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */,
-				EBFC2A241BE7921700E0C1B3 /* DisplayCharacteristics.m in Sources */,
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
@@ -872,6 +871,7 @@
 				A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */,
 				EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */,
 				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
+				EBFC2A341BE9186900E0C1B3 /* CrimeDataDisplay.m in Sources */,
 				EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
 				A92964131A9B807700F3332E /* MapToolbar.m in Sources */,

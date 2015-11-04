@@ -8,6 +8,7 @@ extern int keepProcessing;
 #import "PlanimetricData.h"
 #import "PropertyData.h"
 #import "PipeTrace.h"
+#import "CrimeDataDisplay.h"
 #import "ConfigurationControl.h"
 
 @interface VectorView ()
@@ -174,162 +175,184 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                    {
                                        case DISPLAY_DATA_OPTION_DISPLAY:
                                        {
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerParcels                                                                            visibleAtZoom:_zoom])
+                                           DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
+                                           int passID = [ConfigurationControl.sharedInstance themesNeedDataPass:keepProcessing];
+                                           while (passID < DonePass)
                                            {
-                                               PropertyData *pd = [[PropertyData alloc] init];
-                                               
-                                               pd.processingID = keepProcessing;
-                                               
-                                               [pd displayParcels:_context
-                                                        llCorners:&_latlonCornerPoints
-                                                         LLBounds:&_latlonBounds
-                                                       viewBounds:&_viewBounds];
-                                               
-                                               [pd displayParcelText:_context
-                                                           llCorners:&_latlonCornerPoints
-                                                            LLBounds:&_latlonBounds
-                                                          viewBounds:&_viewBounds];
-                                           }
-                                           
-                                           if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-                                           {
-                                               BoundaryData *bd = [[BoundaryData alloc] init];
-                                               
-                                               [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                         inContext:_context
-                                                         llCorners:&_latlonCornerPoints
-                                                          LLBounds:&_latlonBounds
-                                                        viewBounds:&_viewBounds];
-                                           }
-                                           
-                                           /* if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-                                            {
-                                            BoundaryData *bd = [[BoundaryData alloc]init];
-                                            bd.processingID = keepProcessing;
-                                            [bd displayLandUse:_context
-                                            llCorners:&_latlonCornerPoints
-                                            LLBounds:&_latlonBounds
-                                            viewBounds:&_viewBounds];
-                                            }*/
-                                            
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
-                                                                            visibleAtZoom:_zoom])
-                                            {
-                                                PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                pd.processingID = keepProcessing;
-                                                pd.zoom = _zoom;
-                                               
-                                                if (keepProcessing == self.displayID)
-                                                    [pd displayPlanArea:_context
-                                                              llCorners:&_latlonCornerPoints
-                                                               LLBounds:&_latlonBounds
-                                                             viewBounds:&_viewBounds];
-                                                
-                                                if (keepProcessing == self.displayID)
-                                                    [pd displayPlanLine:_context
-                                                              llCorners:&_latlonCornerPoints
-                                                               LLBounds:&_latlonBounds
-                                                             viewBounds:&_viewBounds];
-                                                
-                                                if (keepProcessing == self.displayID)
-                                                    [pd displayPlanPoint:_context
+                                               if (passID == DataPass)
+                                                   [ConfigurationControl.sharedInstance themesBeginDataPass:keepProcessing];
+                                               else if (passID == DisplayPass)
+                                                   [ConfigurationControl.sharedInstance themesBeginDisplayPass:keepProcessing];
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerParcels
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   PropertyData *pd = [[PropertyData alloc] init];
+                                                   
+                                                   pd.processingID = keepProcessing;
+                                                   
+                                                   [pd displayParcels:_context
+                                                            llCorners:&_latlonCornerPoints
+                                                             LLBounds:&_latlonBounds
+                                                           viewBounds:&_viewBounds];
+                                                   
+                                                   [pd displayParcelText:_context
                                                                llCorners:&_latlonCornerPoints
                                                                 LLBounds:&_latlonBounds
                                                               viewBounds:&_viewBounds];
-                                            }
-                                           
-                                           
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerAlleys
-                                                                            visibleAtZoom:_zoom])
-                                           {
-                                               PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                               pd.processingID = keepProcessing;
-                                               pd.zoom = _zoom;
-
-                                               if (keepProcessing == self.displayID)
-                                                   [pd displayAlleyLine:_context
+                                               }
+                                               
+                                               if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                                               {
+                                                   BoundaryData *bd = [[BoundaryData alloc] init];
+                                                   
+                                                   [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                             inContext:_context
+                                                             llCorners:&_latlonCornerPoints
+                                                              LLBounds:&_latlonBounds
+                                                            viewBounds:&_viewBounds];
+                                               }
+                                               
+                                               /* if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                                                {
+                                                BoundaryData *bd = [[BoundaryData alloc]init];
+                                                bd.processingID = keepProcessing;
+                                                [bd displayLandUse:_context
+                                                llCorners:&_latlonCornerPoints
+                                                LLBounds:&_latlonBounds
+                                                viewBounds:&_viewBounds];
+                                                }*/
+                                               
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                                   pd.processingID = keepProcessing;
+                                                   pd.zoom = _zoom;
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                       [pd displayPlanArea:_context
+                                                                 llCorners:&_latlonCornerPoints
+                                                                  LLBounds:&_latlonBounds
+                                                                viewBounds:&_viewBounds];
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                       [pd displayPlanLine:_context
+                                                                 llCorners:&_latlonCornerPoints
+                                                                  LLBounds:&_latlonBounds
+                                                                viewBounds:&_viewBounds];
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                       [pd displayPlanPoint:_context
+                                                                  llCorners:&_latlonCornerPoints
+                                                                   LLBounds:&_latlonBounds
+                                                                 viewBounds:&_viewBounds];
+                                               }
+                                               
+                                               
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                                   pd.processingID = keepProcessing;
+                                                   pd.zoom = _zoom;
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                       [pd displayAlleyLine:_context
+                                                                  llCorners:&_latlonCornerPoints
+                                                                   LLBounds:&_latlonBounds
+                                                                 viewBounds:&_viewBounds];
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                       [pd displayWallPoint:_context
+                                                                  llCorners:&_latlonCornerPoints
+                                                                   LLBounds:&_latlonBounds
+                                                                 viewBounds:&_viewBounds];
+                                               }
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                                   pd.processingID = keepProcessing;
+                                                   pd.zoom = _zoom;
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                   {
+                                                       [pd displayCurRampIntersectionPoint:_context
+                                                                                 llCorners:&_latlonCornerPoints
+                                                                                  LLBounds:&_latlonBounds
+                                                                                viewBounds:&_viewBounds];
+                                                   }
+                                               }
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
+                                                   cd.processingID = keepProcessing;
+                                                   cd.zoom = _zoom;
+                                                   
+                                                   if (keepProcessing == self.displayID)
+                                                   {
+                                                       [cd displayCrimePoints:_context
+                                                       displayCharacteristics:dc
+                                                                    llCorners:&_latlonCornerPoints
+                                                                     LLBounds:&_latlonBounds
+                                                                   viewBounds:&_viewBounds];
+                                                   }
+                                               }
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   SewerData *sd = [[SewerData alloc] init];
+                                                   sd.processingID = keepProcessing;
+                                                   sd.zoom = _zoom;
+                                                   
+                                                   [sd displayStormLine:_context
+                                                                   pass:LINE_PASS
                                                               llCorners:&_latlonCornerPoints
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];
-                                               
-                                               if (keepProcessing == self.displayID)
-                                                   [pd displayWallPoint:_context
+                                                   
+                                                   [sd displayStormPoint:_context
+                                                               llCorners:&_latlonCornerPoints
+                                                                LLBounds:&_latlonBounds
+                                                              viewBounds:&_viewBounds];
+                                                   
+                                                   [sd displayStormLine:_context
+                                                                   pass:TEXT_PASS
                                                               llCorners:&_latlonCornerPoints
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];
-                                           }
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
-                                                                            visibleAtZoom:_zoom])
-                                           {
-                                               PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                               pd.processingID = keepProcessing;
-                                               pd.zoom = _zoom;
-                                               
-                                               if (keepProcessing == self.displayID)
-                                               {
-                                                   [pd displayCurRampIntersectionPoint:_context
-                                                                             llCorners:&_latlonCornerPoints
-                                                                              LLBounds:&_latlonBounds
-                                                                            viewBounds:&_viewBounds];
+                                                   
                                                }
-                                           }
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerCrimes
-                                                                            visibleAtZoom:_zoom])
-                                           {
-                                               CrimeData *cd = [[CrimeData alloc] init];
-                                               cd.processingID = keepProcessing;
-                                               cd.zoom = _zoom;
                                                
-                                               if (keepProcessing == self.displayID)
+                                               if (keepProcessing == self.displayID && passID == DisplayPass &&
+                                                   [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
                                                {
-                                                   [cd displayCrimePoints:_context
-                                                                             llCorners:&_latlonCornerPoints
-                                                                              LLBounds:&_latlonBounds
-                                                                            viewBounds:&_viewBounds];
+                                                   PipeTrace *pt = [[PipeTrace alloc] init];
+                                                   pt.processingID = keepProcessing;
+                                                   
+                                                   [pt displayPipeTrace:_context
+                                                              llCorners:&_latlonCornerPoints
+                                                               LLBounds:&_latlonBounds
+                                                             viewBounds:&_viewBounds];
                                                }
-                                           }
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                                                            visibleAtZoom:_zoom])
-                                           {
-                                               SewerData *sd = [[SewerData alloc] init];
-                                               sd.processingID = keepProcessing;
-                                               sd.zoom = _zoom;
-                                               
-                                               [sd displayStormLine:_context
-                                                               pass:LINE_PASS
-                                                          llCorners:&_latlonCornerPoints
-                                                           LLBounds:&_latlonBounds
-                                                         viewBounds:&_viewBounds];
-                                               
-                                               [sd displayStormPoint:_context
-                                                           llCorners:&_latlonCornerPoints
-                                                            LLBounds:&_latlonBounds
-                                                          viewBounds:&_viewBounds];
-                                               
-                                               [sd displayStormLine:_context
-                                                               pass:TEXT_PASS
-                                                          llCorners:&_latlonCornerPoints
-                                                           LLBounds:&_latlonBounds
-                                                         viewBounds:&_viewBounds];
-                                               
-                                           }
-                                           
-                                           if (keepProcessing == self.displayID &&
-                                               [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
-                                           {
-                                               PipeTrace *pt = [[PipeTrace alloc] init];
-                                               pt.processingID = keepProcessing;
-                                               
-                                               [pt displayPipeTrace:_context
-                                                          llCorners:&_latlonCornerPoints
-                                                           LLBounds:&_latlonBounds
-                                                         viewBounds:&_viewBounds];
+                                               if (passID == DataPass)
+                                                   [ConfigurationControl.sharedInstance themesEndDataPass:keepProcessing];
+                                               else if (passID == DisplayPass)
+                                                   [ConfigurationControl.sharedInstance themesEndDisplayPass:keepProcessing];
+                                               passID++;
                                            }
                                        }
                                            break;

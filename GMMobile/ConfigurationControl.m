@@ -1,5 +1,6 @@
 //  ConfigurationControl.m
 //  GMMobile
+extern int keepProcessing;
 
 #import "ConfigurationControl.h"
 #import "MapToolbar.h"
@@ -366,6 +367,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
+      andPass:(ItemProcessingPassTypes)passID
 {
     if (configLayers[_currentApp][layerID] &&
         zoom >= configLayerZoom[_currentApp][layerID])
@@ -553,33 +555,61 @@ visibleAtZoom:(CGFloat)zoom
     
 }
 
-- (BOOL) themesNeedDataPass
+- (ItemProcessingPassTypes) themesNeedDataPass:(int)displayID
 {
-    BOOL rtn = FALSE;
+    ItemProcessingPassTypes rtn = DisplayPass;
     
+    for (Theme *thm in _themeList)
+    {
+        thm.displayID = displayID;
+    }
     return rtn;
 }
 
-- (void) themesEndDataPass
+- (void) themesBeginDataPass:(int)displayID
 {
 }
 
-- (void) themesBeginDisplayPass
+- (void) themesEndDataPass:(int)displayID
+{
+}
+
+- (void) themesBeginDisplayPass:(int)displayID
 {
     
 }
 
-- (void) themesEndDisplayPass
+- (void) themesEndDisplayPass:(int)displayID
 {
     for (Theme *thm in _themeList)
     {
-        
+        [thm endDisplay:displayID];
+    }
+    if (displayID == keepProcessing)
+    {
+        _legendList = [[NSMutableArray alloc]init];
+        for (Theme *thm in _themeList)
+        {
+            ThemeLegend * lgnd = [thm copyLegend];
+            [_legendList addObject:lgnd];
+        }
     }
 }
 
 - (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
+                        displayID:(int)displayID
 {
-    int rtn = 0;
+    int rtn = DISPLAY_ITEM;
+    
+    for (Theme *thm in _themeList)
+    {
+        if (thm.displayID != displayID)
+            return DO_NOT_DISPLAY_ITEM;
+        rtn = [thm processTheme:dc
+                      displayID:displayID];
+        if (rtn == DO_NOT_DISPLAY_ITEM)
+            return rtn;
+    }
     
     return rtn;
 }

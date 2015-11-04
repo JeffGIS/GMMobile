@@ -11,6 +11,8 @@
 
 @interface ThemeLegend : NSObject
 
+@property int numClasses;
+@property int numColumns;
 @property float aspectRatio;    // width/height
 @property float pctBorder;      // border width as percentage of largest dimension
 @property float pctTitle;       // percentage of legend height allocated to title
@@ -25,8 +27,6 @@
 @property UIColor*classTxColor; // color of class text
 
 @property NSString* title;
-@property int numClasses;
-@property int numColumns;
 
 
 

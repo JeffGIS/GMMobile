@@ -993,7 +993,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             highlightList:highlightList];
         
         if ([ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                         visibleAtZoom:_vectorViewZoom])
+                                         visibleAtZoom:_vectorViewZoom
+                                               andPass:PickPass])
         {
             [sewerData pickSewer:&llSewerPt
                           atZoom:_mapView.camera.zoom
@@ -1316,7 +1317,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     
     if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                     visibleAtZoom:_mapView.camera.zoom])
+                                     visibleAtZoom:_mapView.camera.zoom
+                                            andPass:PickPass])
         return;
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
@@ -1834,7 +1836,8 @@ haveVV:
 {
     [_vectorViewTimer invalidate];
     keepProcessing++;
-    
+    NSLog(@"Vector view clear");
+
     if (!_vectorView)
         return;
     
@@ -1872,7 +1875,8 @@ haveVV:
     NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
     
     if ([ConfigurationControl.sharedInstance layer:HCLayerAerials
-                                     visibleAtZoom:_vectorViewZoom])
+                                     visibleAtZoom:_vectorViewZoom
+                                           andPass:AerialPass])
     {
         _layer_jpeg.map = _mapView;
         _layer_png.map = _mapView;
