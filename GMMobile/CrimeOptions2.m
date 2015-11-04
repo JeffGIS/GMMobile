@@ -3,6 +3,7 @@
 
 #import "CrimeOptions2.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "ConfigurationControl.h"
 
 @implementation CrimeOptions2
 
@@ -16,7 +17,9 @@
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = UIColor.brownColor;
+    NSArray *legends = ConfigurationControl.sharedInstance.legendList.copy;
+    
+    self.view.backgroundColor = UserDefaults.defaults.appleBlue;
 }
 
 - (void)didReceiveMemoryWarning
