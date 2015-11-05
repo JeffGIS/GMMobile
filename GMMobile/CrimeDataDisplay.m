@@ -107,16 +107,18 @@
         
         if (UCR < 6)
         {
-            //color = _red.CGColor;
+            dc.pointSymbol = Star1Sym;
             size = 20.0;
         }
         else
         {
             color = UIColor.brownColor.CGColor;
+            dc.pointSymbol = Star2Sym;
             size = 16.0;
         }
         [self drawCrimePoint:context
                      atPoint:&llpoint
+                 usingSymbol:dc.pointSymbol
                    withColor:color
                      andSize:(size * sizeFactor)];
     }
@@ -126,12 +128,11 @@
 
 - (void)drawCrimePoint:(CGContextRef)context
                atPoint:(DPOINT *)pPoint
+           usingSymbol:(PointSymbols)sym
              withColor:(CGColorRef)color
                andSize:(CGFloat)size
 
 {
-    CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
-                                  (pPoint->y - size / 2.0), size, size);
     
     //CGContextSetStrokeColorWithColor(context,color);
     //CGContextSetFillColorWithColor(context,color);
@@ -140,6 +141,7 @@
     //CGContextFillPath(context);
     [SymbolDictionary drawPointWithSymbol:context
                                        at:pPoint
+                              usingSymbol:sym
                                      Size:30
                                 fillColor:color
                                 lineColor:color
