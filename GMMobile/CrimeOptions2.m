@@ -9,7 +9,7 @@
 @interface CrimeOptions2 ()
 
 @property (nonatomic) NSArray *legends;
-@property (nonatomic) UIFont *font;
+@property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight;
 @property BOOL rotating;
 
@@ -32,14 +32,22 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _headerHeight = 32.0;
-        _font = [UIFont boldSystemFontOfSize:18.0];
+        _headerHeight = 30.0;
+        
+        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
+                                size:18.0];
+        
+        _headerFont = [UIFont boldSystemFontOfSize:18.0];
     }
     
     else
     {
-        _headerHeight = 44.0;
-        _font = [UIFont boldSystemFontOfSize:28.0];
+        _headerHeight = 40.0;
+        
+        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
+                                size:28.0];
+        
+        _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
     
     [self setupTableView:_tv1];
@@ -51,6 +59,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     _legends = ConfigurationControl.sharedInstance.legendList.copy;
     [self reloadTableViews];
 }
@@ -78,6 +87,9 @@
     tableView.layer.borderWidth = 2.5;
     tableView.layer.cornerRadius = 10.0;
     tableView.delaysContentTouches = NO;
+    tableView.allowsMultipleSelection = YES;
+    tableView.separatorColor = UIColor.clearColor;
+    tableView.separatorInset = UIEdgeInsetsZero;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -126,7 +138,7 @@ viewForHeaderInSection:(NSInteger)section
                             CGRectMake(0.0, 0.0, headerView.frame.size.width,
                                        headerView.frame.size.height)];
     
-    headerLabel.font = _font;
+    headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
     headerLabel.text = tl.title;
@@ -159,10 +171,43 @@ viewForHeaderInSection:(NSInteger)section
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
     cell.textLabel.text = text.copy;
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textAlignment = NSTextAlignmentRight;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    cell.layer.borderColor = UIColor.blackColor.CGColor;
+    cell.layer.borderWidth = 0.5;
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
+forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+    
+    if (tlc.status)
+    {
+        [tableView selectRowAtIndexPath:indexPath
+                               animated:NO
+                         scrollPosition:UITableViewScrollPositionNone];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+    tlc.status = YES;
+}
+
+- (void)tableView:(UITableView *)tableView
+didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+    tlc.status = NO;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation

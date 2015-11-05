@@ -11,8 +11,9 @@
 @interface ThemeLegendCell : NSObject
 @property int count;
 @property float symbolWidth;
-@property UIColor * symbolColor;
-@property NSString * label;
+@property UIColor *symbolColor;
+@property NSString *label;
+@property BOOL status;
 
 + (ThemeLegendCell*) createWithLabel:(NSString*)label;
 
