@@ -153,8 +153,6 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableString *text = tlc.label.mutableCopy;
     
-    NSLog(@"%d", tl.appendClassCount);
-    
     if (tl.appendClassCount)
         [text appendString:[NSString stringWithFormat:@" (%i)", tlc.count]];
     
