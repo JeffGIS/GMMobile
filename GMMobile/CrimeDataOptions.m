@@ -301,7 +301,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSString *formattedDate = @"";
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"MM/dd/YYYY";
+    dateFormatter.dateFormat = @"MM/dd/yyyy";
     formattedDate = [dateFormatter stringFromDate:date];
     
     return formattedDate;
