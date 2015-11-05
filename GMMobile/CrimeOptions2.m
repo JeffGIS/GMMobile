@@ -59,6 +59,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     _legends = ConfigurationControl.sharedInstance.legendList.copy;
     [self reloadTableViews];
 }
@@ -167,16 +168,30 @@ viewForHeaderInSection:(NSInteger)section
     if (tl.appendClassCount)
         [text appendString:[NSString stringWithFormat:@" (%i)", tlc.count]];
     
-    cell.selected = tlc.status;
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
     cell.textLabel.text = text.copy;
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textAlignment = NSTextAlignmentRight;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView
+  willDisplayCell:(UITableViewCell *)cell
+forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+    
+    if (tlc.status)
+    {
+        [tableView selectRowAtIndexPath:indexPath
+                               animated:NO
+                         scrollPosition:UITableViewScrollPositionNone];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView
