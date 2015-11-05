@@ -134,10 +134,17 @@
                                   (pPoint->y - size / 2.0), size, size);
     
     //CGContextSetStrokeColorWithColor(context,color);
-    CGContextSetFillColorWithColor(context,color);
-    CGContextFillEllipseInRect(context, pointRect);
+    //CGContextSetFillColorWithColor(context,color);
+    //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
+    [SymbolDictionary drawPointWithSymbol:context
+                                       at:pPoint
+                                     Size:15
+                                fillColor:color
+                                lineColor:color
+                                lineWidth:1];
+
 }
 
 @end
