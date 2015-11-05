@@ -24,6 +24,7 @@
     thm.legend.pctInnerMargin = 2;
     thm.legend.pctSymbol = 30;
     thm.legend.pctTitle = 12;
+    thm.legend.appendClassCount = YES;
     thm.legend.borderColor = [UIColor blackColor];
     thm.legend.labelBkColor = [UIColor yellowColor];
     thm.legend.titleTxColor = [UIColor blackColor];
