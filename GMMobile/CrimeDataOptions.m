@@ -86,6 +86,11 @@
     [_tableView reloadData];
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
 - (void)setupButton:(UIButton *)button
 {
     button.backgroundColor = UIColor.blackColor;

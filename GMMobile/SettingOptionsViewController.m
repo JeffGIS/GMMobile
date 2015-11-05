@@ -4,10 +4,14 @@
 #import "SettingOptionsViewController.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/NVCalibrationController.h"
+#import "CCodeLibrary/GSSiPopoverView.h"
+#import "CCodeLibrary/NSData+Compression.h"
 
 @interface SettingOptionsViewController ()
 
 @property (nonatomic) NSArray *contents, *images;
+@property (nonatomic) NVContactPicker *nvcp;
+@property (nonatomic) FTPDataPush *push;
 
 @end
 
@@ -53,7 +57,8 @@
 {
     [super viewWillAppear:animated];
     
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device", @"Purchase Data", @"Access Contacts"];
+    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
+                  @"Purchase Data", @"Access Contacts", @"Test Compression & Upload"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -175,28 +180,65 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Access Contacts"])
     {
-        if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
-        {
-            CNContactPickerViewController *cpvc = [[CNContactPickerViewController alloc] init];
-            cpvc.delegate = self;
-            
-            [self presentViewController:cpvc
-                               animated:YES
-                             completion:nil];
-        }
+        _nvcp = [NVContactPicker presentContactPickerInDelegate:self];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test Compression & Upload"])
+    {
+        NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
+                              UserDefaults.defaults.sharedFilePath];
         
-        else
-            NSLog(@"Contacts API requires iOS 9.0 and above");
+        NSData *rawFile = [NSData dataWithContentsOfFile:filePath];
+        NSString *md5 = rawFile.MD5;
+        NSString *sha256 = rawFile.SHA256;
+        NSLog(@"MD5:%@", md5);
+        NSLog(@"SHA256:%@", sha256);
+        
+        NSData *compressedData = [NSData compressFileAtPath:filePath];
+        compressedData = [NSData lzCompressFileAtPath:filePath];
+        
+        /*_push = FTPDataPush.push;
+        _push.delegate = self;
+        
+        GSSiPopoverView *popover = [[GSSiPopoverView alloc] initWithView:self.view];
+        _push.popover = popover;
+        
+        [_push.popover showAfter:0.0
+                       withTitle:@"Upload Property.sqlite"];
+        
+        if (![_push sendFile:@"Sewer.sqlite"
+               fromDirectory:UserDefaults.defaults.sharedFilePath
+                      toFile:@"Sewer.sqlite"
+                 toDirectory:@"GMMobileUploads"
+              deleteWhenDone:NO])
+        {
+            [_push.popover hide];
+            
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"Upload Failed"
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:NVLargeAlertIndexNone];
+#pragma unused(alert)
+        }*/
     }
 }
 
-- (void)contactPicker:(CNContactPickerViewController *)picker
-     didSelectContact:(CNContact *)contact
+- (void)FTPdidComplete:(int)status
+              filePath:(NSString *)path
 {
-    NSLog(@"Name:%@ %@", contact.givenName, contact.familyName);
-    
-    for (int i = 0; i < contact.emailAddresses.count; i++)
-        NSLog(@"Email Address:%@", contact.emailAddresses[i].value);
+    [_push.popover hide];
+    NSLog(@"Upload complete!");
+}
+
+- (void)contactPicker:(NVContactPicker *)contactPicker
+       didReturnEmail:(NSString *)email
+       forContactName:(NSString *)contactName
+{
+    NSLog(@"Name:%@", contactName);
+    NSLog(@"Email:%@", email);
+    _nvcp = nil;
 }
 
 - (void)uploadNow
@@ -269,7 +311,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [dateFormatter setDateFormat:@"MMdd"];
     
     NSString *dateString = [dateFormatter stringFromDate:NSDate.date];
-    dateString = [UserDefaults.defaults reverseString:dateString];
+    dateString = reverseString(dateString);
     
     if ([dateString isEqualToString:text])
     {

@@ -1,5 +1,6 @@
 //  ConfigurationControl.m
 //  GMMobile
+extern int keepProcessing;
 
 #import "ConfigurationControl.h"
 #import "MapToolbar.h"
@@ -250,11 +251,17 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 - (BOOL)setApp:(HardCodedConfigs)appID
 {
     BOOL rtn = YES;
+    
+    if (_currentApp == appID)
+        return FALSE;
+
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     MapToolbar *tb = sharedAppDelegate.mapToolbar;
    
     _currentApp = appID;
     
+    [self destroyCurrentThemes];
+    [self setAppThemes];
     for (int prop = 0; prop < NUMMapToolbarProperty; prop++)
     {
         [tb setConfigurationProperty:prop
@@ -360,6 +367,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
+      andPass:(ItemProcessingPassTypes)passID
 {
     if (configLayers[_currentApp][layerID] &&
         zoom >= configLayerZoom[_currentApp][layerID])
@@ -512,4 +520,97 @@ visibleAtZoom:(CGFloat)zoom
      }];
 }
 
+#pragma mark Themes Section
+
+- (void) setAppThemes
+{
+    Theme * thm;
+    self.themeList = [[NSMutableArray alloc]init];
+    
+    switch (_currentApp)
+    {
+        case HCConfigCrimes:
+            thm = [Theme createTheme:YearTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:MonthTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:DayofWeekTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:HourTheme];
+            [_themeList addObject:thm];
+            break;
+        default:
+            break;
+    }
+}
+- (BOOL) addTheme:(Theme *)theme
+{
+    BOOL rtn = FALSE;
+    
+    return rtn;
+}
+
+- (void) destroyCurrentThemes
+{
+    
+}
+
+- (ItemProcessingPassTypes) themesNeedDataPass:(int)displayID
+{
+    ItemProcessingPassTypes rtn = DisplayPass;
+    
+    for (Theme *thm in _themeList)
+    {
+        thm.displayID = displayID;
+    }
+    return rtn;
+}
+
+- (void) themesBeginDataPass:(int)displayID
+{
+}
+
+- (void) themesEndDataPass:(int)displayID
+{
+}
+
+- (void) themesBeginDisplayPass:(int)displayID
+{
+    
+}
+
+- (void) themesEndDisplayPass:(int)displayID
+{
+    for (Theme *thm in _themeList)
+    {
+        [thm endDisplay:displayID];
+    }
+    if (displayID == keepProcessing)
+    {
+        _legendList = [[NSMutableArray alloc]init];
+        for (Theme *thm in _themeList)
+        {
+            ThemeLegend * lgnd = [thm copyLegend];
+            [_legendList addObject:lgnd];
+        }
+    }
+}
+
+- (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
+                        displayID:(int)displayID
+{
+    int rtn = DISPLAY_ITEM;
+    
+    for (Theme *thm in _themeList)
+    {
+        if (thm.displayID != displayID)
+            return DO_NOT_DISPLAY_ITEM;
+        rtn = [thm processTheme:dc
+                      displayID:displayID];
+        if (rtn == DO_NOT_DISPLAY_ITEM)
+            return rtn;
+    }
+    
+    return rtn;
+}
 @end

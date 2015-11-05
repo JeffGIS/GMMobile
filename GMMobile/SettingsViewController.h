@@ -40,6 +40,7 @@
 - (IBAction)loadAlleyWall:(id)sender;
 - (IBAction)loadCurbRamps:(id)sender;
 - (IBAction)loadCrimeData:(id)sender;
+- (IBAction)compressDatabase:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 

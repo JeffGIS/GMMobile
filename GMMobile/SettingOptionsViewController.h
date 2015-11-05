@@ -5,10 +5,10 @@
 #import "UploadViewController.h"
 #import "CCodeLibrary/NVAlertView.h"
 @import StoreKit;
-@import Contacts;
-@import ContactsUI;
+#import "CCodeLibrary/NVContactPicker.h"
+#import "CCodeLibrary/FTPDataPush.h"
 
-@interface SettingOptionsViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,UploadViewControllerDelegate,SKStoreProductViewControllerDelegate,UINavigationControllerDelegate,CNContactPickerDelegate>
+@interface SettingOptionsViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,UploadViewControllerDelegate,SKStoreProductViewControllerDelegate,FTPDataPushDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;

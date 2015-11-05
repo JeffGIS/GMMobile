@@ -510,7 +510,8 @@ extern int keepProcessing;
        highlightList:(NSMutableArray *)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
-                                      visibleAtZoom:zoom])
+                                      visibleAtZoom:zoom
+                                            andPass:PickPass])
         return 0;
     
     AlleyWallData *pd = [[AlleyWallData alloc] init];
@@ -601,7 +602,8 @@ extern int keepProcessing;
 - (int)pickAlleyWallPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerAlleys
-                                      visibleAtZoom:_zoom])
+                                      visibleAtZoom:_zoom
+                                            andPass:PickPass])
         return 0;
     
     NSString *minID = [[NSString alloc] init];
@@ -749,7 +751,8 @@ extern int keepProcessing;
 - (int)pickCurbRampIntersectionPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
-                                      visibleAtZoom:_zoom])
+                                      visibleAtZoom:_zoom
+                                            andPass:PickPass])
         return 0;
     
     NSString *minID = [[NSString alloc] init];

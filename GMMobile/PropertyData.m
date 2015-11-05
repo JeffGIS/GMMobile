@@ -98,7 +98,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     {
         self.isOpen = YES;
         self.isOpen = !SQLOKpd(sqlite3_open(self.path.UTF8String, &_database), _database, 1);
-        NSLog(@"Property Database open");
+        //NSLog(@"Property Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -113,7 +113,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (opened)
     {
         SQLOKpd(sqlite3_close(_database), _database, 0);
-        NSLog(@"Property Database close");
+        //NSLog(@"Property Database close");
         _isOpen = NO;
     }
 }
@@ -599,7 +599,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
  highlightList:(NSMutableArray*)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
-                                      visibleAtZoom:_zoom])
+                                      visibleAtZoom:_zoom
+                                            andPass:PickPass])
         return 0;
     
     NSString *minPID = [[NSString alloc] init];

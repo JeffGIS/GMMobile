@@ -80,7 +80,7 @@ extern int keepProcessing;
     [super viewDidLoad];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CrimeDataOptionsVC"
+        removeViewControllerWithID:@"CrimeDataPageVC"
                           animated:NO];
     
     [NVTabBarEdit tabBarController:self.tabBarController
@@ -779,7 +779,7 @@ extern int keepProcessing;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
-    UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
+    UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
@@ -792,7 +792,7 @@ extern int keepProcessing;
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CrimeDataOptionsVC"
+            removeViewControllerWithID:@"CrimeDataPageVC"
                               animated:YES];
     }
     
@@ -993,7 +993,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             highlightList:highlightList];
         
         if ([ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                         visibleAtZoom:_vectorViewZoom])
+                                         visibleAtZoom:_vectorViewZoom
+                                               andPass:PickPass])
         {
             [sewerData pickSewer:&llSewerPt
                           atZoom:_mapView.camera.zoom
@@ -1316,7 +1317,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     
     if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                     visibleAtZoom:_mapView.camera.zoom])
+                                     visibleAtZoom:_mapView.camera.zoom
+                                            andPass:PickPass])
         return;
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
@@ -1834,7 +1836,8 @@ haveVV:
 {
     [_vectorViewTimer invalidate];
     keepProcessing++;
-    
+    NSLog(@"Vector view clear");
+
     if (!_vectorView)
         return;
     
@@ -1872,7 +1875,8 @@ haveVV:
     NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
     
     if ([ConfigurationControl.sharedInstance layer:HCLayerAerials
-                                     visibleAtZoom:_vectorViewZoom])
+                                     visibleAtZoom:_vectorViewZoom
+                                           andPass:AerialPass])
     {
         _layer_jpeg.map = _mapView;
         _layer_png.map = _mapView;
@@ -2129,7 +2133,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
     {
-        NSString *textLabelText = [UserDefaults.defaults includeTextAfterFirstColon:_propertyReport[indexPath.row]];
+        NSString *textLabelText = textAfterFirstColon(_propertyReport[indexPath.row]);
         
         CGSize textSize = [textLabelText sizeWithAttributes:@{NSFontAttributeName:
                                                                   [UIFont systemFontOfSize:
@@ -2179,12 +2183,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
         case PropertyTableViewSettingPropertyReport:
         {
             cell.textLabel.font = [UIFont systemFontOfSize:MAX((_screenSize / 28.0), 18.0)];
-            
-            cell.textLabel.text = [UserDefaults.defaults removeOpeningSpaces:
-                                   [UserDefaults.defaults includeTextAfterFirstColon:
-                                    _propertyReport[indexPath.row]]];
-            
-            
+            cell.textLabel.text = removeOpeningSpaces(textAfterFirstColon(_propertyReport[indexPath.row]));
             cell.textLabel.textAlignment = NSTextAlignmentLeft;
             cell.indentationWidth = (cell.frame.size.width * 0.3);
             
@@ -2192,7 +2191,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
                                                                            (cell.indentationWidth - 4.0),
                                                                            cell.frame.size.height)];
             
-            rowHeader.text = [UserDefaults.defaults includeTextBeforeColon:_propertyReport[indexPath.row]];
+            rowHeader.text = textBeforeColon(_propertyReport[indexPath.row]);
             rowHeader.font = [UIFont boldSystemFontOfSize:MAX((_screenSize / 48.0), 11.5)];
             rowHeader.textAlignment = NSTextAlignmentRight;
             
@@ -2588,7 +2587,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)showHCWebsite
 {
     WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
-                                  [UserDefaults.defaults removePIDPrefix:_selectedPID]];
+                                  removePIDPrefix(_selectedPID)];
     
     [self presentViewController:wkvc
                        animated:YES

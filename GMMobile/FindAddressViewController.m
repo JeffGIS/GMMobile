@@ -214,10 +214,11 @@ replacementString:(NSString *)string
     
     if (_addressList.count != 0)
     {
-        cell.textLabel.text = [[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
-                               stringByReplacingOccurrencesOfString:@"\t" withString:@" "];
+        cell.textLabel.text = [textBeforeSecondTabFromEnd(_addressList[indexPath.row])
+                               stringByReplacingOccurrencesOfString:@"\t"
+                                                         withString:@" "];
         
-        cell.detailTextLabel.text = [UserDefaults.defaults includeTextAfterLastTab:_addressList[indexPath.row]];
+        cell.detailTextLabel.text = textAfterLastTab(_addressList[indexPath.row]);
         cell.textLabel.textColor = UIColor.blackColor;
         cell.detailTextLabel.textColor = UIColor.blackColor;
         cell.userInteractionEnabled = YES;
@@ -249,10 +250,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         [_delegate findAddressViewController:self
-                            didSelectAddress:[[UserDefaults.defaults includeTextBeforeSecondTabFromEnd:_addressList[indexPath.row]]
-                                              stringByReplacingOccurrencesOfString:@"\t" withString:@" "]
-                                         PID:[UserDefaults.defaults includeTextBeforeLastTab:
-                                              [UserDefaults.defaults includeTextAfterSecondTabFromEnd:_addressList[indexPath.row]]]];
+                            didSelectAddress:[textBeforeSecondTabFromEnd(_addressList[indexPath.row])
+                                              stringByReplacingOccurrencesOfString:@"\t"
+                                                                        withString:@" "]
+                                         PID:textBeforeLastTab(textAfterSecondTabFromEnd(_addressList[indexPath.row]))];
     }
 }
 
