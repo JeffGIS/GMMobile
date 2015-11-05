@@ -35,7 +35,7 @@
     
     UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
     CrimeOptions1 *co1 = [[CrimeOptions1 alloc] init];
-    CrimeOptions2 *co2 = [[CrimeOptions2 alloc] init];
+    UIViewController *co2 = [storyboard instantiateViewControllerWithIdentifier:@"CrimeOptions2"];
     
     _pages = @[cdovc, co1, co2];
     
