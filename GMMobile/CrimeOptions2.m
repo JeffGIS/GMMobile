@@ -8,7 +8,7 @@
 
 @interface CrimeOptions2 ()
 
-@property (nonatomic) NSArray *legends;
+@property (nonatomic) NSMutableArray *legends, *countLengths;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight;
 @property BOOL rotating;
@@ -35,7 +35,7 @@
         _headerHeight = 30.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:18.0];
+                                size:16.0];
         
         _headerFont = [UIFont boldSystemFontOfSize:18.0];
     }
@@ -45,7 +45,7 @@
         _headerHeight = 40.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:28.0];
+                                size:24.0];
         
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
@@ -61,6 +61,23 @@
     [super viewWillAppear:animated];
     
     _legends = ConfigurationControl.sharedInstance.legendList.copy;
+    _countLengths = NSMutableArray.array;
+    
+    for (int i = 0; i < _legends.count; i++)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[i];
+        NSUInteger length = 0;
+        
+        for (ThemeLegendCell *cells in tl.cells)
+        {
+            NSString *countString = [NSString stringWithFormat:@"%i", cells.count];
+            length = MAX(length, countString.length);
+        }
+        
+        [_countLengths insertObject:@(length)
+                            atIndex:i];
+    }
+    
     [self reloadTableViews];
 }
 
@@ -90,6 +107,7 @@
     tableView.allowsMultipleSelection = YES;
     tableView.separatorColor = UIColor.clearColor;
     tableView.separatorInset = UIEdgeInsetsZero;
+    tableView.contentInset = UIEdgeInsetsZero;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -160,13 +178,50 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
+    for (UIView *views in cell.contentView.subviews)
+    {
+        if (views.tag == 777)
+            [views removeFromSuperview];
+    }
+    
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
     NSMutableString *text = tlc.label.mutableCopy;
     
     if (tl.appendClassCount)
-        [text appendString:[NSString stringWithFormat:@" (%i)", tlc.count]];
+    {
+        NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
+        
+        while (countString.length < [_countLengths[tableView.tag - 1] integerValue])
+        {
+            [countString insertString:@" "
+                              atIndex:0];
+        }
+        
+        [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
+    }
+    
+    NSDictionary *attributes = @{NSFontAttributeName:_font};
+    
+    CGRect textSize = [text boundingRectWithSize:CGSizeMake(cell.textLabel.frame.size.width,
+                                                            cell.textLabel.frame.size.height)
+                                         options:NSStringDrawingUsesLineFragmentOrigin
+                                      attributes:attributes
+                                         context:nil];
+    
+    CGFloat textWidth = ceil(textSize.size.width);
+    CGFloat barWidth = (((cell.contentView.frame.size.width - textWidth) - 32.0) * tlc.symbolWidth);
+    
+    UIView *barView = [[UIView alloc] initWithFrame:
+                       CGRectMake(8.0, (cell.contentView.frame.size.height * 0.15),
+                                  barWidth, (cell.contentView.frame.size.height * 0.7))];
+    
+    barView.backgroundColor = UserDefaults.defaults.green;
+    barView.layer.borderColor = UIColor.blackColor.CGColor;
+    barView.layer.borderWidth = 1.0;
+    barView.tag = 777;
+    [cell.contentView addSubview:barView];
     
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
