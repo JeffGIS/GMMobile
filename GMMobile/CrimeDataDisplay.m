@@ -140,7 +140,7 @@
     //CGContextFillPath(context);
     [SymbolDictionary drawPointWithSymbol:context
                                        at:pPoint
-                                     Size:15
+                                     Size:30
                                 fillColor:color
                                 lineColor:color
                                 lineWidth:1];

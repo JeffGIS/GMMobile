@@ -16,10 +16,12 @@ static double Adjust (double sym,double loc, double size)
 
 @implementation SymbolDictionary
 
-static DPOINT Cross[]={-2,2,-2,5,2,5,2,2,5,2,5,-2,2,-2,2,-5,-2,-5,-2,-2,-5,-2,-5,2,-2,2};
+static DPOINT Cross[]={-2,1,-5,4,-4,5,-1,2,1,2,4,5,5,4,2,1,2,-1,5,-4,4,-5,1,-2,-1,-2,-4,-5,-5,-4,-2,-1,-2,1};
 
 static DPOINT Plus[]={-2,2,-2,5,2,5,2,2,5,2,5,-2,2,-2,2,-5,-2,-5,-2,-2,-5,-2,-5,2,-2,2};
-
+static DPOINT Diamond[]={-5,0,0,5,5,0,0,-5,-5,0};
+static DPOINT Triangle[]={-5,-5,0,5,5,-5,-5,-5};
+static DPOINT Star1[]={0,-5};
 
 + (void)drawPointWithSymbol:(CGContextRef)context
                          at:(LPDPOINT)pt
@@ -31,7 +33,7 @@ static DPOINT Plus[]={-2,2,-2,5,2,5,2,2,5,2,5,-2,2,-2,2,-5,-2,-5,-2,-2,-5,-2,-5,
     CGContextSetFillColorWithColor(context,fcolor);
     CGContextSetLineWidth(context, lwidth);
     CGContextSetStrokeColorWithColor(context,lcolor);
-    LPDPOINT pPoints = Cross;
+    LPDPOINT pPoints = Triangle;
     int nPt = sizeof (Cross)/sizeof(DPOINT);
     CGContextMoveToPoint(context, Adjust(pPoints[0].x,pt->x,size), Adjust(pPoints[0].y,pt->y,size));
     for (int i = 1; i < nPt; i++)
