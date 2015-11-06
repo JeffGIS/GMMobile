@@ -11,8 +11,7 @@
 
 @property (nonatomic) NSMutableArray *legends, *countLengths;
 @property (nonatomic) UIFont *font, *headerFont;
-@property (nonatomic) CGFloat headerHeight;
-@property BOOL rotating;
+@property (nonatomic) CGFloat headerHeight, cornerRadius;
 @property int firstLegend;
 
 @end
@@ -25,7 +24,6 @@
     
     _legends = ConfigurationControl.sharedInstance.legendList.copy;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _rotating = NO;
     
     _firstLegend = 3;
     _tv1.tag = (_firstLegend + 1);
@@ -35,10 +33,11 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _headerHeight = 30.0;
+        _headerHeight = 24.0;
+        _cornerRadius = 4.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:16.0];
+                                size:14.0];
         
         _headerFont = [UIFont boldSystemFontOfSize:18.0];
     }
@@ -46,6 +45,7 @@
     else
     {
         _headerHeight = 40.0;
+        _cornerRadius = 10.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:24.0];
@@ -104,13 +104,12 @@
     tableView.backgroundColor = UserDefaults.defaults.green;
     tableView.bounces = NO;
     tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    tableView.layer.borderWidth = 2.5;
-    tableView.layer.cornerRadius = 10.0;
+    tableView.layer.borderWidth = (_cornerRadius / 4.0);
+    tableView.layer.cornerRadius = _cornerRadius;
     tableView.delaysContentTouches = NO;
     tableView.allowsMultipleSelection = YES;
     tableView.separatorColor = UIColor.clearColor;
     tableView.separatorInset = UIEdgeInsetsZero;
-    tableView.contentInset = UIEdgeInsetsZero;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -136,22 +135,32 @@ heightForHeaderInSection:(NSInteger)section
 viewForHeaderInSection:(NSInteger)section
 {
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
-    CGRect frame = CGRectZero;
     
-    if (_rotating)
+    CGFloat margin = 60.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        frame = CGRectMake(0.0, 0.0, tableView.frame.size.height,
-                           [self tableView:tableView heightForHeaderInSection:0]);
+        margin = 26.0;
+        
+        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            margin = 30.0;
+        }
     }
     
-    else
+    CGFloat tvWidth = ((self.view.frame.size.width - margin) / 2.0);
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        frame = CGRectMake(0.0, 0.0, tableView.frame.size.width,
-                           [self tableView:tableView heightForHeaderInSection:0]);
+        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            tvWidth = ((self.view.frame.size.width - margin) / 4.0);
+        }
     }
     
-    UIView *headerView = [[UIView alloc] initWithFrame:frame];
-    
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tvWidth, _headerHeight)];
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
@@ -183,7 +192,7 @@ viewForHeaderInSection:(NSInteger)section
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 777)
+        if (views.tag == 777 || views.tag == 888)
             [views removeFromSuperview];
     }
     
@@ -205,11 +214,14 @@ viewForHeaderInSection:(NSInteger)section
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
     }
     
-    cell.textLabel.textColor = UIColor.blackColor;
-    cell.textLabel.font = _font;
-    cell.textLabel.text = text.copy;
-    cell.textLabel.textAlignment = NSTextAlignmentRight;
-    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    UILabel *textLabel = [[UILabel alloc] init];
+    textLabel.textColor = UIColor.blackColor;
+    textLabel.font = _font;
+    textLabel.text = text.copy;
+    textLabel.textAlignment = NSTextAlignmentRight;
+    textLabel.adjustsFontSizeToFitWidth = YES;
+    textLabel.tag = 888;
+    
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     
@@ -221,15 +233,42 @@ viewForHeaderInSection:(NSInteger)section
                                       attributes:attributes
                                          context:nil];
     
-    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-    CGFloat tvWidth = ((self.view.frame.size.width - 60.0) / 2.0);
-    CGFloat tvHeight = (((self.view.frame.size.height - tabBarHeight) - 60.0) / 2.0);
+    CGFloat xMargin = 60.0, yMargin = 60.0, barMargin = 8.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        xMargin = 18.0, yMargin = 36.0, barMargin = 4.0;
+        
+        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            xMargin = 30.0, yMargin = 28.0, barMargin = 6.0;
+        }
+    }
+    
+    CGFloat tvWidth = ((self.view.frame.size.width - xMargin) / 2.0);
+    CGFloat tvHeight = ((self.view.frame.size.height - yMargin) / 2.0);
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            tvWidth = ((self.view.frame.size.width - xMargin) / 4.0);
+            tvHeight = (self.view.frame.size.height - yMargin);
+        }
+    }
+    
     CGFloat rowHeight =  (CGFloat)((tvHeight - _headerHeight) / tl.numCells);
     CGFloat textWidth = ceil(textSize.size.width);
-    CGFloat barWidth = (((tvWidth - textWidth) - 32.0) * tlc.symbolWidth);
+    
+    textLabel.frame = CGRectMake((tvWidth - textWidth), 0.0, textWidth, rowHeight);
+    [cell.contentView addSubview:textLabel];
+    
+    CGFloat barWidth = (((tvWidth - textWidth) - (barMargin * 2.0)) * tlc.symbolWidth);
     
     UIImageView *barView = [[UIImageView alloc] initWithFrame:
-                            CGRectMake(8.0, (rowHeight * 0.15), barWidth, (rowHeight * 0.7))];
+                            CGRectMake(barMargin, (rowHeight * 0.15), barWidth, (rowHeight * 0.7))];
     
     barView.image = [UIImage imageFromColor:UserDefaults.defaults.green];
     barView.layer.borderColor = UIColor.blackColor.CGColor;
@@ -274,13 +313,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    _rotating = YES;
     [self reloadTableViews];
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    _rotating = NO;
 }
 
 @end
