@@ -229,6 +229,10 @@
                     rtn = DISPLAY_ITEM;
                 }
                 break;
+            case DepartmentTheme:
+            case DayNightTheme:
+                rtn = DISPLAY_ITEM;
+                break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
                 val -= 2010;
