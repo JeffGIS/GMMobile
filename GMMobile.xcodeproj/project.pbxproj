@@ -531,6 +531,7 @@
 				EBD6B8A91BC1CE1200BACC89 /* Destinations.h */,
 				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
 				EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */,
+				A9C8372B1A65B2E4005EC4FA /* View */,
 				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
 			);
 			name = Model;
@@ -621,7 +622,6 @@
 			isa = PBXGroup;
 			children = (
 				A9C8372A1A65B2DE005EC4FA /* Model */,
-				A9C8372B1A65B2E4005EC4FA /* View */,
 				A9C8372C1A65B2E8005EC4FA /* Controller */,
 			);
 			path = GMMobile;
