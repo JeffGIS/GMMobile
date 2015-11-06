@@ -274,7 +274,7 @@ viewForHeaderInSection:(NSInteger)section
     textLabel.frame = CGRectMake((tvWidth - textWidth), 0.0, textWidth, rowHeight);
     [cell.contentView addSubview:textLabel];
     
-    CGFloat barWidth = (((tvWidth - textWidth) - (barMargin * 2.0)) * tlc.symbolWidth);
+    CGFloat barWidth = (((tvWidth - textWidth) - (barMargin * 2.0)) * 1.0);
     
     UIImageView *barView = [[UIImageView alloc] initWithFrame:
                             CGRectMake(barMargin, (rowHeight * 0.15), barWidth, (rowHeight * 0.7))];

@@ -78,7 +78,7 @@
         case DayNightTheme:
             thm.legend.title = @"Day - Night";
             thm.numDesiredClasses = 2;
-            class = [ThemeClass createWithTitle:@"Day"];
+            class = [ThemeClass createWithTitle:@"  Day"];
             [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"Night"];
             [thm.classes addObject:class];
