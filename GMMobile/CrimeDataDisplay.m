@@ -97,6 +97,7 @@
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         offense = (LPSTR)sqlite3_column_text(statement,3);
+        dc.dPoint = BasePt;
         dc.UCR = sqlite3_column_int(statement,4);
         dc.itemBeginTime = sqlite3_column_int(statement,5);
         dc.itemEndTime = sqlite3_column_int(statement,6);

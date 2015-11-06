@@ -230,8 +230,14 @@
                 }
                 break;
             case DepartmentTheme:
-            case DayNightTheme:
                 rtn = DISPLAY_ITEM;
+                break;
+            case DayNightTheme:
+            {
+                double Altitude, Az;
+                GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
+                rtn = DISPLAY_ITEM;
+            }
                 break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
