@@ -5,6 +5,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
 #import "ThemeLegend.h"
+#import "CCodeLibrary/UIImage+ImageFromColor.h"
 
 @interface CrimeOptions2 ()
 
@@ -213,11 +214,11 @@ viewForHeaderInSection:(NSInteger)section
     CGFloat textWidth = ceil(textSize.size.width);
     CGFloat barWidth = (((cell.contentView.frame.size.width - textWidth) - 32.0) * tlc.symbolWidth);
     
-    UIView *barView = [[UIView alloc] initWithFrame:
-                       CGRectMake(8.0, (cell.contentView.frame.size.height * 0.15),
-                                  barWidth, (cell.contentView.frame.size.height * 0.7))];
+    UIImageView *barView = [[UIImageView alloc] initWithFrame:
+                            CGRectMake(8.0, (cell.contentView.frame.size.height * 0.15),
+                                       barWidth, (cell.contentView.frame.size.height * 0.7))];
     
-    barView.backgroundColor = UserDefaults.defaults.green;
+    barView.image = [UIImage imageFromColor:UserDefaults.defaults.green];
     barView.layer.borderColor = UIColor.blackColor.CGColor;
     barView.layer.borderWidth = 1.0;
     barView.tag = 777;
