@@ -530,6 +530,13 @@ visibleAtZoom:(CGFloat)zoom
     switch (_currentApp)
     {
         case HCConfigCrimes:
+            thm = [Theme createTheme:Part1Theme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:DepartmentTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:DayNightTheme];
+            [_themeList addObject:thm];
+            
             thm = [Theme createTheme:YearTheme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:MonthTheme];

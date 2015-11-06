@@ -534,8 +534,8 @@
 				EBD6B8A91BC1CE1200BACC89 /* Destinations.h */,
 				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
 				EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */,
-				A9C8372B1A65B2E4005EC4FA /* View */,
 				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
+				A9C8372B1A65B2E4005EC4FA /* View */,
 			);
 			name = Model;
 			sourceTree = "<group>";

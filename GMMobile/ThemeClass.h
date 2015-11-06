@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CCodeLibrary/CCodelibrary.h"
 
 @interface ThemeClass : NSObject
 
@@ -16,6 +17,7 @@
 @property float pctOfTotal;
 @property float symbolWidth;
 @property UIColor * color;
+@property PointSymbols symbol;
 
 + (ThemeClass*) createWithTitle:(NSString*)title;
 

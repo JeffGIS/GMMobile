@@ -65,7 +65,6 @@
     int nFound=0;
     LPSTR offense;
     CGFloat size;
-    CGColorRef color=0;
     CGFloat sizeFactor = 5;
     
     if (_zoom > 18)
@@ -98,28 +97,18 @@
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         offense = (LPSTR)sqlite3_column_text(statement,3);
-        UCR = sqlite3_column_int(statement,4);
+        dc.UCR = sqlite3_column_int(statement,4);
         dc.itemBeginTime = sqlite3_column_int(statement,5);
         dc.itemEndTime = sqlite3_column_int(statement,6);
+        dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
         [ConfigurationControl.sharedInstance setDisplayCharacteristics:dc
                                                              displayID:_processingID];
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-        
-        if (UCR < 6)
-        {
-            dc.pointSymbol = Star1Sym;
-            size = 20.0;
-        }
-        else
-        {
-            color = UIColor.brownColor.CGColor;
-            dc.pointSymbol = Star2Sym;
-            size = 16.0;
-        }
+        size = 8;
         [self drawCrimePoint:context
                      atPoint:&llpoint
                  usingSymbol:dc.pointSymbol
-                   withColor:color
+                   withColor:dc.color.CGColor
                      andSize:(size * sizeFactor)];
     }
     SQLOK(sqlite3_finalize(statement), _cd.database);

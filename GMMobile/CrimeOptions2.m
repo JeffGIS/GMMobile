@@ -13,6 +13,7 @@
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight;
 @property BOOL rotating;
+@property int firstLegend;
 
 @end
 
@@ -26,10 +27,11 @@
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _rotating = NO;
     
-    _tv1.tag = 1;
-    _tv2.tag = 2;
-    _tv3.tag = 3;
-    _tv4.tag = 4;
+    _firstLegend = 3;
+    _tv1.tag = 1 + _firstLegend;
+    _tv2.tag = 2 + _firstLegend;
+    _tv3.tag = 3 + _firstLegend;
+    _tv4.tag = 4 + _firstLegend;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -64,7 +66,7 @@
     _legends = ConfigurationControl.sharedInstance.legendList.copy;
     _countLengths = NSMutableArray.array;
     
-    for (int i = 0; i < _legends.count; i++)
+    for (int i = _firstLegend; i < _legends.count; i++)
     {
         ThemeLegend *tl = (ThemeLegend *)_legends[i];
         NSUInteger length = 0;
@@ -76,7 +78,7 @@
         }
         
         [_countLengths insertObject:@(length)
-                            atIndex:i];
+                            atIndex:i-_firstLegend];
     }
     
     [self reloadTableViews];

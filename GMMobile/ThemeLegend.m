@@ -21,6 +21,7 @@
     another.pctInnerMargin = _pctInnerMargin;
     another.pctSymbol = _pctSymbol;
     another.pctTitle = _pctTitle;
+    another.usePointSymbols= _usePointSymbols;
     another.useClassColors = _useClassColors;
     another.appendClassCount = _appendClassCount;
     another.borderColor = [[UIColor alloc]initWithCGColor:_borderColor.CGColor];

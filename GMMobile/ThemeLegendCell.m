@@ -23,6 +23,7 @@
     
     another.count = _count;
     another.symbolWidth = _symbolWidth;
+    another.symbol = _symbol;
     another.symbolColor = [[UIColor alloc]initWithCGColor:_symbolColor.CGColor];
     another.label = [NSString stringWithString:_label];
     return  another;

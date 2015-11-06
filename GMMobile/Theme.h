@@ -16,6 +16,9 @@
 
 typedef NS_ENUM(NSInteger, ThemeTypes)
 {
+    Part1Theme,
+    DepartmentTheme,
+    DayNightTheme,
     YearTheme,
     MonthTheme,
     DayofWeekTheme,
@@ -31,6 +34,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
 @property int numClasses;
 @property int totNumItems;
 @property double totCount;
+@property BOOL setSymbol;
 
 + (Theme *)createTheme:(ThemeTypes)type;
 

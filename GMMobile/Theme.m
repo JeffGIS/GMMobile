@@ -33,6 +33,56 @@
     thm.legend.symbolDefaultColor = [UIColor blueColor];
     switch (type)
     {
+        case Part1Theme:
+            thm.legend.title = @"Part 1 Crimes";
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 8;
+            class = [ThemeClass createWithTitle:@"UCR 01-02: Homicide"];
+            class.symbol = CrossSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 03: Rape"];
+            class.symbol = DiamondSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 04: Robbery"];
+            class.symbol = TriangleSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 05: Agg Assault"];
+            class.symbol = SquareSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 06: Burglary"];
+            class.symbol = Star1Sym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 07: Larceny"];
+            class.symbol = Star2Sym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 08: Auto Theft"];
+            class.symbol = CircleSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 10: Arson"];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            break;
+        case DepartmentTheme:
+            thm.legend.title = @"Department";
+            thm.numDesiredClasses = 4;
+            class = [ThemeClass createWithTitle:@"MP"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UM"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"CR"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"MT"];
+            [thm.classes addObject:class];
+            break;
+        case DayNightTheme:
+            thm.legend.title = @"Day - Night";
+            thm.numDesiredClasses = 2;
+            class = [ThemeClass createWithTitle:@"Day"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Night"];
+            [thm.classes addObject:class];
+            break;
         case YearTheme:
             thm.legend.title = @"Year";
             thm.numDesiredClasses = 6;
@@ -132,12 +182,16 @@
 
 - (BOOL) incrementCount:(int)class
                      by:(double)val
+                     dc:(DisplayCharacteristics *)dc
 {
     BOOL rtn = FALSE;
     if (class >= 0 && class < _numDesiredClasses)
     {
         ThemeClass *cls =  _classes[class];
     
+        if (_setSymbol)
+            dc.pointSymbol = cls.symbol;
+
         cls.count += val;
         cls.numItems++;
         _totCount += val;
@@ -159,30 +213,50 @@
         int val;
         switch (_type)
         {
+            case Part1Theme:
+                if (dc.UCR < 1 || dc.UCR > 10 || dc.UCR == 9)
+                    break;
+                if (dc.UCR < 3)
+                    val = 0;
+                else if (dc.UCR == 10)
+                    val = 7;
+                else
+                    val = dc.UCR - 2;
+                if ([self incrementCount:val
+                                      by:1
+                                      dc:dc])
+                {
+                    rtn = DISPLAY_ITEM;
+                }
+                break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
                 val -= 2010;
                 if ([self incrementCount:val
-                                      by:1])
+                                      by:1
+                                      dc:dc])
                     rtn = DISPLAY_ITEM;
                 break;
             case MonthTheme:
                 val = tmtime.tm_mon;
                 if ([self incrementCount:val
-                                      by:1])
+                                      by:1
+                                      dc:dc])
                     rtn = DISPLAY_ITEM;
                 
                 break;
             case DayofWeekTheme:
                 val = tmtime.tm_wday;
                 if ([self incrementCount:val
-                                      by:1])
+                                      by:1
+                                      dc:dc])
                     rtn = DISPLAY_ITEM;
                 break;
             case HourTheme:
                 val = tmtime.tm_hour/2;
                 if ([self incrementCount:val
-                                      by:1])
+                                      by:1
+                                      dc:dc])
                     rtn = DISPLAY_ITEM;
                 break;
         }

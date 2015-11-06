@@ -10,19 +10,20 @@
 
 static double Adjust (double sym,double loc, double size)
 {
-    double adjusted = sym * 0.2 * size + loc;
+    double adjusted = sym * size + loc;
     return adjusted;
 }
 
 @implementation SymbolDictionary
 
-static DPOINT Cross[]={-2,1,-5,4,-4,5,-1,2,1,2,4,5,5,4,2,1,2,-1,5,-4,4,-5,1,-2,-1,-2,-4,-5,-5,-4,-2,-1,-2,1};
+static DPOINT Cross[]={-2.5,1,-5,4,-4,5,-1,2.5,1,2.5,4,5,5,4,2.5,1,2.5,-1,5,-4,4,-5,1,-2.5,-1,-2.5,-4,-5,-5,-4,-2.5,-1,-2.5,1};
 static DPOINT Plus[]={-2,2,-2,5,2,5,2,2,5,2,5,-2,2,-2,2,-5,-2,-5,-2,-2,-5,-2,-5,2,-2,2};
 static DPOINT Diamond[]={-5,0,0,5,5,0,0,-5,-5,0};
 static DPOINT Triangle[]={-5,-5,0,5,5,-5,-5,-5};
 static DPOINT Star1[]={-5,0,-1.5,1.5,0,5,1.5,1.5,5,0,1.5,-1.5,0,-5,-1.5,-1.5,-5,0};
 static DPOINT Star2[]={0,5,1.1,1.3,5,1.3,1.9,-1.1,3,-5,0,-2.6,-3,-5,-2,-1.1,-5,1.3,-1.1,1.3,0,5};
 static DPOINT Square[]={-5,5,5,5,5,-5,-5,-5,-5,5};
+static DPOINT Splash[]={-4.4,-1.6,-1.4,.7,-2.1,3.3,-.3,1.4,1.3,4.4,.9,.8,4.0,.7,.7,-.7,1.2,-4.0,-.4,-1.5,-2.0,-3.4,-1.6,-.9,-4.4,-1.6};
 + (void)drawPointWithSymbol:(CGContextRef)context
                          at:(LPDPOINT)pt
                 usingSymbol:(PointSymbols)sym
@@ -37,16 +38,18 @@ static DPOINT Square[]={-5,5,5,5,5,-5,-5,-5,-5,5};
     
     if (sym == CircleSym)
     {
+        size *= 0.75;
         CGRect pointRect = CGRectMake((pt->x - size / 2.0),
                                       (pt->y - size / 2.0), size, size);
 
-        CGContextStrokeEllipseInRect(context, pointRect);
+        CGContextFillEllipseInRect(context, pointRect);
     }
     else
     {
         LPDPOINT pPoints;
         int nPt;
-         switch (sym)
+        size *= 0.1;
+        switch (sym)
         {
             case CrossSym:
                 pPoints = Cross;
@@ -59,14 +62,17 @@ static DPOINT Square[]={-5,5,5,5,5,-5,-5,-5,-5,5};
             case DiamondSym:
                 pPoints = Diamond;
                 nPt = sizeof (Diamond)/sizeof(DPOINT);
+                size *= 0.8;
                 break;
             case TriangleSym:
                 pPoints = Triangle;
                 nPt = sizeof (Triangle)/sizeof(DPOINT);
+                size *= 0.8;
                 break;
             case SquareSym:
                 pPoints = Square;
                 nPt = sizeof (Square)/sizeof(DPOINT);
+                size *= 0.7;
                 break;
             case Star1Sym:
                 pPoints = Star1;
@@ -77,8 +83,9 @@ static DPOINT Square[]={-5,5,5,5,5,-5,-5,-5,-5,5};
                 nPt = sizeof (Star2)/sizeof(DPOINT);
                 break;
             case ArsonSym:
-                pPoints = Cross;
-                nPt = sizeof (Cross)/sizeof(DPOINT);
+                size *= 0.5;
+                pPoints = Splash;
+                nPt = sizeof (Splash)/sizeof(DPOINT);
                 break;
                 
         }

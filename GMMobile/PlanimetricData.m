@@ -104,7 +104,7 @@ extern int keepProcessing;
                  withColor:color
                   andWidth:3];
     }
-    
+    CGColorRelease(color);
     SQLOK(sqlite3_finalize(statement),pd.database);
     [pd close:333];
 }
