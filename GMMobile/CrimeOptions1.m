@@ -17,8 +17,7 @@
 {
     [super viewDidLoad];
     
-    NSLog ([NSString stringWithFormat:@"%i legends available",(int)ConfigurationControl.sharedInstance.legendList.count]);
-    self.view.backgroundColor = UserDefaults.defaults.green;
+    self.view.backgroundColor = UserDefaults.defaults.appleBlue;
 }
 
 - (void)didReceiveMemoryWarning

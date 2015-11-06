@@ -50,7 +50,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     NSInteger fromDate = 0, toDate = 0;
     
-    [NVDateRange getPastWeekFromDate:&fromDate
+    [NVDateRange getLastYearFromDate:&fromDate
                               toDate:&toDate];
     
     CRAPI.sharedInstance.fromDate = fromDate;
