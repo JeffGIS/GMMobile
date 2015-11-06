@@ -25,11 +25,12 @@
     _legends = ConfigurationControl.sharedInstance.legendList.copy;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
-    _firstLegend = 3;
-    _tv1.tag = (_firstLegend + 1);
-    _tv2.tag = (_firstLegend + 2);
-    _tv3.tag = (_firstLegend + 3);
-    _tv4.tag = (_firstLegend + 4);
+    _firstLegend = 2;
+    _tv5.tag = (_firstLegend + 1);
+    _tv1.tag = (_firstLegend + 2);
+    _tv2.tag = (_firstLegend + 3);
+    _tv3.tag = (_firstLegend + 4);
+    _tv4.tag = (_firstLegend + 5);
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -57,6 +58,7 @@
     [self setupTableView:_tv2];
     [self setupTableView:_tv3];
     [self setupTableView:_tv4];
+    [self setupTableView:_tv5];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -95,6 +97,7 @@
     [_tv2 reloadData];
     [_tv3 reloadData];
     [_tv4 reloadData];
+    [_tv5 reloadData];
 }
 
 - (void)setupTableView:(UITableView *)tableView
@@ -136,7 +139,7 @@ viewForHeaderInSection:(NSInteger)section
 {
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     
-    CGFloat margin = 60.0;
+    CGFloat margin = 52.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -233,7 +236,7 @@ viewForHeaderInSection:(NSInteger)section
                                       attributes:attributes
                                          context:nil];
     
-    CGFloat xMargin = 60.0, yMargin = 60.0, barMargin = 8.0;
+    CGFloat xMargin = 52.0, yMargin = 52.0, barMargin = 8.0, fixedSize = 120.0, fixedMargin = 12.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -248,6 +251,12 @@ viewForHeaderInSection:(NSInteger)section
     
     CGFloat tvWidth = ((self.view.frame.size.width - xMargin) / 2.0);
     CGFloat tvHeight = ((self.view.frame.size.height - yMargin) / 2.0);
+    
+    if (tableView == _tv3)
+        tvHeight = (((self.view.frame.size.height - yMargin) / 2.0) - (fixedSize + fixedMargin));
+    
+    else if (tableView == _tv5)
+        tvHeight = fixedSize;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
