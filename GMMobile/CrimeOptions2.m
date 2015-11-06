@@ -28,10 +28,10 @@
     _rotating = NO;
     
     _firstLegend = 3;
-    _tv1.tag = 1 + _firstLegend;
-    _tv2.tag = 2 + _firstLegend;
-    _tv3.tag = 3 + _firstLegend;
-    _tv4.tag = 4 + _firstLegend;
+    _tv1.tag = (_firstLegend + 1);
+    _tv2.tag = (_firstLegend + 2);
+    _tv3.tag = (_firstLegend + 3);
+    _tv4.tag = (_firstLegend + 4);
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -78,7 +78,7 @@
         }
         
         [_countLengths insertObject:@(length)
-                            atIndex:i-_firstLegend];
+                            atIndex:(i - _firstLegend)];
     }
     
     [self reloadTableViews];
@@ -196,7 +196,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
         
-        while (countString.length < [_countLengths[tableView.tag - 1] integerValue])
+        while (countString.length < [_countLengths[((tableView.tag - _firstLegend) - 1)] integerValue])
         {
             [countString insertString:@" "
                               atIndex:0];
