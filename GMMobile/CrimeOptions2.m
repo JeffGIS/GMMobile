@@ -205,6 +205,14 @@ viewForHeaderInSection:(NSInteger)section
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
     }
     
+    cell.textLabel.textColor = UIColor.blackColor;
+    cell.textLabel.font = _font;
+    cell.textLabel.text = text.copy;
+    cell.textLabel.textAlignment = NSTextAlignmentRight;
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    cell.layer.borderColor = UIColor.blackColor.CGColor;
+    cell.layer.borderWidth = 0.5;
+    
     NSDictionary *attributes = @{NSFontAttributeName:_font};
     
     CGRect textSize = [text boundingRectWithSize:CGSizeMake(cell.textLabel.frame.size.width,
@@ -213,26 +221,21 @@ viewForHeaderInSection:(NSInteger)section
                                       attributes:attributes
                                          context:nil];
     
+    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+    CGFloat tvWidth = ((self.view.frame.size.width - 60.0) / 2.0);
+    CGFloat tvHeight = (((self.view.frame.size.height - tabBarHeight) - 60.0) / 2.0);
+    CGFloat rowHeight =  (CGFloat)((tvHeight - _headerHeight) / tl.numCells);
     CGFloat textWidth = ceil(textSize.size.width);
-    CGFloat barWidth = (((cell.contentView.frame.size.width - textWidth) - 32.0) * tlc.symbolWidth);
+    CGFloat barWidth = (((tvWidth - textWidth) - 32.0) * tlc.symbolWidth);
     
     UIImageView *barView = [[UIImageView alloc] initWithFrame:
-                            CGRectMake(8.0, (cell.contentView.frame.size.height * 0.15),
-                                       barWidth, (cell.contentView.frame.size.height * 0.7))];
+                            CGRectMake(8.0, (rowHeight * 0.15), barWidth, (rowHeight * 0.7))];
     
     barView.image = [UIImage imageFromColor:UserDefaults.defaults.green];
     barView.layer.borderColor = UIColor.blackColor.CGColor;
     barView.layer.borderWidth = 1.0;
     barView.tag = 777;
     [cell.contentView addSubview:barView];
-    
-    cell.textLabel.textColor = UIColor.blackColor;
-    cell.textLabel.font = _font;
-    cell.textLabel.text = text.copy;
-    cell.textLabel.textAlignment = NSTextAlignmentRight;
-    cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    cell.layer.borderColor = UIColor.blackColor.CGColor;
-    cell.layer.borderWidth = 0.5;
     
     return cell;
 }
