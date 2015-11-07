@@ -78,7 +78,7 @@
         case DayNightTheme:
             thm.legend.title = @"Day - Night";
             thm.numDesiredClasses = 2;
-            class = [ThemeClass createWithTitle:@"Day"];
+            class = [ThemeClass createWithTitle:@"  Day"];
             class.color = [UIColor yellowColor];
             [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"Night"];
