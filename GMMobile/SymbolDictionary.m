@@ -85,7 +85,7 @@ static DPOINT Splash[]={-4.4,-1.6,-1.4,.7,-2.1,3.3,-.3,1.4,1.3,4.4,.9,.8,4.0,.7,
                 nPt = sizeof (Star2)/sizeof(DPOINT);
                 break;
             case ArsonSym:
-                size *= 0.5;
+                size *= 1.2;
                 pPoints = Splash;
                 nPt = sizeof (Splash)/sizeof(DPOINT);
                 break;

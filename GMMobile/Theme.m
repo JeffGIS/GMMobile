@@ -30,7 +30,7 @@
     thm.legend.titleTxColor = [UIColor blackColor];
     thm.legend.titleBkColor = [UIColor whiteColor];
     thm.legend.labelTxColor = [UIColor blueColor];
-    thm.legend.symbolDefaultColor = [UIColor blueColor];
+    thm.legend.symbolDefaultColor = [UIColor greenColor];
     switch (type)
     {
         case Part1Theme:
@@ -179,6 +179,7 @@
     }
     thm.numClasses = (int)[thm.classes count];
     thm.legend.numCells = thm.numClasses;
+    thm.legend.useClassColors = thm.setColor;
     return thm;
 }
 
@@ -290,6 +291,7 @@
     
     if (displayID == _displayID)
     {
+        _legend.useClassColors = _setColor;
         if (_totCount > 0)
             for (ThemeClass *cls in _classes)
             {
