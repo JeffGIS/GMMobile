@@ -119,8 +119,6 @@ UIImage *imageFromSymbol(PointSymbols sym, CGFloat size, UIColor *symColor)
     CGContextSetLineWidth(context, 1.0);
     CGContextSetStrokeColorWithColor(context,UIColor.blackColor.CGColor);
     
-    NSLog(@"%ld", (long)sym);
-    
     if (sym == CircleSym)
     {
         CGContextFillEllipseInRect(context, rect);
