@@ -21,7 +21,7 @@
     self.view.backgroundColor = UIColor.blackColor;
     _selectedRow = _selectedColumn = 0;
     
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
     CGRect ssFrame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,

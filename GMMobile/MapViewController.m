@@ -115,7 +115,7 @@ extern int keepProcessing;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = 0;
     
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
     CGRect mapViewFrame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
@@ -155,7 +155,7 @@ extern int keepProcessing;
     CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
     
     _digitizerTargetView.center = CGPointMake(targetPoint.x,
-                                              (targetPoint.y + [self statusBarHeight:self.interfaceOrientation]));
+                                              (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     
     _digitizerTargetView.image = _blackCrosshairs;
     [self.view addSubview:_digitizerTargetView];
@@ -357,7 +357,7 @@ extern int keepProcessing;
 
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
                               CGPointMake(helpButtonMargin, (helpButtonMargin +
-                                           [self statusBarHeight:self.interfaceOrientation]))
+                                           [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]))
                                                              size:helpButtonSize
                                                              view:self.view
                                                               tag:HelpButtonPresenterMapVC
@@ -496,7 +496,7 @@ extern int keepProcessing;
         MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
                                                            view:self.view
                                                             map:_mapView
-                                                statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
+                                                statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
                                                        delegate:self];
         
         [self removePreviousInfoWindow];
@@ -541,7 +541,7 @@ extern int keepProcessing;
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
     if (_fromSpreadsheet)
@@ -718,7 +718,7 @@ extern int keepProcessing;
     
     if (_firstTimeAppear)
     {
-        CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
         
         _mapView.frame = CGRectMake(0.0, statusBarHeight,
@@ -1038,7 +1038,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             MarkerButton *marker = [MarkerButton markerWithPosition:pickedPt
                                                                view:self.view
                                                                 map:_mapView
-                                                    statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
+                                                    statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
                                                            delegate:self];
             [self removePreviousInfoWindow];
             _infoWindow = [[MarkerInfoWindow alloc] init];
@@ -1181,7 +1181,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
                                               (_digitizerTargetView.center.y -
-                                               [self statusBarHeight:self.interfaceOrientation]));
+                                               [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
         
         CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
         
@@ -1194,7 +1194,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 MarkerButton *marker = [MarkerButton markerWithPosition:position
                                                                    view:self.view
                                                                     map:_mapView
-                                                        statusBarHeight:[self statusBarHeight:self.interfaceOrientation]
+                                                        statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
                                                                delegate:self];
                 
                 [self removePreviousInfoWindow];
@@ -1250,7 +1250,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _digitizerCount++;
                 CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
                                                       (_digitizerTargetView.center.y -
-                                                       [self statusBarHeight:self.interfaceOrientation]));
+                                                       [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
                 
                 CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
                 CLLocationCoordinate2D positioncl = position;
@@ -1304,7 +1304,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
         
         _digitizerTargetView.center = CGPointMake(targetPoint.x,
-                                                  (targetPoint.y + [self statusBarHeight:self.interfaceOrientation]));
+                                                  (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
 }
 
@@ -1546,7 +1546,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
         
         markers.center = CGPointMake(target.x,
-                                     ((target.y + [self statusBarHeight:self.interfaceOrientation]) -
+                                     ((target.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]) -
                                       (markers.frame.size.height / 2.0)));
     }
     
@@ -2856,6 +2856,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              title:@"GMMobile cannot launch CRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
+#pragma unused(alert)
     }
 }
 
@@ -2866,7 +2867,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
     
-    CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:self.interfaceOrientation] + 6.0));
+    CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation] + 6.0));
     
     if ([self.view.subviews containsObject:_legendView])
         [_legendView reloadView];
@@ -2993,7 +2994,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
         
         _digitizerTargetView.center = CGPointMake(markerPosition.x,
-                                                  (markerPosition.y + [self statusBarHeight:self.interfaceOrientation]));
+                                                  (markerPosition.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
     
     _digitizerTargetView.hidden = NO;
@@ -3700,7 +3701,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
 {
-    CGFloat statusBarHeight = [self statusBarHeight:self.interfaceOrientation];
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
     //frame with no height for hidden views
@@ -3983,7 +3984,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              
                              _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
                                                               (_mapToolbar.frame.size.height / 2.0) +
-                                                              [self statusBarHeight:self.interfaceOrientation]);
+                                                              [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
                          }];
         
         _mapToolbar.orientation = MapToolbarOrientationTop;
