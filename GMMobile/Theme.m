@@ -323,6 +323,7 @@
         for (ThemeClass *cls in _classes)
         {
             ThemeLegendCell * tlc = [ThemeLegendCell createWithLabel:cls.title];
+            tlc.symbol = cls.symbol;
             tlc.symbolColor = cls.color;
             tlc.symbolWidth = cls.symbolWidth;
             tlc.count = cls.numItems;
