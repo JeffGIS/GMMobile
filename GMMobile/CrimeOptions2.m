@@ -240,7 +240,7 @@ viewForHeaderInSection:(NSInteger)section
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        xMargin = 18.0, yMargin = 36.0, barMargin = 4.0;
+        xMargin = 18.0, yMargin = 36.0, barMargin = 4.0, fixedSize = 80.0, fixedMargin = 6.0;
         
         if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
             UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
@@ -253,10 +253,7 @@ viewForHeaderInSection:(NSInteger)section
     CGFloat tvHeight = ((self.view.frame.size.height - yMargin) / 2.0);
     
     if (tableView == _tv3)
-        tvHeight = (((self.view.frame.size.height - yMargin) / 2.0) - (fixedSize + fixedMargin));
-    
-    else if (tableView == _tv5)
-        tvHeight = fixedSize;
+        tvHeight -= (fixedSize + fixedMargin);
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -265,8 +262,14 @@ viewForHeaderInSection:(NSInteger)section
         {
             tvWidth = ((self.view.frame.size.width - xMargin) / 4.0);
             tvHeight = (self.view.frame.size.height - yMargin);
+            
+            if (tableView == _tv3)
+                tvHeight -= (fixedSize + fixedMargin);
         }
     }
+    
+    if (tableView == _tv5)
+        tvHeight = fixedSize;
     
     CGFloat rowHeight =  (CGFloat)((tvHeight - _headerHeight) / tl.numCells);
     CGFloat textWidth = ceil(textSize.size.width);
