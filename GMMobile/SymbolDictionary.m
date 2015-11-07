@@ -115,6 +115,7 @@ UIImage *imageFromSymbol(PointSymbols sym, CGFloat size, UIColor *symColor)
     CGRect rect = CGRectMake(0.0, 0.0, size, size);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
+    
     CGContextSetFillColorWithColor(context,symColor.CGColor);
     CGContextSetLineWidth(context, 1.0);
     CGContextSetStrokeColorWithColor(context,UIColor.blackColor.CGColor);
@@ -176,13 +177,13 @@ UIImage *imageFromSymbol(PointSymbols sym, CGFloat size, UIColor *symColor)
                 break;
         }
         
-        CGContextMoveToPoint(context, Adjust(pPoints[0].x, (size * 5.0), size),
-                             Adjust(pPoints[0].y, (size * 5.0), size));
+        CGContextMoveToPoint(context, Adjust(-pPoints[0].x, (size * 5.0), size),
+                             Adjust(-pPoints[0].y, (size * 5.0), size));
         
         for (int i = 1; i < nPt; i++)
         {
-            CGContextAddLineToPoint(context, Adjust(pPoints[i].x, (size * 5.0), size),
-                                    Adjust(pPoints[i].y, (size * 5.0), size));
+            CGContextAddLineToPoint(context, Adjust(-pPoints[i].x, (size * 5.0), size),
+                                    Adjust(-pPoints[i].y, (size * 5.0), size));
         }
         
         if (!CGContextIsPathEmpty(context))
