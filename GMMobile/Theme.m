@@ -285,6 +285,21 @@
     return rtn;
 }
 
+- (void) beginDisplay:(int)displayID
+{
+   
+    if (displayID == _displayID)
+    {
+        _totCount = 0;
+        _totNumItems = 0;
+        for (ThemeClass *cls in _classes)
+        {
+            cls.count = 0;
+            cls.numItems = 0;
+        }
+    }
+}
+
 - (void) endDisplay:(int)displayID
 {
     double maxPct = 0;

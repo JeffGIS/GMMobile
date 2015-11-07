@@ -584,6 +584,10 @@ visibleAtZoom:(CGFloat)zoom
 
 - (void) themesBeginDisplayPass:(int)displayID
 {
+    for (Theme *thm in _themeList)
+    {
+        [thm beginDisplay:displayID];
+    }
     
 }
 
