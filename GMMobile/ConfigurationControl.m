@@ -535,6 +535,7 @@ visibleAtZoom:(CGFloat)zoom
             thm = [Theme createTheme:DepartmentTheme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:DayNightTheme];
+            thm.setColor = YES;
             [_themeList addObject:thm];
             
             thm = [Theme createTheme:YearTheme];

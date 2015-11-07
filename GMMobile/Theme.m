@@ -79,8 +79,10 @@
             thm.legend.title = @"Day - Night";
             thm.numDesiredClasses = 2;
             class = [ThemeClass createWithTitle:@"Day"];
+            class.color = [UIColor yellowColor];
             [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"Night"];
+            class.color = [UIColor blueColor];
             [thm.classes addObject:class];
             break;
         case YearTheme:
@@ -191,7 +193,8 @@
     
         if (_setSymbol)
             dc.pointSymbol = cls.symbol;
-
+        if (_setColor)
+            dc.color = cls.color;
         cls.count += val;
         cls.numItems++;
         _totCount += val;
@@ -236,6 +239,13 @@
             {
                 double Altitude, Az;
                 GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
+                if (Altitude < -6.0)
+                    val = 1;
+                else
+                    val = 0;
+                if ([self incrementCount:val
+                                      by:1
+                                      dc:dc])
                 rtn = DISPLAY_ITEM;
             }
                 break;

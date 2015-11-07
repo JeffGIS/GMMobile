@@ -43,6 +43,7 @@ static DPOINT Splash[]={-4.4,-1.6,-1.4,.7,-2.1,3.3,-.3,1.4,1.3,4.4,.9,.8,4.0,.7,
                                       (pt->y - size / 2.0), size, size);
 
         CGContextFillEllipseInRect(context, pointRect);
+        CGContextStrokeEllipseInRect(context, pointRect);
     }
     else
     {
@@ -69,6 +70,7 @@ static DPOINT Splash[]={-4.4,-1.6,-1.4,.7,-2.1,3.3,-.3,1.4,1.3,4.4,.9,.8,4.0,.7,
                 nPt = sizeof (Triangle)/sizeof(DPOINT);
                 size *= 0.8;
                 break;
+            default:
             case SquareSym:
                 pPoints = Square;
                 nPt = sizeof (Square)/sizeof(DPOINT);
@@ -97,8 +99,9 @@ static DPOINT Splash[]={-4.4,-1.6,-1.4,.7,-2.1,3.3,-.3,1.4,1.3,4.4,.9,.8,4.0,.7,
         
         if (!CGContextIsPathEmpty(context))
         {
-            CGContextFillPath(context);
-            //CGContextDrawPath(context, kCGPathStroke);
+//            CGPathRef path = CGContextCopyPath(context);
+//            CGContextFillPath(context);
+            CGContextDrawPath(context, kCGPathEOFillStroke);
         }
     }
 

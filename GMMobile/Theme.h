@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
 @property int totNumItems;
 @property double totCount;
 @property BOOL setSymbol;
+@property BOOL setColor;
 
 + (Theme *)createTheme:(ThemeTypes)type;
 

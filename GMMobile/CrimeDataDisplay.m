@@ -102,15 +102,17 @@
         dc.itemBeginTime = sqlite3_column_int(statement,5);
         dc.itemEndTime = sqlite3_column_int(statement,6);
         dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-        [ConfigurationControl.sharedInstance setDisplayCharacteristics:dc
-                                                             displayID:_processingID];
-        DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-        size = 8;
-        [self drawCrimePoint:context
-                     atPoint:&llpoint
-                 usingSymbol:dc.pointSymbol
-                   withColor:dc.color.CGColor
-                     andSize:(size * sizeFactor)];
+        if ([ConfigurationControl.sharedInstance setDisplayCharacteristics:dc
+                                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+        {
+            DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+            size = 10;
+            [self drawCrimePoint:context
+                         atPoint:&llpoint
+                     usingSymbol:dc.pointSymbol
+                       withColor:dc.color.CGColor
+                         andSize:(size * sizeFactor)];
+        }
     }
     SQLOK(sqlite3_finalize(statement), _cd.database);
     [_cd close];
@@ -134,7 +136,7 @@
                               usingSymbol:sym
                                      Size:30
                                 fillColor:color
-                                lineColor:color
+                                lineColor:0
                                 lineWidth:1];
 
 }
