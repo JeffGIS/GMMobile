@@ -9,7 +9,8 @@
 
 @interface CrimeOptions2 ()
 
-@property (nonatomic) NSMutableArray *legends, *countLengths;
+@property (nonatomic) NSArray *legends;
+@property (nonatomic) NSMutableArray *countLengths;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
 @property int firstLegend;

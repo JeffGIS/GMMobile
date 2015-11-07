@@ -20,4 +20,6 @@
                   lineColor:(CGColorRef)lcolor
                   lineWidth:(CGFloat)lwidth;
 
+UIImage *imageFromSymbol(PointSymbols sym, CGFloat size, UIColor *symColor);
+
 @end

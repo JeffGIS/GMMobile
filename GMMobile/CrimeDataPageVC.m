@@ -34,7 +34,7 @@
                                                          bundle:NSBundle.mainBundle];
     
     UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
-    CrimeOptions1 *co1 = [[CrimeOptions1 alloc] init];
+    CrimeOptions1 *co1 = [storyboard instantiateViewControllerWithIdentifier:@"CrimeOptions1"];
     UIViewController *co2 = [storyboard instantiateViewControllerWithIdentifier:@"CrimeOptions2"];
     
     _pages = @[cdovc, co1, co2];
