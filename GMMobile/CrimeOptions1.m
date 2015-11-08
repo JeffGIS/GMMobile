@@ -200,25 +200,16 @@ viewForHeaderInSection:(NSInteger)section
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        margin = 26.0;
+        margin = 16.0;
         
         if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
             UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
         {
-            margin = 30.0;
+            margin = 12.0;
         }
     }
     
     CGFloat tvWidth = (self.view.frame.size.width - margin);
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-        {
-            tvWidth = ((self.view.frame.size.width - margin) / 4.0);
-        }
-    }
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tvWidth, _headerHeight)];
     headerView.backgroundColor = UIColor.blackColor;
@@ -277,7 +268,12 @@ viewForHeaderInSection:(NSInteger)section
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     
-    cell.imageView.image = imageFromSymbol(tlc.symbol, 52.0, tl.symbolDefaultColor);
+    CGFloat symbolSize = 52.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        symbolSize = 36.0;
+    
+    cell.imageView.image = imageFromSymbol(tlc.symbol, symbolSize, tl.symbolDefaultColor);
     
     return cell;
 }
@@ -320,6 +316,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     CGFloat margin = 40.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 12.0;
     
     [UIView animateWithDuration:duration animations:^{
         [self setupDeptViewComponents:((self.view.frame.size.height + tabBarHeight) - margin)];
