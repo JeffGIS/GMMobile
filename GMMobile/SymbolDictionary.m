@@ -113,17 +113,19 @@ UIImage *imageFromSymbol(PointSymbols sym, CGFloat size, UIColor *symColor)
     UIImage *image = nil;
     
     CGRect rect = CGRectMake(0.0, 0.0, size, size);
-    UIGraphicsBeginImageContext(rect.size);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     CGContextSetFillColorWithColor(context,symColor.CGColor);
-    CGContextSetLineWidth(context, 1.0);
+    CGContextSetLineWidth(context, 2.0);
     CGContextSetStrokeColorWithColor(context,UIColor.blackColor.CGColor);
+    
+    size -= 4.0;
     
     if (sym == CircleSym)
     {
-        CGContextFillEllipseInRect(context, rect);
-        CGContextStrokeEllipseInRect(context, rect);
+        CGContextFillEllipseInRect(context, CGRectMake(2.0, 2.0, size, size));
+        CGContextStrokeEllipseInRect(context, CGRectMake(2.0, 2.0, size, size));
         image = UIGraphicsGetImageFromCurrentImageContext();
     }
     
@@ -177,13 +179,13 @@ UIImage *imageFromSymbol(PointSymbols sym, CGFloat size, UIColor *symColor)
                 break;
         }
         
-        CGContextMoveToPoint(context, Adjust(-pPoints[0].x, (size * 5.0), size),
-                             Adjust(-pPoints[0].y, (size * 5.0), size));
+        CGContextMoveToPoint(context, Adjust(-pPoints[0].x, ((size * 5.0) + 2.0), size),
+                             Adjust(-pPoints[0].y, ((size * 5.0) + 2.0), size));
         
         for (int i = 1; i < nPt; i++)
         {
-            CGContextAddLineToPoint(context, Adjust(-pPoints[i].x, (size * 5.0), size),
-                                    Adjust(-pPoints[i].y, (size * 5.0), size));
+            CGContextAddLineToPoint(context, Adjust(-pPoints[i].x, ((size * 5.0) + 2.0), size),
+                                    Adjust(-pPoints[i].y, ((size * 5.0) + 2.0), size));
         }
         
         if (!CGContextIsPathEmpty(context))

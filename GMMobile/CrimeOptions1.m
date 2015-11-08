@@ -193,7 +193,7 @@ viewForHeaderInSection:(NSInteger)section
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     
-    cell.imageView.image = imageFromSymbol(tlc.symbol, 48.0, UIColor.redColor);
+    cell.imageView.image = imageFromSymbol(tlc.symbol, 52.0, tl.symbolDefaultColor);
     
     return cell;
 }
