@@ -104,6 +104,7 @@
         deptButton.layer.borderWidth = 0.5;
         deptButton.layer.borderColor = UIColor.blackColor.CGColor;
         deptButton.titleLabel.font = _font;
+        deptButton.titleLabel.adjustsFontSizeToFitWidth = YES;
         deptButton.selected = tlc.status;
         deptButton.tag = (i + 1);
         
