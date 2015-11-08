@@ -40,7 +40,8 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
 + (Theme *)createTheme:(ThemeTypes)type;
 
 - (int) processTheme:(DisplayCharacteristics *)dc
-           displayID:(int)displayID;
+           displayID:(int)displayID
+            testPass:(BOOL)test;
 - (void) beginDisplay:(int)displayID;
 - (void) endDisplay:(int)displayID;
 - (ThemeLegend *)copyLegend;
