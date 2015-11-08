@@ -13,6 +13,7 @@
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
+@property (nonatomic) UILabel *deptHeaderView;
 
 @end
 
@@ -49,6 +50,7 @@
     }
     
     [self setupTableView];
+    [self setupDeptView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -66,6 +68,8 @@
     }
     
     [_tableView reloadData];
+    [self.view layoutIfNeeded];
+    [self setupDeptViewComponents:_deptView.frame.size.width];
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,11 +77,90 @@
     [super didReceiveMemoryWarning];
 }
 
+- (void)setupDeptView
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[1];
+    
+    _deptView.backgroundColor = UIColor.whiteColor;
+    _deptView.layer.cornerRadius = _cornerRadius;
+    _deptView.layer.borderColor = UIColor.blackColor.CGColor;
+    _deptView.layer.borderWidth =  (_cornerRadius / 4.0);
+    _deptView.clipsToBounds = YES;
+    
+    _deptHeaderView = [[UILabel alloc] init];
+    _deptHeaderView.backgroundColor = UIColor.blackColor;
+    _deptHeaderView.text = tl.title;
+    _deptHeaderView.font = _headerFont;
+    _deptHeaderView.textColor = UIColor.whiteColor;
+    _deptHeaderView.textAlignment = NSTextAlignmentCenter;
+    
+    [_deptView addSubview:_deptHeaderView];
+    
+    for (int i = 0; i < tl.cells.count; i++)
+    {
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[i];
+        UIButton *deptButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        deptButton.backgroundColor = UIColor.clearColor;
+        deptButton.layer.borderWidth = 0.5;
+        deptButton.layer.borderColor = UIColor.blackColor.CGColor;
+        deptButton.titleLabel.font = _font;
+        deptButton.selected = tlc.status;
+        deptButton.tag = (i + 1);
+        
+        [deptButton setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
+                    forState:UIControlStateNormal];
+        
+        [deptButton setTitleColor:UIColor.blackColor
+                         forState:UIControlStateNormal];
+        
+        [deptButton addTarget:self
+                       action:@selector(deptButtonTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+        
+        [_deptView addSubview:deptButton];
+    }
+}
+
+- (void)deptButtonTapped:(UIButton *)button
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[1];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[button.tag - 1];
+    
+    if (button.selected)
+    {
+        button.backgroundColor = UIColor.clearColor;
+        button.selected = tlc.status = NO;
+    }
+    
+    else
+    {
+        button.backgroundColor = UserDefaults.defaults.appleGray;
+        button.selected = tlc.status = YES;
+    }
+}
+
+- (void)setupDeptViewComponents:(CGFloat)width
+{
+    _deptHeaderView.frame = CGRectMake(0.0, 0.0, width, _headerHeight);
+    
+    ThemeLegend *tl = (ThemeLegend *)_legends[1];
+    CGFloat buttonWidth = (width / tl.cells.count);
+    
+    for (UIButton *buttons in _deptView.subviews)
+    {
+        if ([buttons isKindOfClass:UIButton.class])
+        {
+            buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
+                                       buttonWidth,(_deptView.frame.size.height - _headerHeight));
+        }
+    }
+}
+
 - (void)setupTableView
 {
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    _tableView.backgroundColor = UserDefaults.defaults.green;
+    _tableView.backgroundColor = UIColor.whiteColor;
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.layer.borderWidth = (_cornerRadius / 4.0);
@@ -233,6 +316,13 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
+    
+    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+    CGFloat margin = 40.0;
+    
+    [UIView animateWithDuration:duration animations:^{
+        [self setupDeptViewComponents:((self.view.frame.size.height + tabBarHeight) - margin)];
+    }];
 }
 
 @end
