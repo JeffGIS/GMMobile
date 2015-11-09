@@ -9,8 +9,7 @@
 
 @interface CrimeOptions2 ()
 
-@property (nonatomic) NSArray *legends;
-@property (nonatomic) NSMutableArray *countLengths;
+@property (nonatomic) NSMutableArray *legends, *countLengths;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
 @property int firstLegend;
@@ -23,7 +22,7 @@
 {
     [super viewDidLoad];
     
-    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
     _firstLegend = 2;
@@ -66,7 +65,7 @@
 {
     [super viewWillAppear:animated];
     
-    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;
     _countLengths = NSMutableArray.array;
     
     for (int i = _firstLegend; i < _legends.count; i++)
