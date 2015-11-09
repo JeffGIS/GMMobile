@@ -9,7 +9,7 @@
 
 @interface CrimeOptions1 ()
 
-@property (nonatomic) NSArray *legends;
+@property (nonatomic) NSMutableArray *legends;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
@@ -23,7 +23,7 @@
 {
     [super viewDidLoad];
     
-    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _countLength = 0;
  
@@ -125,12 +125,18 @@
     {
         button.backgroundColor = UIColor.clearColor;
         button.selected = tlc.status = NO;
+        
+        [button setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
+                forState:UIControlStateNormal];
     }
     
     else
     {
         button.backgroundColor = UserDefaults.defaults.appleGray;
         button.selected = tlc.status = YES;
+        
+        [button setTitle:tlc.label
+                forState:UIControlStateNormal];
     }
 }
 
@@ -156,10 +162,20 @@
             buttons.selected = tlc.status;
             
             if (buttons.selected)
+            {
                 buttons.backgroundColor = UserDefaults.defaults.appleGray;
+                
+                [buttons setTitle:tlc.label
+                         forState:UIControlStateNormal];
+            }
             
             else
+            {
                 buttons.backgroundColor = UIColor.clearColor;
+                
+                [buttons setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
+                         forState:UIControlStateNormal];
+            }
         }
     }
 }
@@ -222,10 +238,7 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(0.0, 0.0, headerView.frame.size.width,
-                                       headerView.frame.size.height)];
-    
+    UILabel *headerLabel = [[UILabel alloc] initWithFrame:headerView.frame];
     headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
@@ -251,25 +264,32 @@ viewForHeaderInSection:(NSInteger)section
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
-    NSMutableString *text = tlc.label.mutableCopy;
+    if (tlc.status)
+        cell.textLabel.text = tlc.label;
     
-    if (tl.appendClassCount)
+    else
     {
-        NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
+        NSMutableString *text = tlc.label.mutableCopy;
         
-        while (countString.length < _countLength)
+        if (tl.appendClassCount)
         {
-            [countString insertString:@" "
-                              atIndex:0];
+            NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
+            
+            while (countString.length < _countLength)
+            {
+                [countString insertString:@" "
+                                  atIndex:0];
+            }
+            
+            [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
         }
         
-        [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
+        cell.textLabel.text = text.copy;
     }
     
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
-    cell.textLabel.text = text.copy;
-    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     
     cell.layer.borderColor = UIColor.blackColor.CGColor;
@@ -306,6 +326,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = YES;
+    
+    [tableView reloadRowsAtIndexPaths:@[indexPath]
+                     withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -314,6 +337,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = NO;
+    
+    [tableView reloadRowsAtIndexPaths:@[indexPath]
+                     withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
