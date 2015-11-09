@@ -48,6 +48,7 @@
     
     _pageControl.numberOfPages = _pages.count;
     _pageControl.currentPage = 0;
+    _pageControl.userInteractionEnabled = NO;
     [self.view addSubview:_pageControl];
 }
 

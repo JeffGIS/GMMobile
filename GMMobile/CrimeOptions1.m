@@ -238,10 +238,7 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(0.0, 0.0, headerView.frame.size.width,
-                                       headerView.frame.size.height)];
-    
+    UILabel *headerLabel = [[UILabel alloc] initWithFrame:headerView.frame];
     headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
