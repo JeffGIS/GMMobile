@@ -85,6 +85,26 @@
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT Count(*) FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
+                     OFFENSEXY_index.maxX    >=%f AND\
+                     OFFENSEXY_index.minX    <=%f AND\
+                     OFFENSEXY_index.maxY    >=%f AND\
+                     OFFENSEXY_index.minY    <=%f AND\
+                     OFFENSEXY_index.MinUCR  >=%f AND\
+                     OFFENSEXY_index.MaxUCR  <=%f AND\
+                     OFFENSEXY_index.minTime >=%f AND\
+                     OFFENSEXY_index.maxTime <= %f",
+                     platlonBounds->xmn,
+                     platlonBounds->xmx,
+                     platlonBounds->ymn,
+                     platlonBounds->ymx,
+                     _minUCR*10.0-1,
+                     _maxUCR*10.0+1,
+                     fromTime/1000.0-1,
+                     toTime/1000.0+1];
+            SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+            sqlite3_step(statement);
+            controlNbr = sqlite3_column_int(statement,0);
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.maxX    >=%f AND\
                      OFFENSEXY_index.minX    <=%f AND\
