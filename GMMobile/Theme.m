@@ -186,27 +186,36 @@
 - (BOOL) incrementCount:(int)class
                      by:(double)val
                      dc:(DisplayCharacteristics *)dc
+               testPass:(BOOL)test
 {
     BOOL rtn = FALSE;
+    
     if (class >= 0 && class < _numDesiredClasses)
     {
         ThemeClass *cls =  _classes[class];
-    
-        if (_setSymbol)
-            dc.pointSymbol = cls.symbol;
-        if (_setColor)
-            dc.color = cls.color;
-        cls.count += val;
-        cls.numItems++;
-        _totCount += val;
-        _totNumItems ++;
-        rtn = TRUE;
+        
+        if (!cls.status)
+        {
+            if (!test)
+            {
+                if (_setSymbol)
+                    dc.pointSymbol = cls.symbol;
+                if (_setColor)
+                    dc.color = cls.color;
+                cls.count += val;
+                cls.numItems++;
+                _totCount += val;
+                _totNumItems ++;
+            }
+            rtn = TRUE;
+        }
     }
     return rtn;
 }
 
 - (int) processTheme:(DisplayCharacteristics *)dc
-                        displayID:(int)displayID
+           displayID:(int)displayID
+            testPass:(BOOL)test
 {
     int rtn = DO_NOT_DISPLAY_ITEM;
     if (displayID == _displayID)
@@ -228,13 +237,32 @@
                     val = dc.UCR - 2;
                 if ([self incrementCount:val
                                       by:1
-                                      dc:dc])
+                                      dc:dc
+                                testPass:test])
                 {
                     rtn = DISPLAY_ITEM;
                 }
                 break;
             case DepartmentTheme:
-                rtn = DISPLAY_ITEM;
+                val = 0;
+                rtn = DO_NOT_DISPLAY_ITEM;
+                int ii=0;
+                for (ThemeClass *cls in _classes)
+                {
+                    if ([dc.string2 isEqualToString:cls.title])
+                    {
+                        ii=1;
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+                if (!ii)
+                    ii=1;
                 break;
             case DayNightTheme:
             {
@@ -246,7 +274,8 @@
                     val = 0;
                 if ([self incrementCount:val
                                       by:1
-                                      dc:dc])
+                                      dc:dc
+                                testPass:test])
                 rtn = DISPLAY_ITEM;
             }
                 break;
@@ -255,14 +284,16 @@
                 val -= 2010;
                 if ([self incrementCount:val
                                       by:1
-                                      dc:dc])
+                                      dc:dc
+                                testPass:test])
                     rtn = DISPLAY_ITEM;
                 break;
             case MonthTheme:
                 val = tmtime.tm_mon;
                 if ([self incrementCount:val
                                       by:1
-                                      dc:dc])
+                                      dc:dc
+                                testPass:test])
                     rtn = DISPLAY_ITEM;
                 
                 break;
@@ -270,14 +301,16 @@
                 val = tmtime.tm_wday;
                 if ([self incrementCount:val
                                       by:1
-                                      dc:dc])
+                                      dc:dc
+                                testPass:test])
                     rtn = DISPLAY_ITEM;
                 break;
             case HourTheme:
                 val = tmtime.tm_hour/2;
                 if ([self incrementCount:val
                                       by:1
-                                      dc:dc])
+                                      dc:dc
+                                testPass:test])
                     rtn = DISPLAY_ITEM;
                 break;
         }
@@ -307,18 +340,22 @@
     if (displayID == _displayID)
     {
         _legend.useClassColors = _setColor;
-        if (_totCount > 0)
-            for (ThemeClass *cls in _classes)
-            {
+        for (ThemeClass *cls in _classes)
+        {
+            if (_totCount > 0)
                 cls.pctOfTotal = cls.count / _totCount;
-                maxPct = max (maxPct,cls.pctOfTotal);
-            }
+            else
+                cls.pctOfTotal = 0;
+            maxPct = max (maxPct,cls.pctOfTotal);
+        }
         
-        if (maxPct > 0)
-            for (ThemeClass *cls in _classes)
-            {
+        for (ThemeClass *cls in _classes)
+        {
+            if (maxPct > 0)
                 cls.symbolWidth = cls.pctOfTotal / maxPct;
-            }
+            else
+                cls.symbolWidth = 0;
+        }
         _legend.cells = [[NSMutableArray alloc]init];
         for (ThemeClass *cls in _classes)
         {
@@ -327,6 +364,7 @@
             tlc.symbolColor = cls.color;
             tlc.symbolWidth = cls.symbolWidth;
             tlc.count = cls.numItems;
+            tlc.status = cls.status;
             [_legend.cells addObject:tlc];
         }
     }

@@ -23,7 +23,7 @@
 {
     [super viewDidLoad];
     
-    _legends = ConfigurationControl.sharedInstance.legendList.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
     _firstLegend = 2;
@@ -66,7 +66,7 @@
 {
     [super viewWillAppear:animated];
     
-    _legends = ConfigurationControl.sharedInstance.legendList.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
     _countLengths = NSMutableArray.array;
     
     for (int i = _firstLegend; i < _legends.count; i++)

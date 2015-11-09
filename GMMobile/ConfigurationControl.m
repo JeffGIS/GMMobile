@@ -560,16 +560,29 @@ visibleAtZoom:(CGFloat)zoom
 
 - (void) destroyCurrentThemes
 {
-    
+    _legendList = nil;
+    _themeList = nil;
 }
 
 - (ItemProcessingPassTypes) themesNeedDataPass:(int)displayID
 {
     ItemProcessingPassTypes rtn = DisplayPass;
     
+    int i = 0;
     for (Theme *thm in _themeList)
     {
         thm.displayID = displayID;
+        if (_legendList)
+        {
+            ThemeLegend * tleg = _legendList[i];
+            int j = 0;
+            for (ThemeClass * cls in thm.classes)
+            {
+                ThemeLegendCell *tlc = tleg.cells[j++];
+                cls.status = tlc.status;
+            }
+        }
+        i++;
     }
     return rtn;
 }
@@ -612,13 +625,26 @@ visibleAtZoom:(CGFloat)zoom
                         displayID:(int)displayID
 {
     int rtn = DISPLAY_ITEM;
-    
+
+    //test pass
     for (Theme *thm in _themeList)
     {
         if (thm.displayID != displayID)
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
-                      displayID:displayID];
+                      displayID:displayID
+                       testPass:YES];
+        if (rtn == DO_NOT_DISPLAY_ITEM)
+            return rtn;
+    }
+    //display pass
+    for (Theme *thm in _themeList)
+    {
+        if (thm.displayID != displayID)
+            return DO_NOT_DISPLAY_ITEM;
+        rtn = [thm processTheme:dc
+                      displayID:displayID
+                       testPass:NO];
         if (rtn == DO_NOT_DISPLAY_ITEM)
             return rtn;
     }

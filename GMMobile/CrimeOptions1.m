@@ -23,7 +23,7 @@
 {
     [super viewDidLoad];
     
-    _legends = ConfigurationControl.sharedInstance.legendList.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _countLength = 0;
  
@@ -57,7 +57,7 @@
 {
     [super viewWillAppear:animated];
     
-    _legends = ConfigurationControl.sharedInstance.legendList.copy;
+    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
     
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     
@@ -70,6 +70,7 @@
     [_tableView reloadData];
     [self.view layoutIfNeeded];
     [self setupDeptViewComponents:_deptView.frame.size.width];
+    [self setupDeptView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -153,6 +154,10 @@
         {
             buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
                                        buttonWidth,(_deptView.frame.size.height - _headerHeight));
+                ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[buttons.tag - 1];
+                
+                [buttons setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
+                            forState:UIControlStateNormal];
         }
     }
 }
