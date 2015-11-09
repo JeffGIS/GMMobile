@@ -220,8 +220,14 @@ viewForHeaderInSection:(NSInteger)section
     UILabel *textLabel = [[UILabel alloc] init];
     textLabel.textColor = UIColor.blackColor;
     textLabel.font = _font;
-    textLabel.text = text.copy;
-    textLabel.textAlignment = NSTextAlignmentRight;
+    
+    if (tlc.status)
+        textLabel.text = tlc.label;
+    
+    else
+        textLabel.text = text.copy;
+    
+    textLabel.textAlignment = NSTextAlignmentLeft;
     textLabel.adjustsFontSizeToFitWidth = YES;
     textLabel.tag = 888;
     
@@ -317,6 +323,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = YES;
+    
+    [tableView reloadRowsAtIndexPaths:@[indexPath]
+                     withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -325,6 +334,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = NO;
+    
+    [tableView reloadRowsAtIndexPaths:@[indexPath]
+                     withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
