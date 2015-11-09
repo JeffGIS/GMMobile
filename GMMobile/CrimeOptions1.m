@@ -70,7 +70,6 @@
     [_tableView reloadData];
     [self.view layoutIfNeeded];
     [self setupDeptViewComponents:_deptView.frame.size.width];
-    [self setupDeptView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -99,18 +98,12 @@
     
     for (int i = 0; i < tl.cells.count; i++)
     {
-        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[i];
         UIButton *deptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        deptButton.backgroundColor = UIColor.clearColor;
         deptButton.layer.borderWidth = 0.5;
         deptButton.layer.borderColor = UIColor.blackColor.CGColor;
         deptButton.titleLabel.font = _font;
         deptButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        deptButton.selected = tlc.status;
         deptButton.tag = (i + 1);
-        
-        [deptButton setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
-                    forState:UIControlStateNormal];
         
         [deptButton setTitleColor:UIColor.blackColor
                          forState:UIControlStateNormal];
@@ -154,10 +147,19 @@
         {
             buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
                                        buttonWidth,(_deptView.frame.size.height - _headerHeight));
-                ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[buttons.tag - 1];
-                
-                [buttons setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
-                            forState:UIControlStateNormal];
+            
+            ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[buttons.tag - 1];
+            
+            [buttons setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
+                     forState:UIControlStateNormal];
+            
+            buttons.selected = tlc.status;
+            
+            if (buttons.selected)
+                buttons.backgroundColor = UserDefaults.defaults.appleGray;
+            
+            else
+                buttons.backgroundColor = UIColor.clearColor;
         }
     }
 }
