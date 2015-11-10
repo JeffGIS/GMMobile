@@ -35,7 +35,7 @@
 - (void)dealloc
 {
     [_cd close];
-    NSLog(@"Sewer Database dealloc");
+    NSLog(@"Crime Database dealloc");
 }
 
 
