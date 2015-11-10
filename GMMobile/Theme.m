@@ -246,12 +246,13 @@
             case DepartmentTheme:
                 val = 0;
                 rtn = DO_NOT_DISPLAY_ITEM;
-                int ii=0;
+                //int ii=0;
                 for (ThemeClass *cls in _classes)
                 {
                     if ([dc.string2 isEqualToString:cls.title])
                     {
-                        ii=1;
+                        //ii=1;
+                        
                         if ([self incrementCount:val
                                               by:1
                                               dc:dc
@@ -261,8 +262,8 @@
                     }
                     val++;
                 }
-                if (!ii)
-                    ii=1;
+                //if (!ii)
+                    //ii=1;
                 break;
             case DayNightTheme:
             {

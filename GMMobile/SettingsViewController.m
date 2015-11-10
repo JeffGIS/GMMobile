@@ -61,9 +61,9 @@
     _platSwitch.on = sharedAppDelegate.mapToolbar.wantPlat;
     
     PropertyData *pd = [[PropertyData alloc] init];
-    [pd open];
+    BOOL pdopened = [pd open];
     _databaseSize.text = [NSString stringWithFormat:@"DB Size: %lld", pd.fileSize];
-    [pd close:777];
+    [pd close:pdopened];
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 
@@ -226,6 +226,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         AlleyWallData *awd;
                         CurbRampData *crd;
                         CrimeData *crimed;
+                        BOOL pdopened = NO;
                         
                         if (option == GetDatabaseSettingSewer)
                         {
@@ -253,7 +254,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         else
                         {
                             pd = [[PropertyData alloc] init];
-                            [pd open];
+                            pdopened = [pd open];
                         }
                         
                         fseek(fid, 0, SEEK_END);
@@ -353,7 +354,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             [awd close];
                         }
                         else
-                            [pd close:888];
+                            [pd close:pdopened];
                         
                         fclose(fid);
                         free(str);
@@ -578,12 +579,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)compressDatabase:(id)sender {
     PropertyData *pd = [[PropertyData alloc] init];
-    [pd open];
+    BOOL pdopened = [pd open];
     [pd executeCmd:"VACUUM"];
-    [pd close:777];
+    [pd close:pdopened];
     [pd open];
         _databaseSize.text = [NSString stringWithFormat:@"DB Size: %lld", pd.fileSize];
-    [pd close:777];
+    [pd close:pdopened];
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 

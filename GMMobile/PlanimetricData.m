@@ -50,7 +50,7 @@ extern int keepProcessing;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL pdopened = [pd open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -106,7 +106,7 @@ extern int keepProcessing;
     }
     CGColorRelease(color);
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close:333];
+    [pd close:pdopened];
 }
 - (void)fillPlanArea:(CGContextRef)context
              nPoints:(int)np
@@ -221,7 +221,7 @@ extern int keepProcessing;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL pdopened = [pd open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -276,7 +276,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close:444];
+    [pd close:pdopened];
 }
 
 - (void)drawPlanLine:(CGContextRef)context
@@ -365,7 +365,7 @@ extern int keepProcessing;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL pdopened = [pd open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -389,7 +389,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close:555];
+    [pd close:pdopened];
 
 }
 - (void) drawPlanPoint:(CGContextRef)context
@@ -899,7 +899,7 @@ extern int keepProcessing;
     sqlite3_stmt *statement = NULL;
     
     PropertyData *pd = [[PropertyData alloc] init];
-    [pd open];
+    BOOL pdopened = [pd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT SYMBOLNAME FROM %@", tableName];
     
@@ -913,7 +913,7 @@ extern int keepProcessing;
     
     SQLOK(sqlite3_finalize(statement),pd.database);
     
-    [pd close:666];
+    [pd close:pdopened];
     
     
     return symList;

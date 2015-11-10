@@ -270,7 +270,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     Destination * dest = [[Destination alloc]init];
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT DestinationNumber,GroupNumber,DestinationName,LATITUDE,LONGITUDE,Frequency,TimeDepart,TimeReturn FROM Destinations WHERE DestinationNumber = %li",destinationID];
+    NSString *query = [NSString stringWithFormat:@"SELECT DestinationNumber,GroupNumber,DestinationName,LATITUDE,LONGITUDE,Frequency,TimeDepart,TimeReturn FROM Destinations WHERE DestinationNumber = %li",(long)destinationID];
     
     sqlite3_stmt *statement = NULL;
     
@@ -299,7 +299,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     NSMutableArray* dests = [[NSMutableArray alloc]init];
 
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT DestinationNumber,GroupNumber,DestinationName,LATITUDE,LONGITUDE,Frequency,TimeDepart,TimeReturn FROM Destinations WHERE GroupNumber = %li",groupID];
+    NSString *query = [NSString stringWithFormat:@"SELECT DestinationNumber,GroupNumber,DestinationName,LATITUDE,LONGITUDE,Frequency,TimeDepart,TimeReturn FROM Destinations WHERE GroupNumber = %li",(long)groupID];
     
     sqlite3_stmt *statement = NULL;
     
@@ -355,7 +355,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     int destnum = [self next_id];
     
     NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Destinations VALUES (%i,%li,'%@',%f,%f,%li,%li,%li);",
-                     destnum,groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon,(long)dest.frequency,
+                     destnum,(long)groupID,dest.destinationName,dest.latlon.lat,dest.latlon.lon,(long)dest.frequency,
                      (long)dest.timeDepart,(long)dest.timeReturn];
     
     [self executeCmd:(LPSTR)cmd.UTF8String];
@@ -367,9 +367,9 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     BOOL opened = [self open];
     
-    NSString * cmd = [NSString stringWithFormat:@"DELETE FROM Destinations WHERE DestinationNumber = %li;",destinationID];
+    NSString * cmd = [NSString stringWithFormat:@"DELETE FROM Destinations WHERE DestinationNumber = %li;",(long)destinationID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"DELETE FROM Routes WHERE DestinationNum = %li;",destinationID];
+    cmd = [NSString stringWithFormat:@"DELETE FROM Routes WHERE DestinationNum = %li;",(long)destinationID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
     [self close:opened];
@@ -465,7 +465,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              BOOL opened = [self open];
              
              NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
-                              routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+                              (long)routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
              
              [self executeCmd:(LPSTR)cmd.UTF8String];
              [self close:opened];
@@ -585,7 +585,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
         BOOL opened = [self open];
         
         NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
-                         routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+                         (long)routeNum, propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
         
         [self executeCmd:(LPSTR)cmd.UTF8String];
         [self close:opened];
@@ -666,7 +666,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     CGFloat totval = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT Distance,Time FROM Routes WHERE PropertyNum = %li",propNum];
+    NSString *query = [NSString stringWithFormat:@"SELECT Distance,Time FROM Routes WHERE PropertyNum = %li",(long)propNum];
     sqlite3_stmt *statement = NULL;
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
@@ -693,7 +693,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
 {
     BOOL opened = [self open];
     
-    NSString * cmd = [NSString stringWithFormat:@"UPDATE Destinations SET DestinationName = '%@' WHERE DestinationNumber = %li",name,destinationID];
+    NSString * cmd = [NSString stringWithFormat:@"UPDATE Destinations SET DestinationName = '%@' WHERE DestinationNumber = %li",name,(long)destinationID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }

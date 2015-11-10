@@ -124,7 +124,7 @@ extern int keepProcessing;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                               zoom:16.0];
+                                                               zoom:12.0];
     
     _mapView = [GMSMapView mapWithFrame:mapViewFrame
                                  camera:camera];

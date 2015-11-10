@@ -1225,12 +1225,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             context:(CGContextRef)context
 {
     extern MNMXCORD curbounds;
-    BOOL dbug = NO;
+    //BOOL dbug = NO;
     CGFloat fontSize = 32.0;
     CGFloat minFontSize = 8.0;
     int numPoints = 0, numLoops = 0;
     int *polyPartLen = 0;
-    int ii=0;
+    //int ii=0;
      UIColor *textColor = nil;
      if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
          textColor = UIColor.redColor;
@@ -1280,8 +1280,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         text = tempString;
     }
     
-    if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
-        ii=0;
+    //if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
+        //ii=0;
     
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
@@ -1520,8 +1520,9 @@ Exit:
     int totProp = 0;
     double sumEMV=0;
     double sumAcres=0;
-    double pctAveEMV, aveEMV;
-    double pctMedianEMV;
+    //double pctAveEMV;
+    //double aveEMV;
+    //double pctMedianEMV;
     int medianEMV=0;
     
     //double pctMedEMV;
@@ -1674,9 +1675,10 @@ Exit:
             }
             n++;
         }
-        aveEMV = sumEMV / [array count];
-        pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
-        pctMedianEMV = ((double)myTotEMV / medianEMV) * 100;
+        
+        //aveEMV = sumEMV / [array count];
+        //pctAveEMV = ((double)myTotEMV / aveEMV) * 100;
+        //pctMedianEMV = ((double)myTotEMV / medianEMV) * 100;
         values->rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[array count]);
     }
     
@@ -1878,7 +1880,7 @@ Exit:
                 LPSTR multiUses = (LPSTR)sqlite3_column_text(statement,16);
                 LPSTR landMark = (LPSTR)sqlite3_column_text(statement, 17);
                 LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 18);
-                LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, 19);
+                //LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, 19);
                 CGFloat landEMV = sqlite3_column_double(statement, 20);
                 CGFloat bldgEMV = sqlite3_column_double(statement, 21);
                 CGFloat totalEMV = sqlite3_column_double(statement, 22);

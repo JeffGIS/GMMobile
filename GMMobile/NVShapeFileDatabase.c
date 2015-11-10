@@ -4,7 +4,7 @@
 #include "NVShapeFileDatabase.h"
 #include "CCodeLibrary/CCodeTypes.h"
 
-static LPSTR  BytesToBlob(LPBYTE pBytes, int nBytes)
+/*static LPSTR  BytesToBlob(LPBYTE pBytes, int nBytes)
 {
     LPSTR pBlob = malloc(nBytes * 2 +4);
     int i, lBlob = 0;
@@ -15,4 +15,4 @@ static LPSTR  BytesToBlob(LPBYTE pBytes, int nBytes)
     }
     pBlob[lBlob] = 0;
     return pBlob;
-}
+}*/

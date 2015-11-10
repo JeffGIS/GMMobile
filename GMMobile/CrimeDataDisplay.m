@@ -59,8 +59,8 @@
     NSString *query;
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
-    int UCR;
-    int controlNbr;
+    //int UCR;
+    //int controlNbr;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
     int nFound=0;
     LPSTR offense;
@@ -68,14 +68,15 @@
     CGFloat size;
     CGFloat sizeFactor = 5;
     
-    if (_zoom > 18)
+    /*if (_zoom > 18)
         sizeFactor *= (2.0 *(_zoom - 18.0));
     
     else if (_zoom < 18)
-        sizeFactor /= (2.0 * (18.0 - _zoom));
+        sizeFactor /= (2.0 * (18.0 - _zoom));*/
     
     if (![self continue])
         return;
+    
     sizeFactor = 1;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
@@ -104,7 +105,7 @@
                      toTime/1000.0+1];
             SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             sqlite3_step(statement);
-            controlNbr = sqlite3_column_int(statement,0);
+            //controlNbr = sqlite3_column_int(statement,0);
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.maxX    >=%f AND\
                      OFFENSEXY_index.minX    <=%f AND\
@@ -129,7 +130,7 @@
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         nFound++;
-        controlNbr = sqlite3_column_int(statement,0);
+        //controlNbr = sqlite3_column_int(statement,0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         offense = (LPSTR)sqlite3_column_text(statement,3);

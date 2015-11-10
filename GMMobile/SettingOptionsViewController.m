@@ -195,8 +195,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSLog(@"MD5:%@", md5);
         NSLog(@"SHA256:%@", sha256);
         
-        NSData *compressedData = [NSData compressFileAtPath:filePath];
-        compressedData = [NSData lzCompressFileAtPath:filePath];
+        //NSData *compressedData = [NSData compressFileAtPath:filePath];
+        //compressedData = [NSData lzCompressFileAtPath:filePath];
         
         /*_push = FTPDataPush.push;
         _push.delegate = self;

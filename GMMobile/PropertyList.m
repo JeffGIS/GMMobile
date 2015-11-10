@@ -360,7 +360,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     NSString *value = nil;
     
     NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE PropNum = %li AND FieldType = %li",
-                       propNum, (long)fieldType];
+                       (long)propNum, (long)fieldType];
     
     BOOL opened = [self open];
     
@@ -471,10 +471,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     {
         NSInteger  j;
         LPBYTE pInts = (LPBYTE)&pPoints[i];
-        unsigned char c;
+        //unsigned char c;
         for (j = 0; j < sizeof(DPOINT); j++, pInts++, lBlob += 2)
         {
-            c = *pInts;
+            //c = *pInts;
             sprintf(&pBlob[lBlob], "%2.2x", *pInts);
         }
     }
@@ -490,10 +490,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     LPSTR pBlob = malloc(sizeof(double)*2+4);
     NSInteger  j;
     LPBYTE pInts = (LPBYTE)&val;
-    unsigned char c;
+    //unsigned char c;
     for (j = 0; j < sizeof(double); j++, pInts++, lBlob += 2)
     {
-        c = *pInts;
+        //c = *pInts;
         sprintf(&pBlob[lBlob], "%2.2x", *pInts);
     }
     pBlob[lBlob] = 0;
@@ -508,10 +508,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     LPSTR pBlob = malloc(sizeof(float)*2+4);
     NSInteger  j;
     LPBYTE pInts = (LPBYTE)&val;
-    unsigned char c;
+    //unsigned char c;
     for (j = 0; j < sizeof(float); j++, pInts++, lBlob += 2)
     {
-        c = *pInts;
+        //c = *pInts;
         sprintf(&pBlob[lBlob], "%2.2x", *pInts);
     }
     pBlob[lBlob] = 0;
@@ -526,10 +526,10 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     LPSTR pBlob = malloc(sizeof(int)*2+4);
     NSInteger  j;
     LPBYTE pInts = (LPBYTE)&val;
-    unsigned char c;
+    //unsigned char c;
     for (j = 0; j < sizeof(int); j++, pInts++, lBlob += 2)
     {
-        c = *pInts;
+        //c = *pInts;
         sprintf(&pBlob[lBlob], "%2.2x", *pInts);
     }
     pBlob[lBlob] = 0;
@@ -547,12 +547,15 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     NSString *PIDBlob = [self stringToBlob:userID];
     NSString * cmd = [NSString stringWithFormat:@"UPDATE PropertyList SET FieldValue = X'%@' WHERE PropNum = %li AND FieldType = %li",
-                      PIDBlob,propNum, (long)PFT_UserID];
+                      PIDBlob,(long)propNum, (long)PFT_UserID];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
 LLPOINT LLPOINTFromString (NSString* string)
 {
+    if (!string)
+        string = @"";
+    
     LLPOINT pt;
     LPSTR str = malloc (string.length+4);
     strcpy (str,string.UTF8String);
