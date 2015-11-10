@@ -60,7 +60,7 @@
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     //int UCR;
-    //int controlNbr;
+    int controlNbr = 0;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
     int nFound=0;
     LPSTR offense;
@@ -105,7 +105,10 @@
                      toTime/1000.0+1];
             SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             sqlite3_step(statement);
-            //controlNbr = sqlite3_column_int(statement,0);
+            controlNbr = sqlite3_column_int(statement,0);
+            
+            SQLOK(sqlite3_finalize(statement), _cd.database);
+            
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.maxX    >=%f AND\
                      OFFENSEXY_index.minX    <=%f AND\
@@ -130,7 +133,7 @@
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         nFound++;
-        //controlNbr = sqlite3_column_int(statement,0);
+        controlNbr = sqlite3_column_int(statement,0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
         offense = (LPSTR)sqlite3_column_text(statement,3);
@@ -154,6 +157,7 @@
                          andSize:(size * sizeFactor)];
         }
     }
+    
     SQLOK(sqlite3_finalize(statement), _cd.database);
     [_cd close];
 }
