@@ -34,12 +34,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.project = PROJECT_METROGIS;
     CRAPI.sharedInstance.showParcelBoundary = YES;
     CRAPI.sharedInstance.parcelShadingOption = 0;
-    [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
-    
     CRAPI.sharedInstance.currentPlatType = @"storm";
-    
-    CRAPI.sharedInstance.currentPlatImagePath = [NSBundle.mainBundle pathForResource:@"SD-30A-10"
-                                                                              ofType:@"jpg"];
+    [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
     
     [UserDefaults.defaults disableWebKitDiskImageCache];
     CRAPI.sharedInstance.defaultColors = UserDefaults.defaults.defaultColors;
