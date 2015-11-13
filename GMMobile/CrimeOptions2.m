@@ -178,6 +178,31 @@ viewForHeaderInSection:(NSInteger)section
     
     [headerView addSubview:headerLabel];
     
+    if (![headerView.subviews containsObject:[headerView viewWithTag:(tableView.tag * 111)]])
+    {
+        UIButton *addToMap = [UIButton buttonWithType:UIButtonTypeCustom];
+        addToMap.tag = (tableView.tag * 111);
+        addToMap.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        addToMap.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        
+        addToMap.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * 2.0)), 0.0,
+                                    (headerView.frame.size.height * 2.0), headerView.frame.size.height);
+        
+        [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                          ofType:@"png"]]
+                  forState:UIControlStateNormal];
+        
+        [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redMinusSign"
+                                                                                          ofType:@"png"]]
+                  forState:UIControlStateSelected];
+        
+        [addToMap addTarget:self
+                     action:@selector(addLegend:)
+           forControlEvents:UIControlEventTouchUpInside];
+        
+        [headerView addSubview:addToMap];
+    }
+    
     return headerView;
 }
 
@@ -343,6 +368,17 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [self reloadTableViews];
+}
+
+- (void)addLegend:(UIButton *)button
+{
+    ThemeLegend *tl = _legends[(button.tag / 111) - 1];
+    
+    if (!button.selected)
+        tl.drawOnMap = button.selected = YES;
+    
+    else
+        tl.drawOnMap = button.selected = NO;
 }
 
 @end

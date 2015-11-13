@@ -11,6 +11,7 @@
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
 		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
+		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -158,6 +159,7 @@
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
 		692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		692B4A031BF6392E0016CE5D /* redMinusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redMinusSign.png; sourceTree = "<group>"; };
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
@@ -392,6 +394,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				692B4A031BF6392E0016CE5D /* redMinusSign.png */,
 				69F5B22B1BC5D80F00119212 /* googleIcon.png */,
 				69F5B2271BC5A56600119212 /* editOptions.png */,
 				69F5B2251BC5A3BC00119212 /* editText.png */,
@@ -770,6 +773,7 @@
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
+				692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,

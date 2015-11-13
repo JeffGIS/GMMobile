@@ -233,6 +233,8 @@ viewForHeaderInSection:(NSInteger)section
     UIView *headerView = [[UIView alloc] initWithFrame:
                           CGRectMake(0.0, 0.0, tvWidth, _headerHeight)];
     
+    headerView.backgroundColor = UIColor.blackColor;
+    
     UILabel *headerLabel = [[UILabel alloc] initWithFrame:headerView.frame];
     headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
@@ -245,7 +247,6 @@ viewForHeaderInSection:(NSInteger)section
         headerLabel.text = @"Select Legend";
     
     [headerView addSubview:headerLabel];
-    headerView.backgroundColor = UIColor.blackColor;
     
     return headerView;
 }
