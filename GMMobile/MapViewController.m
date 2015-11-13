@@ -18,6 +18,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/PolylineCompression.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "Destinations.h"
+#import "ThemeLegendMapOverlay.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -1982,6 +1983,22 @@ haveVV:
                        if([self.view viewWithTag:654321])
                        {
                            [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
+                       }
+                       
+                       if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+                       {
+                           NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+                           
+                           for (ThemeLegend *tls in legends)
+                           {
+                               NSLog(@"%d", tls.drawOnMap);
+                               
+                               if (tls.drawOnMap)
+                               {
+                                   ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tls
+                                                                                            inView:self.view];
+                               }
+                           }
                        }
                    });
 }

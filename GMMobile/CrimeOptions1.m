@@ -57,8 +57,7 @@
 {
     [super viewWillAppear:animated];
     
-    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
-    
+    _legends = ConfigurationControl.sharedInstance.legendList;
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     
     for (ThemeLegendCell *cells in tl.cells)
