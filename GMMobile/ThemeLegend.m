@@ -17,6 +17,7 @@
     another.numCells = _numCells;
     another.numColumns = _numColumns;
     another.aspectRatio = _aspectRatio;
+    another.drawOnMap  = _drawOnMap;
     another.pctBorder = _pctBorder;
     another.pctInnerMargin = _pctInnerMargin;
     another.pctSymbol = _pctSymbol;
@@ -32,11 +33,14 @@
     another.symbolDefaultColor = [[UIColor alloc]initWithCGColor:_symbolDefaultColor.CGColor];
     another.title = [NSString stringWithString:_title];
     another.cells = [[NSMutableArray alloc]init];
+    
     for (ThemeLegendCell *cl in _cells)
     {
         ThemeLegendCell *newCell = [cl copy];
         [another.cells addObject:newCell];
     }
+    
     return another;
 }
+
 @end

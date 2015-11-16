@@ -57,8 +57,7 @@
 {
     [super viewWillAppear:animated];
     
-    _legends = ConfigurationControl.sharedInstance.legendList;//.copy;
-    
+    _legends = ConfigurationControl.sharedInstance.legendList;
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     
     for (ThemeLegendCell *cells in tl.cells)
@@ -93,8 +92,31 @@
     _deptHeaderView.font = _headerFont;
     _deptHeaderView.textColor = UIColor.whiteColor;
     _deptHeaderView.textAlignment = NSTextAlignmentCenter;
+    _deptHeaderView.userInteractionEnabled = YES;
     
     [_deptView addSubview:_deptHeaderView];
+    
+    if (![_deptHeaderView.subviews containsObject:[_deptHeaderView viewWithTag:7777]])
+    {
+        UIButton *addToMap = [UIButton buttonWithType:UIButtonTypeCustom];
+        addToMap.tag = 7777;
+        addToMap.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        addToMap.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        
+        [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                          ofType:@"png"]]
+                  forState:UIControlStateNormal];
+        
+        [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redMinusSign"
+                                                                                          ofType:@"png"]]
+                  forState:UIControlStateSelected];
+        
+        [addToMap addTarget:self
+                     action:@selector(addLegend:)
+           forControlEvents:UIControlEventTouchUpInside];
+        
+        [_deptHeaderView addSubview:addToMap];
+    }
     
     for (int i = 0; i < tl.cells.count; i++)
     {
@@ -144,12 +166,17 @@
 {
     _deptHeaderView.frame = CGRectMake(0.0, 0.0, width, _headerHeight);
     
+    UIButton *addToMap = [_deptHeaderView viewWithTag:7777];
+    
+    addToMap.frame = CGRectMake((_deptHeaderView.frame.size.width - (_deptHeaderView.frame.size.height * 2.0)), 0.0,
+                                (_deptHeaderView.frame.size.height * 2.0), _deptHeaderView.frame.size.height);
+    
     ThemeLegend *tl = (ThemeLegend *)_legends[1];
     CGFloat buttonWidth = (width / tl.cells.count);
     
     for (UIButton *buttons in _deptView.subviews)
     {
-        if ([buttons isKindOfClass:UIButton.class])
+        if ([buttons isKindOfClass:UIButton.class] && buttons.tag != 7777)
         {
             buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
                                        buttonWidth,(_deptView.frame.size.height - _headerHeight));
@@ -245,6 +272,31 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.text = tl.title;
     
     [headerView addSubview:headerLabel];
+    
+    if (![headerView.subviews containsObject:[headerView viewWithTag:3333]])
+    {
+        UIButton *addToMap = [UIButton buttonWithType:UIButtonTypeCustom];
+        addToMap.tag = 3333;
+        addToMap.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        addToMap.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        
+        addToMap.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * 2.0)), 0.0,
+                                    (headerView.frame.size.height * 2.0), headerView.frame.size.height);
+        
+        [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                          ofType:@"png"]]
+                  forState:UIControlStateNormal];
+        
+        [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redMinusSign"
+                                                                                          ofType:@"png"]]
+                  forState:UIControlStateSelected];
+        
+        [addToMap addTarget:self
+                     action:@selector(addLegend:)
+           forControlEvents:UIControlEventTouchUpInside];
+        
+        [headerView addSubview:addToMap];
+    }
     
     return headerView;
 }
@@ -356,6 +408,23 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     [UIView animateWithDuration:duration animations:^{
         [self setupDeptViewComponents:((self.view.frame.size.height + tabBarHeight) - margin)];
     }];
+}
+
+- (void)addLegend:(UIButton *)button
+{
+    ThemeLegend *tl = nil;
+    
+    if (button.tag == 7777)
+        tl = _legends[1];
+    
+    else
+        tl = _legends[0];
+    
+    if (!button.selected)
+        tl.drawOnMap = button.selected = YES;
+    
+    else
+        tl.drawOnMap = button.selected = NO;
 }
 
 @end

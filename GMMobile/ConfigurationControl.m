@@ -576,6 +576,8 @@ visibleAtZoom:(CGFloat)zoom
         {
             ThemeLegend * tleg = _legendList[i];
             int j = 0;
+            thm.legend.drawOnMap = tleg.drawOnMap;
+            if (tleg.cells.count)
             for (ThemeClass * cls in thm.classes)
             {
                 ThemeLegendCell *tlc = tleg.cells[j++];
