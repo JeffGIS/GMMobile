@@ -184,6 +184,7 @@ viewForHeaderInSection:(NSInteger)section
         addToMap.tag = (tableView.tag * 111);
         addToMap.imageView.contentMode = UIViewContentModeScaleAspectFit;
         addToMap.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        addToMap.selected = tl.drawOnMap;
         
         addToMap.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * 2.0)), 0.0,
                                     (headerView.frame.size.height * 2.0), headerView.frame.size.height);

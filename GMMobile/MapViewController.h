@@ -20,8 +20,9 @@
 #import "NVDataLoader.h"
 #import <MessageUI/MessageUI.h>
 #import "CCodeLibrary/NVAlertView.h"
+#import "ThemeLegendMapOverlay.h"
 
-@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate>
+@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;

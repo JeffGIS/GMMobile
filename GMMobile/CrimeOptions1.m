@@ -102,6 +102,7 @@
         addToMap.tag = 7777;
         addToMap.imageView.contentMode = UIViewContentModeScaleAspectFit;
         addToMap.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        addToMap.selected = tl.drawOnMap;
         
         [addToMap setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
                                                                                           ofType:@"png"]]
@@ -279,6 +280,7 @@ viewForHeaderInSection:(NSInteger)section
         addToMap.tag = 3333;
         addToMap.imageView.contentMode = UIViewContentModeScaleAspectFit;
         addToMap.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        addToMap.selected = tl.drawOnMap;
         
         addToMap.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * 2.0)), 0.0,
                                     (headerView.frame.size.height * 2.0), headerView.frame.size.height);

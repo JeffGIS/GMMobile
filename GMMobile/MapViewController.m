@@ -18,7 +18,6 @@ extern int keepProcessing;
 #import "CCodeLibrary/PolylineCompression.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "Destinations.h"
-#import "ThemeLegendMapOverlay.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -1989,18 +1988,33 @@ haveVV:
                        {
                            NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
                            
-                           for (ThemeLegend *tls in legends)
+                           for (int i = 0; i < legends.count; i++)
                            {
-                               NSLog(@"%d", tls.drawOnMap);
+                               ThemeLegend *tl = legends[i];
                                
-                               if (tls.drawOnMap)
+                               for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
                                {
-                                   ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tls
+                                   if (tlmos.tag == ((i + 1) * 111111))
+                                       [tlmos removeFromSuperview];
+                               }
+                               
+                               if (tl.drawOnMap)
+                               {
+                                   ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
+                                                                                           withTag:((i + 1) * 111111)
+                                                                                          delegate:self
                                                                                             inView:self.view];
+#pragma unused(tlmo)
                                }
                            }
                        }
                    });
+}
+
+- (void)themeLegendDidChangeStatus
+{
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
 }
 
 - (void)setupTableView
