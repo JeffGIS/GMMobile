@@ -67,6 +67,7 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
 @property (nonatomic) NSMutableSet *polylines;
+@property (nonatomic) NSMutableArray *themeLegends;
 
 @end
 
@@ -1907,7 +1908,7 @@ haveVV:
     [_vectorView setNeedsDisplay];
 }
 
-- (void)vectorViewDidComplete:(VectorView*)vectorView
+- (void)vectorViewDidComplete:(VectorView *)vectorView
 {
    _waitForVectorViewRefresh = NO;
     
@@ -1987,6 +1988,9 @@ haveVV:
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
                        {
                            NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+                           _themeLegends = NSMutableArray.array;
+                           CGFloat yOrigin = 22.0;
+                           BOOL moveMapToolbar = NO;
                            
                            for (int i = 0; i < legends.count; i++)
                            {
@@ -2003,8 +2007,45 @@ haveVV:
                                    ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
                                                                                            withTag:((i + 1) * 111111)
                                                                                           delegate:self
-                                                                                            inView:self.view];
-#pragma unused(tlmo)
+                                                                                            inView:self.view
+                                                                                          atOrigin:CGPointMake(534.0, yOrigin)];
+                                   
+                                   [_themeLegends addObject:tlmo];
+                                   yOrigin += (tlmo.frame.size.height + 2.0);
+                                   moveMapToolbar = YES;
+                               }
+                           }
+                           
+                           if (moveMapToolbar)
+                           {
+                               if (yOrigin > 908.0)
+                               {
+                                   if (_mapToolbar.orientation != MapToolbarOrientationLeft)
+                                   {
+                                       [UIView animateWithDuration:0.25
+                                                        animations:^{
+                                                            [_mapToolbar animateToVerticalOrientation];
+                                                            
+                                                            _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
+                                                                                             (self.view.frame.size.height / 2.0));
+                                                        }];
+                                       
+                                       _mapToolbar.orientation = MapToolbarOrientationLeft;
+                                   }
+                               }
+                               
+                               else if (_mapToolbar.orientation != MapToolbarOrientationBottom)
+                               {
+                                   [UIView animateWithDuration:0.25
+                                                    animations:^{
+                                                        [_mapToolbar animateToHorizontalOrientation];
+                                                        
+                                                        _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                                                                         (self.view.frame.size.height -
+                                                                                          (_mapToolbar.frame.size.height / 2.0)));
+                                                    }];
+                                   
+                                   _mapToolbar.orientation = MapToolbarOrientationBottom;
                                }
                            }
                        }

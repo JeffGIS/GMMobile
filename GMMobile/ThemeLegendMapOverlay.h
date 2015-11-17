@@ -19,6 +19,7 @@
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
-                               inView:(UIView *)view;
+                               inView:(UIView *)view
+                             atOrigin:(CGPoint)origin;
 
 @end

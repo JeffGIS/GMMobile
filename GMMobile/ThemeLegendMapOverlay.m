@@ -3,6 +3,7 @@
 
 #import "ThemeLegendMapOverlay.h"
 #import "SymbolDictionary.h"
+#import "CCodeLibrary/UIImage+ImageFromColor.h"
 
 @interface ThemeLegendMapOverlay ()
 
@@ -20,12 +21,13 @@
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
                                inView:(UIView *)view
+                             atOrigin:(CGPoint)origin
 {
     ThemeLegendMapOverlay *tlmo = [[ThemeLegendMapOverlay alloc] init];
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;
     tlmo.tag = tag;
-    tlmo.rowHeight = 32.0;
+    tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
@@ -39,20 +41,20 @@
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
     }
     
-    CGFloat height = ((tlmo.legend.numCells + 1) * tlmo.rowHeight);
-    CGFloat width = 240.0, margin = 4.0;
+    CGFloat height = MIN(((tlmo.legend.numCells + 1) * tlmo.rowHeight), 143.0);
+    CGFloat width = 232.0;
     
-    tlmo.frame = CGRectMake(((view.frame.size.width - width) - margin),
-                            ((view.frame.size.height / 2.0) - (height / 2.0)), width, height);
+    tlmo.frame = CGRectMake(origin.x, origin.y, width, height);
     
     tlmo.tableView = [[UITableView alloc] initWithFrame:tlmo.bounds
                                                   style:UITableViewStylePlain];
     
     tlmo.tableView.delegate = tlmo;
     tlmo.tableView.dataSource = tlmo;
-    tlmo.tableView.backgroundColor = UIColor.whiteColor;
+    tlmo.tableView.backgroundColor = UIColor.blackColor;
     tlmo.tableView.rowHeight = tlmo.rowHeight;
-    tlmo.tableView.bounces = NO;
+    tlmo.tableView.bounces = YES;
+    tlmo.tableView.bouncesZoom = YES;
     tlmo.tableView.layer.borderColor = UIColor.blackColor.CGColor;
     tlmo.tableView.layer.borderWidth = 2.0;
     tlmo.tableView.delaysContentTouches = NO;
@@ -116,7 +118,7 @@ viewForHeaderInSection:(NSInteger)section
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 777 || views.tag == 888)
+        if (views.tag == 666 || views.tag == 777 || views.tag == 888)
             [views removeFromSuperview];
     }
     
@@ -150,8 +152,7 @@ viewForHeaderInSection:(NSInteger)section
     
     NSDictionary *attributes = @{NSFontAttributeName:_font};
     
-    CGRect textSize = [text boundingRectWithSize:CGSizeMake(cell.textLabel.frame.size.width,
-                                                            cell.textLabel.frame.size.height)
+    CGRect textSize = [text boundingRectWithSize:self.frame.size
                                          options:NSStringDrawingUsesLineFragmentOrigin
                                       attributes:attributes
                                          context:nil];
@@ -176,6 +177,26 @@ viewForHeaderInSection:(NSInteger)section
     textWidth = MIN(textWidth, (tableView.frame.size.width - textOriginX));
     textLabel.frame = CGRectMake(textOriginX, 0.0, textWidth, _rowHeight);
     [cell.contentView addSubview:textLabel];
+    
+    if (!_legend.usePointSymbols)
+    {
+        CGFloat barMargin = 4.0;
+        CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 2.0)) * tlc.symbolWidth);
+        
+        UIImageView *barView = [[UIImageView alloc] initWithFrame:
+                                CGRectMake(barMargin, (_rowHeight * 0.15), barWidth, (_rowHeight * 0.7))];
+        
+        if (_legend.useClassColors)
+            barView.image = [UIImage imageFromColor:tlc.symbolColor];
+        
+        else
+            barView.image = [UIImage imageFromColor:_legend.symbolDefaultColor];
+        
+        barView.layer.borderColor = UIColor.blackColor.CGColor;
+        barView.layer.borderWidth = 1.0;
+        barView.tag = 666;
+        [cell.contentView addSubview:barView];
+    }
     
     return cell;
 }
