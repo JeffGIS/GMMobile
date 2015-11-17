@@ -21,6 +21,7 @@
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
                                inView:(UIView *)view
-                             atOrigin:(CGPoint)origin;
+                             atOrigin:(CGPoint)origin
+                               tabBar:(UITabBar *)tabBar;
 
 @end

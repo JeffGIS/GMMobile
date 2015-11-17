@@ -17,6 +17,8 @@
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
+		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; };
@@ -166,6 +168,8 @@
 		692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegendMapOverlay.m; sourceTree = "<group>"; };
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
+		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
+		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
@@ -400,6 +404,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69674A261BFBBB30001C5C0B /* resizeIn.png */,
+				69674A271BFBBB30001C5C0B /* resizeOut.png */,
 				692B4A031BF6392E0016CE5D /* redMinusSign.png */,
 				69F5B22B1BC5D80F00119212 /* googleIcon.png */,
 				69F5B2271BC5A56600119212 /* editOptions.png */,
@@ -820,12 +826,14 @@
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
+				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */,
 				A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */,
 				A9A1C0A21B55652200A3DFD8 /* GoogleMaps.bundle in Resources */,
+				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,

@@ -2058,7 +2058,8 @@ haveVV:
                                                                                            withTag:((i + 1) * 111111)
                                                                                           delegate:self
                                                                                             inView:self.view
-                                                                                          atOrigin:mapOrigin];
+                                                                                          atOrigin:mapOrigin
+                                                                                            tabBar:self.tabBarController.tabBar];
                                    
                                    [_themeLegends addObject:tlmo];
                                    
