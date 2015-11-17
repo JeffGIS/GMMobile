@@ -7,6 +7,7 @@
 //
 
 #import "ThemeLegend.h"
+#import "CCodeLibrary/UserDefaults.h"
 
 @implementation ThemeLegend
 
@@ -17,7 +18,7 @@
     another.numCells = _numCells;
     another.numColumns = _numColumns;
     another.aspectRatio = _aspectRatio;
-    another.drawOnMap  = _drawOnMap;
+    another.drawOnMap  = self.drawOnMap;
     another.pctBorder = _pctBorder;
     another.pctInnerMargin = _pctInnerMargin;
     another.pctSymbol = _pctSymbol;
@@ -41,6 +42,17 @@
     }
     
     return another;
+}
+
+- (BOOL)drawOnMap
+{
+    return [UserDefaults.defaults boolForKey:[NSString stringWithFormat:@"ThemeLegend%@", _title]];
+}
+
+- (void)setDrawOnMap:(BOOL)drawOnMap
+{
+    [UserDefaults.defaults saveBool:drawOnMap
+                             forKey:[NSString stringWithFormat:@"ThemeLegend%@", _title]];
 }
 
 @end
