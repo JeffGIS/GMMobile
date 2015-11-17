@@ -180,6 +180,17 @@
     thm.numClasses = (int)[thm.classes count];
     thm.legend.numCells = thm.numClasses;
     thm.legend.useClassColors = thm.setColor;
+    thm.legend.cells = [[NSMutableArray alloc]init];
+    for (ThemeClass *cls in thm.classes)
+    {
+        ThemeLegendCell * tlc = [ThemeLegendCell createWithLabel:cls.title];
+        tlc.symbol = cls.symbol;
+        tlc.symbolColor = cls.color;
+        tlc.symbolWidth = cls.symbolWidth;
+        tlc.count = cls.numItems;
+        tlc.status = cls.status;
+        [thm.legend.cells addObject:tlc];
+    }
     return thm;
 }
 
@@ -357,16 +368,13 @@
             else
                 cls.symbolWidth = 0;
         }
-        _legend.cells = [[NSMutableArray alloc]init];
+        int i=0;
         for (ThemeClass *cls in _classes)
         {
-            ThemeLegendCell * tlc = [ThemeLegendCell createWithLabel:cls.title];
-            tlc.symbol = cls.symbol;
-            tlc.symbolColor = cls.color;
+            ThemeLegendCell * tlc = _legend.cells[i++];
             tlc.symbolWidth = cls.symbolWidth;
             tlc.count = cls.numItems;
             tlc.status = cls.status;
-            [_legend.cells addObject:tlc];
         }
     }
 }

@@ -231,6 +231,7 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
+    _legends = ConfigurationControl.sharedInstance.legendList;
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     tableView.rowHeight = (CGFloat)((tableView.frame.size.height - _headerHeight) / tl.numCells);
     return (NSInteger)tl.numCells;

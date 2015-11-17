@@ -12,6 +12,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "ConfigurationControl.h"
 #import "SymbolDictionary.h"
+#import "Themes.h"
 
 @interface CrimeDataDisplay : NSObject
 @property LPTRANDATA pTranLLtoView;
@@ -24,7 +25,8 @@ extern int keepProcessing;
    displayCharacteristics:(DisplayCharacteristics *)dc
                 llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
-               viewBounds:(MNMXCORD *)pvbounds;
+               viewBounds:(MNMXCORD *)pvbounds
+                   themes:(Themes*)themes;
 
 
 @end

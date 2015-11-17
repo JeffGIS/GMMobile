@@ -74,7 +74,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 + (ConfigurationControl *)sharedInstance;
 
 @property NSMutableArray *appList;
-@property NSMutableArray *themeList;
 @property NSMutableArray *legendList;
 @property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible;
@@ -94,14 +93,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID;
-
-- (ItemProcessingPassTypes) themesNeedDataPass:(int)displayID;
-- (void) themesBeginDataPass:(int)displayID;
-- (void) themesEndDataPass:(int)displayID;
-- (void) themesBeginDisplayPass:(int)displayID;
-- (void) themesEndDisplayPass:(int)displayID;
-- (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
-                        displayID:(int)displayID;
 
 
 @end

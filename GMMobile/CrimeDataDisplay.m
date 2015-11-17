@@ -55,6 +55,7 @@
                  llCorners:(CORNERPOINTS *) latlonCornerPoints
                   LLBounds:(MNMXCORD *)platlonBounds
                 viewBounds:(MNMXCORD *)pvbounds
+                    themes:(Themes*)themes
 {
     NSString *query;
     sqlite3_stmt *statement = NULL;
@@ -145,7 +146,7 @@
         dc.string1 = [NSString stringWithUTF8String:offense];
         dc.string2 = [NSString stringWithUTF8String:dept];
         dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-        if ([ConfigurationControl.sharedInstance setDisplayCharacteristics:dc
+        if ([themes setDisplayCharacteristics:dc
                                                              displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
         {
             DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);

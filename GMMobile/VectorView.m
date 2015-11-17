@@ -10,6 +10,7 @@ extern int keepProcessing;
 #import "PipeTrace.h"
 #import "CrimeDataDisplay.h"
 #import "ConfigurationControl.h"
+#import "Themes.h"
 
 @interface VectorView ()
 
@@ -171,18 +172,22 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                
                                else
                                {
+                                   Themes * themes = [[Themes alloc]init];
+                                   themes.displayID = keepProcessing;
+                                   
+                                   [themes setAppThemes];
                                    switch (_displayDataOption)
                                    {
                                        case DISPLAY_DATA_OPTION_DISPLAY:
                                        {
                                            DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
-                                           int passID = [ConfigurationControl.sharedInstance themesNeedDataPass:keepProcessing];
+                                           int passID = [themes themesNeedDataPass:keepProcessing];
                                            while (passID < DonePass)
                                            {
                                                if (passID == DataPass)
-                                                   [ConfigurationControl.sharedInstance themesBeginDataPass:keepProcessing];
+                                                   [themes themesBeginDataPass:keepProcessing];
                                                else if (passID == DisplayPass)
-                                                   [ConfigurationControl.sharedInstance themesBeginDisplayPass:keepProcessing];
+                                                   [themes themesBeginDisplayPass:keepProcessing];
                                                if (keepProcessing == self.displayID &&
                                                    [ConfigurationControl.sharedInstance layer:HCLayerParcels
                                                                                 visibleAtZoom:_zoom
@@ -306,7 +311,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        displayCharacteristics:dc
                                                                     llCorners:&_latlonCornerPoints
                                                                      LLBounds:&_latlonBounds
-                                                                   viewBounds:&_viewBounds];
+                                                                   viewBounds:&_viewBounds
+                                                                       themes:themes];
                                                    }
                                                }
                                                if (keepProcessing == self.displayID &&
@@ -349,9 +355,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                              viewBounds:&_viewBounds];
                                                }
                                                if (passID == DataPass)
-                                                   [ConfigurationControl.sharedInstance themesEndDataPass:keepProcessing];
+                                                   [themes themesEndDataPass:keepProcessing];
                                                else if (passID == DisplayPass)
-                                                   [ConfigurationControl.sharedInstance themesEndDisplayPass:keepProcessing];
+                                                   [themes themesEndDisplayPass:keepProcessing];
                                                passID++;
                                            }
                                        }

@@ -16,7 +16,13 @@
     class.label = label;
     return class;
 }
-
+/*- (void)setStatus:(BOOL)status
+{
+    int ii;
+    _status = status;
+    if ([_label containsString:@"Homicide"] && !status)
+        ii=1;
+}*/
 -(id) copyWithZone: (NSZone *) zone
 {
     ThemeLegendCell *another = [[ThemeLegendCell allocWithZone: zone] init];

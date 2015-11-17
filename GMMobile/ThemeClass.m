@@ -16,4 +16,12 @@
     class.title = title;
     return class;
 }
+/*- (void)setStatus:(int)status
+{
+    int ii;
+    _status = status;
+    if ([_title containsString:@"Homicide"] && status)
+        ii=1;
+}*/
+
 @end
