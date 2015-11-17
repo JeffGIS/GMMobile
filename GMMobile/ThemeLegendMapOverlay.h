@@ -15,6 +15,7 @@
 @interface ThemeLegendMapOverlay : UIView <UITableViewDataSource,UITableViewDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
+@property (nonatomic) ThemeLegend *legend;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag

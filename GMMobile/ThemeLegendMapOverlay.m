@@ -7,7 +7,6 @@
 
 @interface ThemeLegendMapOverlay ()
 
-@property (nonatomic) ThemeLegend *legend;
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIFont *font, *headerFont;
