@@ -16,6 +16,7 @@
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) ThemeLegend *legend;
+@property BOOL isExpanded;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag

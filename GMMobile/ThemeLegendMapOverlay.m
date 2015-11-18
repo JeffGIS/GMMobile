@@ -11,7 +11,7 @@
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
-@property BOOL isExpanded, selectionMade;
+@property BOOL selectionMade;
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame;
 
@@ -139,7 +139,7 @@ viewForHeaderInSection:(NSInteger)section
 {
     if (!_isExpanded)
     {
-        UIView *overlayView = [[UIView alloc] initWithFrame:self.superview.frame];
+        UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 1024.0, 1024.0)];
         overlayView.backgroundColor = UIColor.blackColor;
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
@@ -161,10 +161,10 @@ viewForHeaderInSection:(NSInteger)section
         
         [UIView animateWithDuration:0.25
                          animations:^{
-                             overlayView.alpha = 0.6;
-                             _tabBar.alpha = 0.4;
+                             overlayView.alpha = 0.7;
+                             _tabBar.alpha = 0.3;
                              
-                             self.frame = CGRectMake((superSize.width * 0.1), ((superSize.height - height) / 2.0),
+                             self.frame = CGRectMake((superSize.width * 0.1), (((superSize.height - height) / 2.0) + 10.0),
                                                      (superSize.width * 0.8), height);
                              
                              _tableView.frame = self.bounds;

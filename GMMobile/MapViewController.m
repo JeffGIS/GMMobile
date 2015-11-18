@@ -1626,7 +1626,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    [self clearVectorView];
+    BOOL clearVV = YES;
+    
+    for (ThemeLegendMapOverlay *tlmos in _themeLegends)
+    {
+        if (tlmos.isExpanded)
+            clearVV = NO;
+    }
+    
+    if (clearVV)
+        [self clearVectorView];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     CGFloat compassSize = 48.0, compassMargin = 6.0;
@@ -1806,8 +1815,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     for (ThemeLegendMapOverlay *tlmos in _themeLegends)
     {
-        if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
-            toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
+        if (tlmos.isExpanded)
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 tlmos.center = CGPointMake(tlmos.center.y, tlmos.center.x);
+                             }];
+        }
+        
+        if (!clearVV)
+            continue;
+        
+        else if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
+                 toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
         {
             [UIView animateWithDuration:duration
                              animations:^{

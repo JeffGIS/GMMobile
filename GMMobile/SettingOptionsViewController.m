@@ -186,7 +186,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Compression & Upload"])
     {
-        NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
+        /*NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
                               UserDefaults.defaults.sharedFilePath];
         
         NSData *rawFile = [NSData dataWithContentsOfFile:filePath];
@@ -195,10 +195,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSLog(@"MD5:%@", md5);
         NSLog(@"SHA256:%@", sha256);
         
-        //NSData *compressedData = [NSData compressFileAtPath:filePath];
-        //compressedData = [NSData lzCompressFileAtPath:filePath];
+        NSData *compressedData = [NSData compressFileAtPath:filePath];
+        compressedData = [NSData lzCompressFileAtPath:filePath];
         
-        /*_push = FTPDataPush.push;
+        _push = FTPDataPush.push;
         _push.delegate = self;
         
         GSSiPopoverView *popover = [[GSSiPopoverView alloc] initWithView:self.view];
