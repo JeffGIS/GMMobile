@@ -67,7 +67,6 @@ extern int keepProcessing;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
 @property (nonatomic) NSMutableSet *polylines;
-@property (nonatomic) NSMutableArray *themeLegends;
 
 @end
 
@@ -1489,8 +1488,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (_secondView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_secondView];
     
-    [self.view bringSubviewToFront:_mapToolbar];
-    [self.view bringSubviewToFront:_compass];
+    if (![self legendIsExpanded])
+    {
+        [self.view bringSubviewToFront:_mapToolbar];
+        [self.view bringSubviewToFront:_compass];
+    }
     
     if (!_tableView.hidden)
         [self.view bringSubviewToFront:_tableView];
@@ -1563,8 +1565,11 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if (!_firstTimeMap)
     {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:position.zoom];
+        if (![self legendIsExpanded])
+        {
+            [self refreshVectorView:_mapView.projection.visibleRegion
+                             atZoom:position.zoom];
+        }
     }
     
     else
@@ -1626,16 +1631,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    BOOL clearVV = YES;
-    
-    for (ThemeLegendMapOverlay *tlmos in _themeLegends)
-    {
-        if (tlmos.isExpanded)
-            clearVV = NO;
-    }
-    
-    if (clearVV)
-        [self clearVectorView];
+    [self clearVectorView];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     CGFloat compassSize = 48.0, compassMargin = 6.0;
@@ -1813,42 +1809,73 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
     }
     
-    for (ThemeLegendMapOverlay *tlmos in _themeLegends)
+    BOOL deferRefresh = [self legendIsExpanded];
+    
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
     {
-        if (tlmos.isExpanded)
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
         {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 tlmos.center = CGPointMake(tlmos.center.y, tlmos.center.x);
-                             }];
-        }
-        
-        if (!clearVV)
-            continue;
-        
-        else if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
-                 toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
-        {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 tlmos.frame = CGRectMake(tlmos.legend.landscapeMapOrigin.x,
-                                                          tlmos.legend.landscapeMapOrigin.y,
-                                                          tlmos.frame.size.width,
-                                                          tlmos.frame.size.height);
-            }];
-        }
-        
-        else
-        {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 tlmos.frame = CGRectMake(tlmos.legend.portraitMapOrigin.x,
-                                                          tlmos.legend.portraitMapOrigin.y,
-                                                          tlmos.frame.size.width,
-                                                          tlmos.frame.size.height);
-                             }];
+            if (tlmos.isExpanded)
+            {
+                tlmos.selectionMade = YES;
+                CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
+                CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+                
+                [UIView animateWithDuration:duration
+                                 animations:^{
+                                     tlmos.frame = CGRectMake((tlmos.frame.origin.y + (tabBarHeight / 2.0) - (statusBarHeight / 2.0)),
+                                                              (tlmos.frame.origin.x - (tabBarHeight / 2.0) + (statusBarHeight / 2.0)),
+                                                              tlmos.frame.size.height, tlmos.frame.size.width);
+                                     
+                                     tlmos.tableView.frame = tlmos.bounds;
+                                 } completion:^(BOOL finished) {
+                                     tlmos.rowHeight = (tlmos.frame.size.height / (tlmos.legend.numCells + 1));
+                                     tlmos.tableView.rowHeight = tlmos.rowHeight;
+                                     [tlmos.tableView reloadData];
+                                 }];
+            }
+            
+            if (deferRefresh)
+                continue;
+            
+            if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
+                toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
+            {
+                [UIView animateWithDuration:duration
+                                 animations:^{
+                                     tlmos.frame = CGRectMake(tlmos.legend.landscapeMapOrigin.x,
+                                                              tlmos.legend.landscapeMapOrigin.y,
+                                                              tlmos.frame.size.width,
+                                                              tlmos.frame.size.height);
+                                 }];
+            }
+            
+            else
+            {
+                [UIView animateWithDuration:duration
+                                 animations:^{
+                                     tlmos.frame = CGRectMake(tlmos.legend.portraitMapOrigin.x,
+                                                              tlmos.legend.portraitMapOrigin.y,
+                                                              tlmos.frame.size.width,
+                                                              tlmos.frame.size.height);
+                                 }];
+            }
+
         }
     }
+}
+
+- (BOOL)legendIsExpanded
+{
+    BOOL isExpanded = NO;
+    
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos.isExpanded)
+            isExpanded = YES;
+    }
+    
+    return isExpanded;
 }
 
 - (void)allocateVectorView
@@ -2034,7 +2061,6 @@ haveVV:
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
                        {
                            NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
-                           _themeLegends = NSMutableArray.array;
                            CGFloat yOriginPortrait = 22.0, yOriginLandscape = 22.0, xOriginLandscape = 790.0;
                            BOOL moveMapToolbar = NO;
                            
@@ -2080,8 +2106,6 @@ haveVV:
                                                                                             inView:self.view
                                                                                           atOrigin:mapOrigin
                                                                                             tabBar:self.tabBarController.tabBar];
-                                   
-                                   [_themeLegends addObject:tlmo];
                                    
                                    yOriginLandscape += (tlmo.frame.size.height + 2.0);
                                    yOriginPortrait += (tlmo.frame.size.height + 2.0);

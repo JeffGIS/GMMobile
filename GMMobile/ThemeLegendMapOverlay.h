@@ -16,7 +16,9 @@
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) ThemeLegend *legend;
-@property BOOL isExpanded;
+@property BOOL isExpanded, selectionMade;
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) CGFloat rowHeight;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag

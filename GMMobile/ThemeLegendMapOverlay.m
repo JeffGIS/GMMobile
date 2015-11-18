@@ -7,13 +7,10 @@
 
 @interface ThemeLegendMapOverlay ()
 
-@property (nonatomic) CGFloat rowHeight;
-@property (nonatomic) UITableView *tableView;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
-@property BOOL selectionMade;
 @property (nonatomic) UITabBar *tabBar;
-@property (nonatomic) CGRect previousFrame;
+@property (nonatomic) CGSize previousSize;
 
 @end
 
@@ -34,6 +31,7 @@
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
+    tlmo.previousSize = CGSizeZero;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
@@ -143,12 +141,18 @@ viewForHeaderInSection:(NSInteger)section
         overlayView.backgroundColor = UIColor.blackColor;
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
-        [self.superview addSubview:overlayView];
-        [self.superview bringSubviewToFront:self];
         
-        _previousFrame = self.frame;
+        if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
+        {
+            [self.superview addSubview:overlayView];
+            [self.superview bringSubviewToFront:self];
+        }
+        
         CGSize superSize = self.superview.frame.size;
-        _rowHeight *= 2.0;
+        _previousSize = self.frame.size;
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+        CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
+        _rowHeight = MIN((_rowHeight * 2.0), maxRowHeight);
         _tableView.rowHeight = _rowHeight;
         _tableView.scrollEnabled = NO;
         _tabBar.userInteractionEnabled = NO;
@@ -164,10 +168,17 @@ viewForHeaderInSection:(NSInteger)section
                              overlayView.alpha = 0.7;
                              _tabBar.alpha = 0.3;
                              
-                             self.frame = CGRectMake((superSize.width * 0.1), (((superSize.height - height) / 2.0) + 10.0),
+                             self.frame = CGRectMake((superSize.width * 0.1),
+                                                     (((superSize.height - height) / 2.0) + (statusBarHeight / 2.0)),
                                                      (superSize.width * 0.8), height);
                              
                              _tableView.frame = self.bounds;
+                             
+                             for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
+                             {
+                                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
+                                     tlmos.alpha = 0.0;
+                             }
                              
                          } completion:^(BOOL finished) {
                              [_tableView reloadData];
@@ -193,8 +204,34 @@ viewForHeaderInSection:(NSInteger)section
                          animations:^{
                              overlayView.alpha = 0.0;
                              _tabBar.alpha = 1.0;
-                             self.frame = _previousFrame;
+                             
+                             if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                                 UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                             {
+                                 self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
+                                                         _legend.landscapeMapOrigin.y,
+                                                         _previousSize.width,
+                                                         _previousSize.height);
+                             }
+                             
+                             else
+                             {
+                                 self.frame = CGRectMake(_legend.portraitMapOrigin.x,
+                                                         _legend.portraitMapOrigin.y,
+                                                         _previousSize.width,
+                                                         _previousSize.height);
+                             }
+                             
                              _tableView.frame = self.bounds;
+                             
+                             if (!_selectionMade)
+                             {
+                                 for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
+                                 {
+                                     if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
+                                         tlmos.alpha = 1.0;
+                                 }
+                             }
                              
                          } completion:^(BOOL finished) {
                              [overlayView removeFromSuperview];
@@ -349,6 +386,20 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
         _selectionMade = YES;
+}
+
+- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        if (orientation == UIDeviceOrientationLandscapeLeft ||
+            orientation == UIDeviceOrientationLandscapeRight)
+        {
+            return 0.0;
+        }
+    }
+    
+    return 20.0;
 }
 
 @end
