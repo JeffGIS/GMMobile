@@ -8,7 +8,7 @@
 
 @protocol ThemeLegendMapOverlayDelegate <NSObject>
 
-- (void)themeLegendDidChangeStatus;
+- (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
 
 @end
 

@@ -90,6 +90,11 @@
             ThemeLegend * tleg = ConfigurationControl.sharedInstance.legendList[i];
             int j = 0;
             thm.legend.drawOnMap = tleg.drawOnMap;
+            thm.legend.portraitMapOrigin = tleg.portraitMapOrigin;
+            thm.legend.landscapeMapOrigin = tleg.landscapeMapOrigin;
+            thm.legend.isDraggedLandscape = tleg.isDraggedLandscape;
+            thm.legend.isDraggedPortrait = tleg.isDraggedPortrait;
+            
             if (tleg.cells.count)
                 for (ThemeClass * cls in thm.classes)
                 {

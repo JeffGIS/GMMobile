@@ -130,7 +130,72 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:addToMap];
     }
     
+    if (![headerView.subviews containsObject:[headerView viewWithTag:(self.tag * 222)]] && !_isExpanded)
+    {
+        UIButton *dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        dragButton.tag = (self.tag * 222);
+        dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
+        dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 8.0, 2.0, 8.0);
+        
+        dragButton.frame = CGRectMake(0.0, 0.0,(headerView.frame.size.height * 2.0),
+                                      headerView.frame.size.height);
+        
+        [dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
+                                                                                            ofType:@"png"]]
+                    forState:UIControlStateNormal];
+        
+        [dragButton addTarget:self
+                       action:@selector(legendWasDragged:withEvent:)
+             forControlEvents:UIControlEventTouchDragInside];
+        
+        [dragButton addTarget:self
+                       action:@selector(dragButtonBegin:)
+             forControlEvents:UIControlEventTouchDown];
+        
+        [dragButton addTarget:self
+                       action:@selector(dragButtonEnd:)
+             forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
+        
+        [headerView addSubview:dragButton];
+    }
+    
     return headerView;
+}
+
+- (void)dragButtonBegin:(UIButton *)button
+{
+    [self.superview bringSubviewToFront:self];
+}
+
+- (void)dragButtonEnd:(UIButton *)button
+{
+    if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+        UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+    {
+        _legend.landscapeMapOrigin = self.frame.origin;
+        _legend.isDraggedLandscape = YES;
+    }
+    
+    else
+    {
+        _legend.portraitMapOrigin = self.frame.origin;
+        _legend.isDraggedPortrait = YES;
+    }
+    
+    if (_delegate)
+        [_delegate themeLegendDidChangeStatus:NO];
+}
+
+- (void)legendWasDragged:(UIButton *)button
+               withEvent:(UIEvent *)event
+{
+    UITouch *touch = [[event touchesForView:button] anyObject];
+    CGPoint previousLocation = [touch previousLocationInView:button];
+    CGPoint location = [touch locationInView:button];
+    CGFloat deltaX = (location.x - previousLocation.x);
+    CGFloat deltaY = (location.y - previousLocation.y);
+    
+    self.center = CGPointMake(self.center.x + deltaX, self.center.y + deltaY);
 }
 
 - (void)expandLegend:(UIButton *)button
@@ -163,10 +228,14 @@ viewForHeaderInSection:(NSInteger)section
         
         _headerFont = [UIFont boldSystemFontOfSize:36.0];
         
+        UIButton *dragButton = [self viewWithTag:(self.tag * 222)];
+        dragButton.enabled = NO;
+        
         [UIView animateWithDuration:0.25
                          animations:^{
                              overlayView.alpha = 0.7;
                              _tabBar.alpha = 0.3;
+                             dragButton.alpha = 0.0;
                              
                              self.frame = CGRectMake((superSize.width * 0.1),
                                                      (((superSize.height - height) / 2.0) + (statusBarHeight / 2.0)),
@@ -239,9 +308,9 @@ viewForHeaderInSection:(NSInteger)section
                              _isExpanded = NO;
                              button.selected = NO;
                              
-                             if (_selectionMade)
+                             if (_selectionMade && _delegate)
                              {
-                                 [_delegate themeLegendDidChangeStatus];
+                                 [_delegate themeLegendDidChangeStatus:YES];
                                  _selectionMade = NO;
                              }
                          }];
@@ -368,7 +437,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_delegate)
     {
         if (!_isExpanded)
-            [_delegate themeLegendDidChangeStatus];
+            [_delegate themeLegendDidChangeStatus:YES];
         
         else
             _selectionMade = YES;
@@ -381,11 +450,14 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
     tlc.status = NO;
     
-    if (!_isExpanded)
-        [_delegate themeLegendDidChangeStatus];
-    
-    else
-        _selectionMade = YES;
+    if (_delegate)
+    {
+        if (!_isExpanded && _delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
+        
+        else
+            _selectionMade = YES;
+    }
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation

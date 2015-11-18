@@ -34,6 +34,10 @@
     another.symbolDefaultColor = [[UIColor alloc]initWithCGColor:_symbolDefaultColor.CGColor];
     another.title = [NSString stringWithString:_title];
     another.cells = [[NSMutableArray alloc]init];
+    another.portraitMapOrigin = _portraitMapOrigin;
+    another.landscapeMapOrigin = _landscapeMapOrigin;
+    another.isDraggedLandscape = _isDraggedLandscape;
+    another.isDraggedPortrait = _isDraggedPortrait;
     
     for (ThemeLegendCell *cl in _cells)
     {

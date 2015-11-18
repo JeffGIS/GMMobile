@@ -13,6 +13,7 @@
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
 		692B4A071BF669D80016CE5D /* ThemeLegendMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */; };
+		692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 692C94351BFCDE9F004D97A1 /* dragIcon.png */; };
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -166,6 +167,7 @@
 		692B4A031BF6392E0016CE5D /* redMinusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redMinusSign.png; sourceTree = "<group>"; };
 		692B4A051BF669D80016CE5D /* ThemeLegendMapOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeLegendMapOverlay.h; sourceTree = "<group>"; };
 		692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegendMapOverlay.m; sourceTree = "<group>"; };
+		692C94351BFCDE9F004D97A1 /* dragIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dragIcon.png; sourceTree = "<group>"; };
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
@@ -404,6 +406,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				692C94351BFCDE9F004D97A1 /* dragIcon.png */,
 				69674A261BFBBB30001C5C0B /* resizeIn.png */,
 				69674A271BFBBB30001C5C0B /* resizeOut.png */,
 				692B4A031BF6392E0016CE5D /* redMinusSign.png */,
@@ -792,6 +795,7 @@
 				692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
+				692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */,
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,

@@ -38,7 +38,7 @@
 @property NSString* title;      //legend title
 @property NSMutableArray *cells;  //ThemeLegendCell array
 
-@property (nonatomic) BOOL drawOnMap;
+@property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait;
 @property CGPoint portraitMapOrigin, landscapeMapOrigin;
 
 @end

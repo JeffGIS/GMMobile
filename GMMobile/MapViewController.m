@@ -2058,120 +2058,138 @@ haveVV:
                            [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
                        }
                        
-                       if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
-                       {
-                           NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
-                           CGFloat yOriginPortrait = 22.0, yOriginLandscape = 22.0, xOriginLandscape = 790.0;
-                           BOOL moveMapToolbar = NO;
-                           
-                           for (int i = 0; i < legends.count; i++)
-                           {
-                               ThemeLegend *tl = legends[i];
-                               
-                               for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
-                               {
-                                   if (tlmos.tag == ((i + 1) * 111111))
-                                       [tlmos removeFromSuperview];
-                               }
-                               
-                               if (tl.drawOnMap)
-                               {
-                                   if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                                       UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                                   {
-                                       if ((yOriginLandscape + 143.0) > 717.0)
-                                       {
-                                           xOriginLandscape = 2.0;
-                                           yOriginLandscape = 22.0;
-                                       }
-                                   }
-                                   
-                                   tl.portraitMapOrigin = CGPointMake(534.0, yOriginPortrait);
-                                   tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
-                                   
-                                   CGPoint mapOrigin = CGPointZero;
-                                   
-                                   if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                                       UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                                   {
-                                       mapOrigin = tl.landscapeMapOrigin;
-                                   }
-                                   
-                                   else
-                                       mapOrigin = tl.portraitMapOrigin;
-                                   
-                                   ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
-                                                                                           withTag:((i + 1) * 111111)
-                                                                                          delegate:self
-                                                                                            inView:self.view
-                                                                                          atOrigin:mapOrigin
-                                                                                            tabBar:self.tabBarController.tabBar];
-                                   
-                                   yOriginLandscape += (tlmo.frame.size.height + 2.0);
-                                   yOriginPortrait += (tlmo.frame.size.height + 2.0);
-                                   moveMapToolbar = YES;
-                               }
-                           }
-                           
-                           if (moveMapToolbar)
-                           {
-                               if (yOriginPortrait > 908.0)
-                               {
-                                   if (_mapToolbar.orientation != MapToolbarOrientationLeft)
-                                   {
-                                       [UIView animateWithDuration:0.25
-                                                        animations:^{
-                                                            [_mapToolbar animateToVerticalOrientation];
-                                                            
-                                                            _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
-                                                                                             (self.view.frame.size.height / 2.0));
-                                                        }];
-                                       
-                                       _mapToolbar.orientation = MapToolbarOrientationLeft;
-                                   }
-                               }
-                               
-                               else if (_mapToolbar.orientation != MapToolbarOrientationBottom)
-                               {
-                                   [UIView animateWithDuration:0.25
-                                                    animations:^{
-                                                        [_mapToolbar animateToHorizontalOrientation];
-                                                        
-                                                        _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
-                                                                                         (self.view.frame.size.height -
-                                                                                          (_mapToolbar.frame.size.height / 2.0)));
-                                                    }];
-                                   
-                                   _mapToolbar.orientation = MapToolbarOrientationBottom;
-                               }
-                           }
-                           
-                           if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                               UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                           {
-                               if (_mapToolbar.orientation != MapToolbarOrientationTop)
-                               {
-                                   [UIView animateWithDuration:0.25
-                                                    animations:^{
-                                                        [_mapToolbar animateToHorizontalOrientation];
-                                                        
-                                                        _mapToolbar.center =
-                                                        CGPointMake((self.view.frame.size.width / 2.0),
-                                                                    (_mapToolbar.frame.size.height / 2.0) +
-                                                                    [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
-                                                    }];
-                                   
-                                   _mapToolbar.orientation = MapToolbarOrientationTop;
-                               }
-                           }
-                       }
+                       [self updateLegendPositions];
                    });
 }
 
-- (void)themeLegendDidChangeStatus
+- (void)updateLegendPositions
 {
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+    {
+        NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+        CGFloat yOriginPortrait = 22.0, yOriginLandscape = 22.0, xOriginLandscape = 790.0;
+        BOOL moveMapToolbar = NO;
+        
+        for (int i = 0; i < legends.count; i++)
+        {
+            ThemeLegend *tl = legends[i];
+            
+            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+            {
+                if (tlmos.tag == ((i + 1) * 111111))
+                    [tlmos removeFromSuperview];
+            }
+            
+            if (tl.drawOnMap)
+            {
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                {
+                    if ((yOriginLandscape + 143.0) > 717.0)
+                    {
+                        xOriginLandscape = 2.0;
+                        yOriginLandscape = 22.0;
+                    }
+                }
+                
+                if (!tl.isDraggedPortrait)
+                    tl.portraitMapOrigin = CGPointMake(534.0, yOriginPortrait);
+                
+                if (!tl.isDraggedLandscape)
+                    tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
+                
+                CGPoint mapOrigin = CGPointZero;
+                
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                {
+                    mapOrigin = tl.landscapeMapOrigin;
+                }
+                
+                else
+                    mapOrigin = tl.portraitMapOrigin;
+                
+                ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
+                                                                        withTag:((i + 1) * 111111)
+                                                                       delegate:self
+                                                                         inView:self.view
+                                                                       atOrigin:mapOrigin
+                                                                         tabBar:self.tabBarController.tabBar];
+                
+                moveMapToolbar = YES;
+                
+                if (!tl.isDraggedPortrait)
+                    yOriginPortrait += (tlmo.frame.size.height + 2.0);
+                
+                if (!tl.isDraggedLandscape)
+                    yOriginLandscape += (tlmo.frame.size.height + 2.0);
+            }
+        }
+        
+        if (moveMapToolbar)
+        {
+            if (yOriginPortrait > 908.0)
+            {
+                if (_mapToolbar.orientation != MapToolbarOrientationLeft)
+                {
+                    [UIView animateWithDuration:0.25
+                                     animations:^{
+                                         [_mapToolbar animateToVerticalOrientation];
+                                         
+                                         _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
+                                                                          (self.view.frame.size.height / 2.0));
+                                     }];
+                    
+                    _mapToolbar.orientation = MapToolbarOrientationLeft;
+                }
+            }
+            
+            else if (_mapToolbar.orientation != MapToolbarOrientationBottom)
+            {
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     [_mapToolbar animateToHorizontalOrientation];
+                                     
+                                     _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                                                      (self.view.frame.size.height -
+                                                                       (_mapToolbar.frame.size.height / 2.0)));
+                                 }];
+                
+                _mapToolbar.orientation = MapToolbarOrientationBottom;
+            }
+        }
+        
+        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            if (_mapToolbar.orientation != MapToolbarOrientationTop)
+            {
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     [_mapToolbar animateToHorizontalOrientation];
+                                     
+                                     _mapToolbar.center =
+                                     CGPointMake((self.view.frame.size.width / 2.0),
+                                                 (_mapToolbar.frame.size.height / 2.0) +
+                                                 [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
+                                 }];
+                
+                _mapToolbar.orientation = MapToolbarOrientationTop;
+            }
+        }
+    }
+}
+
+- (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView
+{
+    if (refreshVectorView)
+    {
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
+    
+    else
+        [self updateLegendPositions];
 }
 
 - (void)setupTableView
