@@ -766,7 +766,9 @@ extern int keepProcessing;
     p1.y = pt->lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
+    
+    CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
+                                                create:YES];
     [crd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT Intersections.intID,LATITUDE,LONGITUDE FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -798,7 +800,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),crd.database);
-    [crd close];
+    [crd close:YES];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
     
@@ -836,7 +838,9 @@ extern int keepProcessing;
     sizeFactor /= (2.0 * (22.0 - _zoom));
     CGFloat size = 150 * sizeFactor;;
     
-    CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
+    CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
+                                                create:YES];
+    
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -867,7 +871,7 @@ extern int keepProcessing;
     }
     
     SQLOK(sqlite3_finalize(statement),crd.database);
-    [crd close];
+    [crd close:YES];
     
 }
 

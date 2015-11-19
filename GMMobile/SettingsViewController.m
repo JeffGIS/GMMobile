@@ -246,7 +246,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         }
                         else if (option == GetDatabaseSettingCurbRamp)
                         {
-                            crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
+                            crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
+                                                          create:NO];
                             [crd createIntersectionsTable:YES];
                             [crd open];
                         }
@@ -339,7 +340,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             [crimed close];
                         
                         if (option == GetDatabaseSettingCurbRamp)
-                            [crd close];
+                            [crd close:YES];
                         
                         else if (option == GetDatabaseSettingAlleyWall)
                         {
