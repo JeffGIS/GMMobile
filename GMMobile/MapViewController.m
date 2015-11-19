@@ -1588,6 +1588,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    [self updateLegendPositions];
+    
     if (!_tableView.hidden)
         [_tableView reloadData];
     
@@ -2072,10 +2074,38 @@ haveVV:
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        CGFloat yFactor = 2.0, xOriginLandscape = 790.0;
+        CGFloat yFactor = 2.0, xOriginLandscape = 790.0, totalHeight = 0.0, maxHeight = 143.0;
+        NSUInteger numOverMaxHeight = 0;
         
         if (_legendsAreOffMap)
-            yFactor = 4.0;
+        {
+            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+            {
+                yFactor = 1.0;
+            }
+            
+            else
+                yFactor = 4.0;
+            
+            totalHeight = yFactor;
+            
+            for (int i = 0; i < legends.count; i++)
+            {
+                ThemeLegend *tl = legends[i];
+                
+                if (tl.drawOnMap)
+                {
+                    totalHeight += ((MIN((tl.numCells + 1.0), 5.5) * 26.0) + yFactor);
+                    
+                    if (tl.numCells > 4)
+                        numOverMaxHeight++;
+                }
+            }
+            
+            if (totalHeight > _mapView.frame.size.height)
+                maxHeight -= ((totalHeight - _mapView.frame.size.height) / numOverMaxHeight);
+        }
         
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
@@ -2096,7 +2126,7 @@ haveVV:
                 if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                     UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                 {
-                    if ((yOriginLandscape + 143.0) > 717.0)
+                    if (((yOriginLandscape + 143.0) > 717.0) && !_legendsAreOffMap)
                     {
                         xOriginLandscape = 2.0;
                         yOriginLandscape = (statusBarHeight + yFactor);
@@ -2125,6 +2155,7 @@ haveVV:
                                                                        delegate:self
                                                                          inView:self.view
                                                                        atOrigin:mapOrigin
+                                                                      maxHeight:maxHeight
                                                                          tabBar:self.tabBarController.tabBar];
                 
                 moveMapToolbar = YES;
@@ -2207,7 +2238,7 @@ haveVV:
 {
     if (!_legendsAreOffMap)
     {
-        _mapViewLegendOffset = themeLegend.frame.size.width;
+        _mapViewLegendOffset = (themeLegend.frame.size.width + 4.0);
         CGRect frame = _mapView.frame;
         frame.size.width -= _mapViewLegendOffset;
         _vectorView.hidden = _legendsAreOffMap = YES;

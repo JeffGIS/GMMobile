@@ -21,6 +21,7 @@
                              delegate:(id)delegate
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
+                            maxHeight:(CGFloat)maxHeight
                                tabBar:(UITabBar *)tabBar
 {
     ThemeLegendMapOverlay *tlmo = [[ThemeLegendMapOverlay alloc] init];
@@ -44,7 +45,7 @@
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
     }
     
-    CGFloat height = MIN(((tlmo.legend.numCells + 1) * tlmo.rowHeight), 143.0);
+    CGFloat height = MIN(((tlmo.legend.numCells + 1) * tlmo.rowHeight), maxHeight);
     tlmo.width = 232.0;
     
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
