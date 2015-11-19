@@ -9,6 +9,7 @@
 @protocol ThemeLegendMapOverlayDelegate <NSObject>
 
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
+- (void)themeLegendWasDraggedOffRightSide:(ThemeLegendMapOverlay *)themeLegend;
 
 @end
 
@@ -18,7 +19,7 @@
 @property (nonatomic) ThemeLegend *legend;
 @property BOOL isExpanded, selectionMade;
 @property (nonatomic) UITableView *tableView;
-@property (nonatomic) CGFloat rowHeight;
+@property (nonatomic) CGFloat rowHeight, width;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag

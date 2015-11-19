@@ -29,12 +29,12 @@ extern int keepProcessing;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property BOOL clearMarkers, clearWhenDeselected, rotateZoom, blockVectorView;
+@property BOOL clearMarkers, clearWhenDeselected, rotateZoom, blockVectorView, legendsAreOffMap;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
-@property (nonatomic) CGFloat vectorViewZoom;
+@property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
 @property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
@@ -102,7 +102,7 @@ extern int keepProcessing;
     
     _nVectorViews = 0,
     _animateToLocation = YES;
-    _routeTraceExists = _fromSpreadsheet = NO;
+    _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = NO;
     
     _polylines = [[NSMutableSet alloc] init];
     
@@ -114,6 +114,7 @@ extern int keepProcessing;
     _firstTimeAppear = _firstTimeMap = YES;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = 0;
+    _mapViewLegendOffset = 0.0;
     
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
@@ -1653,6 +1654,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                (self.view.frame.size.height + _tabBarHeight),
                                (self.view.frame.size.width - _tabBarHeight - statusBarHeight));
     
+    if (_legendsAreOffMap)
+        frame3.size.width -= _mapViewLegendOffset;
+    
     if (!_streetView.hidden)
     {
         [UIView animateWithDuration:duration
@@ -2067,7 +2071,14 @@ haveVV:
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
-        CGFloat yOriginPortrait = 22.0, yOriginLandscape = 22.0, xOriginLandscape = 790.0;
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+        CGFloat yFactor = 2.0, xOriginLandscape = 790.0;
+        
+        if (_legendsAreOffMap)
+            yFactor = 4.0;
+        
+        CGFloat yOriginPortrait = (statusBarHeight + yFactor);
+        CGFloat yOriginLandscape = yOriginPortrait;
         BOOL moveMapToolbar = NO;
         
         for (int i = 0; i < legends.count; i++)
@@ -2088,14 +2099,14 @@ haveVV:
                     if ((yOriginLandscape + 143.0) > 717.0)
                     {
                         xOriginLandscape = 2.0;
-                        yOriginLandscape = 22.0;
+                        yOriginLandscape = (statusBarHeight + yFactor);
                     }
                 }
                 
-                if (!tl.isDraggedPortrait)
+                if (!tl.isDraggedPortrait || _legendsAreOffMap)
                     tl.portraitMapOrigin = CGPointMake(534.0, yOriginPortrait);
                 
-                if (!tl.isDraggedLandscape)
+                if (!tl.isDraggedLandscape || _legendsAreOffMap)
                     tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
                 
                 CGPoint mapOrigin = CGPointZero;
@@ -2118,11 +2129,11 @@ haveVV:
                 
                 moveMapToolbar = YES;
                 
-                if (!tl.isDraggedPortrait)
-                    yOriginPortrait += (tlmo.frame.size.height + 2.0);
+                if (!tl.isDraggedPortrait || _legendsAreOffMap)
+                    yOriginPortrait += (tlmo.frame.size.height + yFactor);
                 
-                if (!tl.isDraggedLandscape)
-                    yOriginLandscape += (tlmo.frame.size.height + 2.0);
+                if (!tl.isDraggedLandscape || _legendsAreOffMap)
+                    yOriginLandscape += (tlmo.frame.size.height + yFactor);
             }
         }
         
@@ -2190,6 +2201,26 @@ haveVV:
     
     else
         [self updateLegendPositions];
+}
+
+- (void)themeLegendWasDraggedOffRightSide:(ThemeLegendMapOverlay *)themeLegend
+{
+    if (!_legendsAreOffMap)
+    {
+        _mapViewLegendOffset = themeLegend.frame.size.width;
+        CGRect frame = _mapView.frame;
+        frame.size.width -= _mapViewLegendOffset;
+        _vectorView.hidden = _legendsAreOffMap = YES;
+        [self updateLegendPositions];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _mapView.frame = frame;
+                         } completion:^(BOOL finished) {
+                             [self refreshVectorView:_mapView.projection.visibleRegion
+                                              atZoom:_mapView.camera.zoom];
+                         }];
+    }
 }
 
 - (void)setupTableView

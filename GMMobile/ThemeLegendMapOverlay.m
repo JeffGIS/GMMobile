@@ -45,9 +45,9 @@
     }
     
     CGFloat height = MIN(((tlmo.legend.numCells + 1) * tlmo.rowHeight), 143.0);
-    CGFloat width = 232.0;
+    tlmo.width = 232.0;
     
-    tlmo.frame = CGRectMake(origin.x, origin.y, width, height);
+    tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
     
     tlmo.tableView = [[UITableView alloc] initWithFrame:tlmo.bounds
                                                   style:UITableViewStylePlain];
@@ -169,6 +169,9 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)dragButtonEnd:(UIButton *)button
 {
+    if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
+        [_delegate themeLegendWasDraggedOffRightSide:self];
+    
     if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
         UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
     {
