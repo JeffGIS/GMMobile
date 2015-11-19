@@ -53,12 +53,18 @@
         int i=0;
         for (Theme *thm in _themeList)
         {
-            ThemeLegend *tl = ConfigurationControl.sharedInstance.legendList[i++];
-            int j=0;
-            for (ThemeLegendCell *tlc in thm.legend.cells)
+            if (ConfigurationControl.sharedInstance.legendList.count > i)
             {
-                ThemeLegendCell *cl = tl.cells[j++];
-                tlc.status = cl.status;
+                ThemeLegend *tl = ConfigurationControl.sharedInstance.legendList[i++];
+                int j=0;
+                for (ThemeLegendCell *tlc in thm.legend.cells)
+                {
+                    if (thm.legend.cells.count > j)
+                    {
+                        ThemeLegendCell *cl = tl.cells[j++];
+                        tlc.status = cl.status;
+                    }
+                }
             }
         }
        
@@ -85,7 +91,7 @@
     for (Theme *thm in _themeList)
     {
         thm.displayID = displayID;
-        if (ConfigurationControl.sharedInstance.legendList)
+        if (ConfigurationControl.sharedInstance.legendList.count > i)
         {
             ThemeLegend * tleg = ConfigurationControl.sharedInstance.legendList[i];
             int j = 0;
@@ -95,12 +101,14 @@
             thm.legend.isDraggedLandscape = tleg.isDraggedLandscape;
             thm.legend.isDraggedPortrait = tleg.isDraggedPortrait;
             
-            if (tleg.cells.count)
-                for (ThemeClass * cls in thm.classes)
+            for (ThemeClass * cls in thm.classes)
+            {
+                if (tleg.cells.count > j)
                 {
                     ThemeLegendCell *tlc = tleg.cells[j++];
                     cls.status = tlc.status;
                 }
+            }
         }
         i++;
     }
