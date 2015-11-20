@@ -2144,6 +2144,40 @@ haveVV:
         CGFloat yOriginLandscape = yOriginPortrait, rowHeight = 26.0;
         NSUInteger portraitColumnCount = 1, landscapeColumnCount = portraitColumnCount;
         UIView *inView = self.view;
+        BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
+        
+        for (ThemeLegend *tls in legends)
+        {
+            if (tls.drawOnMap)
+                legendExistsToDraw = YES;
+        }
+        
+        if (!legendExistsToDraw)
+            [self themeLegendWasDraggedOffLeftSide];
+        
+        if (legendExistsToDraw && !_legendsAreOffMap)
+        {
+            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+            {
+                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                    legendsAreAlreadyDrawn = YES;
+            }
+            
+            if (!legendsAreAlreadyDrawn)
+            {
+                for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+                {
+                    if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                        legendsAreAlreadyDrawn = YES;
+                }
+                
+                if (!legendsAreAlreadyDrawn)
+                {
+                    [self themeLegendWasDraggedOffRightSide];
+                    return;
+                }
+            }
+        }
         
         if (_legendsAreOffMap)
         {
