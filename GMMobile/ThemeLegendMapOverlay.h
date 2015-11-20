@@ -26,7 +26,6 @@
                              delegate:(id)delegate
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
-                            maxHeight:(CGFloat)maxHeight
                                tabBar:(UITabBar *)tabBar;
 
 @end

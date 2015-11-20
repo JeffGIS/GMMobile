@@ -21,7 +21,6 @@
                              delegate:(id)delegate
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
-                            maxHeight:(CGFloat)maxHeight
                                tabBar:(UITabBar *)tabBar
 {
     ThemeLegendMapOverlay *tlmo = [[ThemeLegendMapOverlay alloc] init];
@@ -45,7 +44,7 @@
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
     }
     
-    CGFloat height = MIN(((tlmo.legend.numCells + 1) * tlmo.rowHeight), maxHeight);
+    CGFloat height = ((tlmo.legend.numCells + 1) * tlmo.rowHeight);
     tlmo.width = 232.0;
     
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
@@ -57,8 +56,7 @@
     tlmo.tableView.dataSource = tlmo;
     tlmo.tableView.backgroundColor = UIColor.blackColor;
     tlmo.tableView.rowHeight = tlmo.rowHeight;
-    tlmo.tableView.bounces = YES;
-    tlmo.tableView.bouncesZoom = YES;
+    tlmo.tableView.scrollEnabled = NO;
     tlmo.tableView.layer.borderColor = UIColor.blackColor.CGColor;
     tlmo.tableView.layer.borderWidth = 2.0;
     tlmo.tableView.delaysContentTouches = NO;
@@ -223,7 +221,6 @@ viewForHeaderInSection:(NSInteger)section
         CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
         _rowHeight = MIN((_rowHeight * 2.0), maxRowHeight);
         _tableView.rowHeight = _rowHeight;
-        _tableView.scrollEnabled = NO;
         _tabBar.userInteractionEnabled = NO;
         CGFloat height = ((_legend.numCells + 1) * _rowHeight);
         
@@ -266,7 +263,6 @@ viewForHeaderInSection:(NSInteger)section
         _tabBar.userInteractionEnabled = YES;
         _rowHeight /= 2.0;
         _tableView.rowHeight = _rowHeight;
-        _tableView.scrollEnabled = YES;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
