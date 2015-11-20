@@ -9,7 +9,8 @@
 @protocol ThemeLegendMapOverlayDelegate <NSObject>
 
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
-- (void)themeLegendWasDraggedOffRightSide:(ThemeLegendMapOverlay *)themeLegend;
+- (void)themeLegendWasDraggedOffRightSide;
+- (void)themeLegendWasDraggedOffLeftSide;
 
 @end
 

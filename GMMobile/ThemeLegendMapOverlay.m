@@ -163,21 +163,30 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)dragButtonBegin:(UIButton *)button
 {
+    if (self.superview.superview)
+        [self.superview.superview bringSubviewToFront:self.superview];
+    
     [self.superview bringSubviewToFront:self];
 }
 
 - (void)dragButtonEnd:(UIButton *)button
 {
-    if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
-        [_delegate themeLegendWasDraggedOffRightSide:self];
+    if (self.superview.superview)
+        [self.superview.superview sendSubviewToBack:self.superview];
     
-    if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-        UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+    if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
+        [_delegate themeLegendWasDraggedOffRightSide];
+    
+    else if (self.frame.origin.x < 0.0 && _delegate)
+        [_delegate themeLegendWasDraggedOffLeftSide];
+    
+    else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
     {
         _legend.landscapeMapOrigin = self.frame.origin;
         _legend.isDraggedLandscape = YES;
     }
-    
+        
     else
     {
         _legend.portraitMapOrigin = self.frame.origin;
