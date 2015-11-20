@@ -614,8 +614,17 @@ extern int keepProcessing;
         self.tabBarController.tabBar.hidden = NO;
         self.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, tabBarTop);
         
-        _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
-                                    (tabBarTop - statusBarHeight));
+        if (_legendsAreOffMap)
+        {
+            _mapView.frame = CGRectMake(0.0, statusBarHeight,  (self.view.frame.size.width - _mapViewLegendOffset),
+                                        (tabBarTop - statusBarHeight));
+        }
+        
+        else
+        {
+            _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
+                                        (tabBarTop - statusBarHeight));
+        }
         
         _mapView.userInteractionEnabled = YES;
         
@@ -794,6 +803,42 @@ extern int keepProcessing;
                   insertViewController:cdovc
                                atIndex:1
                               animated:YES];
+        
+        NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+        BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
+        
+        for (ThemeLegend *tls in legends)
+        {
+            if (tls.drawOnMap)
+                legendExistsToDraw = YES;
+        }
+        
+        if (!legendExistsToDraw)
+            [self themeLegendWasDraggedOffLeftSide];
+        
+        if (legendExistsToDraw && !_legendsAreOffMap)
+        {
+            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+            {
+                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                    legendsAreAlreadyDrawn = YES;
+            }
+            
+            if (!legendsAreAlreadyDrawn)
+            {
+                for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+                {
+                    if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                        legendsAreAlreadyDrawn = YES;
+                }
+                
+                if (!legendsAreAlreadyDrawn)
+                {
+                    [self themeLegendWasDraggedOffRightSide];
+                    return;
+                }
+            }
+        }
     }
     
     else
@@ -2099,37 +2144,6 @@ haveVV:
         CGFloat yOriginLandscape = yOriginPortrait, rowHeight = 26.0;
         NSUInteger portraitColumnCount = 1, landscapeColumnCount = portraitColumnCount;
         UIView *inView = self.view;
-        BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
-        
-        for (ThemeLegend *tls in legends)
-        {
-            if (tls.drawOnMap)
-                legendExistsToDraw = YES;
-        }
-        
-        if (legendExistsToDraw && !_legendsAreOffMap)
-        {
-            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
-            {
-                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-                    legendsAreAlreadyDrawn = YES;
-            }
-            
-            if (!legendsAreAlreadyDrawn)
-            {
-                for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
-                {
-                    if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-                        legendsAreAlreadyDrawn = YES;
-                }
-                
-                if (!legendsAreAlreadyDrawn)
-                {
-                    [self themeLegendWasDraggedOffRightSide];
-                    return;
-                }
-            }
-        }
         
         if (_legendsAreOffMap)
         {
