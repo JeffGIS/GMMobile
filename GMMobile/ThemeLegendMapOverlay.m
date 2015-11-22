@@ -10,7 +10,7 @@
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
-@property (nonatomic) CGSize previousSize;
+@property (nonatomic) CGRect previousFrame;
 
 @end
 
@@ -31,7 +31,7 @@
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
-    tlmo.previousSize = CGSizeZero;
+    tlmo.previousFrame = CGRectZero;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
@@ -218,14 +218,30 @@ viewForHeaderInSection:(NSInteger)section
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
         
-        if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
+        CGSize superSize = self.superview.frame.size;
+        CGFloat scrollOffset = 0.0;
+        
+        if ([self.superview isKindOfClass:UIScrollView.class])
+        {
+            if (![self.superview.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
+            {
+                [self.superview.superview addSubview:overlayView];
+                [self.superview.superview bringSubviewToFront:self.superview];
+                [self.superview bringSubviewToFront:self];
+                self.superview.backgroundColor = UIColor.darkGrayColor;
+                
+                superSize = self.superview.superview.frame.size;
+                scrollOffset = self.superview.frame.origin.x;
+            }
+        }
+        
+        else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
         {
             [self.superview addSubview:overlayView];
             [self.superview bringSubviewToFront:self];
         }
         
-        CGSize superSize = self.superview.frame.size;
-        _previousSize = self.frame.size;
+        _previousFrame = self.frame;
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
         _rowHeight = MIN((_rowHeight * 2.0), maxRowHeight);
@@ -247,7 +263,7 @@ viewForHeaderInSection:(NSInteger)section
                              _tabBar.alpha = 0.3;
                              dragButton.alpha = 0.0;
                              
-                             self.frame = CGRectMake((superSize.width * 0.1),
+                             self.frame = CGRectMake(((superSize.width * 0.1) - scrollOffset),
                                                      (((superSize.height - height) / 2.0) + (statusBarHeight / 2.0)),
                                                      (superSize.width * 0.8), height);
                              
@@ -268,7 +284,14 @@ viewForHeaderInSection:(NSInteger)section
     
     else
     {
-        UIView *overlayView = [self.superview viewWithTag:123456789];
+        UIView *overlayView = nil;
+        
+        if ([self.superview isKindOfClass:UIScrollView.class])
+            overlayView = [self.superview.superview viewWithTag:123456789];
+        
+        else
+            overlayView = [self.superview viewWithTag:123456789];
+        
         _tabBar.userInteractionEnabled = YES;
         _rowHeight /= 2.0;
         _tableView.rowHeight = _rowHeight;
@@ -283,21 +306,24 @@ viewForHeaderInSection:(NSInteger)section
                              overlayView.alpha = 0.0;
                              _tabBar.alpha = 1.0;
                              
-                             if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                                 UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                             if ([self.superview isKindOfClass:UIScrollView.class])
+                                 self.frame = _previousFrame;
+                             
+                             else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                                      UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                              {
                                  self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
                                                          _legend.landscapeMapOrigin.y,
-                                                         _previousSize.width,
-                                                         _previousSize.height);
+                                                         _previousFrame.size.width,
+                                                         _previousFrame.size.height);
                              }
                              
                              else
                              {
                                  self.frame = CGRectMake(_legend.portraitMapOrigin.x,
                                                          _legend.portraitMapOrigin.y,
-                                                         _previousSize.width,
-                                                         _previousSize.height);
+                                                         _previousFrame.size.width,
+                                                         _previousFrame.size.height);
                              }
                              
                              _tableView.frame = self.bounds;
@@ -316,6 +342,7 @@ viewForHeaderInSection:(NSInteger)section
                              [_tableView reloadData];
                              _isExpanded = NO;
                              button.selected = NO;
+                             self.superview.backgroundColor = UIColor.lightGrayColor;
                              
                              if (_selectionMade && _delegate)
                              {
