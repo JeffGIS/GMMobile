@@ -3511,7 +3511,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                     fov:(CGFloat)fov
 {
     NSString *staticMapUrl = [NSString stringWithFormat:
-                              @"http://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f&fov=%f&pitch=%f",
+                              @"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f&fov=%f&pitch=%f",
                               coord.latitude, coord.longitude, fov, pitch];
     
     NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
