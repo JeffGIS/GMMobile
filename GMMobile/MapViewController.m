@@ -846,6 +846,17 @@ extern int keepProcessing;
         [NVTabBarEdit tabBarController:self.tabBarController
             removeViewControllerWithID:@"CrimeDataPageVC"
                               animated:YES];
+        
+        if (_legendsAreOffMap)
+        {
+            CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+            CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+            
+            _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
+                                        (tabBarTop - statusBarHeight));
+            
+            _legendsAreOffMap = NO;
+        }
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
