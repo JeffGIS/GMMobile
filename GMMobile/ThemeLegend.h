@@ -39,6 +39,7 @@
 @property NSMutableArray *cells;  //ThemeLegendCell array
 
 @property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait;
-@property CGPoint portraitMapOrigin, landscapeMapOrigin;
+@property (nonatomic) CGPoint portraitMapOrigin, landscapeMapOrigin;
+@property (nonatomic) CGFloat scrollYPosition;
 
 @end

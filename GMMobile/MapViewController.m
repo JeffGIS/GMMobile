@@ -853,9 +853,32 @@ extern int keepProcessing;
             CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
             
             _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
-                                        (tabBarTop - statusBarHeight));
+                                            (tabBarTop - statusBarHeight));
+            
+           for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+           {
+               if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                   [tlmos removeFromSuperview];
+           }
             
             _legendsAreOffMap = NO;
+        }
+        
+        else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                 [tlmos removeFromSuperview];
+        }
+        
+        if (_mapToolbar.orientation != MapToolbarOrientationTop)
+        {
+            [_mapToolbar animateToHorizontalOrientation];
+                                 
+             _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                              (_mapToolbar.frame.size.height / 2.0) +
+                                              [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
+            
+            _mapToolbar.orientation = MapToolbarOrientationTop;
         }
     }
     
@@ -1702,7 +1725,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self clearVectorView];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
-    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     CGFloat compassSize = 48.0, compassMargin = 6.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -1883,42 +1905,68 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
+        CGFloat scrollWidth = _legendScrollView.frame.size.width;
+        CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
+        CGFloat xOrigin = (viewWidth - scrollWidth);
+        CGFloat xCenter = ((viewWidth / 2.0) - xOrigin);
+        CGFloat contentOffset = (_legendScrollView.contentOffset.y - statusBarHeight);
+        
         if ([self.view.subviews containsObject:_legendScrollView])
         {
             [UIView animateWithDuration:duration
                              animations:^{
-                                 _legendScrollView.frame = CGRectMake(((self.view.frame.size.height - _legendScrollView.frame.size.width) + tabBarHeight),
-                                                                      statusBarHeight, _legendScrollView.frame.size.width,
-                                                                      ((self.view.frame.size.width - statusBarHeight) - tabBarHeight));
+                                 _legendScrollView.frame =
+                                 CGRectMake(xOrigin, statusBarHeight, scrollWidth,
+                                            ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
                              }];
         }
         
-        BOOL deferRefresh = [self legendIsExpanded];
+        if (_legendsAreOffMap)
+        {
+            for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+            {
+                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                {
+                    if (tlmos.isExpanded)
+                    {
+                        tlmos.selectionMade = YES;
+                        CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
+                        
+                        [UIView animateWithDuration:duration
+                                         animations:^{
+                                             tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
+                                                                      (viewWidth * 0.8), legendHeight);
+                                             
+                                             tlmos.center = CGPointMake(xCenter, (_legendScrollView.center.y + contentOffset));
+                                             tlmos.tableView.frame = tlmos.bounds;
+                                         } completion:^(BOOL finished) {
+                                             [tlmos.tableView reloadData];
+                                         }];
+                    }
+                }
+            }
+        }
         
-        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
         {
             if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
             {
                 if (tlmos.isExpanded)
                 {
                     tlmos.selectionMade = YES;
+                    CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
                     
                     [UIView animateWithDuration:duration
                                      animations:^{
-                                         tlmos.frame = CGRectMake((tlmos.frame.origin.y + (tabBarHeight / 2.0) - (statusBarHeight / 2.0)),
-                                                                  (tlmos.frame.origin.x - (tabBarHeight / 2.0) + (statusBarHeight / 2.0)),
-                                                                  tlmos.frame.size.height, tlmos.frame.size.width);
+                                         tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
+                                                                  (viewWidth * 0.8), legendHeight);
                                          
+                                         tlmos.center = CGPointMake((viewWidth / 2.0), (self.view.center.x - (statusBarHeight / 2.0)));
                                          tlmos.tableView.frame = tlmos.bounds;
                                      } completion:^(BOOL finished) {
-                                         tlmos.rowHeight = (tlmos.frame.size.height / (tlmos.legend.numCells + 1));
-                                         tlmos.tableView.rowHeight = tlmos.rowHeight;
                                          [tlmos.tableView reloadData];
                                      }];
                 }
-                
-                if (deferRefresh || _legendsAreOffMap)
-                    continue;
                 
                 else if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
                          toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
@@ -1951,7 +1999,16 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     BOOL isExpanded = NO;
     
-    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    if (_legendsAreOffMap)
+    {
+        for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos.isExpanded)
+                isExpanded = YES;
+        }
+    }
+    
+    else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
     {
         if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos.isExpanded)
             isExpanded = YES;
@@ -2148,6 +2205,9 @@ haveVV:
 {
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
+        if ([self legendIsExpanded])
+            return;
+        
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0, xOriginLandscape = 790.0, xOriginPortrait = 534.0;
@@ -2255,10 +2315,14 @@ haveVV:
                         UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                     {
                         mapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
+                        tl.scrollYPosition = yOriginLandscape;
                     }
                     
                     else
+                    {
                         mapOrigin = CGPointMake(xOriginPortrait, yOriginPortrait);
+                        tl.scrollYPosition = yOriginPortrait;
+                    }
                 }
                 
                 else

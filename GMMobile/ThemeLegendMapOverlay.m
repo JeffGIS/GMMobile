@@ -218,20 +218,25 @@ viewForHeaderInSection:(NSInteger)section
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
         
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGSize superSize = self.superview.frame.size;
-        CGFloat scrollOffset = 0.0;
+        CGFloat scrollOffset = 0.0, contentOffset = 0.0;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
-            if (![self.superview.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
+            UIScrollView *legendScroll = (UIScrollView *)self.superview;
+            
+            if (![legendScroll.superview.subviews containsObject:[legendScroll viewWithTag:123456789]])
             {
-                [self.superview.superview addSubview:overlayView];
-                [self.superview.superview bringSubviewToFront:self.superview];
-                [self.superview bringSubviewToFront:self];
-                self.superview.backgroundColor = UIColor.darkGrayColor;
+                [legendScroll.superview addSubview:overlayView];
+                [legendScroll.superview bringSubviewToFront:self.superview];
+                [legendScroll bringSubviewToFront:self];
+                legendScroll.backgroundColor = UIColor.darkGrayColor;
+                legendScroll.scrollEnabled = NO;
                 
-                superSize = self.superview.superview.frame.size;
-                scrollOffset = self.superview.frame.origin.x;
+                superSize = legendScroll.superview.frame.size;
+                scrollOffset = legendScroll.frame.origin.x;
+                contentOffset = (legendScroll.contentOffset.y - statusBarHeight);
             }
         }
         
@@ -242,7 +247,6 @@ viewForHeaderInSection:(NSInteger)section
         }
         
         _previousFrame = self.frame;
-        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
         _rowHeight = MIN((_rowHeight * 2.0), maxRowHeight);
         _tableView.rowHeight = _rowHeight;
@@ -264,7 +268,7 @@ viewForHeaderInSection:(NSInteger)section
                              dragButton.alpha = 0.0;
                              
                              self.frame = CGRectMake(((superSize.width * 0.1) - scrollOffset),
-                                                     (((superSize.height - height) / 2.0) + (statusBarHeight / 2.0)),
+                                                     ((((superSize.height - height) + statusBarHeight) / 2.0) + contentOffset),
                                                      (superSize.width * 0.8), height);
                              
                              _tableView.frame = self.bounds;
@@ -328,13 +332,10 @@ viewForHeaderInSection:(NSInteger)section
                              
                              _tableView.frame = self.bounds;
                              
-                             if (!_selectionMade)
+                             for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
                              {
-                                 for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
-                                 {
-                                     if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
-                                         tlmos.alpha = 1.0;
-                                 }
+                                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
+                                     tlmos.alpha = 1.0;
                              }
                              
                          } completion:^(BOOL finished) {
@@ -342,7 +343,13 @@ viewForHeaderInSection:(NSInteger)section
                              [_tableView reloadData];
                              _isExpanded = NO;
                              button.selected = NO;
-                             self.superview.backgroundColor = UIColor.lightGrayColor;
+                             
+                             if ([self.superview isKindOfClass:UIScrollView.class])
+                             {
+                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
+                                 legendScroll.backgroundColor = UIColor.lightGrayColor;
+                                 legendScroll.scrollEnabled = YES;
+                             }
                              
                              if (_selectionMade && _delegate)
                              {
