@@ -7,11 +7,13 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.gssi.gmmobile</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>GMMobile</string>
+	<key>CFBundleDisplayName</key>
+	<string>GMMobile</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -34,6 +36,8 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>NVMapKitFlyover</string>
+		<string>AlleyWallInventory</string>
+		<string>PedRampDetail</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
