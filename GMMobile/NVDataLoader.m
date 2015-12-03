@@ -39,11 +39,12 @@
 
 - (void) SettingsViewControllerSuccess
 {
-    [_popover hide];
 
     [_dbList removeObjectAtIndex:0];
     dispatch_async(dispatch_get_main_queue(),
                    ^{
+                       [_popover hide];
+
     self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
                                                   target:self
                                                 selector:@selector(checkNextDataset:)
@@ -200,7 +201,7 @@ Top:
             CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
                                                         create:YES];
             
-            if (crd.datasetVersion >= 1)
+            if (crd.datasetVersion >= 2)
                 rtn = YES;
         }
             break;
