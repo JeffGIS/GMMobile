@@ -6,12 +6,17 @@
 #import "CCodeLibrary/NVCalibrationController.h"
 #import "CCodeLibrary/GSSiPopoverView.h"
 #import "CCodeLibrary/NSData+Compression.h"
+#import <CommonCrypto/CommonDigest.h>
+@import MediaPlayer;
 
 @interface SettingOptionsViewController ()
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
 @property (nonatomic) FTPDataPush *push;
+@property (nonatomic) NSArray *products;
+@property (nonatomic) NSString *iapFilePath;
+@property (nonatomic) MPMoviePlayerController *mpController;
 
 @end
 
@@ -58,7 +63,7 @@
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Purchase Data", @"Access Contacts", @"Test Compression & Upload"];
+                  @"Make In-App Purchase", @"Access Contacts", @"Test Compression & Upload"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -164,17 +169,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Purchase Data"])
-    {
-        [self purchaseData];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Clear Prop List & Destinations"])
     {
         CRAPI.sharedInstance.resetPropList = YES;
         CRAPI.sharedInstance.resetDestinations = YES;
         CRAPI.sharedInstance.clearSpreadsheet = YES;
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Make In-App Purchase"])
+    {
+        NSSet *prodID = [NSSet setWithObjects:@"com.gssi.gmmobile_TestVideo", nil];
+        
+        SKProductsRequest *skpr = [[SKProductsRequest alloc] initWithProductIdentifiers:prodID];
+        skpr.delegate = self;
+        [skpr start];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -222,6 +231,140 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                       destructiveIndex:NVLargeAlertIndexNone];
 #pragma unused(alert)
         }*/
+    }
+}
+
+- (void)productsRequest:(SKProductsRequest *)request
+     didReceiveResponse:(SKProductsResponse *)response
+{
+    _products = response.products;
+    
+    NSMutableArray *prodNames = NSMutableArray.array;
+    
+    for (SKProduct *prods in _products)
+    {
+        [prodNames addObject:[NSString stringWithFormat:@"%@\n$%@",
+                              prods.localizedDescription, prods.price]];
+    }
+    
+    [prodNames addObject:@"Cancel"];
+    
+    for (NSString *IDs in response.invalidProductIdentifiers)
+        NSLog(@"INVALID PRODUCT:%@", IDs);
+    
+    if (_products.count)
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"Available In-App Purchases"
+                                                   buttonTextArray:prodNames
+                                                  destructiveIndex:0];
+
+        alert.tag = 12345;
+    }
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue
+ updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions
+{
+    for (SKPaymentTransaction *trans in transactions)
+    {
+        if (trans.transactionState == SKPaymentTransactionStatePurchased)
+        {
+            [SKPaymentQueue.defaultQueue startDownloads:trans.downloads];
+        }
+    }
+}
+
+- (void)paymentQueue:(SKPaymentQueue *)queue
+    updatedDownloads:(NSArray<SKDownload *> *)downloads
+{
+    for (SKDownload *dload in downloads)
+    {
+        if (dload.progress == 1.0)
+        {
+            NSString *cachesPath = dload.contentURL.relativePath;
+            
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentsDirectory = paths.firstObject;
+            NSError *error;
+            
+            NSString *contentsPath = [NSString stringWithFormat:@"%@/Contents", cachesPath];
+            
+            NSArray *dirContents = [NSFileManager.defaultManager contentsOfDirectoryAtPath:contentsPath
+                                                                                     error:&error];
+            
+            if (error)
+                NSLog(@"DIR CONTENTS ERROR:%@", error.localizedDescription);
+            
+            for (NSString *fileName in dirContents)
+            {
+                if ([fileName containsString:@".mp4"])
+                {
+                    _iapFilePath = [NSString stringWithFormat:@"%@/%@", documentsDirectory, fileName];
+                    NSString *oldFilePath = [NSString stringWithFormat:@"%@/%@", contentsPath, fileName];
+                    
+                    if ([NSFileManager.defaultManager moveItemAtPath:oldFilePath
+                                                              toPath:_iapFilePath
+                                                               error:&error])
+                    {
+                        NSLog(@"IAP FilePath:%@", _iapFilePath.description);
+                    }
+                    
+                    else
+                        NSLog(@"FILE MOVE ERROR (%@):%@", fileName, error.localizedDescription);
+                }
+            }
+            
+            [queue finishTransaction:dload.transaction];
+            [self playPromoVideo];
+        }
+    }
+}
+
+- (void)playPromoVideo
+{
+    
+    _mpController = [[MPMoviePlayerController alloc] initWithContentURL:
+                     [NSURL fileURLWithPath:_iapFilePath]];
+    
+    _mpController.controlStyle = MPMovieControlStyleFullscreen;
+    [_mpController prepareToPlay];
+    
+    UIWindow *backgroundWindow = UIApplication.sharedApplication.keyWindow;
+    _mpController.view.frame = backgroundWindow.frame;
+    [backgroundWindow addSubview:_mpController.view];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(promoVideoFinished:)
+                                               name:MPMoviePlayerPlaybackDidFinishNotification
+                                             object:_mpController];
+    
+    [_mpController play];
+}
+
+- (void)promoVideoFinished:(NSNotification *)notification
+{
+    [_mpController.view removeFromSuperview];
+    
+    [NSNotificationCenter.defaultCenter removeObserver:self
+                                                  name:MPMoviePlayerPlaybackDidFinishNotification
+                                                object:_mpController];
+    
+    _mpController = nil;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    UIWindow *backgroundWindow = UIApplication.sharedApplication.keyWindow;
+    
+    if ([backgroundWindow.subviews containsObject:_mpController.view])
+    {
+        [UIView animateWithDuration:duration animations:^{
+            _mpController.view.frame = CGRectMake(0.0, 0.0, backgroundWindow.frame.size.height,
+                                                  backgroundWindow.frame.size.width);
+        }];
     }
 }
 
@@ -273,33 +416,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      completion:nil];
 }
 
-- (void)purchaseData
-{
-    NSDictionary *parametersDict = @{SKStoreProductParameterITunesItemIdentifier:@(1033650392)};
-    
-    SKStoreProductViewController *spvc = [[SKStoreProductViewController alloc] init];
-    spvc.delegate = self;
-    
-    [spvc loadProductWithParameters:parametersDict
-                    completionBlock:^(BOOL result, NSError *error)
-     {
-         if (result)
-         {
-             [self presentViewController:spvc
-                                animated:YES
-                              completion:nil];
-         }
-         
-         else
-             NSLog(@"Error message: %@", error.localizedDescription);
-     }];
-}
-
-- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController
-{
-    
-}
-
 - (void)textAlert:(NVTextAlert *)textAlert
     didReturnText:(NSString *)text
 {
@@ -333,17 +449,34 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    [alertView hideLargeAlertView:YES];
-    
-    if (buttonIndex == 1)
+    if (alertView.tag == 12345)
     {
-        NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
-                                                         delegate:self
-                                                            title:@"Password Required for Access to Load Data"];
-        
-        textAlert.keyboardType = UIKeyboardTypeNumberPad;
-        textAlert.minimumCharacters = 0;
+        if (buttonIndex < _products.count)
+        {
+            SKProduct *product = _products[buttonIndex];
+            
+            SKPayment *payment = [SKPayment paymentWithProduct:product];
+            SKPaymentQueue *payQueue = SKPaymentQueue.defaultQueue;
+            
+            [payQueue addTransactionObserver:self];
+            [payQueue addPayment:payment];
+        }
     }
+    
+    else
+    {
+        if (buttonIndex == 1)
+        {
+            NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
+                                                             delegate:self
+                                                                title:@"Password Required for Access to Load Data"];
+            
+            textAlert.keyboardType = UIKeyboardTypeNumberPad;
+            textAlert.minimumCharacters = 0;
+        }
+    }
+    
+    [alertView hideLargeAlertView:YES];
 }
 
 - (void)cellSwitchValueChanged:(UISwitch *)aSwitch
