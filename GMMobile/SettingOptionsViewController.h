@@ -8,7 +8,7 @@
 #import "CCodeLibrary/NVContactPicker.h"
 #import "CCodeLibrary/FTPDataPush.h"
 
-@interface SettingOptionsViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,UploadViewControllerDelegate,SKStoreProductViewControllerDelegate,FTPDataPushDelegate>
+@interface SettingOptionsViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,UploadViewControllerDelegate,SKProductsRequestDelegate,SKPaymentTransactionObserver,FTPDataPushDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;

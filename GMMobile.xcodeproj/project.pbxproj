@@ -178,7 +178,6 @@
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		699D3A681BE883EB00BD6660 /* CrimeOptions2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeOptions2.h; sourceTree = "<group>"; };
 		699D3A691BE883EB00BD6660 /* CrimeOptions2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeOptions2.m; sourceTree = "<group>"; };
-		69A06CA01BE1C62800B6AD6C /* libcommonCrypto.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcommonCrypto.tbd; path = usr/lib/system/libcommonCrypto.tbd; sourceTree = SDKROOT; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
 		69B46EFD1BC215F100BB7724 /* destinations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = destinations.png; sourceTree = "<group>"; };
@@ -367,6 +366,7 @@
 				69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */,
 				69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */,
 				6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */,
+				698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */,
 				69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */,
 				69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */,
 				69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */,
@@ -377,7 +377,6 @@
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
-				698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */,
 				A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */,
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
 				A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */,
@@ -468,7 +467,6 @@
 				69DB8ADB1BE3D862009372AC /* libc++.tbd */,
 				69DB8AD91BE3D83D009372AC /* libicucore.tbd */,
 				69DB8AD71BE3D82A009372AC /* libz.tbd */,
-				69A06CA01BE1C62800B6AD6C /* libcommonCrypto.tbd */,
 				6992A88A1BE00C4900FB53F0 /* libcompression.tbd */,
 				69307FE71BD0B6910036D936 /* Contacts.framework */,
 				69307FE81BD0B6910036D936 /* ContactsUI.framework */,
