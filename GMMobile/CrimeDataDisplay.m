@@ -147,7 +147,7 @@
         dc.string2 = [NSString stringWithUTF8String:dept];
         dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
         if ([themes setDisplayCharacteristics:dc
-                                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
         {
             DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
             size = 25;

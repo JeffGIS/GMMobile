@@ -3,6 +3,7 @@
 
 #import <sqlite3.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "Themes.h"
 
 @interface PlanimetricData : NSObject
 
@@ -44,9 +45,11 @@
 - (int)pickCurbRampIntersectionPoint:(LLPOINT)point highlightList:(NSMutableArray*)hlist;
 
 -(void)displayCurRampIntersectionPoint:(CGContextRef)context
+                displayCharacteristics:(DisplayCharacteristics *)dc
                              llCorners:(CORNERPOINTS *) latlonCornerPoints
                               LLBounds:(MNMXCORD *)platlonBounds
-                            viewBounds:(MNMXCORD *)pvbounds;
+                            viewBounds:(MNMXCORD *)pvbounds
+                                themes:(Themes*)themes;
 
 - (NSArray *)getDistinctSymbols:(NSString *)tableName;
 

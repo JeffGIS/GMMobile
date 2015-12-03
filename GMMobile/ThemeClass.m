@@ -14,6 +14,7 @@
 {
     ThemeClass *class = [[ThemeClass alloc]init];
     class.title = title;
+    class.size = 1;
     return class;
 }
 /*- (void)setStatus:(int)status

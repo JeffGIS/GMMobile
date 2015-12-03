@@ -176,6 +176,26 @@
             class = [ThemeClass createWithTitle:@"22-23"];
             [thm.classes addObject:class];
             break;
+        case CurbRampTheme:
+            thm.legend.title = @"Intersections";
+            thm.numDesiredClasses = 4;
+            class = [ThemeClass createWithTitle:@"Original"];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Scheduled"];
+            class.color = [UIColor greenColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Built"];
+            class.color = [UIColor blueColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Inventoried"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            break;
     }
     thm.numClasses = (int)[thm.classes count];
     thm.legend.numCells = thm.numClasses;
@@ -212,7 +232,10 @@
                 if (_setSymbol)
                     dc.pointSymbol = cls.symbol;
                 if (_setColor)
+                {
                     dc.color = cls.color;
+                    dc.size = cls.size;
+                }
                 cls.count += val;
                 cls.numItems++;
                 _totCount += val;
@@ -319,6 +342,14 @@
                 break;
             case HourTheme:
                 val = tmtime.tm_hour/2;
+                if ([self incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:test])
+                    rtn = DISPLAY_ITEM;
+                break;
+            case CurbRampTheme:
+                val = (int)dc.string1.integerValue;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc

@@ -820,15 +820,22 @@ extern int keepProcessing;
 }
 
 -(void)displayCurRampIntersectionPoint:(CGContextRef)context
+                displayCharacteristics:(DisplayCharacteristics *)dc
               llCorners:(CORNERPOINTS *) latlonCornerPoints
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
+                 themes:(Themes*)themes
+
 {
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
-    CGColorRef intersectionPointColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.8].CGColor;
-    
+    int assignedTo, status;
+    CGColorRef intersectionPointColor1 = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.8].CGColor;
+    CGColorRef intersectionPointColor2 = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.8].CGColor;
+    CGColorRef intersectionPointColor3 = [UIColor colorWithRed:0 green:0 blue:1 alpha:0.8].CGColor;
+    CGColorRef color;
+    int isize=2;
     //LPSTR symName;
     
     if (![self continue])
@@ -850,7 +857,7 @@ extern int keepProcessing;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             //query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections"];
     }
@@ -861,13 +868,19 @@ extern int keepProcessing;
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
-        
-        DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-        
-        [self drawCurbRampIntersection:context
-                    atPoint:&llpoint
-                  withColor:intersectionPointColor
-                    andSize:size];
+        assignedTo = sqlite3_column_int(statement,2);
+        status = sqlite3_column_int(statement,3);
+        dc.string1 = [NSString stringWithFormat:@"%i",status];
+        if ([themes setDisplayCharacteristics:dc
+                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+        {
+            DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+            
+            [self drawCurbRampIntersection:context
+                        atPoint:&llpoint
+                      withColor:dc.color.CGColor
+                        andSize:size*dc.size];
+        }
     }
     
     SQLOK(sqlite3_finalize(statement),crd.database);

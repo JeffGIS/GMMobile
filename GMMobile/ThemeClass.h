@@ -18,6 +18,7 @@
 @property float pctOfTotal;
 @property float symbolWidth;
 @property UIColor * color;
+@property float size;
 @property PointSymbols symbol;
 
 + (ThemeClass*) createWithTitle:(NSString*)title;

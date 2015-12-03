@@ -36,6 +36,11 @@
             thm = [Theme createTheme:HourTheme];
             [_themeList addObject:thm];
             break;
+        case HCConfigCurbRamps:
+            thm = [Theme createTheme:CurbRampTheme];
+            thm.setColor = YES;
+            [_themeList addObject:thm];
+            break;
         default:
             break;
     }

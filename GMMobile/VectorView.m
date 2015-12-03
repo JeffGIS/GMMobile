@@ -291,9 +291,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    if (keepProcessing == self.displayID)
                                                    {
                                                        [pd displayCurRampIntersectionPoint:_context
+                                                                    displayCharacteristics:dc
                                                                                  llCorners:&_latlonCornerPoints
                                                                                   LLBounds:&_latlonBounds
-                                                                                viewBounds:&_viewBounds];
+                                                                                viewBounds:&_viewBounds
+                                                                                    themes:themes];
                                                    }
                                                }
                                                if (keepProcessing == self.displayID &&
