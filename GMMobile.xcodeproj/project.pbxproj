@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1F0723E81BEBD62F00966C36 /* SymbolDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */; };
-		690E828A1C10F50800AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E82891C10F50800AB410E /* Assets.bundle */; };
+		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
+		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
 		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
 		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
@@ -120,7 +121,6 @@
 		EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
 		EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D11A61B6A8008CE2D1 /* AppDelegate.m */; };
-		EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */; };
 		EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB5521D91A61B6A8008CE2D1 /* Main.storyboard */; };
 		EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */; };
@@ -161,7 +161,7 @@
 /* Begin PBXFileReference section */
 		1F0723E61BEBD62F00966C36 /* SymbolDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolDictionary.h; sourceTree = "<group>"; };
 		1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolDictionary.m; sourceTree = "<group>"; };
-		690E82891C10F50800AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
+		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
 		692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -462,7 +462,7 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				690E82891C10F50800AB410E /* Assets.bundle */,
+				690E829B1C11042A00AB410E /* Assets.bundle */,
 				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
 				69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */,
 				69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */,
@@ -788,6 +788,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				690E829D1C11044700AB410E /* Assets.bundle in Resources */,
 				A90506461A75E12B00288850 /* settings.png in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
@@ -840,7 +841,6 @@
 				A9A1C0A21B55652200A3DFD8 /* GoogleMaps.bundle in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
-				690E828A1C10F50800AB410E /* Assets.bundle in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
@@ -864,6 +864,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				690E829E1C11045600AB410E /* MapViewController.m in Sources */,
 				A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */,
 				EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */,
 				EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */,
@@ -903,7 +904,6 @@
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */,
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,
-				EB5521D51A61B6A8008CE2D1 /* MapViewController.m in Sources */,
 				69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */,
