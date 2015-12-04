@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 
 @property NSMutableArray *appList;
 @property NSMutableArray *legendList;
+@property HardCodedConfigs legendApp;
 @property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible;
 
