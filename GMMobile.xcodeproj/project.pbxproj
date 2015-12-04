@@ -30,6 +30,7 @@
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
 		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
+		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
 		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
@@ -186,6 +187,8 @@
 		69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpreadsheetViewController.h; sourceTree = "<group>"; };
 		69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetViewController.m; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
+		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
+		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		69DB8AD91BE3D83D009372AC /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		69DB8ADB1BE3D862009372AC /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -571,6 +574,8 @@
 				69EB532C1BE7EDEA002481BB /* CrimeOptions1.m */,
 				699D3A681BE883EB00BD6660 /* CrimeOptions2.h */,
 				699D3A691BE883EB00BD6660 /* CrimeOptions2.m */,
+				69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */,
+				69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */,
 				69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */,
 				69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */,
 				69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */,
@@ -871,6 +876,7 @@
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				69EB532A1BE7EA46002481BB /* CrimeDataPageVC.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
+				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
 				EBBC203F1AFB1345004BE242 /* UploadViewController.m in Sources */,
 				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,

@@ -98,6 +98,10 @@ extern int keepProcessing;
         removeViewControllerWithID:@"SpreadsheetVC"
                           animated:NO];
     
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"CurbRampDataOptionsVC"
+                          animated:NO];
+    
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
                                                name:@"didBecomeActive"
@@ -797,12 +801,29 @@ extern int keepProcessing;
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
-    UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+    {
+        UIViewController *crisDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CurbRampDataOptionsVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:crisDataVC
+                               atIndex:1
+                              animated:YES];
+    }
+    
+    else
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"CurbRampDataOptionsVC"
+                              animated:YES];
+    }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
+        UIViewController *crimeDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
+        
         [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:cdovc
+                  insertViewController:crimeDataVC
                                atIndex:1
                               animated:YES];
         
