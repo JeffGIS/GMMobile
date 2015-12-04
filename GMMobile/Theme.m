@@ -176,7 +176,7 @@
             class = [ThemeClass createWithTitle:@"22-23"];
             [thm.classes addObject:class];
             break;
-        case CurbRampTheme:
+        case CurbRampIntersectionTheme:
             thm.legend.title = @"Intersections";
             thm.numDesiredClasses = 4;
             class = [ThemeClass createWithTitle:@"Original"];
@@ -192,6 +192,46 @@
             class.size = 2;
             [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"Inventoried"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            break;
+        case CurbRampTheme:
+            thm.legend.title = @"Ramp Types";
+            thm.numDesiredClasses = 9;
+            class = [ThemeClass createWithTitle:@"1-Perpendicular"];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"2-Perpendicular Non Walkable"];
+            class.color = [UIColor greenColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"3-Combined Perpendicular Walkable"];
+            class.color = [UIColor blueColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"4-Combined Perpendicular Non Walkable"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"5-One Way Directional Adjacent to Curb & Gutter"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"6-One Way Directional Blended Transition"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"7-Parellel"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"8-Depressed Corner"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"9-Fan"];
             class.color = [UIColor redColor];
             class.size = 2;
             [thm.classes addObject:class];
@@ -348,12 +388,20 @@
                                 testPass:test])
                     rtn = DISPLAY_ITEM;
                 break;
-            case CurbRampTheme:
+            case CurbRampIntersectionTheme:
                 val = (int)dc.string1.integerValue;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
                                 testPass:test])
+                    rtn = DISPLAY_ITEM;
+                break;
+            case CurbRampTheme:
+              /*  val = (int)dc.string1.integerValue;
+                if ([self incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:test])*/
                     rtn = DISPLAY_ITEM;
                 break;
         }

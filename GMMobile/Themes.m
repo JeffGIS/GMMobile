@@ -42,6 +42,9 @@
             [_themeList addObject:thm];
             break;
         case HCConfigCurbRamps:
+            thm = [Theme createTheme:CurbRampIntersectionTheme];
+            thm.setColor = YES;
+            [_themeList addObject:thm];
             thm = [Theme createTheme:CurbRampTheme];
             thm.setColor = YES;
             [_themeList addObject:thm];

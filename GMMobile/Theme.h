@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     MonthTheme,
     DayofWeekTheme,
     HourTheme,
+    CurbRampIntersectionTheme,
     CurbRampTheme,
 };
 @interface Theme : NSObject
