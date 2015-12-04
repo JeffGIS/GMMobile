@@ -4,7 +4,6 @@
 #import "CrimeOptions2.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
-#import "ThemeLegend.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 
 @interface CrimeOptions2 ()
@@ -253,7 +252,7 @@ viewForHeaderInSection:(NSInteger)section
     else
         textLabel.text = text.copy;
     
-    textLabel.textAlignment = NSTextAlignmentLeft;
+    textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.adjustsFontSizeToFitWidth = YES;
     textLabel.tag = 888;
     

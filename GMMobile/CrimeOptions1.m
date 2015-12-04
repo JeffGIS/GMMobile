@@ -4,7 +4,6 @@
 #import "CrimeOptions1.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
-#import "ThemeLegend.h"
 #import "SymbolDictionary.h"
 
 @interface CrimeOptions1 ()

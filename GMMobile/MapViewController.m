@@ -826,7 +826,19 @@ extern int keepProcessing;
                   insertViewController:crimeDataVC
                                atIndex:1
                               animated:YES];
-        
+    }
+    
+    else
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"CrimeDataPageVC"
+                              animated:YES];
+    }
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+    {
+    
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
         
@@ -855,7 +867,8 @@ extern int keepProcessing;
                         legendsAreAlreadyDrawn = YES;
                 }
                 
-                if (!legendsAreAlreadyDrawn)
+                if (!legendsAreAlreadyDrawn &&
+                    ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
                 {
                     [self themeLegendWasDraggedOffRightSide];
                     return;
@@ -866,10 +879,6 @@ extern int keepProcessing;
     
     else
     {
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CrimeDataPageVC"
-                              animated:YES];
-        
         if (_legendsAreOffMap)
         {
             CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
@@ -1926,7 +1935,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
     }
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
         CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
@@ -2226,7 +2236,8 @@ haveVV:
 
 - (void)updateLegendPositions
 {
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
         if ([self legendIsExpanded])
             return;
@@ -2265,12 +2276,25 @@ haveVV:
                         legendsAreAlreadyDrawn = YES;
                 }
                 
-                if (!legendsAreAlreadyDrawn)
+                if (!legendsAreAlreadyDrawn &&
+                    ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
                 {
                     [self themeLegendWasDraggedOffRightSide];
                     return;
                 }
             }
+        }
+        
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlmos removeFromSuperview];
+        }
+        
+        for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlmos removeFromSuperview];
         }
         
         if (_legendsAreOffMap)
@@ -2291,18 +2315,6 @@ haveVV:
         for (int i = 0; i < legends.count; i++)
         {
             ThemeLegend *tl = legends[i];
-            
-            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
-            {
-                if (tlmos.tag == ((i + 1) * 111111))
-                    [tlmos removeFromSuperview];
-            }
-            
-            for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
-            {
-                if (tlmos.tag == ((i + 1) * 111111))
-                    [tlmos removeFromSuperview];
-            }
             
             if (tl.drawOnMap)
             {

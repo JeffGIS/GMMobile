@@ -399,7 +399,7 @@ viewForHeaderInSection:(NSInteger)section
     textLabel.textColor = UIColor.blackColor;
     textLabel.font = _font;
     textLabel.text = text.copy;
-    textLabel.textAlignment = NSTextAlignmentLeft;
+    textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.adjustsFontSizeToFitWidth = YES;
     textLabel.tag = 888;
     
@@ -408,7 +408,7 @@ viewForHeaderInSection:(NSInteger)section
     
     NSDictionary *attributes = @{NSFontAttributeName:_font};
     
-    CGRect textSize = [text boundingRectWithSize:self.frame.size
+    CGRect textSize = [text boundingRectWithSize:cell.contentView.frame.size
                                          options:NSStringDrawingUsesLineFragmentOrigin
                                       attributes:attributes
                                          context:nil];
@@ -419,18 +419,27 @@ viewForHeaderInSection:(NSInteger)section
     if (_legend.usePointSymbols)
     {
         CGFloat imageSize = (_rowHeight * 0.7);
+        CGFloat symbolSize = 52.0;
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            symbolSize = 36.0;
         
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, (_rowHeight * 0.15),
                                                                                imageSize, imageSize)];
         
-        imageView.image = imageFromSymbol(tlc.symbol, imageSize, _legend.symbolDefaultColor);
+        if (_legend.useClassColors)
+            imageView.image = imageFromSymbol(tlc.symbol, imageSize, tlc.symbolColor);
+        
+        else
+            imageView.image = imageFromSymbol(tlc.symbol, imageSize, _legend.symbolDefaultColor);
+        
         imageView.tag = 777;
         [cell.contentView addSubview:imageView];
         
-        textOriginX = MAX(textOriginX, ((imageView.frame.origin.x + imageView.frame.size.width) + 4.0));
+        textOriginX = (MIN(imageView.frame.size.height, (imageView.frame.origin.x + imageView.frame.size.width)) + 4.0);
+        textWidth = (self.frame.size.width - textOriginX);
     }
     
-    textWidth = MIN(textWidth, (tableView.frame.size.width - textOriginX));
     textLabel.frame = CGRectMake(textOriginX, 0.0, textWidth, _rowHeight);
     [cell.contentView addSubview:textLabel];
     
