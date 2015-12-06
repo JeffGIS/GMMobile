@@ -199,7 +199,11 @@
         case CurbRampTheme:
             thm.legend.title = @"Ramp Types";
             thm.legend.usePointSymbols = YES;
-            thm.numDesiredClasses = 9;
+            thm.numDesiredClasses = 10;
+            class = [ThemeClass createWithTitle:@"0-Unknown                      "];
+            class.color = [UIColor blackColor];
+            class.size = 1;
+            [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"1-Perpendicular                "];
             class.color = [UIColor yellowColor];
             class.size = 1;
@@ -390,7 +394,9 @@
                     rtn = DISPLAY_ITEM;
                 break;
             case CurbRampIntersectionTheme:
-                val = (int)dc.string1.integerValue;
+                if (dc.elementType != StreetIntersection)
+                    goto DisplayExit;
+                val = (int)dc.string2.integerValue;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
@@ -398,16 +404,20 @@
                     rtn = DISPLAY_ITEM;
                 break;
             case CurbRampTheme:
-              /*  val = (int)dc.string1.integerValue;
+                if (dc.elementType != CurbRamp)
+                    goto DisplayExit;
+                val = (int)dc.string2.integerValue;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
-                                testPass:test])*/
+                                testPass:test])
                     rtn = DISPLAY_ITEM;
                 break;
         }
     }
     return rtn;
+DisplayExit:
+    return DISPLAY_ITEM;
 }
 
 - (void) beginDisplay:(int)displayID
