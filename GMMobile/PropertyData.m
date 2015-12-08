@@ -1301,6 +1301,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                    fontSize:fontSize
                 minFontSize:minFontSize
                   textColor:textColor];
+    if (polyPartLen)
+        free (polyPartLen);
+    
+    free(pPoints);
+    
+
 Exit:
     return;
 }

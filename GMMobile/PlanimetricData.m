@@ -9,6 +9,8 @@ extern int keepProcessing;
 #import "PropertyData.h"
 #import "AlleyWallData.h"
 #import "ConfigurationControl.h"
+#import "CCodeLibrary/NVTextDrawing.h"
+#import "CCodeLibrary/mathutil.h"
 
 @interface PlanimetricData ()
 
@@ -830,10 +832,7 @@ extern int keepProcessing;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
-    int assignedTo, status;
-    CGColorRef intersectionPointColor1 = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.8].CGColor;
-    CGColorRef intersectionPointColor2 = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.8].CGColor;
-    CGColorRef intersectionPointColor3 = [UIColor colorWithRed:0 green:0 blue:1 alpha:0.8].CGColor;
+    int assignedTo, status, intID;
     CGColorRef color;
     int isize=2;
     //LPSTR symName;
@@ -857,7 +856,7 @@ extern int keepProcessing;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status,intID FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             //query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections"];
     }
@@ -870,16 +869,29 @@ extern int keepProcessing;
         BasePt.y = sqlite3_column_double(statement,1);
         assignedTo = sqlite3_column_int(statement,2);
         status = sqlite3_column_int(statement,3);
-        dc.string1 = [NSString stringWithFormat:@"%i",status];
+        intID = sqlite3_column_int(statement,4);
+        dc.elementType = StreetIntersection;
+        dc.string1 = [NSString stringWithFormat:@"%i",intID];
+        dc.string2 = [NSString stringWithFormat:@"%i",status];
         if ([themes setDisplayCharacteristics:dc
                                     displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
         {
             DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-            
-            [self drawCurbRampIntersection:context
-                        atPoint:&llpoint
-                      withColor:dc.color.CGColor
-                        andSize:size*dc.size];
+            NSString *text = [NSString stringWithFormat:@"%i",intID];
+
+            [self drawCurbRampIntersection:intID
+                                 inContext:context
+                                   atPoint:&llpoint
+                                 withColor:dc.color.CGColor
+                                   andSize:size*dc.size
+                                      text:text];
+            if (_zoom >= 17)
+                [self drawRampsForIntersection:intID
+                                            at:&BasePt
+                                     inContext:context
+                                          size:size*dc.size
+                                        themes:themes
+                                      dataBase:crd];
         }
     }
     
@@ -888,11 +900,15 @@ extern int keepProcessing;
     
 }
 
-- (void)drawCurbRampIntersection:(CGContextRef)context
-              atPoint:(DPOINT *)pPoint
-            withColor:(CGColorRef)color
-              andSize:(CGFloat)size
+- (void)drawCurbRampIntersection:(int)intID
+                       inContext:(CGContextRef)context
+                         atPoint:(DPOINT *)pPoint
+                       withColor:(CGColorRef)color
+                         andSize:(CGFloat)size
+                            text:(NSString*)text
 {
+    CGFloat fontSize = 48.0;
+    CGFloat minFontSize = 8.0;
     CGRect pointRect = CGRectMake((pPoint->x - size / 2.0),
                                   (pPoint->y - size / 2.0), size, size);
     
@@ -908,6 +924,70 @@ extern int keepProcessing;
     
     CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
+    LPDPOINT pPoints = PointsFromCGRect (&pointRect);
+    
+    [NVTextDrawing drawText:text
+                  inContext:context
+              withinPolygon:pPoints
+              withNumPoints:4
+                andNumLoops:0
+                    loopLen:0
+               withinBounds:0
+                   fontSize:fontSize
+                minFontSize:minFontSize
+                  textColor:[UIColor blackColor]];
+    free (pPoints);
+
+}
+- (void) drawRampsForIntersection:(int)intID
+                               at:(LPDPOINT) pIntPt
+                        inContext:(CGContextRef)context
+                             size:(CGFloat)size
+                           themes:(Themes*)themes
+                         dataBase:(CurbRampData *)crd
+
+{
+    sqlite3_stmt *statement = NULL;
+    int offX, offY;
+    int rampType, rampNum;
+    DPOINT rampPt;
+    DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
+    dc.elementType = CurbRamp;
+    NSString * query = [NSString stringWithFormat:@"SELECT lev21x, lev21y, rampType, rampNum, rampID FROM Ramps WHERE intID=%i",
+             intID];
+
+    SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        offX = sqlite3_column_int(statement,0);
+        offY = sqlite3_column_int(statement,1);
+        rampType = sqlite3_column_int(statement,2);
+        rampNum = sqlite3_column_int(statement,3);
+        LPSTR rampID = (LPSTR)sqlite3_column_text(statement,4);
+        dc.string1 = [NSString stringWithFormat:@"%i",rampNum];
+        dc.string2 = [NSString stringWithFormat:@"%i",rampType];
+        if ([themes setDisplayCharacteristics:dc
+                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+        {
+            LatLongToPixelXYd(pIntPt->y, pIntPt->x, 21, &rampPt.x, &rampPt.y);
+            rampPt.x += offX;
+            rampPt.y += offY;
+            PixelXYToLatLongd(rampPt.x, rampPt.y, 21, &rampPt.y, &rampPt.x);
+            DPOINT llpoint = TranDPOINT(&rampPt, _pTranLLtoView);
+            NSString *text = [NSString stringWithFormat:@"%i\n%i",rampNum,rampType];
+           [self drawCurbRampIntersection:rampNum
+                                inContext:context
+                                   atPoint:&llpoint
+                                 withColor:dc.color.CGColor
+                                  andSize:size*0.67
+                                     text:text];
+ 
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement),crd.database);
+    
 }
 
 - (NSArray *)getDistinctSymbols:(NSString *)tableName
