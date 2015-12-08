@@ -24,7 +24,7 @@
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
-		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; };
+		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		699D3A6A1BE883EB00BD6660 /* CrimeOptions2.m in Sources */ = {isa = PBXBuildFile; fileRef = 699D3A691BE883EB00BD6660 /* CrimeOptions2.m */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
