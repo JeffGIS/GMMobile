@@ -6,6 +6,8 @@
 #import "PropertyData.h"
 #import "AlleyWallData.h"
 
+extern int keepProcessing;
+
 @implementation NVDataLoader
 
 - (void) dealloc
@@ -88,6 +90,7 @@ Top:
 
 - (void)getNextDataset:(GetDatabaseSetting)dataSetID
 {
+    keepProcessing++;
     [self.timer invalidate];
     
     if (!_svc)
