@@ -113,6 +113,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
 - (void)drawRect:(CGRect)rect
 {
+    if (keepProcessing < 0)
+        return;
     int scale = UIScreen.mainScreen.scale;
     _vectorViewContext = UIGraphicsGetCurrentContext();
     if (!_vectorViewContext || !keepProcessing)

@@ -73,6 +73,7 @@ Top:
         self.timer = nil;
         self.dbList = nil;
         [_delegate NVDataLoaderSuccess];
+        keepProcessing = 1;
         return;
     }
     
@@ -90,7 +91,7 @@ Top:
 
 - (void)getNextDataset:(GetDatabaseSetting)dataSetID
 {
-    keepProcessing++;
+    keepProcessing = -1;
     [self.timer invalidate];
     
     if (!_svc)
