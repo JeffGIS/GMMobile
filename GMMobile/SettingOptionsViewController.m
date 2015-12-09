@@ -324,7 +324,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)playPromoVideo
 {
-    
     _mpController = [[MPMoviePlayerController alloc] initWithContentURL:
                      [NSURL fileURLWithPath:_iapFilePath]];
     
