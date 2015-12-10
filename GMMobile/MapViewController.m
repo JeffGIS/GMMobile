@@ -3606,8 +3606,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
     else if (alertView.tag == EDIT_INTERSECTION_STATUS)
     {
-        NSLog(@"%i", _selectedCRIntPt.intValue);
-        
         if (buttonIndex > 0)
         {
             IntersectionsDatabase *intDb = [[IntersectionsDatabase alloc] init];
