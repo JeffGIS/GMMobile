@@ -3347,7 +3347,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:@"Edit Intersection Status"
-                                               buttonTextArray:@[@"Cancel", @"Original", @"Scheduled", @"Built", @"Inventoried"]
+                                               buttonTextArray:@[@"Cancel", @"Never Surveyed", @"Original Survey",
+                                                                 @"Scheduled for Rebuild", @"Built", @"Resurveyed"]
                                               destructiveIndex:0];
     
     alert.tag = EDIT_INTERSECTION_STATUS;
@@ -3605,11 +3606,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
     else if (alertView.tag == EDIT_INTERSECTION_STATUS)
     {
+        NSLog(@"%i", _selectedCRIntPt.intValue);
+        
         if (buttonIndex > 0)
         {
             IntersectionsDatabase *intDb = [[IntersectionsDatabase alloc] init];
             
-            [intDb setIntersectionStatusTo:(int)alertView.tag
+            [intDb setIntersectionStatusTo:(int)buttonIndex
                            forIntersection:_selectedCRIntPt.intValue];
             
             [self dismissTableView];
