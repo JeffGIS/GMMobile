@@ -63,7 +63,7 @@
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Make In-App Purchase", @"Access Contacts", @"Test Compression & Upload"];
+                  @"Make In-App Purchase", @"Access Contacts"/*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -192,10 +192,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _nvcp = [NVContactPicker presentContactPickerInDelegate:self];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+    /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Compression & Upload"])
     {
-        /*NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
+        NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
                               UserDefaults.defaults.sharedFilePath];
         
         NSData *rawFile = [NSData dataWithContentsOfFile:filePath];
@@ -230,8 +230,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:NVLargeAlertIndexNone];
 #pragma unused(alert)
-        }*/
-    }
+        }
+    }*/
 }
 
 - (void)productsRequest:(SKProductsRequest *)request
