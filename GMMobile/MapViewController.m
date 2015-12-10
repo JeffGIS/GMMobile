@@ -4151,6 +4151,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     _polyline.map = nil;
     _polyline = nil;
+    
+    UIGraphicsBeginImageContext(_mapView.frame.size);
+    [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *mapImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:_mapView.frame];
+    imageView.image = grayscaleImage(mapImage);
+    
+    UIGraphicsBeginImageContext(_mapView.frame.size);
+    [imageView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    [_vectorView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    mapImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    imageView.image = mapImage;
+    
+    [self.view addSubview:imageView];
+    [self.view bringSubviewToFront:_vectorView];
 }
 
 - (void)mapToolbarDidSelectDigitize
