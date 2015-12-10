@@ -3608,11 +3608,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         if (buttonIndex > 0)
         {
-            IntersectionsDatabase *intDb = [[IntersectionsDatabase alloc] init];
-            
+            IntersectionsDatabase *intDb = [IntersectionsDatabase databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
+            [intDb startTransaction];
             [intDb setIntersectionStatusTo:(int)buttonIndex
                            forIntersection:_selectedCRIntPt.intValue];
-            
+            [intDb commitTransaction];
             [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];

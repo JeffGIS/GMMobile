@@ -856,7 +856,7 @@ extern int keepProcessing;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status,intID FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status,Intersections.intID, Intersections.lastUpdateTime FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             //query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections"];
     }
@@ -870,6 +870,7 @@ extern int keepProcessing;
         assignedTo = sqlite3_column_int(statement,2);
         status = sqlite3_column_int(statement,3);
         intID = sqlite3_column_int(statement,4);
+        int date = sqlite3_column_int(statement,5);
         dc.elementType = StreetIntersection;
         dc.string1 = [NSString stringWithFormat:@"%i",intID];
         dc.string2 = [NSString stringWithFormat:@"%i",status];
