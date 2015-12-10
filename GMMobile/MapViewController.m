@@ -1602,6 +1602,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
     
+    for (UIView *views in self.view.subviews)
+    {
+        if (views.tag == 77777)
+            [views removeFromSuperview];
+    }
+    
     [self clearVectorView];
     
     if (_firstView.frame.size.height != 0.0)
@@ -4152,24 +4158,34 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _polyline.map = nil;
     _polyline = nil;
     
+    UIView *grayscaleMapView = [[UIView alloc] initWithFrame:_mapView.frame];
+    grayscaleMapView.backgroundColor = UIColor.whiteColor;
+    [self.view addSubview:grayscaleMapView];
+    
     UIGraphicsBeginImageContext(_mapView.frame.size);
     [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *mapImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:_mapView.frame];
-    imageView.image = grayscaleImage(mapImage);
+    UIImageView *grayscaleView = [[UIImageView alloc] initWithFrame:grayscaleMapView.bounds];
+    grayscaleView.alpha = 0.6;
+    grayscaleView.image = grayscaleImage(mapImage);
+    [grayscaleMapView addSubview:grayscaleView];
     
     UIGraphicsBeginImageContext(_mapView.frame.size);
-    [imageView.layer renderInContext:UIGraphicsGetCurrentContext()];
+    [grayscaleMapView.layer renderInContext:UIGraphicsGetCurrentContext()];
     [_vectorView.layer renderInContext:UIGraphicsGetCurrentContext()];
     mapImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    imageView.image = mapImage;
+    [grayscaleMapView removeFromSuperview];
     
-    [self.view addSubview:imageView];
-    [self.view bringSubviewToFront:_vectorView];
+    grayscaleView.alpha = 1.0;
+    grayscaleView.frame = _mapView.frame;
+    grayscaleView.image = mapImage;
+    grayscaleView.tag = 77777;
+    
+    [self.view addSubview:grayscaleView];
 }
 
 - (void)mapToolbarDidSelectDigitize
