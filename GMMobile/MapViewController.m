@@ -20,6 +20,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/HelpButton.h"
 #import "CCodeLibrary/HelpWebView.h"
 #import "Destinations.h"
+#import "CCodeLibrary/IntersectionsDatabase.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -3594,6 +3595,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelTextSettingEMVLandPerAcre:
                 [self dismissTableView];
                 CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
+                
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 break;
@@ -3605,26 +3607,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         if (buttonIndex > 0)
         {
+            IntersectionsDatabase *intDb = [[IntersectionsDatabase alloc] init];
             
-        }
-        
-        switch (buttonIndex)
-        {
-            case IntersectionStatusOptionOriginal:
-                break;
-                
-            case IntersectionStatusOptionScheduled:
-                break;
-                
-            case IntersectionStatusOptionBuilt:
-                break;
-                
-            case IntersectionStatusOptionInventoried:
-                break;
-        }
-        
-        if (buttonIndex == IntersectionStatusOptionOriginal)
-        {
+            [intDb setIntersectionStatusTo:(int)alertView.tag
+                           forIntersection:_selectedCRIntPt.intValue];
+            
             [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];
