@@ -770,7 +770,7 @@ extern int keepProcessing;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
     
     CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
-                                                create:YES];
+                                                create:NO];
     [crd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT Intersections.intID,LATITUDE,LONGITUDE FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -845,7 +845,7 @@ extern int keepProcessing;
     CGFloat size = 150 * sizeFactor;;
     
     CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
-                                                create:YES];
+                                                create:NO];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
