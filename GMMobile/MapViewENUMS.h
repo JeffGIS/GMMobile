@@ -9,7 +9,6 @@
 #ifndef GMMobile_MapViewENUMS_h
 #define GMMobile_MapViewENUMS_h
 
-
 typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
 {
     PropertyTableViewSettingDefault,
@@ -94,6 +93,5 @@ typedef NS_ENUM(NSInteger, AlleyStatusSetting)
     AlleyStatusSettingCenterline,
     AlleyStatusSettingWall,
 };
-
 
 #endif

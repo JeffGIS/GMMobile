@@ -3,11 +3,11 @@
 
 extern int keepProcessing;
 
-#define CENSUS_ZOOM_ALERT   1
-#define DELETE_WALL_ALERT   2
-#define PARCEL_TEXT_ALERT   3
-#define PARCEL_COLOR_ALERT  4
-
+#define CENSUS_ZOOM_ALERT 1
+#define DELETE_WALL_ALERT 2
+#define PARCEL_TEXT_ALERT 3
+#define PARCEL_COLOR_ALERT 4
+#define EDIT_INTERSECTION_STATUS 5
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
@@ -3019,6 +3019,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Edit Intersection Status"])
+    {
+        [self editIntersectionStatus];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Marker"] ||
@@ -3335,6 +3341,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
+- (void)editIntersectionStatus
+{
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Edit Intersection Status"
+                                               buttonTextArray:@[@"Cancel", @"Original", @"Scheduled", @"Built", @"Inventoried"]
+                                              destructiveIndex:0];
+    
+    alert.tag = EDIT_INTERSECTION_STATUS;
+    [self deselectTableViewRow];
+}
+
 - (void)alleyStatus
 {
     [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWallStatus + 1)
@@ -3583,6 +3601,38 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
 
+    else if (alertView.tag == EDIT_INTERSECTION_STATUS)
+    {
+        if (buttonIndex > 0)
+        {
+            
+        }
+        
+        switch (buttonIndex)
+        {
+            case IntersectionStatusOptionOriginal:
+                break;
+                
+            case IntersectionStatusOptionScheduled:
+                break;
+                
+            case IntersectionStatusOptionBuilt:
+                break;
+                
+            case IntersectionStatusOptionInventoried:
+                break;
+        }
+        
+        if (buttonIndex == IntersectionStatusOptionOriginal)
+        {
+            [self dismissTableView];
+            [self removePreviousInfoWindow];
+            [self removeMarker];
+            
+            [self refreshVectorView:_mapView.projection.visibleRegion
+                             atZoom:_mapView.camera.zoom];
+        }
+    }
 }
 
 - (IBAction)dismissStreetView:(id)sender
@@ -4612,7 +4662,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeCRInt:
             _selectedCRIntPt = title;
-            _options = @[@"Edit Intersection Attributes", @"Remove Intersection Marker"];
+            _options = @[@"Edit Intersection Attributes", @"Edit Intersection Status", @"Remove Intersection Marker"];
             break;
             
         case MarkerInfoWindowTypeCustom:
