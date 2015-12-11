@@ -1019,6 +1019,15 @@ extern int keepProcessing;
 
 - (void)userSavedAlleyWallPointMove:(BOOL)saved
 {
+    
+}
+
+- (void)drawCurbRampIntersection:(CGContextRef)context
+                         atPoint:(DPOINT *)pPoint
+                       withColor:(CGColorRef)color
+                         andSize:(CGFloat)size
+{
+    
 }
 
 @end

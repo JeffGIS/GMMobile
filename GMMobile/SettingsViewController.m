@@ -50,15 +50,13 @@
 {
     [super viewWillAppear:animated];
     
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    _locSwitch.on = sharedAppDelegate.mapToolbar.wantUserLocation;
-    _extSwitch.on = sharedAppDelegate.mapToolbar.wantExtents;
-    _legdSwitch.on = sharedAppDelegate.mapToolbar.wantLegends;
-    _digtSwitch.on = sharedAppDelegate.mapToolbar.wantDigitize;
-    _markSwitch.on = sharedAppDelegate.mapToolbar.wantGrayscale;
-    _mapSwitch.on = sharedAppDelegate.mapToolbar.wantMapType;
-    _platSwitch.on = sharedAppDelegate.mapToolbar.wantPlat;
+    _locSwitch.on = CRAPI.sharedInstance.mapToolbar.wantUserLocation;
+    _extSwitch.on = CRAPI.sharedInstance.mapToolbar.wantExtents;
+    _legdSwitch.on = CRAPI.sharedInstance.mapToolbar.wantLegends;
+    _digtSwitch.on = CRAPI.sharedInstance.mapToolbar.wantDigitize;
+    _markSwitch.on = CRAPI.sharedInstance.mapToolbar.wantGrayscale;
+    _mapSwitch.on = CRAPI.sharedInstance.mapToolbar.wantMapType;
+    _platSwitch.on = CRAPI.sharedInstance.mapToolbar.wantPlat;
     
     PropertyData *pd = [[PropertyData alloc] init];
     BOOL pdopened = [pd open];
@@ -853,58 +851,44 @@ didReturnTimeInterval:(NSString *)timeInterval
 
 - (IBAction)toggleUserLocationButton:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantUserLocation
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantUserLocation
+                                                        value:sender.on];
 }
 
 - (IBAction)toggleExtentsButton:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantExtents
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantExtents
+                                                        value:sender.on];
 }
 
 - (IBAction)toggleLegendsButton:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantLegends
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantLegends
+                                                        value:sender.on];
 }
 
 - (IBAction)toggleDigitizeButton:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantDigitize
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantDigitize
+                                                        value:sender.on];
 }
 
 - (IBAction)toggleMarkerSwitch:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantGrayscale
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantGrayscale
+                                                        value:sender.on];
 }
 
 - (IBAction)toggleMapTypeSC:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMapType
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMapType
+                                                        value:sender.on];
 }
 
 - (IBAction)togglePlatSC:(UISwitch *)sender
 {
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantPlat
-                                                     value:sender.on];
+    [CRAPI.sharedInstance.mapToolbar setConfigurationProperty:MapToolbarPropertyWantPlat
+                                                        value:sender.on];
 }
 
 - (IBAction)showHeadingVC:(id)sender

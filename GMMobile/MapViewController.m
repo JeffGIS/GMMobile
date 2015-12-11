@@ -357,9 +357,7 @@ extern int keepProcessing;
                                                   view:self.view
                                               delegate:self];
     
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    sharedAppDelegate.mapToolbar = _mapToolbar;
-    
+    CRAPI.sharedInstance.mapToolbar = _mapToolbar;
     
     HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
@@ -674,13 +672,27 @@ extern int keepProcessing;
 
 - (void)emailPDF:(UIButton *)button
 {
-    NSArray *viewsArray = nil;
+    NSMutableArray *viewsArray = NSMutableArray.array;
     
     if ([self.view.subviews containsObject:[self.view viewWithTag:77777]])
-        viewsArray = [NSArray arrayWithObjects:[self.view viewWithTag:77777], _vectorView, nil];
+        [viewsArray addObject:[self.view viewWithTag:77777]];
     
     else
-        viewsArray = [NSArray arrayWithObjects:_mapView, _vectorView, nil];
+        [viewsArray addObject:_mapView];
+    
+    [viewsArray addObject:_vectorView];
+    
+    UIView *tlov = [[UIView alloc] initWithFrame:self.view.frame];
+    tlov.backgroundColor = UIColor.clearColor;
+    
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            [tlov addSubview:tlmos];
+    }
+    
+    if (tlov.subviews.count)
+        [viewsArray addObject:tlov];
     
     NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray];
     
@@ -706,6 +718,12 @@ extern int keepProcessing;
     
     else
         NSLog(@"ERROR:No mail account setup on device.");
+    
+    for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            [self.view addSubview:tlmos];
+    }
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller

@@ -65,7 +65,6 @@
 		A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = A91F36991AE97B0500602BCE /* redSliderThumb.png */; };
 		A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */; };
 		A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */; };
-		A92964131A9B807700F3332E /* MapToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = A92964121A9B807700F3332E /* MapToolbar.m */; };
 		A934A73F1B72AFF0000EB9F9 /* update.png in Resources */ = {isa = PBXBuildFile; fileRef = A934A73E1B72AFF0000EB9F9 /* update.png */; };
 		A94656221A85E04A00163525 /* split.png in Resources */ = {isa = PBXBuildFile; fileRef = A94656211A85E04A00163525 /* split.png */; };
 		A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9476B461A9C358A0082476B /* CoreText.framework */; };
@@ -235,8 +234,6 @@
 		A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingOptionsViewController.h; sourceTree = "<group>"; };
 		A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingOptionsViewController.m; sourceTree = "<group>"; };
 		A92382A91AD8840A0027659B /* blackOrangeCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackOrangeCrosshairs.png; sourceTree = "<group>"; };
-		A92964111A9B807700F3332E /* MapToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapToolbar.h; sourceTree = "<group>"; };
-		A92964121A9B807700F3332E /* MapToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapToolbar.m; sourceTree = "<group>"; };
 		A934A73E1B72AFF0000EB9F9 /* update.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = update.png; sourceTree = "<group>"; };
 		A94656211A85E04A00163525 /* split.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = split.png; sourceTree = "<group>"; };
 		A9476B461A9C358A0082476B /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
@@ -523,8 +520,6 @@
 				EBCA6C261A934D15003F7FB8 /* BoundaryData.m */,
 				EBF1356E1AE282A30046990F /* ConfigurationControl.h */,
 				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
-				A92964111A9B807700F3332E /* MapToolbar.h */,
-				A92964121A9B807700F3332E /* MapToolbar.m */,
 				EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */,
 				A99661391AB0BCFF006C0106 /* MarkerButton.h */,
 				A996613A1AB0BCFF006C0106 /* MarkerButton.m */,
@@ -918,7 +913,6 @@
 				EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */,
 				1F0723E81BEBD62F00966C36 /* SymbolDictionary.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
-				A92964131A9B807700F3332E /* MapToolbar.m in Sources */,
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */,
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,

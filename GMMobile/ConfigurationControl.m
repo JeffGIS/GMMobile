@@ -3,7 +3,7 @@
 extern int keepProcessing;
 
 #import "ConfigurationControl.h"
-#import "MapToolbar.h"
+#import "CCodeLibrary/MapToolbar.h"
 #import "AppDelegate.h"
 #import "PlanimetricData.h"
 
@@ -273,10 +273,8 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     if (_currentApp == appID)
         return FALSE;
 
-    AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
-    MapToolbar *tb = sharedAppDelegate.mapToolbar;
-   
-    _currentApp = appID;
+    MapToolbar *tb = CRAPI.sharedInstance.mapToolbar;
+   _currentApp = appID;
     
     for (int prop = 0; prop < NUMMapToolbarProperty; prop++)
     {
