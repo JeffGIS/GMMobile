@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, MapToolbarOrientation)
 - (void)mapToolbarDidSelectZoomExtent;
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType;
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting;
-- (void)mapToolbarDidSelectMarkerSwitch:(BOOL)option;
+- (void)mapToolbarDidSelectGrayscale;
 - (void)mapToolbarDidSelectDigitize;
 - (void)mapToolbarDidSelectLegends;
 - (void)mapToolbarDidFinishDrag;

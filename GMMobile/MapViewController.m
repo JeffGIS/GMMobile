@@ -4140,52 +4140,67 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [_mapView animateToBearing:newHeading.trueHeading];
 }
 
-- (void)mapToolbarDidSelectMarkerSwitch:(BOOL)option
+- (void)mapToolbarDidSelectClearMarkers
 {
-    if (option)
-        _clearMarkers = NO;
+    for (MarkerButton *markers in _markerArray)
+        [markers removeFromSuperview];
     
-    else
-    {
-        for (MarkerButton *markers in _markerArray)
-            [markers removeFromSuperview];
-        
-        [_markerArray removeAllObjects];
-        [self removePreviousInfoWindow];
-        _clearMarkers = YES;
-    }
-    
+    [_markerArray removeAllObjects];
+    [self removePreviousInfoWindow];
+    _clearMarkers = YES;
+
     _polyline.map = nil;
     _polyline = nil;
-    
-    UIView *grayscaleMapView = [[UIView alloc] initWithFrame:_mapView.frame];
-    grayscaleMapView.backgroundColor = UIColor.whiteColor;
-    [self.view addSubview:grayscaleMapView];
-    
-    UIGraphicsBeginImageContext(_mapView.frame.size);
-    [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *mapImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    UIImageView *grayscaleView = [[UIImageView alloc] initWithFrame:grayscaleMapView.bounds];
-    grayscaleView.alpha = 0.6;
-    grayscaleView.image = grayscaleImage(mapImage);
-    [grayscaleMapView addSubview:grayscaleView];
-    
-    UIGraphicsBeginImageContext(_mapView.frame.size);
-    [grayscaleMapView.layer renderInContext:UIGraphicsGetCurrentContext()];
-    [_vectorView.layer renderInContext:UIGraphicsGetCurrentContext()];
-    mapImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    [grayscaleMapView removeFromSuperview];
-    
-    grayscaleView.alpha = 1.0;
-    grayscaleView.frame = _mapView.frame;
-    grayscaleView.image = mapImage;
-    grayscaleView.tag = 77777;
-    
-    [self.view addSubview:grayscaleView];
+}
+
+- (void)mapToolbarDidSelectGrayscale
+{
+    if (![self.view.subviews containsObject:[self.view viewWithTag:77777]])
+    {
+        UIView *grayscaleMapView = [[UIView alloc] initWithFrame:_mapView.frame];
+        grayscaleMapView.backgroundColor = UIColor.whiteColor;
+        
+        UIGraphicsBeginImageContext(_mapView.frame.size);
+        [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage *mapImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        UIImageView *grayscaleView = [[UIImageView alloc] initWithFrame:grayscaleMapView.bounds];
+        grayscaleView.alpha = 0.6;
+        grayscaleView.image = grayscaleImage(mapImage);
+        [grayscaleMapView addSubview:grayscaleView];
+        
+        UIGraphicsBeginImageContext(_mapView.frame.size);
+        [grayscaleMapView.layer renderInContext:UIGraphicsGetCurrentContext()];
+        [_vectorView.layer renderInContext:UIGraphicsGetCurrentContext()];
+        mapImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        grayscaleView.alpha = 1.0;
+        grayscaleView.frame = _mapView.frame;
+        grayscaleView.image = mapImage;
+        grayscaleView.tag = 77777;
+        
+        [self.view addSubview:grayscaleView];
+        
+        if ([self.view.subviews containsObject:_mapToolbar])
+            [self.view bringSubviewToFront:_mapToolbar];
+        
+        if ([self.view.subviews containsObject:_compass])
+            [self.view bringSubviewToFront:_compass];
+        
+        for (HelpButton *helpButton in self.view.subviews)
+        {
+            if ([helpButton isKindOfClass:HelpButton.class])
+                [self.view bringSubviewToFront:helpButton];
+        }
+        
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [self.view bringSubviewToFront:tlmos];
+        }
+    }
 }
 
 - (void)mapToolbarDidSelectDigitize

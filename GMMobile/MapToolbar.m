@@ -5,9 +5,8 @@
 
 @interface MapToolbar ()
 
-@property (nonatomic) UIButton *extentsButton, *userLocationButton, *legendsButton, *digitizeButton;
+@property (nonatomic) UIButton *extentsButton, *userLocationButton, *legendsButton, *digitizeButton, *grayscaleButton;
 @property (nonatomic) UISegmentedControl *mapTypeSC, *platSC;
-@property (nonatomic) UISwitch *markerSwitch;
 @property (nonatomic) CGSize size;
 @property BOOL configChanged, myLocationEnabled, platOverride;
 @property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth, mapTypeSCVertWidth;
@@ -50,14 +49,14 @@
                            value:NO];
     
     //set internal sizes for all devices
-    mt.buttonSize = 47.0, mt.switchHeight = 31.0, mt.switchWidth = 51.0, mt.SCHeight = 29.0, mt.mapTypeSCWidth = 128.0;
+    mt.buttonSize = 47.0, mt.SCHeight = 29.0, mt.mapTypeSCWidth = 128.0;
     mt.buttonMargin = 8.0, mt.switchMargin = 16.0, mt.SCMargin = 17.0, mt.platSCWidth = 196.0;
     mt.mapTypeSCVertWidth = 76.0, mt.platSCVertWidth = 112.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         //reset internal sizes for iPhone
-        mt.buttonSize = 39.0, mt.buttonMargin = 5.0, mt.switchMargin = 9.0, mt.SCMargin = 10.0;
+        mt.buttonSize = 39.0, mt.buttonMargin = 5.0, mt.SCMargin = 10.0;
         mt.mapTypeSCWidth = 78.0, mt.platSCWidth = 166.0;
     }
     
@@ -102,18 +101,17 @@
     //add extents button by default
     [mt addSubview:mt.extentsButton];
     
-    mt.markerSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(((mt.buttonSize * 2.0) + (mt.buttonMargin * 3.0)),
-                                                                 mt.switchMargin, mt.switchWidth, mt.switchHeight)];
+    mt.grayscaleButton = [[UIButton alloc] initWithFrame:CGRectMake(((mt.buttonSize * 2.0) + (mt.buttonMargin * 3.0)),
+                                                                    mt.buttonMargin, mt.buttonSize, mt.buttonSize)];
     
-    [mt.markerSwitch addTarget:mt
-                        action:@selector(markerSwitchSelected:)
-              forControlEvents:UIControlEventValueChanged];
+    [mt setupButton:mt.grayscaleButton
+         imageTitle:@"grayscale"
+         edgeInsets:UIEdgeInsetsZero
+             target:mt
+           selector:@selector(grayscaleSelected:)];
     
-    mt.markerSwitch.on = YES;
-    mt.markerSwitch.tintColor = UIColor.redColor;
-    
-    //add marker switch by default
-    [mt addSubview:mt.markerSwitch];
+    //grayscale button by default
+    [mt addSubview:mt.grayscaleButton];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         mt.mapTypeSC = [[UISegmentedControl alloc] initWithItems:@[@"Stnd", @"Hybd"]];
@@ -177,6 +175,7 @@
     button.layer.cornerRadius = 10.0;
     button.layer.borderColor = UIColor.blackColor.CGColor;
     button.layer.borderWidth = 2.0;
+    button.layer.masksToBounds = YES;
     
     [button setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:imageTitle
                                                                                     ofType:@"png"]]
@@ -231,10 +230,10 @@
         [_delegate mapToolbarDidSelectZoomExtent];
 }
 
-- (void)markerSwitchSelected:(UISwitch *)markerSwitch
+- (void)grayscaleSelected:(UIButton *)button
 {
     if (_delegate)
-        [_delegate mapToolbarDidSelectMarkerSwitch:markerSwitch.on];
+        [_delegate mapToolbarDidSelectGrayscale];
 }
 
 - (void)mapTypeSelected:(UISegmentedControl *)segControl
@@ -317,9 +316,9 @@
     
     if (_wantMarkerSwitch)
     {
-        _markerSwitch.frame = CGRectMake(_buttonMargin, yCount, _switchWidth, _switchHeight);
-        yCount += (_buttonMargin + _switchHeight);
-        xCount = max(xCount, (_buttonMargin * 2.0) + _switchWidth);
+        _grayscaleButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
     }
     
     if (_wantMapType)
@@ -393,8 +392,8 @@
     
     if (_wantMarkerSwitch)
     {
-        _markerSwitch.frame = CGRectMake(xCount, _switchMargin, _switchWidth, _switchHeight);
-        xCount += (_buttonMargin + _switchWidth);
+        _grayscaleButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
     }
     
     if (_wantMapType)
@@ -682,18 +681,18 @@
         
         if (_wantMarkerSwitch)
         {
-            _markerSwitch.frame = CGRectMake(xCount, _switchMargin, _switchWidth, _switchHeight);
+            _grayscaleButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
             
-            if (![self.subviews containsObject:_markerSwitch])
-                [self addSubview:_markerSwitch];
+            if (![self.subviews containsObject:_grayscaleButton])
+                [self addSubview:_grayscaleButton];
             
-            xCount += (_buttonMargin + _switchWidth);
+            xCount += (_buttonMargin + _buttonSize);
         }
         
         else
         {
-            if ([self.subviews containsObject:_markerSwitch])
-                [_markerSwitch removeFromSuperview];
+            if ([self.subviews containsObject:_grayscaleButton])
+                [_grayscaleButton removeFromSuperview];
         }
         
         if (_wantMapType)
@@ -810,19 +809,19 @@
         
         if (_wantMarkerSwitch)
         {
-            _markerSwitch.frame = CGRectMake(_buttonMargin, yCount, _switchWidth, _switchHeight);
+            _grayscaleButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
             
-            if (![self.subviews containsObject:_markerSwitch])
-                [self addSubview:_markerSwitch];
+            if (![self.subviews containsObject:_grayscaleButton])
+                [self addSubview:_grayscaleButton];
             
-            yCount += (_buttonMargin + _switchHeight);
-            xCount = max(xCount, (_buttonMargin * 2.0) + _switchWidth);
+            yCount += (_buttonMargin + _buttonSize);
+            xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
         }
         
         else
         {
-            if ([self.subviews containsObject:_markerSwitch])
-                [_markerSwitch removeFromSuperview];
+            if ([self.subviews containsObject:_grayscaleButton])
+                [_grayscaleButton removeFromSuperview];
         }
         
         if (_wantMapType)
