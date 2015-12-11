@@ -835,8 +835,10 @@ extern int keepProcessing;
     int assignedTo, status, intID;
     CGColorRef color;
     int isize=2;
+    int tot=0, current=0;
     //LPSTR symName;
     
+    CRAPI.sharedInstance.mapToolbarProgress = 0;
     if (![self continue])
         return;
     CGFloat sizeFactor = 1;
@@ -853,50 +855,59 @@ extern int keepProcessing;
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     [crd open];
-    switch (CRAPI.sharedInstance.project)
-    {
-        case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status,Intersections.intID, Intersections.lastUpdateTime FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-            //query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM Intersections"];
-    }
-    
+    query = [NSString stringWithFormat:@"SELECT Count(*) FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    if ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        BasePt.x = sqlite3_column_double(statement,0);
-        BasePt.y = sqlite3_column_double(statement,1);
-        assignedTo = sqlite3_column_int(statement,2);
-        status = sqlite3_column_int(statement,3);
-        intID = sqlite3_column_int(statement,4);
-        int date = sqlite3_column_int(statement,5);
-        dc.elementType = StreetIntersection;
-        dc.string1 = [NSString stringWithFormat:@"%i",intID];
-        dc.string2 = [NSString stringWithFormat:@"%i",status];
-        if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
-        {
-            DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-            NSString *text = [NSString stringWithFormat:@"%i",intID];
-
-            [self drawCurbRampIntersection:intID
-                                 inContext:context
-                                   atPoint:&llpoint
-                                 withColor:dc.color.CGColor
-                                   andSize:size*dc.size
-                                      text:text];
-            if (_zoom >= 17)
-                [self drawRampsForIntersection:intID
-                                            at:&BasePt
-                                     inContext:context
-                                          size:size*dc.size
-                                        themes:themes
-                                      dataBase:crd];
-        }
+        tot = sqlite3_column_int(statement,0);
     }
-    
     SQLOK(sqlite3_finalize(statement),crd.database);
+    if (tot)
+    {
+        query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status,Intersections.intID, Intersections.lastUpdateTime FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        
+        SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+        
+        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+        {
+            [CRAPI.sharedInstance updateProgress:tot current:++current];
+
+            BasePt.x = sqlite3_column_double(statement,0);
+            BasePt.y = sqlite3_column_double(statement,1);
+            assignedTo = sqlite3_column_int(statement,2);
+            status = sqlite3_column_int(statement,3);
+            intID = sqlite3_column_int(statement,4);
+            int date = sqlite3_column_int(statement,5);
+            dc.elementType = StreetIntersection;
+            dc.string1 = [NSString stringWithFormat:@"%i",intID];
+            dc.string2 = [NSString stringWithFormat:@"%i",status];
+            if ([themes setDisplayCharacteristics:dc
+                                        displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+            {
+                DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+                NSString *text = [NSString stringWithFormat:@"%i",intID];
+                
+                [self drawCurbRampIntersection:intID
+                                     inContext:context
+                                       atPoint:&llpoint
+                                     withColor:dc.color.CGColor
+                                       andSize:size*dc.size
+                                          text:text];
+                if (_zoom >= 17)
+                    [self drawRampsForIntersection:intID
+                                                at:&BasePt
+                                         inContext:context
+                                              size:size*dc.size
+                                            themes:themes
+                                          dataBase:crd];
+            }
+        }
+        
+        SQLOK(sqlite3_finalize(statement),crd.database);
+    }
     [crd close:YES];
     
 }
