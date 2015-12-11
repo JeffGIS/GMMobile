@@ -4159,6 +4159,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         UIView *grayscaleMapView = [[UIView alloc] initWithFrame:_mapView.frame];
         grayscaleMapView.backgroundColor = UIColor.whiteColor;
+        grayscaleMapView.tag = 77777;
+        grayscaleMapView.userInteractionEnabled = NO;
         
         UIGraphicsBeginImageContext(_mapView.frame.size);
         [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
@@ -4169,19 +4171,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         grayscaleView.alpha = 0.6;
         grayscaleView.image = grayscaleImage(mapImage);
         [grayscaleMapView addSubview:grayscaleView];
+
+        [self.view addSubview:grayscaleMapView];
         
-        UIGraphicsBeginImageContext(_mapView.frame.size);
-        [grayscaleMapView.layer renderInContext:UIGraphicsGetCurrentContext()];
-        [_vectorView.layer renderInContext:UIGraphicsGetCurrentContext()];
-        mapImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        grayscaleView.alpha = 1.0;
-        grayscaleView.frame = _mapView.frame;
-        grayscaleView.image = mapImage;
-        grayscaleView.tag = 77777;
-        
-        [self.view addSubview:grayscaleView];
+        if ([self.view.subviews containsObject:_vectorView])
+            [self.view bringSubviewToFront:_vectorView];
         
         if ([self.view.subviews containsObject:_mapToolbar])
             [self.view bringSubviewToFront:_mapToolbar];
@@ -4200,6 +4194,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
                 [self.view bringSubviewToFront:tlmos];
         }
+        
+        for (MarkerButton *markers in _markerArray)
+            [self.view bringSubviewToFront:markers];
+        
+        if ([self.view.subviews containsObject:_infoWindow])
+            [self.view bringSubviewToFront:_infoWindow];
     }
 }
 
