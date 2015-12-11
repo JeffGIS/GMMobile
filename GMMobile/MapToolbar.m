@@ -5,8 +5,10 @@
 
 @interface MapToolbar ()
 
-@property (nonatomic) UIButton *extentsButton, *userLocationButton, *legendsButton, *digitizeButton, *grayscaleButton;
+@property (nonatomic) UIButton *extentsButton, *userLocationButton, *legendsButton, *digitizeButton;
+@property (nonatomic) UIButton *grayscaleButton, *clearMarkerButton, *emailPDFButton;
 @property (nonatomic) UISegmentedControl *mapTypeSC, *platSC;
+@property (nonatomic) UIProgressView *progressView;
 @property (nonatomic) CGSize size;
 @property BOOL configChanged, myLocationEnabled, platOverride;
 @property (nonatomic) CGFloat buttonSize, switchHeight, switchWidth, SCHeight, mapTypeSCWidth, mapTypeSCVertWidth;
@@ -33,7 +35,16 @@
     [mt setConfigurationProperty:MapToolbarPropertyWantExtents
                            value:YES];
     
-    [mt setConfigurationProperty:MapToolbarPropertyWantMarkerSwitch
+    [mt setConfigurationProperty:MapToolbarPropertyWantGrayscale
+                           value:YES];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantClearMarkers
+                           value:YES];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantEmailPDF
+                           value:YES];
+    
+    [mt setConfigurationProperty:MapToolbarPropertyWantProgressBar
                            value:YES];
     
     [mt setConfigurationProperty:MapToolbarPropertyWantPlat
@@ -86,7 +97,7 @@
              target:mt
            selector:@selector(userLocationSelected:)];
 
-    //add user location button by default
+    //add user location button added by default
     [mt addSubview:mt.userLocationButton];
     
     mt.extentsButton = [[UIButton alloc] initWithFrame:CGRectMake((mt.buttonSize + (mt.buttonMargin * 2.0)),
@@ -98,7 +109,7 @@
              target:mt
            selector:@selector(extentsSelected:)];
   
-    //add extents button by default
+    //add extents button added by default
     [mt addSubview:mt.extentsButton];
     
     mt.grayscaleButton = [[UIButton alloc] initWithFrame:CGRectMake(((mt.buttonSize * 2.0) + (mt.buttonMargin * 3.0)),
@@ -110,8 +121,32 @@
              target:mt
            selector:@selector(grayscaleSelected:)];
     
-    //grayscale button by default
+    //grayscale button added by default
     [mt addSubview:mt.grayscaleButton];
+    
+    mt.clearMarkerButton = [[UIButton alloc] initWithFrame:CGRectMake(((mt.buttonSize * 3.0) + (mt.buttonMargin * 4.0)),
+                                                                      mt.buttonMargin, mt.buttonSize, mt.buttonSize)];
+    
+    [mt setupButton:mt.clearMarkerButton
+         imageTitle:@"clearMarkers"
+         edgeInsets:UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0)
+             target:mt
+           selector:@selector(clearMarkersSelected:)];
+    
+    //clear marker button added by default
+    [mt addSubview:mt.clearMarkerButton];
+    
+    mt.emailPDFButton = [[UIButton alloc] initWithFrame:CGRectMake(((mt.buttonSize * 4.0) + (mt.buttonMargin * 5.0)),
+                                                                   mt.buttonMargin, mt.buttonSize, mt.buttonSize)];
+    
+    [mt setupButton:mt.emailPDFButton
+         imageTitle:@"emailIcon"
+         edgeInsets:UIEdgeInsetsMake(5.0, 5.0, 5.0, 5.0)
+             target:mt
+           selector:@selector(emailPDFSelected:)];
+    
+    //email PDF button added by default
+    [mt addSubview:mt.emailPDFButton];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         mt.mapTypeSC = [[UISegmentedControl alloc] initWithItems:@[@"Stnd", @"Hybd"]];
@@ -236,6 +271,18 @@
         [_delegate mapToolbarDidSelectGrayscale];
 }
 
+- (void)clearMarkersSelected:(UIButton *)button
+{
+    if (_delegate)
+        [_delegate mapToolbarDidSelectClearMarkers];
+}
+
+- (void)emailPDFSelected:(UIButton *)button
+{
+    if (_delegate)
+        [_delegate mapToolbarDidSelectEmailPDF];
+}
+
 - (void)mapTypeSelected:(UISegmentedControl *)segControl
 {
     if (_delegate)
@@ -314,9 +361,23 @@
         xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
     }
     
-    if (_wantMarkerSwitch)
+    if (_wantGrayscale)
     {
         _grayscaleButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+    }
+    
+    if (_wantClearMarkers)
+    {
+        _clearMarkerButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
+        yCount += (_buttonMargin + _buttonSize);
+        xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
+    }
+    
+    if (_wantEmailPDF)
+    {
+        _emailPDFButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
         yCount += (_buttonMargin + _buttonSize);
         xCount = max(xCount, (_buttonMargin * 2.0) + _buttonSize);
     }
@@ -390,9 +451,21 @@
         xCount += (_buttonMargin + _buttonSize);
     }
     
-    if (_wantMarkerSwitch)
+    if (_wantGrayscale)
     {
         _grayscaleButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
+    }
+    
+    if (_wantClearMarkers)
+    {
+        _clearMarkerButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+        xCount += (_buttonMargin + _buttonSize);
+    }
+    
+    if (_wantEmailPDF)
+    {
+        _emailPDFButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
         xCount += (_buttonMargin + _buttonSize);
     }
     
@@ -515,7 +588,7 @@
     [self setPreviousConfiguration];
     
     _wantDigitize = _wantExtents = _wantLegends = _wantMapType =
-    _wantMarkerSwitch = _wantUserLocation = NO;
+    _wantGrayscale = _wantUserLocation = NO;
     
     _wantPlat = _configChanged = YES;
     
@@ -545,7 +618,10 @@
 {
     _previousConfig[MapToolbarPropertyWantUserLocation] = _wantUserLocation;
     _previousConfig[MapToolbarPropertyWantPlat] = _wantPlat;
-    _previousConfig[MapToolbarPropertyWantMarkerSwitch] = _wantMarkerSwitch;
+    _previousConfig[MapToolbarPropertyWantGrayscale] = _wantGrayscale;
+    _previousConfig[MapToolbarPropertyWantClearMarkers] = _wantClearMarkers;
+    _previousConfig[MapToolbarPropertyWantEmailPDF] = _wantEmailPDF;
+    _previousConfig[MapToolbarPropertyWantProgressBar] = _wantProgressBar;
     _previousConfig[MapToolbarPropertyWantMapType] = _wantMapType;
     _previousConfig[MapToolbarPropertyWantLegends] = _wantLegends;
     _previousConfig[MapToolbarPropertyWantExtents] = _wantExtents;
@@ -556,7 +632,10 @@
 {
     _wantUserLocation = _previousConfig[MapToolbarPropertyWantUserLocation];
     _wantPlat = _previousConfig[MapToolbarPropertyWantPlat];
-    _wantMarkerSwitch = _previousConfig[MapToolbarPropertyWantMarkerSwitch];
+    _wantGrayscale = _previousConfig[MapToolbarPropertyWantGrayscale];
+    _wantClearMarkers = _previousConfig[MapToolbarPropertyWantClearMarkers];
+    _wantEmailPDF = _previousConfig[MapToolbarPropertyWantEmailPDF];
+    _wantProgressBar = _previousConfig[MapToolbarPropertyWantProgressBar];
     _wantMapType = _previousConfig[MapToolbarPropertyWantMapType];
     _wantLegends = _previousConfig[MapToolbarPropertyWantLegends];
     _wantExtents = _previousConfig[MapToolbarPropertyWantExtents];
@@ -592,8 +671,20 @@
             _wantLegends = value;
             break;
             
-        case MapToolbarPropertyWantMarkerSwitch:
-            _wantMarkerSwitch = value;
+        case MapToolbarPropertyWantGrayscale:
+            _wantGrayscale = value;
+            break;
+            
+        case MapToolbarPropertyWantClearMarkers:
+            _wantClearMarkers = value;
+            break;
+            
+        case MapToolbarPropertyWantEmailPDF:
+            _wantEmailPDF = value;
+            break;
+            
+        case MapToolbarPropertyWantProgressBar:
+            _wantProgressBar = value;
             break;
             
         default:
@@ -679,7 +770,7 @@
                 [_digitizeButton removeFromSuperview];
         }
         
-        if (_wantMarkerSwitch)
+        if (_wantGrayscale)
         {
             _grayscaleButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
             
@@ -693,6 +784,38 @@
         {
             if ([self.subviews containsObject:_grayscaleButton])
                 [_grayscaleButton removeFromSuperview];
+        }
+        
+        if (_wantClearMarkers)
+        {
+            _clearMarkerButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_clearMarkerButton])
+                [self addSubview:_clearMarkerButton];
+            
+            xCount += (_buttonMargin + _buttonSize);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_clearMarkerButton])
+                [_clearMarkerButton removeFromSuperview];
+        }
+        
+        if (_wantEmailPDF)
+        {
+            _emailPDFButton.frame = CGRectMake(xCount, _buttonMargin, _buttonSize, _buttonSize);
+            
+            if (![self.subviews containsObject:_emailPDFButton])
+                [self addSubview:_emailPDFButton];
+            
+            xCount += (_buttonMargin + _buttonSize);
+        }
+        
+        else
+        {
+            if ([self.subviews containsObject:_emailPDFButton])
+                [_emailPDFButton removeFromSuperview];
         }
         
         if (_wantMapType)
@@ -807,7 +930,7 @@
                 [_digitizeButton removeFromSuperview];
         }
         
-        if (_wantMarkerSwitch)
+        if (_wantGrayscale)
         {
             _grayscaleButton.frame = CGRectMake(_buttonMargin, yCount, _buttonSize, _buttonSize);
             
@@ -883,8 +1006,6 @@
         [self splitScreenSettingSelected:MapViewScreenSettingFullscreen];
         _platSC.selectedSegmentIndex = MapViewScreenSettingFullscreen;
     }
-    
-    //_wantLegends controls a pulldown list of available legends which display with the MarkerView class
 }
 
 @end

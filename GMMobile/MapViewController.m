@@ -32,7 +32,7 @@ extern int keepProcessing;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property BOOL clearMarkers, clearWhenDeselected, rotateZoom, blockVectorView, legendsAreOffMap;
+@property BOOL clearWhenDeselected, rotateZoom, blockVectorView, legendsAreOffMap;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
@@ -494,14 +494,6 @@ extern int keepProcessing;
         
         [_mapView animateToCameraPosition:camera];
         
-        if (_clearMarkers)
-        {
-            for (MarkerButton *markers in _markerArray)
-                [markers removeFromSuperview];
-            
-            [_markerArray removeAllObjects];
-        }
-        
         _selectedPIDCoords = pidCoord;
         
         for (MarkerButton *marker in _markerArray)
@@ -682,7 +674,15 @@ extern int keepProcessing;
 
 - (void)emailPDF:(UIButton *)button
 {
-    NSData *pdf = [NVPDFSnapshotter pdfFromViews:[NSArray arrayWithObjects:_mapView, _vectorView, nil]];
+    NSArray *viewsArray = nil;
+    
+    if ([self.view.subviews containsObject:[self.view viewWithTag:77777]])
+        viewsArray = [NSArray arrayWithObjects:[self.view viewWithTag:77777], _vectorView, nil];
+    
+    else
+        viewsArray = [NSArray arrayWithObjects:_mapView, _vectorView, nil];
+    
+    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray];
     
     if (MFMailComposeViewController.canSendMail)
     {
@@ -1132,14 +1132,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         if (highlightList.count)
         {
-            if (_clearMarkers)
-            {
-                for (MarkerButton *markers in _markerArray)
-                    [markers removeFromSuperview];
-                
-                [_markerArray removeAllObjects];
-            }
-            
             PickedItem *pi = [PickedItem nearestPickedItem:highlightList];
             CLLocationCoordinate2D pickedPt;
             pickedPt.latitude = pi.pickedPoint.y;
@@ -4147,7 +4139,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [_markerArray removeAllObjects];
     [self removePreviousInfoWindow];
-    _clearMarkers = YES;
 
     _polyline.map = nil;
     _polyline = nil;
@@ -4201,6 +4192,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if ([self.view.subviews containsObject:_infoWindow])
             [self.view bringSubviewToFront:_infoWindow];
     }
+}
+
+- (void)mapToolbarDidSelectEmailPDF
+{
+    [self emailPDF:nil];
 }
 
 - (void)mapToolbarDidSelectDigitize

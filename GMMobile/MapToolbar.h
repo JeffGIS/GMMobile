@@ -3,7 +3,7 @@
 
 #import "CCodeLibrary/CCodeLibrary.h"
 
-#define NUMMapToolbarProperty 7
+#define NUMMapToolbarProperty 10
 
 typedef NS_ENUM(NSInteger, MapToolbarProperty)
 {
@@ -13,7 +13,10 @@ typedef NS_ENUM(NSInteger, MapToolbarProperty)
     MapToolbarPropertyWantUserLocation,
     MapToolbarPropertyWantExtents,
     MapToolbarPropertyWantLegends,
-    MapToolbarPropertyWantMarkerSwitch,
+    MapToolbarPropertyWantGrayscale,
+    MapToolbarPropertyWantClearMarkers,
+    MapToolbarPropertyWantEmailPDF,
+    MapToolbarPropertyWantProgressBar,
 };
 
 typedef NS_ENUM(NSInteger, MapToolbarOrientation)
@@ -34,6 +37,8 @@ typedef NS_ENUM(NSInteger, MapToolbarOrientation)
 - (void)mapToolbarDidSelectMapType:(NSInteger)mapType;
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting;
 - (void)mapToolbarDidSelectGrayscale;
+- (void)mapToolbarDidSelectClearMarkers;
+- (void)mapToolbarDidSelectEmailPDF;
 - (void)mapToolbarDidSelectDigitize;
 - (void)mapToolbarDidSelectLegends;
 - (void)mapToolbarDidFinishDrag;
@@ -44,7 +49,9 @@ typedef NS_ENUM(NSInteger, MapToolbarOrientation)
 
 @property (nonatomic, weak) id <MapToolbarDelegate> delegate;
 @property (nonatomic) MapToolbarOrientation orientation;
-@property (readonly) BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation, wantExtents, wantLegends, wantMarkerSwitch;
+@property (readonly) BOOL wantPlat, wantDigitize, wantMapType, wantUserLocation;
+@property (readonly) BOOL wantExtents, wantLegends, wantGrayscale, wantClearMarkers;
+@property (readonly) BOOL wantEmailPDF, wantProgressBar;
 
 + (MapToolbar *)showMapToolbarWithCenter:(CGPoint)center
                                    view:(UIView *)view

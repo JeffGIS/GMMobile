@@ -56,7 +56,7 @@
     _extSwitch.on = sharedAppDelegate.mapToolbar.wantExtents;
     _legdSwitch.on = sharedAppDelegate.mapToolbar.wantLegends;
     _digtSwitch.on = sharedAppDelegate.mapToolbar.wantDigitize;
-    _markSwitch.on = sharedAppDelegate.mapToolbar.wantMarkerSwitch;
+    _markSwitch.on = sharedAppDelegate.mapToolbar.wantGrayscale;
     _mapSwitch.on = sharedAppDelegate.mapToolbar.wantMapType;
     _platSwitch.on = sharedAppDelegate.mapToolbar.wantPlat;
     
@@ -887,7 +887,7 @@ didReturnTimeInterval:(NSString *)timeInterval
 {
     AppDelegate *sharedAppDelegate = UIApplication.sharedApplication.delegate;
     
-    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantMarkerSwitch
+    [sharedAppDelegate.mapToolbar setConfigurationProperty:MapToolbarPropertyWantGrayscale
                                                      value:sender.on];
 }
 
