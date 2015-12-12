@@ -14,7 +14,7 @@
 
 @end
 
-@interface ThemeLegendMapOverlay : UIView <UITableViewDataSource,UITableViewDelegate>
+@interface ThemeLegendMapOverlay : UIView <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) ThemeLegend *legend;

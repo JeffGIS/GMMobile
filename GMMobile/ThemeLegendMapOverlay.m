@@ -95,13 +95,33 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:headerView.frame];
-    headerLabel.font = _headerFont;
-    headerLabel.textColor = UIColor.whiteColor;
-    headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = _legend.title;
+    UIButton *titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
+    titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    titleButton.titleLabel.font = _headerFont;
     
-    [headerView addSubview:headerLabel];
+    [titleButton setTitleColor:UIColor.whiteColor
+                      forState:UIControlStateNormal];
+    
+    if (_legend.titles.count > 1)
+    {
+        [titleButton setTitleColor:UIColor.greenColor
+                          forState:UIControlStateHighlighted];
+        
+        [titleButton addTarget:self
+                        action:@selector(showTitles:)
+              forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    else
+    {
+        [titleButton setTitleColor:UIColor.redColor
+                          forState:UIControlStateHighlighted];
+    }
+    
+    [titleButton setTitle:_legend.title
+                 forState:UIControlStateNormal];
+    
+    [headerView addSubview:titleButton];
     
     if (![headerView.subviews containsObject:[headerView viewWithTag:(self.tag * 111)]])
     {
@@ -159,6 +179,46 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     return headerView;
+}
+
+- (void)showTitles:(UIButton *)button
+{
+    _tabBar.userInteractionEnabled = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _tabBar.alpha = 0.3;
+                     }];
+    
+    NSMutableArray *textArray = NSMutableArray.array;
+    [textArray addObject:@"Cancel"];
+    [textArray addObjectsFromArray:_legend.titles.copy];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.superview
+                                                      delegate:self
+                                                         title:@"Select Legend Title"
+                                               buttonTextArray:textArray
+                                              destructiveIndex:1];
+#pragma unused(alert)
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex > 0)
+    {
+        _legend.currentTitleIndex = (int)(buttonIndex - 1);
+        [_tableView reloadData];
+    }
+    
+    [alertView hideLargeAlertView:YES];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         _tabBar.alpha = 1.0;
+                     }];
+    
+    _tabBar.userInteractionEnabled = YES;
 }
 
 - (void)dragButtonBegin:(UIButton *)button

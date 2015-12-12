@@ -32,8 +32,10 @@
     another.labelBkColor = [[UIColor alloc]initWithCGColor:_labelBkColor.CGColor];
     another.labelTxColor = [[UIColor alloc]initWithCGColor:_labelTxColor.CGColor];
     another.symbolDefaultColor = [[UIColor alloc]initWithCGColor:_symbolDefaultColor.CGColor];
-    another.title = [NSString stringWithString:_title];
-    another.cells = [[NSMutableArray alloc]init];
+    another.title = _title;
+    another.currentTitleIndex = _currentTitleIndex;
+    another.titles = [NSMutableArray arrayWithArray:_titles.copy];
+    another.cells = NSMutableArray.array;
     another.portraitMapOrigin = _portraitMapOrigin;
     another.landscapeMapOrigin = _landscapeMapOrigin;
     another.isDraggedLandscape = _isDraggedLandscape;
