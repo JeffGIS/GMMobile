@@ -33,8 +33,8 @@
     another.labelTxColor = [[UIColor alloc]initWithCGColor:_labelTxColor.CGColor];
     another.symbolDefaultColor = [[UIColor alloc]initWithCGColor:_symbolDefaultColor.CGColor];
     another.title = _title;
-    another.currentTitleIndex = _currentTitleIndex;
     another.titles = [NSMutableArray arrayWithArray:_titles.copy];
+    another.currentTitleIndex = _currentTitleIndex;
     another.cells = NSMutableArray.array;
     another.portraitMapOrigin = _portraitMapOrigin;
     another.landscapeMapOrigin = _landscapeMapOrigin;
@@ -59,6 +59,11 @@
 {
     [UserDefaults.defaults saveBool:drawOnMap
                              forKey:[NSString stringWithFormat:@"ThemeLegend%@", _title]];
+}
+
+- (void)setCurrentTitleIndex:(int)currentTitleIndex
+{
+    self.title = (NSString*)self.titles[currentTitleIndex];
 }
 
 @end

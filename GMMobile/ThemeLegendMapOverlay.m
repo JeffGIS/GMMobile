@@ -209,6 +209,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         _legend.currentTitleIndex = (int)(buttonIndex - 1);
         [_tableView reloadData];
+        [_delegate themeLegendDidChangeStatus:YES];
     }
     
     [alertView hideLargeAlertView:YES];

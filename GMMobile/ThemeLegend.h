@@ -37,7 +37,7 @@
 
 @property NSString* title;      //current legend title
 @property NSMutableArray *titles; //possible titles
-@property int currentTitleIndex; //index of current title
+@property (nonatomic)int currentTitleIndex; //index of current title
 @property NSMutableArray *cells;  //ThemeLegendCell array
 
 @property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait;
