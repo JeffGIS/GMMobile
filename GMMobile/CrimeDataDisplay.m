@@ -68,6 +68,7 @@
     LPSTR dept;
     CGFloat size;
     CGFloat sizeFactor = 5;
+    int tot=0, current=0;
     
     /*if (_zoom > 18)
         sizeFactor *= (2.0 *(_zoom - 18.0));
@@ -105,10 +106,11 @@
                      fromTime/1000.0-1,
                      toTime/1000.0+1];
             SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
-            sqlite3_step(statement);
-            controlNbr = sqlite3_column_int(statement,0);
-            
-            SQLOK(sqlite3_finalize(statement), _cd.database);
+            if ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+            {
+                tot = sqlite3_column_int(statement,0);
+            }
+            SQLOK(sqlite3_finalize(statement),_cd.database);
             
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.maxX    >=%f AND\
@@ -129,37 +131,40 @@
                      toTime/1000.0+1];
     }
     
-    SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
-    
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    if (tot)
     {
-        nFound++;
-        controlNbr = sqlite3_column_int(statement,0);
-        BasePt.x = sqlite3_column_double(statement,1);
-        BasePt.y = sqlite3_column_double(statement,2);
-        offense = (LPSTR)sqlite3_column_text(statement,3);
-        dc.dPoint = BasePt;
-        dc.UCR = sqlite3_column_int(statement,4);
-        dc.itemBeginTime = sqlite3_column_int(statement,5);
-        dc.itemEndTime = sqlite3_column_int(statement,6);
-        dept = (LPSTR)sqlite3_column_text(statement,7);
-        dc.string1 = [NSString stringWithUTF8String:offense];
-        dc.string2 = [NSString stringWithUTF8String:dept];
-        dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-        if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+        SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+        
+        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
-            DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-            size = 25;
-            [self drawCrimePoint:context
-                         atPoint:&llpoint
-                     usingSymbol:dc.pointSymbol
-                       withColor:dc.color.CGColor
-                         andSize:(size * sizeFactor)];
+            [CRAPI.sharedInstance updateProgress:tot current:++current];
+            controlNbr = sqlite3_column_int(statement,0);
+            BasePt.x = sqlite3_column_double(statement,1);
+            BasePt.y = sqlite3_column_double(statement,2);
+            offense = (LPSTR)sqlite3_column_text(statement,3);
+            dc.dPoint = BasePt;
+            dc.UCR = sqlite3_column_int(statement,4);
+            dc.itemBeginTime = sqlite3_column_int(statement,5);
+            dc.itemEndTime = sqlite3_column_int(statement,6);
+            dept = (LPSTR)sqlite3_column_text(statement,7);
+            dc.string1 = [NSString stringWithUTF8String:offense];
+            dc.string2 = [NSString stringWithUTF8String:dept];
+            dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+            if ([themes setDisplayCharacteristics:dc
+                                        displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+            {
+                DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+                size = 25;
+                [self drawCrimePoint:context
+                             atPoint:&llpoint
+                         usingSymbol:dc.pointSymbol
+                           withColor:dc.color.CGColor
+                             andSize:(size * sizeFactor)];
+            }
         }
+        
+        SQLOK(sqlite3_finalize(statement), _cd.database);
     }
-    
-    SQLOK(sqlite3_finalize(statement), _cd.database);
     [_cd close];
 }
 

@@ -17,6 +17,7 @@
     ThemeClass *class;
     thm.type = type;
     thm.legend = [[ThemeLegend alloc]init];
+    thm.titles = [[NSMutableArray alloc]init];
     thm.classes = [[NSMutableArray alloc]init];
     thm.legend.aspectRatio = 0.7;
     thm.legend.numColumns = 1;
@@ -35,6 +36,7 @@
     {
         case Part1Theme:
             thm.legend.title = @"Part 1 Crimes";
+            [thm addTitle:thm.legend.title];
             thm.setSymbol = YES;
             thm.legend.usePointSymbols = YES;
             thm.numDesiredClasses = 8;
@@ -65,6 +67,7 @@
             break;
         case DepartmentTheme:
             thm.legend.title = @"Department";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 4;
             class = [ThemeClass createWithTitle:@"MP"];
             [thm.classes addObject:class];
@@ -77,6 +80,7 @@
             break;
         case DayNightTheme:
             thm.legend.title = @"Day - Night";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 2;
             class = [ThemeClass createWithTitle:@"Day  "];
             class.color = [UIColor yellowColor];
@@ -87,6 +91,7 @@
             break;
         case YearTheme:
             thm.legend.title = @"Year";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 6;
             class = [ThemeClass createWithTitle:@"2010"];
             [thm.classes addObject:class];
@@ -103,6 +108,7 @@
             break;
         case MonthTheme:
             thm.legend.title = @"Month";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 12;
             class = [ThemeClass createWithTitle:@"Jan"];
             [thm.classes addObject:class];
@@ -131,6 +137,7 @@
             break;
         case DayofWeekTheme:
             thm.legend.title = @"Day";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 7;
             class = [ThemeClass createWithTitle:@"Sun"];
             [thm.classes addObject:class];
@@ -149,6 +156,7 @@
             break;
         case HourTheme:
             thm.legend.title = @"Hour";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 12;
             thm.legend.numColumns = 2;
             class = [ThemeClass createWithTitle:@"00-01"];
@@ -178,6 +186,7 @@
             break;
         case CurbRampIntersectionTheme:
             thm.legend.title = @"Intersections";
+            [thm addTitle:thm.legend.title];
             thm.numDesiredClasses = 4;
             class = [ThemeClass createWithTitle:@"Original   "];
             class.color = [UIColor yellowColor];
@@ -198,6 +207,10 @@
             break;
         case CurbRampTheme:
             thm.legend.title = @"Ramp Types";
+            [thm addTitle:thm.legend.title];
+            [thm addTitle:@"Material"];
+            [thm addTitle:@"Year"];
+            [thm addTitle:@"Excessive Slope"];
             thm.legend.usePointSymbols = YES;
             thm.numDesiredClasses = 10;
             class = [ThemeClass createWithTitle:@"0-Unknown                      "];
@@ -253,6 +266,9 @@
             break;
     }
     thm.numClasses = (int)[thm.classes count];
+    thm.currentTitleIndex = 0;
+    thm.legend.titles = [thm.titles copy];
+    thm.legend.currentTitleIndex = 0;
     thm.legend.numCells = thm.numClasses;
     thm.legend.useClassColors = thm.setColor;
     thm.legend.cells = [[NSMutableArray alloc]init];
@@ -267,6 +283,12 @@
         [thm.legend.cells addObject:tlc];
     }
     return thm;
+}
+
+-(void) addTitle:(NSString *)title
+{
+    NSString * ttl = [NSString stringWithString:title];
+    [self.titles addObject:ttl];
 }
 
 - (BOOL) incrementCount:(int)class

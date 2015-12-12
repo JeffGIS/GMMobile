@@ -30,6 +30,8 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
 
 @property int displayID;
 @property ThemeTypes type;
+@property NSMutableArray * titles;
+@property int currentTitleIndex;
 @property NSMutableArray * classes;
 @property ThemeLegend* legend;
 @property int numDesiredClasses;

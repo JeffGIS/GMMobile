@@ -35,7 +35,9 @@
 @property UIColor*labelTxColor; // color of class text
 @property UIColor*symbolDefaultColor; // default color of symbol
 
-@property NSString* title;      //legend title
+@property NSString* title;      //current legend title
+@property NSMutableArray *titles; //possible titles
+@property int currentTitleIndex; //index of current title
 @property NSMutableArray *cells;  //ThemeLegendCell array
 
 @property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait;
