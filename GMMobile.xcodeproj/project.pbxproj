@@ -39,8 +39,6 @@
 		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
 		69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */; };
 		69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */; };
-		69DB8AE31BE3D8DE009372AC /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */; };
-		69DB8AE41BE3D8DE009372AC /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
@@ -104,7 +102,6 @@
 		A9C837281A65B23A005EC4FA /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C837271A65B23A005EC4FA /* MapKit.framework */; };
 		A9CBF20E1A81558C006AC88E /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF20C1A81558C006AC88E /* arrow.png */; };
 		A9CBF2111A8156C7006AC88E /* list.png in Resources */ = {isa = PBXBuildFile; fileRef = A9CBF2101A8156C7006AC88E /* list.png */; };
-		A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */ = {isa = PBXBuildFile; fileRef = A9CF61A41B4C576B00ADE8DB /* NVShapeFileDatabase.c */; };
 		A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D269E21AE4C77C00A5C38E /* plusSign.png */; };
 		A9D281881B045BAD00523B29 /* autoUpload.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281851B045BAD00523B29 /* autoUpload.png */; };
 		A9D281891B045BAD00523B29 /* loadData.png in Resources */ = {isa = PBXBuildFile; fileRef = A9D281861B045BAD00523B29 /* loadData.png */; };
@@ -281,8 +278,6 @@
 		A9C837271A65B23A005EC4FA /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		A9CBF20C1A81558C006AC88E /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		A9CBF2101A8156C7006AC88E /* list.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list.png; sourceTree = "<group>"; };
-		A9CF61A41B4C576B00ADE8DB /* NVShapeFileDatabase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = NVShapeFileDatabase.c; sourceTree = "<group>"; };
-		A9CF61A51B4C576B00ADE8DB /* NVShapeFileDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVShapeFileDatabase.h; sourceTree = "<group>"; };
 		A9D269E21AE4C77C00A5C38E /* plusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusSign.png; sourceTree = "<group>"; };
 		A9D281851B045BAD00523B29 /* autoUpload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = autoUpload.png; sourceTree = "<group>"; };
 		A9D281861B045BAD00523B29 /* loadData.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loadData.png; sourceTree = "<group>"; };
@@ -366,8 +361,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69DB8AE31BE3D8DE009372AC /* libNVCoordinateLibrary.a in Frameworks */,
-				69DB8AE41BE3D8DE009372AC /* libNVShapefileLibrary.a in Frameworks */,
 				69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */,
 				69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */,
 				69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */,
@@ -527,8 +520,6 @@
 				A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */,
 				EB3268531B19146400A7D40A /* NVDataLoader.h */,
 				EB3268541B19146400A7D40A /* NVDataLoader.m */,
-				A9CF61A51B4C576B00ADE8DB /* NVShapeFileDatabase.h */,
-				A9CF61A41B4C576B00ADE8DB /* NVShapeFileDatabase.c */,
 				EB4A18C01AA89DE100B8B162 /* PipeTrace.h */,
 				EB4A18C11AA89DE100B8B162 /* PipeTrace.m */,
 				EBCA6C2D1A96AEC7003F7FB8 /* PlanimetricData.h */,
@@ -899,7 +890,6 @@
 				A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */,
 				69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */,
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
-				A9CF61A61B4C576B00ADE8DB /* NVShapeFileDatabase.c in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */,
 				69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */,
