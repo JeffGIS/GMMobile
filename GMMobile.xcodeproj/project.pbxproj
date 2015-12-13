@@ -327,6 +327,7 @@
 		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PropertyData.m; sourceTree = "<group>"; };
+		EB983D381C1CF94B00A994C7 /* ThemeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeTypes.h; sourceTree = "<group>"; };
 		EBAB31CA1AE8200000C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
 		EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerOverridesViewController.h; sourceTree = "<group>"; };
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
@@ -689,6 +690,7 @@
 				EBFC2A391BEA5FBF00E0C1B3 /* ThemeLegendCell.m */,
 				692B4A051BF669D80016CE5D /* ThemeLegendMapOverlay.h */,
 				692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */,
+				EB983D381C1CF94B00A994C7 /* ThemeTypes.h */,
 			);
 			name = Themes;
 			sourceTree = "<group>";

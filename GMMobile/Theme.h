@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ThemeClass.h"
 #import "ThemeLegend.h"
 #import "CCodeLibrary/CCodelibrary.h"
 
@@ -14,18 +15,6 @@
 #define DISPLAY_ITEM            2
 #define ITEM_HAS_BEEN_DISPLAYED 3
 
-typedef NS_ENUM(NSInteger, ThemeTypes)
-{
-    Part1Theme,
-    DepartmentTheme,
-    DayNightTheme,
-    YearTheme,
-    MonthTheme,
-    DayofWeekTheme,
-    HourTheme,
-    CurbRampIntersectionTheme,
-    CurbRampTheme,
-};
 @interface Theme : NSObject
 
 @property int displayID;

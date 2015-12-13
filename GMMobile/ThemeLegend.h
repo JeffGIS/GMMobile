@@ -7,11 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ThemeClass.h"
+#import "ThemeTypes.h"
 #import "ThemeLegendCell.h"
 
 @interface ThemeLegend : NSObject
 
+@property ThemeTypes type;             // legend type
 @property int numCells;         // number of desired cells. Actual number in cells
                                 // array may differ
 @property int numColumns;
