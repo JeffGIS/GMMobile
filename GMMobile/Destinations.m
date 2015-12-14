@@ -465,7 +465,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              BOOL opened = [self open];
              
              NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
-                              (long)routeNum, (long)propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+                              (long)routeNum, (long)propNum, (long)destinationID, direction, route.distanceInMiles, route.timeInMinutes];
              
              [self executeCmd:(LPSTR)cmd.UTF8String];
              [self close:opened];
@@ -585,7 +585,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
         BOOL opened = [self open];
         
         NSString *cmd = [NSString stringWithFormat:@"INSERT INTO Routes VALUES (%li,%li,%li,%i,%f,%f);",
-                         (long)routeNum, (long)propNum, destinationID, direction, route.distanceInMiles, route.timeInMinutes];
+                         (long)routeNum, (long)propNum, (long)destinationID, direction, route.distanceInMiles, route.timeInMinutes];
         
         [self executeCmd:(LPSTR)cmd.UTF8String];
         [self close:opened];
