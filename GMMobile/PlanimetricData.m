@@ -896,7 +896,7 @@ extern int keepProcessing;
                                      withColor:dc.color.CGColor
                                        andSize:size*dc.size
                                           text:text];
-                if (_zoom >= 17)
+                if (_zoom >= 11)
                     [self drawRampsForIntersection:intID
                                                 at:&BasePt
                                          inContext:context
@@ -965,7 +965,7 @@ extern int keepProcessing;
     DPOINT rampPt;
     DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
     dc.elementType = CurbRamp;
-    NSString * query = [NSString stringWithFormat:@"SELECT lev21x, lev21y, rampType, rampNum, rampID FROM Ramps WHERE intID=%i",
+    NSString * query = [NSString stringWithFormat:@"SELECT lev21x, lev21y, rampType, rampNum, rampID, yearRebuilt FROM Ramps WHERE intID=%i",
              intID];
 
     SQLOK(sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
@@ -977,6 +977,7 @@ extern int keepProcessing;
         rampType = sqlite3_column_int(statement,2);
         rampNum = sqlite3_column_int(statement,3);
         LPSTR rampID = (LPSTR)sqlite3_column_text(statement,4);
+        dc.itemEndTime = sqlite3_column_int(statement,5);
         dc.string1 = [NSString stringWithFormat:@"%i",rampNum];
         dc.string2 = [NSString stringWithFormat:@"%i",rampType];
         if ([themes setDisplayCharacteristics:dc

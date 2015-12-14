@@ -205,7 +205,7 @@ Top:
             CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
                                                         create:NO];
             
-            if (crd.datasetVersion >= 1)
+            if (crd.datasetVersion >= 2)
                 rtn = YES;
         }
             break;

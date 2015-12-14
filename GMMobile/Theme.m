@@ -8,6 +8,7 @@
 
 #import "Theme.h"
 #import "ThemeLegend.h"
+#import "ConfigurationControl.h"
 
 @implementation Theme
 
@@ -206,12 +207,20 @@
             [thm.classes addObject:class];
             break;
         case CurbRampTheme:
-            thm.legend.title = @"Ramp Types";
-            [thm.titles addObject:thm.legend.title];
+        {
+            int crtOpt = getThemeOpt(type);
+            
+            thm.currentTitleIndex = crtOpt;
+            [thm.titles addObject:@"Ramp Types"];
             [thm.titles addObject:@"Material"];
             [thm.titles addObject:@"Year"];
             [thm.titles addObject:@"Excessive Slope"];
             thm.legend.usePointSymbols = YES;
+            switch (crtOpt)
+            {
+                    
+            default:
+            thm.legend.title = @"Ramp Types";
             thm.numDesiredClasses = 10;
             class = [ThemeClass createWithTitle:@"0-Unknown                      "];
             class.color = [UIColor blackColor];
@@ -263,11 +272,38 @@
             class.size = 2;
             class.symbol = CircleSym;
             [thm.classes addObject:class];
+                    break;
+        case 3:
+            
+                thm.legend.title = @"Year Rebuilt";
+                thm.numDesiredClasses = 4;
+                class = [ThemeClass createWithTitle:@"    "];
+                class.color = [UIColor blackColor];
+                class.size = 1;
+                class.symbol = CircleSym;
+                [thm.classes addObject:class];
+                class = [ThemeClass createWithTitle:@"2013"];
+                class.color = [UIColor yellowColor];
+                class.size = 1;
+                class.symbol = CircleSym;
+                [thm.classes addObject:class];
+                class = [ThemeClass createWithTitle:@"2014"];
+                class.color = [UIColor greenColor];
+                class.size = 2;
+                class.symbol = CircleSym;
+                [thm.classes addObject:class];
+                class = [ThemeClass createWithTitle:@"2015"];
+                class.color = [UIColor blueColor];
+                class.size = 2;
+                class.symbol = CircleSym;
+                [thm.classes addObject:class];
+                
+            }
+        }
             break;
     }
     thm.numClasses = (int)thm.classes.count;
     thm.legend.type = thm.type;
-    thm.currentTitleIndex = 0;
     thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles.copy];
     thm.legend.currentTitleIndex = thm.currentTitleIndex;
     thm.legend.numCells = thm.numClasses;
@@ -284,6 +320,20 @@
         [thm.legend.cells addObject:tlc];
     }
     return thm;
+}
+
+int getThemeOpt(ThemeTypes type)
+{
+    int opt = 1;
+    for (ThemeLegend *tleg in ConfigurationControl.sharedInstance.legendList)
+    {
+        if (tleg.type == type)
+        {
+            opt = tleg.currentTitleIndex + 1;
+        }
+    }
+
+    return opt;
 }
 
 - (BOOL) incrementCount:(int)class
@@ -433,7 +483,10 @@
             case CurbRampTheme:
                 if (dc.elementType != CurbRamp)
                     goto DisplayExit;
-                val = (int)dc.string2.integerValue;
+                if (self.currentTitleIndex == 3)
+                    val = dc.itemEndTime-2012;
+                else
+                    val = (int)dc.string2.integerValue;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
