@@ -932,17 +932,6 @@ extern int keepProcessing;
             if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
                  [tlmos removeFromSuperview];
         }
-        
-        if (_mapToolbar.orientation != MapToolbarOrientationTop)
-        {
-            [_mapToolbar animateToHorizontalOrientation];
-                                 
-             _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
-                                              (_mapToolbar.frame.size.height / 2.0) +
-                                              [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
-            
-            _mapToolbar.orientation = MapToolbarOrientationTop;
-        }
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
@@ -976,6 +965,44 @@ extern int keepProcessing;
                 withViewController:avc];
     
     [_mapToolbar configure:_screenSetting];
+    
+    switch (_mapToolbar.orientation)
+    {
+        case MapToolbarOrientationTop:
+            [_mapToolbar animateToHorizontalOrientation];
+            
+            _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                             (_mapToolbar.frame.size.height / 2.0) +
+                                             [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
+            
+            break;
+            
+        case MapToolbarOrientationBottom:
+            [_mapToolbar animateToHorizontalOrientation];
+            
+            _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                                             (self.view.frame.size.height -
+                                              (_mapToolbar.frame.size.height / 2.0)));
+            break;
+            
+        case MapToolbarOrientationLeft:
+            [_mapToolbar animateToVerticalOrientation];
+            
+            _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
+                                             (self.view.frame.size.height / 2.0));
+            break;
+            
+        case MapToolbarOrientationRight:
+            [_mapToolbar animateToVerticalOrientation];
+            
+            _mapToolbar.center = CGPointMake(self.view.frame.size.width -
+                                             (_mapToolbar.frame.size.width / 2.0),
+                                             (self.view.frame.size.height / 2.0));
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
