@@ -32,7 +32,7 @@
     another.labelBkColor = [[UIColor alloc]initWithCGColor:_labelBkColor.CGColor];
     another.labelTxColor = [[UIColor alloc]initWithCGColor:_labelTxColor.CGColor];
     another.symbolDefaultColor = [[UIColor alloc]initWithCGColor:_symbolDefaultColor.CGColor];
-    another.title = _title;
+    another.title = [NSString stringWithString:self.title];
     another.titles = [NSMutableArray arrayWithArray:_titles.copy];
     another.currentTitleIndex = _currentTitleIndex;
     another.cells = NSMutableArray.array;
