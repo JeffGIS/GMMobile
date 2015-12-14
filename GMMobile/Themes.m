@@ -115,6 +115,7 @@
             thm.legend.isDraggedPortrait = tleg.isDraggedPortrait;
             thm.legend.title = tleg.title;
             thm.legend.currentTitleIndex = tleg.currentTitleIndex;
+            thm.legend.type = tleg.type;
             
             for (ThemeClass * cls in thm.classes)
             {

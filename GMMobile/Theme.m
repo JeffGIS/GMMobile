@@ -266,6 +266,7 @@
             break;
     }
     thm.numClasses = (int)thm.classes.count;
+    thm.legend.type = thm.type;
     thm.currentTitleIndex = 0;
     thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles.copy];
     thm.legend.currentTitleIndex = thm.currentTitleIndex;

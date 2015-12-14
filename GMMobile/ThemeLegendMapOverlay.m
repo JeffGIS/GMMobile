@@ -95,33 +95,37 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    UIButton *titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
-    titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    titleButton.titleLabel.font = _headerFont;
-    
-    [titleButton setTitleColor:UIColor.whiteColor
-                      forState:UIControlStateNormal];
-    
-    if (_legend.titles.count > 1)
+    if (![headerView.subviews containsObject:[headerView viewWithTag:(self.tag * 333)]])
     {
-        [titleButton setTitleColor:UIColor.greenColor
-                          forState:UIControlStateHighlighted];
+        UIButton *titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
+        titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleButton.titleLabel.font = _headerFont;
+        titleButton.tag = (self.tag * 333);
         
-        [titleButton addTarget:self
-                        action:@selector(showTitles:)
-              forControlEvents:UIControlEventTouchUpInside];
+        [titleButton setTitleColor:UIColor.whiteColor
+                          forState:UIControlStateNormal];
+        
+        if (_legend.titles.count > 1)
+        {
+            [titleButton setTitleColor:UIColor.greenColor
+                              forState:UIControlStateHighlighted];
+            
+            [titleButton addTarget:self
+                            action:@selector(showTitles:)
+                  forControlEvents:UIControlEventTouchUpInside];
+        }
+        
+        else
+        {
+            [titleButton setTitleColor:UIColor.redColor
+                              forState:UIControlStateHighlighted];
+        }
+        
+        [titleButton setTitle:_legend.title
+                     forState:UIControlStateNormal];
+        
+        [headerView addSubview:titleButton];
     }
-    
-    else
-    {
-        [titleButton setTitleColor:UIColor.redColor
-                          forState:UIControlStateHighlighted];
-    }
-    
-    [titleButton setTitle:_legend.title
-                 forState:UIControlStateNormal];
-    
-    [headerView addSubview:titleButton];
     
     if (![headerView.subviews containsObject:[headerView viewWithTag:(self.tag * 111)]])
     {
@@ -209,7 +213,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         _legend.currentTitleIndex = (int)(buttonIndex - 1);
         [_tableView reloadData];
-        [_delegate themeLegendDidChangeStatus:YES];
+        
+        if (_delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
     }
     
     [alertView hideLargeAlertView:YES];

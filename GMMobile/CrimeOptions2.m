@@ -166,16 +166,40 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(0.0, 0.0, headerView.frame.size.width,
-                                       headerView.frame.size.height)];
-    
-    headerLabel.font = _headerFont;
-    headerLabel.textColor = UIColor.whiteColor;
-    headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = tl.title;
-    
-    [headerView addSubview:headerLabel];
+    if (![headerView.subviews containsObject:[headerView viewWithTag:(tableView.tag * 333)]])
+    {
+        UIButton *titleButton = [[UIButton alloc] initWithFrame:
+                                 CGRectMake(0.0, 0.0, headerView.frame.size.width,
+                                            headerView.frame.size.height)];
+        
+        titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleButton.titleLabel.font = _headerFont;
+        titleButton.tag = (tableView.tag * 333);
+        
+        [titleButton setTitleColor:UIColor.whiteColor
+                          forState:UIControlStateNormal];
+        
+        if (tl.titles.count > 1)
+        {
+            [titleButton setTitleColor:UIColor.greenColor
+                              forState:UIControlStateHighlighted];
+            
+            [titleButton addTarget:self
+                            action:@selector(showTitles:)
+                  forControlEvents:UIControlEventTouchUpInside];
+        }
+        
+        else
+        {
+            [titleButton setTitleColor:UIColor.redColor
+                              forState:UIControlStateHighlighted];
+        }
+        
+        [titleButton setTitle:tl.title
+                     forState:UIControlStateNormal];
+        
+        [headerView addSubview:titleButton];
+    }
     
     if (![headerView.subviews containsObject:[headerView viewWithTag:(tableView.tag * 111)]])
     {
@@ -204,6 +228,50 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     return headerView;
+}
+
+- (void)showTitles:(UIButton *)button
+{
+    ThemeLegend *tl = _legends[(button.tag / 333) - 1];
+    self.tabBarController.tabBar.userInteractionEnabled = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.tabBarController.tabBar.alpha = 0.3;
+                     }];
+    
+    NSMutableArray *textArray = NSMutableArray.array;
+    [textArray addObject:@"Cancel"];
+    [textArray addObjectsFromArray:tl.titles.copy];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Select Legend Title"
+                                               buttonTextArray:textArray
+                                              destructiveIndex:1];
+    
+    alert.tag = button.tag;
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    ThemeLegend *tl = _legends[(alertView.tag / 333) - 1];
+    
+    if (buttonIndex > 0)
+    {
+        tl.currentTitleIndex = (int)(buttonIndex - 1);
+        [self reloadTableViews];
+    }
+    
+    [alertView hideLargeAlertView:YES];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.tabBarController.tabBar.alpha = 1.0;
+                     }];
+    
+    self.tabBarController.tabBar.userInteractionEnabled = YES;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView

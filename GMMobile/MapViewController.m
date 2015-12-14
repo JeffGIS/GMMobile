@@ -894,6 +894,18 @@ extern int keepProcessing;
                 }
             }
         }
+        
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlmos.tableView reloadData];
+        }
+        
+        for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlmos.tableView reloadData];
+        }
     }
     
     else

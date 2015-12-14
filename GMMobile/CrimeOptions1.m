@@ -12,7 +12,7 @@
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
-@property (nonatomic) UILabel *deptHeaderView;
+@property (nonatomic) UIButton *deptHeaderView;
 
 @end
 
@@ -85,13 +85,20 @@
     _deptView.layer.borderWidth =  (_cornerRadius / 4.0);
     _deptView.clipsToBounds = YES;
     
-    _deptHeaderView = [[UILabel alloc] init];
+    _deptHeaderView = [[UIButton alloc] init];
+    _deptHeaderView.titleLabel.textAlignment = NSTextAlignmentCenter;
+    _deptHeaderView.titleLabel.font = _headerFont;
     _deptHeaderView.backgroundColor = UIColor.blackColor;
-    _deptHeaderView.text = tl.title;
-    _deptHeaderView.font = _headerFont;
-    _deptHeaderView.textColor = UIColor.whiteColor;
-    _deptHeaderView.textAlignment = NSTextAlignmentCenter;
-    _deptHeaderView.userInteractionEnabled = YES;
+    _deptHeaderView.tag = 6666;
+    
+    [_deptHeaderView setTitleColor:UIColor.whiteColor
+                          forState:UIControlStateNormal];
+    
+    [_deptHeaderView setTitleColor:UIColor.redColor
+                          forState:UIControlStateHighlighted];
+    
+    [_deptHeaderView setTitle:tl.title
+                     forState:UIControlStateNormal];
     
     [_deptView addSubview:_deptHeaderView];
     
@@ -176,7 +183,8 @@
     
     for (UIButton *buttons in _deptView.subviews)
     {
-        if ([buttons isKindOfClass:UIButton.class] && buttons.tag != 7777)
+        if ([buttons isKindOfClass:UIButton.class]
+            && buttons.tag != 7777 && buttons.tag != 6666)
         {
             buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
                                        buttonWidth,(_deptView.frame.size.height - _headerHeight));
@@ -266,13 +274,37 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:headerView.frame];
-    headerLabel.font = _headerFont;
-    headerLabel.textColor = UIColor.whiteColor;
-    headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = tl.title;
-    
-    [headerView addSubview:headerLabel];
+    if (![headerView.subviews containsObject:[headerView viewWithTag:2222]])
+    {
+        UIButton *titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
+        titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        titleButton.titleLabel.font = _headerFont;
+        titleButton.tag = 2222;
+        
+        [titleButton setTitleColor:UIColor.whiteColor
+                          forState:UIControlStateNormal];
+        
+        if (tl.titles.count > 1)
+        {
+            [titleButton setTitleColor:UIColor.greenColor
+                              forState:UIControlStateHighlighted];
+            
+            [titleButton addTarget:self
+                            action:@selector(showTitles:)
+                  forControlEvents:UIControlEventTouchUpInside];
+        }
+        
+        else
+        {
+            [titleButton setTitleColor:UIColor.redColor
+                              forState:UIControlStateHighlighted];
+        }
+        
+        [titleButton setTitle:tl.title
+                     forState:UIControlStateNormal];
+        
+        [headerView addSubview:titleButton];
+    }
     
     if (![headerView.subviews containsObject:[headerView viewWithTag:3333]])
     {
@@ -301,6 +333,49 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     return headerView;
+}
+
+- (void)showTitles:(UIButton *)button
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[0];
+    self.tabBarController.tabBar.userInteractionEnabled = NO;
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.tabBarController.tabBar.alpha = 0.3;
+                     }];
+    
+    NSMutableArray *textArray = NSMutableArray.array;
+    [textArray addObject:@"Cancel"];
+    [textArray addObjectsFromArray:tl.titles.copy];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Select Legend Title"
+                                               buttonTextArray:textArray
+                                              destructiveIndex:1];
+#pragma unused(alert)
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[0];
+    
+    if (buttonIndex > 0)
+    {
+        tl.currentTitleIndex = (int)(buttonIndex - 1);
+        [_tableView reloadData];
+    }
+    
+    [alertView hideLargeAlertView:YES];
+    
+    [UIView animateWithDuration:0.25
+                     animations:^{
+                         self.tabBarController.tabBar.alpha = 1.0;
+                     }];
+    
+    self.tabBarController.tabBar.userInteractionEnabled = YES;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
