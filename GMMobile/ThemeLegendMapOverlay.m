@@ -198,7 +198,12 @@ viewForHeaderInSection:(NSInteger)section
     [textArray addObject:@"Cancel"];
     [textArray addObjectsFromArray:_legend.titles.copy];
     
-    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.superview
+    UIView *superview = self.superview;
+    
+    if ([self.superview isKindOfClass:UIScrollView.class])
+        superview = self.superview.superview;
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
                                                       delegate:self
                                                          title:@"Select Legend Title"
                                                buttonTextArray:textArray
