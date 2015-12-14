@@ -73,7 +73,7 @@
                 int j=0;
                 for (ThemeLegendCell *tlc in thm.legend.cells)
                 {
-                    if (thm.legend.cells.count > j)
+                    if (tl.cells.count > j)
                     {
                         ThemeLegendCell *cl = tl.cells[j++];
                         tlc.status = cl.status;
