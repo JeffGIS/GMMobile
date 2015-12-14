@@ -61,6 +61,7 @@
             [ConfigurationControl.sharedInstance.legendList addObject:lgnd];
         }
     }
+    
     else
     {
         int i=0;
@@ -80,10 +81,9 @@
                 }
             }
         }
-       
     }
-
 }
+
 - (BOOL) addTheme:(Theme *)theme
 {
     BOOL rtn = FALSE;

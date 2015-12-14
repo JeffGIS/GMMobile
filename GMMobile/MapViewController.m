@@ -206,38 +206,6 @@ extern int keepProcessing;
     
     _saveDigitizerButton.alpha = 0.0;
     
-    UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
-                                                                                           ofType:@"png"]];
-    
-    CGFloat compassSize = 48.0, compassMargin = 6.0;
-    CGFloat helpButtonSize = 56.0, helpButtonMargin = 8.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        compassSize = 36.0, compassMargin = 4.0;
-        helpButtonSize = 40.0, helpButtonMargin = 4.0;
-    }
-    
-    _compass = [[UIButton alloc] initWithFrame:CGRectMake((self.view.frame.size.width - compassSize - compassMargin),
-                                                          (statusBarHeight + compassMargin), compassSize, compassSize)];
-    
-    [_compass setImage:compassImage
-              forState:UIControlStateNormal];
-    
-    _compass.backgroundColor = UIColor.whiteColor;
-    _compass.layer.cornerRadius = (compassSize / 2.0);
-    _compass.layer.borderWidth = 1.0;
-    _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
-    _compass.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-    _compass.alpha = 0.0;
-    _compass.hidden = YES;
-    
-    [_compass addTarget:self
-                 action:@selector(compassTapped:)
-       forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.view addSubview:_compass];
-    
     UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
                                                                                                    action:@selector(mapViewLongPressed:)];
     
@@ -369,15 +337,42 @@ extern int keepProcessing;
         [_nvdl loadNVData:(config - 1)
                   popover:_popover];
     }
-
+    
+    UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
+                                                                                           ofType:@"png"]];
+    
+    CGFloat compassSize = 52.0, compassMargin = 6.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        compassSize = 38.0, compassMargin = 4.0;
+    
     HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
-                              CGPointMake(helpButtonMargin, (helpButtonMargin +
-                                           [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]))
-                                                             size:helpButtonSize
+                              CGPointMake(compassMargin, (compassMargin + [self statusBarHeight:statusBarHeight]))
+                                                             size:compassSize
                                                              view:self.view
                                                               tag:HelpButtonPresenterMapVC
                                                            tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
+    
+    _compass = [[UIButton alloc] initWithFrame:CGRectMake((compassMargin), (statusBarHeight + (2.0 * compassMargin) + compassSize),
+                                                          compassSize, compassSize)];
+    
+    [_compass setImage:compassImage
+              forState:UIControlStateNormal];
+    
+    _compass.backgroundColor = UIColor.whiteColor;
+    _compass.layer.cornerRadius = (compassSize / 2.0);
+    _compass.layer.borderWidth = 1.0;
+    _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
+    _compass.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+    _compass.alpha = 0.0;
+    _compass.hidden = YES;
+    
+    [_compass addTarget:self
+                 action:@selector(compassTapped:)
+       forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:_compass];
 }
 
 - (void)becameActive:(id)selector
@@ -2233,13 +2228,26 @@ haveVV:
                            if (_infoWindow)
                                [self.view bringSubviewToFront:_infoWindow];
                            
+                           if (!_compass.hidden)
+                               [self.view bringSubviewToFront:_compass];
+                           
+                           for (HelpButton *helpButton in self.view.subviews)
+                           {
+                               if ([helpButton isKindOfClass:HelpButton.class])
+                                   [self.view bringSubviewToFront:helpButton];
+                           }
+                           
+                           for (HelpWebView *helpWebView in self.view.subviews)
+                           {
+                               if ([helpWebView isKindOfClass:HelpWebView.class])
+                                   [self.view bringSubviewToFront:helpWebView];
+                           }
+                           
                            [self.view bringSubviewToFront:_mapToolbar];
+                           [self updateLegendPositions];
                            
                            if (!_tableView.hidden)
                                [self.view bringSubviewToFront:_tableView];
-                           
-                           if (!_compass.hidden)
-                               [self.view bringSubviewToFront:_compass];
                            
                            for (GSSiDatePicker *datePicker in self.view.subviews)
                            {
@@ -2262,33 +2270,15 @@ haveVV:
                            if ([self.view.subviews containsObject:_digitizationToolbar])
                                [self.view bringSubviewToFront:_digitizationToolbar];
                            
-                           for (HelpButton *helpButton in self.view.subviews)
-                           {
-                               if ([helpButton isKindOfClass:HelpButton.class])
-                                   [self.view bringSubviewToFront:helpButton];
-                           }
-                           
-                           for (HelpWebView *helpWebView in self.view.subviews)
-                           {
-                               if ([helpWebView isKindOfClass:HelpWebView.class])
-                                   [self.view bringSubviewToFront:helpWebView];
-                           }
-                           
                            if ([self.view.subviews containsObject:_legendView])
                                [self.view bringSubviewToFront:_legendView];
+                           
+                           if([self.view viewWithTag:123456])
+                               [self.view bringSubviewToFront:[self.view viewWithTag:123456]];
+                           
+                           if([self.view viewWithTag:654321])
+                               [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
                        }
-                       
-                       if([self.view viewWithTag:123456])
-                       {
-                           [self.view bringSubviewToFront:[self.view viewWithTag:123456]];
-                       }
-                       
-                       if([self.view viewWithTag:654321])
-                       {
-                           [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
-                       }
-                       
-                       [self updateLegendPositions];
                    });
 }
 
