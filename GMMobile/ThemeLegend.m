@@ -40,6 +40,7 @@
     another.landscapeMapOrigin = _landscapeMapOrigin;
     another.isDraggedLandscape = _isDraggedLandscape;
     another.isDraggedPortrait = _isDraggedPortrait;
+    another.type = _type;
     
     for (ThemeLegendCell *cl in _cells)
     {
@@ -52,18 +53,19 @@
 
 - (BOOL)drawOnMap
 {
-    return [UserDefaults.defaults boolForKey:[NSString stringWithFormat:@"ThemeLegend%@", _title]];
+    return [UserDefaults.defaults boolForKey:[NSString stringWithFormat:@"ThemeLegend%li", (long)_type]];
 }
 
 - (void)setDrawOnMap:(BOOL)drawOnMap
 {
     [UserDefaults.defaults saveBool:drawOnMap
-                             forKey:[NSString stringWithFormat:@"ThemeLegend%@", _title]];
+                             forKey:[NSString stringWithFormat:@"ThemeLegend%li", (long)_type]];
 }
 
 - (void)setCurrentTitleIndex:(int)currentTitleIndex
 {
-    self.title = (NSString*)self.titles[currentTitleIndex];
+    _currentTitleIndex = currentTitleIndex;
+    _title = (NSString *)_titles[_currentTitleIndex];
 }
 
 @end

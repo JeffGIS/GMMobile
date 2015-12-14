@@ -113,6 +113,8 @@
             thm.legend.landscapeMapOrigin = tleg.landscapeMapOrigin;
             thm.legend.isDraggedLandscape = tleg.isDraggedLandscape;
             thm.legend.isDraggedPortrait = tleg.isDraggedPortrait;
+            thm.legend.title = tleg.title;
+            thm.legend.currentTitleIndex = tleg.currentTitleIndex;
             
             for (ThemeClass * cls in thm.classes)
             {
