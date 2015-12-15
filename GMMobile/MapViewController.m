@@ -32,7 +32,7 @@ extern int keepProcessing;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property BOOL clearWhenDeselected, rotateZoom, blockVectorView, legendsAreOffMap;
+@property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
@@ -2146,17 +2146,14 @@ haveVV:
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom
 {
-    if (!_blockVectorView)
-    {
-        [self clearVectorView];
-        _vectorViewZoom = zoom;
-        
-        _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                            target:self
-                                                          selector:@selector(startVectorView:)
-                                                          userInfo:nil
-                                                           repeats:NO];
-    }
+    [self clearVectorView];
+    _vectorViewZoom = zoom;
+    
+    _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                        target:self
+                                                      selector:@selector(startVectorView:)
+                                                      userInfo:nil
+                                                       repeats:NO];
 }
 
 - (void)startVectorView:(NSTimer *)timer
@@ -3923,32 +3920,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)startTrackingUserLocation
 {
     if (CLLocationManager.locationServicesEnabled)
-        [_locationManager startUpdatingHeading];
-    
-    if (CLLocationManager.headingAvailable)
         [_locationManager startUpdatingLocation];
     
-    [self clearVectorView];
-    
-    _blockVectorView = YES;
     _mapView.myLocationEnabled = YES;
-    _mapView.settings.rotateGestures = NO;
 }
 
 - (void)stopTrackingUserLocation:(BOOL)refresh
 {
     [_locationManager stopUpdatingLocation];
-    [_locationManager stopUpdatingHeading];
     _mapView.myLocationEnabled = NO;
-    _mapView.settings.rotateGestures = YES;
     [_mapToolbar deselectMyLocationButton];
-    _blockVectorView = NO;
-    
-    if (refresh)
-    {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
-    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager
