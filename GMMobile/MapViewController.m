@@ -1098,11 +1098,46 @@ extern int keepProcessing;
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
         CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
         
+        NSMutableArray *subviewsArray = NSMutableArray.array;
+        
+        for (UIView *subviews in self.view.subviews)
+        {
+            if (subviews == _mapToolbar || subviews == _compass ||
+                [subviews isKindOfClass:HelpButton.class] ||
+                [subviews isKindOfClass:ThemeLegendMapOverlay.class])
+            {
+                if (!subviews.hidden)
+                    [subviewsArray addObject:subviews];
+            }
+        }
+        
+        CGRect *frames = (CGRect *)malloc((sizeof(CGRect) * subviewsArray.count) + 4);
+        
+        for (int i = 0; i < subviewsArray.count; i++)
+            frames[i] = [(UIView *)subviewsArray[i] frame];
+        
+        CGRect targetFrame = largestRect(1.0, 10, _mapView.frame, (int)subviewsArray.count, frames);
+        
+        free(frames);
+        
+        [[self.view viewWithTag:999] removeFromSuperview];
+        
+        UIView *testView = [[UIView alloc] initWithFrame:targetFrame];
+        testView.backgroundColor = UIColor.greenColor;
+        testView.tag = 999;
+        testView.alpha = 0.5;
+        [self.view addSubview:testView];
+        
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
         
+        UIEdgeInsets inset = UIEdgeInsetsMake(CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 10.0,
+                                              CGRectGetMinX(targetFrame) - CGRectGetMinX(_mapView.frame) + 10.0,
+                                              CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame) + 10.0,
+                                              CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 10.0);
+        
         camera = [_mapView cameraForBounds:coordBounds
-                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+                                    insets:inset];
     }
     
     else
