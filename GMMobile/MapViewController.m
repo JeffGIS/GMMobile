@@ -1719,9 +1719,6 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     }
     
     [self updateMarkerPosition];
-    
-    if (!_myLocationMarker.hidden)
-        _myLocationMarker.center = [_mapView.projection pointForCoordinate:_currentLocation];
 }
 
 - (void)updateMarkerPosition
@@ -1737,6 +1734,14 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     
     MarkerButton *marker = _markerArray.lastObject;
     _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+    
+    if (!_myLocationMarker.hidden)
+    {
+        CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
+        
+        _myLocationMarker.center =
+        CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+    }
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -2230,7 +2235,9 @@ haveVV:
                        {
                            [self.view addSubview:_vectorView];
                            [self.view bringSubviewToFront:_vectorView];
-                           [self.view bringSubviewToFront:_myLocationMarker];
+                           
+                           if (!_myLocationMarker.hidden)
+                               [self.view bringSubviewToFront:_myLocationMarker];
                            
                            for (MarkerButton *markers in _markerArray)
                                [self.view bringSubviewToFront:markers];
@@ -3934,6 +3941,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (CLLocationManager.locationServicesEnabled)
         [_locationManager startUpdatingLocation];
+    
+    [self.view bringSubviewToFront:_myLocationMarker];
 }
 
 - (void)stopTrackingUserLocation:(BOOL)refresh
@@ -3952,9 +3961,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (_animateToLocation)
     {
         [_mapView animateToLocation:_currentLocation];
-        _myLocationMarker.center = [_mapView.projection pointForCoordinate:_currentLocation];
+        CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
+        
+        _myLocationMarker.center =
+        CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+        
         _myLocationMarker.hidden = NO;
-        [self.view bringSubviewToFront:_myLocationMarker];
     }
     
     else if (_locationCount > 2)
