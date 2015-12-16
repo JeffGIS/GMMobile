@@ -1134,7 +1134,7 @@ extern int keepProcessing;
             frames[i] = [(UIView *)subviewsArray[i] frame];
         
         float aspectRatio = [self getAspectRatioForBounds:bounds];
-        CGRect targetFrame = largestRect(aspectRatio, 10, _mapView.frame, (int)subviewsArray.count, frames);
+        CGRect targetFrame = largestRect(aspectRatio, 5, _mapView.frame, (int)subviewsArray.count, frames);
         
         free(frames);
         
