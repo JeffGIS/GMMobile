@@ -23,6 +23,7 @@
 		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00731C1B229C0074AF72 /* clearMarkers.png */; };
 		694F00761C1B2A000074AF72 /* emailIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00751C1B2A000074AF72 /* emailIcon.png */; };
+		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
@@ -175,6 +176,7 @@
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
+		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6956EAE71C20E992008BF283 /* myLocationMarker.png */,
 				694F00751C1B2A000074AF72 /* emailIcon.png */,
 				694F00731C1B229C0074AF72 /* clearMarkers.png */,
 				69352E501C1A7D57009A486B /* grayscale.png */,
@@ -848,6 +851,7 @@
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
+				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
 				A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,

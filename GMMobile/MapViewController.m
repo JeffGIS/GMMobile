@@ -71,6 +71,7 @@ extern int keepProcessing;
 @property (nonatomic) GMSPolyline *polyline;
 @property (nonatomic) NSMutableSet *polylines;
 @property (nonatomic) UIScrollView *legendScrollView;
+@property (nonatomic) UIImageView *myLocationMarker;
 
 @end
 
@@ -354,7 +355,7 @@ extern int keepProcessing;
                                                            tabBar:self.tabBarController.tabBar];
 #pragma unused(helpButton)
     
-    _compass = [[UIButton alloc] initWithFrame:CGRectMake((compassMargin), (statusBarHeight + (2.0 * compassMargin) + compassSize),
+    _compass = [[UIButton alloc] initWithFrame:CGRectMake(compassMargin, (statusBarHeight + (2.0 * compassMargin) + compassSize),
                                                           compassSize, compassSize)];
     
     [_compass setImage:compassImage
@@ -373,6 +374,15 @@ extern int keepProcessing;
        forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:_compass];
+    
+    _myLocationMarker = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
+    _myLocationMarker.backgroundColor = UIColor.clearColor;
+    _myLocationMarker.hidden = YES;
+    
+    _myLocationMarker.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"myLocationMarker"
+                                                                                             ofType:@"png"]];
+    
+    [self.view addSubview:_myLocationMarker];
 }
 
 - (void)becameActive:(id)selector
@@ -1709,6 +1719,9 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     }
     
     [self updateMarkerPosition];
+    
+    if (!_myLocationMarker.hidden)
+        _myLocationMarker.center = [_mapView.projection pointForCoordinate:_currentLocation];
 }
 
 - (void)updateMarkerPosition
@@ -1880,8 +1893,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     [UIView animateWithDuration:duration
                      animations:^{
-                         _compass.frame = CGRectMake((self.view.frame.size.height - compassSize - compassMargin + _tabBarHeight),
-                                                     (statusBarHeight + compassMargin), compassSize, compassSize);
+                         _compass.frame = CGRectMake(compassMargin, (statusBarHeight + (2.0 * compassMargin) + compassSize), compassSize, compassSize);
                          
                          _compass.alpha = 0.0;
                      } completion:^(BOOL finished) {
@@ -2218,6 +2230,7 @@ haveVV:
                        {
                            [self.view addSubview:_vectorView];
                            [self.view bringSubviewToFront:_vectorView];
+                           [self.view bringSubviewToFront:_myLocationMarker];
                            
                            for (MarkerButton *markers in _markerArray)
                                [self.view bringSubviewToFront:markers];
@@ -3921,15 +3934,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (CLLocationManager.locationServicesEnabled)
         [_locationManager startUpdatingLocation];
-    
-    _mapView.myLocationEnabled = YES;
 }
 
 - (void)stopTrackingUserLocation:(BOOL)refresh
 {
     [_locationManager stopUpdatingLocation];
-    _mapView.myLocationEnabled = NO;
     [_mapToolbar deselectMyLocationButton];
+    _myLocationMarker.hidden = YES;
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -3939,7 +3950,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _locationCount++;
     
     if (_animateToLocation)
+    {
         [_mapView animateToLocation:_currentLocation];
+        _myLocationMarker.center = [_mapView.projection pointForCoordinate:_currentLocation];
+        _myLocationMarker.hidden = NO;
+        [self.view bringSubviewToFront:_myLocationMarker];
+    }
     
     else if (_locationCount > 2)
     {
@@ -4924,9 +4940,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)compassTapped:(UIButton *)button
 {
-    if (_mapView.myLocationEnabled)
-        [self stopTrackingUserLocation:NO];
-    
     [_mapView animateToBearing:0.0];
 }
 
