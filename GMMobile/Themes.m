@@ -101,14 +101,15 @@
 {
     ItemProcessingPassTypes rtn = DisplayPass;
     int i = 0;
+    
     for (Theme *thm in _themeList)
     {
         thm.displayID = displayID;
+        
         if (ConfigurationControl.sharedInstance.legendList.count > i)
         {
-            ThemeLegend * tleg = ConfigurationControl.sharedInstance.legendList[i];
+            ThemeLegend *tleg = ConfigurationControl.sharedInstance.legendList[i];
             int j = 0;
-            thm.legend.drawOnMap = tleg.drawOnMap;
             thm.legend.portraitMapOrigin = tleg.portraitMapOrigin;
             thm.legend.landscapeMapOrigin = tleg.landscapeMapOrigin;
             thm.legend.isDraggedLandscape = tleg.isDraggedLandscape;
@@ -126,8 +127,10 @@
                 }
             }
         }
+        
         i++;
     }
+    
     return rtn;
 }
 

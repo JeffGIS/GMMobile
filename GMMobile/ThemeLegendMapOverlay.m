@@ -235,6 +235,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)dragButtonBegin:(UIButton *)button
 {
+    _previousFrame = self.frame;
+    
     if (self.superview.superview)
         [self.superview.superview bringSubviewToFront:self.superview];
     
@@ -243,6 +245,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)dragButtonEnd:(UIButton *)button
 {
+    CGFloat originXTrans = fabs(self.frame.origin.x - _previousFrame.origin.x);
+    CGFloat originYTrans = fabs(self.frame.origin.y - _previousFrame.origin.y);
+    
+    BOOL significantMove = ((originXTrans > self.frame.size.width) ||
+                            (originYTrans > self.frame.size.height));
+    
     if (self.superview.superview)
         [self.superview.superview sendSubviewToBack:self.superview];
     
@@ -253,16 +261,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         [_delegate themeLegendWasDraggedOffLeftSide];
     
     else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+             UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
     {
-        _legend.landscapeMapOrigin = self.frame.origin;
-        _legend.isDraggedLandscape = YES;
+        if (significantMove || _legend.isDraggedLandscape)
+        {
+            _legend.landscapeMapOrigin = self.frame.origin;
+            _legend.isDraggedLandscape = YES;
+        }
     }
         
     else
     {
-        _legend.portraitMapOrigin = self.frame.origin;
-        _legend.isDraggedPortrait = YES;
+        if (significantMove || _legend.isDraggedPortrait)
+        {
+            _legend.portraitMapOrigin = self.frame.origin;
+            _legend.isDraggedPortrait = YES;
+        }
     }
     
     if (_delegate)
