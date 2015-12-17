@@ -209,29 +209,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                 LLBounds:&_latlonBounds
                                                               viewBounds:&_viewBounds];
                                                }
-                                               
-                                               if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-                                               {
-                                                   BoundaryData *bd = [[BoundaryData alloc] init];
-                                                   
-                                                   [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                             inContext:_context
-                                                             llCorners:&_latlonCornerPoints
-                                                              LLBounds:&_latlonBounds
-                                                            viewBounds:&_viewBounds];
-                                               }
-                                               
-                                               /* if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
-                                                {
-                                                BoundaryData *bd = [[BoundaryData alloc]init];
-                                                bd.processingID = keepProcessing;
-                                                [bd displayLandUse:_context
-                                                llCorners:&_latlonCornerPoints
-                                                LLBounds:&_latlonBounds
-                                                viewBounds:&_viewBounds];
-                                                }*/
-                                               
-                                               if (keepProcessing == self.displayID &&
+                                                if (keepProcessing == self.displayID &&
                                                    [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
                                                                                 visibleAtZoom:_zoom
                                                                                       andPass:passID])
@@ -345,6 +323,18 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];
                                                    
+                                               }
+                                               
+                                               
+                                               if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                                               {
+                                                   BoundaryData *bd = [[BoundaryData alloc] init];
+                                                   
+                                                   [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                             inContext:_context
+                                                             llCorners:&_latlonCornerPoints
+                                                              LLBounds:&_latlonBounds
+                                                            viewBounds:&_viewBounds];
                                                }
                                                
                                                if (keepProcessing == self.displayID && passID == DisplayPass &&
