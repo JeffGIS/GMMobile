@@ -82,7 +82,7 @@ extern int keepProcessing;
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            UIColor *boundaryColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.5];
+            UIColor *boundaryColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.75];
             [self drawBoundary:context
                        nPoints:numPoints
                         nLoops:numLoops
