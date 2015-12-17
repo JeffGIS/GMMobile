@@ -18,7 +18,6 @@
     another.numCells = _numCells;
     another.numColumns = _numColumns;
     another.aspectRatio = _aspectRatio;
-    another.drawOnMap = self.drawOnMap;
     another.pctBorder = _pctBorder;
     another.pctInnerMargin = _pctInnerMargin;
     another.pctSymbol = _pctSymbol;
