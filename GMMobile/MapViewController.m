@@ -1138,13 +1138,13 @@ extern int keepProcessing;
         
         free(frames);
         
-        [[self.view viewWithTag:999] removeFromSuperview];
+        /*[[self.view viewWithTag:999] removeFromSuperview];
         
         UIView *testView = [[UIView alloc] initWithFrame:targetFrame];
         testView.backgroundColor = UIColor.greenColor;
         testView.tag = 999;
         testView.alpha = 0.5;
-        [self.view addSubview:testView];
+        [self.view addSubview:testView];*/
         
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
