@@ -6,6 +6,13 @@
 
 @interface FindBoundariesViewController ()
 
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
+@property (weak, nonatomic) IBOutlet UITableView *topTableView;
+@property (weak, nonatomic) IBOutlet UITableView *bottomTableView;
+@property (weak, nonatomic) IBOutlet UIView *polylineView;
+@property (weak, nonatomic) IBOutlet UIView *maskView;
+@property (weak, nonatomic) IBOutlet UIView *offsetView;
+
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
 @property (nonatomic) NSString *selectedType;
 @property (nonatomic) NSMutableDictionary *sections;
