@@ -34,11 +34,110 @@
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
     [self setupBackButton];
+    _polylineView.hidden = _maskView.hidden = _offsetView.hidden = YES;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self setupTopView:_polylineView
+                   tag:11
+                  text:@"Show\nPolyline"];
+    
+    [self setupTopView:_maskView
+                   tag:22
+                  text:@"Mask\nBounds"];
+    
+    [self setupTopView:_offsetView
+                   tag:33
+                  text:@"Edit\nOffset"];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)setupTopView:(UIView *)topView
+                 tag:(NSUInteger)tag
+                text:(NSString *)text
+{
+    if (topView.hidden)
+    {
+        topView.backgroundColor = UserDefaults.defaults.appleGray;
+        topView.layer.borderColor = UIColor.blackColor.CGColor;
+        topView.layer.borderWidth = 2.0;
+        topView.layer.cornerRadius = 10.0;
+        topView.tag = tag;
+        topView.hidden = NO;
+        
+        CGFloat offset = 0.0;
+        
+        if (topView == _polylineView || topView == _maskView)
+        {
+            UISwitch *viewSwitch = [[UISwitch alloc] init];
+            CGSize size = viewSwitch.frame.size;
+            
+            viewSwitch.frame = CGRectMake((topView.frame.size.width - size.width) - 6.0,
+                                          ((topView.frame.size.height - size.height) / 2.0), size.width, size.height);
+            
+            viewSwitch.tag = topView.tag;
+            viewSwitch.tintColor = UIColor.redColor;
+            offset += (viewSwitch.frame.size.width + 6.0);
+            
+            [topView addSubview:viewSwitch];
+            
+            [viewSwitch addTarget:self
+                           action:@selector(topViewSwitchTapped:)
+                 forControlEvents:UIControlEventValueChanged];
+        }
+        
+        else
+        {
+            UIButton *viewButton = [[UIButton alloc] initWithFrame:
+                                    CGRectMake((topView.frame.size.width / 2.0), 6.0,
+                                               ((topView.frame.size.width / 2.0) - 6.0),
+                                               (topView.frame.size.height - 12.0))];
+            
+            viewButton.backgroundColor = UIColor.blackColor;
+            viewButton.layer.cornerRadius = 10.0;
+            viewButton.tag = topView.tag;
+            offset += (viewButton.frame.size.width + 6.0);
+            
+            [topView addSubview:viewButton];
+        }
+        
+        UILabel *viewLabel = [[UILabel alloc] initWithFrame:CGRectMake(4.0, 4.0, ((topView.frame.size.width - offset) - 8.0),
+                                                                       (topView.frame.size.height - 8.0))];
+        
+        viewLabel.backgroundColor = UIColor.clearColor;
+        viewLabel.font = [UIFont boldSystemFontOfSize:32.0];
+        viewLabel.adjustsFontSizeToFitWidth = YES;
+        viewLabel.textColor = UIColor.blackColor;
+        viewLabel.textAlignment = NSTextAlignmentCenter;
+        viewLabel.text = text;
+        viewLabel.numberOfLines = 2;
+        
+        [topView addSubview:viewLabel];
+    }
+}
+
+- (void)topViewSwitchTapped:(UISwitch *)topViewSwitch
+{
+    switch (topViewSwitch.tag)
+    {
+        case 11:
+            CRAPI.sharedInstance.showPolylineForBounds = topViewSwitch.on;
+            break;
+            
+        case 22:
+            CRAPI.sharedInstance.maskBoundsForBounds = topViewSwitch.on;
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (void)setupTableView:(UITableView *)tableView

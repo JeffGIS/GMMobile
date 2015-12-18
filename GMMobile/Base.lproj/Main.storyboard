@@ -4179,6 +4179,9 @@
                                     </constraint>
                                     <constraint firstAttribute="height" constant="40" id="lEb-pr-o1r"/>
                                     <constraint firstAttribute="width" constant="120" id="wNs-CE-0lr"/>
+                                    <constraint firstAttribute="height" constant="44" id="zVu-cD-eIw">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="60"/>
+                                    </constraint>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
                                 <state key="normal" title="&lt; Return">
@@ -4191,6 +4194,7 @@
                                         <exclude reference="ja7-8S-sLc"/>
                                         <exclude reference="lEb-pr-o1r"/>
                                         <exclude reference="wNs-CE-0lr"/>
+                                        <exclude reference="zVu-cD-eIw"/>
                                     </mask>
                                 </variation>
                                 <variation key="heightClass=compact">
@@ -4207,6 +4211,7 @@
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="26"/>
                                     <mask key="constraints">
                                         <include reference="wNs-CE-0lr"/>
+                                        <include reference="zVu-cD-eIw"/>
                                     </mask>
                                 </variation>
                                 <connections>

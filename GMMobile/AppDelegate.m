@@ -61,6 +61,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [UIApplication.sharedApplication registerUserNotificationSettings:nSettings];
     [UIApplication.sharedApplication registerForRemoteNotifications];
     
+    CRAPI.sharedInstance.showPolylineForBounds = [UserDefaults.defaults boolForKey:@"ShowPolylineForBounds"];
+    CRAPI.sharedInstance.maskBoundsForBounds = [UserDefaults.defaults boolForKey:@"MaskBoundsForBounds"];
+    
     return YES;
 }
 
@@ -144,7 +147,11 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    [UserDefaults.defaults saveBool:CRAPI.sharedInstance.showPolylineForBounds
+                             forKey:@"ShowPolylineForBounds"];
     
+    [UserDefaults.defaults saveBool:CRAPI.sharedInstance.maskBoundsForBounds
+                             forKey:@"MaskBoundsForBounds"];
 }
 
 @end
