@@ -61,6 +61,13 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [UIApplication.sharedApplication registerUserNotificationSettings:nSettings];
     [UIApplication.sharedApplication registerForRemoteNotifications];
     
+    CRAPI.sharedInstance.showPolylineForBounds = [UserDefaults.defaults boolForKey:@"ShowPolylineForBounds"];
+    CRAPI.sharedInstance.maskBoundsForBounds = [UserDefaults.defaults boolForKey:@"MaskBoundsForBounds"];
+    CRAPI.sharedInstance.offsetForBounds = [UserDefaults.defaults stringForKey:@"OffsetForBounds"];
+    
+    if (!CRAPI.sharedInstance.offsetForBounds)
+        CRAPI.sharedInstance.offsetForBounds = @"0 feet";
+    
     return YES;
 }
 
@@ -95,7 +102,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+    [UserDefaults.defaults saveBool:CRAPI.sharedInstance.showPolylineForBounds
+                             forKey:@"ShowPolylineForBounds"];
     
+    [UserDefaults.defaults saveBool:CRAPI.sharedInstance.maskBoundsForBounds
+                             forKey:@"MaskBoundsForBounds"];
+    
+    [UserDefaults.defaults saveString:CRAPI.sharedInstance.offsetForBounds
+                               forKey:@"OffsetForBounds"];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

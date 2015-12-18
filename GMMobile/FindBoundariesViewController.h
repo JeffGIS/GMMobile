@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/NVTextAlert.h"
 
 @class FindBoundariesViewController;
 
@@ -14,11 +15,8 @@
 
 @end
 
-@interface FindBoundariesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface FindBoundariesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate>
 
 @property (weak, nonatomic) id <FindBoundsViewControllerDelegate> delegate;
-@property (weak, nonatomic) IBOutlet UIButton *backButton;
-@property (weak, nonatomic) IBOutlet UITableView *topTableView;
-@property (weak, nonatomic) IBOutlet UITableView *bottomTableView;
 
 @end
