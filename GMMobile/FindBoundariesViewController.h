@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/NVTextAlert.h"
 
 @class FindBoundariesViewController;
 
@@ -14,7 +15,7 @@
 
 @end
 
-@interface FindBoundariesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface FindBoundariesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate>
 
 @property (weak, nonatomic) id <FindBoundsViewControllerDelegate> delegate;
 

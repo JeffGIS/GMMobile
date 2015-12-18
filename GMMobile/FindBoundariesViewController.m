@@ -10,8 +10,12 @@
 @property (weak, nonatomic) IBOutlet UITableView *topTableView;
 @property (weak, nonatomic) IBOutlet UITableView *bottomTableView;
 @property (weak, nonatomic) IBOutlet UIView *polylineView;
-@property (weak, nonatomic) IBOutlet UIView *maskView;
-@property (weak, nonatomic) IBOutlet UIView *offsetView;
+@property (weak, nonatomic) IBOutlet UIView *maskBoundsView;
+@property (weak, nonatomic) IBOutlet UIButton *offsetButton;
+@property (weak, nonatomic) IBOutlet UISwitch *polylineSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *maskBoundsSwitch;
+@property (weak, nonatomic) IBOutlet UILabel *polylineLabel;
+@property (weak, nonatomic) IBOutlet UILabel *maskBoundsLabel;
 
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
 @property (nonatomic) NSString *selectedType;
@@ -33,25 +37,30 @@
     
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
-    [self setupBackButton];
-    _polylineView.hidden = _maskView.hidden = _offsetView.hidden = YES;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
     
-    [self setupTopView:_polylineView
-                   tag:11
-                  text:@"Show\nPolyline"];
+    [self setupButton:_backButton
+                title:@"< Return"];
     
-    [self setupTopView:_maskView
-                   tag:22
-                  text:@"Mask\nBounds"];
+    [self setupButton:_offsetButton
+                title:[NSString stringWithFormat:@"Edit Offset:\n%@",
+                       CRAPI.sharedInstance.offsetForBounds]];
     
-    [self setupTopView:_offsetView
-                   tag:33
-                  text:@"Edit\nOffset"];
+    [self setupView:_polylineView];
+    [self setupView:_maskBoundsView];
+    
+    [self setupLabel:_polylineLabel
+                text:@"Show\nPolyline"];
+    
+    [self setupLabel:_maskBoundsLabel
+                text:@"Mask\nBounds"];
+    
+    _polylineSwitch.tintColor = UIColor.redColor;
+    _maskBoundsSwitch.tintColor = UIColor.redColor;
+    _polylineSwitch.on = CRAPI.sharedInstance.showPolylineForBounds;
+    _maskBoundsSwitch.on = CRAPI.sharedInstance.maskBoundsForBounds;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _offsetButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
 }
 
 - (void)didReceiveMemoryWarning
@@ -59,85 +68,41 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)setupTopView:(UIView *)topView
-                 tag:(NSUInteger)tag
-                text:(NSString *)text
+- (void)setupView:(UIView *)view
 {
-    if (topView.hidden)
-    {
-        topView.backgroundColor = UserDefaults.defaults.appleGray;
-        topView.layer.borderColor = UIColor.blackColor.CGColor;
-        topView.layer.borderWidth = 2.0;
-        topView.layer.cornerRadius = 10.0;
-        topView.tag = tag;
-        topView.hidden = NO;
-        
-        CGFloat offset = 0.0;
-        
-        if (topView == _polylineView || topView == _maskView)
-        {
-            UISwitch *viewSwitch = [[UISwitch alloc] init];
-            CGSize size = viewSwitch.frame.size;
-            
-            viewSwitch.frame = CGRectMake((topView.frame.size.width - size.width) - 6.0,
-                                          ((topView.frame.size.height - size.height) / 2.0), size.width, size.height);
-            
-            viewSwitch.tag = topView.tag;
-            viewSwitch.tintColor = UIColor.redColor;
-            offset += (viewSwitch.frame.size.width + 6.0);
-            
-            [topView addSubview:viewSwitch];
-            
-            [viewSwitch addTarget:self
-                           action:@selector(topViewSwitchTapped:)
-                 forControlEvents:UIControlEventValueChanged];
-        }
-        
-        else
-        {
-            UIButton *viewButton = [[UIButton alloc] initWithFrame:
-                                    CGRectMake((topView.frame.size.width / 2.0), 6.0,
-                                               ((topView.frame.size.width / 2.0) - 6.0),
-                                               (topView.frame.size.height - 12.0))];
-            
-            viewButton.backgroundColor = UIColor.blackColor;
-            viewButton.layer.cornerRadius = 10.0;
-            viewButton.tag = topView.tag;
-            offset += (viewButton.frame.size.width + 6.0);
-            
-            [topView addSubview:viewButton];
-        }
-        
-        UILabel *viewLabel = [[UILabel alloc] initWithFrame:CGRectMake(4.0, 4.0, ((topView.frame.size.width - offset) - 8.0),
-                                                                       (topView.frame.size.height - 8.0))];
-        
-        viewLabel.backgroundColor = UIColor.clearColor;
-        viewLabel.font = [UIFont boldSystemFontOfSize:32.0];
-        viewLabel.adjustsFontSizeToFitWidth = YES;
-        viewLabel.textColor = UIColor.blackColor;
-        viewLabel.textAlignment = NSTextAlignmentCenter;
-        viewLabel.text = text;
-        viewLabel.numberOfLines = 2;
-        
-        [topView addSubview:viewLabel];
-    }
+    view.backgroundColor = UserDefaults.defaults.appleGray;
+    view.layer.borderColor = UIColor.blackColor.CGColor;
+    view.layer.borderWidth = 2.0;
+    view.layer.cornerRadius = 10.0;
 }
 
-- (void)topViewSwitchTapped:(UISwitch *)topViewSwitch
+- (void)setupLabel:(UILabel *)label
+              text:(NSString *)text
 {
-    switch (topViewSwitch.tag)
-    {
-        case 11:
-            CRAPI.sharedInstance.showPolylineForBounds = topViewSwitch.on;
-            break;
-            
-        case 22:
-            CRAPI.sharedInstance.maskBoundsForBounds = topViewSwitch.on;
-            break;
-            
-        default:
-            break;
-    }
+    label.text = text;
+    label.numberOfLines = 2;
+    label.font = [UIFont boldSystemFontOfSize:32.0];
+    label.adjustsFontSizeToFitWidth = YES;
+    label.textAlignment = NSTextAlignmentCenter;
+}
+
+- (void)setupButton:(UIButton *)button
+              title:(NSString *)title
+{
+    button.backgroundColor = UIColor.blackColor;
+    button.layer.cornerRadius = 10.0;
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:24.0];
+    button.titleLabel.adjustsFontSizeToFitWidth = YES;
+    button.titleLabel.numberOfLines = 2;
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    button.titleLabel.textAlignment = NSTextAlignmentCenter;
+    
+    [button setTitle:title
+            forState:UIControlStateNormal];
+    
+    [button setTitleColor:UIColor.whiteColor
+                 forState:UIControlStateNormal];
 }
 
 - (void)setupTableView:(UITableView *)tableView
@@ -161,14 +126,37 @@
                                                                       alpha:0.1];
 }
 
-- (void)setupBackButton
+- (IBAction)polylineSwitchTapped:(UISwitch *)sender
 {
-    _backButton.backgroundColor = UIColor.blackColor;
-    _backButton.layer.cornerRadius = 10.0;
-    _backButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    CRAPI.sharedInstance.showPolylineForBounds = sender.on;
+}
+
+- (IBAction)maskBoundsSwitchTapped:(UISwitch *)sender
+{
+    CRAPI.sharedInstance.maskBoundsForBounds = sender.on;
+}
+
+- (IBAction)offsetButtonTapped:(id)sender
+{
+    NVTextAlert *alert = [NVTextAlert showTextAlertinView:self.view
+                                                 delegate:self
+                                                    title:@"Edit Offset"];
+    alert.minimumCharacters = 0;
+    alert.text = CRAPI.sharedInstance.offsetForBounds;
+}
+
+- (void)textAlert:(NVTextAlert *)textAlert
+    didReturnText:(NSString *)text
+{
+    if (!text || [text isEqualToString:@""])
+        text = @"0 feet";
     
-    [_backButton setTitleColor:UIColor.whiteColor
-                      forState:UIControlStateNormal];
+    CRAPI.sharedInstance.offsetForBounds = text;
+    [textAlert hideTextAlert:YES];
+    
+    [_offsetButton setTitle:[NSString stringWithFormat:@"Edit Offset:\n%@",
+                             CRAPI.sharedInstance.offsetForBounds]
+                   forState:UIControlStateNormal];
 }
 
 - (IBAction)goBack:(id)sender
