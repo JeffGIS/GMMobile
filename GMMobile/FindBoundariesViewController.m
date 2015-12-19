@@ -375,4 +375,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [_sectionCounts addObject:[[NSNumber alloc] initWithInt:sectionCount]];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    for (NVTextAlert *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVTextAlert.class])
+            [alert willRotateWithDuration:duration];
+    }
+}
+
 @end
