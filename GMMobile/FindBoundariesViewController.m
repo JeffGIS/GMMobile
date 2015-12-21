@@ -146,31 +146,30 @@
 }
 
 - (void)textAlert:(NVUnitPickerTextAlert *)textAlert
-    didReturnText:(NSString *)text
+   didReturnValue:(NSString *)value
+            units:(NSString *)units
 {
-    if (!text || [text isEqualToString:@""] || [text isEqualToString:@"feet"])
-        text = @"0 feet";
+    if (!value || [value isEqualToString:@""])
+        value = @"0";
     
-    else if ([text isEqualToString:@"meters"])
-        text = @"0 meters";
+    if (!units || [units isEqualToString:@""])
+        units = @"feet";
     
-    else if ([text isEqualToString:@"miles"])
-        text = @"0 miles";
+    if ([value characterAtIndex:(value.length - 1)] == '.')
+        value = [value substringToIndex:value.length - 1];
     
-    CRAPI.sharedInstance.offsetForBounds = text;
+    CRAPI.sharedInstance.offsetForBounds = [NSString stringWithFormat:@"%@ %@", value, units];
     
-    NSArray *textArray = [text componentsSeparatedByString:@" "];
-    NSInteger value = [textArray[0] integerValue];
-    NSString *units = textArray[1];
+    NSInteger intValue = value.integerValue;
     
     if ([units isEqualToString:@"feet"])
-        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)(value * 0.3048);
+        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)(intValue * 0.3048);
     
     else if ([units isEqualToString:@"meters"])
-        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)value;
+        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)intValue;
     
     else if ([units isEqualToString:@"miles"])
-        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)(value * 1609.34);
+        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)(intValue * 1609.34);
     
     [textAlert hideTextAlert:YES];
     
