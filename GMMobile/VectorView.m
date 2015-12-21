@@ -124,15 +124,15 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         _latlonBounds.ymn = max (_latlonBounds.ymn,bounds.ymn);
         _latlonBounds.xmx = min (_latlonBounds.xmx,bounds.xmx);
         _latlonBounds.ymx = min (_latlonBounds.ymx,bounds.ymx);
-        PointInArea *pia = [[PointInArea alloc] init];
-        pia.maxDimension = 1024;
+        _pia = [[PointInArea alloc] init];
+        _pia.maxDimension = 1024;
         
         LPDPOINT pPoints = [boundData getPolygonPointsForBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
                                                         numPoints:&numPoints
                                                          numLoops:&numLoops
                                                       polyPartLen:&polyPartLen];
 
-        [pia loadArea:(int)numPoints
+        [_pia loadArea:(int)numPoints
              numLoops:(int)numLoops
           polyPartLen:polyPartLen
                points:pPoints];
@@ -325,7 +325,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                     llCorners:&_latlonCornerPoints
                                                                      LLBounds:&_latlonBounds
                                                                    viewBounds:&_viewBounds
-                                                                       themes:themes];
+                                                                       themes:themes
+                                                                  pointInArea:_pia];
                                                    }
                                                }
                                                if (keepProcessing == self.displayID &&

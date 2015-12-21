@@ -26,7 +26,8 @@ extern int keepProcessing;
                 llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
-                   themes:(Themes*)themes;
+                   themes:(Themes*)themes
+              pointInArea:(PointInArea *)pia;
 
 
 @end

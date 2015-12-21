@@ -13,6 +13,19 @@
 
 @interface BoundaryData : NSObject
 @property int processingID;
+@property sqlite3 *database;
+@property (atomic) BOOL isOpen;
+@property (nonatomic, copy) NSString *documentsDirectory;
+@property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, copy) NSString *path;
+@property NSInteger fileSize;
+@property (nonatomic) int datasetVersion;
+
+- (BOOL)open;
+- (void)close:(BOOL)opened;
+- (void)startTransaction;
+- (void)commitTransaction;
+- (BOOL)executeCmd:(char *)cmd;
 
 - (NSMutableArray *)getBoundaryAreaTypes;
 - (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type;

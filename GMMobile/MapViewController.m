@@ -1107,9 +1107,9 @@ extern int keepProcessing;
     
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
     {
-        PropertyData *propData = [[PropertyData alloc] init];
+        BoundaryData *boundData = [[BoundaryData alloc] init];
         
-        MNMXCORD bounds = [propData getBoundaryAreaBounds:
+        MNMXCORD bounds = [boundData getBoundaryAreaBounds:
                            CRAPI.sharedInstance.currentOverallBoundaryRefno];
         
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);

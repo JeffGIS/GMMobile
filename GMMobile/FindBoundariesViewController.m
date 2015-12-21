@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import "FindBoundariesViewController.h"
-#import "PropertyData.h"
+#import "BoundaryData.h"
 
 @interface FindBoundariesViewController ()
 
@@ -32,8 +32,8 @@
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
-    PropertyData *propData = [[PropertyData alloc] init];
-    _boundaryList = [propData getBoundaryAreaTypes];
+    BoundaryData *boundData = [[BoundaryData alloc] init];
+    _boundaryList = [boundData getBoundaryAreaTypes];
     
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
@@ -290,10 +290,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([tableView isEqual:_topTableView])
     {
-        PropertyData *propData = [[PropertyData alloc] init];
+        BoundaryData *boundData = [[BoundaryData alloc] init];
         
         _selectedType = _boundaryList[indexPath.row];
-        _boundaryDataList = [propData getBoundaryAreaDataForType:_selectedType];
+        _boundaryDataList = [boundData getBoundaryAreaDataForType:_selectedType];
         NSSortDescriptor *sort;
         
         if ([_selectedType isEqualToString:@"Minneapolis Wards"])

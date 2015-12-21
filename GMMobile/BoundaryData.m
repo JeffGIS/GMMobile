@@ -7,6 +7,10 @@
 #import "PropertyData.h"
 
 extern int keepProcessing;
+@implementation BoundaryAreaData
+
+@end
+
 
 @interface BoundaryData ()
 
@@ -15,6 +19,104 @@ extern int keepProcessing;
 @end
 
 @implementation BoundaryData
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        _documentsDirectory = UserDefaults.defaults.sharedFilePath;
+        _fileName = @"Boundary.sqlite";
+        _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+    }
+    
+    return self;
+}
+
+- (void)dealloc
+{
+    [self close:TRUE];
+    NSLog(@"Boundary Database dealloc");
+}
+
+- (BOOL)open
+{
+    BOOL rtn = FALSE;
+    if (!_isOpen)
+    {
+        _isOpen = !SQLOK(sqlite3_open(self.path.UTF8String, &_database), _database);
+        NSLog(@"Boundary Database open");
+        
+        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
+                                                                   error:nil].fileSize;
+        rtn = TRUE;
+    }
+    return rtn;
+}
+
+- (void)close:(BOOL)opened
+{
+    if (opened && _isOpen)
+    {
+        SQLOK(sqlite3_close(_database),_database);
+        NSLog(@"Boundary Database close");
+    }
+    _isOpen = NO;
+}
+
+- (void)clear
+{
+    [self close:TRUE];
+    
+    //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
+    //error:nil];
+}
+
+- (int) datasetVersion
+{
+    int rtn = -1;
+    BOOL opened = [self open];
+    if (_isOpen && _fileSize > 0)
+    {
+        NSString *query = [NSString stringWithFormat:@"SELECT max(Version) FROM BOUNDARY_VERSION"];
+        
+        sqlite3_stmt *statement = NULL;
+        
+        SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            LPSTR version = (LPSTR)sqlite3_column_text(statement, 0);
+            
+            if (version)
+                rtn = atoi(version);
+        }
+        
+        SQLOK(sqlite3_finalize(statement), _database);
+    }
+    [self close:opened];
+    if ( _fileSize > 100)
+        rtn = 0;
+    return rtn;
+}
+
+- (BOOL)executeCmd:(char *)cmd
+{
+    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    return rtn;
+}
+
+- (void)startTransaction
+{
+    [self open];
+    SQLOK(sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+}
+
+- (void)commitTransaction
+{
+    SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database);
+}
+
 
 -(void)displayBoundary:(int)refno
              inContext:(CGContextRef)context
@@ -176,7 +278,7 @@ extern int keepProcessing;
             break;
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 22);
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -185,7 +287,7 @@ extern int keepProcessing;
         [types addObject:outString];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 23);
+    SQLOK(sqlite3_finalize(statement), _database);
     
     [self close:opened];
     
@@ -207,7 +309,7 @@ extern int keepProcessing;
             break;
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 24);
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -219,7 +321,7 @@ extern int keepProcessing;
         [data addObject:baData];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 25);
+    SQLOK(sqlite3_finalize(statement), _database);
     
     [self close:opened];
     return data;
@@ -247,7 +349,7 @@ extern int keepProcessing;
             break;
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 26);
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -257,7 +359,7 @@ extern int keepProcessing;
         bounds.ymx = sqlite3_column_double(statement, 4);
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 27);
+    SQLOK(sqlite3_finalize(statement), _database);
     
     [self close:opened];
     return bounds;
@@ -273,12 +375,11 @@ extern int keepProcessing;
     sqlite3_stmt *statement = NULL;
     if (polyPartLen)
         *polyPartLen = 0;
-    PropertyData * pd = [[PropertyData alloc] init];
-    BOOL pdopened = [pd open];
+    BOOL opened = [self open];
     
-    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i", refno];
+    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i", refno];
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -313,8 +414,8 @@ extern int keepProcessing;
         }
     }
     
-    SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close:pdopened];
+    SQLOK(sqlite3_finalize(statement), _database);
+    [self close:opened];
     
     return llpoints;
 }

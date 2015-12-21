@@ -46,10 +46,6 @@ extern int keepProcessing;
 
 @end
 
-@implementation BoundaryAreaData
-
-@end
-
 @implementation PropertyData
 
 

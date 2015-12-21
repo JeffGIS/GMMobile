@@ -30,6 +30,7 @@
 @property MNMXCORD latlonBounds;
 @property MNMXCORD viewBounds;
 @property CGLayerRef vectorLayer;
+@property PointInArea *pia;
 
 - (void) setRegion:(GMSVisibleRegion)region;
 

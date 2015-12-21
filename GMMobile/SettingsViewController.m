@@ -3,6 +3,7 @@
 
 #import "SettingsViewController.h"
 #import "PropertyData.h"
+#import "BoundaryData.h"
 #import "AlleyWallData.h"
 #import "AppDelegate.h"
 
@@ -224,14 +225,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         AlleyWallData *awd;
                         CurbRampData *crd;
                         CrimeData *crimed;
-                        BOOL pdopened = NO;
+                        BoundaryData *bd;
+                        BOOL opened = NO;
                         
                         if (option == GetDatabaseSettingSewer)
                         {
                             sd = [[SewerData alloc] init];
                             [sd open];
                         }
-                        
+                        else if (option == GetDatabaseSettingAreas)
+                        {
+                            bd = [[BoundaryData alloc] init];
+                            opened = [bd open];
+                        }
                         else if (option == GetDatabaseSettingAlleyWall)
                         {
                             awd = [[AlleyWallData alloc] init];
@@ -253,7 +259,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         else
                         {
                             pd = [[PropertyData alloc] init];
-                            pdopened = [pd open];
+                            opened = [pd open];
                         }
                         
                         fseek(fid, 0, SEEK_END);
@@ -262,6 +268,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         
                         if (option == GetDatabaseSettingSewer)
                             [sd startTransaction];
+                        
+                        else if (option == GetDatabaseSettingAreas)
+                            [bd startTransaction];
                         
                         else if (option == GetDatabaseSettingAlleyWall)
                             [awd startTransaction];
@@ -279,6 +288,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         {
                             if (option == GetDatabaseSettingSewer)
                                 [sd executeCmd:str];
+                            
+                            else if (option == GetDatabaseSettingAreas)
+                                [bd executeCmd:str];
                             
                             else if (option == GetDatabaseSettingCrimes)
                                 [crimed executeCmd:str];
@@ -307,6 +319,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         if (option == GetDatabaseSettingSewer)
                             [sd commitTransaction];
                         
+                        else if (option == GetDatabaseSettingAreas)
+                            [bd commitTransaction];
+                        
                         else if (option == GetDatabaseSettingAlleyWall)
                             [awd commitTransaction];
                         
@@ -334,6 +349,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         if (option == GetDatabaseSettingSewer)
                             [sd close];
                         
+                        if (option == GetDatabaseSettingAreas)
+                            [bd close:opened];
+                        
                         if (option == GetDatabaseSettingCrimes)
                             [crimed close];
                         
@@ -353,7 +371,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             [awd close];
                         }
                         else
-                            [pd close:pdopened];
+                            [pd close:opened];
                         
                         fclose(fid);
                         free(str);

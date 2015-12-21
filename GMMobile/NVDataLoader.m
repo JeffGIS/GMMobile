@@ -4,6 +4,7 @@
 #import "NVDataLoader.h"
 #import "AlleyWallData.h"
 #import "PropertyData.h"
+#import "BoundaryData.h"
 #import "AlleyWallData.h"
 
 extern int keepProcessing;
@@ -176,9 +177,9 @@ Top:
             
         case GetDatabaseSettingAreas:
         {
-            PropertyData *pd = [[PropertyData alloc] init];
+            BoundaryData *bd = [[BoundaryData alloc] init];
             
-            if (pd.areasDatasetVersion >= 0)
+            if (bd.datasetVersion >= 0)
                 rtn = YES;
         }
             break;
