@@ -148,10 +148,30 @@
 - (void)textAlert:(NVUnitPickerTextAlert *)textAlert
     didReturnText:(NSString *)text
 {
-    if (!text || [text isEqualToString:@""])
+    if (!text || [text isEqualToString:@""] || [text isEqualToString:@"feet"])
         text = @"0 feet";
     
+    else if ([text isEqualToString:@"meters"])
+        text = @"0 meters";
+    
+    else if ([text isEqualToString:@"miles"])
+        text = @"0 miles";
+    
     CRAPI.sharedInstance.offsetForBounds = text;
+    
+    NSArray *textArray = [text componentsSeparatedByString:@" "];
+    NSInteger value = [textArray[0] integerValue];
+    NSString *units = textArray[1];
+    
+    if ([units isEqualToString:@"feet"])
+        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)(value * 0.3048);
+    
+    else if ([units isEqualToString:@"meters"])
+        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)value;
+    
+    else if ([units isEqualToString:@"miles"])
+        CRAPI.sharedInstance.offsetForBoundsInMeters = (int)(value * 1609.34);
+    
     [textAlert hideTextAlert:YES];
     
     [_offsetButton setTitle:[NSString stringWithFormat:@"Edit Offset:\n%@",

@@ -64,9 +64,13 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.showPolylineForBounds = [UserDefaults.defaults boolForKey:@"ShowPolylineForBounds"];
     CRAPI.sharedInstance.maskBoundsForBounds = [UserDefaults.defaults boolForKey:@"MaskBoundsForBounds"];
     CRAPI.sharedInstance.offsetForBounds = [UserDefaults.defaults stringForKey:@"OffsetForBounds"];
+    CRAPI.sharedInstance.offsetForBoundsInMeters = (int)[UserDefaults.defaults integerForKey:@"OffsetForBoundsInMeters"];
     
     if (!CRAPI.sharedInstance.offsetForBounds)
         CRAPI.sharedInstance.offsetForBounds = @"0 feet";
+    
+    if (!CRAPI.sharedInstance.offsetForBoundsInMeters)
+        CRAPI.sharedInstance.offsetForBoundsInMeters = 0;
     
     return YES;
 }
@@ -110,6 +114,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     
     [UserDefaults.defaults saveString:CRAPI.sharedInstance.offsetForBounds
                                forKey:@"OffsetForBounds"];
+    
+    [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.offsetForBoundsInMeters
+                                forKey:@"OffsetForBoundsInMeters"];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
