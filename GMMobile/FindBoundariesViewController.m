@@ -138,14 +138,14 @@
 
 - (IBAction)offsetButtonTapped:(id)sender
 {
-    NVTextAlert *alert = [NVTextAlert showTextAlertinView:self.view
-                                                 delegate:self
-                                                    title:@"Edit Offset"];
-    alert.minimumCharacters = 0;
-    alert.text = CRAPI.sharedInstance.offsetForBounds;
+    NVUnitPickerTextAlert *nvupta = [NVUnitPickerTextAlert showUnitPickerTextAlertWithTitle:@"Edit Offset"
+                                                                                pickerArray:@[@"feet", @"meters", @"miles"]
+                                                                                   delegate:self];
+    
+    nvupta.text = CRAPI.sharedInstance.offsetForBounds;
 }
 
-- (void)textAlert:(NVTextAlert *)textAlert
+- (void)textAlert:(NVUnitPickerTextAlert *)textAlert
     didReturnText:(NSString *)text
 {
     if (!text || [text isEqualToString:@""])
@@ -378,9 +378,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    for (NVTextAlert *alert in self.view.subviews)
+    
+    
+    for (NVUnitPickerTextAlert *alert in UIApplication.sharedApplication.keyWindow.subviews)
     {
-        if ([alert isKindOfClass:NVTextAlert.class])
+        if ([alert isKindOfClass:NVUnitPickerTextAlert.class])
             [alert willRotateWithDuration:duration];
     }
 }
