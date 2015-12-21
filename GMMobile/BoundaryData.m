@@ -82,13 +82,16 @@ extern int keepProcessing;
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            UIColor *boundaryColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.75];
-            [self drawBoundary:context
-                       nPoints:numPoints
-                        nLoops:numLoops
-                       partLen:polyPartLen
-                        points:llpoints
-                     withColor:boundaryColor.CGColor];
+            if (CRAPI.sharedInstance.showPolylineForBounds)
+            {
+                UIColor *boundaryColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.80];
+                [self drawBoundary:context
+                           nPoints:numPoints
+                            nLoops:numLoops
+                           partLen:polyPartLen
+                            points:llpoints
+                         withColor:boundaryColor.CGColor];
+            }
         }
     }
  
@@ -151,11 +154,169 @@ extern int keepProcessing;
         }
     }
 }
+
 - (BOOL) continue
 {
     if (self.processingID == keepProcessing)
         return YES;
     return NO;
+}
+- (NSMutableArray *)getBoundaryAreaTypes
+{
+    NSMutableArray * types=[[NSMutableArray alloc] init];
+    sqlite3_stmt *statement = NULL;
+    NSString *query = [[NSString alloc] init];
+    
+    BOOL opened = [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREA";
+            break;
+    }
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 22);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR type = (LPSTR)sqlite3_column_text(statement, 0);
+        NSString *outString = [NSString stringWithFormat:@"%s", type];
+        [types addObject:outString];
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), _database, 23);
+    
+    [self close:opened];
+    
+    return types;
+}
+
+- (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type
+{
+    NSMutableArray * data = [[NSMutableArray alloc] init];
+    sqlite3_stmt *statement = NULL;
+    NSString *query = [[NSString alloc] init];
+    
+    BOOL opened = [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT id,NAME FROM BOUNDARYAREA WHERE TYPE='%@'",type];
+            break;
+    }
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 24);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR name = (LPSTR)sqlite3_column_text(statement, 1);
+        BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+        baData.refno = refno;
+        baData.name = [NSString stringWithUTF8String:name];
+        [data addObject:baData];
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), _database, 25);
+    
+    [self close:opened];
+    return data;
+}
+
+- (MNMXCORD)getBoundaryAreaBounds:(int)refno
+{
+    MNMXCORD bounds = {0};
+    
+    sqlite3_stmt *statement = NULL;
+    NSString *query = [[NSString alloc] init];
+    
+    BOOL opened = [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_MPLS:
+            query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %i",
+                     refno];
+            break;
+            
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%i AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+                     refno];
+            break;
+    }
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 26);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        bounds.xmn = sqlite3_column_double(statement, 1);
+        bounds.xmx = sqlite3_column_double(statement, 2);
+        bounds.ymn = sqlite3_column_double(statement, 3);
+        bounds.ymx = sqlite3_column_double(statement, 4);
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), _database, 27);
+    
+    [self close:opened];
+    return bounds;
+}
+
+- (LPDPOINT)getPolygonPointsForBoundary:(int)refno
+                               numPoints:(int *)numPoints
+                                numLoops:(int *)numLoops
+                             polyPartLen:(int **)polyPartLen
+{
+    DPOINT basePoint = {0};
+    LPDPOINT llpoints = NULL;
+    sqlite3_stmt *statement = NULL;
+    if (polyPartLen)
+        *polyPartLen = 0;
+    PropertyData * pd = [[PropertyData alloc] init];
+    BOOL pdopened = [pd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i", refno];
+    
+    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        basePoint.x = sqlite3_column_double(statement, 0);
+        basePoint.y = sqlite3_column_double(statement, 1);
+        *numPoints = sqlite3_column_int(statement, 2);
+        *numLoops = sqlite3_column_int(statement, 3);
+        if (*numLoops > 1 && polyPartLen)
+        {
+            *polyPartLen = malloc (*numLoops * sizeof (int));
+            memcpy (*polyPartLen,(int *)sqlite3_column_blob(statement,4),*numLoops * sizeof(int));
+        }
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 5);
+        llpoints = malloc(abs(*numPoints) * sizeof(DPOINT) + 4);
+        
+        if (*numPoints < 0)
+        {
+            *numPoints = -*numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < *numPoints; i++)
+            {
+                llpoints[i].x = (basePoint.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (basePoint.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+            }
+        }
+        
+        else for (int i = 0; i < *numPoints; i++)
+        {
+            llpoints[i].x = (basePoint.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (basePoint.y + offsetPoints[i].y / COORDINATE_FACTOR);
+        }
+    }
+    
+    SQLOK(sqlite3_finalize(statement), pd.database);
+    [pd close:pdopened];
+    
+    return llpoints;
 }
 
 -(void)displayLandUse:(CGContextRef)context

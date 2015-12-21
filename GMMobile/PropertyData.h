@@ -25,12 +25,6 @@ typedef struct {int nMatchingProperties;
                     pctSenior;
                 }DATA_FROM_TABLES;
 
-@interface BoundaryAreaData : NSObject
-
-@property NSString *name;
-@property int refno;
-
-@end
 
 @interface PropertyData : NSObject 
 
@@ -47,7 +41,6 @@ typedef struct {int nMatchingProperties;
 @property (nonatomic) int propertyDatasetVersion;
 @property (nonatomic) int parcelDatasetVersion;
 @property (nonatomic) int censusDatasetVersion;
-@property (nonatomic) int areasDatasetVersion;
 @property (nonatomic) int planDatasetVersion;
 
 - (BOOL)open;
@@ -101,9 +94,6 @@ typedef struct {int nMatchingProperties;
 
 - (NSMutableArray *)getOwnersMatchingString:(NSString *)string;
 - (BOOL)getDistinctUseCodes:(NSString *)outFile;
-- (NSMutableArray *)getBoundaryAreaTypes;
-- (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type;
-- (MNMXCORD) getBoundaryAreaBounds:(int)refno;
 
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
                                numPoints:(int *)numPoints

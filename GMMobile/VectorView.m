@@ -7,6 +7,7 @@ extern int keepProcessing;
 #import "BoundaryData.h"
 #import "PlanimetricData.h"
 #import "PropertyData.h"
+#import "BoundaryData.h"
 #import "PipeTrace.h"
 #import "CrimeDataDisplay.h"
 #import "ConfigurationControl.h"
@@ -99,6 +100,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
 - (void) setRegion:(GMSVisibleRegion)region
 {
+    int numPoints, numLoops;
+    LPINT polyPartLen;
+    
     _latlonCornerPoints.nearLeft.x = region.nearLeft.longitude;
     _latlonCornerPoints.nearLeft.y = region.nearLeft.latitude;
     _latlonCornerPoints.farLeft.x = region.farLeft.longitude;
@@ -109,6 +113,33 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _latlonCornerPoints.nearRight.y = region.nearRight.latitude;
 
     _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
+    
+    if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+        CRAPI.sharedInstance.maskBoundsForBounds)
+    {
+        BoundaryData *boundData = [[BoundaryData alloc] init];
+        MNMXCORD bounds = [boundData getBoundaryAreaBounds:
+                           CRAPI.sharedInstance.currentOverallBoundaryRefno];
+        _latlonBounds.xmn = max (_latlonBounds.xmn,bounds.xmn);
+        _latlonBounds.ymn = max (_latlonBounds.ymn,bounds.ymn);
+        _latlonBounds.xmx = min (_latlonBounds.xmx,bounds.xmx);
+        _latlonBounds.ymx = min (_latlonBounds.ymx,bounds.ymx);
+        PointInArea *pia = [[PointInArea alloc] init];
+        pia.maxDimension = 1024;
+        
+        LPDPOINT pPoints = [boundData getPolygonPointsForBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                        numPoints:&numPoints
+                                                         numLoops:&numLoops
+                                                      polyPartLen:&polyPartLen];
+
+        [pia loadArea:(int)numPoints
+             numLoops:(int)numLoops
+          polyPartLen:polyPartLen
+               points:pPoints];
+        
+
+    }
+
 }
 
 - (void)drawRect:(CGRect)rect
@@ -326,7 +357,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                }
                                                
                                                
-                                               if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno)
+                                               if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+                                                   (CRAPI.sharedInstance.showPolylineForBounds ||
+                                                   CRAPI.sharedInstance.maskBoundsForBounds))
                                                {
                                                    BoundaryData *bd = [[BoundaryData alloc] init];
                                                    
