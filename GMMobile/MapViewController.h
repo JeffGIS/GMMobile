@@ -29,7 +29,12 @@
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property (nonatomic) int currentZoom;
 @property (weak, nonatomic) IBOutlet UIButton *exitStreetView;
-@property BOOL fromSpreadsheet;
+@property BOOL fromSpreadsheet, fromLegends;
 @property (nonatomic) CLLocationCoordinate2D spreadsheetCoords;
+@property (nonatomic) GMSMapView *mapView;
+@property NSUInteger fromIndex;
+
+- (void)refreshVectorView:(GMSVisibleRegion)region
+                   atZoom:(CGFloat)zoom;
 
 @end

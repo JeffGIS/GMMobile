@@ -6,6 +6,7 @@
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 #import "SymbolDictionary.h"
+#import "MapViewController.h"
 
 @interface CurbRampDataOptions ()
 
@@ -15,6 +16,7 @@
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *legends, *countLengths;
+@property (nonatomic) MapViewController *mapVC;
 
 @end
 
@@ -26,6 +28,7 @@
     
     _legends = ConfigurationControl.sharedInstance.legendList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -270,6 +273,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
+    if (tlc.status)
+        tlc.count = 0;
+    
     NSMutableString *text = tlc.label.mutableCopy;
     
     if (tl.appendClassCount)
@@ -299,12 +305,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         UILabel *textLabel = [[UILabel alloc] init];
         textLabel.textColor = UIColor.blackColor;
         textLabel.font = _font;
-        
-        if (tlc.status)
-            textLabel.text = tlc.label;
-        
-        else
-            textLabel.text = text.copy;
+        textLabel.text = text.copy;
         
         textLabel.textAlignment = NSTextAlignmentCenter;
         textLabel.adjustsFontSizeToFitWidth = YES;
@@ -420,8 +421,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = NO;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation

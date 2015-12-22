@@ -5,14 +5,19 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
 #import "SymbolDictionary.h"
+#import "MapViewController.h"
 
 @interface CrimeOptions1 ()
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIView *deptView;
 
 @property (nonatomic) NSMutableArray *legends;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
 @property (nonatomic) UIButton *deptHeaderView;
+@property (nonatomic) MapViewController *mapVC;
 
 @end
 
@@ -25,7 +30,8 @@
     _legends = ConfigurationControl.sharedInstance.legendList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _countLength = 0;
- 
+    _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;
+    
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         _headerHeight = 24.0;
@@ -152,11 +158,10 @@
     
     if (button.selected)
     {
-        button.backgroundColor = UIColor.clearColor;
-        button.selected = tlc.status = NO;
-        
-        [button setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
-                forState:UIControlStateNormal];
+        tlc.status = NO;
+        _mapVC.fromIndex = self.tabBarController.selectedIndex;
+        _mapVC.fromLegends = YES;
+        self.tabBarController.selectedIndex = 0;
     }
     
     else
@@ -164,7 +169,7 @@
         button.backgroundColor = UserDefaults.defaults.appleGray;
         button.selected = tlc.status = YES;
         
-        [button setTitle:tlc.label
+        [button setTitle:[NSString stringWithFormat:@"%@ (0)", tlc.label]
                 forState:UIControlStateNormal];
     }
 }
@@ -197,20 +202,10 @@
             buttons.selected = tlc.status;
             
             if (buttons.selected)
-            {
                 buttons.backgroundColor = UserDefaults.defaults.appleGray;
-                
-                [buttons setTitle:tlc.label
-                         forState:UIControlStateNormal];
-            }
             
             else
-            {
                 buttons.backgroundColor = UIColor.clearColor;
-                
-                [buttons setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
-                         forState:UIControlStateNormal];
-            }
         }
     }
 }
@@ -394,27 +389,24 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
     if (tlc.status)
-        cell.textLabel.text = tlc.label;
+        tlc.count = 0;
     
-    else
+    NSMutableString *text = tlc.label.mutableCopy;
+    
+    if (tl.appendClassCount)
     {
-        NSMutableString *text = tlc.label.mutableCopy;
+        NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
         
-        if (tl.appendClassCount)
+        while (countString.length < _countLength)
         {
-            NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
-            
-            while (countString.length < _countLength)
-            {
-                [countString insertString:@" "
-                                  atIndex:0];
-            }
-            
-            [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
+            [countString insertString:@" "
+                              atIndex:0];
         }
         
-        cell.textLabel.text = text.copy;
+        [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
     }
+    
+    cell.textLabel.text = text.copy;
     
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
@@ -467,8 +459,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = NO;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
