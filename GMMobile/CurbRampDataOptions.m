@@ -6,6 +6,7 @@
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 #import "SymbolDictionary.h"
+#import "MapViewController.h"
 
 @interface CurbRampDataOptions ()
 
@@ -15,6 +16,7 @@
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *legends, *countLengths;
+@property (nonatomic) MapViewController *mapVC;
 
 @end
 
@@ -26,6 +28,7 @@
     
     _legends = ConfigurationControl.sharedInstance.legendList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -299,12 +302,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         UILabel *textLabel = [[UILabel alloc] init];
         textLabel.textColor = UIColor.blackColor;
         textLabel.font = _font;
-        
-        if (tlc.status)
-            textLabel.text = tlc.label;
-        
-        else
-            textLabel.text = text.copy;
+        textLabel.text = text.copy;
         
         textLabel.textAlignment = NSTextAlignmentCenter;
         textLabel.adjustsFontSizeToFitWidth = YES;
@@ -362,12 +360,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         cell.textLabel.textColor = UIColor.blackColor;
         cell.textLabel.font = _font;
-        
-        if (tlc.status)
-            cell.textLabel.text = tlc.label;
-        
-        else
-            cell.textLabel.text = text.copy;
+        cell.textLabel.text = text.copy;
         
         cell.textLabel.textAlignment = NSTextAlignmentLeft;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
@@ -409,8 +402,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = YES;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -420,8 +414,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = NO;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation

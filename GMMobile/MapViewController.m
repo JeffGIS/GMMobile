@@ -47,7 +47,6 @@ extern int keepProcessing;
 @property MapViewScreenSetting screenSetting;
 @property (nonatomic) NSInteger gestureCount, digitizerCount;
 @property (nonatomic) MapToolbar *mapToolbar;
-@property (nonatomic) GMSMapView *mapView;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
@@ -327,6 +326,7 @@ extern int keepProcessing;
                                               delegate:self];
     
     CRAPI.sharedInstance.mapToolbar = _mapToolbar;
+    CRAPI.sharedInstance.mapVC = self;
     
     HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
     
@@ -2282,6 +2282,13 @@ haveVV:
     
     else dispatch_async(dispatch_get_main_queue(),
                    ^{
+                       if (_fromLegends)
+                       {
+                           self.tabBarController.selectedIndex = _fromIndex;
+                           _fromLegends = NO;
+                           return;
+                       }
+                       
                        [_vectorView removeFromSuperview];
                        
                        if (_screenSetting != MapViewScreenSettingPlatView)
