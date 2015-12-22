@@ -116,7 +116,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerDefaultZoom[HCLayerPlanimetric] = 18;
         layerDefaultZoom[HCLayerAlleys] = 14;
         layerDefaultZoom[HCLayerAlleys] = 13;
-        layerDefaultZoom[HCLayerCrimes] = 12;
+        layerDefaultZoom[HCLayerCrimes] = 11;
         
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;

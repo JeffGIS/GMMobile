@@ -186,7 +186,7 @@ extern int keepProcessing;
             }
             if (CRAPI.sharedInstance.showPolylineForBounds)
             {
-                UIColor *boundaryColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.80];
+                UIColor *boundaryColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.60];
                 [self drawBoundary:context
                            nPoints:numPoints
                             nLoops:numLoops
