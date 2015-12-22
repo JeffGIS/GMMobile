@@ -470,12 +470,33 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
     if (_legend.appendClassCount)
     {
-        NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
+        NSMutableString *countString = NSMutableString.string;
+        
+        if (tlc.status)
+        {
+            [countString insertString:@"X"
+                              atIndex:0];
+        }
+        
+        else
+        {
+            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count]
+                              atIndex:0];
+        }
         
         while (countString.length < _countLength)
         {
-            [countString insertString:@" "
-                              atIndex:0];
+            if (tlc.status)
+            {
+                [countString insertString:@"X"
+                                  atIndex:0];
+            }
+            
+            else
+            {
+                [countString insertString:@" "
+                                  atIndex:0];
+            }
         }
         
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];

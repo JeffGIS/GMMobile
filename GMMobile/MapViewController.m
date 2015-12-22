@@ -404,6 +404,18 @@ extern int keepProcessing;
 {
     [super viewWillAppear:animated];
     
+    if (_fromLegends)
+    {
+        self.view.userInteractionEnabled = NO;
+        self.tabBarController.tabBar.userInteractionEnabled = NO;
+    }
+    
+    else
+    {
+        self.view.userInteractionEnabled = YES;
+        self.tabBarController.tabBar.userInteractionEnabled = YES;
+    }
+    
     if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
     {
         if ([self.view.subviews containsObject:_legendView])
@@ -2285,6 +2297,7 @@ haveVV:
                        if (_fromLegends)
                        {
                            self.tabBarController.selectedIndex = _fromIndex;
+                           self.tabBarController.tabBar.userInteractionEnabled = YES;
                            _fromLegends = NO;
                            return;
                        }
