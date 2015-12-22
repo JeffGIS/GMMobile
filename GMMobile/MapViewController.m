@@ -2423,8 +2423,12 @@ haveVV:
             for (int i = 0; i < legends.count; i++)
             {
                 ThemeLegend *tl = legends[i];
-                CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
-                scrollHeight += legendHeight;
+                
+                if (tl.drawOnMap)
+                {
+                    CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
+                    scrollHeight += legendHeight;
+                }
             }
             
             _legendScrollView.contentSize = CGSizeMake(_legendScrollView.frame.size.width, scrollHeight);
