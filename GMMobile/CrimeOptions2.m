@@ -304,9 +304,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
-    if (tlc.status)
-        tlc.count = 0;
-    
     NSMutableString *text = tlc.label.mutableCopy;
     
     if (tl.appendClassCount)
@@ -424,8 +421,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = YES;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)tableView:(UITableView *)tableView

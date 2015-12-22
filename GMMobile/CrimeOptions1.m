@@ -157,21 +157,15 @@
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[button.tag - 1];
     
     if (button.selected)
-    {
         tlc.status = NO;
-        _mapVC.fromIndex = self.tabBarController.selectedIndex;
-        _mapVC.fromLegends = YES;
-        self.tabBarController.selectedIndex = 0;
-    }
     
     else
-    {
-        button.backgroundColor = UserDefaults.defaults.appleGray;
         button.selected = tlc.status = YES;
-        
-        [button setTitle:[NSString stringWithFormat:@"%@ (0)", tlc.label]
-                forState:UIControlStateNormal];
-    }
+    
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
+
 }
 
 - (void)setupDeptViewComponents:(CGFloat)width
@@ -388,9 +382,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegend *tl = (ThemeLegend *)_legends[0];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
-    if (tlc.status)
-        tlc.count = 0;
-    
     NSMutableString *text = tlc.label.mutableCopy;
     
     if (tl.appendClassCount)
@@ -448,8 +439,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = YES;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)tableView:(UITableView *)tableView

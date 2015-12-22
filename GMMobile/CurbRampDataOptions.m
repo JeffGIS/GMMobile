@@ -273,9 +273,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     
-    if (tlc.status)
-        tlc.count = 0;
-    
     NSMutableString *text = tlc.label.mutableCopy;
     
     if (tl.appendClassCount)
@@ -363,12 +360,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         cell.textLabel.textColor = UIColor.blackColor;
         cell.textLabel.font = _font;
-        
-        if (tlc.status)
-            cell.textLabel.text = tlc.label;
-        
-        else
-            cell.textLabel.text = text.copy;
+        cell.textLabel.text = text.copy;
         
         cell.textLabel.textAlignment = NSTextAlignmentLeft;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
@@ -410,8 +402,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
     tlc.status = YES;
     
-    [tableView reloadRowsAtIndexPaths:@[indexPath]
-                     withRowAnimation:UITableViewRowAnimationNone];
+    _mapVC.fromIndex = self.tabBarController.selectedIndex;
+    _mapVC.fromLegends = YES;
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)tableView:(UITableView *)tableView
