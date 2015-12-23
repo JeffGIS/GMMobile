@@ -2927,7 +2927,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 0; i < numPoints; i++)
         {
             CLLocationCoordinate2D coord = [path coordinateAtIndex:i];
-            DPOINT point;
+            DPOINT point = {0};
             point.x = coord.longitude;
             point.y = coord.latitude;
             llpoints[i] = point;
@@ -2936,20 +2936,30 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if (path.count)
         {
             const char *filePath = [NSString stringWithFormat:@"%@/pipetrace_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
+            FILE *tracePolyFile = fopen(filePath, "wb");
             
-            FILE *fid = fopen(filePath, "wb");
-            
-            if (fid)
+            if (!tracePolyFile)
             {
-                fwrite(&numPoints, sizeof(int), 1, fid);
-                fwrite(llpoints, (numPoints * sizeof(DPOINT)), 1, fid);
-                fclose(fid);
+                free (llpoints);
+                
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                  delegate:self
+                                                                     title:@"Polyline Data File Write ERROR"
+                                                           buttonTextArray:@[@"OK"]
+                                                          destructiveIndex:0];
+#pragma unused(alert)
             }
             
+            else
+            {
+                fwrite(&numPoints, sizeof(int), 1, tracePolyFile);
+                fwrite(llpoints, sizeof(DPOINT), numPoints, tracePolyFile);
+                fclose(tracePolyFile);
+                free (llpoints);
+                
+                [self perform3DFlyAround];
+            }
         }
-        free (llpoints);
-        
-        [self perform3DFlyAround];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -2958,7 +2968,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
                                         forKey:@"FlyOverType"];
         
-        int numPointsLoops[2];
+        int numPoints = 0, numLoops = 0;
+        int *polyPartLen = 0;
+        
         CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
         
         PropertyData *propData = [[PropertyData alloc] init];
@@ -2966,23 +2978,37 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
         
         LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
-                                                         numPoints:&numPointsLoops[0]
-                                                          numLoops:&numPointsLoops[1]
-                                                       polyPartLen:0];
+                                                         numPoints:&numPoints
+                                                          numLoops:&numLoops
+                                                       polyPartLen:&polyPartLen];
         
         const char *filePath = [NSString stringWithFormat:@"%@/pid_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
-        
         FILE *pidPolyFile = fopen(filePath, "wb");
         
-        fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
-        fwrite(numPointsLoops, sizeof(int), 2, pidPolyFile);
-        fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
-        fwrite(llpoints, sizeof(DPOINT), numPointsLoops[0], pidPolyFile);
-        fclose(pidPolyFile);
+        if (!pidPolyFile)
+        {
+            free(llpoints);
+            
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"Polygon Data File Write ERROR"
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+#pragma unused(alert)
+        }
         
-        free(llpoints);
-        
-        [self perform3DFlyAround];
+        else
+        {
+            fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
+            fwrite(&numPoints, sizeof(int), 1, pidPolyFile);
+            fwrite(&numLoops, sizeof(int), 1, pidPolyFile);
+            fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
+            fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
+            fclose(pidPolyFile);
+            free(llpoints);
+            
+            [self perform3DFlyAround];
+        }
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
