@@ -2982,7 +2982,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                           numLoops:&numLoops
                                                        polyPartLen:&polyPartLen];
         
-        const char *filePath = [NSString stringWithFormat:@"%@/pid_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
+        const char *filePath = [NSString stringWithFormat:@"%@/flyaround_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
         FILE *pidPolyFile = fopen(filePath, "wb");
         
         if (!pidPolyFile)
