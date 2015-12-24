@@ -1095,9 +1095,9 @@ extern int keepProcessing;
     [_digitizationToolbar addSubview:button];
 }
 
-- (float) getAspectRatioForBounds:(MNMXCORD)bounds
+- (CGFloat) getAspectRatioForBounds:(MNMXCORD)bounds
 {
-    float ar = 1.0;
+    CGFloat ar = 1.0;
     
     CLLocationCoordinate2D ll[2];
     ll[0].latitude = bounds.ymn;
@@ -1110,8 +1110,10 @@ extern int keepProcessing;
 
     if (fabs(pt[1].y - pt[0].y) > 0)
         ar = fabs((pt[1].x - pt[0].x)/(pt[1].y - pt[0].y));
+    
     return ar;
 }
+
 - (void)extentZoom
 {
     [self stopTrackingUserLocation:NO];
@@ -1145,7 +1147,7 @@ extern int keepProcessing;
         for (int i = 0; i < subviewsArray.count; i++)
             frames[i] = [(UIView *)subviewsArray[i] frame];
         
-        float aspectRatio = [self getAspectRatioForBounds:bounds];
+        CGFloat aspectRatio = [self getAspectRatioForBounds:bounds];
         CGRect targetFrame = largestRect(aspectRatio, 5, _mapView.frame, (int)subviewsArray.count, frames);
         
         free(frames);
