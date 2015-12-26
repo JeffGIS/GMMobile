@@ -423,8 +423,8 @@ int getThemeOpt(ThemeTypes type)
                 break;
             case DayNightTheme:
             {
-                double Altitude, Az;
-                GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
+                double Altitude=dc.sunAngle, Az;
+                //GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
                 if (Altitude < -6.0)
                     val = 1;
                 else

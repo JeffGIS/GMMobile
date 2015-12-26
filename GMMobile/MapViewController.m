@@ -2223,6 +2223,7 @@ haveVV:
     [_vectorView removeFromSuperview];
     vectorViews[_vectorView.ivv] = nil;
     _vectorView = nil;
+    [CRAPI.sharedInstance updateProgress:-1 current:0];
     [CRAPI.sharedInstance updateProgress:0 current:0];
 
 }
@@ -3329,7 +3330,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)perform3DFlyAround
 {
-    NSString *flyOverURL = @"NVMapKitFlyover://";
+    NSString *flyOverURL = @"NVMapKitFlyover:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
