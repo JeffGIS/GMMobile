@@ -199,4 +199,20 @@
     return rtn;
 }
 
+- (void) getMinMaxUCR:(int *)minUCR max:(int *)maxUCR
+{
+    *minUCR = 1;
+    *maxUCR = 99;
+    for (Theme *thm in _themeList)
+    {
+        if (thm.type == Part1Theme)
+        {
+            *minUCR = 1;
+            *maxUCR = 10;
+        }
+    }
+
+}
+
+
 @end

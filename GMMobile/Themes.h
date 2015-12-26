@@ -22,6 +22,7 @@
 - (void) themesEndDisplayPass:(int)displayID;
 - (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
                         displayID:(int)displayID;
+- (void) getMinMaxUCR:(int *)minUCR max:(int *)maxUCR;
 
 
 @end

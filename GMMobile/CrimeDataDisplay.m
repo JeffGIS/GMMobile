@@ -85,8 +85,7 @@
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     [_cd open];
-    _minUCR = 1;
-    _maxUCR = 10;
+    [themes getMinMaxUCR:&_minUCR max:&_maxUCR];
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
