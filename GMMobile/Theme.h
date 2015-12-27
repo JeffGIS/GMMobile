@@ -29,9 +29,13 @@
 @property double totCount;
 @property BOOL setSymbol;
 @property BOOL setColor;
+@property int minUCR, maxUCR;
+@property int minYear, maxYear;
 
 + (Theme *)createTheme:(ThemeTypes)type;
 
+- (BOOL) classIsSelected:(int)iclass;
+- (int) classFromUCR:(int)ucr;
 - (int) processTheme:(DisplayCharacteristics *)dc
            displayID:(int)displayID
             testPass:(BOOL)test;

@@ -199,20 +199,95 @@
     return rtn;
 }
 
-- (void) getMinMaxUCR:(int *)minUCR max:(int *)maxUCR
+- (BOOL) getMinMaxTime:(int)range min:(int *)minTime max:(int *)maxTime
 {
+    BOOL display = TRUE;
+    int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
+    
+    *minTime = fromTime;
+    *maxTime = toTime;
+    return display;
+}
+
+- (int) getNumUCRRanges
+{
+    int nRange = 0;
+    for (Theme *thm in _themeList)
+    {
+        switch (thm.type)
+        {
+            case Part1Theme:
+            {
+                int lastUCR = -1;
+                for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
+                {
+                    int iclass = [thm classFromUCR:ucr];
+                    if (![thm classIsSelected:iclass])
+                        iclass = -1;
+                    if (iclass > -1 && ucr - lastUCR > 1)
+                    {
+                        nRange++;
+                    }
+                    if (iclass > -1)
+                        lastUCR = ucr;
+                }
+            }
+                break;
+            default:
+                break;
+        }
+    }
+    
+    return nRange;
+}
+- (void) getMinMaxUCR:(int)range min:(int *)minUCR max:(int *)maxUCR
+{
+    int nRange = 0;
     *minUCR = 1;
     *maxUCR = 99;
     for (Theme *thm in _themeList)
     {
-        if (thm.type == Part1Theme)
+        switch (thm.type)
         {
-            *minUCR = 1;
-            *maxUCR = 10;
+            case Part1Theme:
+            {
+                int lastUCR = -1;
+                for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
+                {
+                    int iclass = [thm classFromUCR:ucr];
+                    if (![thm classIsSelected:iclass])
+                        iclass = -1;
+                    if (iclass > -1 && ucr - lastUCR > 1)
+                    {
+                        if (nRange == range)
+                        {
+                            *minUCR = ucr;
+                            *maxUCR = ucr;
+                        }
+                        nRange++;
+                    }
+                    if (iclass > -1)
+                    {
+                        lastUCR = ucr;
+                        if (nRange == range+1)
+                            *maxUCR = ucr;
+                    }
+                }
+            }
+                break;
+            default:
+                break;
         }
     }
-
+    
 }
 
+
+- (int) getNumTimeRanges
+{
+    int n = 1;
+    
+    return n;
+}
 
 @end

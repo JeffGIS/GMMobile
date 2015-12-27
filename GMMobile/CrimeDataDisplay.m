@@ -65,6 +65,7 @@
     int controlNbr = 0;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
     int nFound=0;
+    int numUCRRanges, numTimeRanges;
     LPSTR offense;
     LPSTR dept;
     CGFloat size;
@@ -85,34 +86,14 @@
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     [_cd open];
-    [themes getMinMaxUCR:&_minUCR max:&_maxUCR];
-    switch (CRAPI.sharedInstance.project)
+    numUCRRanges  = [themes getNumUCRRanges];
+    numTimeRanges = [themes getNumTimeRanges];
+    for (int ucrRange = 0; ucrRange < numUCRRanges; ucrRange++)
     {
-        case PROJECT_METROGIS:
-/*            query = [NSString stringWithFormat:@"SELECT Count(*) FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
-                     OFFENSEXY_index.maxX    >=%f AND\
-                     OFFENSEXY_index.minX    <=%f AND\
-                     OFFENSEXY_index.maxY    >=%f AND\
-                     OFFENSEXY_index.minY    <=%f AND\
-                     OFFENSEXY_index.MinUCR  >=%f AND\
-                     OFFENSEXY_index.MaxUCR  <=%f AND\
-                     OFFENSEXY_index.minTime >=%f AND\
-                     OFFENSEXY_index.maxTime <= %f",
-                     platlonBounds->xmn,
-                     platlonBounds->xmx,
-                     platlonBounds->ymn,
-                     platlonBounds->ymx,
-                     _minUCR*10.0-1,
-                     _maxUCR*10.0+1,
-                     fromTime/1000.0-1,
-                     toTime/1000.0+1];
-            SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
-            if ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
-            {
-                tot = sqlite3_column_int(statement,0);
-            }
-            SQLOK(sqlite3_finalize(statement),_cd.database);
-*/
+        [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
+        for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
+        {
+            BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.minTime >=%f AND\
                      OFFENSEXY_index.maxTime <=%f AND\
@@ -130,43 +111,41 @@
                      platlonBounds->xmx,
                      platlonBounds->ymn,
                      platlonBounds->ymx];
-    }
-    tot = toTime - fromTime;
-    if (tot)
-    {
-        SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
-        
-        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
-        {
-            controlNbr = sqlite3_column_int(statement,0);
-            BasePt.x = sqlite3_column_double(statement,1);
-            BasePt.y = sqlite3_column_double(statement,2);
-            offense = (LPSTR)sqlite3_column_text(statement,3);
-            dc.dPoint = BasePt;
-            dc.UCR = sqlite3_column_int(statement,4);
-            dc.itemBeginTime = sqlite3_column_int(statement,5);
-            [CRAPI.sharedInstance updateProgress:tot current:dc.itemBeginTime-fromTime];
-            dc.itemEndTime = sqlite3_column_int(statement,6);
-            dept = (LPSTR)sqlite3_column_text(statement,7);
-            dc.sunAngle = sqlite3_column_int(statement,8);
-            dc.string1 = [NSString stringWithUTF8String:offense];
-            dc.string2 = [NSString stringWithUTF8String:dept];
-            dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-            if ((!pia || [pia DPointInArea:&BasePt]) &&
-                [themes setDisplayCharacteristics:dc
-                                        displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+            tot = toTime - fromTime;
+            SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+            
+            while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
-                DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-                size = 25;
-                [self drawCrimePoint:context
-                             atPoint:&llpoint
-                         usingSymbol:dc.pointSymbol
-                           withColor:dc.color.CGColor
-                             andSize:(size * sizeFactor)];
+                controlNbr = sqlite3_column_int(statement,0);
+                BasePt.x = sqlite3_column_double(statement,1);
+                BasePt.y = sqlite3_column_double(statement,2);
+                offense = (LPSTR)sqlite3_column_text(statement,3);
+                dc.dPoint = BasePt;
+                dc.UCR = sqlite3_column_int(statement,4);
+                dc.itemBeginTime = sqlite3_column_int(statement,5);
+                [CRAPI.sharedInstance updateProgress:tot current:dc.itemBeginTime-fromTime];
+                dc.itemEndTime = sqlite3_column_int(statement,6);
+                dept = (LPSTR)sqlite3_column_text(statement,7);
+                dc.sunAngle = sqlite3_column_int(statement,8);
+                dc.string1 = [NSString stringWithUTF8String:offense];
+                dc.string2 = [NSString stringWithUTF8String:dept];
+                dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+                if ((!pia || [pia DPointInArea:&BasePt]) &&
+                    [themes setDisplayCharacteristics:dc
+                                            displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                {
+                    DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+                    size = 25;
+                    [self drawCrimePoint:context
+                                 atPoint:&llpoint
+                             usingSymbol:dc.pointSymbol
+                               withColor:dc.color.CGColor
+                                 andSize:(size * sizeFactor)];
+                }
             }
+            
+            SQLOK(sqlite3_finalize(statement), _cd.database);
         }
-        
-        SQLOK(sqlite3_finalize(statement), _cd.database);
     }
     [_cd close];
     [CRAPI.sharedInstance updateProgress:tot current:tot];

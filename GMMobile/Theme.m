@@ -12,6 +12,25 @@
 
 @implementation Theme
 
++ (NSString *)formattedDate:(NSDate *)date
+{
+    NSString *formattedDate = @"";
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"MM/dd/yyyy";
+    formattedDate = [dateFormatter stringFromDate:date];
+    
+    return formattedDate;
+}
++ (int) yearFromDate:(NSInteger)date
+{
+    NSString *dateString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:date]];
+    
+    LPSTR pYear = strrchr (dateString.UTF8String,'/');
+    int iyear = atoi (++pYear);
+    return iyear;
+}
+
 + (Theme *)createTheme:(ThemeTypes)type
 {
     Theme * thm = [[Theme alloc]init];
@@ -36,6 +55,8 @@
     switch (type)
     {
         case Part1Theme:
+            thm.minUCR = 1;
+            thm.maxUCR = 10;
             thm.legend.title = @"Part 1 Crimes";
             [thm.titles addObject:thm.legend.title];
             thm.setSymbol = YES;
@@ -91,21 +112,21 @@
             [thm.classes addObject:class];
             break;
         case YearTheme:
+        {
+            int startYear = [self yearFromDate:CRAPI.sharedInstance.fromDate];
+            int endYear = [self yearFromDate:CRAPI.sharedInstance.toDate];
+
             thm.legend.title = @"Year";
+            thm.minYear = startYear;
+            thm.maxYear = endYear;
             [thm.titles addObject:thm.legend.title];
-            thm.numDesiredClasses = 6;
-            class = [ThemeClass createWithTitle:@"2010"];
-            [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"2011"];
-            [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"2012"];
-            [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"2013"];
-            [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"2014"];
-            [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"2015"];
-            [thm.classes addObject:class];
+            thm.numDesiredClasses = endYear - startYear + 1;
+            for (int year = startYear;year <= endYear;year++)
+            {
+                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%i",year]];
+                [thm.classes addObject:class];
+            }
+        }
             break;
         case MonthTheme:
             thm.legend.title = @"Month";
@@ -369,6 +390,39 @@ int getThemeOpt(ThemeTypes type)
     return rtn;
 }
 
+- (BOOL) classIsSelected:(int)iclass
+{
+    BOOL rtn = FALSE;
+    
+    if (iclass >= 0 && iclass < self.numClasses)
+    {
+        ThemeClass * tc = self.classes[iclass];
+        rtn = !tc.status;
+    }
+    return rtn;
+}
+
+- (int) classFromUCR:(int)ucr
+{
+    int iclass = -1;
+    switch (self.type)
+    {
+        case Part1Theme:
+            if (ucr < 1 || ucr > 10 || ucr == 9)
+                break;
+            if (ucr < 3)
+                iclass = 0;
+            else if (ucr == 10)
+                iclass = 7;
+            else
+                iclass = ucr - 2;
+            break;
+        default:
+            break;
+    }
+    return iclass;
+}
+
 - (int) processTheme:(DisplayCharacteristics *)dc
            displayID:(int)displayID
             testPass:(BOOL)test
@@ -438,7 +492,7 @@ int getThemeOpt(ThemeTypes type)
                 break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
-                val -= 2010;
+                val -= self.minYear;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
