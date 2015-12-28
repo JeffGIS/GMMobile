@@ -277,12 +277,33 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (tl.appendClassCount)
     {
-        NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
+        NSMutableString *countString = NSMutableString.string;
+        
+        if (tlc.status)
+        {
+            [countString insertString:@"X"
+                              atIndex:0];
+        }
+        
+        else
+        {
+            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count]
+                              atIndex:0];
+        }
         
         while (countString.length < [_countLengths[(tableView.tag - 1)] integerValue])
         {
-            [countString insertString:@" "
-                              atIndex:0];
+            if (tlc.status)
+            {
+                [countString insertString:@"X"
+                                  atIndex:0];
+            }
+            
+            else
+            {
+                [countString insertString:@" "
+                                  atIndex:0];
+            }
         }
         
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
@@ -361,7 +382,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         cell.textLabel.textColor = UIColor.blackColor;
         cell.textLabel.font = _font;
         cell.textLabel.text = text.copy;
-        
         cell.textLabel.textAlignment = NSTextAlignmentLeft;
         cell.textLabel.adjustsFontSizeToFitWidth = YES;
         

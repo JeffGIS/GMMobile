@@ -23,6 +23,7 @@
 		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00731C1B229C0074AF72 /* clearMarkers.png */; };
 		694F00761C1B2A000074AF72 /* emailIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00751C1B2A000074AF72 /* emailIcon.png */; };
+		694F93B51C30475500723155 /* questionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F93B41C30475500723155 /* questionMark.png */; };
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
@@ -176,6 +177,7 @@
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
+		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
@@ -409,6 +411,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				694F93B41C30475500723155 /* questionMark.png */,
 				6956EAE71C20E992008BF283 /* myLocationMarker.png */,
 				694F00751C1B2A000074AF72 /* emailIcon.png */,
 				694F00731C1B229C0074AF72 /* clearMarkers.png */,
@@ -599,8 +602,8 @@
 				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
 				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
-				69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */,
 				69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */,
+				69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */,
 				A9BC27ED1A9276CD00FA89D8 /* ThemesViewController.h */,
 				A9BC27EE1A9276CD00FA89D8 /* ThemesViewController.m */,
 				A9F56EBE1A847CA8003522AE /* WebKitViewController.h */,
@@ -799,6 +802,7 @@
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
+				694F93B51C30475500723155 /* questionMark.png in Resources */,
 				692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,

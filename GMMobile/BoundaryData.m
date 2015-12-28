@@ -156,6 +156,7 @@ extern int keepProcessing;
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
+        
         if (numPoints != 0)
         {
             numLoops = sqlite3_column_int(statement,3);
@@ -194,6 +195,8 @@ extern int keepProcessing;
                             points:llpoints
                          withColor:boundaryColor.CGColor];
             }
+            
+            free(llpoints);
         }
     }
  

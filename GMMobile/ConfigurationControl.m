@@ -137,6 +137,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantHelpButton] = YES;
         
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDigitize] = YES;
@@ -148,6 +149,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantHelpButton] = YES;
         
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDigitize] = YES;
@@ -159,6 +161,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantHelpButton] = YES;
         
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = NO;
@@ -170,6 +173,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantHelpButton] = YES;
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = NO;
@@ -181,10 +185,11 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantHelpButton] = YES;
         
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantDigitize] = NO;
-        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantLegends] = NO;
@@ -192,6 +197,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantHelpButton] = YES;
         
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;

@@ -196,10 +196,20 @@
             buttons.selected = tlc.status;
             
             if (buttons.selected)
+            {
                 buttons.backgroundColor = UserDefaults.defaults.appleGray;
+                
+                [buttons setTitle:[NSString stringWithFormat:@"%@ (XX)", tlc.label]
+                         forState:UIControlStateNormal];
+            }
             
             else
+            {
                 buttons.backgroundColor = UIColor.clearColor;
+                
+                [buttons setTitle:[NSString stringWithFormat:@"%@ (%i)", tlc.label, tlc.count]
+                         forState:UIControlStateNormal];
+            }
         }
     }
 }
@@ -386,12 +396,33 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (tl.appendClassCount)
     {
-        NSMutableString *countString = [NSString stringWithFormat:@"%i", tlc.count].mutableCopy;
+        NSMutableString *countString = NSMutableString.string;
+        
+        if (tlc.status)
+        {
+            [countString insertString:@"X"
+                              atIndex:0];
+        }
+        
+        else
+        {
+            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count]
+                              atIndex:0];
+        }
         
         while (countString.length < _countLength)
         {
-            [countString insertString:@" "
-                              atIndex:0];
+            if (tlc.status)
+            {
+                [countString insertString:@"X"
+                                  atIndex:0];
+            }
+            
+            else
+            {
+                [countString insertString:@" "
+                                  atIndex:0];
+            }
         }
         
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];

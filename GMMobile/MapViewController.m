@@ -17,7 +17,6 @@ extern int keepProcessing;
 #import <MapKit/MapKit.h>
 #import "CCodeLibrary/PolylineCompression.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
-#import "CCodeLibrary/HelpButton.h"
 #import "CCodeLibrary/HelpWebView.h"
 #import "Destinations.h"
 #import "CCodeLibrary/IntersectionsDatabase.h"
@@ -39,7 +38,7 @@ extern int keepProcessing;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
 @property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
-@property (nonatomic) CGFloat heading, pitch, fov;
+@property (nonatomic) CGFloat heading, pitch, fov, compassMargin;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
@@ -52,7 +51,7 @@ extern int keepProcessing;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
-@property BOOL waitForVectorViewRefresh, inDigitizationMode, helpButtonMoved, animateToLocation;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -342,21 +341,12 @@ extern int keepProcessing;
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
     
-    CGFloat compassSize = 52.0, compassMargin = 6.0;
+    CGFloat compassSize = 48.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        compassSize = 38.0, compassMargin = 4.0;
+        compassSize = 36.0;
     
-    HelpButton *helpButton = [HelpButton showHelpButtonWithOrigin:
-                              CGPointMake(compassMargin, (compassMargin + [self statusBarHeight:statusBarHeight]))
-                                                             size:compassSize
-                                                             view:self.view
-                                                              tag:HelpButtonPresenterMapVC
-                                                           tabBar:self.tabBarController.tabBar];
-#pragma unused(helpButton)
-    
-    _compass = [[UIButton alloc] initWithFrame:CGRectMake(compassMargin, (statusBarHeight + (2.0 * compassMargin) + compassSize),
-                                                          compassSize, compassSize)];
+    _compass = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, compassSize, compassSize)];
     
     [_compass setImage:compassImage
               forState:UIControlStateNormal];
@@ -404,27 +394,22 @@ extern int keepProcessing;
 {
     [super viewWillAppear:animated];
     
+    if (_fromLegends)
+    {
+        self.view.userInteractionEnabled = NO;
+        self.tabBarController.tabBar.userInteractionEnabled = NO;
+    }
+    
+    else
+    {
+        self.view.userInteractionEnabled = YES;
+        self.tabBarController.tabBar.userInteractionEnabled = YES;
+    }
+    
     if (ConfigurationControl.sharedInstance.currentApp != HCConfigAlleyWallStatus)
     {
         if ([self.view.subviews containsObject:_legendView])
-        {
             [_legendView hideLegendView:NO];
-            
-            if (_helpButtonMoved)
-            {
-                for (HelpButton *helpButton in self.view.subviews)
-                {
-                    if ([helpButton isKindOfClass:HelpButton.class])
-                    {
-                        helpButton.center =
-                        CGPointMake(helpButton.center.x, helpButton.center.y -
-                                    _legendView.frame.size.height);
-                        
-                        _helpButtonMoved = NO;
-                    }
-                }
-            }
-        }
     }
     
     for (HelpWebView *helpWebView in self.view.subviews)
@@ -570,13 +555,6 @@ extern int keepProcessing;
                                                            zoom:16.0];
         
         [_mapView moveCamera:camUpdate];
-       
-        for (HelpButton *helpButton in self.view.subviews)
-        {
-            if ([helpButton isKindOfClass:HelpButton.class])
-                helpButton.hidden = YES;
-        }
-        
         _mapToolbar.hidden = YES;
         _compass.hidden = YES;
         
@@ -629,16 +607,27 @@ extern int keepProcessing;
         }
         
         _mapView.userInteractionEnabled = YES;
-        
-        for (HelpButton *helpButton in self.view.subviews)
-        {
-            if ([helpButton isKindOfClass:HelpButton.class])
-                helpButton.hidden = NO;
-        }
-        
         _mapToolbar.hidden = NO;
         _compass.hidden = NO;
     }
+}
+
+- (void)updateCompassPosition
+{
+    if (_mapToolbar.orientation == MapToolbarOrientationTop ||
+        _mapToolbar.orientation == MapToolbarOrientationBottom)
+    {
+        _compass.center = CGPointMake(((_mapToolbar.frame.origin.x - _compassMargin) - (_compass.frame.size.width / 2.0)),
+                                      _mapToolbar.center.y);
+    }
+    
+    else
+    {
+        _compass.center = CGPointMake(_mapToolbar.center.x,
+                                      ((_mapToolbar.frame.origin.y - _compassMargin) - (_compass.frame.size.height / 2.0)));
+    }
+    
+    NSLog(@"%f,%f", _compass.center.x, _compass.center.y);
 }
 
 - (void)setupTempButton:(UIButton *)button
@@ -778,8 +767,7 @@ extern int keepProcessing;
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
         
-        _mapView.frame = CGRectMake(0.0, statusBarHeight,
-                                    self.view.frame.size.width,
+        _mapView.frame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
                                     (tabBarTop - statusBarHeight));
         
         _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
@@ -1008,6 +996,14 @@ extern int keepProcessing;
         default:
             break;
     }
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _compassMargin = 4.0;
+    
+    else
+        _compassMargin = 6.0;
+    
+    [self updateCompassPosition];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -1083,9 +1079,9 @@ extern int keepProcessing;
     [_digitizationToolbar addSubview:button];
 }
 
-- (float) getAspectRatioForBounds:(MNMXCORD)bounds
+- (CGFloat) getAspectRatioForBounds:(MNMXCORD)bounds
 {
-    float ar = 1.0;
+    CGFloat ar = 1.0;
     
     CLLocationCoordinate2D ll[2];
     ll[0].latitude = bounds.ymn;
@@ -1098,8 +1094,10 @@ extern int keepProcessing;
 
     if (fabs(pt[1].y - pt[0].y) > 0)
         ar = fabs((pt[1].x - pt[0].x)/(pt[1].y - pt[0].y));
+    
     return ar;
 }
+
 - (void)extentZoom
 {
     [self stopTrackingUserLocation:NO];
@@ -1120,7 +1118,6 @@ extern int keepProcessing;
         for (UIView *subviews in self.view.subviews)
         {
             if (subviews == _mapToolbar || subviews == _compass ||
-                [subviews isKindOfClass:HelpButton.class] ||
                 [subviews isKindOfClass:ThemeLegendMapOverlay.class])
             {
                 if (!subviews.hidden)
@@ -1133,7 +1130,7 @@ extern int keepProcessing;
         for (int i = 0; i < subviewsArray.count; i++)
             frames[i] = [(UIView *)subviewsArray[i] frame];
         
-        float aspectRatio = [self getAspectRatioForBounds:bounds];
+        CGFloat aspectRatio = [self getAspectRatioForBounds:bounds];
         CGRect targetFrame = largestRect(aspectRatio, 5, _mapView.frame, (int)subviewsArray.count, frames);
         
         free(frames);
@@ -1879,10 +1876,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self clearVectorView];
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
-    CGFloat compassSize = 48.0, compassMargin = 6.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        compassSize = 36.0, compassMargin = 4.0;
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
                                ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0),
@@ -1949,10 +1942,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
+    
+    
     [UIView animateWithDuration:duration
                      animations:^{
-                         _compass.frame = CGRectMake(compassMargin, (statusBarHeight + (2.0 * compassMargin) + compassSize), compassSize, compassSize);
-                         
+                         [self updateCompassPosition];
                          _compass.alpha = 0.0;
                      } completion:^(BOOL finished) {
                          _compass.transform = CGAffineTransformMakeRotation(_mapView.camera.bearing * M_PI / 180);
@@ -2209,7 +2203,8 @@ haveVV:
     [_vectorView removeFromSuperview];
     vectorViews[_vectorView.ivv] = nil;
     _vectorView = nil;
-    [CRAPI.sharedInstance updateProgress:0 current:0];
+    [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
+    [CRAPI.sharedInstance updateProgress:1 current:0 range:0 numRanges:1];
 
 }
 
@@ -2285,6 +2280,7 @@ haveVV:
                        if (_fromLegends)
                        {
                            self.tabBarController.selectedIndex = _fromIndex;
+                           self.tabBarController.tabBar.userInteractionEnabled = YES;
                            _fromLegends = NO;
                            return;
                        }
@@ -2307,12 +2303,6 @@ haveVV:
                            
                            if (!_compass.hidden)
                                [self.view bringSubviewToFront:_compass];
-                           
-                           for (HelpButton *helpButton in self.view.subviews)
-                           {
-                               if ([helpButton isKindOfClass:HelpButton.class])
-                                   [self.view bringSubviewToFront:helpButton];
-                           }
                            
                            for (HelpWebView *helpWebView in self.view.subviews)
                            {
@@ -2524,15 +2514,17 @@ haveVV:
         
         if (_legendsAreOffMap && _mapToolbar.orientation != MapToolbarOrientationLeft)
         {
+            _mapToolbar.orientation = MapToolbarOrientationLeft;
+            
             [UIView animateWithDuration:0.25
                              animations:^{
                                  [_mapToolbar animateToVerticalOrientation];
                                  
                                  _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
                                                                   (self.view.frame.size.height / 2.0));
+                                 
+                                 [self updateCompassPosition];
                              }];
-            
-            _mapToolbar.orientation = MapToolbarOrientationLeft;
         }
     }
 }
@@ -2914,7 +2906,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 0; i < numPoints; i++)
         {
             CLLocationCoordinate2D coord = [path coordinateAtIndex:i];
-            DPOINT point;
+            DPOINT point = {0};
             point.x = coord.longitude;
             point.y = coord.latitude;
             llpoints[i] = point;
@@ -2923,20 +2915,30 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if (path.count)
         {
             const char *filePath = [NSString stringWithFormat:@"%@/pipetrace_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
+            FILE *tracePolyFile = fopen(filePath, "wb");
             
-            FILE *fid = fopen(filePath, "wb");
-            
-            if (fid)
+            if (!tracePolyFile)
             {
-                fwrite(&numPoints, sizeof(int), 1, fid);
-                fwrite(llpoints, (numPoints * sizeof(DPOINT)), 1, fid);
-                fclose(fid);
+                free (llpoints);
+                
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                  delegate:self
+                                                                     title:@"Polyline Data File Write ERROR"
+                                                           buttonTextArray:@[@"OK"]
+                                                          destructiveIndex:0];
+#pragma unused(alert)
             }
             
+            else
+            {
+                fwrite(&numPoints, sizeof(int), 1, tracePolyFile);
+                fwrite(llpoints, sizeof(DPOINT), numPoints, tracePolyFile);
+                fclose(tracePolyFile);
+                free (llpoints);
+                
+                [self perform3DFlyAround];
+            }
         }
-        free (llpoints);
-        
-        [self perform3DFlyAround];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -2945,7 +2947,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
                                         forKey:@"FlyOverType"];
         
-        int numPointsLoops[2];
+        int numPoints = 0, numLoops = 0;
+        int *polyPartLen = 0;
+        
         CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
         
         PropertyData *propData = [[PropertyData alloc] init];
@@ -2953,23 +2957,37 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
         
         LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
-                                                         numPoints:&numPointsLoops[0]
-                                                          numLoops:&numPointsLoops[1]
-                                                       polyPartLen:0];
+                                                         numPoints:&numPoints
+                                                          numLoops:&numLoops
+                                                       polyPartLen:&polyPartLen];
         
-        const char *filePath = [NSString stringWithFormat:@"%@/pid_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
-        
+        const char *filePath = [NSString stringWithFormat:@"%@/flyaround_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
         FILE *pidPolyFile = fopen(filePath, "wb");
         
-        fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
-        fwrite(numPointsLoops, sizeof(int), 2, pidPolyFile);
-        fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
-        fwrite(llpoints, sizeof(DPOINT), numPointsLoops[0], pidPolyFile);
-        fclose(pidPolyFile);
+        if (!pidPolyFile)
+        {
+            free(llpoints);
+            
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"Polygon Data File Write ERROR"
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+#pragma unused(alert)
+        }
         
-        free(llpoints);
-        
-        [self perform3DFlyAround];
+        else
+        {
+            fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
+            fwrite(&numPoints, sizeof(int), 1, pidPolyFile);
+            fwrite(&numLoops, sizeof(int), 1, pidPolyFile);
+            fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
+            fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
+            fclose(pidPolyFile);
+            free(llpoints);
+            
+            [self perform3DFlyAround];
+        }
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -3288,7 +3306,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)perform3DFlyAround
 {
-    NSString *flyOverURL = @"NVMapKitFlyover://";
+    NSString *flyOverURL = @"NVMapKitFlyover:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
@@ -3503,24 +3521,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                   delegate:self
                                                 selectable:NO
                                                   animated:YES];
-        
-        if (!_helpButtonMoved)
-        {
-            [UIView animateWithDuration:0.25
-                             animations:^{
-                                 for (HelpButton *helpButton in self.view.subviews)
-                                 {
-                                     if ([helpButton isKindOfClass:HelpButton.class])
-                                     {
-                                         helpButton.center =
-                                         CGPointMake(helpButton.center.x, helpButton.center.y +
-                                                     _legendView.frame.size.height);
-                                     }
-                                 }
-                             } completion:^(BOOL finished) {
-                                 _helpButtonMoved = YES;
-                             }];
-        }
     }
 }
 
@@ -3627,16 +3627,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      animations:^{
                          _digitizerTargetView.alpha = 1.0;
                          _digitizationToolbar.alpha = 1.0;
-                         
-                         for (HelpButton *helpButton in self.view.subviews)
-                         {
-                             if ([helpButton isKindOfClass:HelpButton.class])
-                             {
-                                 helpButton.center =
-                                 CGPointMake(helpButton.center.x, helpButton.center.y +
-                                             _digitizationToolbar.frame.size.height);
-                             }
-                         }
                      }];
 }
 
@@ -3646,20 +3636,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                      animations:^{
                          _digitizerTargetView.alpha = 0.0;
                          _digitizationToolbar.alpha = 0.0;
-                         
-                         for (HelpButton *helpButton in self.view.subviews)
-                         {
-                             if ([helpButton isKindOfClass:HelpButton.class])
-                             {
-                                 helpButton.center =
-                                 CGPointMake(helpButton.center.x, helpButton.center.y -
-                                             _digitizationToolbar.frame.size.height);
-                             }
-                         }
                      } completion:^(BOOL finished) {
                          _digitizerTargetView.hidden = YES;
                          _digitizationToolbar.hidden = YES;
-                         _saveDigitizerButton.alpha = /*_undoDigitizerButton.alpha =*/ 0.0;
+                         _saveDigitizerButton.alpha = 0.0;
                          _cancelDigitizerButton.alpha = 1.0;
                      }];
 }
@@ -4296,12 +4276,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if ([self.view.subviews containsObject:_compass])
             [self.view bringSubviewToFront:_compass];
         
-        for (HelpButton *helpButton in self.view.subviews)
-        {
-            if ([helpButton isKindOfClass:HelpButton.class])
-                [self.view bringSubviewToFront:helpButton];
-        }
-        
         for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
         {
             if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
@@ -4319,6 +4293,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)mapToolbarDidSelectEmailPDF
 {
     [self emailPDF:nil];
+}
+
+- (void)mapToolbarDidSelectHelpButton
+{
+    HelpWebView *helpWebView = [HelpWebView showHelpWebView:self.view
+                                                presenterID:@"Map View"
+                                                     tabBar:self.tabBarController.tabBar];
+#pragma unused(helpWebView)
 }
 
 - (void)mapToolbarDidSelectDigitize
@@ -4713,6 +4695,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [self.view bringSubviewToFront:_mapToolbar];
+    [self updateCompassPosition];
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
