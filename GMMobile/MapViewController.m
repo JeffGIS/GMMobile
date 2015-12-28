@@ -2203,8 +2203,8 @@ haveVV:
     [_vectorView removeFromSuperview];
     vectorViews[_vectorView.ivv] = nil;
     _vectorView = nil;
-    [CRAPI.sharedInstance updateProgress:-1 current:0];
-    [CRAPI.sharedInstance updateProgress:0 current:0];
+    [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
+    [CRAPI.sharedInstance updateProgress:1 current:0 range:0 numRanges:1];
 
 }
 

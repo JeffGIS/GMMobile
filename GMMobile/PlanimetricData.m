@@ -873,7 +873,7 @@ extern int keepProcessing;
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
-            [CRAPI.sharedInstance updateProgress:tot current:++current];
+            [CRAPI.sharedInstance updateProgress:tot current:++current range:0 numRanges:1];
 
             BasePt.x = sqlite3_column_double(statement,0);
             BasePt.y = sqlite3_column_double(statement,1);

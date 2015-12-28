@@ -71,7 +71,7 @@
     CGFloat size;
     CGFloat sizeFactor = 5;
     NSInteger tot=0, current=0;
-    [CRAPI.sharedInstance updateProgress:-1 current:0];
+    [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
     
     /*if (_zoom > 18)
         sizeFactor *= (2.0 *(_zoom - 18.0));
@@ -88,12 +88,15 @@
     [_cd open];
     numUCRRanges  = [themes getNumUCRRanges];
     numTimeRanges = [themes getNumTimeRanges];
+    int totRanges = numTimeRanges * numUCRRanges;
+    int iRange = 0;
     for (int ucrRange = 0; ucrRange < numUCRRanges; ucrRange++)
     {
         [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
             BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
+            
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.minTime >=%f AND\
                      OFFENSEXY_index.maxTime <=%f AND\
@@ -123,7 +126,10 @@
                 dc.dPoint = BasePt;
                 dc.UCR = sqlite3_column_int(statement,4);
                 dc.itemBeginTime = sqlite3_column_int(statement,5);
-                [CRAPI.sharedInstance updateProgress:tot current:dc.itemBeginTime-fromTime];
+                [CRAPI.sharedInstance updateProgress:tot
+                                             current:dc.itemBeginTime-fromTime
+                                               range:iRange
+                                           numRanges:totRanges];
                 dc.itemEndTime = sqlite3_column_int(statement,6);
                 dept = (LPSTR)sqlite3_column_text(statement,7);
                 dc.sunAngle = sqlite3_column_int(statement,8);
@@ -143,12 +149,12 @@
                                  andSize:(size * sizeFactor)];
                 }
             }
-            
+            iRange++;
             SQLOK(sqlite3_finalize(statement), _cd.database);
         }
     }
     [_cd close];
-    [CRAPI.sharedInstance updateProgress:tot current:tot];
+    [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
 }
 
 - (void)drawCrimePoint:(CGContextRef)context
