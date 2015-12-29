@@ -626,8 +626,6 @@ extern int keepProcessing;
         _compass.center = CGPointMake(_mapToolbar.center.x,
                                       ((_mapToolbar.frame.origin.y - _compassMargin) - (_compass.frame.size.height / 2.0)));
     }
-    
-    NSLog(@"%f,%f", _compass.center.x, _compass.center.y);
 }
 
 - (void)setupTempButton:(UIButton *)button

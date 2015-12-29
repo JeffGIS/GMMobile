@@ -18,6 +18,9 @@
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
 @property (nonatomic) UIButton *deptHeaderView;
 @property (nonatomic) MapViewController *mapVC;
+@property (nonatomic) NSMutableArray *dragSelectedCells;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
+@property NSUInteger currentRow;
 
 @end
 
@@ -31,6 +34,7 @@
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _countLength = 0;
     _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;
+    _dragSelectActive = _preventRefresh = _firstTimeDrag = NO;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -227,6 +231,105 @@
     _tableView.allowsMultipleSelection = YES;
     _tableView.separatorColor = UIColor.clearColor;
     _tableView.separatorInset = UIEdgeInsetsZero;
+    
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:self
+                                          action:@selector(tlmoLongPressed:)];
+    
+    lpgr.minimumPressDuration = 1.0;
+    lpgr.delegate = self;
+    [_tableView addGestureRecognizer:lpgr];
+}
+
+- (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    UITableView *tv = (UITableView *)gesture.view;
+    
+    switch (gesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+        {
+            _dragSelectActive = NO;
+            
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            {
+                UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
+                cell.backgroundColor = UIColor.whiteColor;
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                
+                if (cell.selected)
+                {
+                    [self tableView:tv
+          didDeselectRowAtIndexPath:indexPaths];
+                }
+                
+                else
+                {
+                    [self tableView:tv
+            didSelectRowAtIndexPath:indexPaths];
+                }
+                
+                cell.selected = !cell.selected;
+            }
+            
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+            _preventRefresh = NO;
+        }
+            break;
+            
+        case UIGestureRecognizerStateBegan:
+        {
+            _dragSelectActive = _preventRefresh = YES;
+            _dragSelectedCells = NSMutableArray.array;
+            _firstTimeDrag = YES;
+        }
+            
+        default:
+        {
+            CGPoint point = [gesture locationInView:tv];
+            CGPoint superpoint = [gesture locationInView:self.view];
+            
+            if (CGRectContainsPoint(tv.frame, superpoint))
+            {
+                NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
+                
+                if (_firstTimeDrag)
+                {
+                    _currentRow = row;
+                    _firstTimeDrag = NO;
+                }
+                
+                else if (row != _currentRow)
+                    _currentRow = row;
+                
+                else
+                    return;
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:_currentRow
+                                                            inSection:0];
+                
+                if (![_dragSelectedCells containsObject:indexPath])
+                {
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UserDefaults.defaults.lightBlue;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    [_dragSelectedCells addObject:indexPath];
+                }
+                
+                else
+                {
+                    indexPath = (NSIndexPath *)_dragSelectedCells.lastObject;
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                    [_dragSelectedCells removeObject:indexPath];
+                }
+            }
+        }
+            break;
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -434,9 +537,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     cell.textLabel.font = _font;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    
+    cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
+    cell.contentView.backgroundColor = UIColor.clearColor;
     
     CGFloat symbolSize = 52.0;
     
@@ -466,25 +570,37 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-    tlc.status = YES;
-    
-    _mapVC.fromIndex = self.tabBarController.selectedIndex;
-    _mapVC.fromLegends = YES;
-    self.tabBarController.selectedIndex = 0;
+    if (!_dragSelectActive)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[0];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+        tlc.status = YES;
+        
+        if (!_preventRefresh)
+        {
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView
 didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-    tlc.status = NO;
-    
-    _mapVC.fromIndex = self.tabBarController.selectedIndex;
-    _mapVC.fromLegends = YES;
-    self.tabBarController.selectedIndex = 0;
+    if (!_dragSelectActive)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[0];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+        tlc.status = NO;
+        
+        if (!_preventRefresh)
+        {
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+        }
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation

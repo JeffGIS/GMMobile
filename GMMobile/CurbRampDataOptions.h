@@ -1,8 +1,8 @@
 //  CurbRampDataOptions.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
-@interface CurbRampDataOptions : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface CurbRampDataOptions : UIViewController <UITableViewDataSource,UITableViewDelegate,UIGestureRecognizerDelegate>
 
 @end

@@ -1,7 +1,8 @@
 //  ThemeLegendMapOverlay.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+@import UIKit;
+#import "CCodeLibrary/NVAlertView.h"
 #import "ThemeLegend.h"
 
 @class ThemeLegendMapOverlay;

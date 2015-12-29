@@ -608,10 +608,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     textLabel.text = text.copy;
     textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.adjustsFontSizeToFitWidth = YES;
+    textLabel.backgroundColor = UIColor.clearColor;
     textLabel.tag = 888;
     
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
+    cell.contentView.backgroundColor = UIColor.clearColor;
+    cell.textLabel.backgroundColor = UIColor.clearColor;
     
     NSDictionary *attributes = @{NSFontAttributeName:_font};
     

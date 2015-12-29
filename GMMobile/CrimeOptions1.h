@@ -1,8 +1,8 @@
 //  CrimeOptions1.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
-@interface CrimeOptions1 : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface CrimeOptions1 : UIViewController <UITableViewDataSource,UITableViewDelegate,UIGestureRecognizerDelegate>
 
 @end
