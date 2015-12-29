@@ -77,6 +77,7 @@
     
     [_tableView reloadData];
     [self.view layoutIfNeeded];
+    
     [self setupDeptViewComponents:_deptView.frame.size.width];
 }
 
@@ -99,18 +100,32 @@
     _deptHeaderView.titleLabel.textAlignment = NSTextAlignmentCenter;
     _deptHeaderView.titleLabel.font = _headerFont;
     _deptHeaderView.backgroundColor = UIColor.blackColor;
-    _deptHeaderView.tag = 6666;
+    _deptHeaderView.tag = 222;
     
     [_deptHeaderView setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
     
-    [_deptHeaderView setTitleColor:UIColor.redColor
+    if (tl.titles.count > 1 || tl.hasColors)
+    {
+        [_deptHeaderView setTitleColor:UIColor.greenColor
+                              forState:UIControlStateHighlighted];
+        
+        [_deptHeaderView addTarget:self
+                            action:@selector(showLegendOptions:)
+                  forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    else
+    {
+        [_deptHeaderView setTitleColor:UIColor.redColor
                           forState:UIControlStateHighlighted];
+    }
     
     [_deptHeaderView setTitle:tl.title
                      forState:UIControlStateNormal];
     
-    [_deptView addSubview:_deptHeaderView];
+    if (![_deptView.subviews containsObject:[_deptView viewWithTag:222]])
+        [_deptView addSubview:_deptHeaderView];
     
     if (![_deptHeaderView.subviews containsObject:[_deptHeaderView viewWithTag:7777]])
     {
@@ -187,7 +202,7 @@
     for (UIButton *buttons in _deptView.subviews)
     {
         if ([buttons isKindOfClass:UIButton.class]
-            && buttons.tag != 7777 && buttons.tag != 6666)
+            && buttons.tag != 7777 && buttons.tag != 222)
         {
             buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
                                        buttonWidth,(_deptView.frame.size.height - _headerHeight));
@@ -376,12 +391,12 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    if (![headerView.subviews containsObject:[headerView viewWithTag:2222]])
+    if (![headerView.subviews containsObject:[headerView viewWithTag:111]])
     {
         UIButton *titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
         titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         titleButton.titleLabel.font = _headerFont;
-        titleButton.tag = 2222;
+        titleButton.tag = 111;
         
         [titleButton setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
@@ -439,7 +454,8 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)showLegendOptions:(UIButton *)button
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
+    NSUInteger index = ((button.tag / 111) - 1);
+    ThemeLegend *tl = (ThemeLegend *)_legends[index];
     self.tabBarController.tabBar.userInteractionEnabled = NO;
     
     [UIView animateWithDuration:0.25
@@ -461,13 +477,15 @@ viewForHeaderInSection:(NSInteger)section
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
     
+    alert.tag = button.tag;
     alert.identifier = @"TopLevelAlert";
 }
 
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
+    NSUInteger index = ((alertView.tag / 111) - 1);
+    ThemeLegend *tl = (ThemeLegend *)_legends[index];
     
     if (buttonIndex > 0)
     {
@@ -484,6 +502,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                              @"Blues", @"Rainbow", @"Custom"]
                                                           destructiveIndex:1];
                 
+                alert.tag = alertView.tag;
                 alert.identifier = @"ColorsAlert";
             }
             
@@ -499,7 +518,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                            buttonTextArray:textArray
                                                           destructiveIndex:1];
                 
-                alert.tag = 432;
+                alert.tag = alertView.tag;
+                alert.identifier = @"TitlesAlert";
             }
             
             return;
