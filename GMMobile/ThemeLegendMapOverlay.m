@@ -288,8 +288,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             for (NSIndexPath *indexPaths in _dragSelectedCells)
             {
                 UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
-                cell.backgroundColor = UIColor.whiteColor;
-                cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 
                 if (buttonIndex == 1)
                 {
@@ -309,18 +307,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
             
             _preventRefresh = NO;
-            
-            if (_delegate)
-                [_delegate themeLegendDidChangeStatus:YES];
         }
         
         else
         {
             _legend.currentTitleIndex = (int)(buttonIndex - 1);
             [_tableView reloadData];
-            
-            if (_delegate)
-                [_delegate themeLegendDidChangeStatus:YES];
+        }
+        
+        if (_delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
+    }
+    
+    if (alertView.tag == 999)
+    {
+        for (NSIndexPath *indexPaths in _dragSelectedCells)
+        {
+            UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+            cell.backgroundColor = UIColor.whiteColor;
+            cell.selectionStyle = UITableViewCellSelectionStyleGray;
         }
     }
     
@@ -652,8 +657,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         CGFloat barMargin = 4.0;
         CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 2.0)) * tlc.symbolWidth);
-        
-        NSLog(@"%li:barWidth:%f", (long)indexPath.row, barWidth);
         
         UIImageView *barView = [[UIImageView alloc] initWithFrame:
                                 CGRectMake(barMargin, (_rowHeight * 0.15), barWidth, (_rowHeight * 0.7))];
