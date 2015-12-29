@@ -2077,7 +2077,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 {
                     if (tlmos.isExpanded)
                     {
-                        tlmos.selectionMade = YES;
                         CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
                         
                         [UIView animateWithDuration:duration
@@ -2101,7 +2100,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             {
                 if (tlmos.isExpanded)
                 {
-                    tlmos.selectionMade = YES;
                     CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
                     
                     [UIView animateWithDuration:duration
@@ -2290,7 +2288,6 @@ haveVV:
                        if (_screenSetting != MapViewScreenSettingPlatView)
                        {
                            [self.view addSubview:_vectorView];
-                           [self.view bringSubviewToFront:_vectorView];
                            
                            if (!_myLocationMarker.hidden)
                                [self.view bringSubviewToFront:_myLocationMarker];
@@ -2354,10 +2351,27 @@ haveVV:
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
-        if ([self legendIsExpanded])
-            return;
-        
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+        
+        if ([self legendIsExpanded])
+        {
+            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+            {
+                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                {
+                    if (tlmos.isExpanded)
+                    {
+                        [self.view bringSubviewToFront:[self.view viewWithTag:123456789]];
+                        [self.view bringSubviewToFront:tlmos];
+                        tlmos.legend = legends[(tlmos.tag / 111111) - 1];
+                        [tlmos.tableView reloadData];
+                    }
+                }
+            }
+            
+            return;
+        }
+        
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0, xOriginLandscape = 790.0, xOriginPortrait = 534.0;
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);

@@ -11,6 +11,8 @@
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame;
+@property (nonatomic) NSMutableArray *dragSelectedCells;
+@property BOOL dragSelectActive, preventRefresh;
 
 @end
 
@@ -27,7 +29,7 @@
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;
     tlmo.tag = tag;
-    tlmo.isExpanded = tlmo.selectionMade = NO;
+    tlmo.isExpanded = tlmo.dragSelectActive = tlmo.preventRefresh = NO;
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
@@ -65,10 +67,73 @@
     tlmo.tableView.separatorInset = UIEdgeInsetsZero;
     tlmo.tableView.layoutMargins = UIEdgeInsetsZero;
     
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:tlmo
+                                          action:@selector(tlmoLongPressed:)];
+    
+    lpgr.minimumPressDuration = 1.0;
+    lpgr.delegate = tlmo;
+    [tlmo.tableView addGestureRecognizer:lpgr];
+    
     [tlmo addSubview:tlmo.tableView];
     [view addSubview:tlmo];
     
     return tlmo;
+}
+
+- (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    UITableView *tv = (UITableView *)gesture.view;
+    
+    switch (gesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+        {
+            UIView *superview = self.superview;
+            
+            if ([self.superview isKindOfClass:UIScrollView.class])
+                superview = self.superview.superview;
+            
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
+                                                              delegate:self
+                                                                 title:@"Select Action for All Highlighted Cells"
+                                                       buttonTextArray:@[@"Cancel",
+                                                                         @"Select All",
+                                                                         @"Deselect All"]
+                                                      destructiveIndex:1];
+            alert.tag = 999;
+        }
+            break;
+        
+        case UIGestureRecognizerStateBegan:
+        {
+            _dragSelectActive = _preventRefresh = YES;
+            _dragSelectedCells = NSMutableArray.array;
+        }
+            
+        default:
+        {
+            CGPoint point = [gesture locationInView:tv];
+            
+            if (CGRectContainsPoint(tv.frame, point))
+            {
+                NSUInteger row = (NSUInteger)(point.y / tv.rowHeight);
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(row - 1)
+                                                            inSection:0];
+                
+                if (![_dragSelectedCells containsObject:indexPath])
+                {
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UserDefaults.defaults.lightBlue;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    [_dragSelectedCells addObject:indexPath];
+                }
+            }
+        }
+            break;
+            
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -216,11 +281,47 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex > 0)
     {
-        _legend.currentTitleIndex = (int)(buttonIndex - 1);
-        [_tableView reloadData];
+        if (alertView.tag == 999)
+        {
+            _dragSelectActive = NO;
+            
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            {
+                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+                cell.backgroundColor = UIColor.whiteColor;
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                
+                if (buttonIndex == 1)
+                {
+                    cell.selected = YES;
+                    
+                    [self tableView:_tableView
+            didSelectRowAtIndexPath:indexPaths];
+                }
+                
+                else
+                {
+                    cell.selected = NO;
+                    
+                    [self tableView:_tableView
+          didDeselectRowAtIndexPath:indexPaths];
+                }
+            }
+            
+            _preventRefresh = NO;
+            
+            if (_delegate)
+                [_delegate themeLegendDidChangeStatus:YES];
+        }
         
-        if (_delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        else
+        {
+            _legend.currentTitleIndex = (int)(buttonIndex - 1);
+            [_tableView reloadData];
+            
+            if (_delegate)
+                [_delegate themeLegendDidChangeStatus:YES];
+        }
     }
     
     [alertView hideLargeAlertView:YES];
@@ -437,11 +538,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  legendScroll.scrollEnabled = YES;
                              }
                              
-                             if (_selectionMade && _delegate)
-                             {
+                             if (!_preventRefresh && _delegate)
                                  [_delegate themeLegendDidChangeStatus:YES];
-                                 _selectionMade = NO;
-                             }
                          }];
     }
 }
@@ -555,6 +653,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         CGFloat barMargin = 4.0;
         CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 2.0)) * tlc.symbolWidth);
         
+        NSLog(@"%li:barWidth:%f", (long)indexPath.row, barWidth);
+        
         UIImageView *barView = [[UIImageView alloc] initWithFrame:
                                 CGRectMake(barMargin, (_rowHeight * 0.15), barWidth, (_rowHeight * 0.7))];
         
@@ -590,32 +690,26 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
-    tlc.status = YES;
-    
-    if (_delegate)
+    if (!_dragSelectActive)
     {
-        if (!_isExpanded)
-            [_delegate themeLegendDidChangeStatus:YES];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
+        tlc.status = YES;
         
-        else
-            _selectionMade = YES;
+        if (!_preventRefresh && _delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
     }
 }
 
 - (void)tableView:(UITableView *)tableView
 didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
-    tlc.status = NO;
-    
-    if (_delegate)
+    if (!_dragSelectActive)
     {
-        if (!_isExpanded && _delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
+        tlc.status = NO;
         
-        else
-            _selectionMade = YES;
+        if (!_preventRefresh && _delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
     }
 }
 
