@@ -168,23 +168,103 @@
         
         [_deptView addSubview:deptButton];
     }
+    
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:self
+                                          action:@selector(deptViewLongPressed:)];
+    
+    lpgr.minimumPressDuration = 1.0;
+    lpgr.delegate = self;
+    [_deptView addGestureRecognizer:lpgr];
+}
+
+- (void)deptViewLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    UIView *deptView = gesture.view;
+    ThemeLegend *tl = (ThemeLegend *)_legends[1];
+    CGFloat buttonWidth = (deptView.frame.size.width / tl.cells.count);
+    
+    switch (gesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+        {
+            _dragSelectActive = NO;
+            
+            for (UIButton *deptButton in _dragSelectedCells)
+            {
+                deptButton.backgroundColor = UIColor.whiteColor;
+                [self deptButtonTapped:deptButton];
+            }
+            
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+            _preventRefresh = NO;
+        }
+            break;
+            
+        case UIGestureRecognizerStateBegan:
+            _dragSelectActive = _preventRefresh = YES;
+            _dragSelectedCells = NSMutableArray.array;
+            _firstTimeDrag = YES;
+            
+        default:
+        {
+            CGPoint point = [gesture locationInView:deptView];
+            CGPoint superpoint = [gesture locationInView:self.view];
+            
+            if (CGRectContainsPoint(deptView.frame, superpoint))
+            {
+                NSUInteger buttonID = (NSUInteger)(point.x / buttonWidth);
+                
+                if (_firstTimeDrag)
+                {
+                    _currentRow = buttonID;
+                    _firstTimeDrag = NO;
+                }
+                
+                else if (buttonID != _currentRow)
+                    _currentRow = buttonID;
+                
+                else
+                    return;
+                
+                UIButton *deptButton = [deptView viewWithTag:(buttonID + 1)];
+                
+                if (![_dragSelectedCells containsObject:deptButton])
+                {
+                    deptButton.backgroundColor = UserDefaults.defaults.lightBlue;
+                    [_dragSelectedCells addObject:deptButton];
+                }
+                
+                else
+                {
+                    deptButton = (UIButton *)_dragSelectedCells.lastObject;
+                    deptButton.backgroundColor = UIColor.whiteColor;
+                    [_dragSelectedCells removeObject:deptButton];
+                }
+            }
+        }
+            break;
+    }
 }
 
 - (void)deptButtonTapped:(UIButton *)button
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[1];
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[button.tag - 1];
-    
-    if (button.selected)
-        tlc.status = NO;
-    
-    else
-        button.selected = tlc.status = YES;
-    
-    _mapVC.fromIndex = self.tabBarController.selectedIndex;
-    _mapVC.fromLegends = YES;
-    self.tabBarController.selectedIndex = 0;
-
+    if (!_dragSelectActive)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[1];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[button.tag - 1];
+        
+        button.selected = tlc.status = !button.selected;
+        
+        if (!_preventRefresh)
+        {
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+        }
+    }
 }
 
 - (void)setupDeptViewComponents:(CGFloat)width
