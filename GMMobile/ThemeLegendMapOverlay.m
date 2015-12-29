@@ -211,13 +211,13 @@ viewForHeaderInSection:(NSInteger)section
         [titleButton setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
         
-        if (_legend.titles.count > 1)
+        if (_legend.titles.count > 1 || _legend.hasColors)
         {
             [titleButton setTitleColor:UIColor.greenColor
                               forState:UIControlStateHighlighted];
             
             [titleButton addTarget:self
-                            action:@selector(showTitles:)
+                            action:@selector(showLegendOptions:)
                   forControlEvents:UIControlEventTouchUpInside];
         }
         
@@ -291,7 +291,7 @@ viewForHeaderInSection:(NSInteger)section
     return headerView;
 }
 
-- (void)showTitles:(UIButton *)button
+- (void)showLegendOptions:(UIButton *)button
 {
     _tabBar.userInteractionEnabled = NO;
     
@@ -300,10 +300,6 @@ viewForHeaderInSection:(NSInteger)section
                          _tabBar.alpha = 0.3;
                      }];
     
-    NSMutableArray *textArray = NSMutableArray.array;
-    [textArray addObject:@"Cancel"];
-    [textArray addObjectsFromArray:_legend.titles.copy];
-    
     UIView *superview = self.superview;
     
     if ([self.superview isKindOfClass:UIScrollView.class])
@@ -311,10 +307,13 @@ viewForHeaderInSection:(NSInteger)section
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
                                                       delegate:self
-                                                         title:@"Select Legend Title"
-                                               buttonTextArray:textArray
+                                                         title:[NSString stringWithFormat:@"Legend Options for %@",
+                                                                _legend.title]
+                                               buttonTextArray:@[@"Cancel", @"Select Legend Title",
+                                                                 @"Color Symbols Using\nThis Legend"]
                                               destructiveIndex:1];
-#pragma unused(alert)
+    
+    alert.tag = 654;
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -322,8 +321,50 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex > 0)
     {
-        _legend.currentTitleIndex = (int)(buttonIndex - 1);
-        [_tableView reloadData];
+        if (alertView.tag == 654)//Top Level Alert
+        {
+            [alertView hideLargeAlertView:YES];
+            
+            if (buttonIndex == 1)//Titles Option
+            {
+                NSMutableArray *textArray = NSMutableArray.array;
+                [textArray addObject:@"Cancel"];
+                [textArray addObjectsFromArray:_legend.titles.copy];
+                
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Select Legend Title"
+                                                           buttonTextArray:textArray
+                                                          destructiveIndex:1];
+                
+                alert.tag = 543;
+            }
+            
+            else if (buttonIndex == 2)//Colors Option
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
+                                                                             @"Blues", @"Rainbow", @"Custom"]
+                                                          destructiveIndex:1];
+                
+                alert.tag = 432;
+            }
+            
+            return;
+        }
+        
+        else if (alertView.tag == 543)//Titles Option Alert
+        {
+            _legend.currentTitleIndex = (int)(buttonIndex - 1);
+            [_tableView reloadData];
+        }
+        
+        else if (alertView.tag == 432)//Colors Option Alert
+        {
+            
+        }
     }
     
     [alertView hideLargeAlertView:YES];

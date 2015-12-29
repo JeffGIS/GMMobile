@@ -52,6 +52,8 @@
     thm.legend.titleBkColor = [UIColor whiteColor];
     thm.legend.labelTxColor = [UIColor blueColor];
     thm.legend.symbolDefaultColor = [UIColor greenColor];
+    thm.legend.hasColors = YES;
+    
     switch (type)
     {
         case Part1Theme:
@@ -323,6 +325,7 @@
         }
             break;
     }
+    
     thm.numClasses = (int)thm.classes.count;
     thm.legend.type = thm.type;
     thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles.copy];
@@ -330,6 +333,7 @@
     thm.legend.numCells = thm.numClasses;
     thm.legend.useClassColors = thm.setColor;
     thm.legend.cells = [[NSMutableArray alloc]init];
+    
     for (ThemeClass *cls in thm.classes)
     {
         ThemeLegendCell * tlc = [ThemeLegendCell createWithLabel:cls.title];
@@ -340,6 +344,7 @@
         tlc.status = cls.status;
         [thm.legend.cells addObject:tlc];
     }
+    
     return thm;
 }
 

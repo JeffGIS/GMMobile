@@ -40,6 +40,7 @@
     another.isDraggedLandscape = _isDraggedLandscape;
     another.isDraggedPortrait = _isDraggedPortrait;
     another.type = _type;
+    another.hasColors = _hasColors;
     
     for (ThemeLegendCell *cl in _cells)
     {
