@@ -293,13 +293,13 @@ viewForHeaderInSection:(NSInteger)section
         [titleButton setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
         
-        if (tl.titles.count > 1)
+        if (tl.titles.count > 1 || tl.hasColors)
         {
             [titleButton setTitleColor:UIColor.greenColor
                               forState:UIControlStateHighlighted];
             
             [titleButton addTarget:self
-                            action:@selector(showTitles:)
+                            action:@selector(showLegendOptions:)
                   forControlEvents:UIControlEventTouchUpInside];
         }
         
@@ -344,7 +344,7 @@ viewForHeaderInSection:(NSInteger)section
     return headerView;
 }
 
-- (void)showTitles:(UIButton *)button
+- (void)showLegendOptions:(UIButton *)button
 {
     ThemeLegend *tl = _legends[(button.tag / 333) - 1];
     self.tabBarController.tabBar.userInteractionEnabled = NO;
@@ -356,15 +356,20 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
-    [textArray addObjectsFromArray:tl.titles.copy];
+    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    
+    if (tl.titles.count > 1)
+        [textArray addObject:@"Select Legend Title"];
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
-                                                         title:@"Select Legend Title"
+                                                         title:[NSString stringWithFormat:@"Legend Options for\n%@",
+                                                                tl.title]
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
     
     alert.tag = button.tag;
+    alert.identifier = @"TopLevelAlert";
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -374,8 +379,52 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (buttonIndex > 0)
     {
-        tl.currentTitleIndex = (int)(buttonIndex - 1);
-        [self reloadTableViews];
+        if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
+        {
+            [alertView hideLargeAlertView:YES];
+            
+            if (buttonIndex == 1)//Colors Option
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
+                                                                             @"Blues", @"Rainbow", @"Custom"]
+                                                          destructiveIndex:1];
+                
+                alert.tag = alertView.tag;
+                alert.identifier = @"ColorsAlert";
+            }
+            
+            else if (buttonIndex == 2)//Titles Option
+            {
+                NSMutableArray *textArray = NSMutableArray.array;
+                [textArray addObject:@"Cancel"];
+                [textArray addObjectsFromArray:tl.titles.copy];
+                
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Select Legend Title"
+                                                           buttonTextArray:textArray
+                                                          destructiveIndex:1];
+                
+                alert.tag = alertView.tag;
+                alert.identifier = @"TitlesAlert";
+            }
+            
+            return;
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"TitlesAlert"])
+        {
+            tl.currentTitleIndex = (int)(buttonIndex - 1);
+            [self reloadTableViews];
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"ColorsAlert"])
+        {
+            
+        }
     }
     
     [alertView hideLargeAlertView:YES];

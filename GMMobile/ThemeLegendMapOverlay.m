@@ -305,15 +305,21 @@ viewForHeaderInSection:(NSInteger)section
     if ([self.superview isKindOfClass:UIScrollView.class])
         superview = self.superview.superview;
     
+    NSMutableArray *textArray = NSMutableArray.array;
+    [textArray addObject:@"Cancel"];
+    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    
+    if (_legend.titles.count > 1)
+        [textArray addObject:@"Select Legend Title"];
+    
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
                                                       delegate:self
-                                                         title:[NSString stringWithFormat:@"Legend Options for %@",
+                                                         title:[NSString stringWithFormat:@"Legend Options for\n%@",
                                                                 _legend.title]
-                                               buttonTextArray:@[@"Cancel", @"Select Legend Title",
-                                                                 @"Color Symbols Using\nThis Legend"]
+                                               buttonTextArray:textArray
                                               destructiveIndex:1];
     
-    alert.tag = 654;
+    alert.identifier = @"TopLevelAlert";
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -321,11 +327,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex > 0)
     {
-        if (alertView.tag == 654)//Top Level Alert
+        if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
         {
             [alertView hideLargeAlertView:YES];
             
-            if (buttonIndex == 1)//Titles Option
+            if (buttonIndex == 1)//Colors Option
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
+                                                                             @"Blues", @"Rainbow", @"Custom"]
+                                                          destructiveIndex:1];
+                
+                alert.identifier = @"ColorsAlert";
+            }
+            
+            else if (buttonIndex == 2)//Titles Option
             {
                 NSMutableArray *textArray = NSMutableArray.array;
                 [textArray addObject:@"Cancel"];
@@ -337,31 +355,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                            buttonTextArray:textArray
                                                           destructiveIndex:1];
                 
-                alert.tag = 543;
-            }
-            
-            else if (buttonIndex == 2)//Colors Option
-            {
-                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
-                                                                  delegate:self
-                                                                     title:@"Color Symbols Using\nThis Legend"
-                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
-                                                                             @"Blues", @"Rainbow", @"Custom"]
-                                                          destructiveIndex:1];
-                
-                alert.tag = 432;
+                alert.identifier = @"TitlesAlert";
             }
             
             return;
         }
         
-        else if (alertView.tag == 543)//Titles Option Alert
+        else if ([alertView.identifier isEqualToString:@"TitlesAlert"])
         {
             _legend.currentTitleIndex = (int)(buttonIndex - 1);
             [_tableView reloadData];
         }
         
-        else if (alertView.tag == 432)//Colors Option Alert
+        else if ([alertView.identifier isEqualToString:@"ColorsAlert"])
         {
             
         }
