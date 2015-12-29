@@ -12,7 +12,8 @@
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
-@property BOOL dragSelectActive, preventRefresh;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
+@property NSUInteger currentRow;
 
 @end
 
@@ -29,11 +30,13 @@
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;
     tlmo.tag = tag;
-    tlmo.isExpanded = tlmo.dragSelectActive = tlmo.preventRefresh = NO;
+    tlmo.isExpanded = tlmo.dragSelectActive = NO;
+    tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
     tlmo.previousFrame = CGRectZero;
+    tlmo.currentRow = 0;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
@@ -89,19 +92,33 @@
     {
         case UIGestureRecognizerStateEnded:
         {
-            UIView *superview = self.superview;
+            _dragSelectActive = NO;
             
-            if ([self.superview isKindOfClass:UIScrollView.class])
-                superview = self.superview.superview;
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            {
+                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+                cell.backgroundColor = UIColor.whiteColor;
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                
+                if (cell.selected)
+                {
+                    [self tableView:_tableView
+          didDeselectRowAtIndexPath:indexPaths];
+                }
+               
+                else
+                {
+                    [self tableView:_tableView
+            didSelectRowAtIndexPath:indexPaths];
+                }
+                
+                cell.selected = !cell.selected;
+            }
             
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
-                                                              delegate:self
-                                                                 title:@"Select Action for All Highlighted Cells"
-                                                       buttonTextArray:@[@"Cancel",
-                                                                         @"Select All",
-                                                                         @"Deselect All"]
-                                                      destructiveIndex:1];
-            alert.tag = 999;
+            _preventRefresh = NO;
+            
+            if (_delegate)
+                [_delegate themeLegendDidChangeStatus:YES];
         }
             break;
         
@@ -109,6 +126,7 @@
         {
             _dragSelectActive = _preventRefresh = YES;
             _dragSelectedCells = NSMutableArray.array;
+            _firstTimeDrag = YES;
         }
             
         default:
@@ -119,7 +137,21 @@
             {
                 NSUInteger row = (NSUInteger)(point.y / tv.rowHeight);
                 
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(row - 1)
+                if (_firstTimeDrag)
+                {
+                    _currentRow = row;
+                    _firstTimeDrag = NO;
+                }
+                
+                else if (row != _currentRow)
+                {
+                    _currentRow = row;
+                }
+                
+                else
+                    return;
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(_currentRow - 1)
                                                             inSection:0];
                 
                 if (![_dragSelectedCells containsObject:indexPath])
@@ -128,6 +160,15 @@
                     cell.backgroundColor = UserDefaults.defaults.lightBlue;
                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     [_dragSelectedCells addObject:indexPath];
+                }
+                
+                else
+                {
+                    indexPath = (NSIndexPath *)_dragSelectedCells.lastObject;
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                    [_dragSelectedCells removeObject:indexPath];
                 }
             }
         }
@@ -281,52 +322,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex > 0)
     {
-        if (alertView.tag == 999)
-        {
-            _dragSelectActive = NO;
-            
-            for (NSIndexPath *indexPaths in _dragSelectedCells)
-            {
-                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
-                
-                if (buttonIndex == 1)
-                {
-                    cell.selected = YES;
-                    
-                    [self tableView:_tableView
-            didSelectRowAtIndexPath:indexPaths];
-                }
-                
-                else
-                {
-                    cell.selected = NO;
-                    
-                    [self tableView:_tableView
-          didDeselectRowAtIndexPath:indexPaths];
-                }
-            }
-            
-            _preventRefresh = NO;
-        }
-        
-        else
-        {
-            _legend.currentTitleIndex = (int)(buttonIndex - 1);
-            [_tableView reloadData];
-        }
-        
-        if (_delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
-    }
-    
-    if (alertView.tag == 999)
-    {
-        for (NSIndexPath *indexPaths in _dragSelectedCells)
-        {
-            UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
-            cell.backgroundColor = UIColor.whiteColor;
-            cell.selectionStyle = UITableViewCellSelectionStyleGray;
-        }
+        _legend.currentTitleIndex = (int)(buttonIndex - 1);
+        [_tableView reloadData];
     }
     
     [alertView hideLargeAlertView:YES];

@@ -2355,7 +2355,25 @@ haveVV:
         
         if ([self legendIsExpanded])
         {
-            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+            if (_legendsAreOffMap)
+            {
+                for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+                {
+                    if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                    {
+                        if (tlmos.isExpanded)
+                        {
+                            [self.view bringSubviewToFront:[self.view viewWithTag:123456789]];
+                            [self.view bringSubviewToFront:_legendScrollView];
+                            [_legendScrollView bringSubviewToFront:tlmos];
+                            tlmos.legend = legends[(tlmos.tag / 111111) - 1];
+                            [tlmos.tableView reloadData];
+                        }
+                    }
+                }
+            }
+            
+            else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
             {
                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
                 {
