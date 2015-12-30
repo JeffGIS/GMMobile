@@ -11,9 +11,9 @@
 
 @implementation Themes
 
-- (void) setAppThemes
+- (void)setAppThemes
 {
-    Theme * thm;
+    Theme *thm;
     
     if (ConfigurationControl.sharedInstance.legendApp != ConfigurationControl.sharedInstance.currentApp)
         [self destroyCurrentThemes];
@@ -77,6 +77,7 @@
                     {
                         ThemeLegendCell *cl = tl.cells[j++];
                         tlc.status = cl.status;
+                        tlc.symbolColor = cl.symbolColor;
                     }
                 }
             }
@@ -97,7 +98,7 @@
     _themeList = nil;
 }
 
-- (ItemProcessingPassTypes) themesNeedDataPass:(int)displayID
+- (ItemProcessingPassTypes)themesNeedDataPass:(int)displayID
 {
     ItemProcessingPassTypes rtn = DisplayPass;
     int i = 0;
@@ -124,6 +125,7 @@
                 {
                     ThemeLegendCell *tlc = tleg.cells[j++];
                     cls.status = tlc.status;
+                    cls.color = tlc.symbolColor;
                 }
             }
         }

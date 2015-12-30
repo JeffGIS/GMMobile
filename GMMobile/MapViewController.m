@@ -626,8 +626,6 @@ extern int keepProcessing;
         _compass.center = CGPointMake(_mapToolbar.center.x,
                                       ((_mapToolbar.frame.origin.y - _compassMargin) - (_compass.frame.size.height / 2.0)));
     }
-    
-    NSLog(@"%f,%f", _compass.center.x, _compass.center.y);
 }
 
 - (void)setupTempButton:(UIButton *)button
@@ -1939,6 +1937,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
     }
     
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
+            [alert willRotateWithDuration:duration];
+    }
+    
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
@@ -2077,7 +2081,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 {
                     if (tlmos.isExpanded)
                     {
-                        tlmos.selectionMade = YES;
                         CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
                         
                         [UIView animateWithDuration:duration
@@ -2101,7 +2104,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             {
                 if (tlmos.isExpanded)
                 {
-                    tlmos.selectionMade = YES;
                     CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
                     
                     [UIView animateWithDuration:duration
@@ -2159,6 +2161,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
     {
         if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos.isExpanded)
+            isExpanded = YES;
+    }
+    
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
             isExpanded = YES;
     }
     
@@ -2290,7 +2298,6 @@ haveVV:
                        if (_screenSetting != MapViewScreenSettingPlatView)
                        {
                            [self.view addSubview:_vectorView];
-                           [self.view bringSubviewToFront:_vectorView];
                            
                            if (!_myLocationMarker.hidden)
                                [self.view bringSubviewToFront:_myLocationMarker];
@@ -2319,13 +2326,13 @@ haveVV:
                            for (GSSiDatePicker *datePicker in self.view.subviews)
                            {
                                if ([datePicker isKindOfClass:GSSiDatePicker.class])
-                                   [datePicker bringToFrontOfView:self.view];
+                                   [self.view bringSubviewToFront:datePicker];
                            }
                            
                            for (GSSiNotesView *notesView in self.view.subviews)
                            {
                                if ([notesView isKindOfClass:GSSiNotesView.class])
-                                   [notesView bringToFrontOfView:self.view];
+                                   [self.view bringSubviewToFront:notesView];
                            }
                            
                            if ([self.view.subviews containsObject:_popover])
@@ -2354,10 +2361,45 @@ haveVV:
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
-        if ([self legendIsExpanded])
-            return;
-        
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+        
+        if ([self legendIsExpanded])
+        {
+            if (_legendsAreOffMap)
+            {
+                for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+                {
+                    if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                    {
+                        if (tlmos.isExpanded)
+                        {
+                            [self.view bringSubviewToFront:[self.view viewWithTag:123456789]];
+                            [self.view bringSubviewToFront:_legendScrollView];
+                            [_legendScrollView bringSubviewToFront:tlmos];
+                            tlmos.legend = legends[(tlmos.tag / 111111) - 1];
+                            [tlmos.tableView reloadData];
+                        }
+                    }
+                }
+            }
+            
+            else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+            {
+                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                {
+                    if (tlmos.isExpanded)
+                    {
+                        [self.view bringSubviewToFront:[self.view viewWithTag:123456789]];
+                        [self.view bringSubviewToFront:tlmos];
+                        tlmos.legend = legends[(tlmos.tag / 111111) - 1];
+                        [tlmos.tableView reloadData];
+                    }
+                }
+            }
+            
+            return;
+        }
+        
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0, xOriginLandscape = 790.0, xOriginPortrait = 534.0;
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);

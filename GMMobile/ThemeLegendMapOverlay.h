@@ -1,7 +1,8 @@
 //  ThemeLegendMapOverlay.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+@import UIKit;
+#import "CCodeLibrary/NVAlertView.h"
 #import "ThemeLegend.h"
 
 @class ThemeLegendMapOverlay;
@@ -14,11 +15,11 @@
 
 @end
 
-@interface ThemeLegendMapOverlay : UIView <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate>
+@interface ThemeLegendMapOverlay : UIView <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) ThemeLegend *legend;
-@property BOOL isExpanded, selectionMade;
+@property BOOL isExpanded;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) CGFloat rowHeight, width;
 

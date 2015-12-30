@@ -1,12 +1,7 @@
-//
 //  Themes.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 11/17/15.
-//  Copyright © 2015 GSSi. All rights reserved.
-//
 
-#import <Foundation/Foundation.h>
+@import UIKit;
 #import "Theme.h"
 #import "ConfigurationControl.h"
 
@@ -15,17 +10,24 @@
 @property int displayID;
 
 - (void) setAppThemes;
-- (ItemProcessingPassTypes) themesNeedDataPass:(int)displayID;
+- (ItemProcessingPassTypes)themesNeedDataPass:(int)displayID;
 - (void) themesBeginDataPass:(int)displayID;
 - (void) themesEndDataPass:(int)displayID;
 - (void) themesBeginDisplayPass:(int)displayID;
 - (void) themesEndDisplayPass:(int)displayID;
+
 - (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
                         displayID:(int)displayID;
-- (void) getMinMaxUCR:(int)range min:(int *)minUCR max:(int *)maxUCR;
-- (BOOL) getMinMaxTime:(int)range min:(int *)minTime max:(int *)maxTime;
+
+- (void) getMinMaxUCR:(int)range
+                  min:(int *)minUCR
+                  max:(int *)maxUCR;
+
+- (BOOL) getMinMaxTime:(int)range
+                   min:(int *)minTime
+                   max:(int *)maxTime;
+
 - (int) getNumUCRRanges;
 - (int) getNumTimeRanges;
-
 
 @end

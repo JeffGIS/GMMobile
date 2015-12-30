@@ -18,6 +18,9 @@
 @property (nonatomic) CGFloat headerHeight, cornerRadius;
 @property (nonatomic) UIButton *deptHeaderView;
 @property (nonatomic) MapViewController *mapVC;
+@property (nonatomic) NSMutableArray *dragSelectedCells;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
+@property NSUInteger currentRow;
 
 @end
 
@@ -31,6 +34,7 @@
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _countLength = 0;
     _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;
+    _dragSelectActive = _preventRefresh = _firstTimeDrag = NO;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -73,6 +77,7 @@
     
     [_tableView reloadData];
     [self.view layoutIfNeeded];
+    
     [self setupDeptViewComponents:_deptView.frame.size.width];
 }
 
@@ -95,18 +100,32 @@
     _deptHeaderView.titleLabel.textAlignment = NSTextAlignmentCenter;
     _deptHeaderView.titleLabel.font = _headerFont;
     _deptHeaderView.backgroundColor = UIColor.blackColor;
-    _deptHeaderView.tag = 6666;
+    _deptHeaderView.tag = 222;
     
     [_deptHeaderView setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
     
-    [_deptHeaderView setTitleColor:UIColor.redColor
+    if (tl.titles.count > 1 || tl.hasColors)
+    {
+        [_deptHeaderView setTitleColor:UIColor.greenColor
+                              forState:UIControlStateHighlighted];
+        
+        [_deptHeaderView addTarget:self
+                            action:@selector(showLegendOptions:)
+                  forControlEvents:UIControlEventTouchUpInside];
+    }
+    
+    else
+    {
+        [_deptHeaderView setTitleColor:UIColor.redColor
                           forState:UIControlStateHighlighted];
+    }
     
     [_deptHeaderView setTitle:tl.title
                      forState:UIControlStateNormal];
     
-    [_deptView addSubview:_deptHeaderView];
+    if (![_deptView.subviews containsObject:[_deptView viewWithTag:222]])
+        [_deptView addSubview:_deptHeaderView];
     
     if (![_deptHeaderView.subviews containsObject:[_deptHeaderView viewWithTag:7777]])
     {
@@ -149,23 +168,103 @@
         
         [_deptView addSubview:deptButton];
     }
+    
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:self
+                                          action:@selector(deptViewLongPressed:)];
+    
+    lpgr.minimumPressDuration = 1.0;
+    lpgr.delegate = self;
+    [_deptView addGestureRecognizer:lpgr];
+}
+
+- (void)deptViewLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    UIView *deptView = gesture.view;
+    ThemeLegend *tl = (ThemeLegend *)_legends[1];
+    CGFloat buttonWidth = (deptView.frame.size.width / tl.cells.count);
+    
+    switch (gesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+        {
+            _dragSelectActive = NO;
+            
+            for (UIButton *deptButton in _dragSelectedCells)
+            {
+                deptButton.backgroundColor = UIColor.whiteColor;
+                [self deptButtonTapped:deptButton];
+            }
+            
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+            _preventRefresh = NO;
+        }
+            break;
+            
+        case UIGestureRecognizerStateBegan:
+            _dragSelectActive = _preventRefresh = YES;
+            _dragSelectedCells = NSMutableArray.array;
+            _firstTimeDrag = YES;
+            
+        default:
+        {
+            CGPoint point = [gesture locationInView:deptView];
+            CGPoint superpoint = [gesture locationInView:self.view];
+            
+            if (CGRectContainsPoint(deptView.frame, superpoint))
+            {
+                NSUInteger buttonID = (NSUInteger)(point.x / buttonWidth);
+                
+                if (_firstTimeDrag)
+                {
+                    _currentRow = buttonID;
+                    _firstTimeDrag = NO;
+                }
+                
+                else if (buttonID != _currentRow)
+                    _currentRow = buttonID;
+                
+                else
+                    return;
+                
+                UIButton *deptButton = [deptView viewWithTag:(buttonID + 1)];
+                
+                if (![_dragSelectedCells containsObject:deptButton])
+                {
+                    deptButton.backgroundColor = UserDefaults.defaults.lightBlue;
+                    [_dragSelectedCells addObject:deptButton];
+                }
+                
+                else
+                {
+                    deptButton = (UIButton *)_dragSelectedCells.lastObject;
+                    deptButton.backgroundColor = UIColor.whiteColor;
+                    [_dragSelectedCells removeObject:deptButton];
+                }
+            }
+        }
+            break;
+    }
 }
 
 - (void)deptButtonTapped:(UIButton *)button
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[1];
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[button.tag - 1];
-    
-    if (button.selected)
-        tlc.status = NO;
-    
-    else
-        button.selected = tlc.status = YES;
-    
-    _mapVC.fromIndex = self.tabBarController.selectedIndex;
-    _mapVC.fromLegends = YES;
-    self.tabBarController.selectedIndex = 0;
-
+    if (!_dragSelectActive)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[1];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[button.tag - 1];
+        
+        button.selected = tlc.status = !button.selected;
+        
+        if (!_preventRefresh)
+        {
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+        }
+    }
 }
 
 - (void)setupDeptViewComponents:(CGFloat)width
@@ -183,7 +282,7 @@
     for (UIButton *buttons in _deptView.subviews)
     {
         if ([buttons isKindOfClass:UIButton.class]
-            && buttons.tag != 7777 && buttons.tag != 6666)
+            && buttons.tag != 7777 && buttons.tag != 222)
         {
             buttons.frame = CGRectMake((buttonWidth * (buttons.tag - 1)), _headerHeight,
                                        buttonWidth,(_deptView.frame.size.height - _headerHeight));
@@ -227,6 +326,105 @@
     _tableView.allowsMultipleSelection = YES;
     _tableView.separatorColor = UIColor.clearColor;
     _tableView.separatorInset = UIEdgeInsetsZero;
+    
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:self
+                                          action:@selector(tlmoLongPressed:)];
+    
+    lpgr.minimumPressDuration = 1.0;
+    lpgr.delegate = self;
+    [_tableView addGestureRecognizer:lpgr];
+}
+
+- (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    UITableView *tv = (UITableView *)gesture.view;
+    
+    switch (gesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+        {
+            _dragSelectActive = NO;
+            
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            {
+                UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
+                cell.backgroundColor = UIColor.whiteColor;
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                
+                if (cell.selected)
+                {
+                    [self tableView:tv
+          didDeselectRowAtIndexPath:indexPaths];
+                }
+                
+                else
+                {
+                    [self tableView:tv
+            didSelectRowAtIndexPath:indexPaths];
+                }
+                
+                cell.selected = !cell.selected;
+            }
+            
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+            _preventRefresh = NO;
+        }
+            break;
+            
+        case UIGestureRecognizerStateBegan:
+        {
+            _dragSelectActive = _preventRefresh = YES;
+            _dragSelectedCells = NSMutableArray.array;
+            _firstTimeDrag = YES;
+        }
+            
+        default:
+        {
+            CGPoint point = [gesture locationInView:tv];
+            CGPoint superpoint = [gesture locationInView:self.view];
+            
+            if (CGRectContainsPoint(tv.frame, superpoint))
+            {
+                NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
+                
+                if (_firstTimeDrag)
+                {
+                    _currentRow = row;
+                    _firstTimeDrag = NO;
+                }
+                
+                else if (row != _currentRow)
+                    _currentRow = row;
+                
+                else
+                    return;
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:_currentRow
+                                                            inSection:0];
+                
+                if (![_dragSelectedCells containsObject:indexPath])
+                {
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UserDefaults.defaults.lightBlue;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    [_dragSelectedCells addObject:indexPath];
+                }
+                
+                else
+                {
+                    indexPath = (NSIndexPath *)_dragSelectedCells.lastObject;
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                    [_dragSelectedCells removeObject:indexPath];
+                }
+            }
+        }
+            break;
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -273,23 +471,23 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
-    if (![headerView.subviews containsObject:[headerView viewWithTag:2222]])
+    if (![headerView.subviews containsObject:[headerView viewWithTag:111]])
     {
         UIButton *titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
         titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         titleButton.titleLabel.font = _headerFont;
-        titleButton.tag = 2222;
+        titleButton.tag = 111;
         
         [titleButton setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
         
-        if (tl.titles.count > 1)
+        if (tl.titles.count > 1 || tl.hasColors)
         {
             [titleButton setTitleColor:UIColor.greenColor
                               forState:UIControlStateHighlighted];
             
             [titleButton addTarget:self
-                            action:@selector(showTitles:)
+                            action:@selector(showLegendOptions:)
                   forControlEvents:UIControlEventTouchUpInside];
         }
         
@@ -334,9 +532,10 @@ viewForHeaderInSection:(NSInteger)section
     return headerView;
 }
 
-- (void)showTitles:(UIButton *)button
+- (void)showLegendOptions:(UIButton *)button
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
+    NSUInteger index = ((button.tag / 111) - 1);
+    ThemeLegend *tl = (ThemeLegend *)_legends[index];
     self.tabBarController.tabBar.userInteractionEnabled = NO;
     
     [UIView animateWithDuration:0.25
@@ -346,25 +545,76 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
-    [textArray addObjectsFromArray:tl.titles.copy];
+    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    
+    if (tl.titles.count > 1)
+        [textArray addObject:@"Select Legend Title"];
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
-                                                         title:@"Select Legend Title"
+                                                         title:[NSString stringWithFormat:@"Legend Options for\n%@",
+                                                                tl.title]
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
-#pragma unused(alert)
+    
+    alert.tag = button.tag;
+    alert.identifier = @"TopLevelAlert";
 }
 
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
+    NSUInteger index = ((alertView.tag / 111) - 1);
+    ThemeLegend *tl = (ThemeLegend *)_legends[index];
     
     if (buttonIndex > 0)
     {
-        tl.currentTitleIndex = (int)(buttonIndex - 1);
-        [_tableView reloadData];
+        if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
+        {
+            [alertView hideLargeAlertView:YES];
+            
+            if (buttonIndex == 1)//Colors Option
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
+                                                                             @"Blues", @"Rainbow", @"Custom"]
+                                                          destructiveIndex:1];
+                
+                alert.tag = alertView.tag;
+                alert.identifier = @"ColorsAlert";
+            }
+            
+            else if (buttonIndex == 2)//Titles Option
+            {
+                NSMutableArray *textArray = NSMutableArray.array;
+                [textArray addObject:@"Cancel"];
+                [textArray addObjectsFromArray:tl.titles.copy];
+                
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Select Legend Title"
+                                                           buttonTextArray:textArray
+                                                          destructiveIndex:1];
+                
+                alert.tag = alertView.tag;
+                alert.identifier = @"TitlesAlert";
+            }
+            
+            return;
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"TitlesAlert"])
+        {
+            tl.currentTitleIndex = (int)(buttonIndex - 1);
+            [_tableView reloadData];
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"ColorsAlert"])
+        {
+            
+        }
     }
     
     [alertView hideLargeAlertView:YES];
@@ -434,9 +684,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     cell.textLabel.font = _font;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    
+    cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
+    cell.contentView.backgroundColor = UIColor.clearColor;
     
     CGFloat symbolSize = 52.0;
     
@@ -466,25 +717,37 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-    tlc.status = YES;
-    
-    _mapVC.fromIndex = self.tabBarController.selectedIndex;
-    _mapVC.fromLegends = YES;
-    self.tabBarController.selectedIndex = 0;
+    if (!_dragSelectActive)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[0];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+        tlc.status = YES;
+        
+        if (!_preventRefresh)
+        {
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView
 didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegend *tl = (ThemeLegend *)_legends[0];
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-    tlc.status = NO;
-    
-    _mapVC.fromIndex = self.tabBarController.selectedIndex;
-    _mapVC.fromLegends = YES;
-    self.tabBarController.selectedIndex = 0;
+    if (!_dragSelectActive)
+    {
+        ThemeLegend *tl = (ThemeLegend *)_legends[0];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
+        tlc.status = NO;
+        
+        if (!_preventRefresh)
+        {
+            _mapVC.fromIndex = self.tabBarController.selectedIndex;
+            _mapVC.fromLegends = YES;
+            self.tabBarController.selectedIndex = 0;
+        }
+    }
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation

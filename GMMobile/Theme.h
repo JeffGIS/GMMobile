@@ -1,15 +1,10 @@
-//
 //  Theme.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 11/2/15.
-//  Copyright © 2015 GSSi. All rights reserved.
-//
 
-#import <Foundation/Foundation.h>
+@import UIKit;
+#import "CCodeLibrary/CRAPI.h"
 #import "ThemeClass.h"
 #import "ThemeLegend.h"
-#import "CCodeLibrary/CCodelibrary.h"
 
 #define DO_NOT_DISPLAY_ITEM     1
 #define DISPLAY_ITEM            2

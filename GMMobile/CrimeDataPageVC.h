@@ -1,7 +1,7 @@
 //  CrimeDataPageVC.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 @interface CrimeDataPageVC : UIPageViewController <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
 

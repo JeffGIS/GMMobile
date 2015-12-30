@@ -1,12 +1,7 @@
-//
 //  ThemeLegend.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 11/2/15.
-//  Copyright © 2015 GSSi. All rights reserved.
-//
 
-#import <Foundation/Foundation.h>
+@import UIKit;
 #import "ThemeTypes.h"
 #import "ThemeLegendCell.h"
 
@@ -41,7 +36,7 @@
 @property (nonatomic)int currentTitleIndex; //index of current title
 @property NSMutableArray *cells;  //ThemeLegendCell array
 
-@property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait;
+@property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait, hasColors;
 @property (nonatomic) CGPoint portraitMapOrigin, landscapeMapOrigin;
 @property (nonatomic) CGFloat scrollYPosition;
 

@@ -4,6 +4,7 @@
 #import "ThemeLegendMapOverlay.h"
 #import "SymbolDictionary.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
+#import "CCodeLibrary/NVColorSet.h"
 
 @interface ThemeLegendMapOverlay ()
 
@@ -11,6 +12,9 @@
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame;
+@property (nonatomic) NSMutableArray *dragSelectedCells;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
+@property NSUInteger currentRow;
 
 @end
 
@@ -27,11 +31,13 @@
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;
     tlmo.tag = tag;
-    tlmo.isExpanded = tlmo.selectionMade = NO;
+    tlmo.isExpanded = tlmo.dragSelectActive = NO;
+    tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
     tlmo.previousFrame = CGRectZero;
+    tlmo.currentRow = 0;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
@@ -65,10 +71,111 @@
     tlmo.tableView.separatorInset = UIEdgeInsetsZero;
     tlmo.tableView.layoutMargins = UIEdgeInsetsZero;
     
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                          initWithTarget:tlmo
+                                          action:@selector(tlmoLongPressed:)];
+    
+    lpgr.minimumPressDuration = 1.0;
+    lpgr.delegate = tlmo;
+    [tlmo.tableView addGestureRecognizer:lpgr];
+    
     [tlmo addSubview:tlmo.tableView];
     [view addSubview:tlmo];
     
     return tlmo;
+}
+
+- (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    UITableView *tv = (UITableView *)gesture.view;
+    
+    switch (gesture.state)
+    {
+        case UIGestureRecognizerStateEnded:
+        {
+            _dragSelectActive = NO;
+            
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            {
+                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+                cell.backgroundColor = UIColor.whiteColor;
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                
+                if (cell.selected)
+                {
+                    [self tableView:_tableView
+          didDeselectRowAtIndexPath:indexPaths];
+                }
+               
+                else
+                {
+                    [self tableView:_tableView
+            didSelectRowAtIndexPath:indexPaths];
+                }
+                
+                cell.selected = !cell.selected;
+            }
+            
+            _preventRefresh = NO;
+            
+            if (_delegate)
+                [_delegate themeLegendDidChangeStatus:YES];
+        }
+            break;
+        
+        case UIGestureRecognizerStateBegan:
+        {
+            _dragSelectActive = _preventRefresh = YES;
+            _dragSelectedCells = NSMutableArray.array;
+            _firstTimeDrag = YES;
+        }
+            
+        default:
+        {
+            CGPoint point = [gesture locationInView:tv];
+            
+            if (CGRectContainsPoint(tv.frame, point))
+            {
+                NSUInteger row = (NSUInteger)(point.y / tv.rowHeight);
+                
+                if (_firstTimeDrag)
+                {
+                    _currentRow = row;
+                    _firstTimeDrag = NO;
+                }
+                
+                else if (row != _currentRow)
+                {
+                    _currentRow = row;
+                }
+                
+                else
+                    return;
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(_currentRow - 1)
+                                                            inSection:0];
+                
+                if (![_dragSelectedCells containsObject:indexPath])
+                {
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UserDefaults.defaults.lightBlue;
+                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                    [_dragSelectedCells addObject:indexPath];
+                }
+                
+                else
+                {
+                    indexPath = (NSIndexPath *)_dragSelectedCells.lastObject;
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPath];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                    [_dragSelectedCells removeObject:indexPath];
+                }
+            }
+        }
+            break;
+            
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -105,13 +212,13 @@ viewForHeaderInSection:(NSInteger)section
         [titleButton setTitleColor:UIColor.whiteColor
                           forState:UIControlStateNormal];
         
-        if (_legend.titles.count > 1)
+        if (_legend.titles.count > 1 || _legend.hasColors)
         {
             [titleButton setTitleColor:UIColor.greenColor
                               forState:UIControlStateHighlighted];
             
             [titleButton addTarget:self
-                            action:@selector(showTitles:)
+                            action:@selector(showLegendOptions:)
                   forControlEvents:UIControlEventTouchUpInside];
         }
         
@@ -185,7 +292,7 @@ viewForHeaderInSection:(NSInteger)section
     return headerView;
 }
 
-- (void)showTitles:(UIButton *)button
+- (void)showLegendOptions:(UIButton *)button
 {
     _tabBar.userInteractionEnabled = NO;
     
@@ -194,21 +301,26 @@ viewForHeaderInSection:(NSInteger)section
                          _tabBar.alpha = 0.3;
                      }];
     
-    NSMutableArray *textArray = NSMutableArray.array;
-    [textArray addObject:@"Cancel"];
-    [textArray addObjectsFromArray:_legend.titles.copy];
-    
     UIView *superview = self.superview;
     
     if ([self.superview isKindOfClass:UIScrollView.class])
         superview = self.superview.superview;
     
+    NSMutableArray *textArray = NSMutableArray.array;
+    [textArray addObject:@"Cancel"];
+    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    
+    if (_legend.titles.count > 1)
+        [textArray addObject:@"Select Legend Title"];
+    
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
                                                       delegate:self
-                                                         title:@"Select Legend Title"
+                                                         title:[NSString stringWithFormat:@"Legend Options for\n%@",
+                                                                _legend.title]
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
-#pragma unused(alert)
+    
+    alert.identifier = @"TopLevelAlert";
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -216,14 +328,98 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex > 0)
     {
-        _legend.currentTitleIndex = (int)(buttonIndex - 1);
-        [_tableView reloadData];
+        if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
+        {
+            [alertView hideLargeAlertView:YES];
+            
+            if (buttonIndex == 1)//Colors Option
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                           buttonTextArray:NVColorSet.colorOptions
+                                                          destructiveIndex:1];
+                
+                alert.identifier = @"ColorOptionsAlert";
+            }
+            
+            else if (buttonIndex == 2)//Titles Option
+            {
+                NSMutableArray *textArray = NSMutableArray.array;
+                [textArray addObject:@"Cancel"];
+                [textArray addObjectsFromArray:_legend.titles.copy];
+                
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                  delegate:self
+                                                                     title:@"Select Legend Title"
+                                                           buttonTextArray:textArray
+                                                          destructiveIndex:1];
+                
+                alert.identifier = @"TitlesAlert";
+            }
+            
+            return;
+        }
         
-        if (_delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        else if ([alertView.identifier isEqualToString:@"TitlesAlert"])
+        {
+            _legend.currentTitleIndex = (int)(buttonIndex - 1);
+            [_tableView reloadData];
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"ColorOptionsAlert"])
+        {
+            switch (buttonIndex)
+            {
+                case NVColorOptionReds:
+                    break;
+                    
+                case NVColorOptionGreens:
+                    break;
+                    
+                case NVColorOptionBlues:
+                    break;
+                    
+                case NVColorOptionRandom:
+                {
+                    [alertView hideLargeAlertView:YES];
+                    
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Color Palette"
+                                                               buttonTextArray:NVColorSet.randomColorPaletteOptions
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"RandomColorAlert";
+                    return;
+                }
+                    break;
+                    
+                case NVColorOptionCustom:
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
+        {
+            NSArray *colorArray = [NVColorSet randomColorArrayOfType:buttonIndex
+                                                       numComponents:_legend.numCells];
+            
+            for (int i = 0; i < _legend.numCells; i++)
+            {
+                ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[i];
+                tlc.symbolColor = (NVColor *)colorArray[i];
+            }
+        }
     }
     
     [alertView hideLargeAlertView:YES];
+    
+    if (_delegate)
+        [_delegate themeLegendDidChangeStatus:YES];
     
     [UIView animateWithDuration:0.25
                      animations:^{
@@ -299,7 +495,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (!_isExpanded)
     {
-        UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 1024.0, 1024.0)];
+        CGRect bounds = UIScreen.mainScreen.bounds;
+        CGFloat longestSide = MAX(bounds.size.height, bounds.size.width);
+        
+        UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, longestSide, longestSide)];
         overlayView.backgroundColor = UIColor.blackColor;
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
@@ -437,11 +636,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  legendScroll.scrollEnabled = YES;
                              }
                              
-                             if (_selectionMade && _delegate)
-                             {
+                             if (!_preventRefresh && _delegate)
                                  [_delegate themeLegendDidChangeStatus:YES];
-                                 _selectionMade = NO;
-                             }
                          }];
     }
 }
@@ -508,10 +704,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     textLabel.text = text.copy;
     textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.adjustsFontSizeToFitWidth = YES;
+    textLabel.backgroundColor = UIColor.clearColor;
     textLabel.tag = 888;
     
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
+    cell.contentView.backgroundColor = UIColor.clearColor;
+    cell.textLabel.backgroundColor = UIColor.clearColor;
     
     NSDictionary *attributes = @{NSFontAttributeName:_font};
     
@@ -590,32 +789,26 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
-    tlc.status = YES;
-    
-    if (_delegate)
+    if (!_dragSelectActive)
     {
-        if (!_isExpanded)
-            [_delegate themeLegendDidChangeStatus:YES];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
+        tlc.status = YES;
         
-        else
-            _selectionMade = YES;
+        if (!_preventRefresh && _delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
     }
 }
 
 - (void)tableView:(UITableView *)tableView
 didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
-    tlc.status = NO;
-    
-    if (_delegate)
+    if (!_dragSelectActive)
     {
-        if (!_isExpanded && _delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
+        tlc.status = NO;
         
-        else
-            _selectionMade = YES;
+        if (!_preventRefresh && _delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
     }
 }
 
