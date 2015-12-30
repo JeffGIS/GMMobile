@@ -4,7 +4,7 @@
 #import "ThemeLegendMapOverlay.h"
 #import "SymbolDictionary.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
-#import "CCodeLibrary/NVColorSet.h"
+#import "CCodeLibrary/UserDefaults.h"
 
 @interface ThemeLegendMapOverlay ()
 
@@ -37,7 +37,7 @@
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
     tlmo.previousFrame = CGRectZero;
-    tlmo.currentRow = 0;
+    tlmo.currentRow = tlmo.currentColorPalette = 0;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
@@ -323,9 +323,26 @@ viewForHeaderInSection:(NSInteger)section
     alert.identifier = @"TopLevelAlert";
 }
 
+- (void)displayRandomColorAlertInView:(UIView *)view
+{
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:view
+                                                      delegate:self
+                                                         title:@"Confirm Random Color Selection"
+                                               buttonTextArray:@[@"OK", @"Try Again"]
+                                              destructiveIndex:0];
+    
+    alert.overlayView.backgroundColor = UIColor.clearColor;
+    alert.backgroundColor = NVColor.gainsboroColor;
+    alert.layer.borderColor = UIColor.blackColor.CGColor;
+    alert.layer.borderWidth = 2.0;
+    alert.buttonBorderColor = UIColor.grayColor;
+    alert.identifier = @"RandomColorConfirmation";
+}
+
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
+    
     if (buttonIndex > 0)
     {
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
@@ -403,9 +420,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
         
-        else if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
+        else if ([alertView.identifier isEqualToString:@"RandomColorAlert"] ||
+                 [alertView.identifier isEqualToString:@"RandomColorConfirmation"])
         {
-            NSArray *colorArray = [NVColorSet randomColorArrayOfType:buttonIndex
+            
+            [alertView hideLargeAlertView:YES];
+            
+            if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
+                _currentColorPalette = buttonIndex;
+            
+            NSArray *colorArray = [NVColorSet randomColorArrayOfType:_currentColorPalette
                                                        numComponents:_legend.numCells];
             
             for (int i = 0; i < _legend.numCells; i++)
@@ -413,20 +437,46 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[i];
                 tlc.symbolColor = (NVColor *)colorArray[i];
             }
+            
+            [_tableView reloadData];
+            
+            if (_delegate)
+            {
+                [_delegate randomColorsSelectedWithOption:_currentColorPalette
+                                           forThemeLegend:self];
+            }
+            
+            if (!_isExpanded)
+            {
+                if (![alertView.identifier isEqualToString:@"RandomColorConfirmation"])
+                {
+                    [UIView animateWithDuration:0.25
+                                     animations:^{
+                                         _tabBar.alpha = 1.0;
+                                     }];
+                }
+                
+                _tabBar.userInteractionEnabled = YES;
+            }
+            
+            return;
         }
     }
     
     [alertView hideLargeAlertView:YES];
     
-    if (_delegate)
-        [_delegate themeLegendDidChangeStatus:YES];
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _tabBar.alpha = 1.0;
-                     }];
-    
-    _tabBar.userInteractionEnabled = YES;
+    if (!_isExpanded)
+    {
+        if (_delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _tabBar.alpha = 1.0;
+                         }];
+        
+        _tabBar.userInteractionEnabled = YES;
+    }
 }
 
 - (void)dragButtonBegin:(UIButton *)button

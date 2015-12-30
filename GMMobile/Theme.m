@@ -379,16 +379,19 @@ int getThemeOpt(ThemeTypes type)
             {
                 if (_setSymbol)
                     dc.pointSymbol = cls.symbol;
+                
                 if (_setColor)
                 {
                     dc.color = cls.color;
                     dc.size = cls.size;
                 }
+                
                 cls.count += val;
                 cls.numItems++;
                 _totCount += val;
                 _totNumItems ++;
             }
+            
             rtn = TRUE;
         }
     }

@@ -65,12 +65,14 @@
     else
     {
         int i=0;
+        
         for (Theme *thm in _themeList)
         {
             if (ConfigurationControl.sharedInstance.legendList.count > i)
             {
                 ThemeLegend *tl = ConfigurationControl.sharedInstance.legendList[i++];
                 int j=0;
+                
                 for (ThemeLegendCell *tlc in thm.legend.cells)
                 {
                     if (tl.cells.count > j)

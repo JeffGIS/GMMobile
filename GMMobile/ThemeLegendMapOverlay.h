@@ -4,6 +4,7 @@
 @import UIKit;
 #import "CCodeLibrary/NVAlertView.h"
 #import "ThemeLegend.h"
+#import "CCodeLibrary/NVColorSet.h"
 
 @class ThemeLegendMapOverlay;
 
@@ -12,6 +13,9 @@
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
 - (void)themeLegendWasDraggedOffRightSide;
 - (void)themeLegendWasDraggedOffLeftSide;
+
+- (void)randomColorsSelectedWithOption:(NVColorOption)option
+                        forThemeLegend:(ThemeLegendMapOverlay *)legend;
 
 @end
 
@@ -22,6 +26,7 @@
 @property BOOL isExpanded;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) CGFloat rowHeight, width;
+@property NSUInteger currentColorPalette;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
@@ -29,5 +34,7 @@
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
                                tabBar:(UITabBar *)tabBar;
+
+- (void)displayRandomColorAlertInView:(UIView *)view;
 
 @end
