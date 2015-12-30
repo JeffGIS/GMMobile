@@ -51,7 +51,7 @@ extern int keepProcessing;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
-@property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation;
+@property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
 @property (nonatomic) GMSTileLayer *layer_png;
 @property (nonatomic) UIButton *compass;
@@ -70,6 +70,8 @@ extern int keepProcessing;
 @property (nonatomic) NSMutableSet *polylines;
 @property (nonatomic) UIScrollView *legendScrollView;
 @property (nonatomic) UIImageView *myLocationMarker;
+@property NSUInteger currentLegendTag;
+@property NVColorOption currentColorOption;
 
 @end
 
@@ -110,9 +112,9 @@ extern int keepProcessing;
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
-    _nVectorViews = 0,
+    _nVectorViews = _currentLegendTag = 0,
     _animateToLocation = YES;
-    _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = NO;
+    _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     
     _legendScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 236.0),
                                                                        statusBarHeight, 236.0,
@@ -2352,6 +2354,15 @@ haveVV:
                            
                            if([self.view viewWithTag:654321])
                                [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
+                           
+                           if (_displayRandomColorAlert)
+                           {
+                               self.tabBarController.tabBar.userInteractionEnabled = NO;
+                               ThemeLegendMapOverlay *tlmo = (ThemeLegendMapOverlay *)[self.view viewWithTag:_currentLegendTag];
+                               tlmo.currentColorPalette = _currentColorOption;
+                               [tlmo displayRandomColorAlertInView:self.view];
+                               _displayRandomColorAlert = NO;
+                           }
                        }
                    });
 }
@@ -2395,6 +2406,14 @@ haveVV:
                         [tlmos.tableView reloadData];
                     }
                 }
+            }
+            
+            if (_displayRandomColorAlert)
+            {
+                self.tabBarController.tabBar.userInteractionEnabled = NO;
+                ThemeLegendMapOverlay *tlmo = [self.view viewWithTag:_currentLegendTag];
+                [tlmo displayRandomColorAlertInView:self.view];
+                _displayRandomColorAlert = NO;
             }
             
             return;
@@ -2625,6 +2644,15 @@ haveVV:
                                               atZoom:_mapView.camera.zoom];
                          }];
     }
+}
+
+- (void)randomColorsSelectedWithOption:(NVColorOption)option
+                        forThemeLegend:(ThemeLegendMapOverlay *)legend
+{
+    _displayRandomColorAlert = YES;
+    _currentColorOption = option;
+    _currentLegendTag = legend.tag;
+    [self themeLegendDidChangeStatus:!legend.isExpanded];
 }
 
 - (void)setupTableView
