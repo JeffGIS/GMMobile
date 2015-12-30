@@ -19,7 +19,7 @@
 @end
 
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate,MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, weak) id <SettingsViewControllerDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
@@ -41,6 +41,7 @@
 - (IBAction)loadCurbRamps:(id)sender;
 - (IBAction)loadCrimeData:(id)sender;
 - (IBAction)compressDatabase:(id)sender;
+- (IBAction)emailFileList:(id)sender;
 
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 

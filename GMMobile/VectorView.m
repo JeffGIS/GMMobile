@@ -136,7 +136,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
              numLoops:(int)numLoops
           polyPartLen:polyPartLen
                points:pPoints];
-        
+        //[FileLister listFilesInDirectory:@"SHARED"
+        //                        outputTo:@""];
+
 
     }
 

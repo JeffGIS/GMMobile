@@ -980,6 +980,67 @@ didReturnTimeInterval:(NSString *)timeInterval
 #pragma unused(alert)
 }
 
+- (IBAction)emailFileList:(id)sender
+{
+    NSInteger totSize;
+    NSString *documentsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+
+    NSString *txtfile = [NSString stringWithFormat:@"%@/filelist.txt", documentsDir];
+
+    NSInteger nFiles = [FileLister listFilesInDirectory:@"ALL" outputTo:txtfile totalSize:&totSize];
+    if (MFMailComposeViewController.canSendMail)
+    {
+        MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
+        composer.mailComposeDelegate = self;
+        composer.subject = @"File list from GMMobile";
+        
+        [composer setMessageBody:[NSString stringWithFormat:@"%li files (%li bytes) included in list from %@",nFiles,totSize,UIDevice.currentDevice.name]
+                          isHTML:NO];
+        
+        [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
+        
+        [composer addAttachmentData:[NSData dataWithContentsOfFile:txtfile]
+                           mimeType:@"application/csvm+json"
+                           fileName:@"filelist.txt"];
+        
+        [self presentViewController:composer
+                           animated:YES
+                         completion:nil];
+    }
+    
+    else
+        NSLog(@"ERROR:No mail account setup on device.");
+}
+- (void)mailComposeController:(MFMailComposeViewController *)controller
+          didFinishWithResult:(MFMailComposeResult)result
+                        error:(NSError *)error
+{
+    switch (result)
+    {
+        case MFMailComposeResultCancelled:
+            NSLog(@"Mail cancelled");
+            break;
+            
+        case MFMailComposeResultSaved:
+            NSLog(@"Mail saved");
+            break;
+            
+        case MFMailComposeResultSent:
+            NSLog(@"Mail sent");
+            break;
+            
+        case MFMailComposeResultFailed:
+            NSLog(@"Mail sent failure:%@", error.localizedDescription);
+            break;
+            
+        default:
+            break;
+    }
+    
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
+}
+
 - (IBAction)goBack:(id)sender
 {
     [self dismissViewControllerAnimated:YES
