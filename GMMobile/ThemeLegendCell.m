@@ -5,7 +5,7 @@
 
 @implementation ThemeLegendCell
 
-+ (ThemeLegendCell *) createWithLabel:(NSString *)label
++ (ThemeLegendCell *)createWithLabel:(NSString *)label
 {
     ThemeLegendCell *class = [[ThemeLegendCell alloc] init];
     class.label = label;
@@ -20,7 +20,7 @@
         ii=1;
 }*/
 
--(id) copyWithZone: (NSZone *) zone
+- (id)copyWithZone:(NSZone *)zone
 {
     ThemeLegendCell *another = [[ThemeLegendCell allocWithZone: zone] init];
     
@@ -28,7 +28,7 @@
     another.symbolWidth = _symbolWidth;
     another.symbol = _symbol;
     another.status = _status;
-    another.symbolColor = [[UIColor alloc]initWithCGColor:_symbolColor.CGColor];
+    another.symbolColor = _symbolColor;
     another.label = [NSString stringWithString:_label];
     return  another;
 }

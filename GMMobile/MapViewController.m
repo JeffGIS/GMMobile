@@ -1937,6 +1937,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
     }
     
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
+            [alert willRotateWithDuration:duration];
+    }
+    
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
@@ -2158,6 +2164,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             isExpanded = YES;
     }
     
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
+            isExpanded = YES;
+    }
+    
     return isExpanded;
 }
 
@@ -2314,13 +2326,13 @@ haveVV:
                            for (GSSiDatePicker *datePicker in self.view.subviews)
                            {
                                if ([datePicker isKindOfClass:GSSiDatePicker.class])
-                                   [datePicker bringToFrontOfView:self.view];
+                                   [self.view bringSubviewToFront:datePicker];
                            }
                            
                            for (GSSiNotesView *notesView in self.view.subviews)
                            {
                                if ([notesView isKindOfClass:GSSiNotesView.class])
-                                   [notesView bringToFrontOfView:self.view];
+                                   [self.view bringSubviewToFront:notesView];
                            }
                            
                            if ([self.view.subviews containsObject:_popover])

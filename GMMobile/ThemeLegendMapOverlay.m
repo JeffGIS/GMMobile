@@ -4,6 +4,7 @@
 #import "ThemeLegendMapOverlay.h"
 #import "SymbolDictionary.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
+#import "CCodeLibrary/NVColorSet.h"
 
 @interface ThemeLegendMapOverlay ()
 
@@ -336,11 +337,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                   delegate:self
                                                                      title:@"Color Symbols Using\nThis Legend"
-                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
-                                                                             @"Blues", @"Rainbow", @"Custom"]
+                                                           buttonTextArray:NVColorSet.colorOptions
                                                           destructiveIndex:1];
                 
-                alert.identifier = @"ColorsAlert";
+                alert.identifier = @"ColorOptionsAlert";
             }
             
             else if (buttonIndex == 2)//Titles Option
@@ -367,13 +367,59 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [_tableView reloadData];
         }
         
-        else if ([alertView.identifier isEqualToString:@"ColorsAlert"])
+        else if ([alertView.identifier isEqualToString:@"ColorOptionsAlert"])
         {
+            switch (buttonIndex)
+            {
+                case NVColorOptionReds:
+                    break;
+                    
+                case NVColorOptionGreens:
+                    break;
+                    
+                case NVColorOptionBlues:
+                    break;
+                    
+                case NVColorOptionRandom:
+                {
+                    [alertView hideLargeAlertView:YES];
+                    
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Color Palette"
+                                                               buttonTextArray:NVColorSet.randomColorPaletteOptions
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"RandomColorAlert";
+                    return;
+                }
+                    break;
+                    
+                case NVColorOptionCustom:
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
+        {
+            NSArray *colorArray = [NVColorSet randomColorArrayOfType:buttonIndex
+                                                       numComponents:_legend.numCells];
             
+            for (int i = 0; i < _legend.numCells; i++)
+            {
+                ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[i];
+                tlc.symbolColor = (NVColor *)colorArray[i];
+            }
         }
     }
     
     [alertView hideLargeAlertView:YES];
+    
+    if (_delegate)
+        [_delegate themeLegendDidChangeStatus:YES];
     
     [UIView animateWithDuration:0.25
                      animations:^{
@@ -449,7 +495,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (!_isExpanded)
     {
-        UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 1024.0, 1024.0)];
+        CGRect bounds = UIScreen.mainScreen.bounds;
+        CGFloat longestSide = MAX(bounds.size.height, bounds.size.width);
+        
+        UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, longestSide, longestSide)];
         overlayView.backgroundColor = UIColor.blackColor;
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
