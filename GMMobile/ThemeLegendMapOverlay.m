@@ -389,12 +389,45 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             switch (buttonIndex)
             {
                 case NVColorOptionReds:
+                {
+                    NSArray *colorArray = [NVColorSet redsArrayWithNumComponents:_legend.numCells];
+                    
+                    for (int i = 0; i < _legend.numCells; i++)
+                    {
+                        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[i];
+                        tlc.symbolColor = (NVColor *)colorArray[i];
+                    }
+                    
+                    [_tableView reloadData];
+                }
                     break;
                     
                 case NVColorOptionGreens:
+                {
+                    NSArray *colorArray = [NVColorSet greensArrayWithNumComponents:_legend.numCells];
+                    
+                    for (int i = 0; i < _legend.numCells; i++)
+                    {
+                        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[i];
+                        tlc.symbolColor = (NVColor *)colorArray[i];
+                    }
+                    
+                    [_tableView reloadData];
+                }
                     break;
                     
                 case NVColorOptionBlues:
+                {
+                    NSArray *colorArray = [NVColorSet bluesArrayWithNumComponents:_legend.numCells];
+                    
+                    for (int i = 0; i < _legend.numCells; i++)
+                    {
+                        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[i];
+                        tlc.symbolColor = (NVColor *)colorArray[i];
+                    }
+                    
+                    [_tableView reloadData];
+                }
                     break;
                     
                 case NVColorOptionRandom:

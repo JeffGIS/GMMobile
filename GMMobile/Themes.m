@@ -29,7 +29,6 @@
             thm = [Theme createTheme:DepartmentTheme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:DayNightTheme];
-            thm.setColor = YES;
             [_themeList addObject:thm];
             
             thm = [Theme createTheme:YearTheme];
@@ -43,10 +42,8 @@
             break;
         case HCConfigCurbRamps:
             thm = [Theme createTheme:CurbRampIntersectionTheme];
-            thm.setColor = YES;
             [_themeList addObject:thm];
             thm = [Theme createTheme:CurbRampTheme];
-            thm.setColor = YES;
             [_themeList addObject:thm];
             break;
         default:
