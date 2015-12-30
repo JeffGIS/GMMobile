@@ -1827,7 +1827,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self updateLegendPositions];
+    if (![self legendIsExpanded])
+        [self updateLegendPositions];
     
     if (!_tableView.hidden)
         [_tableView reloadData];
@@ -1937,12 +1938,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                          toInterfaceOrientation:toInterfaceOrientation
                                    tabBarHeight:_tabBarHeight];
         }
-    }
-    
-    for (NVAlertView *alert in self.view.subviews)
-    {
-        if ([alert isKindOfClass:NVAlertView.class])
-            [alert willRotateWithDuration:duration];
     }
     
     if (!_compass.hidden)
@@ -2143,6 +2138,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                      }];
                 }
             }
+        }
+    }
+    
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
+        {
+            [self.view bringSubviewToFront:alert];
+            [alert willRotateWithDuration:duration];
         }
     }
 }
