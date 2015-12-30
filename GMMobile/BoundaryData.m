@@ -128,14 +128,12 @@ extern int keepProcessing;
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int numPoints, numLoops;
-    PropertyData * pd = [[PropertyData alloc] init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
-    
-    BOOL pdopened = [pd open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -149,7 +147,7 @@ extern int keepProcessing;
                      refno];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -200,8 +198,8 @@ extern int keepProcessing;
         }
     }
  
-    SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close:pdopened];
+    SQLOK(sqlite3_finalize(statement), _database);
+    [self close:opened];
 }
 
 - (void)drawBoundary:(CGContextRef)context
