@@ -20,6 +20,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/HelpWebView.h"
 #import "Destinations.h"
 #import "CCodeLibrary/IntersectionsDatabase.h"
+#import "CCodeLibrary/NVColorSet.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -610,6 +611,11 @@ extern int keepProcessing;
         _mapToolbar.hidden = NO;
         _compass.hidden = NO;
     }
+    
+    NSArray *colorArray = [NVColorSet randomColorArrayOfType:NVColorTypeMedium
+                                               numComponents:12];
+    
+    NSLog(@"%@", colorArray);
 }
 
 - (void)updateCompassPosition
