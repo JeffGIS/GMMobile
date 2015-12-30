@@ -321,6 +321,9 @@ viewForHeaderInSection:(NSInteger)section
                                               destructiveIndex:1];
     
     alert.identifier = @"TopLevelAlert";
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+        [_delegate clearVectorView];
 }
 
 - (void)displayRandomColorAlertInView:(UIView *)view
@@ -337,6 +340,9 @@ viewForHeaderInSection:(NSInteger)section
     alert.layer.borderWidth = 2.0;
     alert.buttonBorderColor = UIColor.grayColor;
     alert.identifier = @"RandomColorConfirmation";
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+        [_delegate clearVectorView];
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -578,6 +584,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (!_isExpanded)
     {
+        if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+            [_delegate clearVectorView];
+        
         CGRect bounds = UIScreen.mainScreen.bounds;
         CGFloat longestSide = MAX(bounds.size.height, bounds.size.width);
         
