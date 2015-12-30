@@ -308,7 +308,9 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
-    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
+    
     
     if (_legend.titles.count > 1)
         [textArray addObject:@"Select Legend Title"];
@@ -355,18 +357,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             [alertView hideLargeAlertView:YES];
             
-            if (buttonIndex == 1)//Colors Option
+            if (buttonIndex == 1)//Apply Existing Colors
+            {
+                
+            }
+            
+            if (buttonIndex == 2)//Select Colors Option
             {
                 NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                   delegate:self
-                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                                     title:@"Select Color Scheme"
                                                            buttonTextArray:NVColorSet.colorOptions
                                                           destructiveIndex:1];
                 
                 alert.identifier = @"ColorOptionsAlert";
             }
             
-            else if (buttonIndex == 2)//Titles Option
+            else if (buttonIndex == 3)//Titles Option
             {
                 NSMutableArray *textArray = NSMutableArray.array;
                 [textArray addObject:@"Cancel"];

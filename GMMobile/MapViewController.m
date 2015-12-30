@@ -2368,6 +2368,27 @@ haveVV:
                                _displayRandomColorAlert = NO;
                            }
                        }
+                       
+                       if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+                       {
+                           if (!_legendsAreOffMap)
+                           {
+                               for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+                               {
+                                   if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                                   {
+                                       [self.view bringSubviewToFront:tlmos];
+                                   }
+                               }
+                           }
+                       }
+                       
+                       for (NVAlertView *alert in self.view.subviews)
+                       {
+                           if ([alert isKindOfClass:NVAlertView.class])
+                               [self.view bringSubviewToFront:alert];
+                       }
                    });
 }
 
