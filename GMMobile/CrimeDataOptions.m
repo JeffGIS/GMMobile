@@ -220,6 +220,7 @@ didReturnFromDate:(NSInteger)fromDate
     [self updateButton:_areaTypeButton];
     [self updateButton:_legendButton];
     [self updateButton:_modeButton];
+    [self updateButton:_dateRangeButton];
 }
 
 - (IBAction)areaType:(UIButton *)sender
