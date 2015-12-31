@@ -11,13 +11,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *dateRangeButton;
 @property (weak, nonatomic) IBOutlet UIButton *areaTypeButton;
 @property (weak, nonatomic) IBOutlet UIButton *legendButton;
+@property (weak, nonatomic) IBOutlet UIButton *modeButton;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
-@property (nonatomic) NSArray *legends, *areaTypes;
-@property NSInteger selectedAreaType, selectedLegend;
+@property (nonatomic) NSArray *legends, *areaTypes, *modes;
+@property NSInteger selectedAreaType, selectedLegend, selectedMode;
 
 @end
 
@@ -28,7 +29,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _selectedAreaType = 0, _selectedLegend = 0;
+    _selectedAreaType = _selectedLegend = _selectedMode = 0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -64,20 +65,34 @@
                  @"Auto Theft/Recovery", @"Luring Related Offenses", @"Animal Related Offenses",
                  @"Bike Theft", @"Phone Theft", @"Crisis Related"];
     
+    _modes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals",
+               @"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare", @"Hotspot Map for Month with Monthly Compare",
+               @"Hotspot Map for Week with Weekly Compare", @"Basic Choropleth Map for Wards", @"Choropleth Map for Wards by Year",
+               @"Choropleth Map for Wards by Month", @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",
+               @"Choropleth Map for Sectors by Month", @"Basic Choropleth Map for Neighborhoods",
+               @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+    
+    _modeButton.selected = YES;
+    _areaTypeButton.selected = NO;
+    _legendButton.selected = NO;
+    _dateRangeButton.selected = NO;
+    
     [self setupButton:_dateRangeButton];
     [self setupButton:_areaTypeButton];
     [self setupButton:_legendButton];
+    [self setupButton:_modeButton];
     
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
     
-    [_areaTypeButton setTitle:_areaTypes[_selectedAreaType]
+    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _areaTypes[_selectedAreaType]]
                      forState:UIControlStateNormal];
     
-    [_legendButton setTitle:_legends[_selectedLegend]
+    [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _legends[_selectedLegend]]
                    forState:UIControlStateNormal];
     
-    _legendButton.selected = YES;
+    [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _modes[_selectedMode]]
+                 forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
                                                          [NSBundle.mainBundle pathForResource:@"checkmark"
@@ -106,7 +121,7 @@
 
 - (void)setupButton:(UIButton *)button
 {
-    button.backgroundColor = UIColor.blackColor;
+    [self updateButton:button];
     
     [button setTitleColor:UIColor.whiteColor
                  forState:UIControlStateNormal];
@@ -114,11 +129,14 @@
     [button setTitleColor:UIColor.grayColor
                  forState:UIControlStateHighlighted];
     
-    [button setTitleColor:UIColor.whiteColor
-                 forState:UIControlStateSelected];
-    
     [button setTitleColor:UIColor.grayColor
                  forState:(UIControlStateHighlighted|UIControlStateSelected)];
+    
+    [button setTitleColor:UIColor.blackColor
+                 forState:UIControlStateSelected];
+    
+    [button setTitleColor:UIColor.blackColor
+                 forState:UIControlStateDisabled];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         button.titleLabel.font = [UIFont boldSystemFontOfSize:22.0];
@@ -126,7 +144,6 @@
     else
         button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
     
-    button.titleLabel.numberOfLines = 2;
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.layer.cornerRadius = _cornerRadius;
@@ -135,12 +152,27 @@
     button.contentEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
 }
 
+- (void)updateButton:(UIButton *)button
+{
+    if (button.enabled)
+    {
+        if (button.selected)
+            button.backgroundColor = UIColor.whiteColor;
+        
+        else
+            button.backgroundColor = UIColor.blackColor;
+    }
+    
+    else
+        button.backgroundColor = UIColor.grayColor;
+}
+
 - (void)setupTableView
 {
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = UIColor.grayColor;
-    _tableView.bounces = NO;
+    _tableView.bounces = YES;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.layer.borderWidth = (_cornerRadius / 4.0);
     _tableView.layer.cornerRadius = _cornerRadius;
@@ -179,8 +211,15 @@ didReturnFromDate:(NSInteger)fromDate
     NSString *fromString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:fromDate]];
     NSString *toString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:toDate]];
     
-    [_dateRangeButton setTitle:[NSString stringWithFormat:@"%@-%@", fromString, toString]
+    [_dateRangeButton setTitle:[NSString stringWithFormat:@"Date Range:%@-%@", fromString, toString]
                       forState:UIControlStateNormal];
+}
+
+- (void)updateButtons
+{
+    [self updateButton:_areaTypeButton];
+    [self updateButton:_legendButton];
+    [self updateButton:_modeButton];
 }
 
 - (IBAction)areaType:(UIButton *)sender
@@ -189,6 +228,9 @@ didReturnFromDate:(NSInteger)fromDate
     {
         _areaTypeButton.selected = YES;
         _legendButton.selected = NO;
+        _modeButton.selected = NO;
+        
+        [self updateButtons];
         [_tableView reloadData];
     }
 }
@@ -199,6 +241,22 @@ didReturnFromDate:(NSInteger)fromDate
     {
         _legendButton.selected = YES;
         _areaTypeButton.selected = NO;
+        _modeButton.selected = NO;
+        
+        [self updateButtons];
+        [_tableView reloadData];
+    }
+}
+
+- (IBAction)mode:(id)sender
+{
+    if (!_modeButton.selected)
+    {
+        _modeButton.selected = YES;
+        _areaTypeButton.selected = NO;
+        _legendButton.selected = NO;
+        
+        [self updateButtons];
         [_tableView reloadData];
     }
 }
@@ -209,8 +267,11 @@ didReturnFromDate:(NSInteger)fromDate
     if (_areaTypeButton.selected)
         return _areaTypes.count;
     
-    else
+    else if (_legendButton.selected)
         return _legends.count;
+    
+    else
+        return _modes.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView
@@ -242,10 +303,13 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.textAlignment = NSTextAlignmentCenter;
     
     if (_areaTypeButton.selected)
-        headerLabel.text = @"Select Area Type";
+        headerLabel.text = @"Select Bounding Area";
+    
+    else if (_legendButton.selected)
+        headerLabel.text = @"Select Legend";
     
     else
-        headerLabel.text = @"Select Legend";
+        headerLabel.text = @"Select Mode";
     
     [headerView addSubview:headerLabel];
     
@@ -275,11 +339,22 @@ viewForHeaderInSection:(NSInteger)section
             cell.accessoryView = nil;
     }
     
-    else
+    else if (_legendButton.selected)
     {
         cell.textLabel.text = _legends[indexPath.row];
         
         if (indexPath.row == _selectedLegend)
+            cell.accessoryView = _checkmarkView;
+        
+        else
+            cell.accessoryView = nil;
+    }
+    
+    else
+    {
+        cell.textLabel.text = _modes[indexPath.row];
+        
+        if (indexPath.row == _selectedMode)
             cell.accessoryView = _checkmarkView;
         
         else
@@ -291,7 +366,6 @@ viewForHeaderInSection:(NSInteger)section
     cell.userInteractionEnabled = YES;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.font = _font;
-    
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     
@@ -305,16 +379,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _selectedAreaType = indexPath.row;
         
-        [_areaTypeButton setTitle:_areaTypes[_selectedAreaType]
+        [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _areaTypes[_selectedAreaType]]
                          forState:UIControlStateNormal];
+    }
+    
+    else if (_legendButton.selected)
+    {
+        _selectedLegend = indexPath.row;
+        
+        [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _legends[_selectedLegend]]
+                       forState:UIControlStateNormal];
     }
     
     else
     {
-        _selectedLegend = indexPath.row;
+        _selectedMode = indexPath.row;
         
-        [_legendButton setTitle:_legends[_selectedLegend]
-                       forState:UIControlStateNormal];
+        [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _modes[_selectedMode]]
+                     forState:UIControlStateNormal];
     }
     
     [_tableView reloadData];
