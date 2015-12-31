@@ -102,7 +102,7 @@
 {
     tableView.delegate = self;
     tableView.dataSource = self;
-    tableView.backgroundColor = UIColor.whiteColor;
+    tableView.backgroundColor = UIColor.grayColor;
     tableView.bounces = NO;
     tableView.layer.borderColor = UIColor.blackColor.CGColor;
     tableView.layer.borderWidth = (_cornerRadius / 4.0);

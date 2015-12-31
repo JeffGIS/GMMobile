@@ -319,7 +319,7 @@
 {
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    _tableView.backgroundColor = UIColor.whiteColor;
+    _tableView.backgroundColor = UIColor.grayColor;
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.layer.borderWidth = (_cornerRadius / 4.0);
