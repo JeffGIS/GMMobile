@@ -6,6 +6,7 @@
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 #import "MapViewController.h"
+#import "CCodeLibrary/UserDefaults.h"
 
 @interface CrimeOptions2 ()
 
@@ -22,7 +23,7 @@
 @property (nonatomic) MapViewController *mapVC;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
-@property NSUInteger currentRow;
+@property NSUInteger currentRow, currentColorPalette;
 
 @end
 
@@ -36,6 +37,7 @@
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;
     _dragSelectActive = _preventRefresh = _firstTimeDrag = NO;
+    _currentRow = _currentColorPalette = 0;
     
     _firstLegend = 2;
     _tv5.tag = (_firstLegend + 1);
@@ -356,7 +358,9 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
-    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
+    
     
     if (tl.titles.count > 1)
         [textArray addObject:@"Select Legend Title"];
@@ -368,35 +372,40 @@ viewForHeaderInSection:(NSInteger)section
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
     
-    alert.tag = button.tag;
     alert.identifier = @"TopLevelAlert";
+    alert.tag = button.tag;
 }
 
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    ThemeLegend *tl = _legends[(alertView.tag / 333) - 1];
+    NSUInteger index = ((alertView.tag / 333) - 1);
+    ThemeLegend *tl = (ThemeLegend *)_legends[index];
+    
+    [alertView hideLargeAlertView:YES];
     
     if (buttonIndex > 0)
     {
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
         {
-            [alertView hideLargeAlertView:YES];
+            if (buttonIndex == 1)//Apply Existing Colors
+            {
+                
+            }
             
-            if (buttonIndex == 1)//Colors Option
+            if (buttonIndex == 2)//Select Colors Option
             {
                 NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                   delegate:self
-                                                                     title:@"Color Symbols Using\nThis Legend"
-                                                           buttonTextArray:@[@"Cancel", @"Reds", @"Greens",
-                                                                             @"Blues", @"Rainbow", @"Custom"]
+                                                                     title:@"Select Color Scheme"
+                                                           buttonTextArray:NVColorSet.colorOptions
                                                           destructiveIndex:1];
                 
+                alert.identifier = @"ColorOptionsAlert";
                 alert.tag = alertView.tag;
-                alert.identifier = @"ColorsAlert";
             }
             
-            else if (buttonIndex == 2)//Titles Option
+            else if (buttonIndex == 3)//Titles Option
             {
                 NSMutableArray *textArray = NSMutableArray.array;
                 [textArray addObject:@"Cancel"];
@@ -408,8 +417,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                            buttonTextArray:textArray
                                                           destructiveIndex:1];
                 
-                alert.tag = alertView.tag;
                 alert.identifier = @"TitlesAlert";
+                alert.tag = alertView.tag;
             }
             
             return;
@@ -421,13 +430,107 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [self reloadTableViews];
         }
         
-        else if ([alertView.identifier isEqualToString:@"ColorsAlert"])
+        else if ([alertView.identifier isEqualToString:@"ColorOptionsAlert"])
+        {
+            switch (buttonIndex)
+            {
+                case NVColorOptionReds:
+                {
+                    NSArray *colorArray = [NVColorSet redsArrayWithNumComponents:tl.numCells];
+                    
+                    for (int i = 0; i < tl.numCells; i++)
+                    {
+                        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[i];
+                        tlc.symbolColor = (NVColor *)colorArray[i];
+                    }
+                    
+                    [self reloadTableViews];
+                }
+                    break;
+                    
+                case NVColorOptionGreens:
+                {
+                    NSArray *colorArray = [NVColorSet greensArrayWithNumComponents:tl.numCells];
+                    
+                    for (int i = 0; i < tl.numCells; i++)
+                    {
+                        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[i];
+                        tlc.symbolColor = (NVColor *)colorArray[i];
+                    }
+                    
+                    [self reloadTableViews];
+                }
+                    break;
+                    
+                case NVColorOptionBlues:
+                {
+                    NSArray *colorArray = [NVColorSet bluesArrayWithNumComponents:tl.numCells];
+                    
+                    for (int i = 0; i < tl.numCells; i++)
+                    {
+                        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[i];
+                        tlc.symbolColor = (NVColor *)colorArray[i];
+                    }
+                    
+                    [self reloadTableViews];
+                }
+                    break;
+                    
+                case NVColorOptionRandom:
+                {
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Color Palette"
+                                                               buttonTextArray:NVColorSet.randomColorPaletteOptions
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"RandomColorAlert";
+                    alert.tag = alertView.tag;
+                    return;
+                }
+                    break;
+                    
+                case NVColorOptionCustom:
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        
+        else if ([alertView.identifier isEqualToString:@"RandomColorAlert"] ||
+                 [alertView.identifier isEqualToString:@"RandomColorConfirmation"])
         {
             
+            if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
+                _currentColorPalette = buttonIndex;
+            
+            NSArray *colorArray = [NVColorSet randomColorArrayOfType:_currentColorPalette
+                                                       numComponents:tl.numCells];
+            
+            for (int i = 0; i < tl.numCells; i++)
+            {
+                ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[i];
+                tlc.symbolColor = (NVColor *)colorArray[i];
+            }
+            
+            [self reloadTableViews];
+            
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"Confirm Random Color Selection"
+                                                       buttonTextArray:@[@"OK", @"Try Again"]
+                                                      destructiveIndex:0];
+            
+            alert.overlayView.backgroundColor = UIColor.clearColor;
+            alert.backgroundColor = NVColor.gainsboroColor;
+            alert.layer.borderColor = UIColor.blackColor.CGColor;
+            alert.layer.borderWidth = 2.0;
+            alert.buttonBorderColor = UIColor.grayColor;
+            alert.identifier = @"RandomColorConfirmation";
+            alert.tag = alertView.tag;
         }
     }
-    
-    [alertView hideLargeAlertView:YES];
     
     [UIView animateWithDuration:0.25
                      animations:^{
