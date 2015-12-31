@@ -11,7 +11,7 @@
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
-@property (nonatomic) CGRect previousFrame;
+@property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
 @property NSUInteger currentRow;
@@ -36,7 +36,7 @@
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
-    tlmo.previousFrame = CGRectZero;
+    tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
     tlmo.currentRow = tlmo.currentColorPalette = 0;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
@@ -604,7 +604,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGSize superSize = self.superview.frame.size;
-        CGFloat scrollOffset = 0.0, contentOffset = 0.0;
+        CGFloat contentOffset = 0.0;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -615,11 +615,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [legendScroll.superview addSubview:overlayView];
                 [legendScroll.superview bringSubviewToFront:self.superview];
                 [legendScroll bringSubviewToFront:self];
-                legendScroll.backgroundColor = UIColor.darkGrayColor;
                 legendScroll.scrollEnabled = NO;
+                _previousScrollFrame = legendScroll.frame;
                 
                 superSize = legendScroll.superview.frame.size;
-                scrollOffset = legendScroll.frame.origin.x;
                 contentOffset = (legendScroll.contentOffset.y - statusBarHeight);
             }
         }
@@ -651,7 +650,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              _tabBar.alpha = 0.3;
                              dragButton.alpha = 0.0;
                              
-                             self.frame = CGRectMake(((superSize.width * 0.1) - scrollOffset),
+                             if ([self.superview isKindOfClass:UIScrollView.class])
+                             {
+                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
+                                 legendScroll.frame = overlayView.frame;
+                                 
+                                 legendScroll.center = CGPointMake(legendScroll.center.x,
+                                                                   (legendScroll.superview.center.y + (_tabBar.frame.size.height / 2.0)));
+                             }
+                             
+                             self.frame = CGRectMake((superSize.width * 0.1),
                                                      ((((superSize.height - height) + statusBarHeight) / 2.0) + contentOffset),
                                                      (superSize.width * 0.8), height);
                              
@@ -695,11 +703,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              _tabBar.alpha = 1.0;
                              
                              if ([self.superview isKindOfClass:UIScrollView.class])
+                             {
+                                 self.superview.frame =
+                                 CGRectMake((self.superview.superview.frame.size.width - _previousScrollFrame.size.width),
+                                 _previousScrollFrame.origin.y, _previousScrollFrame.size.width,
+                                 self.superview.superview.frame.size.height);
+                                 
                                  self.frame = _previousFrame;
+                             }
                              
                              else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                                       UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                              {
+                                 
+                                 
                                  self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
                                                          _legend.landscapeMapOrigin.y,
                                                          _previousFrame.size.width,
@@ -731,7 +748,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
                                  UIScrollView *legendScroll = (UIScrollView *)self.superview;
-                                 legendScroll.backgroundColor = UIColor.lightGrayColor;
                                  legendScroll.scrollEnabled = YES;
                              }
                              

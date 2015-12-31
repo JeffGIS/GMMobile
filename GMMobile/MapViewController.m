@@ -122,6 +122,7 @@ extern int keepProcessing;
                          
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
     _legendScrollView.clipsToBounds = NO;
+    _legendScrollView.alpha = 0.0;
     [self.view addSubview:_legendScrollView];
     
     _polylines = [[NSMutableSet alloc] init];
@@ -2057,21 +2058,27 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
         CGFloat xOrigin = (viewWidth - scrollWidth);
-        CGFloat xCenter = ((viewWidth / 2.0) - xOrigin);
         CGFloat contentOffset = (_legendScrollView.contentOffset.y - statusBarHeight);
-        
-        if ([self.view.subviews containsObject:_legendScrollView])
-        {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 _legendScrollView.frame =
-                                 CGRectMake(xOrigin, statusBarHeight, scrollWidth,
-                                            ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
-                             }];
-        }
         
         if (_legendsAreOffMap)
         {
+            if ([self.view.subviews containsObject:_legendScrollView] && ![self legendIsExpanded])
+            {
+                [UIView animateWithDuration:duration
+                                 animations:^{
+                                     
+                                     if (![self legendIsExpanded])
+                                     {
+                                         _legendScrollView.frame =
+                                         CGRectMake(xOrigin, statusBarHeight, scrollWidth,
+                                                    ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
+                                     }
+                                     
+                                     else
+                                         _legendScrollView.center = self.view.center;
+                                 }];
+            }
+            
             for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
             {
                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
@@ -2085,7 +2092,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                              tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
                                                                       (viewWidth * 0.8), legendHeight);
                                              
-                                             tlmos.center = CGPointMake(xCenter, (_legendScrollView.center.y + contentOffset));
+                                             tlmos.center = CGPointMake((viewWidth / 2.0), (self.view.frame.size.width / 2.0) + contentOffset);
                                              tlmos.tableView.frame = tlmos.bounds;
                                          } completion:^(BOOL finished) {
                                              [tlmos.tableView reloadData];
@@ -2634,6 +2641,7 @@ haveVV:
         _mapViewLegendOffset = _legendScrollView.frame.size.width;
         CGRect frame = _mapView.frame;
         frame.size.width -= _mapViewLegendOffset;
+        _legendScrollView.alpha = 1.0;
         _vectorView.hidden = _legendsAreOffMap = YES;
         [self updateLegendPositions];
         
@@ -2656,6 +2664,7 @@ haveVV:
         
         _mapViewLegendOffset = 0.0;
         _vectorView.hidden = YES;
+        _legendScrollView.alpha = 0.0;
         _legendsAreOffMap = NO;
         [self updateLegendPositions];
         
