@@ -666,12 +666,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     UIImageView *barView = [[UIImageView alloc] initWithFrame:
                             CGRectMake(barMargin, (rowHeight * 0.15), barWidth, (rowHeight * 0.7))];
     
-    if (tl.useClassColors)
-        barView.image = [UIImage imageFromColor:tlc.symbolColor];
-    
-    else
-        barView.image = [UIImage imageFromColor:tl.symbolDefaultColor];
-    
+    barView.image = [UIImage imageFromColor:tlc.symbolColor];
     barView.layer.borderColor = UIColor.blackColor.CGColor;
     barView.layer.borderWidth = 1.0;
     barView.tag = 777;
