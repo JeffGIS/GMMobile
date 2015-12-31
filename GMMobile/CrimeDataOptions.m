@@ -4,6 +4,7 @@
 #import "CrimeDataOptions.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
+#import "CCodeLibrary/NVAlertView.h"
 
 @interface CrimeDataOptions ()
 
@@ -323,6 +324,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
+    
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
+        {
+            [self.view bringSubviewToFront:alert];
+            [alert willRotateWithDuration:duration];
+        }
+    }
 }
 
 - (NSString *)formattedDate:(NSDate *)date

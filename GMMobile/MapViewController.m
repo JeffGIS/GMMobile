@@ -3,12 +3,6 @@
 
 extern int keepProcessing;
 
-#define CENSUS_ZOOM_ALERT 1
-#define DELETE_WALL_ALERT 2
-#define PARCEL_TEXT_ALERT 3
-#define PARCEL_COLOR_ALERT 4
-#define EDIT_INTERSECTION_STATUS 5
-
 #import "MapViewController.h"
 #import "WebKitViewController.h"
 #import "AppDelegate.h"
@@ -1666,7 +1660,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                              title:[NSString stringWithFormat:@"Error getting plat file:%@", statusString]
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
+        
+        alert.tabBar = self.tabBarController.tabBar;
     }
 
 }
@@ -3030,7 +3025,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                      title:@"Polyline Data File Write ERROR"
                                                            buttonTextArray:@[@"OK"]
                                                           destructiveIndex:0];
-#pragma unused(alert)
+                
+                alert.tabBar = self.tabBarController.tabBar;
+                alert.identifier = @"PolylineDataFileWriteError";
             }
             
             else
@@ -3077,7 +3074,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                  title:@"Polygon Data File Write ERROR"
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:0];
-#pragma unused(alert)
+            
+            alert.tabBar = self.tabBarController.tabBar;
+            alert.identifier = @"PolygonDataFileWriteError";
         }
         
         else
@@ -3368,7 +3367,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
                                               destructiveIndex:0];
     
-    alert.tag = CENSUS_ZOOM_ALERT;
+    alert.tabBar = self.tabBarController.tabBar;
+    alert.identifier = @"CensusZoomAlert";
 }
 
 - (void)selectParcelText
@@ -3381,7 +3381,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Owner/Total Tax", @"Building Number",@"Land EMV", @"Land EMV per Acre"]
                                               destructiveIndex:0];
     
-    alert.tag = PARCEL_TEXT_ALERT;
+    alert.tabBar = self.tabBarController.tabBar;
+    alert.identifier = @"ParcelTextAlert";
 }
 
 - (void)addToPropList
@@ -3425,7 +3426,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              title:@"GMMobile cannot launch Flyover App"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
+        
+        alert.tabBar = self.tabBarController.tabBar;
+        alert.identifier = @"CannotLaunchFlyoverApp";
     }
 }
 
@@ -3533,7 +3536,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"YES", @"NO"]
                                               destructiveIndex:1];
     
-    alert.tag = DELETE_WALL_ALERT;
+    alert.tabBar = self.tabBarController.tabBar;
+    alert.identifier = @"DeleteWallAlert";
     [self deselectTableViewRow];
 }
 
@@ -3588,7 +3592,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              title:@"GMMobile cannot launch CRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
+        
+        alert.tabBar = self.tabBarController.tabBar;
+        alert.identifier = @"CannotLaunchCRISDetail";
     }
 }
 
@@ -3601,7 +3607,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                  @"Scheduled for Rebuild", @"Built", @"Resurveyed"]
                                               destructiveIndex:0];
     
-    alert.tag = EDIT_INTERSECTION_STATUS;
+    alert.tabBar = self.tabBarController.tabBar;
+    alert.identifier = @"EditIntersectionStatus";
     [self deselectTableViewRow];
 }
 
@@ -3753,7 +3760,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [alertView hideLargeAlertView:YES];
     
-    if (alertView.tag == DELETE_WALL_ALERT)//delete wall point
+    if ([alertView.identifier isEqualToString:@"DeleteWallAlert"])
     {
         if (buttonIndex == 0)
         {
@@ -3770,7 +3777,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
     
-    else if (alertView.tag == CENSUS_ZOOM_ALERT)
+    else if ([alertView.identifier isEqualToString:@"CensusZoomAlert"])
     {
         switch (buttonIndex)
         {
@@ -3794,7 +3801,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 break;
         }
     }
-    else if (alertView.tag == PARCEL_TEXT_ALERT)
+    
+    else if ([alertView.identifier isEqualToString:@"ParcelTextAlert"])
     {
         switch (buttonIndex)
         {
@@ -3816,7 +3824,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
 
-    else if (alertView.tag == EDIT_INTERSECTION_STATUS)
+    else if ([alertView.identifier isEqualToString:@"EditIntersectionStatus"])
     {
         if (buttonIndex > 0)
         {
@@ -4165,6 +4173,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                         buttonTextArray:@[@"OK"]
                                                        destructiveIndex:0];
              alert.tag = 888;
+             alert.tabBar = self.tabBarController.tabBar;
          }
          
          else
@@ -4313,6 +4322,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         alert.tag = 888;
+        alert.tabBar = self.tabBarController.tabBar;
     }
 }
 
@@ -4328,6 +4338,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         alert.tag = 999;
+        alert.tabBar = self.tabBarController.tabBar;
     }
 }
 */
@@ -5181,7 +5192,8 @@ didFindMatchBetweenNote:(NSString *)note
                                                          title:[NSString stringWithFormat:@"List already contains %@", itemInList]
                                                buttonTextArray:@[@"Cancel", text1, text2]
                                               destructiveIndex:0];
-#pragma unused(alert)
+    
+    alert.tabBar = self.tabBarController.tabBar;
 }
 
 - (NSArray *)arrayOfPickableNotesItemsForNotesView:(GSSiNotesView *)notesView
@@ -5206,7 +5218,8 @@ didFindMatchBetweenNote:(NSString *)note
                                                              title:@"GMMobile cannot launch Alley Wall Inventory"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
+        
+        alert.tabBar = self.tabBarController.tabBar;
     }
 }
 
