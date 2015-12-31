@@ -1660,8 +1660,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                              title:[NSString stringWithFormat:@"Error getting plat file:%@", statusString]
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-        
-        alert.tabBar = self.tabBarController.tabBar;
+#pragma unused(alert)
     }
 
 }
@@ -1716,7 +1715,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (_secondView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_secondView];
     
-    if (![self legendIsExpanded])
+    if (![self legendIsExpanded] && ![self alertVisible])
     {
         [self.view bringSubviewToFront:_mapToolbar];
         [self.view bringSubviewToFront:_compass];
@@ -1801,7 +1800,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if (!_firstTimeMap)
     {
-        if (![self legendIsExpanded])
+        if (![self legendIsExpanded] && ![self alertVisible])
         {
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:position.zoom];
@@ -1823,7 +1822,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    if (![self legendIsExpanded])
+    if (![self legendIsExpanded] && ![self alertVisible])
         [self updateLegendPositions];
     
     if (!_tableView.hidden)
@@ -2057,20 +2056,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
         if (_legendsAreOffMap)
         {
-            if ([self.view.subviews containsObject:_legendScrollView] && ![self legendIsExpanded])
+            if ([self.view.subviews containsObject:_legendScrollView])
             {
+                if (![self legendIsExpanded])
+                
                 [UIView animateWithDuration:duration
                                  animations:^{
-                                     
-                                     if (![self legendIsExpanded])
-                                     {
-                                         _legendScrollView.frame =
-                                         CGRectMake(xOrigin, statusBarHeight, scrollWidth,
-                                                    ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
-                                     }
-                                     
-                                     else
-                                         _legendScrollView.center = self.view.center;
+                                     _legendScrollView.frame =
+                                     CGRectMake(xOrigin, statusBarHeight, scrollWidth,
+                                                ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
                                  }];
             }
             
@@ -2172,13 +2166,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             isExpanded = YES;
     }
     
+    return isExpanded;
+}
+
+- (BOOL)alertVisible
+{
+    BOOL alertVisible = NO;
+    
     for (NVAlertView *alert in self.view.subviews)
     {
         if ([alert isKindOfClass:NVAlertView.class])
-            isExpanded = YES;
+            alertVisible = YES;
     }
     
-    return isExpanded;
+    return alertVisible;
 }
 
 - (void)allocateVectorView
@@ -3026,7 +3027,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                            buttonTextArray:@[@"OK"]
                                                           destructiveIndex:0];
                 
-                alert.tabBar = self.tabBarController.tabBar;
                 alert.identifier = @"PolylineDataFileWriteError";
             }
             
@@ -3075,7 +3075,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:0];
             
-            alert.tabBar = self.tabBarController.tabBar;
             alert.identifier = @"PolygonDataFileWriteError";
         }
         
@@ -3367,7 +3366,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
                                               destructiveIndex:0];
     
-    alert.tabBar = self.tabBarController.tabBar;
     alert.identifier = @"CensusZoomAlert";
 }
 
@@ -3381,7 +3379,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Owner/Total Tax", @"Building Number",@"Land EMV", @"Land EMV per Acre"]
                                               destructiveIndex:0];
     
-    alert.tabBar = self.tabBarController.tabBar;
     alert.identifier = @"ParcelTextAlert";
 }
 
@@ -3427,7 +3424,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         
-        alert.tabBar = self.tabBarController.tabBar;
         alert.identifier = @"CannotLaunchFlyoverApp";
     }
 }
@@ -3536,7 +3532,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"YES", @"NO"]
                                               destructiveIndex:1];
     
-    alert.tabBar = self.tabBarController.tabBar;
     alert.identifier = @"DeleteWallAlert";
     [self deselectTableViewRow];
 }
@@ -3593,7 +3588,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         
-        alert.tabBar = self.tabBarController.tabBar;
         alert.identifier = @"CannotLaunchCRISDetail";
     }
 }
@@ -3607,7 +3601,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                  @"Scheduled for Rebuild", @"Built", @"Resurveyed"]
                                               destructiveIndex:0];
     
-    alert.tabBar = self.tabBarController.tabBar;
     alert.identifier = @"EditIntersectionStatus";
     [self deselectTableViewRow];
 }
@@ -4173,7 +4166,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                         buttonTextArray:@[@"OK"]
                                                        destructiveIndex:0];
              alert.tag = 888;
-             alert.tabBar = self.tabBarController.tabBar;
          }
          
          else
@@ -5192,8 +5184,7 @@ didFindMatchBetweenNote:(NSString *)note
                                                          title:[NSString stringWithFormat:@"List already contains %@", itemInList]
                                                buttonTextArray:@[@"Cancel", text1, text2]
                                               destructiveIndex:0];
-    
-    alert.tabBar = self.tabBarController.tabBar;
+#pragma unused(alert)
 }
 
 - (NSArray *)arrayOfPickableNotesItemsForNotesView:(GSSiNotesView *)notesView
@@ -5218,8 +5209,7 @@ didFindMatchBetweenNote:(NSString *)note
                                                              title:@"GMMobile cannot launch Alley Wall Inventory"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-        
-        alert.tabBar = self.tabBarController.tabBar;
+#pragma unused(alert)
     }
 }
 

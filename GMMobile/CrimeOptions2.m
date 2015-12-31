@@ -374,7 +374,6 @@ viewForHeaderInSection:(NSInteger)section
     
     alert.identifier = @"TopLevelAlert";
     alert.tag = button.tag;
-    alert.tabBar = self.tabBarController.tabBar;
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -404,7 +403,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
                 alert.identifier = @"ColorOptionsAlert";
                 alert.tag = alertView.tag;
-                alert.tabBar = self.tabBarController.tabBar;
             }
             
             else if (buttonIndex == 3)//Titles Option
@@ -421,7 +419,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
                 alert.identifier = @"TitlesAlert";
                 alert.tag = alertView.tag;
-                alert.tabBar = self.tabBarController.tabBar;
             }
             
             return;
@@ -489,7 +486,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                     alert.identifier = @"RandomColorAlert";
                     alert.tag = alertView.tag;
-                    alert.tabBar = self.tabBarController.tabBar;
                     return;
                 }
                     break;
@@ -533,7 +529,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             alert.buttonBorderColor = UIColor.grayColor;
             alert.identifier = @"RandomColorConfirmation";
             alert.tag = alertView.tag;
-            alert.tabBar = self.tabBarController.tabBar;
         }
     }
     
