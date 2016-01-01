@@ -358,15 +358,28 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                }
                                                
                                                
+                                              /* if (keepProcessing == self.displayID)
+                                               {
+                                                   BoundaryData *bd = [[BoundaryData alloc] init];
+                                                   bd.processingID = keepProcessing;
+                                                   bd.zoom = _zoom;
+                                                   [bd displayLandUse:_context
+                                                            llCorners:&_latlonCornerPoints
+                                                             LLBounds:&_latlonBounds
+                                                           viewBounds:&_viewBounds];
+                                               }
+                                               
                                                if (keepProcessing == self.displayID)
                                                {
                                                    BoundaryData *bd = [[BoundaryData alloc] init];
-                                                   
-                                                   [bd displayLandUse:_context
-                                                             llCorners:&_latlonCornerPoints
-                                                              LLBounds:&_latlonBounds
-                                                            viewBounds:&_viewBounds];
-                                               }
+                                                   bd.processingID = keepProcessing;
+                                                   bd.zoom = _zoom;
+                                                   [bd displayCensusAreas:_context
+                                                                     type:@"TRACT"
+                                                            llCorners:&_latlonCornerPoints
+                                                             LLBounds:&_latlonBounds
+                                                           viewBounds:&_viewBounds];
+                                               }*/
                                                
                                                if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
                                                    (CRAPI.sharedInstance.showPolylineForBounds ||
