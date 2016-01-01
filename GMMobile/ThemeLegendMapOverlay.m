@@ -350,7 +350,6 @@ viewForHeaderInSection:(NSInteger)section
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    
     if (buttonIndex > 0)
     {
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
