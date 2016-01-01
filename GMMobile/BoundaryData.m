@@ -432,14 +432,13 @@ extern int keepProcessing;
     DPOINT BasePt;
     int numPoints, useCode;
     //int numLoops;
-    PropertyData * pd = [[PropertyData alloc]init];
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    BOOL pdopened = [pd open];
+    BOOL opened = [self open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -449,7 +448,7 @@ extern int keepProcessing;
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -497,8 +496,8 @@ extern int keepProcessing;
                 withColor:UIColor.redColor.CGColor];
     }
     
-    SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close:pdopened];
+    SQLOK(sqlite3_finalize(statement), self.database);
+    [self close:opened];
 }
 
 - (void)drawUseCode:(CGContextRef)context

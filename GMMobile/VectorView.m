@@ -358,9 +358,19 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                }
                                                
                                                
+                                               if (keepProcessing == self.displayID)
+                                               {
+                                                   BoundaryData *bd = [[BoundaryData alloc] init];
+                                                   
+                                                   [bd displayLandUse:_context
+                                                             llCorners:&_latlonCornerPoints
+                                                              LLBounds:&_latlonBounds
+                                                            viewBounds:&_viewBounds];
+                                               }
+                                               
                                                if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
                                                    (CRAPI.sharedInstance.showPolylineForBounds ||
-                                                   CRAPI.sharedInstance.maskBoundsForBounds))
+                                                    CRAPI.sharedInstance.maskBoundsForBounds))
                                                {
                                                    BoundaryData *bd = [[BoundaryData alloc] init];
                                                    
