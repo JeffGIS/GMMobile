@@ -133,11 +133,10 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                       polyPartLen:&polyPartLen];
 
         [_pia loadArea:(int)numPoints
-             numLoops:(int)numLoops
-          polyPartLen:polyPartLen
-               points:pPoints];
-        
-
+              numLoops:(int)numLoops
+           polyPartLen:polyPartLen
+                points:pPoints
+         boundaryWidth:5];
     }
 
 }
@@ -317,7 +316,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
                                                    cd.processingID = keepProcessing;
                                                    cd.zoom = _zoom;
-                                                   
+                                                   cd.mode = PINMAP;
+                                                   cd.mode = CHOROPLETH;
+                                                   cd.choroplethTarget = @"Minneapolis Neighborhoods";
                                                    if (keepProcessing == self.displayID)
                                                    {
                                                        [cd displayCrimePoints:_context
@@ -358,7 +359,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                }
                                                
                                                
-                                              /* if (keepProcessing == self.displayID)
+                                               /*if (keepProcessing == self.displayID)
                                                {
                                                    BoundaryData *bd = [[BoundaryData alloc] init];
                                                    bd.processingID = keepProcessing;

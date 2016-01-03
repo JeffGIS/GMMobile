@@ -7,6 +7,7 @@
 //
 
 #import "CrimeDataDisplay.h"
+#import "BoundaryData.h"
 
 @implementation CrimeDataDisplay
 {
@@ -72,18 +73,32 @@
     CGFloat sizeFactor = 5;
     NSInteger tot=0, current=0;
     [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
-    
+    PointInAreas *pias = nil;
+    BoundaryData *bd = nil;
+
+    [self setTrans:latlonCornerPoints viewBounds:pvbounds];
+    if (_mode == CHOROPLETH)
+    {
+        pias = [[PointInAreas alloc]init];
+        bd = [[BoundaryData alloc]init];
+        bd.processingID = self.processingID;
+        [bd load:_choroplethTarget
+  toPointInAreas:pias
+usingPointInArea:pia
+       llCorners:latlonCornerPoints
+        LLBounds:platlonBounds
+      viewBounds:pvbounds];
+    }
     /*if (_zoom > 18)
-        sizeFactor *= (2.0 *(_zoom - 18.0));
-    
-    else if (_zoom < 18)
-        sizeFactor /= (2.0 * (18.0 - _zoom));*/
+     sizeFactor *= (2.0 *(_zoom - 18.0));
+     
+     else if (_zoom < 18)
+     sizeFactor /= (2.0 * (18.0 - _zoom));*/
     
     if (![self continue])
         return;
     
     sizeFactor = 1;
-    [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     [_cd open];
     numUCRRanges  = [themes getNumUCRRanges];
@@ -141,12 +156,19 @@
                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                 {
                     DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-                    size = 25;
-                    [self drawCrimePoint:context
-                                 atPoint:&llpoint
-                             usingSymbol:dc.pointSymbol
-                               withColor:dc.color.CGColor
-                                 andSize:(size * sizeFactor)];
+                    if (_mode == CHOROPLETH)
+                    {
+                        [pias DPointInArea:&llpoint];
+                    }
+                    else
+                    {
+                        size = 25;
+                        [self drawCrimePoint:context
+                                     atPoint:&llpoint
+                                 usingSymbol:dc.pointSymbol
+                                   withColor:dc.color.CGColor
+                                     andSize:(size * sizeFactor)];
+                    }
                 }
             }
             iRange++;
@@ -155,6 +177,17 @@
     }
     [_cd close];
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
+    if (_mode == CHOROPLETH)
+    {
+        [pias createDisplayColors];
+
+        [bd display:context
+           areaType:_choroplethTarget
+       pointInAreas:pias
+          llCorners:latlonCornerPoints
+           LLBounds:platlonBounds
+         viewBounds:pvbounds];
+    }
 }
 
 - (void)drawCrimePoint:(CGContextRef)context
