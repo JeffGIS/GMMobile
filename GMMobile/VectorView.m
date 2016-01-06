@@ -133,14 +133,13 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                       polyPartLen:&polyPartLen];
 
         [_pia loadArea:(int)numPoints
-             numLoops:(int)numLoops
-          polyPartLen:polyPartLen
-               points:pPoints];
+              numLoops:(int)numLoops
+           polyPartLen:polyPartLen
+                points:pPoints
+         boundaryWidth:5];
         //[FileLister listFilesInDirectory:@"SHARED"
         //                        outputTo:@""];
-
-
-    }
+   }
 
 }
 
