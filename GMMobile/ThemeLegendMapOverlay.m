@@ -11,7 +11,7 @@
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
-@property (nonatomic) CGRect previousFrame;
+@property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
 @property NSUInteger currentRow;
@@ -36,7 +36,7 @@
     tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
-    tlmo.previousFrame = CGRectZero;
+    tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
     tlmo.currentRow = tlmo.currentColorPalette = 0;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
@@ -308,7 +308,9 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
-    [textArray addObject:@"Color Symbols Using\nThis Legend"];
+    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
+    
     
     if (_legend.titles.count > 1)
         [textArray addObject:@"Select Legend Title"];
@@ -321,6 +323,9 @@ viewForHeaderInSection:(NSInteger)section
                                               destructiveIndex:1];
     
     alert.identifier = @"TopLevelAlert";
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+        [_delegate clearVectorView];
 }
 
 - (void)displayRandomColorAlertInView:(UIView *)view
@@ -337,30 +342,37 @@ viewForHeaderInSection:(NSInteger)section
     alert.layer.borderWidth = 2.0;
     alert.buttonBorderColor = UIColor.grayColor;
     alert.identifier = @"RandomColorConfirmation";
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+        [_delegate clearVectorView];
 }
 
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    
     if (buttonIndex > 0)
     {
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
         {
             [alertView hideLargeAlertView:YES];
             
-            if (buttonIndex == 1)//Colors Option
+            if (buttonIndex == 1)//Apply Existing Colors
+            {
+                
+            }
+            
+            if (buttonIndex == 2)//Select Colors Option
             {
                 NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                   delegate:self
-                                                                     title:@"Color Symbols Using\nThis Legend"
+                                                                     title:@"Select Color Scheme"
                                                            buttonTextArray:NVColorSet.colorOptions
                                                           destructiveIndex:1];
                 
                 alert.identifier = @"ColorOptionsAlert";
             }
             
-            else if (buttonIndex == 2)//Titles Option
+            else if (buttonIndex == 3)//Titles Option
             {
                 NSMutableArray *textArray = NSMutableArray.array;
                 [textArray addObject:@"Cancel"];
@@ -578,6 +590,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (!_isExpanded)
     {
+        if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+            [_delegate clearVectorView];
+        
         CGRect bounds = UIScreen.mainScreen.bounds;
         CGFloat longestSide = MAX(bounds.size.height, bounds.size.width);
         
@@ -588,7 +603,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGSize superSize = self.superview.frame.size;
-        CGFloat scrollOffset = 0.0, contentOffset = 0.0;
+        CGFloat contentOffset = 0.0;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -599,11 +614,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [legendScroll.superview addSubview:overlayView];
                 [legendScroll.superview bringSubviewToFront:self.superview];
                 [legendScroll bringSubviewToFront:self];
-                legendScroll.backgroundColor = UIColor.darkGrayColor;
                 legendScroll.scrollEnabled = NO;
+                _previousScrollFrame = legendScroll.frame;
                 
                 superSize = legendScroll.superview.frame.size;
-                scrollOffset = legendScroll.frame.origin.x;
                 contentOffset = (legendScroll.contentOffset.y - statusBarHeight);
             }
         }
@@ -635,7 +649,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              _tabBar.alpha = 0.3;
                              dragButton.alpha = 0.0;
                              
-                             self.frame = CGRectMake(((superSize.width * 0.1) - scrollOffset),
+                             if ([self.superview isKindOfClass:UIScrollView.class])
+                             {
+                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
+                                 legendScroll.frame = overlayView.frame;
+                                 
+                                 legendScroll.center = CGPointMake(legendScroll.center.x,
+                                                                   (legendScroll.superview.center.y + (_tabBar.frame.size.height / 2.0)));
+                             }
+                             
+                             self.frame = CGRectMake((superSize.width * 0.1),
                                                      ((((superSize.height - height) + statusBarHeight) / 2.0) + contentOffset),
                                                      (superSize.width * 0.8), height);
                              
@@ -679,11 +702,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              _tabBar.alpha = 1.0;
                              
                              if ([self.superview isKindOfClass:UIScrollView.class])
+                             {
+                                 self.superview.frame =
+                                 CGRectMake((self.superview.superview.frame.size.width - _previousScrollFrame.size.width),
+                                 _previousScrollFrame.origin.y, _previousScrollFrame.size.width,
+                                 self.superview.superview.frame.size.height);
+                                 
                                  self.frame = _previousFrame;
+                             }
                              
                              else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                                       UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                              {
+                                 
+                                 
                                  self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
                                                          _legend.landscapeMapOrigin.y,
                                                          _previousFrame.size.width,
@@ -715,7 +747,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
                                  UIScrollView *legendScroll = (UIScrollView *)self.superview;
-                                 legendScroll.backgroundColor = UIColor.lightGrayColor;
                                  legendScroll.scrollEnabled = YES;
                              }
                              

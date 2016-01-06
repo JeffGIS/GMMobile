@@ -319,7 +319,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
                                                    cd.processingID = keepProcessing;
                                                    cd.zoom = _zoom;
-                                                   
+                                                   cd.mode = PINMAP;
+                                                   cd.mode = CHOROPLETH;
+                                                   cd.choroplethTarget = @"Minneapolis Neighborhoods";
                                                    if (keepProcessing == self.displayID)
                                                    {
                                                        [cd displayCrimePoints:_context
@@ -360,9 +362,32 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                }
                                                
                                                
+                                               /*if (keepProcessing == self.displayID)
+                                               {
+                                                   BoundaryData *bd = [[BoundaryData alloc] init];
+                                                   bd.processingID = keepProcessing;
+                                                   bd.zoom = _zoom;
+                                                   [bd displayLandUse:_context
+                                                            llCorners:&_latlonCornerPoints
+                                                             LLBounds:&_latlonBounds
+                                                           viewBounds:&_viewBounds];
+                                               }
+                                               
+                                               if (keepProcessing == self.displayID)
+                                               {
+                                                   BoundaryData *bd = [[BoundaryData alloc] init];
+                                                   bd.processingID = keepProcessing;
+                                                   bd.zoom = _zoom;
+                                                   [bd displayCensusAreas:_context
+                                                                     type:@"TRACT"
+                                                            llCorners:&_latlonCornerPoints
+                                                             LLBounds:&_latlonBounds
+                                                           viewBounds:&_viewBounds];
+                                               }*/
+                                               
                                                if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
                                                    (CRAPI.sharedInstance.showPolylineForBounds ||
-                                                   CRAPI.sharedInstance.maskBoundsForBounds))
+                                                    CRAPI.sharedInstance.maskBoundsForBounds))
                                                {
                                                    BoundaryData *bd = [[BoundaryData alloc] init];
                                                    

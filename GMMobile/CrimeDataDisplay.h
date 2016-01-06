@@ -7,6 +7,12 @@
 //
 extern int keepProcessing;
 
+typedef NS_ENUM(NSInteger, CrimeMapMode)
+{
+    PINMAP,
+    HOTSPOT,
+    CHOROPLETH,
+};
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
@@ -15,6 +21,9 @@ extern int keepProcessing;
 #import "Themes.h"
 
 @interface CrimeDataDisplay : NSObject
+
+@property CrimeMapMode mode;
+@property NSString * choroplethTarget;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property int processingID;

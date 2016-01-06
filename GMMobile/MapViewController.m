@@ -3,12 +3,6 @@
 
 extern int keepProcessing;
 
-#define CENSUS_ZOOM_ALERT 1
-#define DELETE_WALL_ALERT 2
-#define PARCEL_TEXT_ALERT 3
-#define PARCEL_COLOR_ALERT 4
-#define EDIT_INTERSECTION_STATUS 5
-
 #import "MapViewController.h"
 #import "WebKitViewController.h"
 #import "AppDelegate.h"
@@ -122,6 +116,7 @@ extern int keepProcessing;
                          
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
     _legendScrollView.clipsToBounds = NO;
+    _legendScrollView.alpha = 0.0;
     [self.view addSubview:_legendScrollView];
     
     _polylines = [[NSMutableSet alloc] init];
@@ -1720,7 +1715,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (_secondView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_secondView];
     
-    if (![self legendIsExpanded])
+    if (![self legendIsExpanded] && ![self alertVisible])
     {
         [self.view bringSubviewToFront:_mapToolbar];
         [self.view bringSubviewToFront:_compass];
@@ -1805,7 +1800,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if (!_firstTimeMap)
     {
-        if (![self legendIsExpanded])
+        if (![self legendIsExpanded] && ![self alertVisible])
         {
             [self refreshVectorView:_mapView.projection.visibleRegion
                              atZoom:position.zoom];
@@ -1827,7 +1822,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    [self updateLegendPositions];
+    if (![self legendIsExpanded] && ![self alertVisible])
+        [self updateLegendPositions];
     
     if (!_tableView.hidden)
         [_tableView reloadData];
@@ -1937,12 +1933,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                          toInterfaceOrientation:toInterfaceOrientation
                                    tabBarHeight:_tabBarHeight];
         }
-    }
-    
-    for (NVAlertView *alert in self.view.subviews)
-    {
-        if ([alert isKindOfClass:NVAlertView.class])
-            [alert willRotateWithDuration:duration];
     }
     
     if (!_compass.hidden)
@@ -2062,21 +2052,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
         CGFloat xOrigin = (viewWidth - scrollWidth);
-        CGFloat xCenter = ((viewWidth / 2.0) - xOrigin);
         CGFloat contentOffset = (_legendScrollView.contentOffset.y - statusBarHeight);
-        
-        if ([self.view.subviews containsObject:_legendScrollView])
-        {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 _legendScrollView.frame =
-                                 CGRectMake(xOrigin, statusBarHeight, scrollWidth,
-                                            ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
-                             }];
-        }
         
         if (_legendsAreOffMap)
         {
+            if ([self.view.subviews containsObject:_legendScrollView])
+            {
+                if (![self legendIsExpanded])
+                
+                [UIView animateWithDuration:duration
+                                 animations:^{
+                                     _legendScrollView.frame =
+                                     CGRectMake(xOrigin, statusBarHeight, scrollWidth,
+                                                ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
+                                 }];
+            }
+            
             for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
             {
                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
@@ -2090,7 +2081,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                              tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
                                                                       (viewWidth * 0.8), legendHeight);
                                              
-                                             tlmos.center = CGPointMake(xCenter, (_legendScrollView.center.y + contentOffset));
+                                             tlmos.center = CGPointMake((viewWidth / 2.0), (self.view.frame.size.width / 2.0) + contentOffset);
                                              tlmos.tableView.frame = tlmos.bounds;
                                          } completion:^(BOOL finished) {
                                              [tlmos.tableView reloadData];
@@ -2145,6 +2136,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             }
         }
     }
+    
+    for (NVAlertView *alert in self.view.subviews)
+    {
+        if ([alert isKindOfClass:NVAlertView.class])
+        {
+            [self.view bringSubviewToFront:alert];
+            [alert willRotateWithDuration:duration];
+        }
+    }
 }
 
 - (BOOL)legendIsExpanded
@@ -2166,13 +2166,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             isExpanded = YES;
     }
     
+    return isExpanded;
+}
+
+- (BOOL)alertVisible
+{
+    BOOL alertVisible = NO;
+    
     for (NVAlertView *alert in self.view.subviews)
     {
         if ([alert isKindOfClass:NVAlertView.class])
-            isExpanded = YES;
+            alertVisible = YES;
     }
     
-    return isExpanded;
+    return alertVisible;
 }
 
 - (void)allocateVectorView
@@ -2363,6 +2370,27 @@ haveVV:
                                [tlmo displayRandomColorAlertInView:self.view];
                                _displayRandomColorAlert = NO;
                            }
+                       }
+                       
+                       if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+                       {
+                           if (!_legendsAreOffMap)
+                           {
+                               for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+                               {
+                                   if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                                   {
+                                       [self.view bringSubviewToFront:tlmos];
+                                   }
+                               }
+                           }
+                       }
+                       
+                       for (NVAlertView *alert in self.view.subviews)
+                       {
+                           if ([alert isKindOfClass:NVAlertView.class])
+                               [self.view bringSubviewToFront:alert];
                        }
                    });
 }
@@ -2609,6 +2637,7 @@ haveVV:
         _mapViewLegendOffset = _legendScrollView.frame.size.width;
         CGRect frame = _mapView.frame;
         frame.size.width -= _mapViewLegendOffset;
+        _legendScrollView.alpha = 1.0;
         _vectorView.hidden = _legendsAreOffMap = YES;
         [self updateLegendPositions];
         
@@ -2631,6 +2660,7 @@ haveVV:
         
         _mapViewLegendOffset = 0.0;
         _vectorView.hidden = YES;
+        _legendScrollView.alpha = 0.0;
         _legendsAreOffMap = NO;
         [self updateLegendPositions];
         
@@ -2996,7 +3026,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                      title:@"Polyline Data File Write ERROR"
                                                            buttonTextArray:@[@"OK"]
                                                           destructiveIndex:0];
-#pragma unused(alert)
+                
+                alert.identifier = @"PolylineDataFileWriteError";
             }
             
             else
@@ -3043,7 +3074,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                  title:@"Polygon Data File Write ERROR"
                                                        buttonTextArray:@[@"OK"]
                                                       destructiveIndex:0];
-#pragma unused(alert)
+            
+            alert.identifier = @"PolygonDataFileWriteError";
         }
         
         else
@@ -3334,7 +3366,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
                                               destructiveIndex:0];
     
-    alert.tag = CENSUS_ZOOM_ALERT;
+    alert.identifier = @"CensusZoomAlert";
 }
 
 - (void)selectParcelText
@@ -3347,7 +3379,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"Cancel", @"Owner/Total Tax", @"Building Number",@"Land EMV", @"Land EMV per Acre"]
                                               destructiveIndex:0];
     
-    alert.tag = PARCEL_TEXT_ALERT;
+    alert.identifier = @"ParcelTextAlert";
 }
 
 - (void)addToPropList
@@ -3391,7 +3423,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              title:@"GMMobile cannot launch Flyover App"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
+        
+        alert.identifier = @"CannotLaunchFlyoverApp";
     }
 }
 
@@ -3499,7 +3532,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                buttonTextArray:@[@"YES", @"NO"]
                                               destructiveIndex:1];
     
-    alert.tag = DELETE_WALL_ALERT;
+    alert.identifier = @"DeleteWallAlert";
     [self deselectTableViewRow];
 }
 
@@ -3554,7 +3587,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              title:@"GMMobile cannot launch CRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
-#pragma unused(alert)
+        
+        alert.identifier = @"CannotLaunchCRISDetail";
     }
 }
 
@@ -3567,7 +3601,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                  @"Scheduled for Rebuild", @"Built", @"Resurveyed"]
                                               destructiveIndex:0];
     
-    alert.tag = EDIT_INTERSECTION_STATUS;
+    alert.identifier = @"EditIntersectionStatus";
     [self deselectTableViewRow];
 }
 
@@ -3719,7 +3753,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [alertView hideLargeAlertView:YES];
     
-    if (alertView.tag == DELETE_WALL_ALERT)//delete wall point
+    if ([alertView.identifier isEqualToString:@"DeleteWallAlert"])
     {
         if (buttonIndex == 0)
         {
@@ -3736,7 +3770,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
     
-    else if (alertView.tag == CENSUS_ZOOM_ALERT)
+    else if ([alertView.identifier isEqualToString:@"CensusZoomAlert"])
     {
         switch (buttonIndex)
         {
@@ -3760,7 +3794,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 break;
         }
     }
-    else if (alertView.tag == PARCEL_TEXT_ALERT)
+    
+    else if ([alertView.identifier isEqualToString:@"ParcelTextAlert"])
     {
         switch (buttonIndex)
         {
@@ -3782,7 +3817,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
 
-    else if (alertView.tag == EDIT_INTERSECTION_STATUS)
+    else if ([alertView.identifier isEqualToString:@"EditIntersectionStatus"])
     {
         if (buttonIndex > 0)
         {
@@ -4279,6 +4314,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         alert.tag = 888;
+        alert.tabBar = self.tabBarController.tabBar;
     }
 }
 
@@ -4294,6 +4330,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         alert.tag = 999;
+        alert.tabBar = self.tabBarController.tabBar;
     }
 }
 */

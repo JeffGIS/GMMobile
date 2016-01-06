@@ -14,6 +14,9 @@
 - (void)themeLegendWasDraggedOffRightSide;
 - (void)themeLegendWasDraggedOffLeftSide;
 
+@optional
+- (void)clearVectorView;
+
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend;
 

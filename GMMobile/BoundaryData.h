@@ -20,6 +20,7 @@
 @property (nonatomic, copy) NSString *path;
 @property NSInteger fileSize;
 @property (nonatomic) int datasetVersion;
+@property int zoom;
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;
@@ -41,9 +42,27 @@
             llCorners:(CORNERPOINTS *) latlonCornerPoints
              LLBounds:(MNMXCORD *)platlonBounds
            viewBounds:(MNMXCORD *)pvbounds;
+-(void)displayCensusAreas:(CGContextRef)context
+                     type:(NSString *)type
+                llCorners:(CORNERPOINTS *) latlonCornerPoints
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds;
 - (LPDPOINT)getPolygonPointsForBoundary:(int)refno
                               numPoints:(int *)numPoints
                                numLoops:(int *)numLoops
                             polyPartLen:(int **)polyPartLen;
+- (int)     load:(NSString*)areaType
+  toPointInAreas:(PointInAreas*)pias
+usingPointInArea:(PointInArea*)pia
+       llCorners:(CORNERPOINTS *) latlonCornerPoints
+        LLBounds:(MNMXCORD *)platlonBounds
+      viewBounds:(MNMXCORD *)pvbounds;
+
+- (int) display:(CGContextRef)context
+       areaType:(NSString*)areaType
+   pointInAreas:(PointInAreas*)pias
+      llCorners:(CORNERPOINTS *) latlonCornerPoints
+       LLBounds:(MNMXCORD *)platlonBounds
+     viewBounds:(MNMXCORD *)pvbounds;
 
 @end
