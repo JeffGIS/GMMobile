@@ -2,8 +2,9 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
+@import CoreLocation;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,CLLocationManagerDelegate>
 
 + (AppDelegate *)sharedAppDelegate;
 - (void)didStartNetworking;
@@ -11,5 +12,6 @@
 
 @property (strong, nonatomic) UIWindow *window;
 @property NSInteger networkingCount;
+@property (nonatomic) CLLocationManager *locationManager;
 
 @end

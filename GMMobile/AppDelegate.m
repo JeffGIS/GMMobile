@@ -72,7 +72,35 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if (!CRAPI.sharedInstance.offsetForBoundsInMeters)
         CRAPI.sharedInstance.offsetForBoundsInMeters = 0;
     
+    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager.delegate = self;
+    [_locationManager requestWhenInUseAuthorization];
+    
+    [NSTimer scheduledTimerWithTimeInterval:5.0
+                                     target:self
+                                   selector:@selector(checkUserLocation)
+                                   userInfo:nil
+                                    repeats:YES];
+    
     return YES;
+}
+
+- (void)checkUserLocation
+{
+    [_locationManager requestLocation];
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray *)locations
+{
+    CLLocation *location = (CLLocation *)locations.lastObject;
+    NSLog(@"%@", location.description);
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error
+{
+    NSLog(@"locationManager ERROR:%@", error.localizedDescription);
 }
 
 - (void)application:(UIApplication *)app
