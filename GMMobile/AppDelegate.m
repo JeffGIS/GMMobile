@@ -74,18 +74,26 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
-    [_locationManager requestWhenInUseAuthorization];
+    _locationManager.allowsBackgroundLocationUpdates = YES;
+    _locationManager.activityType = CLActivityTypeAutomotiveNavigation;
+    
+    if ([_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)])
+        [_locationManager requestAlwaysAuthorization];
+    
+    _backgroundTaskIdentifier = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+        [UIApplication.sharedApplication endBackgroundTask:_backgroundTaskIdentifier];
+    }];
     
     [NSTimer scheduledTimerWithTimeInterval:5.0
                                      target:self
-                                   selector:@selector(checkUserLocation)
+                                   selector:@selector(checkUserLocation:)
                                    userInfo:nil
                                     repeats:YES];
     
     return YES;
 }
 
-- (void)checkUserLocation
+- (void)checkUserLocation:(NSTimer *)timer
 {
     [_locationManager requestLocation];
 }

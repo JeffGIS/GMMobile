@@ -13,5 +13,6 @@
 @property (strong, nonatomic) UIWindow *window;
 @property NSInteger networkingCount;
 @property (nonatomic) CLLocationManager *locationManager;
+@property UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 
 @end
