@@ -7,6 +7,8 @@
 #import "CCodeLibrary/GSSiPopoverView.h"
 #import "CCodeLibrary/NSData+Compression.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "CCodeLibrary/UserDefaults.h"
+#import "AppDelegate.h"
 @import MediaPlayer;
 
 @interface SettingOptionsViewController ()
@@ -63,7 +65,7 @@
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Make In-App Purchase", @"Access Contacts"/*, @"Test Compression & Upload"*/];
+                  @"Make In-App Purchase", @"Access Contacts", @"Track User Location"/*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -111,7 +113,8 @@
     
     BOOL containsSwitch = NO;
     
-    if (indexPath.row == 0)
+    if ([cell.textLabel.text isEqualToString:@"Auto Upload"] ||
+        [cell.textLabel.text isEqualToString:@"Track User Location"])
     {
         for (UISwitch *switches in cell.contentView.subviews)
         {
@@ -124,6 +127,15 @@
             UISwitch *cellSwitch = [[UISwitch alloc] init];
             cellSwitch.tintColor = UIColor.redColor;
             cellSwitch.onTintColor = UIColor.greenColor;
+            
+            if ([cell.textLabel.text isEqualToString:@"Auto Upload"])
+                cellSwitch.tag = 777;
+            
+            else
+            {
+                cellSwitch.tag = 888;
+                cellSwitch.on = [UserDefaults.defaults boolForKey:@"TrackLocation"];
+            }
             
             cellSwitch.center = CGPointMake((cell.frame.size.width - 100.0),
                                             (cell.frame.size.height / 2.0));
@@ -480,7 +492,28 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)cellSwitchValueChanged:(UISwitch *)aSwitch
 {
-    NSLog(@"Auto Upload Status:%d", aSwitch.on);
+    switch (aSwitch.tag)
+    {
+        case 777://Auto upload
+            NSLog(@"Auto Upload Status:%d", aSwitch.on);
+            break;
+            
+        case 888://Track location
+        {
+            if (aSwitch.on)
+                [AppDelegate.sharedAppDelegate scheduleLocationTracking];
+            
+            else
+                [AppDelegate.sharedAppDelegate stopLocationTracking];
+            
+            [UserDefaults.defaults saveBool:aSwitch.on
+                                     forKey:@"TrackLocation"];
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue

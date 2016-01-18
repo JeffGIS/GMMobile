@@ -6,6 +6,19 @@ int keepProcessing = 1;
 #import "AppDelegate.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import "CCodeLibrary/NVDateRange.h"
+#import "CCodeLibrary/UserDefaults.h"
+#import "CCodeLibrary/SharedDefaults.h"
+#import "CCodeLibrary/CRAPI.h"
+
+@interface AppDelegate ()
+
+@property UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+@property (nonatomic) NSTimer *locationTimer;
+@property (nonatomic) GeoMasterServer *GMServer;
+@property (nonatomic) CLLocation *currentLocation;
+@property BOOL skipMethodCall;
+
+@end
 
 @implementation AppDelegate
 
@@ -80,17 +93,29 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if ([_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)])
         [_locationManager requestAlwaysAuthorization];
     
+    if ([UserDefaults.defaults boolForKey:@"TrackLocation"])
+        [self scheduleLocationTracking];
+    
+    return YES;
+}
+
+- (void)scheduleLocationTracking
+{
     _backgroundTaskIdentifier = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
         [UIApplication.sharedApplication endBackgroundTask:_backgroundTaskIdentifier];
     }];
     
-    [NSTimer scheduledTimerWithTimeInterval:5.0
-                                     target:self
-                                   selector:@selector(checkUserLocation:)
-                                   userInfo:nil
-                                    repeats:YES];
-    
-    return YES;
+    _locationTimer = [NSTimer scheduledTimerWithTimeInterval:30.0
+                                                      target:self
+                                                    selector:@selector(checkUserLocation:)
+                                                    userInfo:nil
+                                                     repeats:YES];
+}
+
+- (void)stopLocationTracking
+{
+    [UIApplication.sharedApplication endBackgroundTask:_backgroundTaskIdentifier];
+    [_locationTimer invalidate];
 }
 
 - (void)checkUserLocation:(NSTimer *)timer
@@ -101,14 +126,58 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
-    CLLocation *location = (CLLocation *)locations.lastObject;
-    NSLog(@"%@", location.description);
+    _currentLocation = (CLLocation *)locations.lastObject;
+    
+    if (!_skipMethodCall)
+    {
+        [self performSelector:@selector(sendLocationToServer)
+                   withObject:nil
+                   afterDelay:0.5];
+        
+        _skipMethodCall = YES;
+    }
+}
+
+- (void)sendLocationToServer
+{
+    _GMServer = GeoMasterServer.open;
+    _GMServer.delegate = self;
+    [_GMServer initCommunication:5.0];
+    _skipMethodCall = NO;
 }
 
 - (void)locationManager:(CLLocationManager *)manager
        didFailWithError:(NSError *)error
 {
     NSLog(@"locationManager ERROR:%@", error.localizedDescription);
+}
+
+- (void)GMServerDidOpen:(GeoMasterServer *)server
+{
+    NSString *msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\GetUserLocations.txt,%@,%@,%i,%i,%i,%i,%i,%i)\r\n",
+                     UIDevice.currentDevice.identifierForVendor.UUIDString, UIDevice.currentDevice.name,
+                     (int)round(_currentLocation.coordinate.latitude * 10000), (int)round(_currentLocation.coordinate.longitude * 10000),
+                     (int)round(_currentLocation.timestamp.timeIntervalSince1970), (int)round(_currentLocation.horizontalAccuracy),
+                     (int)round(_currentLocation.course), (int)round(_currentLocation.speed)];
+    
+    if (msg)
+        [_GMServer sendMessage:msg];
+    
+    NSLog(@"GMServer Query: %@", msg);
+}
+
+- (void)GMServer:(GeoMasterServer *)server
+didReceiveMessage:(NSString *)message
+      withStatus:(long)status
+{
+    
+}
+
+- (void)GMServer:(GeoMasterServer *)server
+ didReceiveError:(NSString *)error
+      withStatus:(long)status
+{
+    
 }
 
 - (void)application:(UIApplication *)app

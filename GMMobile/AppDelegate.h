@@ -1,10 +1,10 @@
 //  AppDelegate.h
 //  GMMobile
 
-#import "CCodeLibrary/CCodeLibrary.h"
 @import CoreLocation;
+#import "CCodeLibrary/GeoMasterServer.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate,CLLocationManagerDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,CLLocationManagerDelegate,GeoMasterServerDelegate>
 
 + (AppDelegate *)sharedAppDelegate;
 - (void)didStartNetworking;
@@ -13,6 +13,8 @@
 @property (strong, nonatomic) UIWindow *window;
 @property NSInteger networkingCount;
 @property (nonatomic) CLLocationManager *locationManager;
-@property UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+
+- (void)scheduleLocationTracking;
+- (void)stopLocationTracking;
 
 @end
