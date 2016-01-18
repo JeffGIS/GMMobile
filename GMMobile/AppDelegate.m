@@ -156,7 +156,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     NSString *msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\GetUserLocations.txt,%@,%@,%i,%i,%i,%i,%i,%i)\r\n",
                      UIDevice.currentDevice.identifierForVendor.UUIDString, UIDevice.currentDevice.name,
-                     (int)round(_currentLocation.coordinate.latitude * 10000), (int)round(_currentLocation.coordinate.longitude * 10000),
+                     (int)round(_currentLocation.coordinate.latitude * 100000), (int)round(_currentLocation.coordinate.longitude * 100000),
                      (int)round(_currentLocation.timestamp.timeIntervalSince1970), (int)round(_currentLocation.horizontalAccuracy),
                      (int)round(_currentLocation.course), (int)round(_currentLocation.speed)];
     
@@ -170,13 +170,16 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 didReceiveMessage:(NSString *)message
       withStatus:(long)status
 {
-    
+    NSLog(@"Location update: %@", message);
+    [_GMServer closeServer];
 }
 
 - (void)GMServer:(GeoMasterServer *)server
  didReceiveError:(NSString *)error
       withStatus:(long)status
 {
+    NSLog(@"Location update ERROR: %@", error);
+    [_GMServer closeServer];
     
 }
 
