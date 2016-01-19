@@ -11,7 +11,7 @@
 #import "AppDelegate.h"
 @import MediaPlayer;
 
-@interface SettingOptionsViewController ()
+@interface SettingOptionsViewController () <DBRestClientDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -19,6 +19,8 @@
 @property (nonatomic) NSArray *products;
 @property (nonatomic) NSString *iapFilePath;
 @property (nonatomic) MPMoviePlayerController *mpController;
+@property (nonatomic) DBRestClient *restClient;
+@property (nonatomic) DBMetadata *metadata;
 
 @end
 
@@ -58,6 +60,9 @@
     _tableView.delaysContentTouches = NO;
     
     _versionLabel.text = [NSString stringWithFormat:@"GMMobile Version %@", UIApplication.appVersionBuild];
+    
+    _restClient = [[DBRestClient alloc] initWithSession:DBSession.sharedSession];
+    _restClient.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -74,6 +79,20 @@
         _contents = tempArray.copy;
     }
     
+    if (!DBSession.sharedSession.isLinked)
+    {
+        NSMutableArray *tempArray = _contents.mutableCopy;
+        [tempArray addObject:@"Link App to Dropbox"];
+        _contents = tempArray.copy;
+    }
+    
+    else
+    {
+        NSMutableArray *tempArray = _contents.mutableCopy;
+        [tempArray addObject:@"Download File From Dropbox"];
+        _contents = tempArray.copy;
+    }
+    
     [_tableView reloadData];
 }
 
@@ -85,7 +104,11 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return _contents.count;
+    if (_metadata)
+        return _metadata.contents.count;
+    
+    else
+        return _contents.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -102,14 +125,33 @@
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:32.0];
     cell.textLabel.textColor = UIColor.blackColor;
-    cell.textLabel.text = _contents[indexPath.row];
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    
+    if (_metadata)
+    {
+        DBMetadata *metadata = _metadata.contents[indexPath.row];
+        cell.textLabel.text = metadata.filename;
+    }
+    
+    else
+        cell.textLabel.text = _contents[indexPath.row];
+    
     cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
-    if (indexPath.row < _images.count)
+    if (indexPath.row < _images.count && !_metadata)
         cell.imageView.image = _images[indexPath.row];
+    
+    else
+        cell.imageView.image = nil;
     
     cell.textLabel.highlightedTextColor = UserDefaults.defaults.appleBlue;
     cell.indentationWidth = 10.0;
+    
+    for (UIView *views in cell.contentView.subviews)
+    {
+        if (views.tag == 777 || views.tag == 888)
+            [views removeFromSuperview];
+    }
     
     BOOL containsSwitch = NO;
     
@@ -204,6 +246,25 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _nvcp = [NVContactPicker presentContactPickerInDelegate:self];
     }
     
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Link App to Dropbox"])
+    {
+        if (!DBSession.sharedSession.isLinked)
+            [DBSession.sharedSession linkFromController:self];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Download File From Dropbox"])
+    {
+        [_restClient loadMetadata:@"/GSSi"];
+    }
+    
+    else if (_metadata)
+    {
+        DBMetadata *metadata = _metadata.contents[indexPath.row];
+        [_restClient loadMetadata:metadata.path];
+    }
+    
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Compression & Upload"])
     {
@@ -244,6 +305,44 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(alert)
         }
     }*/
+}
+
+- (void)restClient:(DBRestClient *)client
+    loadedMetadata:(DBMetadata *)metadata
+{
+    if (metadata.isDirectory)
+        _metadata = metadata;
+    
+    else
+    {
+        [_restClient loadFile:metadata.path
+                     intoPath:[NSString stringWithFormat:@"%@/%@",
+                               UserDefaults.defaults.localFilePath, metadata.filename]];
+        
+        _metadata = nil;
+    }
+    
+    [_tableView reloadData];
+}
+
+- (void)restClient:(DBRestClient *)client
+loadMetadataFailedWithError:(NSError *)error
+{
+    NSLog(@"ERROR loading dropbox metadata:%@", error);
+}
+
+- (void)restClient:(DBRestClient *)client
+        loadedFile:(NSString *)localPath
+       contentType:(NSString *)contentType
+          metadata:(DBMetadata *)metadata
+{
+    NSLog(@"Dropbox file loaded into path:%@", localPath);
+}
+
+- (void)restClient:(DBRestClient *)client
+loadFileFailedWithError:(NSError *)error
+{
+    NSLog(@"ERROR loading the dropbox file:%@", error);
 }
 
 - (void)productsRequest:(SKProductsRequest *)request
