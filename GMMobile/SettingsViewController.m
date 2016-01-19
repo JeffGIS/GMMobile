@@ -129,6 +129,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingCurbRamp:
             case GetDatabaseSettingCensus:
             case GetDatabaseSettingCrimes:
+            case GetDatabaseSettingMapleGrove:
             {
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
                 NSString *file;
@@ -157,7 +158,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         _popover.title = @"Load Crime Tables";
                     }
                         break;
-                        
+                    case GetDatabaseSettingMapleGrove:
+                    {
+                        [_popover hide];
+                        return;
+                    }
+                        break;
                     case GetDatabaseSettingAreas:
                     {
                         file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
@@ -591,6 +597,32 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (IBAction)loadMapleGrove:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
+    NSString *fileName = @"MapleGroveShapefiles.gcf";
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
+    [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.option = GetDatabaseSettingMapleGrove;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Shape Files"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:outputDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
