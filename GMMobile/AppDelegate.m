@@ -9,6 +9,7 @@ int keepProcessing = 1;
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/SharedDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
+#import <DropboxSDK/DropboxSDK.h>
 
 @interface AppDelegate ()
 
@@ -96,7 +97,31 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if ([UserDefaults.defaults boolForKey:@"TrackLocation"])
         [self scheduleLocationTracking];
     
+    DBSession *dbSession = [[DBSession alloc] initWithAppKey:@"e9sfl63o413ouwz"
+                                                   appSecret:@"0jub4iz06yfn7a8"
+                                                        root:kDBRootDropbox];
+    
+    [DBSession setSharedSession:dbSession];
+    
     return YES;
+}
+
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)source
+         annotation:(id)annotation
+{
+    if ([DBSession.sharedSession handleOpenURL:url])
+    {
+        if (DBSession.sharedSession.isLinked)
+        {
+            NSLog(@"App linked successfully!");
+        }
+        
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (void)scheduleLocationTracking

@@ -7,6 +7,7 @@
 @import StoreKit;
 #import "CCodeLibrary/NVContactPicker.h"
 #import "CCodeLibrary/FTPDataPush.h"
+#import <DropboxSDK/DropboxSDK.h>
 
 @interface SettingOptionsViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,UploadViewControllerDelegate,SKProductsRequestDelegate,SKPaymentTransactionObserver,FTPDataPushDelegate>
 
