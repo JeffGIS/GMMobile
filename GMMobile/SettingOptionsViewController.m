@@ -70,7 +70,7 @@
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Make In-App Purchase", @"Access Contacts", @"Track User Location"/*, @"Test Compression & Upload"*/];
+                  @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization"/*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -254,9 +254,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Select Organization"])
+    {
+        [self performSegueWithIdentifier:@"SelectOrganization"
+                                  sender:self];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Download File From Dropbox"])
     {
-        [_restClient loadMetadata:@"/GSSi"];
+        [_restClient loadMetadata:@"/"];
     }
     
     else if (_metadata)

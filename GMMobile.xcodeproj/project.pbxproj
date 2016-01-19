@@ -21,6 +21,7 @@
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
 		69394F931C4E802D00F140DE /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69394F921C4E802D00F140DE /* DropboxSDK.framework */; };
 		69394F951C4E807200F140DE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69394F941C4E807200F140DE /* Security.framework */; };
+		69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00731C1B229C0074AF72 /* clearMarkers.png */; };
@@ -179,6 +180,8 @@
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
 		69394F921C4E802D00F140DE /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
 		69394F941C4E807200F140DE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		69394F961C4ECBA200F140DE /* SelectOrganizationVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectOrganizationVC.h; sourceTree = "<group>"; };
+		69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectOrganizationVC.m; sourceTree = "<group>"; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
 		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
@@ -606,6 +609,8 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
+				69394F961C4ECBA200F140DE /* SelectOrganizationVC.h */,
+				69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
 				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
@@ -775,6 +780,9 @@
 							com.apple.Push = {
 								enabled = 1;
 							};
+							com.apple.iCloud = {
+								enabled = 0;
+							};
 						};
 					};
 					EB5521E41A61B6A8008CE2D1 = {
@@ -919,6 +927,7 @@
 				69EB532D1BE7EDEA002481BB /* CrimeOptions1.m in Sources */,
 				A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */,
 				EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */,
+				69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */,
 				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
 				EBFC2A341BE9186900E0C1B3 /* CrimeDataDisplay.m in Sources */,
 				EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */,

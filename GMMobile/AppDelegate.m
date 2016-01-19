@@ -88,8 +88,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
-    _locationManager.allowsBackgroundLocationUpdates = YES;
     _locationManager.activityType = CLActivityTypeAutomotiveNavigation;
+    
+    if ([_locationManager respondsToSelector:@selector(allowsBackgroundLocationUpdates)])
+        _locationManager.allowsBackgroundLocationUpdates = YES;
     
     if ([_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)])
         [_locationManager requestAlwaysAuthorization];
@@ -114,9 +116,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if ([DBSession.sharedSession handleOpenURL:url])
     {
         if (DBSession.sharedSession.isLinked)
-        {
             NSLog(@"App linked successfully!");
-        }
         
         return YES;
     }
