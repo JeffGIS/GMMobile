@@ -40,6 +40,7 @@
 - (IBAction)loadAlleyWall:(id)sender;
 - (IBAction)loadCurbRamps:(id)sender;
 - (IBAction)loadCrimeData:(id)sender;
+- (IBAction)loadMapleGrove:(id)sender;
 - (IBAction)compressDatabase:(id)sender;
 - (IBAction)emailFileList:(id)sender;
 
