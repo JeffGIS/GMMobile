@@ -21,7 +21,7 @@
 @property (nonatomic) MPMoviePlayerController *mpController;
 @property (nonatomic) DBRestClient *restClient;
 @property (nonatomic) DBMetadata *metadata;
-
+@property (nonatomic) NSMetadataQuery *query;
 @end
 
 @implementation SettingOptionsViewController
@@ -70,7 +70,8 @@
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization"/*, @"Test Compression & Upload"*/];
+                  @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
+                  @"Download File from iCloud"/*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -247,6 +248,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Download File from iCloud"])
+    {
+        _query = [[NSMetadataQuery alloc] init];
+        _query.searchScopes = [NSArray arrayWithObject:NSMetadataQueryUbiquitousDataScope];
+        
+        [NSNotificationCenter.defaultCenter addObserver:self
+                                               selector:@selector(queryDidFinishGathering:)
+                                                   name:NSMetadataQueryDidFinishGatheringNotification
+                                                 object:_query];
+        [_query startQuery];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Link App to Dropbox"])
     {
         if (!DBSession.sharedSession.isLinked)
@@ -312,6 +326,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(alert)
         }
     }*/
+}
+
+- (void)queryDidFinishGathering:(NSNotification *)notification
+{
+    for (NSMetadataItem *items in _query.results)
+        NSLog(@"%@", [items valueForKey:NSMetadataItemDisplayNameKey]);
 }
 
 - (void)restClient:(DBRestClient *)client
