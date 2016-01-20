@@ -11,7 +11,7 @@
 #import "AppDelegate.h"
 @import MediaPlayer;
 
-@interface SettingOptionsViewController () <DBRestClientDelegate>
+@interface SettingOptionsViewController () <UIDocumentPickerDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -19,9 +19,7 @@
 @property (nonatomic) NSArray *products;
 @property (nonatomic) NSString *iapFilePath;
 @property (nonatomic) MPMoviePlayerController *mpController;
-@property (nonatomic) DBRestClient *restClient;
-@property (nonatomic) DBMetadata *metadata;
-@property (nonatomic) NSMetadataQuery *query;
+
 @end
 
 @implementation SettingOptionsViewController
@@ -60,9 +58,6 @@
     _tableView.delaysContentTouches = NO;
     
     _versionLabel.text = [NSString stringWithFormat:@"GMMobile Version %@", UIApplication.appVersionBuild];
-    
-    _restClient = [[DBRestClient alloc] initWithSession:DBSession.sharedSession];
-    _restClient.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -71,26 +66,12 @@
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Download File from iCloud"/*, @"Test Compression & Upload"*/];
+                  @"Access Documents" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         NSMutableArray *tempArray = _contents.mutableCopy;
         [tempArray addObject:@"Clear Prop List & Destinations"];
-        _contents = tempArray.copy;
-    }
-    
-    if (!DBSession.sharedSession.isLinked)
-    {
-        NSMutableArray *tempArray = _contents.mutableCopy;
-        [tempArray addObject:@"Link App to Dropbox"];
-        _contents = tempArray.copy;
-    }
-    
-    else
-    {
-        NSMutableArray *tempArray = _contents.mutableCopy;
-        [tempArray addObject:@"Download File From Dropbox"];
         _contents = tempArray.copy;
     }
     
@@ -105,11 +86,7 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    if (_metadata)
-        return _metadata.contents.count;
-    
-    else
-        return _contents.count;
+    return _contents.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -127,19 +104,10 @@
     cell.textLabel.font = [UIFont boldSystemFontOfSize:32.0];
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    
-    if (_metadata)
-    {
-        DBMetadata *metadata = _metadata.contents[indexPath.row];
-        cell.textLabel.text = metadata.filename;
-    }
-    
-    else
-        cell.textLabel.text = _contents[indexPath.row];
-    
+    cell.textLabel.text = _contents[indexPath.row];
     cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
-    if (indexPath.row < _images.count && !_metadata)
+    if (indexPath.row < _images.count)
         cell.imageView.image = _images[indexPath.row];
     
     else
@@ -248,23 +216,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Download File from iCloud"])
+              isEqualToString:@"Access Documents"])
     {
-        _query = [[NSMetadataQuery alloc] init];
-        _query.searchScopes = [NSArray arrayWithObject:NSMetadataQueryUbiquitousDataScope];
+        UIDocumentPickerViewController *documentPicker =
+        [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.content", @"public.composite-content", @"public.data"]
+                                                               inMode:UIDocumentPickerModeImport];
         
-        [NSNotificationCenter.defaultCenter addObserver:self
-                                               selector:@selector(queryDidFinishGathering:)
-                                                   name:NSMetadataQueryDidFinishGatheringNotification
-                                                 object:_query];
-        [_query startQuery];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Link App to Dropbox"])
-    {
-        if (!DBSession.sharedSession.isLinked)
-            [DBSession.sharedSession linkFromController:self];
+        documentPicker.delegate = self;
+        documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
+        
+        [self presentViewController:documentPicker
+                           animated:NO
+                         completion:nil];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -272,18 +235,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self performSegueWithIdentifier:@"SelectOrganization"
                                   sender:self];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Download File From Dropbox"])
-    {
-        [_restClient loadMetadata:@"/"];
-    }
-    
-    else if (_metadata)
-    {
-        DBMetadata *metadata = _metadata.contents[indexPath.row];
-        [_restClient loadMetadata:metadata.path];
     }
     
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -328,48 +279,26 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }*/
 }
 
-- (void)queryDidFinishGathering:(NSNotification *)notification
+- (void)documentPicker:(UIDocumentPickerViewController *)controller
+  didPickDocumentAtURL:(NSURL *)url
 {
-    for (NSMetadataItem *items in _query.results)
-        NSLog(@"%@", [items valueForKey:NSMetadataItemDisplayNameKey]);
-}
-
-- (void)restClient:(DBRestClient *)client
-    loadedMetadata:(DBMetadata *)metadata
-{
-    if (metadata.isDirectory)
-        _metadata = metadata;
-    
-    else
+    if (controller.documentPickerMode == UIDocumentPickerModeImport)
     {
-        [_restClient loadFile:metadata.path
-                     intoPath:[NSString stringWithFormat:@"%@/%@",
-                               UserDefaults.defaults.localFilePath, metadata.filename]];
+        NSString *alertMessage = [NSString stringWithFormat:@"Successfully imported %@", url.lastPathComponent];
         
-        _metadata = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view delegate:self
+                                                                 title:alertMessage
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+#pragma unused(alert)
+        });
     }
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
+{
     
-    [_tableView reloadData];
-}
-
-- (void)restClient:(DBRestClient *)client
-loadMetadataFailedWithError:(NSError *)error
-{
-    NSLog(@"ERROR loading dropbox metadata:%@", error);
-}
-
-- (void)restClient:(DBRestClient *)client
-        loadedFile:(NSString *)localPath
-       contentType:(NSString *)contentType
-          metadata:(DBMetadata *)metadata
-{
-    NSLog(@"Dropbox file loaded into path:%@", localPath);
-}
-
-- (void)restClient:(DBRestClient *)client
-loadFileFailedWithError:(NSError *)error
-{
-    NSLog(@"ERROR loading the dropbox file:%@", error);
 }
 
 - (void)productsRequest:(SKProductsRequest *)request

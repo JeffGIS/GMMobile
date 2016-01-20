@@ -19,10 +19,7 @@
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
-		69394F931C4E802D00F140DE /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69394F921C4E802D00F140DE /* DropboxSDK.framework */; };
-		69394F951C4E807200F140DE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69394F941C4E807200F140DE /* Security.framework */; };
 		69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */; };
-		69394F9A1C4EEE3700F140DE /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69394F991C4EEE3700F140DE /* CloudKit.framework */; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00731C1B229C0074AF72 /* clearMarkers.png */; };
@@ -179,11 +176,8 @@
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
-		69394F921C4E802D00F140DE /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
-		69394F941C4E807200F140DE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		69394F961C4ECBA200F140DE /* SelectOrganizationVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectOrganizationVC.h; sourceTree = "<group>"; };
 		69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectOrganizationVC.m; sourceTree = "<group>"; };
-		69394F991C4EEE3700F140DE /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
 		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
@@ -375,7 +369,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69394F951C4E807200F140DE /* Security.framework in Frameworks */,
 				69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */,
 				69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */,
 				69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */,
@@ -388,14 +381,12 @@
 				69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */,
 				69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */,
 				A9A1C0A61B55661500A3DFD8 /* Accelerate.framework in Frameworks */,
-				69394F9A1C4EEE3700F140DE /* CloudKit.framework in Frameworks */,
 				A9A1C0A41B55660E00A3DFD8 /* CoreBluetooth.framework in Frameworks */,
 				A90C6E991B4A3AC300D87DB8 /* MessageUI.framework in Frameworks */,
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
 				A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */,
-				69394F931C4E802D00F140DE /* DropboxSDK.framework in Frameworks */,
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
 				A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */,
 				A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */,
@@ -483,9 +474,6 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				69394F991C4EEE3700F140DE /* CloudKit.framework */,
-				69394F941C4E807200F140DE /* Security.framework */,
-				69394F921C4E802D00F140DE /* DropboxSDK.framework */,
 				690E829B1C11042A00AB410E /* Assets.bundle */,
 				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
 				69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */,
