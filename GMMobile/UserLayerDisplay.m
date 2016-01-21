@@ -27,6 +27,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (sfd)
     {
         sfd.zoom = _zoom;
+        sfd.processingID = _processingID;
         [sfd display:context
 displayCharacteristics:dc
            llCorners:latlonCornerPoints
@@ -41,6 +42,22 @@ displayCharacteristics:dc
     if (sfd)
     {
         sfd.zoom = _zoom;
+        sfd.processingID = _processingID;
+        [sfd display:context
+displayCharacteristics:dc
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds
+              themes:themes
+         pointInArea:pia];
+    }
+    fileName = @"wMeter.shp";
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    if (sfd)
+    {
+        sfd.zoom = _zoom;
+        sfd.processingID = _processingID;
         [sfd display:context
 displayCharacteristics:dc
            llCorners:latlonCornerPoints

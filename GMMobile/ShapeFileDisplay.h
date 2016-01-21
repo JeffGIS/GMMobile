@@ -5,6 +5,7 @@
 //  Created by JEFFREY E SMITH on 1/20/16.
 //  Copyright © 2016 GSSi. All rights reserved.
 //
+extern int keepProcessing;
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
@@ -16,7 +17,10 @@
 
 @property SHPHandle hSHP;
 @property DBFHandle hDBF;
+@property int processingID;
 @property int zoom;
+@property NSString * fileName;
+@property NSString * filePath;
 
 
 + (ShapeFileDisplay *)createWithFile:(const char*)shapeFile;

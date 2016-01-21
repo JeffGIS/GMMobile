@@ -16,6 +16,14 @@
 
 @implementation ShapeFileDisplay
 
+- (BOOL)continue
+{
+    if (self.processingID == keepProcessing)
+        return YES;
+    
+    return NO;
+}
+
 + (ShapeFileDisplay *)createWithFile:(const char*)shapeFile
 {
     char outFile[MAX_PATH];
@@ -26,6 +34,7 @@
     
     if (!shapeFile)
         return NULL;
+    
     sprintf (outFile,"%s",shapeFile);
     char * pFS = strrchr (outFile,'/');
     if (pFS)
@@ -49,6 +58,8 @@ Top:
         sfd = [[ShapeFileDisplay alloc]init];
         sfd.hSHP = hSHP;
         sfd.hDBF = hDBF;
+        sfd.filePath = [NSString stringWithUTF8String:shapeFile];
+        sfd.fileName = [sfd.filePath lastPathComponent];
     }
     else if (first)
     {
@@ -87,12 +98,22 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     CGFloat size = 20;
     CGFloat sizeFactor = 5;
-    if (_zoom > 18)
-     sizeFactor *= (2.0 *(_zoom - 18.0));
-     
-     else if (_zoom < 18)
-     sizeFactor /= (2.0 * (18.0 - _zoom));
 
+    if (_zoom > 18)
+        sizeFactor *= (2.0 *(_zoom - 18.0));
+    else if (_zoom < 18)
+        sizeFactor /= (2.0 * (18.0 - _zoom));
+    
+    dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+
+    PointSymbols sym = CircleSym;
+    
+    if ([_fileName containsString:@"Meter"])
+    {
+        sym = Star2Sym;
+        dc.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
+        sizeFactor *=2;
+    }
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -100,6 +121,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     for (int irec = 0; irec < _hSHP->nRecords; irec++)
     {
+        if (![self continue])
+            break;
         SHPObject *psCShape = SHPReadObject (_hSHP, irec );
         
         switch (psCShape->nSHPType)
@@ -107,27 +130,38 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             case SHPT_POINT:
             {
                 DPOINT pt;
+                int iField = DBFGetFieldIndex(_hDBF, "MODEL");
                 pt.x = psCShape->padfX[0];
                 pt.y = psCShape->padfY[0];
                 pt = TranDPOINT(&pt, _pTranLLtoView);
-                dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
                 [self drawPoint:context
                         atPoint:&pt
-                    usingSymbol:CircleSym
+                    usingSymbol:sym
                      withColor:dc.color.CGColor
                       andSize:(size * sizeFactor)];
             }
                 break;
             default:
             {
+                int iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
+                double width=1;
+                int fieldWidth, nDecimals;
+                char fieldName[32];
+                if (iField)
+                {
+                    DBFGetFieldInfo(_hDBF,iField,
+                                    fieldName, &fieldWidth, &nDecimals );
+                    width = DBFReadDoubleAttribute( _hDBF,irec,iField );
+
+                }
                 [self drawLine:context
                        nPoints:psCShape->nVertices
                         nLoops:psCShape->nParts
                        partLen:psCShape->panPartStart
                              x:psCShape->padfX
                              y:psCShape->padfY
-                     withColor:UIColor.blackColor.CGColor
-                      andWidth:3];
+                     withColor:dc.color.CGColor
+                      andWidth:width*sizeFactor];
             }
         }
         SHPDestroyObject ( psCShape );
@@ -229,7 +263,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                      Size:size
                                 fillColor:color
                                 lineColor:0
-                                lineWidth:size/5];
+                                lineWidth:size/7];
     
 }
 
