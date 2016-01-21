@@ -46,6 +46,12 @@
             thm = [Theme createTheme:CurbRampTheme];
             [_themeList addObject:thm];
             break;
+        case HCConfigMapleGrove:
+            thm = [Theme createTheme:CurbRampIntersectionTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:CurbRampTheme];
+            [_themeList addObject:thm];
+            break;
         default:
             break;
     }

@@ -16,9 +16,10 @@
 
 @property SHPHandle hSHP;
 @property DBFHandle hDBF;
+@property int zoom;
 
 
-+ (ShapeFileDisplay *)createWithFile:(char*)shapeFile;
++ (ShapeFileDisplay *)createWithFile:(const char*)shapeFile;
 -(void)  display:(CGContextRef)context
 displayCharacteristics:(DisplayCharacteristics *)dc
        llCorners:(CORNERPOINTS *) latlonCornerPoints

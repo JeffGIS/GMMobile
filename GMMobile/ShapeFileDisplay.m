@@ -16,7 +16,7 @@
 
 @implementation ShapeFileDisplay
 
-+ (ShapeFileDisplay *)createWithFile:(char*)shapeFile
++ (ShapeFileDisplay *)createWithFile:(const char*)shapeFile
 {
     char outFile[MAX_PATH];
     SHPHandle hSHP;
@@ -85,6 +85,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
           themes:(Themes*)themes
      pointInArea:(PointInArea *)pia
 {
+    CGFloat size = 20;
+    CGFloat sizeFactor = 5;
+    if (_zoom > 18)
+     sizeFactor *= (2.0 *(_zoom - 18.0));
+     
+     else if (_zoom < 18)
+     sizeFactor /= (2.0 * (18.0 - _zoom));
+
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
@@ -94,14 +102,34 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         SHPObject *psCShape = SHPReadObject (_hSHP, irec );
         
-        [self drawLine:context
-               nPoints:psCShape->nVertices
-                nLoops:psCShape->nParts
-               partLen:psCShape->panPartStart
-                     x:psCShape->padfX
-                     y:psCShape->padfY
-             withColor:UIColor.blackColor.CGColor
-              andWidth:3];
+        switch (psCShape->nSHPType)
+        {
+            case SHPT_POINT:
+            {
+                DPOINT pt;
+                pt.x = psCShape->padfX[0];
+                pt.y = psCShape->padfY[0];
+                pt = TranDPOINT(&pt, _pTranLLtoView);
+                dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+                [self drawPoint:context
+                        atPoint:&pt
+                    usingSymbol:CircleSym
+                     withColor:dc.color.CGColor
+                      andSize:(size * sizeFactor)];
+            }
+                break;
+            default:
+            {
+                [self drawLine:context
+                       nPoints:psCShape->nVertices
+                        nLoops:psCShape->nParts
+                       partLen:psCShape->panPartStart
+                             x:psCShape->padfX
+                             y:psCShape->padfY
+                     withColor:UIColor.blackColor.CGColor
+                      andWidth:3];
+            }
+        }
         SHPDestroyObject ( psCShape );
     }
     CloseTRANS2(&_pTranLLtoView);
@@ -186,6 +214,23 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         CGPathRelease(path);
     }
+
+}
+- (void)drawPoint:(CGContextRef)context
+               atPoint:(DPOINT *)pPoint
+           usingSymbol:(PointSymbols)sym
+             withColor:(CGColorRef)color
+               andSize:(CGFloat)size
+
+{
+    [SymbolDictionary drawPointWithSymbol:context
+                                       at:pPoint
+                              usingSymbol:sym
+                                     Size:size
+                                fillColor:color
+                                lineColor:0
+                                lineWidth:size/5];
+    
 }
 
 

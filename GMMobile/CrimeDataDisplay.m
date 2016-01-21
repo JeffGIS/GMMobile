@@ -198,11 +198,6 @@ usingPointInArea:pia
 
 {
     
-    //CGContextSetStrokeColorWithColor(context,color);
-    //CGContextSetFillColorWithColor(context,color);
-    //CGContextFillEllipseInRect(context, pointRect);
-    //CGContextStrokeEllipseInRect(context, pointRect);
-    //CGContextFillPath(context);
     [SymbolDictionary drawPointWithSymbol:context
                                        at:pPoint
                               usingSymbol:sym

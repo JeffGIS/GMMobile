@@ -25,13 +25,30 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
     ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
     if (sfd)
+    {
+        sfd.zoom = _zoom;
         [sfd display:context
-            displayCharacteristics:dc
+displayCharacteristics:dc
            llCorners:latlonCornerPoints
             LLBounds:platlonBounds
           viewBounds:pvbounds
               themes:themes
          pointInArea:pia];
+    }
+    fileName = @"wHydrant.shp";
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    if (sfd)
+    {
+        sfd.zoom = _zoom;
+        [sfd display:context
+displayCharacteristics:dc
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds
+              themes:themes
+         pointInArea:pia];
+    }
 }
 
 

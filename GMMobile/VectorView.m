@@ -361,7 +361,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    
                                                }
                                                if (keepProcessing == self.displayID &&
-                                                   [ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerMapleGrove
                                                                                 visibleAtZoom:_zoom
                                                                                       andPass:passID])
                                                {

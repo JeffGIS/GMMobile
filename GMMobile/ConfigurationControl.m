@@ -100,6 +100,10 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                                                identifier:HCConfigCrimes];
         
         [self.appList addObject:ap];
+        ap = [[ApplicationObject alloc] initWithNameAndID:@"Maple Grove App"
+                                               identifier:HCConfigMapleGrove];
+        
+        [self.appList addObject:ap];
         self.currentApp = -1;
         
         strcpy(layerName[HCLayerAerials], "Aerial Photos");
@@ -109,6 +113,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         strcpy(layerName[HCLayerAlleys], "Alleys");
         strcpy(layerName[HCLayerCurbRamps], "Curb Ramps");
         strcpy(layerName[HCLayerCrimes], "Crimes");
+        strcpy(layerName[HCLayerMapleGrove], "Maple Grove Data");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
@@ -117,6 +122,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerDefaultZoom[HCLayerAlleys] = 14;
         layerDefaultZoom[HCLayerAlleys] = 13;
         layerDefaultZoom[HCLayerCrimes] = 11;
+        layerDefaultZoom[HCLayerMapleGrove] = 11;
         
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
@@ -125,6 +131,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerHasSymbols[HCLayerAlleys] = YES;
         layerHasSymbols[HCLayerAlleys] = NO;
         layerHasSymbols[HCLayerCrimes] = NO;
+        layerHasSymbols[HCLayerMapleGrove] = YES;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
@@ -199,6 +206,18 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantHelpButton] = YES;
         
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantUserLocation] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantExtents] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantGrayscale] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantClearMarkers] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantEmailPDF] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantHelpButton] = YES;
+        
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
         configLayers[HCConfigSewers][HCLayerParcels] = YES;
@@ -242,6 +261,15 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigCrimes][HCLayerAlleys] = NO;
         configLayers[HCConfigCrimes][HCLayerCurbRamps] = NO;
         configLayers[HCConfigCrimes][HCLayerCrimes] = YES;
+        
+        configLayers[HCConfigMapleGrove][HCLayerAerials] = NO;
+        configLayers[HCConfigMapleGrove][HCLayerParcels] = YES;
+        configLayers[HCConfigMapleGrove][HCLayerSewers] = YES;
+        configLayers[HCConfigMapleGrove][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigMapleGrove][HCLayerAlleys] = NO;
+        configLayers[HCConfigMapleGrove][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigMapleGrove][HCLayerCrimes] = NO;
+        configLayers[HCConfigMapleGrove][HCLayerMapleGrove] = YES;
         
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {

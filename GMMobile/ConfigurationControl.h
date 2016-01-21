@@ -6,7 +6,7 @@
 #import "Theme.h"
 
 #define MAX_LAYER_NAME 32
-#define NUMHardCodedConfigs 6
+#define NUMHardCodedConfigs 7
 
 typedef NS_ENUM(NSInteger, GetDatabaseSetting)
 {
@@ -32,9 +32,10 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigSewers,
     HCConfigMetroProp,
     HCConfigCrimes,
+    HCConfigMapleGrove,
 };
 
-#define NUMHardCodedLayers 7
+#define NUMHardCodedLayers 8
 
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
@@ -45,6 +46,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerAlleys,
     HCLayerCurbRamps,
     HCLayerCrimes,
+    HCLayerMapleGrove,
 };
 
 @interface ApplicationObject : NSObject
