@@ -39,6 +39,7 @@
 		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
 		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
+		69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C8DB561C515DC90062AE84 /* MGThemesVC.m */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
@@ -202,6 +203,8 @@
 		69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetViewController.m; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
 		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		69C8DB551C515DC90062AE84 /* MGThemesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGThemesVC.h; sourceTree = "<group>"; };
+		69C8DB561C515DC90062AE84 /* MGThemesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGThemesVC.m; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -597,6 +600,8 @@
 				699D3A691BE883EB00BD6660 /* CrimeOptions2.m */,
 				69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */,
 				69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */,
+				69C8DB551C515DC90062AE84 /* MGThemesVC.h */,
+				69C8DB561C515DC90062AE84 /* MGThemesVC.m */,
 				69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */,
 				69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */,
 				69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */,
@@ -955,6 +960,7 @@
 				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,
+				69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
