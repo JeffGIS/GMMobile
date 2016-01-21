@@ -864,7 +864,8 @@ extern int keepProcessing;
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
     
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
@@ -2068,7 +2069,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
         CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
@@ -2394,7 +2396,8 @@ haveVV:
                        }
                        
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
-                           ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
                        {
                            if (!_legendsAreOffMap)
                            {
@@ -2419,7 +2422,8 @@ haveVV:
 - (void)updateLegendPositions
 {
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         
