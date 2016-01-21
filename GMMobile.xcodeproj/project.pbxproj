@@ -20,6 +20,8 @@
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
 		69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */; };
+		6944EDFF1C515A8E00DD5A24 /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */; };
+		6944EE001C515A8E00DD5A24 /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69450DB01BD603E50079F7EC /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00731C1B229C0074AF72 /* clearMarkers.png */; };
@@ -36,6 +38,8 @@
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
 		69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
+		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
+		69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C8DB561C515DC90062AE84 /* MGThemesVC.m */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
@@ -116,8 +120,6 @@
 		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
-		EB178F0B1C4FEEDE00B194AD /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB178F0A1C4FEEDE00B194AD /* libNVShapefileLibrary.a */; };
-		EB178F0D1C5023D000B194AD /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB178F0C1C5023D000B194AD /* libNVCoordinateLibrary.a */; };
 		EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
@@ -200,6 +202,9 @@
 		69C441A31BB466EA00D026A7 /* SpreadsheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpreadsheetViewController.h; sourceTree = "<group>"; };
 		69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpreadsheetViewController.m; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
+		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		69C8DB551C515DC90062AE84 /* MGThemesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGThemesVC.h; sourceTree = "<group>"; };
+		69C8DB561C515DC90062AE84 /* MGThemesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGThemesVC.m; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -305,8 +310,6 @@
 		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
 		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeFileDisplay.h; sourceTree = "<group>"; };
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShapeFileDisplay.m; sourceTree = "<group>"; };
-		EB178F0A1C4FEEDE00B194AD /* libNVShapefileLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVShapefileLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/Untitled-cfrufkzcmkdnucabbmzmgjxnuazs/Build/Products/Debug-iphoneos/libNVShapefileLibrary.a"; sourceTree = "<group>"; };
-		EB178F0C1C5023D000B194AD /* libNVCoordinateLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVCoordinateLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/Untitled-cfrufkzcmkdnucabbmzmgjxnuazs/Build/Products/Debug-iphoneos/libNVCoordinateLibrary.a"; sourceTree = "<group>"; };
 		EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlleyWallData.h; sourceTree = "<group>"; };
 		EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlleyWallData.m; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
@@ -379,8 +382,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB178F0D1C5023D000B194AD /* libNVCoordinateLibrary.a in Frameworks */,
-				EB178F0B1C4FEEDE00B194AD /* libNVShapefileLibrary.a in Frameworks */,
+				6944EDFF1C515A8E00DD5A24 /* libNVCoordinateLibrary.a in Frameworks */,
+				6944EE001C515A8E00DD5A24 /* libNVShapefileLibrary.a in Frameworks */,
 				69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */,
 				69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */,
 				69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */,
@@ -486,8 +489,6 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				EB178F0C1C5023D000B194AD /* libNVCoordinateLibrary.a */,
-				EB178F0A1C4FEEDE00B194AD /* libNVShapefileLibrary.a */,
 				690E829B1C11042A00AB410E /* Assets.bundle */,
 				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
 				69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */,
@@ -599,6 +600,8 @@
 				699D3A691BE883EB00BD6660 /* CrimeOptions2.m */,
 				69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */,
 				69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */,
+				69C8DB551C515DC90062AE84 /* MGThemesVC.h */,
+				69C8DB561C515DC90062AE84 /* MGThemesVC.m */,
 				69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */,
 				69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */,
 				69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */,
@@ -682,6 +685,7 @@
 				EB5521CD1A61B6A8008CE2D1 /* Info.plist */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
 				6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */,
+				69C8DB4B1C515B440062AE84 /* .gitignore */,
 			);
 			name = "Supporting Files";
 			path = GMMobile;
@@ -875,6 +879,7 @@
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
+				69C8DB4C1C515B440062AE84 /* .gitignore in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,
@@ -955,6 +960,7 @@
 				A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,
+				69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

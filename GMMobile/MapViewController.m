@@ -98,6 +98,10 @@ extern int keepProcessing;
         removeViewControllerWithID:@"CurbRampDataOptionsVC"
                           animated:NO];
     
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"MGThemesVC"
+                          animated:NO];
+    
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
                                                name:@"didBecomeActive"
@@ -822,6 +826,23 @@ extern int keepProcessing;
     {
         [NVTabBarEdit tabBarController:self.tabBarController
             removeViewControllerWithID:@"CurbRampDataOptionsVC"
+                              animated:YES];
+    }
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+    {
+        UIViewController *mgThemesVC = [storyboard instantiateViewControllerWithIdentifier:@"MGThemesVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:mgThemesVC
+                               atIndex:1
+                              animated:YES];
+    }
+    
+    else
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"MGThemesVC"
                               animated:YES];
     }
     
