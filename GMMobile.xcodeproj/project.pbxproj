@@ -114,6 +114,10 @@
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
 		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
 		A9F56EC01A847CA8003522AE /* WebKitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9F56EBF1A847CA8003522AE /* WebKitViewController.m */; };
+		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
+		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
+		EB178F0B1C4FEEDE00B194AD /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB178F0A1C4FEEDE00B194AD /* libNVShapefileLibrary.a */; };
+		EB178F0D1C5023D000B194AD /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB178F0C1C5023D000B194AD /* libNVCoordinateLibrary.a */; };
 		EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
@@ -297,6 +301,12 @@
 		A9F56EBE1A847CA8003522AE /* WebKitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitViewController.h; sourceTree = "<group>"; };
 		A9F56EBF1A847CA8003522AE /* WebKitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebKitViewController.m; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
+		EB178F041C4FE4BA00B194AD /* UserLayerDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserLayerDisplay.h; sourceTree = "<group>"; };
+		EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserLayerDisplay.m; sourceTree = "<group>"; };
+		EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeFileDisplay.h; sourceTree = "<group>"; };
+		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShapeFileDisplay.m; sourceTree = "<group>"; };
+		EB178F0A1C4FEEDE00B194AD /* libNVShapefileLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVShapefileLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/Untitled-cfrufkzcmkdnucabbmzmgjxnuazs/Build/Products/Debug-iphoneos/libNVShapefileLibrary.a"; sourceTree = "<group>"; };
+		EB178F0C1C5023D000B194AD /* libNVCoordinateLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVCoordinateLibrary.a; path = "../../../Library/Developer/Xcode/DerivedData/Untitled-cfrufkzcmkdnucabbmzmgjxnuazs/Build/Products/Debug-iphoneos/libNVCoordinateLibrary.a"; sourceTree = "<group>"; };
 		EB1B80FF1AEDDA9B00A0C7B6 /* AlleyWallData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AlleyWallData.h; sourceTree = "<group>"; };
 		EB1B81001AEDDA9B00A0C7B6 /* AlleyWallData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AlleyWallData.m; sourceTree = "<group>"; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
@@ -369,6 +379,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB178F0D1C5023D000B194AD /* libNVCoordinateLibrary.a in Frameworks */,
+				EB178F0B1C4FEEDE00B194AD /* libNVShapefileLibrary.a in Frameworks */,
 				69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */,
 				69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */,
 				69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */,
@@ -474,6 +486,8 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EB178F0C1C5023D000B194AD /* libNVCoordinateLibrary.a */,
+				EB178F0A1C4FEEDE00B194AD /* libNVShapefileLibrary.a */,
 				690E829B1C11042A00AB410E /* Assets.bundle */,
 				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
 				69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */,
@@ -550,6 +564,10 @@
 				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
 				EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */,
 				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
+				EB178F041C4FE4BA00B194AD /* UserLayerDisplay.h */,
+				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
+				EB178F071C4FEAE500B194AD /* ShapeFileDisplay.h */,
+				EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -894,6 +912,7 @@
 				EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				69EB532A1BE7EA46002481BB /* CrimeDataPageVC.m in Sources */,
+				EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
@@ -925,6 +944,7 @@
 				EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */,
 				1F0723E81BEBD62F00966C36 /* SymbolDictionary.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
+				EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */,
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */,
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,

@@ -10,6 +10,7 @@ extern int keepProcessing;
 #import "BoundaryData.h"
 #import "PipeTrace.h"
 #import "CrimeDataDisplay.h"
+#import "UserLayerDisplay.h"
 #import "ConfigurationControl.h"
 #import "Themes.h"
 
@@ -358,6 +359,25 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];
                                                    
+                                               }
+                                               if (keepProcessing == self.displayID &&
+                                                   [ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                                                                visibleAtZoom:_zoom
+                                                                                      andPass:passID])
+                                               {
+                                                   UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+                                                   ud.processingID = keepProcessing;
+                                                   ud.zoom = _zoom;
+                                                    if (keepProcessing == self.displayID)
+                                                   {
+                                                       [ud displayLayers:_context
+                                                       displayCharacteristics:dc
+                                                                    llCorners:&_latlonCornerPoints
+                                                                     LLBounds:&_latlonBounds
+                                                                   viewBounds:&_viewBounds
+                                                                       themes:themes
+                                                                  pointInArea:_pia];
+                                                   }
                                                }
                                                
                                                
