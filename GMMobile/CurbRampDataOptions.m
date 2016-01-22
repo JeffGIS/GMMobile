@@ -248,11 +248,17 @@ viewForHeaderInSection:(NSInteger)section
         if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
             UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
         {
-            margin = 12.0;
+            margin = 18.0;
         }
     }
     
     CGFloat tvWidth = (self.view.frame.size.width - margin);
+    
+    if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+        UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+    {
+        tvWidth /= 2.0;
+    }
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tvWidth, _headerHeight)];
     headerView.backgroundColor = UIColor.blackColor;
@@ -615,7 +621,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 }
             }
             
-            CGFloat tvWidth = (self.view.frame.size.width - 40.0);
+            CGFloat margin = 40.0;
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            {
+                margin = 16.0;
+                
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                {
+                    margin = 18.0;
+                }
+            }
+            
+            CGFloat tvWidth = (self.view.frame.size.width - margin);
+            
+            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+            {
+                tvWidth /= 2.0;
+            }
+            
             CGFloat rowHeight =  (CGFloat)((tvHeight - _headerHeight) / tl.numCells);
             CGFloat textWidth = ceil(textSize.size.width);
             
