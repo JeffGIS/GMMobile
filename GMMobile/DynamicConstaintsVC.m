@@ -118,10 +118,10 @@
             backgroundColor:UIColor.greenColor];
     
     [self addSubviewstoView:v2
-            backgroundColor:UIColor.purpleColor];
+            backgroundColor:UIColor.redColor];
     
     [self addSubviewstoView:v3
-            backgroundColor:UIColor.redColor];
+            backgroundColor:UIColor.magentaColor];
     
     [self addSubviewstoView:v4
             backgroundColor:UIColor.yellowColor];
