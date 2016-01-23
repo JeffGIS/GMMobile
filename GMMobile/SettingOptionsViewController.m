@@ -10,6 +10,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
 @import MediaPlayer;
+#import "DynamicConstaintsVC.h"
 
 @interface SettingOptionsViewController () <UIDocumentPickerDelegate>
 
@@ -240,7 +241,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Dynamic Constraints VC"])
     {
+        DynamicConstaintsVC *dcvc = [[DynamicConstaintsVC alloc] init];
         
+        [self presentViewController:dcvc
+                           animated:YES
+                         completion:nil];
     }
     
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
