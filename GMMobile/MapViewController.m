@@ -2626,7 +2626,7 @@ haveVV:
             }
         }
         
-        if (_legendsAreOffMap && _mapToolbar.orientation != MapToolbarOrientationLeft)
+        /*if (_legendsAreOffMap && _mapToolbar.orientation != MapToolbarOrientationLeft)
         {
             _mapToolbar.orientation = MapToolbarOrientationLeft;
             
@@ -2639,7 +2639,7 @@ haveVV:
                                  
                                  [self updateCompassPosition];
                              }];
-        }
+        }*/
     }
 }
 
