@@ -20,6 +20,11 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     HourTheme,
     CurbRampIntersectionTheme,
     CurbRampTheme,
+    MGVWaterLineTheme,
+    MGVWaterMeterTheme,
+    MGVHydrantTheme,
+    MGVFiberLineTheme,
+    MGVFiberPointTheme,
 };
 
 #endif /* ThemeTypes_h */

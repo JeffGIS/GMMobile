@@ -773,7 +773,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    UIColor *parcelLineColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+    UIColor *parcelLineColor = [UIColor colorWithRed:0.5 green:0 blue:0 alpha:1];
     int parcelLineWidth = 3;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;

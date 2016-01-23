@@ -36,7 +36,7 @@
     Theme * thm = [[Theme alloc]init];
     ThemeClass *class;
     thm.type = type;
-    thm.setColor = YES;
+    thm.setColor = NO;
     thm.legend = [[ThemeLegend alloc]init];
     thm.titles = [[NSMutableArray alloc]init];
     thm.classes = [[NSMutableArray alloc]init];
@@ -116,6 +116,7 @@
             [thm.classes addObject:class];
             break;
         case DayNightTheme:
+            thm.setColor = YES;
             thm.legend.title = @"Day - Night";
             [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = 2;
@@ -370,6 +371,143 @@
             }
         }
             break;
+        case MGVHydrantTheme:
+            thm.setColor = YES;
+            thm.legend.title = @"Hydrant Thread";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 2;
+            class = [ThemeClass createWithTitle:@"Minneapolis "];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"National Std"];
+            class.color = [UIColor greenColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            break;
+        case MGVWaterMeterTheme:
+        case MGVWaterLineTheme:
+            thm.setColor = YES;
+            thm.legend.title = @"Pipe Material";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 8;
+            class = [ThemeClass createWithTitle:@"CIPP   "];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"COP    "];
+            class.color = [UIColor greenColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"DIP    "];
+            class.color = [UIColor blueColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"HDPE   "];
+            class.color = [UIColor cyanColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Irrigat"];
+            class.color = [UIColor blackColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"LockJnt"];
+            class.color = [UIColor redColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"PVC    "];
+            class.color = [UIColor brownColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Other  "];
+            class.color = [UIColor orangeColor];
+            class.size = 2;
+            [thm.classes addObject:class];
+            break;
+        case MGVFiberLineTheme:
+            thm.setColor = YES;
+            thm.legend.title = @"Fiber Strands";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 9;
+            class = [ThemeClass createWithTitle:@"0  "];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"12 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"24 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"36 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"48 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"72 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"84 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"96 "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"120"];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            break;
+        case MGVFiberPointTheme:
+            thm.setColor = YES;
+            thm.legend.title = @"Fiber Point";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 9;
+            class = [ThemeClass createWithTitle:@"Building        "];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Hand Hole       "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Lateral         "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Patch Panel     "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Splice-Vault    "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Valve Box       "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Vault           "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Water Tower Base"];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Other           "];
+            class.color = [UIColor greenColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            break;
     }
     
     thm.numClasses = (int)thm.classes.count;
@@ -600,6 +738,100 @@ int getThemeOpt(ThemeTypes type)
                                       dc:dc
                                 testPass:test])
                     rtn = DISPLAY_ITEM;
+                break;
+            case MGVWaterLineTheme:
+                if (dc.elementType != WaterMain)
+                    goto DisplayExit;
+                val = 0;
+                for (ThemeClass * cls in _classes)
+                {
+                    if ([cls.title isEqualToString:@"Other"] || [cls.title containsString:dc.string2])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+                break;
+            case MGVWaterMeterTheme:
+                if (dc.elementType != WaterMeter)
+                    goto DisplayExit;
+                val = 0;
+                for (ThemeClass * cls in _classes)
+                {
+                    if ([cls.title containsString:dc.string2])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+                break;
+            case MGVHydrantTheme:
+                if (dc.elementType != Hydrant)
+                    goto DisplayExit;
+                val = 0;
+                for (ThemeClass * cls in _classes)
+                {
+                    NSString * classType = [[cls.title substringToIndex:5] uppercaseString];
+                    NSString * recordType = [dc.string2 uppercaseString];
+                    if ([recordType containsString:classType])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+                break;
+            case MGVFiberLineTheme:
+                if (dc.elementType != FiberLines)
+                    goto DisplayExit;
+                val = 0;
+                for (ThemeClass * cls in _classes)
+                {
+                    int classVal = [cls.title integerValue];
+                    if (dc.UCR == classVal)
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+            case MGVFiberPointTheme:
+                if (dc.elementType != FiberPoints)
+                    goto DisplayExit;
+                val = 0;
+                for (ThemeClass * cls in _classes)
+                {
+                    NSString * classType = [cls.title uppercaseString];
+                    NSString * recordType = [dc.string2 uppercaseString];
+                    if ([classType containsString:@"OTHER"] || [classType containsString:recordType])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
                 break;
         }
     }
