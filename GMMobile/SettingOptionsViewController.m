@@ -10,6 +10,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
 @import MediaPlayer;
+#import "DynamicConstaintsVC.h"
 
 @interface SettingOptionsViewController () <UIDocumentPickerDelegate>
 
@@ -66,7 +67,7 @@
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Access Documents" /*, @"Test Compression & Upload"*/];
+                  @"Access Documents", @"Test Dynamic Constraints VC" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -235,6 +236,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self performSegueWithIdentifier:@"SelectOrganization"
                                   sender:self];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test Dynamic Constraints VC"])
+    {
+        DynamicConstaintsVC *dcvc = [[DynamicConstaintsVC alloc] init];
+        
+        [self presentViewController:dcvc
+                           animated:YES
+                         completion:nil];
     }
     
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text

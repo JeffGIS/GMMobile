@@ -39,19 +39,17 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _rowHeight = 36.0;
-        _headerHeight = 24.0;
+        _headerHeight = 20.0;
         _cornerRadius = 4.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:14.0];
         
-        _headerFont = [UIFont boldSystemFontOfSize:18.0];
+        _headerFont = [UIFont boldSystemFontOfSize:14.0];
     }
     
     else
     {
-        _rowHeight = 52.0;
         _headerHeight = 40.0;
         _cornerRadius = 10.0;
         
@@ -592,7 +590,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     CGFloat symbolSize = 52.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        symbolSize = 36.0;
+        symbolSize = 28.0;
     
     if (tl.usePointSymbols)
         cell.imageView.image = imageFromSymbol(tlc.symbol, symbolSize, tlc.symbolColor);
