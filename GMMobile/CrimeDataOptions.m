@@ -67,10 +67,11 @@
     
     _modes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals",
                @"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare", @"Hotspot Map for Month with Monthly Compare",
-               @"Hotspot Map for Week with Weekly Compare", @"Basic Choropleth Map for Wards", @"Choropleth Map for Wards by Year",
-               @"Choropleth Map for Wards by Month", @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",
-               @"Choropleth Map for Sectors by Month", @"Basic Choropleth Map for Neighborhoods",
-               @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+               @"Hotspot Map for Week with Weekly Compare",
+               @"Basic Choropleth Map for Precincts", @"Choropleth Map for Precincts by Year",@"Choropleth Map for Precincts by Month",
+               @"Basic Choropleth Map for Wards", @"Choropleth Map for Wards by Year",@"Choropleth Map for Wards by Month",
+               @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",@"Choropleth Map for Sectors by Month",
+               @"Basic Choropleth Map for Neighborhoods",@"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
     
     _modeButton.selected = YES;
     _areaTypeButton.selected = NO;
@@ -402,6 +403,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             CRAPI.sharedInstance.crimeMode = CHOROPLETH;
         if ([mode containsString:@"HOTSPOT"])
             CRAPI.sharedInstance.crimeMode = HOTSPOT;
+        if ([mode containsString:@"PRECINCTS"])
+            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Precincts";
         if ([mode containsString:@"NEIGHBORHOODS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
         if ([mode containsString:@"WARDS"])

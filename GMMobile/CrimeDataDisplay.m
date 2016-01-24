@@ -179,14 +179,24 @@ usingPointInArea:pia
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
     if (_mode == CHOROPLETH)
     {
+        NSArray * textArray = [NSArray new];
+        
         [pias createDisplayColors];
-
+        
         [bd display:context
            areaType:_choroplethTarget
        pointInAreas:pias
           llCorners:latlonCornerPoints
            LLBounds:platlonBounds
          viewBounds:pvbounds];
+        
+        [bd displayText:context
+               areaType:_choroplethTarget
+              textArray:textArray
+           pointInAreas:pias
+              llCorners:latlonCornerPoints
+               LLBounds:platlonBounds
+             viewBounds:pvbounds];
     }
 }
 

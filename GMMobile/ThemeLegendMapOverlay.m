@@ -905,11 +905,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!_dragSelectActive)
     {
-        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
-        tlc.status = YES;
-        
-        if (!_preventRefresh && _delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        NSInteger irow = indexPath.row;
+        if (irow >= 0 && irow < _legend.cells.count)
+        {
+            ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[irow];
+            tlc.status = YES;
+            
+            if (!_preventRefresh && _delegate)
+                [_delegate themeLegendDidChangeStatus:YES];
+        }
     }
 }
 

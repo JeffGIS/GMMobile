@@ -5,6 +5,7 @@
 
 #import "BoundaryData.h"
 #import "PropertyData.h"
+#import "CCodeLibrary/NVTextDrawing.h"
 
 extern int keepProcessing;
 @implementation BoundaryAreaData
@@ -844,6 +845,111 @@ NextPass:
                   nPoints:numPoints
                    points:llpoints
                 withColor:[pias colorForArea:keyval]];
+        free (llpoints);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), self.database);
+    [self close:opened];
+    
+    return nLoaded;
+    
+}
+
+- (int) displayText:(CGContextRef)context
+       areaType:(NSString*)areaType
+          textArray:(NSArray *)textArray
+   pointInAreas:(PointInAreas*)pias
+      llCorners:(CORNERPOINTS *) latlonCornerPoints
+       LLBounds:(MNMXCORD *)platlonBounds
+     viewBounds:(MNMXCORD *)pvbounds
+{
+    extern MNMXCORD curbounds;
+    int nLoaded = 0;
+    NSString *query = @"";
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints;
+    LPSTR pkeyval;
+    NSString * keyval;
+    int numLoops;
+    NSString * key = areaType;
+    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    CGFloat fontSize = 32.0;
+    CGFloat minFontSize = 8.0;
+    
+    BOOL opened = [self open];
+    
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    
+    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+        [areaType isEqualToString:@"Minneapolis Wards"] ||
+        [areaType isEqualToString:@"Minneapolis Sectors"] ||
+        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+    {
+        table = @"BOUNDARYAREA";
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+    }
+    else
+    {
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        
+    }
+    //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
+NextPass:
+    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        numPoints = sqlite3_column_int(statement,2);
+        numLoops = sqlite3_column_int(statement,3);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        //int nBlobBytes = sqlite3_column_bytes(statement,4);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
+        //nBlobBytes = sqlite3_column_bytes(statement,5);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        pkeyval = (LPSTR)sqlite3_column_text(statement,6);
+        keyval = [NSString stringWithUTF8String:pkeyval];
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        if (textArray)
+        {
+            NSString * text=@"test";
+            UIColor *textColor = UIColor.redColor;
+        [NVTextDrawing drawText:text
+                      inContext:context
+                  withinPolygon:llpoints
+                  withNumPoints:numPoints
+                    andNumLoops:numLoops
+                        loopLen:polyPartLen
+                   withinBounds:&curbounds
+                       fontSize:fontSize
+                    minFontSize:minFontSize
+                      textColor:textColor];
+        }
         free (llpoints);
     }
     
