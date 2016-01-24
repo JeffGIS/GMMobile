@@ -30,6 +30,7 @@
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) CGFloat rowHeight, width;
 @property NSUInteger currentColorPalette;
+@property (nonatomic) UIButton *dragButton, *expandButton;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
