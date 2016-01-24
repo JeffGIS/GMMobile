@@ -716,7 +716,14 @@ extern int keepProcessing;
     }
     
     else
-        NSLog(@"ERROR:No mail account setup on device.");
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"ERROR: No mail account setup on device."
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
+    }
     
     for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
     {

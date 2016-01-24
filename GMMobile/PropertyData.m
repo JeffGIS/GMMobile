@@ -1098,8 +1098,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     int *polyPartLen = 0;
     //int ii=0;
      UIColor *textColor = nil;
-     if (ConfigurationControl.sharedInstance.GMTilesVisible == YES)
+    
+     if (ConfigurationControl.sharedInstance.GMTilesVisible)
          textColor = UIColor.redColor;
+    
      else
          textColor = UIColor.blackColor;
     
