@@ -683,7 +683,11 @@ extern int keepProcessing;
     for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
     {
         if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+        {
+            tlmos.expandButton.alpha = 0.0;
+            tlmos.dragButton.alpha = 0.0;
             [tlov addSubview:tlmos];
+        }
     }
     
     if (tlov.subviews.count)
@@ -717,7 +721,11 @@ extern int keepProcessing;
     for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
     {
         if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+        {
+            tlmos.expandButton.alpha = 1.0;
+            tlmos.dragButton.alpha = 1.0;
             [self.view addSubview:tlmos];
+        }
     }
 }
 
