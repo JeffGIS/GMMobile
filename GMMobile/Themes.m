@@ -47,9 +47,15 @@
             [_themeList addObject:thm];
             break;
         case HCConfigMapleGrove:
-            thm = [Theme createTheme:CurbRampIntersectionTheme];
+            thm = [Theme createTheme:MGVWaterLineTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:CurbRampTheme];
+            thm = [Theme createTheme:MGVHydrantTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:MGVFiberLineTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:MGVFiberPointTheme];
+            [_themeList addObject:thm];
+            thm = [Theme createTheme:MGVWaterMeterTheme];
             [_themeList addObject:thm];
             break;
         default:

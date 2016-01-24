@@ -208,7 +208,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantDigitize] = NO;
-        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantLegends] = NO;
@@ -321,16 +321,19 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     switch (_currentApp)
     {
         case HCConfigMetroProp:
-            
             CRAPI.sharedInstance.parcelTextOption = 1;
             break;
          
         case HCConfigSewers:
         case HCConfigAlleyWalls:
-            
+        case HCConfigCrimes:
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
             CRAPI.sharedInstance.parcelTextOption = 2;
             break;
-            
+        case HCConfigMapleGrove:
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
+            CRAPI.sharedInstance.parcelTextOption = 1;
+            break;
         default:
             CRAPI.sharedInstance.parcelTextOption = 0;
             break;
@@ -544,6 +547,23 @@ visibleAtZoom:(CGFloat)zoom
             LayerObject * lo = [[LayerObject alloc]initWithName:@"CRINTPT"
                                                           andID:-1];
             
+            [array addObject:lo];
+            
+        }
+            break;
+        case HCLayerMapleGrove:
+        {
+            LayerObject * lo = [[LayerObject alloc]initWithName:@"WATER"
+                                                          andID:-1];
+            
+            [array addObject:lo];
+            
+            lo = [[LayerObject alloc]initWithName:@"SEWER"
+                                            andID:-1];
+            [array addObject:lo];
+            
+            lo = [[LayerObject alloc]initWithName:@"FIBER"
+                                            andID:-1];
             [array addObject:lo];
             
         }

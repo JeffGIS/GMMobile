@@ -66,10 +66,10 @@
                      tag:2];
     
     [self setupTableView:_bottomLeftTV
-                     tag:1];
+                     tag:3];
     
     [self setupTableView:_bottomRightTV
-                     tag:2];
+                     tag:4];
 }
 
 - (void)viewWillAppear:(BOOL)animated

@@ -21,7 +21,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
     NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
+    
     NSString *fileName = @"wMain.shp";
+    dc.elementType = WaterMain;
     NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
     ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
     if (sfd)
@@ -37,6 +39,7 @@ displayCharacteristics:dc
          pointInArea:pia];
     }
     fileName = @"wHydrant.shp";
+    dc.elementType = Hydrant;
     shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
     sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
     if (sfd)
@@ -52,6 +55,39 @@ displayCharacteristics:dc
          pointInArea:pia];
     }
     fileName = @"wMeter.shp";
+    dc.elementType = WaterMeter;
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    if (sfd)
+    {
+        sfd.zoom = _zoom;
+        sfd.processingID = _processingID;
+        [sfd display:context
+displayCharacteristics:dc
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds
+              themes:themes
+         pointInArea:pia];
+    }
+    fileName = @"MG_FiberLines.shp";
+    dc.elementType = FiberLines;
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    if (sfd)
+    {
+        sfd.zoom = _zoom;
+        sfd.processingID = _processingID;
+        [sfd display:context
+displayCharacteristics:dc
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds
+              themes:themes
+         pointInArea:pia];
+    }
+    fileName = @"MG_FiberPoints.shp";
+    dc.elementType = FiberPoints;
     shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
     sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
     if (sfd)

@@ -319,9 +319,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
                                                    cd.processingID = keepProcessing;
                                                    cd.zoom = _zoom;
-                                                   cd.mode = PINMAP;
-                                                   cd.mode = CHOROPLETH;
-                                                   cd.choroplethTarget = @"Minneapolis Neighborhoods";
+                                                   cd.mode = CRAPI.sharedInstance.crimeMode;
+                                                   cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
                                                    if (keepProcessing == self.displayID)
                                                    {
                                                        [cd displayCrimePoints:_context

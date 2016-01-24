@@ -46,7 +46,10 @@
         return NULL;
     
 Top:
-    hSHP = SHPOpen( outFile, "rb" );
+    if (first)
+        hSHP = NULL;
+    else
+        hSHP = SHPOpen( outFile, "rb" );
     if( hSHP != NULL )
     {
         hDBF = DBFOpen ( outFile, "rb" );
@@ -65,11 +68,16 @@ Top:
     {
         first = FALSE;
         char * args[5];
-        char inprj[] = {"-i=proj=utm zone=15 units=m datum=NAD83 no_defs" };//+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs
-        char outprj[] = "-o=proj=latlong datum=WGS84";
-        args[1] = shapeFile;
+        //char inprj_utm[] = {"-i=proj=utm zone=15 units=m datum=NAD83 no_defs" };//+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs
+        char inprj_utm[] = {"+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs"};
+        char inprj_hc[] = {"+proj=lcc +lat_1=45.13333333 +lat_2=44.88333333 +lat_0=44.79111111 +lon_0=-93.38333333 +x_0=152400.3048006096 +y_0=30480.06096012192 +a=6378418.941 +b=6357033.31 +units=us-ft +no_defs"};
+        char outprj[] = "+proj=latlong +datum=WGS84";
+        args[1] = (char *)shapeFile;
         args[2] = outFile;
-        args[3] = inprj;
+        args[3] = inprj_utm;
+        if (strstr (shapeFile,"Fiber"))
+            args[3] = inprj_hc;
+        
         args[4] = outprj;
         [NSFileManager.defaultManager createDirectoryAtPath:[ [NSString stringWithUTF8String:outFile] stringByDeletingLastPathComponent]
                                 withIntermediateDirectories:YES
@@ -105,14 +113,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         sizeFactor /= (2.0 * (18.0 - _zoom));
     
     dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-
+    dc.string1 = _fileName;
     PointSymbols sym = CircleSym;
     
     if ([_fileName containsString:@"Meter"])
     {
         sym = Star2Sym;
         dc.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
-        sizeFactor *=2;
+        sizeFactor *=1.5;
     }
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -124,44 +132,127 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         if (![self continue])
             break;
         SHPObject *psCShape = SHPReadObject (_hSHP, irec );
-        
-        switch (psCShape->nSHPType)
+        MNMXCORD SHPBounds;
+        SHPBounds.xmn = psCShape->dfXMin;
+        SHPBounds.xmx = psCShape->dfXMax;
+        SHPBounds.ymn = psCShape->dfYMin;
+        SHPBounds.ymx = psCShape->dfYMax;
+        if (BoundsInBounds (&SHPBounds,platlonBounds,1))
         {
-            case SHPT_POINT:
+            
+            switch (psCShape->nSHPType)
             {
-                DPOINT pt;
-                int iField = DBFGetFieldIndex(_hDBF, "MODEL");
-                pt.x = psCShape->padfX[0];
-                pt.y = psCShape->padfY[0];
-                pt = TranDPOINT(&pt, _pTranLLtoView);
-                [self drawPoint:context
-                        atPoint:&pt
-                    usingSymbol:sym
-                     withColor:dc.color.CGColor
-                      andSize:(size * sizeFactor)];
-            }
-                break;
-            default:
-            {
-                int iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
-                double width=1;
-                int fieldWidth, nDecimals;
-                char fieldName[32];
-                if (iField)
+                case SHPT_POINT:
+                case SHPT_POINTZ:
+                case SHPT_POINTM:
                 {
-                    DBFGetFieldInfo(_hDBF,iField,
-                                    fieldName, &fieldWidth, &nDecimals );
-                    width = DBFReadDoubleAttribute( _hDBF,irec,iField );
-
+                    DPOINT pt;
+                    pt.x = psCShape->padfX[0];
+                    pt.y = psCShape->padfY[0];
+                    pt = TranDPOINT(&pt, _pTranLLtoView);
+                    int iField, fieldWidth, nDecimals;
+                    char fieldName[32];
+                    switch (dc.elementType)
+                    {
+                        case Hydrant:
+                        {
+                            iField = DBFGetFieldIndex(_hDBF, "Model");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cModel = DBFReadStringAttribute( _hDBF,irec,iField );
+                                if (!strcasecmp (cModel,"Single Pumper"))
+                                    sym = TriangleSym;
+                                else if (!strcasecmp (cModel,"Double Pumper"))
+                                    sym = SquareSym;
+                                else sym = Star1Sym;
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "Nozzle");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cNozzle = DBFReadStringAttribute( _hDBF,irec,iField );
+                                dc.string2 = [NSString stringWithUTF8String:cNozzle];
+                            }
+                        }
+                            break;
+                        case FiberPoints:
+                        {
+                            sym = Star1Sym;
+                            iField = DBFGetFieldIndex(_hDBF, "TYPE_OF_ST");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cType = DBFReadStringAttribute( _hDBF,irec,iField );
+                                dc.string2 = [NSString stringWithUTF8String:cType];
+                            }
+                        }
+                            break;
+                   }
+                    if ([themes setDisplayCharacteristics:dc
+                                                displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                    {
+                        [self drawPoint:context
+                                atPoint:&pt
+                            usingSymbol:sym
+                              withColor:dc.color.CGColor
+                                andSize:(size * sizeFactor)];
+                    }
                 }
-                [self drawLine:context
-                       nPoints:psCShape->nVertices
-                        nLoops:psCShape->nParts
-                       partLen:psCShape->panPartStart
-                             x:psCShape->padfX
-                             y:psCShape->padfY
-                     withColor:dc.color.CGColor
-                      andWidth:width*sizeFactor];
+                    break;
+                default:
+                {
+                    double width=1;
+                    int fieldWidth, nDecimals, iField;
+                    char fieldName[32];
+                    if ([_fileName containsString:@"wMain"])
+                    {
+                        iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
+                        if (iField >= 0)
+                        {
+                            DBFGetFieldInfo(_hDBF,iField,
+                                            fieldName, &fieldWidth, &nDecimals );
+                            width = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                        }
+                        iField = DBFGetFieldIndex(_hDBF, "Material");
+                        if (iField >= 0)
+                        {
+                            DBFGetFieldInfo(_hDBF,iField,
+                                            fieldName, &fieldWidth, &nDecimals );
+                            const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
+                            dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                        }
+                    }
+                    else
+                    {
+                        iField = DBFGetFieldIndex(_hDBF, "Strands");
+                        if (iField >= 0)
+                        {
+                            DBFGetFieldInfo(_hDBF,iField,
+                                            fieldName, &fieldWidth, &nDecimals );
+                            double segments = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                            int iSegments = segments;
+                            dc.UCR = iSegments;
+                            width = iSegments/2;
+                        }
+                        
+                    }
+                    if ([themes setDisplayCharacteristics:dc
+                                                displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                    {
+                        [self drawLine:context
+                               nPoints:psCShape->nVertices
+                                nLoops:psCShape->nParts
+                               partLen:psCShape->panPartStart
+                                     x:psCShape->padfX
+                                     y:psCShape->padfY
+                             withColor:dc.color.CGColor
+                              andWidth:width*sizeFactor];
+                    }
+                }
             }
         }
         SHPDestroyObject ( psCShape );
@@ -181,7 +272,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         andWidth:(CGFloat)width
 {
     CGContextSetLineWidth(context, width);
-    
+    CGContextSetLineJoin(context,kCGLineJoinRound);
+    CGContextSetLineCap(context,kCGLineCapRound);
     LPDPOINT llpoints = malloc(np * sizeof(DPOINT) + 4);
     //symName = (LPSTR)sqlite3_column_text(statement,6);
     
@@ -263,7 +355,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                      Size:size
                                 fillColor:color
                                 lineColor:0
-                                lineWidth:size/7];
+                                lineWidth:size/8];
     
 }
 

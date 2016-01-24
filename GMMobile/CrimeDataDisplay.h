@@ -7,13 +7,6 @@
 //
 extern int keepProcessing;
 
-typedef NS_ENUM(NSInteger, CrimeMapMode)
-{
-    PINMAP,
-    HOTSPOT,
-    CHOROPLETH,
-};
-
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "ConfigurationControl.h"

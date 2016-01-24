@@ -395,7 +395,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else
     {
         _selectedMode = indexPath.row;
-        
+        NSString * mode = [_modes[_selectedMode] uppercaseString];
+        if ([mode containsString:@"PIN"])
+            CRAPI.sharedInstance.crimeMode = PINMAP;
+        if ([mode containsString:@"CHOROPLETH"])
+            CRAPI.sharedInstance.crimeMode = CHOROPLETH;
+        if ([mode containsString:@"HOTSPOT"])
+            CRAPI.sharedInstance.crimeMode = HOTSPOT;
+        if ([mode containsString:@"NEIGHBORHOODS"])
+            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
+        if ([mode containsString:@"WARDS"])
+            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Wards";
+        if ([mode containsString:@"SECTORS"])
+            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
         [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _modes[_selectedMode]]
                      forState:UIControlStateNormal];
     }
