@@ -15,6 +15,7 @@ extern int keepProcessing;
 #import "Destinations.h"
 #import "CCodeLibrary/IntersectionsDatabase.h"
 #import "NVPageController.h"
+#import "CrimeDataOptions.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -862,6 +863,11 @@ extern int keepProcessing;
                   insertViewController:nvpc
                                atIndex:1
                               animated:YES];
+        
+        UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
+        
+        if (cdovc)
+            [nvpc addViewController:cdovc];
     }
     
     else

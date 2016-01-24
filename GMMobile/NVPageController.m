@@ -42,7 +42,9 @@
 - (void)setupPages
 {
     _legends = ConfigurationControl.sharedInstance.legendList;
-    _pages = NSMutableArray.array;
+    
+    if (!_pages.count)
+        _pages = NSMutableArray.array;
     
     NVPageView *rootPV = [NVPageView pageViewWithNumLegends:MIN(_legends.count, 3)
                                               startingIndex:0
@@ -110,6 +112,12 @@
         NSInteger currentPage = [_pages indexOfObject:pvc.viewControllers[0]];
         _pageControl.currentPage = currentPage;
     }
+}
+
+- (void)addViewController:(UIViewController *)viewController
+{
+    _pages = NSMutableArray.array;
+    [_pages addObject:viewController];
 }
 
 @end
