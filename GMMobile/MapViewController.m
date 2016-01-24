@@ -14,6 +14,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/HelpWebView.h"
 #import "Destinations.h"
 #import "CCodeLibrary/IntersectionsDatabase.h"
+#import "NVPageController.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -848,18 +849,29 @@ extern int keepProcessing;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
-        UIViewController *crimeDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
+        //UIViewController *crimeDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
+        
+        NVPageController *nvpc = NVPageController.new;
+        nvpc.restorationIdentifier = @"NVPageController";
+        nvpc.tabBarItem.title = @"Crime Options";
+        
+        nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"fieldOptions"
+                                                                                               ofType:@"png"]];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:crimeDataVC
+                  insertViewController:nvpc
                                atIndex:1
                               animated:YES];
     }
     
     else
     {
-        [NVTabBarEdit tabBarController:self.tabBarController
+        /*[NVTabBarEdit tabBarController:self.tabBarController
             removeViewControllerWithID:@"CrimeDataPageVC"
+                              animated:YES];*/
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"NVPageController"
                               animated:YES];
     }
     

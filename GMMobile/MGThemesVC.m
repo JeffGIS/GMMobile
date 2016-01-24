@@ -18,9 +18,9 @@
 
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
-@property (nonatomic) NSMutableArray *legends, *countLengths;
+@property (nonatomic) NSArray *legends;
 @property (nonatomic) MapViewController *mapVC;
-@property (nonatomic) NSMutableArray *dragSelectedCells;
+@property (nonatomic) NSMutableArray *dragSelectedCells, *countLengths;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
 @property NSUInteger currentRow, currentColorPalette;
 
@@ -674,6 +674,5 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     else
         tl.drawOnMap = button.selected = NO;
 }
-
 
 @end
