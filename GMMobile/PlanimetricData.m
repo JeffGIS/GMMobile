@@ -838,9 +838,11 @@ extern int keepProcessing;
     int tot=0, current=0;
     //LPSTR symName;
     
-    CRAPI.sharedInstance.mapToolbarProgress = 0;
+    CRAPI.sharedInstance.mapToolbar.progress = 0;
+    
     if (![self continue])
         return;
+    
     CGFloat sizeFactor = 1;
     
     sizeFactor /= (2.0 * (22.0 - _zoom));
