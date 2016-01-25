@@ -34,6 +34,15 @@
     return self;
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return YES;
+    
+    else
+        return NO;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -91,7 +100,15 @@
     [self.view addSubview:_pageControl];
     
     [_pageControl.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
-    [_pageControl.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        [_pageControl.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
+                                                  constant:12.0].active = YES;
+    }
+    
+    else
+        [_pageControl.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
 }
 
 - (void)didReceiveMemoryWarning

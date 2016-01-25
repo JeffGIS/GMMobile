@@ -13,7 +13,7 @@
 
 @property NSUInteger numLegends, startingIndex, currentRow, currentColorPalette;
 @property (nonatomic) NSArray *legends;
-@property (nonatomic) CGFloat headerHeight, cornerRadius;
+@property (nonatomic) CGFloat headerHeight, cornerRadius, innerMargin, outerMargin, pageControlMargin;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *countLengths, *dragSelectedCells;
 @property (nonatomic) MapViewController *mapVC;
@@ -54,8 +54,9 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _headerHeight = 24.0;
-        _cornerRadius = 4.0;
+        _headerHeight = 22.0;
+        _cornerRadius = _innerMargin = _outerMargin = 4.0;
+        _pageControlMargin = 12.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:14.0];
@@ -66,7 +67,9 @@
     else
     {
         _headerHeight = 44.0;
-        _cornerRadius = 10.0;
+        _cornerRadius = _innerMargin = 10.0;
+        _outerMargin = 20.0;
+        _pageControlMargin = 30.0;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:24.0];
@@ -89,16 +92,16 @@
     {
         case NVPageViewArrangementFit1:
             [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:20.0].active = YES;
+                                                                    constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-20.0].active = YES;
+                                                                     constant:-_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:20.0].active = YES;
+                                                                constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-30.0].active = YES;
+                                                                   constant:-_pageControlMargin].active = YES;
             break;
             
         case NVPageViewArrangementFit2:
@@ -109,10 +112,10 @@
             CGFloat multiplier = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             
             [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:20.0].active = YES;
+                                                                    constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-20.0].active = YES;
+                                                                     constant:-_outerMargin].active = YES;
             
             [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
             [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
@@ -121,13 +124,13 @@
                                                                  multiplier:multiplier].active = YES;
             
             [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:20.0].active = YES;
+                                                                constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
-                                                                   constant:-10.0].active = YES;
+                                                                   constant:-_innerMargin].active = YES;
             
             [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-30.0].active = YES;
+                                                                   constant:-_pageControlMargin].active = YES;
         }
             break;
             
@@ -141,10 +144,10 @@
             CGFloat multiplier2 = ((numCells2 + (1.5 / numCells2)) / (numCells3 + (1.5 / numCells3)));
             
             [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:20.0].active = YES;
+                                                                    constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-20.0].active = YES;
+                                                                     constant:-_outerMargin].active = YES;
             
             [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
             [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
@@ -155,19 +158,19 @@
                                                                  multiplier:multiplier1].active = YES;
             
             [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:20.0].active = YES;
+                                                                constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
-                                                                   constant:-10.0].active = YES;
+                                                                   constant:-_innerMargin].active = YES;
             
             [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
                                                                  multiplier:multiplier2].active = YES;
             
             [[self.view viewWithTag:3].topAnchor constraintEqualToAnchor:[self.view viewWithTag:2].bottomAnchor
-                                                                constant:10.0].active = YES;
+                                                                constant:_innerMargin].active = YES;
             
             [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-30.0].active = YES;
+                                                                   constant:-_pageControlMargin].active = YES;
         }
             break;
             
@@ -186,10 +189,10 @@
             CGFloat rightPacked = (numCells3 + numCells4 + numCells5);
             
             [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:20.0].active = YES;
+                                                                constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:20.0].active = YES;
+                                                                    constant:_outerMargin].active = YES;
             
             [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
             
@@ -197,10 +200,10 @@
                                                                  multiplier:multiplier1].active = YES;
             
             [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
-                                                                   constant:-10.0].active = YES;
+                                                                   constant:-_innerMargin].active = YES;
             
             [[self.view viewWithTag:4].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-20.0].active = YES;
+                                                                     constant:-_innerMargin].active = YES;
             
             [[self.view viewWithTag:5].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].trailingAnchor].active = YES;
             
@@ -208,10 +211,10 @@
                                                                  multiplier:multiplier3].active = YES;
             
             [[self.view viewWithTag:4].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].topAnchor
-                                                                   constant:-10.0].active = YES;
+                                                                   constant:-_innerMargin].active = YES;
             
             [[self.view viewWithTag:5].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-30.0].active = YES;
+                                                                   constant:-_pageControlMargin].active = YES;
             
             [[self.view viewWithTag:1].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:2].widthAnchor].active = YES;
             [[self.view viewWithTag:2].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:3].widthAnchor].active = YES;
@@ -226,10 +229,10 @@
                                                                      multiplier:multiplier2].active = YES;
                 
                 [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:3].topAnchor
-                                                                       constant:-10.0].active = YES;
+                                                                       constant:-_innerMargin].active = YES;
                 
                 [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].leadingAnchor
-                                                                         constant:-10.0].active = YES;
+                                                                         constant:-_innerMargin].active = YES;
                 
                 [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
                 [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
@@ -247,10 +250,10 @@
                                                                      multiplier:multiplier2].active = YES;
                 
                 [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:4].topAnchor
-                                                                       constant:-10.0].active = YES;
+                                                                       constant:-_innerMargin].active = YES;
                 
                 [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor
-                                                                         constant:-10.0].active = YES;
+                                                                         constant:-_innerMargin].active = YES;
                 
                 [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
                 [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].trailingAnchor].active = YES;
@@ -447,20 +450,8 @@ viewForHeaderInSection:(NSInteger)section
 {
     ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
     
-    CGFloat margin = 40.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        margin = 16.0;
-        
-        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-        {
-            margin = 12.0;
-        }
-    }
-    
-    CGFloat tvWidth = (self.view.frame.size.width - margin);
+    CGFloat tvWidth = ((self.view.frame.size.width - (_innerMargin + (_outerMargin * 2.0))) /
+                       [self numColumnsFromArrangement:_pageArrangement]);
     
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tvWidth, _headerHeight)];
     headerView.backgroundColor = UIColor.blackColor;
@@ -530,10 +521,10 @@ viewForHeaderInSection:(NSInteger)section
         [addToMap.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
         
         [addToMap.leadingAnchor constraintEqualToAnchor:headerView.trailingAnchor
-                                               constant:(-addToMap.imageView.image.size.width - 8.0)].active = YES;
+                                               constant:(-headerView.frame.size.height - _innerMargin)].active = YES;
         
         [addToMap.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor
-                                                constant:4.0].active = YES;
+                                                constant:-_innerMargin].active = YES;
     }
     
     return headerView;
@@ -956,6 +947,58 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [self reloadTableViews];
+}
+
+- (NSUInteger)numColumnsFromArrangement:(NVPageViewArrangement)arrangement
+{
+    NSUInteger numColumns = 0;
+    
+    switch (arrangement)
+    {
+        case NVPageViewArrangementFit1:
+        case NVPageViewArrangementFit2:
+        case NVPageViewArrangementFit3:
+        case NVPageViewArrangementFit4:
+        case NVPageViewArrangementFit5:
+        case NVPageViewArrangementFit6:
+            numColumns = 1;
+            break;
+            
+        case NVPageViewArrangementFit2Columns2:
+        case NVPageViewArrangementFit3Columns2:
+        case NVPageViewArrangementFit4Columns2:
+        case NVPageViewArrangementFit5Columns2:
+        case NVPageViewArrangementFit6Columns2:
+            numColumns = 2;
+            break;
+            
+        case NVPageViewArrangementFit3Columns3:
+        case NVPageViewArrangementFit4Columns3:
+        case NVPageViewArrangementFit5Columns3:
+        case NVPageViewArrangementFit6Columns3:
+            numColumns = 3;
+            break;
+            
+        case NVPageViewArrangementFit4Columns4:
+        case NVPageViewArrangementFit5Columns4:
+        case NVPageViewArrangementFit6Columns4:
+            numColumns = 4;
+            break;
+            
+        case NVPageViewArrangementFit5Columns5:
+        case NVPageViewArrangementFit6Columns5:
+            numColumns = 5;
+            break;
+            
+        case NVPageViewArrangementFit6Columns6:
+            numColumns = 6;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return numColumns;
 }
 
 @end
