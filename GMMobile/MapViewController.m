@@ -867,7 +867,10 @@ extern int keepProcessing;
     {
         //UIViewController *crimeDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
         
-        NVPageController *nvpc = NVPageController.new;
+        NSArray *pvaArray = [NSArray arrayWithObjects:[NSNumber numberWithInteger:NVPageViewArrangementFit2],
+                             [NSNumber numberWithInteger:NVPageViewArrangementFit5Columns2], nil];
+        
+        NVPageController *nvpc = [NVPageController pageControllerWithArrangementArray:pvaArray];
         nvpc.restorationIdentifier = @"NVPageController";
         nvpc.tabBarItem.title = @"Crime Options";
         
