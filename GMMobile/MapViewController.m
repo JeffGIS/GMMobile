@@ -81,10 +81,6 @@ extern int keepProcessing;
     [super viewDidLoad];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CrimeDataPageVC"
-                          animated:NO];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
         removeViewControllerWithID:@"FieldOptionsVC"
                           animated:NO];
     
@@ -865,8 +861,6 @@ extern int keepProcessing;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
-        //UIViewController *crimeDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataPageVC"];
-        
         NSArray *pvaArray = [NSArray arrayWithObjects:[NSNumber numberWithInteger:NVPageViewArrangementFit2],
                              [NSNumber numberWithInteger:NVPageViewArrangementFit5Columns2], nil];
         
@@ -890,10 +884,6 @@ extern int keepProcessing;
     
     else
     {
-        /*[NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CrimeDataPageVC"
-                              animated:YES];*/
-        
         [NVTabBarEdit tabBarController:self.tabBarController
             removeViewControllerWithID:@"NVPageController"
                               animated:YES];
