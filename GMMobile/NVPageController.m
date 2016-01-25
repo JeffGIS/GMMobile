@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "NVPageController.h"
-#import "NVPageView.h"
 #import "ConfigurationControl.h"
 
 @interface NVPageController ()  <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
@@ -10,10 +9,21 @@
 @property (nonatomic) NSMutableArray *pages;
 @property (nonatomic) UIPageControl *pageControl;
 @property (nonatomic) NSArray *legends;
+@property (nonatomic) NSArray *pageViewArrangementArray;
 
 @end
 
 @implementation NVPageController
+
++ (instancetype)pageControllerWithArrangementArray:(NSArray *)arrangementArray
+{
+    if (!arrangementArray)
+        return nil;
+    
+    NVPageController *nvpc = NVPageController.new;
+    nvpc.pageViewArrangementArray = arrangementArray;
+    return nvpc;
+}
 
 - (id)init
 {
@@ -42,21 +52,32 @@
 - (void)setupPages
 {
     _legends = ConfigurationControl.sharedInstance.legendList;
+    int index = 0;
     
     if (!_pages.count)
         _pages = NSMutableArray.array;
     
-    NVPageView *rootPV = [NVPageView pageViewWithNumLegends:MIN(_legends.count, 3)
+    NVPageViewArrangement rootPVArr = [(NSNumber *)_pageViewArrangementArray[0] integerValue];
+    NSUInteger numLegends = [self numPagesFromArrangement:rootPVArr];
+    
+    NVPageView *rootPV = [NVPageView pageViewWithNumLegends:numLegends
                                               startingIndex:0
-                                                pageControl:_pageControl];
+                                                pageControl:_pageControl
+                                            pageArrangement:rootPVArr];
+    
+    index += numLegends;
     
     [_pages addObject:rootPV];
     
-    for (int i = 3; i < _legends.count; i += 3)
+    for (int i = 1; i < _pageViewArrangementArray.count; i++)
     {
-        NVPageView *pv = [NVPageView pageViewWithNumLegends:MIN((_legends.count - i), 3)
-                                              startingIndex:(NSUInteger)i
-                                                pageControl:_pageControl];
+        NVPageViewArrangement pvArr = [(NSNumber *)_pageViewArrangementArray[i] integerValue];
+        NSUInteger numLegends = [self numPagesFromArrangement:pvArr];
+        
+        NVPageView *pv = [NVPageView pageViewWithNumLegends:numLegends
+                                              startingIndex:index
+                                                pageControl:_pageControl
+                                            pageArrangement:pvArr];
         
         [_pages addObject:pv];
     }
@@ -118,6 +139,58 @@
 {
     _pages = NSMutableArray.array;
     [_pages addObject:viewController];
+}
+
+- (NSUInteger)numPagesFromArrangement:(NVPageViewArrangement)arrangement
+{
+    NSUInteger numPages = 0;
+    
+    switch (arrangement)
+    {
+        case NVPageViewArrangementFit1:
+            numPages = 1;
+            break;
+            
+        case NVPageViewArrangementFit2:
+        case NVPageViewArrangementFit2Columns2:
+            numPages = 2;
+            break;
+            
+        case NVPageViewArrangementFit3:
+        case NVPageViewArrangementFit3Columns2:
+        case NVPageViewArrangementFit3Columns3:
+            numPages = 3;
+            break;
+            
+        case NVPageViewArrangementFit4:
+        case NVPageViewArrangementFit4Columns2:
+        case NVPageViewArrangementFit4Columns3:
+        case NVPageViewArrangementFit4Columns4:
+            numPages = 4;
+            break;
+            
+        case NVPageViewArrangementFit5:
+        case NVPageViewArrangementFit5Columns2:
+        case NVPageViewArrangementFit5Columns3:
+        case NVPageViewArrangementFit5Columns4:
+        case NVPageViewArrangementFit5Columns5:
+            numPages = 5;
+            break;
+            
+        case NVPageViewArrangementFit6:
+        case NVPageViewArrangementFit6Columns2:
+        case NVPageViewArrangementFit6Columns3:
+        case NVPageViewArrangementFit6Columns4:
+        case NVPageViewArrangementFit6Columns5:
+        case NVPageViewArrangementFit6Columns6:
+            numPages = 6;
+            break;
+            
+        default:
+            break;
+    }
+    
+    return numPages;
 }
 
 @end

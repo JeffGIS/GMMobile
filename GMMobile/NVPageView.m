@@ -19,6 +19,7 @@
 @property (nonatomic) MapViewController *mapVC;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
 @property (nonatomic) UIPageControl *pageControl;
+@property NVPageViewArrangement pageArrangement;
 
 @end
 
@@ -27,10 +28,12 @@
 + (instancetype)pageViewWithNumLegends:(NSUInteger)numLegends
                          startingIndex:(NSUInteger)startingIndex
                            pageControl:(UIPageControl *)pageControl
+                       pageArrangement:(NVPageViewArrangement)pageArrangement;
 {
     NVPageView *nvpv = NVPageView.new;
     nvpv.numLegends = numLegends;
     nvpv.startingIndex = startingIndex;
+    nvpv.pageArrangement = pageArrangement;
     return nvpv;
 }
 
@@ -80,17 +83,17 @@
                          tag:(i + 1)];
         
         [self.view addSubview:tv];
-        
-        [tv.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                         constant:20.0].active = YES;
-        
-        [tv.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                          constant:-20.0].active = YES;
     }
     
-    switch (_numLegends)
+    switch (_pageArrangement)
     {
-        case 1:
+        case NVPageViewArrangementFit1:
+            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                                                    constant:20.0].active = YES;
+            
+            [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                                                     constant:-20.0].active = YES;
+            
             [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
                                                                 constant:20.0].active = YES;
             
@@ -98,10 +101,21 @@
                                                                    constant:-30.0].active = YES;
             break;
             
-        case 2:
+        case NVPageViewArrangementFit2:
         {
-            CGFloat multiplier = ([(ThemeLegend *)_legends[_startingIndex] numCells] /
-                                  [(ThemeLegend *)_legends[_startingIndex + 1] numCells]);
+            CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
+            CGFloat numCells2 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 1] numCells];
+            
+            CGFloat multiplier = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
+            
+            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                                                    constant:20.0].active = YES;
+            
+            [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                                                     constant:-20.0].active = YES;
+            
+            [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
+            [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
             
             [[self.view viewWithTag:1].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:2].heightAnchor
                                                                  multiplier:multiplier].active = YES;
@@ -117,7 +131,7 @@
         }
             break;
             
-        case 3:
+        case NVPageViewArrangementFit3:
         {
             CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
             CGFloat numCells2 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 1] numCells];
@@ -126,17 +140,28 @@
             CGFloat multiplier1 = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             CGFloat multiplier2 = ((numCells2 + (1.5 / numCells2)) / (numCells3 + (1.5 / numCells3)));
             
+            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                                                    constant:20.0].active = YES;
+            
+            [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                                                     constant:-20.0].active = YES;
+            
+            [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
+            [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
+            [[self.view viewWithTag:3].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
+            [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
+            
             [[self.view viewWithTag:1].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:2].heightAnchor
                                                                  multiplier:multiplier1].active = YES;
-            
-            [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
-                                                                 multiplier:multiplier2].active = YES;
             
             [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
                                                                 constant:20.0].active = YES;
             
             [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
                                                                    constant:-10.0].active = YES;
+            
+            [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
+                                                                 multiplier:multiplier2].active = YES;
             
             [[self.view viewWithTag:3].topAnchor constraintEqualToAnchor:[self.view viewWithTag:2].bottomAnchor
                                                                 constant:10.0].active = YES;
@@ -145,6 +170,96 @@
                                                                    constant:-30.0].active = YES;
         }
             break;
+            
+        case NVPageViewArrangementFit5Columns2:
+        {
+            CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
+            CGFloat numCells2 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 1] numCells];
+            CGFloat numCells3 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 2] numCells];
+            CGFloat numCells4 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 3] numCells];
+            CGFloat numCells5 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 4] numCells];
+            
+            CGFloat multiplier1 = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
+            CGFloat multiplier3 = ((numCells4 + (1.5 / numCells4)) / (numCells5 + (1.5 / numCells5)));
+            
+            CGFloat leftPacked = (numCells1 + numCells2 + numCells3);
+            CGFloat rightPacked = (numCells3 + numCells4 + numCells5);
+            
+            [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                                                constant:20.0].active = YES;
+            
+            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                                                    constant:20.0].active = YES;
+            
+            [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
+            
+            [[self.view viewWithTag:1].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:2].heightAnchor
+                                                                 multiplier:multiplier1].active = YES;
+            
+            [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
+                                                                   constant:-10.0].active = YES;
+            
+            [[self.view viewWithTag:4].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                                                     constant:-20.0].active = YES;
+            
+            [[self.view viewWithTag:5].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].trailingAnchor].active = YES;
+            
+            [[self.view viewWithTag:4].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:5].heightAnchor
+                                                                 multiplier:multiplier3].active = YES;
+            
+            [[self.view viewWithTag:4].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].topAnchor
+                                                                   constant:-10.0].active = YES;
+            
+            [[self.view viewWithTag:5].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
+                                                                   constant:-30.0].active = YES;
+            
+            [[self.view viewWithTag:1].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:2].widthAnchor].active = YES;
+            [[self.view viewWithTag:2].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:3].widthAnchor].active = YES;
+            [[self.view viewWithTag:3].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:4].widthAnchor].active = YES;
+            [[self.view viewWithTag:4].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:5].widthAnchor].active = YES;
+            
+            if (leftPacked <= rightPacked) //3+2 arrangement
+            {
+                CGFloat multiplier2 = ((numCells2 + (1.5 / numCells2)) / (numCells3 + (1.5 / numCells3)));
+                
+                [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
+                                                                     multiplier:multiplier2].active = YES;
+                
+                [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:3].topAnchor
+                                                                       constant:-10.0].active = YES;
+                
+                [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].leadingAnchor
+                                                                         constant:-10.0].active = YES;
+                
+                [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
+                [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
+                [[self.view viewWithTag:3].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
+                [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].bottomAnchor].active = YES;
+                [[self.view viewWithTag:4].topAnchor constraintEqualToAnchor:[self.view viewWithTag:1].topAnchor].active = YES;
+                [[self.view viewWithTag:5].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].leadingAnchor].active = YES;
+            }
+            
+            else //2+3 arrangement
+            {
+                CGFloat multiplier2 = ((numCells3 + (1.5 / numCells3)) / (numCells4 + (1.5 / numCells4)));
+                
+                [[self.view viewWithTag:3].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:4].heightAnchor
+                                                                     multiplier:multiplier2].active = YES;
+                
+                [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:4].topAnchor
+                                                                       constant:-10.0].active = YES;
+                
+                [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor
+                                                                         constant:-10.0].active = YES;
+                
+                [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
+                [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].trailingAnchor].active = YES;
+                [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].bottomAnchor].active = YES;
+                [[self.view viewWithTag:3].topAnchor constraintEqualToAnchor:[self.view viewWithTag:1].topAnchor].active = YES;
+                [[self.view viewWithTag:4].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor].active = YES;
+                [[self.view viewWithTag:5].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor].active = YES;
+            }
+        }
             
         default:
             break;
