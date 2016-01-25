@@ -874,8 +874,8 @@ NextPass:
     int numLoops;
     NSString * key = areaType;
     NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
-    CGFloat fontSize = 32.0;
-    CGFloat minFontSize = 8.0;
+    CGFloat fontSize = 48.0;
+    CGFloat minFontSize = 6.0;
     
     BOOL opened = [self open];
     
@@ -935,20 +935,21 @@ NextPass:
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
-        if (textArray)
+        double count = [pias countForArea:keyval];
+        if (count >= 0)
         {
-            NSString * text=@"test";
+            NSString * text=[NSString stringWithFormat:@"%.0lf",count];
             UIColor *textColor = UIColor.redColor;
-        [NVTextDrawing drawText:text
-                      inContext:context
-                  withinPolygon:llpoints
-                  withNumPoints:numPoints
-                    andNumLoops:numLoops
-                        loopLen:polyPartLen
-                   withinBounds:&curbounds
-                       fontSize:fontSize
-                    minFontSize:minFontSize
-                      textColor:textColor];
+            [NVTextDrawing drawText:text
+                          inContext:context
+                      withinPolygon:llpoints
+                      withNumPoints:numPoints
+                        andNumLoops:numLoops
+                            loopLen:polyPartLen
+                       withinBounds:pvbounds
+                           fontSize:fontSize
+                        minFontSize:minFontSize
+                          textColor:textColor];
         }
         free (llpoints);
     }
