@@ -508,7 +508,7 @@ extern int keepProcessing;
               points:(LPDPOINT)pPoints
            withColor:(CGColorRef)color
 {
-    CGContextSetLineWidth(context, 5);
+    CGContextSetLineWidth(context, 3);
     
     if (nLoops > 1)
     {
@@ -845,6 +845,12 @@ NextPass:
                   nPoints:numPoints
                    points:llpoints
                 withColor:[pias colorForArea:keyval]];
+        [self drawUseCode:context
+                  nPoints:numPoints
+                 nLoops:numLoops
+              partLen:0
+                   points:llpoints
+                withColor:UIColor.blackColor.CGColor];
         free (llpoints);
     }
     
