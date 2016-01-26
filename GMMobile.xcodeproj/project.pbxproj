@@ -19,7 +19,6 @@
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
-		69366DF31C53D36000E79AA7 /* DynamicConstaintsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366DF21C53D36000E79AA7 /* DynamicConstaintsVC.m */; };
 		69366E001C542A4B00E79AA7 /* NVPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366DFF1C542A4B00E79AA7 /* NVPageView.m */; };
 		69366E031C542A6700E79AA7 /* NVPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366E021C542A6700E79AA7 /* NVPageController.m */; };
 		69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */; };
@@ -30,6 +29,7 @@
 		694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00731C1B229C0074AF72 /* clearMarkers.png */; };
 		694F00761C1B2A000074AF72 /* emailIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00751C1B2A000074AF72 /* emailIcon.png */; };
 		694F93B51C30475500723155 /* questionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F93B41C30475500723155 /* questionMark.png */; };
+		6955DB7C1C57E4590066CD83 /* ENA_20_12-08_E0.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6955DB7B1C57E4590066CD83 /* ENA_20_12-08_E0.pdf */; };
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
@@ -182,8 +182,6 @@
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
-		69366DF11C53D36000E79AA7 /* DynamicConstaintsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicConstaintsVC.h; sourceTree = "<group>"; };
-		69366DF21C53D36000E79AA7 /* DynamicConstaintsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicConstaintsVC.m; sourceTree = "<group>"; };
 		69366DFE1C542A4B00E79AA7 /* NVPageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVPageView.h; sourceTree = "<group>"; };
 		69366DFF1C542A4B00E79AA7 /* NVPageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPageView.m; sourceTree = "<group>"; };
 		69366E011C542A6700E79AA7 /* NVPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVPageController.h; sourceTree = "<group>"; };
@@ -193,6 +191,7 @@
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
 		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
+		6955DB7B1C57E4590066CD83 /* ENA_20_12-08_E0.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "ENA_20_12-08_E0.pdf"; sourceTree = "<group>"; };
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
@@ -624,8 +623,6 @@
 				69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
 				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
-				69366DF11C53D36000E79AA7 /* DynamicConstaintsVC.h */,
-				69366DF21C53D36000E79AA7 /* DynamicConstaintsVC.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
 				EB5522741A752A7F008CE2D1 /* SettingsViewController.m */,
 				69C441A41BB466EA00D026A7 /* SpreadsheetViewController.m */,
@@ -675,6 +672,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6955DB7B1C57E4590066CD83 /* ENA_20_12-08_E0.pdf */,
 				A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */,
 				A97B727F1ADB5D4B001ACFAE /* beep.mp3 */,
 				A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */,
@@ -892,6 +890,7 @@
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
 				A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */,
+				6955DB7C1C57E4590066CD83 /* ENA_20_12-08_E0.pdf in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 				A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */,
 			);
@@ -911,7 +910,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69366DF31C53D36000E79AA7 /* DynamicConstaintsVC.m in Sources */,
 				690E829E1C11045600AB410E /* MapViewController.m in Sources */,
 				A9237F821AFA84E400D10E96 /* SettingOptionsViewController.m in Sources */,
 				EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */,
