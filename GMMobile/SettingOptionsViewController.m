@@ -10,7 +10,8 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
 @import MediaPlayer;
-#import "DynamicConstaintsVC.h"
+#import "CCodeLibrary/NVPDFViewer.h"
+@import WebKit;
 
 @interface SettingOptionsViewController () <UIDocumentPickerDelegate>
 
@@ -67,7 +68,7 @@
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Access Documents", @"Test Dynamic Constraints VC" /*, @"Test Compression & Upload"*/];
+                  @"Access Documents", @"Test NVPDF Viewer" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -77,6 +78,11 @@
     }
     
     [_tableView reloadData];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -239,14 +245,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test Dynamic Constraints VC"])
+              isEqualToString:@"Test NVPDF Viewer"])
     {
-        DynamicConstaintsVC *dcvc = [[DynamicConstaintsVC alloc] init];
-        
-        [self presentViewController:dcvc
-                           animated:YES
-                         completion:nil];
+        NVPDFViewer *nvpdf = [NVPDFViewer showPDFViewerInView:self.view
+                                                 withFileName:@"ENA_20_12-08_E0"
+                                                       tabBar:self.tabBarController.tabBar];
+#pragma unused(nvpdf)
     }
+    
     
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Compression & Upload"])
