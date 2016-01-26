@@ -16,6 +16,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
+@property (nonatomic) CGFloat buttonMargin, headerHeight;
 
 @end
 
@@ -34,7 +35,6 @@
     tlmo.tag = tag;
     tlmo.isExpanded = tlmo.dragSelectActive = NO;
     tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
-    tlmo.rowHeight = 26.0;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
     tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
@@ -51,9 +51,23 @@
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
     }
     
-    CGFloat height = ((tlmo.legend.numCells + 1) * tlmo.rowHeight);
-    tlmo.width = 232.0;
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        tlmo.width = 114.0;
+        tlmo.buttonMargin = 1.1;
+        tlmo.rowHeight = 14.0;
+        tlmo.headerHeight = 20.0;
+    }
     
+    else
+    {
+        tlmo.width = 232.0;
+        tlmo.buttonMargin = 2.0;
+        tlmo.rowHeight = 26.0;
+        tlmo.headerHeight = 32.0;
+    }
+
+    CGFloat height = ((tlmo.legend.numCells * tlmo.rowHeight) + tlmo.headerHeight);
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
     
     tlmo.tableView = [[UITableView alloc] initWithFrame:tlmo.bounds
@@ -193,21 +207,84 @@
 - (CGFloat)tableView:(UITableView *)tableView
 heightForHeaderInSection:(NSInteger)section
 {
-    return _rowHeight;
+    return _headerHeight;
 }
 
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, _headerHeight)];
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     
+    if (![headerView.subviews containsObject:_expandButton])
+    {
+        _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _expandButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        _expandButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        _expandButton.selected = _isExpanded;
+        
+        _expandButton.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * _buttonMargin)), 0.0,
+                                         (headerView.frame.size.height * _buttonMargin), headerView.frame.size.height);
+        
+        [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeOut"
+                                                                                               ofType:@"png"]]
+                       forState:UIControlStateNormal];
+        
+        [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeIn"
+                                                                                               ofType:@"png"]]
+                       forState:UIControlStateSelected];
+        
+        [_expandButton addTarget:self
+                          action:@selector(expandLegend:)
+                forControlEvents:UIControlEventTouchUpInside];
+        
+        [headerView addSubview:_expandButton];
+    }
+    
+    if (![headerView.subviews containsObject:_dragButton] && !_isExpanded)
+    {
+        _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        
+        else
+            _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 8.0, 2.0, 8.0);
+        
+        _dragButton.frame = CGRectMake(0.0, 0.0,(headerView.frame.size.height * _buttonMargin),
+                                       headerView.frame.size.height);
+        
+        [_dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
+                                                                                             ofType:@"png"]]
+                     forState:UIControlStateNormal];
+        
+        [_dragButton addTarget:self
+                        action:@selector(legendWasDragged:withEvent:)
+              forControlEvents:UIControlEventTouchDragInside];
+        
+        [_dragButton addTarget:self
+                        action:@selector(dragButtonBegin:)
+                forControlEvents:UIControlEventTouchDown];
+        
+        [_dragButton addTarget:self
+                        action:@selector(dragButtonEnd:)
+              forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
+        
+        [headerView addSubview:_dragButton];
+    }
+    
     if (![headerView.subviews containsObject:_titleButton])
     {
-        _titleButton = [[UIButton alloc] initWithFrame:headerView.frame];
+        _titleButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(_dragButton.frame), 0.0,
+                                                                  (_expandButton.frame.origin.x - CGRectGetMaxX(_dragButton.frame)),
+                                                                  headerView.frame.size.height)];
+        
         _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleButton.titleLabel.font = _headerFont;
+        _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
         
         [_titleButton setTitleColor:UIColor.whiteColor
                            forState:UIControlStateNormal];
@@ -232,59 +309,6 @@ viewForHeaderInSection:(NSInteger)section
                       forState:UIControlStateNormal];
         
         [headerView addSubview:_titleButton];
-    }
-    
-    if (![headerView.subviews containsObject:_expandButton])
-    {
-        _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _expandButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        _expandButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-        _expandButton.selected = _isExpanded;
-        
-        _expandButton.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * 2.0)), 0.0,
-                                         (headerView.frame.size.height * 2.0), headerView.frame.size.height);
-        
-        [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeOut"
-                                                                                               ofType:@"png"]]
-                       forState:UIControlStateNormal];
-        
-        [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeIn"
-                                                                                               ofType:@"png"]]
-                       forState:UIControlStateSelected];
-        
-        [_expandButton addTarget:self
-                          action:@selector(expandLegend:)
-                forControlEvents:UIControlEventTouchUpInside];
-        
-        [headerView addSubview:_expandButton];
-    }
-    
-    if (![headerView.subviews containsObject:_dragButton] && !_isExpanded)
-    {
-        _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
-        _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 8.0, 2.0, 8.0);
-        
-        _dragButton.frame = CGRectMake(0.0, 0.0,(headerView.frame.size.height * 2.0),
-                                       headerView.frame.size.height);
-        
-        [_dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
-                                                                                             ofType:@"png"]]
-                     forState:UIControlStateNormal];
-        
-        [_dragButton addTarget:self
-                        action:@selector(legendWasDragged:withEvent:)
-              forControlEvents:UIControlEventTouchDragInside];
-        
-        [_dragButton addTarget:self
-                        action:@selector(dragButtonBegin:)
-                forControlEvents:UIControlEventTouchDown];
-        
-        [_dragButton addTarget:self
-                        action:@selector(dragButtonEnd:)
-              forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
-        
-        [headerView addSubview:_dragButton];
     }
     
     return headerView;

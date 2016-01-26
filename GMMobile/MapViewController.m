@@ -112,8 +112,13 @@ extern int keepProcessing;
     _animateToLocation = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     
-    _legendScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 236.0),
-                                                                       statusBarHeight, 236.0,
+    CGFloat legendScrollWidth = 236.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        legendScrollWidth = 118.0;
+    
+    _legendScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - legendScrollWidth),
+                                                                       statusBarHeight, legendScrollWidth,
                                                                        (tabBarTop - statusBarHeight))];
                          
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
@@ -2498,10 +2503,20 @@ haveVV:
             return;
         }
         
+        CGFloat tlmoWidth = 234.0, rowHeight = 26.0, headerHeight = 30.0;
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            tlmoWidth = 116.0, rowHeight = 14.0, headerHeight = 20.0;
+        
+        CGFloat landscapeWidth = MAX(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
+        CGFloat portraitWidth = MIN(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
+        CGFloat xOriginLandscape = (landscapeWidth - tlmoWidth);
+        CGFloat xOriginPortrait = (portraitWidth - tlmoWidth);
+        
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        CGFloat yFactor = 2.0, xOriginLandscape = 790.0, xOriginPortrait = 534.0;
+        CGFloat yFactor = 2.0;
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
-        CGFloat yOriginLandscape = yOriginPortrait, rowHeight = 26.0;
+        CGFloat yOriginLandscape = yOriginPortrait;
         NSUInteger portraitColumnCount = 1, landscapeColumnCount = portraitColumnCount;
         UIView *inView = self.view;
         BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
@@ -2563,14 +2578,14 @@ haveVV:
                 
                 if (tl.drawOnMap)
                 {
-                    CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
+                    CGFloat legendHeight = (((rowHeight * tl.numCells) + headerHeight) + yFactor);
                     scrollHeight += legendHeight;
                 }
             }
             
             _legendScrollView.contentSize = CGSizeMake(_legendScrollView.frame.size.width, scrollHeight);
         }
-        
+            
         for (int i = 0; i < legends.count; i++)
         {
             ThemeLegend *tl = legends[i];
@@ -2579,7 +2594,7 @@ haveVV:
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
-                if (((yOriginLandscape + legendHeight) > 717.0) && !_legendsAreOffMap)
+                if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
                 {
                     xOriginLandscape = yFactor;
                     
@@ -2590,7 +2605,7 @@ haveVV:
                     landscapeColumnCount++;
                 }
                 
-                if (((yOriginPortrait + legendHeight) > 973.0) && !_legendsAreOffMap)
+                if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
                 {
                     xOriginPortrait = yFactor;
                     
