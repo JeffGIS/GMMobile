@@ -68,6 +68,7 @@ extern int keepProcessing;
 @property (nonatomic) UIImageView *myLocationMarker;
 @property NSUInteger currentLegendTag;
 @property NVColorOption currentColorOption;
+@property BOOL emailPDFAfterUpdate;
 
 @end
 
@@ -111,6 +112,7 @@ extern int keepProcessing;
     _nVectorViews = _currentLegendTag = 0,
     _animateToLocation = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
+    _emailPDFAfterUpdate = NO;
     
     CGFloat legendScrollWidth = 236.0;
     
@@ -734,6 +736,25 @@ extern int keepProcessing;
             tlmos.dragButton.alpha = 1.0;
             [self.view addSubview:tlmos];
         }
+    }
+    
+    if (_emailPDFAfterUpdate)
+    {
+        GMSVisibleRegion region = _mapView.projection.visibleRegion;
+        
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+        CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+        
+        _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
+                                    (tabBarTop - statusBarHeight));
+        
+        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:region];
+        
+        GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                                 withPadding:0.0];
+        
+        [_mapView moveCamera:update];
+        _emailPDFAfterUpdate = NO;
     }
 }
 
@@ -2447,6 +2468,9 @@ haveVV:
                            if ([alert isKindOfClass:NVAlertView.class])
                                [self.view bringSubviewToFront:alert];
                        }
+                       
+                       if (_emailPDFAfterUpdate)
+                           [self emailPDF:nil];
                    });
 }
 
@@ -4257,7 +4281,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
              GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
              
              GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                      withPadding:40];
+                                                      withPadding:40.0];
              
              [_mapView moveCamera:update];
              [self updateMarkerPosition];
@@ -4330,7 +4354,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
             
             GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                     withPadding:40];
+                                                     withPadding:40.0];
             
             [_mapView moveCamera:update];
             [self updateMarkerPosition];
@@ -4362,7 +4386,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
         
         GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                 withPadding:40];
+                                                 withPadding:40.0];
         
         [_mapView moveCamera:update];
         [self updateMarkerPosition];
@@ -4464,6 +4488,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)mapToolbarDidSelectEmailPDF
 {
     [self emailPDF:nil];
+}
+
+- (void)mapToolbarDidLongPressEmailPDF
+{
+    GMSVisibleRegion region = _mapView.projection.visibleRegion;
+    CGRect frame = _mapView.frame;
+    frame.origin.x -= (frame.size.width / 2.0);
+    frame.origin.y -= (frame.size.height / 2.0);
+    frame.size.width *= 2.0;
+    frame.size.height *= 2.0;
+    _mapView.frame = frame;
+    
+    GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:region];
+    
+    GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                             withPadding:0.0];
+    
+    [_mapView moveCamera:update];
+    _emailPDFAfterUpdate = YES;
 }
 
 - (void)mapToolbarDidSelectHelpButton

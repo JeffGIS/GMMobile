@@ -191,6 +191,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             }
                         }
                             break;
+                            
+                        default:
+                            break;
                    }
                     if ([themes setDisplayCharacteristics:dc
                                                 displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
