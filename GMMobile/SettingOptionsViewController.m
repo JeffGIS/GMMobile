@@ -10,10 +10,9 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
 @import MediaPlayer;
-#import "CCodeLibrary/NVPDFViewer.h"
-@import WebKit;
+#import "ReaderViewController.h"
 
-@interface SettingOptionsViewController () <UIDocumentPickerDelegate>
+@interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -68,7 +67,7 @@
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Access Documents", @"Test NVPDF Viewer" /*, @"Test Compression & Upload"*/];
+                  @"Access Documents", @"Test PDF Reader Core" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -245,14 +244,27 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test NVPDF Viewer"])
+              isEqualToString:@"Test PDF Reader Core"])
     {
-        NVPDFViewer *nvpdf = [NVPDFViewer showPDFViewerInView:self.view
-                                                 withFileName:@"ENA_20_12-08_E0"
-                                                       tabBar:self.tabBarController.tabBar];
-#pragma unused(nvpdf)
+        NSString *filePath = [NSBundle.mainBundle pathForResource:@"ENA_20_12-08_E0"
+                                                           ofType:@"pdf"];
+        
+        ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath
+                                                               password:nil];
+        
+        if (document)
+        {
+            ReaderViewController *readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
+            
+            readerVC.delegate = self;
+            readerVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            readerVC.modalPresentationStyle = UIModalPresentationFullScreen;
+            
+            [self presentViewController:readerVC
+                               animated:YES
+                             completion:nil];
+        }
     }
-    
     
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Compression & Upload"])
@@ -294,6 +306,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(alert)
         }
     }*/
+}
+
+- (void)dismissReaderViewController:(ReaderViewController *)viewController
+{
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller
