@@ -3085,8 +3085,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             if (!tracePolyFile)
             {
-                free (llpoints);
-                
                 NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                                   delegate:self
                                                                      title:@"Polyline Data File Write ERROR"
@@ -3101,11 +3099,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 fwrite(&numPoints, sizeof(int), 1, tracePolyFile);
                 fwrite(llpoints, sizeof(DPOINT), numPoints, tracePolyFile);
                 fclose(tracePolyFile);
-                free (llpoints);
                 
                 [self perform3DFlyAround];
             }
         }
+        
+        free (llpoints);
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -3133,8 +3132,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         if (!pidPolyFile)
         {
-            free(llpoints);
-            
             NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                               delegate:self
                                                                  title:@"Polygon Data File Write ERROR"
@@ -3152,10 +3149,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
             fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
             fclose(pidPolyFile);
-            free(llpoints);
             
             [self perform3DFlyAround];
         }
+        
+        free (llpoints);
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text

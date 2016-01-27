@@ -859,10 +859,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (_legend.usePointSymbols)
     {
         CGFloat imageSize = (_rowHeight * 0.7);
-        CGFloat symbolSize = 52.0;
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            symbolSize = 36.0;
         
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, (_rowHeight * 0.15),
                                                                                imageSize, imageSize)];

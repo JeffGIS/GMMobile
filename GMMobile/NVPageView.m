@@ -809,7 +809,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                          context:nil];
     
     CGFloat textWidth = ceil(textSize.size.width);
-    CGFloat textOriginX = MAX((tableView.frame.size.width - textWidth), 4.0);
     
     if (tl.usePointSymbols)
     {
@@ -834,9 +833,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [imageView.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor
                                                constant:10.0].active = YES;
-        
-        textOriginX = (MIN(imageView.frame.size.height, (imageView.frame.origin.x + imageView.frame.size.width)) + 4.0);
-        textWidth = (tableView.frame.size.width - textOriginX);
         
         [textLabel.leadingAnchor constraintEqualToAnchor:imageView.trailingAnchor
                                                 constant:10.0].active = YES;
