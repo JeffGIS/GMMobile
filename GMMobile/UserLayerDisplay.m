@@ -41,7 +41,7 @@ displayCharacteristics:dc
               themes:themes
          pointInArea:pia];
     }
-    
+
     fileName = @"wMain.shp";
     dc.elementType = WaterMain;
     shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
