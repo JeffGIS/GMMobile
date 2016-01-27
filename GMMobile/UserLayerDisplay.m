@@ -21,11 +21,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
     NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
+    ShapeFileDisplay *sfd;
+    NSString *fileName;
+    NSString *shapeFile;
     
-    NSString *fileName = @"wMain.shp";
-    dc.elementType = WaterMain;
-    NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    fileName = @"PDFBOUNDS.shp";
+    dc.elementType = PDFBounds;
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
     if (sfd)
     {
         sfd.zoom = _zoom;
@@ -38,6 +41,24 @@ displayCharacteristics:dc
               themes:themes
          pointInArea:pia];
     }
+    
+    fileName = @"wMain.shp";
+    dc.elementType = WaterMain;
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    if (sfd)
+    {
+        sfd.zoom = _zoom;
+        sfd.processingID = _processingID;
+        [sfd display:context
+displayCharacteristics:dc
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds
+              themes:themes
+         pointInArea:pia];
+    }
+    
     fileName = @"wHydrant.shp";
     dc.elementType = Hydrant;
     shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
