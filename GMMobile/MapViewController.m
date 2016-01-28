@@ -17,13 +17,21 @@ extern int keepProcessing;
 #import "NVPageController.h"
 #import "CrimeDataOptions.h"
 
+typedef struct NVRegionQuadrants {
+    GMSVisibleRegion fullRegion;
+    GMSVisibleRegion upperRightRegion;
+    GMSVisibleRegion upperLeftRegion;
+    GMSVisibleRegion lowerRightRegion;
+    GMSVisibleRegion lowerLeftRegion;
+} NVRegionQuadrants;
+
 #define MAX_VECTORVIEWS 8
 
 @interface MapViewController ()
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
-@property (nonatomic) NSMutableArray *propertyReport, *markerArray;
+@property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
@@ -66,9 +74,10 @@ extern int keepProcessing;
 @property (nonatomic) NSMutableSet *polylines;
 @property (nonatomic) UIScrollView *legendScrollView;
 @property (nonatomic) UIImageView *myLocationMarker;
-@property NSUInteger currentLegendTag;
+@property NSUInteger currentLegendTag, pdfCount;
 @property NVColorOption currentColorOption;
 @property BOOL emailPDFAfterUpdate;
+@property (nonatomic) NVRegionQuadrants regionQuads;
 
 @end
 
@@ -109,7 +118,7 @@ extern int keepProcessing;
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
-    _nVectorViews = _currentLegendTag = 0,
+    _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _emailPDFAfterUpdate = NO;
@@ -698,63 +707,97 @@ extern int keepProcessing;
     
     NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray];
     
-    if (MFMailComposeViewController.canSendMail)
+    if (_emailPDFAfterUpdate)
     {
-        MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
-        composer.mailComposeDelegate = self;
-        composer.subject = @"PDF from GMMobile";
+        [_pdfsArray addObject:pdf];
         
-        [composer setMessageBody:@"The PDF attached to this email was rendered by GMMobile."
-                          isHTML:NO];
+        GMSCoordinateBounds *bounds = {0};
         
-        [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
-        
-        [composer addAttachmentData:pdf
-                           mimeType:@"application/pdf"
-                           fileName:@"testPDF.pdf"];
-        
-        [self presentViewController:composer
-                           animated:YES
-                         completion:nil];
-    }
-    
-    else
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:@"ERROR: No mail account setup on device."
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-#pragma unused(alert)
-    }
-    
-    for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
-    {
-        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+        switch (_pdfCount)
         {
-            tlmos.expandButton.alpha = 1.0;
-            tlmos.dragButton.alpha = 1.0;
-            [self.view addSubview:tlmos];
+            case 1:
+                bounds = [[GMSCoordinateBounds alloc] initWithRegion:_regionQuads.upperRightRegion];
+                break;
+                
+            case 2:
+                bounds = [[GMSCoordinateBounds alloc] initWithRegion:_regionQuads.lowerLeftRegion];
+                break;
+                
+            case 3:
+                bounds = [[GMSCoordinateBounds alloc] initWithRegion:_regionQuads.lowerRightRegion];
+                break;
+                
+            default:
+                break;
+        }
+        
+        if (_pdfCount < 5)
+        {
+            GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                                     withPadding:0.0];
+            
+            [_mapView moveCamera:update];
+            _pdfCount++;
         }
     }
     
-    if (_emailPDFAfterUpdate)
+    if (!_emailPDFAfterUpdate || _pdfCount == 5)
     {
-        GMSVisibleRegion region = _mapView.projection.visibleRegion;
+        if (MFMailComposeViewController.canSendMail)
+        {
+            MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
+            composer.mailComposeDelegate = self;
+            composer.subject = @"PDF from GMMobile";
+            
+            [composer setMessageBody:@"The PDF attached to this email was rendered by GMMobile."
+                              isHTML:NO];
+            
+            [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
+            
+            if (_pdfsArray.count)
+            {
+                for (int i = 0; i < _pdfsArray.count; i++)
+                {
+                    [composer addAttachmentData:(NSData *)_pdfsArray[i]
+                                       mimeType:@"application/pdf"
+                                       fileName:@"testPDF.pdf"];
+                }
+            }
+            
+            else
+            {
+                [composer addAttachmentData:pdf
+                                   mimeType:@"application/pdf"
+                                   fileName:@"testPDF.pdf"];
+            }
+            
+            [self presentViewController:composer
+                               animated:YES
+                             completion:nil];
+        }
         
-        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+        else
+        {
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"ERROR: No mail account setup on device."
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+#pragma unused(alert)
+        }
         
-        _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
-                                    (tabBarTop - statusBarHeight));
+        for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            {
+                tlmos.expandButton.alpha = 1.0;
+                tlmos.dragButton.alpha = 1.0;
+                [self.view addSubview:tlmos];
+            }
+        }
         
-        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:region];
-        
-        GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                 withPadding:0.0];
-        
-        [_mapView moveCamera:update];
-        _emailPDFAfterUpdate = NO;
+        if (_emailPDFAfterUpdate)
+            _emailPDFAfterUpdate = NO;
     }
 }
 
@@ -4492,21 +4535,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidLongPressEmailPDF
 {
-    GMSVisibleRegion region = _mapView.projection.visibleRegion;
-    CGRect frame = _mapView.frame;
-    frame.origin.x -= (frame.size.width / 2.0);
-    frame.origin.y -= (frame.size.height / 2.0);
-    frame.size.width *= 2.0;
-    frame.size.height *= 2.0;
-    _mapView.frame = frame;
+    _pdfsArray = NSMutableArray.array;
+    _regionQuads = divideRegionIntoQuads(_mapView.projection.visibleRegion);
     
-    GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:region];
+    GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithRegion:_regionQuads.upperLeftRegion];
     
     GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                              withPadding:0.0];
     
     [_mapView moveCamera:update];
     _emailPDFAfterUpdate = YES;
+    _pdfCount++;
 }
 
 - (void)mapToolbarDidSelectHelpButton
@@ -5398,6 +5437,65 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     _nvdl.popover = nil;
     _nvdl.delegate = nil;
     _nvdl = nil;
+}
+
+NVRegionQuadrants divideRegionIntoQuads(GMSVisibleRegion region)
+{
+    NVRegionQuadrants regionQuads = {0};
+    
+    regionQuads.fullRegion = region;
+    regionQuads.upperLeftRegion.farLeft = regionQuads.fullRegion.farLeft;
+    regionQuads.upperRightRegion.farRight = regionQuads.fullRegion.farRight;
+    regionQuads.lowerLeftRegion.nearLeft = regionQuads.fullRegion.nearLeft;
+    regionQuads.lowerRightRegion.nearRight = regionQuads.fullRegion.nearRight;
+    
+    regionQuads.upperLeftRegion.farRight = CLLocationCoordinate2DMake(((regionQuads.upperLeftRegion.farLeft.latitude +
+                                                                         regionQuads.upperRightRegion.farRight.latitude) / 2.0),
+                                                                       ((regionQuads.upperLeftRegion.farLeft.longitude +
+                                                                         regionQuads.upperRightRegion.farRight.longitude) / 2.0));
+    
+    regionQuads.upperRightRegion.farLeft = regionQuads.upperLeftRegion.farRight;
+    
+    regionQuads.lowerLeftRegion.nearRight = CLLocationCoordinate2DMake(((regionQuads.lowerLeftRegion.nearLeft.latitude +
+                                                                          regionQuads.lowerRightRegion.nearRight.latitude) / 2.0),
+                                                                        ((regionQuads.lowerLeftRegion.nearLeft.longitude +
+                                                                          regionQuads.lowerRightRegion.nearRight.longitude) / 2.0));
+    
+    regionQuads.lowerRightRegion.nearLeft = regionQuads.lowerLeftRegion.nearRight;
+    
+    
+    regionQuads.upperLeftRegion.nearLeft = CLLocationCoordinate2DMake(((regionQuads.upperLeftRegion.farLeft.latitude +
+                                                                         regionQuads.lowerLeftRegion.nearLeft.latitude) / 2.0),
+                                                                       ((regionQuads.upperLeftRegion.farLeft.longitude +
+                                                                         regionQuads.lowerLeftRegion.nearLeft.longitude) / 2.0));
+    
+    regionQuads.lowerLeftRegion.farLeft = regionQuads.upperLeftRegion.nearLeft;
+    
+    regionQuads.upperRightRegion.nearRight = CLLocationCoordinate2DMake(((regionQuads.upperRightRegion.farRight.latitude +
+                                                                           regionQuads.lowerRightRegion.nearRight.latitude) / 2.0),
+                                                                         ((regionQuads.upperRightRegion.farRight.longitude +
+                                                                           regionQuads.lowerRightRegion.nearRight.longitude) / 2.0));
+    
+    regionQuads.lowerRightRegion.farRight = regionQuads.upperRightRegion.nearRight;
+    
+    CLLocationCoordinate2D middlePoint1 = CLLocationCoordinate2DMake(((regionQuads.upperLeftRegion.farRight.latitude +
+                                                                       regionQuads.lowerLeftRegion.nearRight.latitude) / 2.0),
+                                                                     ((regionQuads.upperLeftRegion.farRight.longitude +
+                                                                       regionQuads.lowerLeftRegion.nearRight.longitude) / 2.0));
+    
+    CLLocationCoordinate2D middlePoint2 = CLLocationCoordinate2DMake(((regionQuads.upperLeftRegion.nearLeft.latitude +
+                                                                       regionQuads.upperRightRegion.nearRight.latitude) / 2.0),
+                                                                     ((regionQuads.upperLeftRegion.nearLeft.longitude +
+                                                                       regionQuads.upperRightRegion.nearRight.longitude) / 2.0));
+    
+    regionQuads.upperLeftRegion.nearRight = CLLocationCoordinate2DMake(((middlePoint1.latitude + middlePoint2.latitude) / 2.0),
+                                                                        ((middlePoint1.longitude + middlePoint2.longitude) / 2.0));
+    
+    regionQuads.upperRightRegion.nearLeft = regionQuads.upperLeftRegion.nearRight;
+    regionQuads.lowerRightRegion.farLeft = regionQuads.upperLeftRegion.nearRight;
+    regionQuads.lowerLeftRegion.farRight = regionQuads.upperLeftRegion.nearRight;
+    
+    return regionQuads;
 }
 
 @end
