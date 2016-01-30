@@ -3492,6 +3492,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [button.superview removeFromSuperview];
         [self deselectTableViewRow];
         _showsPanarama = NO;
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
     }];
 }
 
