@@ -27,7 +27,7 @@ typedef struct NVRegionQuadrants {
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController ()
+@interface MapViewController () <GMSPanoramaViewDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -45,7 +45,7 @@ typedef struct NVRegionQuadrants {
 @property (nonatomic) CGFloat heading, pitch, fov, compassMargin;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer *vectorViewTimer;
-@property (nonatomic) UIImageView *streetView, *targetView, *digitizerTargetView;
+@property (nonatomic) UIImageView *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property MapViewScreenSetting screenSetting;
 @property (nonatomic) NSInteger gestureCount, digitizerCount;
@@ -76,7 +76,7 @@ typedef struct NVRegionQuadrants {
 @property (nonatomic) UIImageView *myLocationMarker;
 @property NSUInteger currentLegendTag, pdfCount;
 @property NVColorOption currentColorOption;
-@property BOOL emailPDFAfterUpdate;
+@property BOOL emailPDFAfterUpdate, showsPanarama;
 @property (nonatomic) NVRegionQuadrants regionQuads;
 
 @end
@@ -121,7 +121,7 @@ typedef struct NVRegionQuadrants {
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _emailPDFAfterUpdate = NO;
+    _emailPDFAfterUpdate = _showsPanarama = NO;
     
     CGFloat legendScrollWidth = 236.0;
     
@@ -270,38 +270,6 @@ typedef struct NVRegionQuadrants {
     _cityInnerBounds.size.height = 103220;
     _tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
-    _streetView = [[UIImageView alloc] init];
-    _streetView.hidden = YES;
-    _streetView.userInteractionEnabled = YES;
-    
-    UISwipeGestureRecognizer *upSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                                                  action:@selector(svUpSwiped:)];
-    
-    upSwipe.direction = UISwipeGestureRecognizerDirectionUp;
-    upSwipe.delegate = self;
-    [_streetView addGestureRecognizer:upSwipe];
-    
-    UISwipeGestureRecognizer *downSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self
-                                                                                    action:@selector(svDownSwiped:)];
-    
-    downSwipe.direction = UISwipeGestureRecognizerDirectionDown;
-    downSwipe.delegate = self;
-    [_streetView addGestureRecognizer:downSwipe];
-    
-    UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                action:@selector(svDoubleTapped:)];
-    
-    doubleTap.numberOfTapsRequired = 2;
-    doubleTap.delegate = self;
-    [_streetView addGestureRecognizer:doubleTap];
-    
-    UITapGestureRecognizer *twoFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                   action:@selector(svTwoFingerTapped:)];
-    
-    twoFingerTap.numberOfTouchesRequired = 2;
-    twoFingerTap.delegate = self;
-    [_streetView addGestureRecognizer:twoFingerTap];
-    
     _firstView = [[UIView alloc] init];
     _secondView = [[UIView alloc] init];
     _firstView.clipsToBounds = _secondView.clipsToBounds = YES;
@@ -328,7 +296,6 @@ typedef struct NVRegionQuadrants {
     
     [self.view addSubview:_firstView];
     [self.view addSubview:_secondView];
-    [self.view addSubview:_streetView];
     
     [self setupTableView];
     
@@ -1832,13 +1799,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (_secondView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_secondView];
     
-    if (![self legendIsExpanded] && ![self alertVisible])
+    if (![self legendIsExpanded] && ![self alertVisible] && !_showsPanarama)
     {
         [self.view bringSubviewToFront:_mapToolbar];
         [self.view bringSubviewToFront:_compass];
     }
     
-    if (!_tableView.hidden)
+    if (!_tableView.hidden && ![self alertVisible] && !_showsPanarama)
         [self.view bringSubviewToFront:_tableView];
     
     for (GSSiDatePicker *datePicker in self.view.subviews)
@@ -2007,17 +1974,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_legendsAreOffMap)
         frame3.size.width -= _mapViewLegendOffset;
     
-    if (!_streetView.hidden)
-    {
-        [UIView animateWithDuration:duration
-                         animations:^{
-                             _streetView.frame =
-                             CGRectMake((((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
-                                        ((self.view.frame.size.width - _screenSize) / 2.0),
-                                        _screenSize, _screenSize);
-                         }];
-    }
-
     [_mapToolbar willRotateWithDuration:duration
                            tabBarHeight:_tabBarHeight
                         statusBarHeight:statusBarHeight];
@@ -2327,33 +2283,38 @@ haveVV:
 
 - (void)clearVectorView
 {
-    [_vectorViewTimer invalidate];
-    keepProcessing++;
-    NSLog(@"Vector view clear");
-
-    if (!_vectorView)
-        return;
-    
-    _vectorView.displayDataOption = DISPLAY_DATA_OPTION_NODISPLAY;
-    [_vectorView removeFromSuperview];
-    vectorViews[_vectorView.ivv] = nil;
-    _vectorView = nil;
-    [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
-    [CRAPI.sharedInstance updateProgress:1 current:0 range:0 numRanges:1];
-
+    if (!_showsPanarama)
+    {
+        [_vectorViewTimer invalidate];
+        keepProcessing++;
+        NSLog(@"Vector view clear");
+        
+        if (!_vectorView)
+            return;
+        
+        _vectorView.displayDataOption = DISPLAY_DATA_OPTION_NODISPLAY;
+        [_vectorView removeFromSuperview];
+        vectorViews[_vectorView.ivv] = nil;
+        _vectorView = nil;
+        [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
+        [CRAPI.sharedInstance updateProgress:1 current:0 range:0 numRanges:1];
+    }
 }
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom
 {
-    [self clearVectorView];
-    _vectorViewZoom = zoom;
-    
-    _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                        target:self
-                                                      selector:@selector(startVectorView:)
-                                                      userInfo:nil
-                                                       repeats:NO];
+    if (!_showsPanarama)
+    {
+        [self clearVectorView];
+        _vectorViewZoom = zoom;
+        
+        _vectorViewTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                            target:self
+                                                          selector:@selector(startVectorView:)
+                                                          userInfo:nil
+                                                           repeats:NO];
+    }
 }
 
 - (void)startVectorView:(NSTimer *)timer
@@ -3457,34 +3418,81 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showStreetView
 {
-    _streetView.frame = _tableView.frame;
-    _fov = 90.0, _pitch = 0.0;
+    _showsPanarama = YES;
+    GMSPanoramaView *panView = [[GMSPanoramaView alloc] init];
+    [panView moveNearCoordinate:_selectedPIDCoords];
+    panView.translatesAutoresizingMaskIntoConstraints = NO;
+    panView.delegate = self;
+    panView.alpha = 0.0;
     
-    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                   pitch:_pitch
-                                                     fov:_fov];
+    [self.view addSubview:panView];
     
-    [self.view bringSubviewToFront:_streetView];
+    [panView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
+    [panView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+    [panView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
     
-    for (UIView *view in self.view.subviews)
-        view.hidden = YES;
+    [panView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
+                                         constant:self.tabBarController.tabBar.frame.size.height].active = YES;
     
-    _streetView.hidden = NO;
+    UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
+    dismissPan.backgroundColor = UIColor.clearColor;
+    dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
+    dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+    dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
+    dismissPan.titleLabel.layer.shadowOpacity = 1.0;
+    dismissPan.titleLabel.layer.shadowRadius = 3.0;
+    dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
     
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _streetView.frame =
-                         CGRectMake(((self.view.frame.size.width - _screenSize) / 2.0),
-                                    (((self.view.frame.size.height + _tabBarHeight) - _screenSize) / 2.0),
-                                    _screenSize, _screenSize);
-                         
-                         self.view.backgroundColor = UIColor.blackColor;
-                         self.tabBarController.tabBar.alpha = 0.0;
-                         UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
-                         _exitStreetView.hidden = NO;
-                     } completion:^(BOOL finished) {
-                         self.tabBarController.tabBar.hidden = YES;
-                     }];
+    [dismissPan setTitle:@"< Return"
+                    forState:UIControlStateNormal];
+    
+    [dismissPan setTitleColor:UIColor.whiteColor
+                     forState:UIControlStateNormal];
+    
+    [dismissPan setTitleColor:UIColor.lightGrayColor
+                     forState:UIControlStateHighlighted];
+    
+    [panView addSubview:dismissPan];
+    
+    [dismissPan.leadingAnchor constraintEqualToAnchor:panView.leadingAnchor
+                                             constant:20.0].active = YES;
+    
+    [dismissPan.topAnchor constraintEqualToAnchor:panView.topAnchor
+                                         constant:20.0].active = YES;
+    
+    [dismissPan addTarget:self
+                   action:@selector(dismissPanTapped:)
+         forControlEvents:UIControlEventTouchUpInside];
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        panView.alpha = 1.0;
+        self.tabBarController.tabBar.alpha = 0.0;
+    }];
+}
+
+- (void)panoramaView:(GMSPanoramaView *)view
+   didMoveToPanorama:(GMSPanorama *)panorama
+      nearCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    CLLocationDirection heading = getHeading(panorama.coordinate, coordinate);
+    
+    view.camera = [GMSPanoramaCamera cameraWithHeading:heading
+                                                 pitch:0.0
+                                                  zoom:1.0
+                                                   FOV:90.0];
+}
+
+- (void)dismissPanTapped:(UIButton *)button
+{
+    [UIView animateWithDuration:0.25 animations:^{
+        button.superview.alpha = 0.0;
+        self.tabBarController.tabBar.alpha = 1.0;
+    } completion:^(BOOL finished) {
+        [button.superview removeFromSuperview];
+        [self deselectTableViewRow];
+        _showsPanarama = NO;
+    }];
 }
 
 - (void)showCensusArea
@@ -3967,50 +3975,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (IBAction)dismissStreetView:(id)sender
-{
-    self.tabBarController.tabBar.hidden = NO;
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _streetView.frame = CGRectMake(_tableView.frame.origin.x,
-                                                        _tableView.frame.origin.y,
-                                                        _tableView.frame.size.width,
-                                                        _tableView.frame.size.height);
-                         
-                         self.view.backgroundColor = UIColor.whiteColor;
-                         self.tabBarController.tabBar.alpha = 1.0;
-                         UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleDefault;
-                         
-                         for (UIView *view in self.view.subviews)
-                             view.hidden = NO;
-                         
-                         _exitStreetView.hidden = YES;
-                     }
-                     completion:^(BOOL finished){
-                         [self.view sendSubviewToBack:_streetView];
-                         _streetView.hidden = YES;
-                         
-                         if(!_tableView.hidden)
-                             [self.view bringSubviewToFront:_tableView];
-                         
-                         [self deselectTableViewRow];
-                     }];
-}
-
-- (UIImage *)getStreetViewImageAtCoords:(CLLocationCoordinate2D)coord
-                                  pitch:(CGFloat)pitch
-                                    fov:(CGFloat)fov
-{
-    NSString *staticMapUrl = [NSString stringWithFormat:
-                              @"https://maps.googleapis.com/maps/api/streetview?size=640x640&location=%f,%f&fov=%f&pitch=%f",
-                              coord.latitude, coord.longitude, fov, pitch];
-    
-    NSURL *mapUrl = [NSURL URLWithString:[staticMapUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:mapUrl]];
-    return image;
-}
-
 - (void)dismissTableView
 {
     if (!_tableView.hidden)
@@ -4165,42 +4129,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         _targetView.center = superpoint;
     }
-}
-
-- (void)svUpSwiped:(UISwipeGestureRecognizer *)gesture
-{
-    _pitch -= 10.0;
-    
-    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                   pitch:_pitch
-                                                     fov:_fov];
-}
-
-- (void)svDownSwiped:(UISwipeGestureRecognizer *)gesture
-{
-    _pitch += 10.0;
-    
-    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                   pitch:_pitch
-                                                     fov:_fov];
-}
-
-- (void)svDoubleTapped:(UITapGestureRecognizer *)gesture
-{
-    _fov -= 10.0;
-    
-    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                   pitch:_pitch
-                                                     fov:_fov];
-}
-
-- (void)svTwoFingerTapped:(UITapGestureRecognizer *)gesture
-{
-    _fov += 10.0;
-    
-    _streetView.image = [self getStreetViewImageAtCoords:_selectedPIDCoords
-                                                   pitch:_pitch
-                                                     fov:_fov];
 }
 
 - (void)mapToolbarDidSelectZoomExtent

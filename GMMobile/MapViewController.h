@@ -28,7 +28,6 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property (nonatomic) int currentZoom;
-@property (weak, nonatomic) IBOutlet UIButton *exitStreetView;
 @property BOOL fromSpreadsheet, fromLegends;
 @property (nonatomic) CLLocationCoordinate2D spreadsheetCoords;
 @property (nonatomic) GMSMapView *mapView;
