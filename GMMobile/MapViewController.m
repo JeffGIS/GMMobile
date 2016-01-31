@@ -1279,7 +1279,15 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                              _clearWhenDeselected = NO;
                          }];
     }
-    
+    else if (CRAPI.sharedInstance.selectBoundaryFromMapType)
+    {
+        LLPOINT llpickPt;
+        llpickPt.lat = coordinate.latitude;
+        llpickPt.lon = coordinate.longitude;
+        BoundaryData *bd = [[BoundaryData alloc]init];
+        [bd pickBoundaryArea:llpickPt];
+        
+    }
     else
     {
         LLPOINT llpickPt, llSewerPt, llPropPt;
