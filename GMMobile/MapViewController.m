@@ -110,6 +110,10 @@ typedef struct NVRegionQuadrants {
         removeViewControllerWithID:@"MGThemesVC"
                           animated:NO];
     
+    [NVTabBarEdit tabBarController:self.tabBarController
+        removeViewControllerWithID:@"CrimeDataOptionsVC"
+                          animated:NO];
+    
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
                                                name:@"didBecomeActive"
@@ -902,7 +906,7 @@ typedef struct NVRegionQuadrants {
         
         NVPageController *nvpc = [NVPageController pageControllerWithArrangementArray:pvaArray];
         nvpc.restorationIdentifier = @"NVPageController";
-        nvpc.tabBarItem.title = @"Crime Options";
+        nvpc.tabBarItem.title = @"Legends";
         
         nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"fieldOptions"
                                                                                                ofType:@"png"]];
@@ -912,10 +916,12 @@ typedef struct NVRegionQuadrants {
                                atIndex:1
                               animated:YES];
         
-        UIViewController *cdovc = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
+        UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
         
-        if (cdovc)
-            [nvpc addViewController:cdovc];
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:crimeOptionsVC
+                               atIndex:1
+                              animated:YES];
     }
     
     else
@@ -923,6 +929,10 @@ typedef struct NVRegionQuadrants {
         [NVTabBarEdit tabBarController:self.tabBarController
             removeViewControllerWithID:@"NVPageController"
                               animated:YES];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"CrimeDataOptionsVC"
+                              animated:NO];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||

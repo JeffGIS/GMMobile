@@ -18,5 +18,6 @@
 @interface FindBoundariesViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,NVUnitPickerTextAlertDelegate>
 
 @property (weak, nonatomic) id <FindBoundsViewControllerDelegate> delegate;
+@property (nonatomic) NSArray *otherAreas;
 
 @end

@@ -3,6 +3,7 @@
 
 #import "FindBoundariesViewController.h"
 #import "BoundaryData.h"
+#import "CrimeDataOptions.h"
 
 @interface FindBoundariesViewController ()
 
@@ -22,6 +23,7 @@
 @property (nonatomic) NSString *selectedType;
 @property (nonatomic) NSMutableDictionary *sections;
 @property (nonatomic) NSMutableArray *sectionBegins, *sectionCounts, *sectionKeys;
+@property BOOL useOtherAreas;
 
 @end
 
@@ -35,6 +37,10 @@
     
     BoundaryData *boundData = [[BoundaryData alloc] init];
     _boundaryList = [boundData getBoundaryAreaTypes];
+    _useOtherAreas = NO;
+    
+    if (_otherAreas.count)
+        [_boundaryList addObject:@"Other Areas"];
     
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
@@ -124,15 +130,16 @@
     tableView.separatorInset = UIEdgeInsetsZero;
     tableView.separatorColor = UIColor.blackColor;
     tableView.backgroundColor = UserDefaults.defaults.green;
-    tableView.bounces = NO;
+    tableView.bounces = YES;
     tableView.layer.borderColor = UIColor.blackColor.CGColor;
     
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 12.8), 44.0);
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
     tableView.rowHeight = rowHeight;
     tableView.sectionHeaderHeight = 0.0;
     tableView.layer.borderWidth = (rowHeight / 20.0);
     tableView.layer.cornerRadius = 10.0;
-    tableView.sectionIndexMinimumDisplayRowCount = 6;
+    tableView.sectionIndexMinimumDisplayRowCount = 8;
+    tableView.delaysContentTouches = YES;
     
     tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.0
                                                                       alpha:0.1];
@@ -198,11 +205,8 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (tableView == _bottomTableView &&
-        ![_selectedType isEqualToString:@"Minneapolis Wards"])
-    {
+    if (tableView == _bottomTableView && !_useOtherAreas)
         return _sections.count;
-    }
     
     else
         return 1;
@@ -210,23 +214,28 @@
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-    if (tableView == _bottomTableView &&
-        ![_selectedType isEqualToString:@"Minneapolis Wards"])
-    {
+    if (tableView == _bottomTableView && !_useOtherAreas)
         return _sectionKeys;
-    }
-    
-    else
-        return nil;
+
+    return nil;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    if ([tableView isEqual:_topTableView])
+    if (tableView == _topTableView)
     {
-        if (_boundaryList.count != 0)
+        if (_boundaryList.count)
             return _boundaryList.count;
+        
+        else
+            return 1;
+    }
+    
+    else if (_useOtherAreas)
+    {
+        if (_otherAreas.count)
+            return _otherAreas.count;
         
         else
             return 1;
@@ -234,14 +243,10 @@
     
     else
     {
-        if (_boundaryDataList.count != 0)
+        if (_boundaryDataList.count)
         {
-            if (![_selectedType isEqualToString:@"Minneapolis Wards"])
-            {
-                NSNumber *num = _sectionCounts[section];
-                int n = (int)num.integerValue;
-                return n;
-            }
+            if (_sectionCounts.count)
+                return [_sectionCounts[section] integerValue];
             
             else
                 return _boundaryDataList.count;
@@ -264,11 +269,11 @@
                                       reuseIdentifier:@"Cell"];
     }
     
-    if (_boundaryList.count != 0)
+    if (_boundaryList.count)
     {
-        if ([tableView isEqual:_topTableView])
+        if (tableView == _topTableView)
         {
-            if (_boundaryList.count != 0)
+            if (_boundaryList.count)
             {
                 cell.textLabel.text = _boundaryList[indexPath.row];
                 cell.textLabel.textColor = UIColor.blackColor;
@@ -283,11 +288,27 @@
             }
         }
         
+        else if (_useOtherAreas)
+        {
+            if (_otherAreas.count)
+            {
+                cell.textLabel.text = _otherAreas[indexPath.row];
+                cell.textLabel.textColor = UIColor.blackColor;
+                cell.userInteractionEnabled = YES;
+            }
+            
+            else
+            {
+                cell.textLabel.text = @"No Boundaries Types available";
+                cell.textLabel.textColor = UIColor.grayColor;
+                cell.userInteractionEnabled = NO;
+            }
+        }
+        
         else
         {
-            if (_boundaryDataList.count != 0)
+            if (_boundaryDataList.count)
             {
-                //BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
                 NSNumber *begin = _sectionBegins[indexPath.section];
                 BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
                 
@@ -319,13 +340,21 @@
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([tableView isEqual:_topTableView])
+    if (tableView == _topTableView)
     {
-        BoundaryData *boundData = [[BoundaryData alloc] init];
-        
         _selectedType = _boundaryList[indexPath.row];
-        _boundaryDataList = [boundData getBoundaryAreaDataForType:_selectedType];
-        NSSortDescriptor *sort;
+        
+        if ([_selectedType isEqualToString:@"Other Areas"])
+            _useOtherAreas = YES;
+        
+        else
+        {
+            _useOtherAreas = NO;
+            BoundaryData *boundData = [[BoundaryData alloc] init];
+            _boundaryDataList = [boundData getBoundaryAreaDataForType:_selectedType];
+        }
+        
+        NSSortDescriptor *sort = nil;
         
         if ([_selectedType isEqualToString:@"Minneapolis Wards"])
         {
@@ -344,10 +373,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                   selector:@selector(caseInsensitiveCompare:)];
         }
         
-        [_boundaryDataList sortUsingDescriptors:[NSArray arrayWithObject:sort]];
-        
-        if (![_selectedType isEqualToString:@"Minneapolis Wards"])
+        if (!_useOtherAreas)
+        {
+            [_boundaryDataList sortUsingDescriptors:[NSArray arrayWithObject:sort]];
             [self setupSectionIndex];
+        }
         
         [_bottomTableView reloadData];
         _selectFromMapButton.enabled = YES;
@@ -358,14 +388,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         if (_delegate)
         {
-            NSNumber *begin = _sectionBegins[indexPath.section];
+            NSString *boundsName = @"";
+            int refno = 0;
             
-            BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
+            if (_useOtherAreas)
+                boundsName = _otherAreas[indexPath.row];
+            
+            else
+            {
+                NSNumber *begin = _sectionBegins[indexPath.section];
+                BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
+                boundsName = baData.name;
+                refno = baData.refno;
+            }
             
             [_delegate findBoundsViewController:self
-                                didSelectBounds:baData.name
+                                didSelectBounds:boundsName
                                            type:_selectedType
-                                          refno:baData.refno];
+                                          refno:refno];
         }
     }
 }
@@ -376,7 +416,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _sectionBegins = [[NSMutableArray alloc] init];
     _sectionCounts = [[NSMutableArray alloc] init];
     _sectionKeys = [[NSMutableArray alloc] init];
-    //BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
     
     int sectionCount = 0;
     

@@ -5,8 +5,9 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/NVAlertView.h"
+#import "FindBoundariesViewController.h"
 
-@interface CrimeDataOptions ()
+@interface CrimeDataOptions () <FindBoundsViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *dateRangeButton;
 @property (weak, nonatomic) IBOutlet UIButton *areaTypeButton;
@@ -17,8 +18,9 @@
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
-@property (nonatomic) NSArray *legends, *areaTypes, *modes;
-@property NSInteger selectedAreaType, selectedLegend, selectedMode;
+@property (nonatomic) NSArray *legends, *modes;
+@property NSInteger selectedLegend, selectedMode;
+@property (nonatomic, copy) NSString *selectedAreaType;
 
 @end
 
@@ -29,7 +31,8 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _selectedAreaType = _selectedLegend = _selectedMode = 0;
+    _selectedLegend = _selectedMode = 0;
+    _selectedAreaType = @"Entire City";
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -54,10 +57,6 @@
         
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
-    
-    _areaTypes = @[@"Entire City", @"Neighborhoods", @"Wards", @"Precincts", @"Sectors",
-                   @"Broadway Area", @"Downtown Improvement District", @"NorthWest L",
-                   @"Midtown", @"Midtown (expanded)", @"Violent Crime Hotspots"];
     
     _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Arson", @"Assault", @"Burglary",
                  @"Force/NoForce Burglary of Dwelling", @"Graffiti", @"Narcotics", @"Prostitution",
@@ -86,7 +85,7 @@
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
     
-    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _areaTypes[_selectedAreaType]]
+    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _selectedAreaType]
                      forState:UIControlStateNormal];
     
     [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _legends[_selectedLegend]]
@@ -224,19 +223,6 @@ didReturnFromDate:(NSInteger)fromDate
     [self updateButton:_dateRangeButton];
 }
 
-- (IBAction)areaType:(UIButton *)sender
-{
-    if (!_areaTypeButton.selected)
-    {
-        _areaTypeButton.selected = YES;
-        _legendButton.selected = NO;
-        _modeButton.selected = NO;
-        
-        [self updateButtons];
-        [_tableView reloadData];
-    }
-}
-
 - (IBAction)legend:(UIButton *)sender
 {
     if (!_legendButton.selected)
@@ -266,10 +252,7 @@ didReturnFromDate:(NSInteger)fromDate
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    if (_areaTypeButton.selected)
-        return _areaTypes.count;
-    
-    else if (_legendButton.selected)
+    if (_legendButton.selected)
         return _legends.count;
     
     else
@@ -330,18 +313,7 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
-    if (_areaTypeButton.selected)
-    {
-        cell.textLabel.text = _areaTypes[indexPath.row];
-        
-        if (indexPath.row == _selectedAreaType)
-            cell.accessoryView = _checkmarkView;
-        
-        else
-            cell.accessoryView = nil;
-    }
-    
-    else if (_legendButton.selected)
+    if (_legendButton.selected)
     {
         cell.textLabel.text = _legends[indexPath.row];
         
@@ -377,15 +349,7 @@ viewForHeaderInSection:(NSInteger)section
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (_areaTypeButton.selected)
-    {
-        _selectedAreaType = indexPath.row;
-        
-        [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _areaTypes[_selectedAreaType]]
-                         forState:UIControlStateNormal];
-    }
-    
-    else if (_legendButton.selected)
+    if (_legendButton.selected)
     {
         _selectedLegend = indexPath.row;
         
@@ -442,6 +406,36 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     formattedDate = [dateFormatter stringFromDate:date];
     
     return formattedDate;
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue
+                 sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ShowCrimeAreas"])
+    {
+        FindBoundariesViewController *findBounds = segue.destinationViewController;
+        findBounds.delegate = self;
+        
+        findBounds.otherAreas = @[@"Entire City", @"Broadway Area", @"Downtown Improvement District", @"NorthWest L",
+                                  @"Midtown", @"Midtown (expanded)", @"Violent Crime Hotspots"];
+    }
+}
+
+- (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
+                 didSelectBounds:(NSString *)bounds
+                            type:(NSString *)type
+                           refno:(int)refno
+{
+    [findBounds dismissViewControllerAnimated:YES
+                                   completion:nil];
+    
+    CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+    CRAPI.sharedInstance.currentOverallBoundaryName = _selectedAreaType = bounds;
+    CRAPI.sharedInstance.currentOverallBoundaryType = type;
+    CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+    
+    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _selectedAreaType]
+                     forState:UIControlStateNormal];
 }
 
 @end
