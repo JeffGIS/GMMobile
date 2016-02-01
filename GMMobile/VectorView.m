@@ -220,11 +220,23 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                BoundaryData *bd = [[BoundaryData alloc] init];
                                                bd.processingID = keepProcessing;
                                                bd.zoom = _zoom;
-                                               [bd displayLandUse:_context
-                                                        llCorners:&_latlonCornerPoints
-                                                         LLBounds:&_latlonBounds
-                                                       viewBounds:&_viewBounds];
+                                               NSArray * textArray = [NSArray new];
                                                
+                                               [bd display:_context
+                                                  areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
+                                              pointInAreas:nil
+                                                 llCorners:&_latlonCornerPoints
+                                                  LLBounds:&_latlonBounds
+                                                viewBounds:&_viewBounds];
+                                               
+                                               /*[bd displayText:context
+                                                      areaType:_choroplethTarget
+                                                     textArray:textArray
+                                                  pointInAreas:pias
+                                                     llCorners:latlonCornerPoints
+                                                      LLBounds:platlonBounds
+                                                    viewBounds:pvbounds];*/
+
                                            }
                                            else
                                            {

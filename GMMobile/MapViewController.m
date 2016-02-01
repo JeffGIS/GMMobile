@@ -1181,13 +1181,20 @@ typedef struct NVRegionQuadrants {
 {
     [self stopTrackingUserLocation:NO];
     GMSCameraPosition *camera;
+    MNMXCORD bounds;
     
-    if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+    if (CRAPI.sharedInstance.currentOverallBoundaryRefno || CRAPI.sharedInstance.selectBoundaryFromMapType)
     {
         BoundaryData *boundData = [[BoundaryData alloc] init];
         
-        MNMXCORD bounds = [boundData getBoundaryAreaBounds:
-                           CRAPI.sharedInstance.currentOverallBoundaryRefno];
+        if (CRAPI.sharedInstance.selectBoundaryFromMapType)
+        {
+            bounds = [boundData selectBoundaryFromMapInit:
+                            CRAPI.sharedInstance.selectBoundaryFromMapType];
+        }
+        else
+            bounds = [boundData getBoundaryAreaBounds:
+                            CRAPI.sharedInstance.currentOverallBoundaryRefno];
         
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
         CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);

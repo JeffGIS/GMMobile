@@ -424,7 +424,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     BoundaryData *bd = [[BoundaryData alloc] init];
     NSString *type = [_topTableView cellForRowAtIndexPath:_topTableView.indexPathForSelectedRow].textLabel.text;
-    [bd selectBoundaryFromMapInit:type];
+    CRAPI.sharedInstance.selectBoundaryFromMapType = type;
     
     if (_delegate)
     {

@@ -841,10 +841,18 @@ NextPass:
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
+        CGColorRef color;
+        
+        if (pias)
+            color = [pias colorForArea:keyval];
+        else
+            color = [NVColor randomColorFromArray:[NVColor pastelColors]
+                                        ForString:keyval].CGColor;
+
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpoints
-                withColor:[pias colorForArea:keyval]];
+                withColor:color];
         [self drawUseCode:context
                   nPoints:numPoints
                  nLoops:numLoops
@@ -1004,7 +1012,6 @@ NextPass:
     
     [self close:opened];
     
-    CRAPI.sharedInstance.selectBoundaryFromMapType = type;
     return bounds;
 }
 
