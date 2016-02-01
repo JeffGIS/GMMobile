@@ -1037,9 +1037,85 @@ NextPass:
 
 - (int)pickBoundaryArea:(LLPOINT)point
 {
-    int rtn = 0;
+    int nPicked = 0;
+    NSString *query = @"";
+    sqlite3_stmt *statement = NULL;
+    DPOINT BasePt;
+    int numPoints;
+    int refno = 0;
+    LPSTR pkeyval;
+    NSString * keyval;
+    int numLoops;
+    NSString * areaType = CRAPI.sharedInstance.selectBoundaryFromMapType;
+    NSString * key = areaType;
+    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    BOOL opened = [self open];
     
-    return rtn;
+    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+        [areaType isEqualToString:@"Minneapolis Wards"] ||
+        [areaType isEqualToString:@"Minneapolis Sectors"] ||
+        [areaType isEqualToString:@"Cities And Townships"] ||
+        [areaType isEqualToString:@"Counties"] ||
+        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+    {
+        table = @"BOUNDARYAREA";
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME, %@.id FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,areaType,table,table,
+                 point.lon,point.lon,point.lat,point.lat];
+    }
+    else
+    {
+    }
+    SQLOK(sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        BasePt.x = sqlite3_column_double(statement,0);
+        BasePt.y = sqlite3_column_double(statement,1);
+        numPoints = sqlite3_column_int(statement,2);
+        numLoops = sqlite3_column_int(statement,3);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        pkeyval = (LPSTR)sqlite3_column_text(statement,6);
+        keyval = [NSString stringWithUTF8String:pkeyval];
+        refno = sqlite3_column_int(statement,7);
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        DPOINT dp;
+        dp.x = point.lon;
+        dp.y = point.lat;
+        if (POINT_IN_AREAD(dp, numPoints, llpoints, 1, 0, 0, 0))
+            nPicked++;
+        free (llpoints);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), self.database);
+    [self close:opened];
+    if (nPicked == 1)
+    {
+        CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+        CRAPI.sharedInstance.currentOverallBoundaryName = keyval;
+        CRAPI.sharedInstance.currentOverallBoundaryType = areaType;
+        CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    }
+    return nPicked;
 }
 
 @end
