@@ -871,7 +871,7 @@ NextPass:
 
 - (int) displayText:(CGContextRef)context
        areaType:(NSString*)areaType
-          textArray:(NSArray *)textArray
+          textArray:(NSArray *)textArrayx
    pointInAreas:(PointInAreas*)pias
       llCorners:(CORNERPOINTS *) latlonCornerPoints
        LLBounds:(MNMXCORD *)platlonBounds
@@ -949,10 +949,20 @@ NextPass:
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
-        double count = [pias countForArea:keyval];
+        NSString * text;
+        double count;
+        if (pias)
+        {
+            count = [pias countForArea:keyval];
+            text = [NSString stringWithFormat:@"%.0lf",count];
+        }
+        else
+        {
+            count = 1;
+            text = keyval;
+        }
         if (count >= 0)
         {
-            NSString * text=[NSString stringWithFormat:@"%.0lf",count];
             UIColor *textColor = UIColor.redColor;
             [NVTextDrawing drawText:text
                           inContext:context
