@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *maskBoundsSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *polylineLabel;
 @property (weak, nonatomic) IBOutlet UILabel *maskBoundsLabel;
+@property (weak, nonatomic) IBOutlet UIButton *selectFromMapButton;
 
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
 @property (nonatomic) NSString *selectedType;
@@ -45,6 +46,9 @@
                 title:[NSString stringWithFormat:@"Edit Offset:\n%@",
                        CRAPI.sharedInstance.offsetForBounds]];
     
+    [self setupButton:_selectFromMapButton
+                title:@"Select From Map"];
+    
     [self setupView:_polylineView];
     [self setupView:_maskBoundsView];
     
@@ -60,7 +64,13 @@
     _maskBoundsSwitch.on = CRAPI.sharedInstance.maskBoundsForBounds;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
         _offsetButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.0];
+        _selectFromMapButton.titleLabel.font = [UIFont boldSystemFontOfSize:24.0];
+    }
+    
+    else
+        _selectFromMapButton.titleLabel.font = [UIFont boldSystemFontOfSize:36.0];
 }
 
 - (void)didReceiveMemoryWarning
@@ -405,5 +415,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [alert willRotateWithDuration:duration];
     }
 }
+
+- (IBAction)selectFromMap:(id)sender
+{
+    BoundaryData *bd = [[BoundaryData alloc] init];
+}
+
+//call (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type in the BoundaryData class
 
 @end
