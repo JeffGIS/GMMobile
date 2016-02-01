@@ -220,7 +220,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                BoundaryData *bd = [[BoundaryData alloc] init];
                                                bd.processingID = keepProcessing;
                                                bd.zoom = _zoom;
-                                               NSArray * textArray = [NSArray new];
                                                
                                                [bd display:_context
                                                   areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
@@ -229,13 +228,13 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                   LLBounds:&_latlonBounds
                                                 viewBounds:&_viewBounds];
                                                
-                                               /*[bd displayText:context
-                                                      areaType:_choroplethTarget
-                                                     textArray:textArray
-                                                  pointInAreas:pias
-                                                     llCorners:latlonCornerPoints
-                                                      LLBounds:platlonBounds
-                                                    viewBounds:pvbounds];*/
+                                               [bd displayText:_context
+                                                      areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
+                                                     textArray:nil
+                                                  pointInAreas:nil
+                                                     llCorners:&_latlonCornerPoints
+                                                      LLBounds:&_latlonBounds
+                                                    viewBounds:&_viewBounds];
 
                                            }
                                            else
