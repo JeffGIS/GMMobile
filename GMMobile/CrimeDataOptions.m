@@ -32,7 +32,6 @@
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _selectedLegend = _selectedMode = 0;
-    _selectedAreaType = @"Entire City";
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -85,9 +84,6 @@
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
     
-    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _selectedAreaType]
-                     forState:UIControlStateNormal];
-    
     [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _legends[_selectedLegend]]
                    forState:UIControlStateNormal];
     
@@ -110,6 +106,11 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
+                               CRAPI.sharedInstance.currentOverallBoundaryName,
+                               CRAPI.sharedInstance.currentOverallBoundaryType]
+                     forState:UIControlStateNormal];
     
     [_tableView reloadData];
 }
@@ -430,12 +431,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                    completion:nil];
     
     CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-    CRAPI.sharedInstance.currentOverallBoundaryName = _selectedAreaType = bounds;
-    CRAPI.sharedInstance.currentOverallBoundaryType = type;
-    CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
     
-    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@", _selectedAreaType]
-                     forState:UIControlStateNormal];
+    if (bounds && ![bounds isEqualToString:@""])
+    {
+        CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
+        CRAPI.sharedInstance.currentOverallBoundaryType = type;
+        CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+        
+        [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
+                                   CRAPI.sharedInstance.currentOverallBoundaryName,
+                                   CRAPI.sharedInstance.currentOverallBoundaryType]
+                         forState:UIControlStateNormal];
+    }
+    
+    else
+        self.tabBarController.selectedIndex = 0;
 }
 
 @end
