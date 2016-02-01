@@ -794,6 +794,8 @@ NextPass:
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
+        [areaType isEqualToString:@"Cities And Townships"] ||
+        [areaType isEqualToString:@"Counties"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
         table = @"BOUNDARYAREA";
@@ -861,7 +863,7 @@ NextPass:
         [self drawUseCode:context
                   nPoints:numPoints
                    nLoops:numLoops
-                  partLen:0
+                  partLen:polyPartLen
                    points:llpoints
                 withColor:UIColor.blackColor.CGColor];
         
@@ -906,6 +908,8 @@ NextPass:
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
+        [areaType isEqualToString:@"Cities And Townships"] ||
+        [areaType isEqualToString:@"Counties"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
