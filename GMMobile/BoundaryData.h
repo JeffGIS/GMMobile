@@ -71,5 +71,8 @@ usingPointInArea:(PointInArea*)pia
           llCorners:(CORNERPOINTS *) latlonCornerPoints
            LLBounds:(MNMXCORD *)platlonBounds
          viewBounds:(MNMXCORD *)pvbounds;
+- (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type;
+- (int)pickBoundaryArea:(LLPOINT)point;
+
 
 @end

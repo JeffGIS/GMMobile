@@ -967,4 +967,52 @@ NextPass:
     
 }
 
+- (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type
+{
+    MNMXCORD bounds = {0};
+    
+    sqlite3_stmt *statement = NULL;
+    NSString *query = [[NSString alloc] init];
+    
+    BOOL opened = [self open];
+    
+    switch (CRAPI.sharedInstance.project)
+    {
+        case PROJECT_MPLS:
+            break;
+            
+        case PROJECT_METROGIS:
+            query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.TYPE='%@' AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+                     type];
+            break;
+    }
+    
+    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    DBoundsInit(&bounds);
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        MNMXCORD bounds2;
+        bounds2.xmn = sqlite3_column_double(statement, 1);
+        bounds2.xmx = sqlite3_column_double(statement, 2);
+        bounds2.ymn = sqlite3_column_double(statement, 3);
+        bounds2.ymx = sqlite3_column_double(statement, 4);
+        AddMinMaxD (&bounds, &bounds2);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), _database);
+    
+    [self close:opened];
+    
+    CRAPI.sharedInstance.selectBoundaryFromMapType = type;
+    return bounds;
+}
+
+- (int)pickBoundaryArea:(LLPOINT)point
+{
+    int rtn = 0;
+    
+    return rtn;
+}
+
 @end
