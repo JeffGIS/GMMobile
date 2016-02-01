@@ -62,6 +62,8 @@
     _maskBoundsSwitch.tintColor = UIColor.redColor;
     _polylineSwitch.on = CRAPI.sharedInstance.showPolylineForBounds;
     _maskBoundsSwitch.on = CRAPI.sharedInstance.maskBoundsForBounds;
+    _selectFromMapButton.enabled = NO;
+    _selectFromMapButton.alpha = 0.4;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -348,6 +350,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [self setupSectionIndex];
         
         [_bottomTableView reloadData];
+        _selectFromMapButton.enabled = YES;
+        _selectFromMapButton.alpha = 1.0;
     }
     
     else
@@ -355,7 +359,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if (_delegate)
         {
             NSNumber *begin = _sectionBegins[indexPath.section];
-            //BoundaryAreaData *baData = [[BoundaryAreaData alloc] init];
+            
             BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
             
             [_delegate findBoundsViewController:self
@@ -419,8 +423,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (IBAction)selectFromMap:(id)sender
 {
     BoundaryData *bd = [[BoundaryData alloc] init];
+    NSString *type = [_topTableView cellForRowAtIndexPath:_topTableView.indexPathForSelectedRow].textLabel.text;
+    [bd selectBoundaryFromMapInit:type];
+    
+    if (_delegate)
+    {
+        [_delegate findBoundsViewController:self
+                            didSelectBounds:nil
+                                       type:nil
+                                      refno:0];
+    }
 }
-
-//call (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type in the BoundaryData class
 
 @end
