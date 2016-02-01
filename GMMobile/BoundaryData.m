@@ -6,6 +6,7 @@
 #import "BoundaryData.h"
 #import "PropertyData.h"
 #import "CCodeLibrary/NVTextDrawing.h"
+#import "CCodeLibrary/NVColor.h"
 
 extern int keepProcessing;
 @implementation BoundaryAreaData
@@ -845,20 +846,25 @@ NextPass:
         
         if (pias)
             color = [pias colorForArea:keyval];
+        
         else
-            color = [NVColor randomColorFromArray:[NVColor pastelColors]
-                                        ForString:keyval].CGColor;
+        {
+            color = [NVColor randomColorFromArray:NVColor.pastelColors
+                                        forString:keyval].CGColor;
+        }
 
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpoints
                 withColor:color];
+        
         [self drawUseCode:context
                   nPoints:numPoints
-                 nLoops:numLoops
-              partLen:0
+                   nLoops:numLoops
+                  partLen:0
                    points:llpoints
                 withColor:UIColor.blackColor.CGColor];
+        
         free (llpoints);
     }
     
