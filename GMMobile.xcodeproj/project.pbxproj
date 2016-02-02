@@ -87,6 +87,7 @@
 		69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C8DB561C515DC90062AE84 /* MGThemesVC.m */; };
 		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
 		69CE00FC1C6160D700DC56E2 /* GMMobileIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */; };
+		69CE00FE1C61652100DC56E2 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00FD1C61652100DC56E2 /* Default-568h@2x.png */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
@@ -318,6 +319,7 @@
 		69C8DB561C515DC90062AE84 /* MGThemesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGThemesVC.m; sourceTree = "<group>"; };
 		69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GMMobileIcon.png; sourceTree = "<group>"; };
+		69CE00FD1C61652100DC56E2 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -768,6 +770,7 @@
 			children = (
 				EB5521D91A61B6A8008CE2D1 /* Main.storyboard */,
 				69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */,
+				69CE00FD1C61652100DC56E2 /* Default-568h@2x.png */,
 				EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */,
 				1F0723E61BEBD62F00966C36 /* SymbolDictionary.h */,
 				1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */,
@@ -1035,6 +1038,7 @@
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				694FB1D71C588363005410F6 /* Reader-Button-H@2x.png in Resources */,
 				694FB1E21C588363005410F6 /* Reader-Mark-N.png in Resources */,
+				69CE00FE1C61652100DC56E2 /* Default-568h@2x.png in Resources */,
 				694FB1EA1C588363005410F6 /* Reader-Print@3x.png in Resources */,
 				69352E511C1A7D57009A486B /* grayscale.png in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
