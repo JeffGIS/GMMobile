@@ -116,7 +116,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
     
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
-        CRAPI.sharedInstance.maskBoundsForBounds)
+        CRAPI.sharedInstance.maskBoundsForBounds &&
+        !CRAPI.sharedInstance.selectBoundaryFromMapType)
     {
         BoundaryData *boundData = [[BoundaryData alloc] init];
         MNMXCORD bounds = [boundData getBoundaryAreaBounds:
