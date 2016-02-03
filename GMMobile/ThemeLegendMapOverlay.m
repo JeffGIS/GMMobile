@@ -22,6 +22,42 @@
 
 @implementation ThemeLegendMapOverlay
 
++ (CGFloat)rowHeight
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 18.0;
+    
+    else
+        return 26.0;
+}
+
++ (CGFloat)headerHeight
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 24.0;
+    
+    else
+        return 32.0;
+}
+
++ (CGFloat)width
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 118.0;
+    
+    else
+        return 232.0;
+}
+
++ (CGFloat)buttonMargin
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 1.1;
+    
+    else
+        return 2.0;
+}
+
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
@@ -49,22 +85,6 @@
     {
         NSString *countString = [NSString stringWithFormat:@"%i", cells.count];
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
-    }
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        tlmo.width = 118.0;
-        tlmo.buttonMargin = 1.1;
-        tlmo.rowHeight = 18.0;
-        tlmo.headerHeight = 24.0;
-    }
-    
-    else
-    {
-        tlmo.width = 232.0;
-        tlmo.buttonMargin = 2.0;
-        tlmo.rowHeight = 26.0;
-        tlmo.headerHeight = 32.0;
     }
 
     CGFloat height = ((tlmo.legend.numCells * tlmo.rowHeight) + tlmo.headerHeight);
@@ -707,17 +727,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             overlayView = [self.superview viewWithTag:123456789];
         
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        {
-            _rowHeight = 18.0;
-            _headerHeight = 24.0;
-        }
-        
-        else
-        {
-            _rowHeight = 26.0;
-            _headerHeight = 32.0;
-        }
+        _rowHeight = ThemeLegendMapOverlay.rowHeight;
+        _headerHeight = ThemeLegendMapOverlay.headerHeight;
         
         _tabBar.userInteractionEnabled = YES;
         _tableView.rowHeight = _rowHeight;
