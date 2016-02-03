@@ -16,6 +16,7 @@ extern int keepProcessing;
 @interface CrimeDataDisplay : NSObject
 
 @property CrimeMapMode mode;
+@property int numPass;
 @property NSString * choroplethTarget;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;

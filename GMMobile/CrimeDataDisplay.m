@@ -65,16 +65,17 @@
     //int UCR;
     int controlNbr = 0;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
-    int nFound=0;
     int numUCRRanges, numTimeRanges;
     LPSTR offense;
     LPSTR dept;
     CGFloat size;
     CGFloat sizeFactor = 5;
-    NSInteger tot=0, current=0;
+    NSInteger tot=0;
     [CRAPI.sharedInstance updateProgress:-1 current:0 range:0 numRanges:1];
     PointInAreas *pias = nil;
     BoundaryData *bd = nil;
+    HotSpot * hs = nil;
+    int iPass = 1;
 
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     if (_mode == CHOROPLETH)
@@ -89,15 +90,19 @@ usingPointInArea:pia
         LLBounds:platlonBounds
       viewBounds:pvbounds];
     }
-    /*if (_zoom > 18)
-     sizeFactor *= (2.0 *(_zoom - 18.0));
-     
-     else if (_zoom < 18)
-     sizeFactor /= (2.0 * (18.0 - _zoom));*/
     
     if (![self continue])
         return;
-    
+
+NextPass:
+    if (_mode == HOTSPOT)
+    {
+        hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
+                             Height:MNMXCORDHeight(pvbounds)
+                           NumGrids:1
+                          PointSize:MNMXCORDWidth(pvbounds)/32];
+    }
+   
     sizeFactor = 1;
     
     [_cd open];
@@ -160,6 +165,10 @@ usingPointInArea:pia
                     {
                         [pias DPointInArea:&llpoint];
                     }
+                    else if (_mode == HOTSPOT)
+                    {
+                        [hs addPointAtX:llpoint.x andY:llpoint.y];
+                    }
                     else
                     {
                         size = 25;
@@ -176,6 +185,9 @@ usingPointInArea:pia
         }
     }
     [_cd close];
+    if (_mode == HOTSPOT && iPass++ < _numPass)
+        goto NextPass;
+    
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
     if (_mode == CHOROPLETH)
     {
@@ -197,6 +209,10 @@ usingPointInArea:pia
               llCorners:latlonCornerPoints
                LLBounds:platlonBounds
              viewBounds:pvbounds];
+    }
+    if (_mode == HOTSPOT)
+    {
+        [hs display:context];
     }
 }
 
