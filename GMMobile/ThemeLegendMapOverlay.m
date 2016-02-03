@@ -86,6 +86,11 @@
         NSString *countString = [NSString stringWithFormat:@"%i", cells.count];
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
     }
+    
+    tlmo.rowHeight = ThemeLegendMapOverlay.rowHeight;
+    tlmo.headerHeight = ThemeLegendMapOverlay.headerHeight;
+    tlmo.width = ThemeLegendMapOverlay.width;
+    tlmo.buttonMargin = ThemeLegendMapOverlay.buttonMargin;
 
     CGFloat height = ((tlmo.legend.numCells * tlmo.rowHeight) + tlmo.headerHeight);
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
