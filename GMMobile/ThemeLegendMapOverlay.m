@@ -17,6 +17,7 @@
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat buttonMargin;
+@property (nonatomic) CGPoint previousContentOffset;
 
 @end
 
@@ -34,10 +35,10 @@
 + (CGFloat)headerHeight
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return 28.0;
+        return 32.0;
     
     else
-        return 36.0;
+        return 40.0;
 }
 
 + (CGFloat)width
@@ -51,11 +52,7 @@
 
 + (CGFloat)buttonMargin
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return 1.1;
-    
-    else
-        return 2.0;
+    return 1.1;
 }
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
@@ -75,6 +72,7 @@
     tlmo.tabBar = tabBar;
     tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
     tlmo.currentRow = tlmo.currentColorPalette = 0;
+    tlmo.previousContentOffset = CGPointZero;
     
     tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:18.0];
@@ -271,12 +269,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-        
-        else
-            _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 8.0, 2.0, 8.0);
+        _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
         
         _dragButton.frame = CGRectMake(0.0, 0.0,(headerView.frame.size.height * _buttonMargin),
                                        headerView.frame.size.height);
@@ -574,6 +567,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)dragButtonBegin:(UIButton *)button
 {
     _previousFrame = self.frame;
+    self.superview.clipsToBounds = NO;
     
     if (self.superview.superview)
         [self.superview.superview bringSubviewToFront:self.superview];
@@ -617,6 +611,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
     
+    self.superview.clipsToBounds = YES;
+    
     if (_delegate)
         [_delegate themeLegendDidChangeStatus:NO];
 }
@@ -651,7 +647,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         overlayView.tag = 123456789;
 
         CGSize superSize = self.superview.frame.size;
-        CGFloat contentOffset = 0.0;
+        CGFloat contentOffset = 0.0, expandCorrection = 0.0;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -660,12 +656,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [legendScroll bringSubviewToFront:self];
             legendScroll.scrollEnabled = NO;
             _previousScrollFrame = legendScroll.frame;
+            _previousContentOffset = legendScroll.contentOffset;
             
             superSize = legendScroll.superview.frame.size;
-            contentOffset = legendScroll.contentOffset.y;
             
-            if ((legendScroll.contentSize.height - contentOffset) < superSize.height)
-                contentOffset -= (statusBarHeight + _tabBar.frame.size.height);
+            expandCorrection = (legendScroll.contentSize.height - longestSide);
+            
+            contentOffset = MIN(legendScroll.contentOffset.y, expandCorrection);
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
@@ -755,12 +752,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
-                                 self.superview.frame =
-                                 CGRectMake((self.superview.superview.frame.size.width - _previousScrollFrame.size.width),
-                                 statusBarHeight, _previousScrollFrame.size.width,
-                                 self.superview.superview.frame.size.height - statusBarHeight);
+                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
+                                 
+                                 legendScroll.frame = CGRectMake((legendScroll.superview.frame.size.width - _previousScrollFrame.size.width),
+                                                                 statusBarHeight, _previousScrollFrame.size.width,
+                                                                 legendScroll.superview.frame.size.height - statusBarHeight);
+                                 
+                                 [legendScroll setContentOffset:_previousContentOffset
+                                                       animated:NO];
                                  
                                  self.frame = _previousFrame;
+                                 
+                                 
                              }
                              
                              else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
