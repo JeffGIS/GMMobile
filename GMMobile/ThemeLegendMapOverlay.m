@@ -51,11 +51,7 @@
 
 + (CGFloat)buttonMargin
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return 1.1;
-    
-    else
-        return 2.0;
+    return 1.1;
 }
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
@@ -271,12 +267,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-        
-        else
-            _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 8.0, 2.0, 8.0);
+        _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
         
         _dragButton.frame = CGRectMake(0.0, 0.0,(headerView.frame.size.height * _buttonMargin),
                                        headerView.frame.size.height);
@@ -651,7 +642,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         overlayView.tag = 123456789;
 
         CGSize superSize = self.superview.frame.size;
-        CGFloat contentOffset = 0.0;
+        CGFloat contentOffset = 0.0, expandCorrection = 0.0;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -662,10 +653,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _previousScrollFrame = legendScroll.frame;
             
             superSize = legendScroll.superview.frame.size;
-            contentOffset = legendScroll.contentOffset.y;
             
-            if ((legendScroll.contentSize.height - contentOffset) < superSize.height)
-                contentOffset -= (statusBarHeight + _tabBar.frame.size.height);
+            expandCorrection = (legendScroll.contentSize.height - longestSide);
+            
+            contentOffset = MIN(legendScroll.contentOffset.y, expandCorrection);
+            NSLog(@"%f,%f", expandCorrection, contentOffset);
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
