@@ -100,7 +100,7 @@ NextPass:
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
                            NumGrids:1
-                          PointSize:MNMXCORDWidth(pvbounds)/32];
+                          PointSize:MNMXCORDWidth(pvbounds)/64];
     }
    
     sizeFactor = 1;
