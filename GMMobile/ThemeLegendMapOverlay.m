@@ -34,10 +34,10 @@
 + (CGFloat)headerHeight
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return 24.0;
+        return 28.0;
     
     else
-        return 32.0;
+        return 36.0;
 }
 
 + (CGFloat)width
@@ -663,6 +663,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             superSize = legendScroll.superview.frame.size;
             contentOffset = legendScroll.contentOffset.y;
+            
+            if ((legendScroll.contentSize.height - contentOffset) < superSize.height)
+                contentOffset -= (statusBarHeight + _tabBar.frame.size.height);
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
@@ -691,17 +694,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [UIView animateWithDuration:0.25
                          animations:^{
-                             if ([self.superview isKindOfClass:UIScrollView.class])
-                                 _tabBar.alpha = 0.0;
-                             
-                             else
-                             {
+                             if (![self.superview isKindOfClass:UIScrollView.class])
                                  overlayView.alpha = 0.7;
-                                 _tabBar.alpha = 0.3;
-                             }
-                            
                              
                              _dragButton.alpha = 0.0;
+                             _tabBar.alpha = 0.0;
                              
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
@@ -755,8 +752,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                          animations:^{
                              overlayView.alpha = 0.0;
                              _tabBar.alpha = 1.0;
-                             
-                             
                              
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
