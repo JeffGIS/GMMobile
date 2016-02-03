@@ -22,6 +22,42 @@
 
 @implementation ThemeLegendMapOverlay
 
++ (CGFloat)rowHeight
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 18.0;
+    
+    else
+        return 26.0;
+}
+
++ (CGFloat)headerHeight
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 24.0;
+    
+    else
+        return 32.0;
+}
+
++ (CGFloat)width
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 118.0;
+    
+    else
+        return 232.0;
+}
+
++ (CGFloat)buttonMargin
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return 1.1;
+    
+    else
+        return 2.0;
+}
+
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
@@ -51,21 +87,10 @@
         tlmo.countLength = MAX(tlmo.countLength, countString.length);
     }
     
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        tlmo.width = 114.0;
-        tlmo.buttonMargin = 1.1;
-        tlmo.rowHeight = 14.0;
-        tlmo.headerHeight = 20.0;
-    }
-    
-    else
-    {
-        tlmo.width = 232.0;
-        tlmo.buttonMargin = 2.0;
-        tlmo.rowHeight = 26.0;
-        tlmo.headerHeight = 32.0;
-    }
+    tlmo.rowHeight = ThemeLegendMapOverlay.rowHeight;
+    tlmo.headerHeight = ThemeLegendMapOverlay.headerHeight;
+    tlmo.width = ThemeLegendMapOverlay.width;
+    tlmo.buttonMargin = ThemeLegendMapOverlay.buttonMargin;
 
     CGFloat height = ((tlmo.legend.numCells * tlmo.rowHeight) + tlmo.headerHeight);
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
@@ -652,7 +677,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         _previousFrame = self.frame;
         CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
-        _rowHeight = MIN((_rowHeight * 2.0), maxRowHeight);
+        _rowHeight = _headerHeight = MIN((_rowHeight * 2.0), maxRowHeight);
         _tableView.rowHeight = _rowHeight;
         _tabBar.userInteractionEnabled = NO;
         CGFloat height = ((_legend.numCells + 1) * _rowHeight);
@@ -707,8 +732,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             overlayView = [self.superview viewWithTag:123456789];
         
+        _rowHeight = ThemeLegendMapOverlay.rowHeight;
+        _headerHeight = ThemeLegendMapOverlay.headerHeight;
+        
         _tabBar.userInteractionEnabled = YES;
-        _rowHeight /= 2.0;
         _tableView.rowHeight = _rowHeight;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"

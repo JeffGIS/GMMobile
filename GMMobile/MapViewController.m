@@ -127,17 +127,13 @@ typedef struct NVRegionQuadrants {
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _emailPDFAfterUpdate = _showsPanarama = NO;
     
-    CGFloat legendScrollWidth = 236.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        legendScrollWidth = 118.0;
+    CGFloat legendScrollWidth = (ThemeLegendMapOverlay.width + 4.0);
     
     _legendScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - legendScrollWidth),
                                                                        statusBarHeight, legendScrollWidth,
                                                                        (tabBarTop - statusBarHeight))];
                          
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
-    _legendScrollView.clipsToBounds = NO;
     _legendScrollView.alpha = 0.0;
     [self.view addSubview:_legendScrollView];
     
@@ -2557,10 +2553,9 @@ haveVV:
             return;
         }
         
-        CGFloat tlmoWidth = 234.0, rowHeight = 26.0, headerHeight = 30.0;
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            tlmoWidth = 116.0, rowHeight = 14.0, headerHeight = 20.0;
+        CGFloat tlmoWidth = (ThemeLegendMapOverlay.width + 2.0);
+        CGFloat rowHeight = ThemeLegendMapOverlay.rowHeight;
+        CGFloat headerHeight = ThemeLegendMapOverlay.headerHeight;
         
         CGFloat landscapeWidth = MAX(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
         CGFloat portraitWidth = MIN(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);

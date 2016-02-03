@@ -11,8 +11,6 @@
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
-		692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */; };
-		692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */; };
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
 		692B4A071BF669D80016CE5D /* ThemeLegendMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */; };
 		692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 692C94351BFCDE9F004D97A1 /* dragIcon.png */; };
@@ -87,6 +85,8 @@
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
 		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
 		69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C8DB561C515DC90062AE84 /* MGThemesVC.m */; };
+		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
+		69CE00FC1C6160D700DC56E2 /* GMMobileIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
@@ -218,8 +218,6 @@
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
-		692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
-		692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		692B4A031BF6392E0016CE5D /* redMinusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redMinusSign.png; sourceTree = "<group>"; };
 		692B4A051BF669D80016CE5D /* ThemeLegendMapOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeLegendMapOverlay.h; sourceTree = "<group>"; };
 		692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegendMapOverlay.m; sourceTree = "<group>"; };
@@ -318,6 +316,8 @@
 		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		69C8DB551C515DC90062AE84 /* MGThemesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGThemesVC.h; sourceTree = "<group>"; };
 		69C8DB561C515DC90062AE84 /* MGThemesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGThemesVC.m; sourceTree = "<group>"; };
+		69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GMMobileIcon.png; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -617,6 +617,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */,
 				69985FE91C5FC4D800FCC332 /* criminal.png */,
 				694F93B41C30475500723155 /* questionMark.png */,
 				6956EAE71C20E992008BF283 /* myLocationMarker.png */,
@@ -766,9 +767,8 @@
 			isa = PBXGroup;
 			children = (
 				EB5521D91A61B6A8008CE2D1 /* Main.storyboard */,
-				692ACC6F1B86E6EE00400B36 /* Launch Screen.xib */,
+				69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */,
 				EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */,
-				692ACC6D1B86E4CA00400B36 /* Default-568h@2x.png */,
 				1F0723E61BEBD62F00966C36 /* SymbolDictionary.h */,
 				1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */,
 			);
@@ -1049,6 +1049,7 @@
 				69B46EFE1BC215F100BB7724 /* destinations.png in Resources */,
 				A95EC7E41B224BFC0031B903 /* uploadCloud.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
+				69CE00FC1C6160D700DC56E2 /* GMMobileIcon.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				694FB1DB1C588363005410F6 /* Reader-Button-N@3x.png in Resources */,
@@ -1066,7 +1067,6 @@
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				694FB1E51C588363005410F6 /* Reader-Mark-Y.png in Resources */,
 				694FB1E11C588363005410F6 /* Reader-Export@3x.png in Resources */,
-				692ACC6E1B86E4CA00400B36 /* Default-568h@2x.png in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
 				694FB1DA1C588363005410F6 /* Reader-Button-N@2x.png in Resources */,
 				69E62D501BBF276B0018390B /* fieldOptions.png in Resources */,
@@ -1087,8 +1087,8 @@
 				694FB1E71C588363005410F6 /* Reader-Mark-Y@3x.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				69C8DB4C1C515B440062AE84 /* .gitignore in Resources */,
+				69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
-				692ACC701B86E6EE00400B36 /* Launch Screen.xib in Resources */,
 				694FB1E91C588363005410F6 /* Reader-Print@2x.png in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,
 				69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */,

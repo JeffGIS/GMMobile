@@ -32,6 +32,11 @@
 @property NSUInteger currentColorPalette;
 @property (nonatomic) UIButton *dragButton, *expandButton;
 
++ (CGFloat)rowHeight;
++ (CGFloat)headerHeight;
++ (CGFloat)width;
++ (CGFloat)buttonMargin;
+
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
