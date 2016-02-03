@@ -75,10 +75,19 @@
     PointInAreas *pias = nil;
     BoundaryData *bd = nil;
     HotSpot * hs = nil;
+    DispersePoint *dp = nil;
     int iPass = 1;
 
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
-    if (_mode == CHOROPLETH)
+    [_cd open];
+
+    if (_mode == PINMAP)
+    {
+        dp = [DispersePoint initWithWidth:MNMXCORDWidth(pvbounds)
+                                   Height:MNMXCORDHeight(pvbounds)
+                              andDatabase:_cd];
+    }
+    else if (_mode == CHOROPLETH)
     {
         pias = [[PointInAreas alloc]init];
         bd = [[BoundaryData alloc]init];
@@ -105,7 +114,6 @@ NextPass:
    
     sizeFactor = 1;
     
-    [_cd open];
     numUCRRanges  = [themes getNumUCRRanges];
     numTimeRanges = [themes getNumTimeRanges];
     int totRanges = numTimeRanges * numUCRRanges;
@@ -156,12 +164,21 @@ NextPass:
                 dc.string1 = [NSString stringWithUTF8String:offense];
                 dc.string2 = [NSString stringWithUTF8String:dept];
                 dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+                size = 25;
                 if ((!pia || [pia DPointInArea:&BasePt]) &&
                     [themes setDisplayCharacteristics:dc
                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                 {
                     DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-                    if (_mode == CHOROPLETH)
+                    if (_mode == PINMAP)
+                    {
+                        [dp addPoint:&llpoint
+                         usingSymbol:dc.pointSymbol
+                           withColor:dc.color.CGColor
+                             andSize:(size * sizeFactor)];
+
+                    }
+                    else if (_mode == CHOROPLETH)
                     {
                         [pias DPointInArea:&llpoint];
                     }
@@ -171,12 +188,6 @@ NextPass:
                     }
                     else
                     {
-                        size = 25;
-                        [self drawCrimePoint:context
-                                     atPoint:&llpoint
-                                 usingSymbol:dc.pointSymbol
-                                   withColor:dc.color.CGColor
-                                     andSize:(size * sizeFactor)];
                     }
                 }
             }
@@ -184,12 +195,20 @@ NextPass:
             SQLOK(sqlite3_finalize(statement), _cd.database);
         }
     }
-    [_cd close];
     if (_mode == HOTSPOT && iPass++ < _numPass)
         goto NextPass;
     
+    [_cd close];
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
-    if (_mode == CHOROPLETH)
+    if (_mode == PINMAP)
+    {
+/*        [self drawCrimePoint:context
+                     atPoint:&llpoint
+                 usingSymbol:dc.pointSymbol
+                   withColor:dc.color.CGColor
+                     andSize:(size * sizeFactor)];*/
+    }
+    else if (_mode == CHOROPLETH)
     {
         NSArray * textArray = [NSArray new];
         
@@ -210,7 +229,7 @@ NextPass:
                LLBounds:platlonBounds
              viewBounds:pvbounds];
     }
-    if (_mode == HOTSPOT)
+    else if (_mode == HOTSPOT)
     {
         [hs display:context];
     }

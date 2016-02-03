@@ -11,6 +11,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/SymbolDictionary.h"
+#import "CCodeLibrary/DispersePoint.h"
 #import "Themes.h"
 
 @interface CrimeDataDisplay : NSObject
