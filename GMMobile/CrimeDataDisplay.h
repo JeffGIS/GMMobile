@@ -10,7 +10,7 @@ extern int keepProcessing;
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "ConfigurationControl.h"
-#import "SymbolDictionary.h"
+#import "CCodeLibrary/SymbolDictionary.h"
 #import "Themes.h"
 
 @interface CrimeDataDisplay : NSObject

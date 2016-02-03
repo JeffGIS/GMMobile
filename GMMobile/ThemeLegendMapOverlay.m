@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import "ThemeLegendMapOverlay.h"
-#import "SymbolDictionary.h"
+#import "CCodeLibrary/SymbolDictionary.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 #import "CCodeLibrary/UserDefaults.h"
 

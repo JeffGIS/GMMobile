@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F0723E81BEBD62F00966C36 /* SymbolDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
@@ -213,8 +212,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1F0723E61BEBD62F00966C36 /* SymbolDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SymbolDictionary.h; sourceTree = "<group>"; };
-		1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SymbolDictionary.m; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
@@ -769,8 +766,6 @@
 				EB5521D91A61B6A8008CE2D1 /* Main.storyboard */,
 				69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */,
 				EB5521DC1A61B6A8008CE2D1 /* Images.xcassets */,
-				1F0723E61BEBD62F00966C36 /* SymbolDictionary.h */,
-				1F0723E71BEBD62F00966C36 /* SymbolDictionary.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -1171,7 +1166,6 @@
 				EBFC2A341BE9186900E0C1B3 /* CrimeDataDisplay.m in Sources */,
 				EB1B81011AEDDA9C00A0C7B6 /* AlleyWallData.m in Sources */,
 				694FB1B51C58830E005410F6 /* ReaderThumbRender.m in Sources */,
-				1F0723E81BEBD62F00966C36 /* SymbolDictionary.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
 				694FB1B61C58830E005410F6 /* ReaderThumbRequest.m in Sources */,
 				694FB1B31C58830E005410F6 /* ReaderThumbFetch.m in Sources */,

@@ -5,7 +5,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
-#import "SymbolDictionary.h"
+#import "CCodeLibrary/SymbolDictionary.h"
 #import "MapViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 
