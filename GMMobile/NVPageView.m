@@ -54,7 +54,7 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _headerHeight = 22.0;
+        _headerHeight = 26.0;
         _cornerRadius = _innerMargin = _outerMargin = 4.0;
         _pageControlMargin = 12.0;
         

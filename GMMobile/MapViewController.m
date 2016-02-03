@@ -2560,7 +2560,7 @@ haveVV:
         CGFloat tlmoWidth = 234.0, rowHeight = 26.0, headerHeight = 30.0;
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            tlmoWidth = 116.0, rowHeight = 14.0, headerHeight = 20.0;
+            tlmoWidth = 120.0, rowHeight = 18.0, headerHeight = 24.0;
         
         CGFloat landscapeWidth = MAX(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
         CGFloat portraitWidth = MIN(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);

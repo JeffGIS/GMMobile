@@ -53,10 +53,10 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        tlmo.width = 114.0;
+        tlmo.width = 118.0;
         tlmo.buttonMargin = 1.1;
-        tlmo.rowHeight = 14.0;
-        tlmo.headerHeight = 20.0;
+        tlmo.rowHeight = 18.0;
+        tlmo.headerHeight = 24.0;
     }
     
     else
@@ -652,7 +652,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         _previousFrame = self.frame;
         CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
-        _rowHeight = MIN((_rowHeight * 2.0), maxRowHeight);
+        _rowHeight = _headerHeight = MIN((_rowHeight * 2.0), maxRowHeight);
         _tableView.rowHeight = _rowHeight;
         _tabBar.userInteractionEnabled = NO;
         CGFloat height = ((_legend.numCells + 1) * _rowHeight);
@@ -707,8 +707,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             overlayView = [self.superview viewWithTag:123456789];
         
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        {
+            _rowHeight = 18.0;
+            _headerHeight = 24.0;
+        }
+        
+        else
+        {
+            _rowHeight = 26.0;
+            _headerHeight = 32.0;
+        }
+        
         _tabBar.userInteractionEnabled = YES;
-        _rowHeight /= 2.0;
         _tableView.rowHeight = _rowHeight;
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
