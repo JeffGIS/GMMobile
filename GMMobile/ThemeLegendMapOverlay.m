@@ -655,18 +655,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
             UIScrollView *legendScroll = (UIScrollView *)self.superview;
+            [legendScroll.superview bringSubviewToFront:self.superview];
+            [legendScroll bringSubviewToFront:self];
+            legendScroll.scrollEnabled = NO;
+            _previousScrollFrame = legendScroll.frame;
             
-            if (![legendScroll.superview.subviews containsObject:[legendScroll viewWithTag:123456789]])
-            {
-                [legendScroll.superview addSubview:overlayView];
-                [legendScroll.superview bringSubviewToFront:self.superview];
-                [legendScroll bringSubviewToFront:self];
-                legendScroll.scrollEnabled = NO;
-                _previousScrollFrame = legendScroll.frame;
-                
-                superSize = legendScroll.superview.frame.size;
-                contentOffset = (legendScroll.contentOffset.y - statusBarHeight);
-            }
+            superSize = legendScroll.superview.frame.size;
+            contentOffset = (legendScroll.contentOffset.y - statusBarHeight);
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
@@ -690,17 +685,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [UIView animateWithDuration:0.25
                          animations:^{
-                             overlayView.alpha = 0.7;
-                             _tabBar.alpha = 0.3;
+                             if ([self.superview isKindOfClass:UIScrollView.class])
+                                 _tabBar.alpha = 0.0;
+                             
+                             else
+                             {
+                                 overlayView.alpha = 0.7;
+                                 _tabBar.alpha = 0.3;
+                             }
+                            
+                             
                              _dragButton.alpha = 0.0;
                              
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
                                  UIScrollView *legendScroll = (UIScrollView *)self.superview;
                                  legendScroll.frame = overlayView.frame;
-                                 
-                                 legendScroll.center = CGPointMake(legendScroll.center.x,
-                                                                   (legendScroll.superview.center.y + (_tabBar.frame.size.height / 2.0)));
                              }
                              
                              self.frame = CGRectMake((superSize.width * 0.1),

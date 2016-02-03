@@ -2152,10 +2152,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
         if (_legendsAreOffMap)
         {
-            if ([self.view.subviews containsObject:_legendScrollView])
+            if ([self.view.subviews containsObject:_legendScrollView] && ![self legendIsExpanded])
             {
-                if (![self legendIsExpanded])
-                
                 [UIView animateWithDuration:duration
                                  animations:^{
                                      _legendScrollView.frame =
