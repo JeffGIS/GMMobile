@@ -28,7 +28,7 @@
 @property (nonatomic) ThemeLegend *legend;
 @property BOOL isExpanded;
 @property (nonatomic) UITableView *tableView;
-@property (nonatomic) CGFloat rowHeight, width;
+@property (nonatomic) CGFloat rowHeight, width, headerHeight;
 @property NSUInteger currentColorPalette;
 @property (nonatomic) UIButton *dragButton, *expandButton;
 

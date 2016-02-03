@@ -2147,8 +2147,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     {
         CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
+        CGFloat viewHeight = (self.view.frame.size.width + statusBarHeight);
         CGFloat xOrigin = (viewWidth - scrollWidth);
-        CGFloat contentOffset = (_legendScrollView.contentOffset.y - statusBarHeight);
+        CGFloat contentOffset = _legendScrollView.contentOffset.y;
         
         if (_legendsAreOffMap)
         {
@@ -2168,14 +2169,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 {
                     if (tlmos.isExpanded)
                     {
+                        CGFloat maxRowHeight = MIN((ThemeLegendMapOverlay.rowHeight * 4.0),
+                                                   ((self.view.frame.size.width - statusBarHeight - 8.0) / (tlmos.legend.numCells + 1)));
+                        
+                        tlmos.rowHeight = tlmos.headerHeight = maxRowHeight;
+                        tlmos.tableView.rowHeight = tlmos.rowHeight;
                         CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
                         
                         [UIView animateWithDuration:duration
                                          animations:^{
                                              tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
-                                                                      (viewWidth * 0.8), legendHeight);
+                                                                      (viewWidth * 0.9), legendHeight);
                                              
-                                             tlmos.center = CGPointMake((viewWidth / 2.0), (self.view.frame.size.width / 2.0) + contentOffset);
+                                             tlmos.center = CGPointMake((viewWidth / 2.0), ((viewHeight / 2.0) + contentOffset));
                                              tlmos.tableView.frame = tlmos.bounds;
                                          } completion:^(BOOL finished) {
                                              [tlmos.tableView reloadData];

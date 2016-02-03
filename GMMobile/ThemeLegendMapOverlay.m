@@ -16,7 +16,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin, headerHeight;
+@property (nonatomic) CGFloat buttonMargin;
 
 @end
 
@@ -635,6 +635,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)expandLegend:(UIButton *)button
 {
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    
     if (!_isExpanded)
     {
         if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
@@ -647,8 +649,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         overlayView.backgroundColor = UIColor.blackColor;
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
-        
-        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+
         CGSize superSize = self.superview.frame.size;
         CGFloat contentOffset = 0.0;
         
@@ -661,7 +662,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _previousScrollFrame = legendScroll.frame;
             
             superSize = legendScroll.superview.frame.size;
-            contentOffset = (legendScroll.contentOffset.y - statusBarHeight);
+            contentOffset = legendScroll.contentOffset.y;
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
@@ -671,17 +672,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         
         _previousFrame = self.frame;
-        CGFloat maxRowHeight = (((superSize.height - statusBarHeight) - 8.0) / (_legend.numCells + 1));
-        _rowHeight = _headerHeight = MIN((_rowHeight * 2.0), maxRowHeight);
+        CGFloat superHeight = ((superSize.height + _tabBar.frame.size.height) - statusBarHeight);
+        
+        CGFloat maxRowHeight = MIN((ThemeLegendMapOverlay.rowHeight * 4.0),
+                                   ((superHeight - 8.0) / (_legend.numCells + 1)));
+        
+        _rowHeight = _headerHeight = maxRowHeight;
         _tableView.rowHeight = _rowHeight;
         _tabBar.userInteractionEnabled = NO;
-        CGFloat height = ((_legend.numCells + 1) * _rowHeight);
         
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
                                 size:36.0];
         
         _headerFont = [UIFont boldSystemFontOfSize:36.0];
         _dragButton.enabled = NO;
+        
+        CGFloat legendHeight = (_rowHeight * (_legend.numCells + 1));
         
         [UIView animateWithDuration:0.25
                          animations:^{
@@ -703,9 +709,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  legendScroll.frame = overlayView.frame;
                              }
                              
-                             self.frame = CGRectMake((superSize.width * 0.1),
-                                                     ((((superSize.height - height) + statusBarHeight) / 2.0) + contentOffset),
-                                                     (superSize.width * 0.8), height);
+                             self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y,
+                                                      (superSize.width * 0.9), legendHeight);
+                             
+                             self.center = CGPointMake((superSize.width / 2.0),
+                                                       (((superHeight / 2.0) + contentOffset) + statusBarHeight));
                              
                              _tableView.frame = self.bounds;
                              
@@ -748,12 +756,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              overlayView.alpha = 0.0;
                              _tabBar.alpha = 1.0;
                              
+                             
+                             
                              if ([self.superview isKindOfClass:UIScrollView.class])
                              {
                                  self.superview.frame =
                                  CGRectMake((self.superview.superview.frame.size.width - _previousScrollFrame.size.width),
-                                 _previousScrollFrame.origin.y, _previousScrollFrame.size.width,
-                                 self.superview.superview.frame.size.height);
+                                 statusBarHeight, _previousScrollFrame.size.width,
+                                 self.superview.superview.frame.size.height - statusBarHeight);
                                  
                                  self.frame = _previousFrame;
                              }
