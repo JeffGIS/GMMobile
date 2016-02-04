@@ -211,49 +211,89 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     double width=1;
                     int fieldWidth, nDecimals, iField;
                     char fieldName[32];
-                    if ([_fileName containsString:@"wMain"])
+                    switch (dc.elementType)
                     {
-                        iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
-                        if (iField >= 0)
+                        case WaterMain:
                         {
-                            DBFGetFieldInfo(_hDBF,iField,
-                                            fieldName, &fieldWidth, &nDecimals );
-                            width = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                            iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                width = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "Material");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
+                                dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                            }
                         }
-                        iField = DBFGetFieldIndex(_hDBF, "Material");
-                        if (iField >= 0)
+                            break;
+                        case FiberLines:
                         {
-                            DBFGetFieldInfo(_hDBF,iField,
-                                            fieldName, &fieldWidth, &nDecimals );
-                            const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
-                            dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                            iField = DBFGetFieldIndex(_hDBF, "Strands");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                double segments = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                                int iSegments = segments;
+                                dc.UCR = iSegments;
+                                width = iSegments/2;
+                            }
+                            
                         }
-                    }
-                    else
-                    {
-                        iField = DBFGetFieldIndex(_hDBF, "Strands");
-                        if (iField >= 0)
+                            break;
+                        case PDFBounds:
                         {
-                            DBFGetFieldInfo(_hDBF,iField,
-                                            fieldName, &fieldWidth, &nDecimals );
-                            double segments = DBFReadDoubleAttribute( _hDBF,irec,iField );
-                            int iSegments = segments;
-                            dc.UCR = iSegments;
-                            width = iSegments/2;
+                            iField = DBFGetFieldIndex(_hDBF, "UDI");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cUDI = DBFReadStringAttribute( _hDBF,irec,iField );
+                                dc.string2 = [NSString stringWithUTF8String:cUDI];
+                                dc.color = [NVColor randomColorFromArray:NVColor.pastelColors
+                                                                        forString:dc.string2];
+
+                            }
+                            
                         }
-                        
+                            break;
                     }
                     if ([themes setDisplayCharacteristics:dc
                                                 displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                     {
-                        [self drawLine:context
-                               nPoints:psCShape->nVertices
-                                nLoops:psCShape->nParts
-                               partLen:psCShape->panPartStart
-                                     x:psCShape->padfX
-                                     y:psCShape->padfY
-                             withColor:dc.color.CGColor
-                              andWidth:width*sizeFactor];
+                        if (dc.elementType == PDFBounds)
+                        {
+                            LPDPOINT llpoints = malloc(psCShape->nVertices * sizeof(DPOINT) + 4);
+                            
+                            
+                            for (int i = 0; i < psCShape->nVertices; i++)
+                            {
+                                llpoints[i].x = psCShape->padfX[i];
+                                llpoints[i].y = psCShape->padfY[i];
+                                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                            }
+                            [self fillArea:context nPoints:psCShape->nVertices
+                                    points:llpoints
+                                 withColor:dc.color.CGColor];
+                            
+                        }
+                        else
+                        {
+                            [self drawLine:context
+                                   nPoints:psCShape->nVertices
+                                    nLoops:psCShape->nParts
+                                   partLen:psCShape->panPartStart
+                                         x:psCShape->padfX
+                                         y:psCShape->padfY
+                                 withColor:dc.color.CGColor
+                                  andWidth:width*sizeFactor];
+                        }
                     }
                 }
             }
@@ -264,6 +304,28 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2(&_pTranViewtoLL);
 }
 
+- (void)fillArea:(CGContextRef)context
+           nPoints:(int)np
+            points:(LPDPOINT)pPoints
+         withColor:(CGColorRef)color
+{
+    CGContextSetLineWidth(context, 3);
+    
+    
+    CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
+    
+    for (int i = 1; i < np; i++)
+        CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+    
+    CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
+    
+    if (!CGContextIsPathEmpty(context))
+    {
+        //CGContextSetStrokeColorWithColor(context,color);
+        CGContextSetFillColorWithColor(context,color);
+        CGContextDrawPath(context, kCGPathFill);
+    }
+}
 
 - (void)drawLine:(CGContextRef)context
          nPoints:(int)np

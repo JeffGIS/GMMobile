@@ -186,6 +186,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
             dispatch_async(_vectorQueue,
                            ^{
+                               DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
                                _colorSpace = CGColorSpaceCreateDeviceRGB();
                                _width = self.bounds.size.width * scale;
                                _height = self.bounds.size.height * scale;
@@ -195,15 +196,34 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                _context = CGLayerGetContext(_vectorLayer);
                                if (keepProcessing == self.displayID && CRAPI.sharedInstance.showPlats)
                                {
-                                   SewerData *sd = [[SewerData alloc] init];
-                                   sd.processingID = keepProcessing;
-                                   sd.zoom = _zoom;
-                                   
-                                   [sd displayPlats:_context
-                                               type:@"STORM"
-                                          llCorners:&_latlonCornerPoints
-                                           LLBounds:&_latlonBounds
-                                         viewBounds:&_viewBounds];
+                                   if (ConfigurationControl.sharedInstance.currentApp == HCConfigSewers)
+                                   {
+                                       SewerData *sd = [[SewerData alloc] init];
+                                       sd.processingID = keepProcessing;
+                                       sd.zoom = _zoom;
+                                       
+                                       [sd displayPlats:_context
+                                                   type:@"STORM"
+                                              llCorners:&_latlonCornerPoints
+                                               LLBounds:&_latlonBounds
+                                             viewBounds:&_viewBounds];
+                                   }
+                                   else if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+                                   {
+                                       UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+                                       ud.processingID = keepProcessing;
+                                       ud.zoom = _zoom;
+                                       if (keepProcessing == self.displayID)
+                                       {
+                                           [ud displayLayers:_context
+                                      displayCharacteristics:dc
+                                                   llCorners:&_latlonCornerPoints
+                                                    LLBounds:&_latlonBounds
+                                                  viewBounds:&_viewBounds
+                                                      themes:nil
+                                                 pointInArea:_pia];
+                                       }
+                                   }
                                }
                                
                                else
@@ -240,7 +260,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                            }
                                            else
                                            {
-                                               DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
                                                int passID = [themes themesNeedDataPass:keepProcessing];
                                                while (passID < DonePass)
                                                {

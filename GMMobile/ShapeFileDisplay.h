@@ -11,6 +11,7 @@ extern int keepProcessing;
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "NVShapeFileLibrary/shapefil.h"
 #import "CCodeLibrary/SymbolDictionary.h"
+#import "CCodeLibrary/NVColor.h"
 #import "Themes.h"
 
 @interface ShapeFileDisplay : NSObject

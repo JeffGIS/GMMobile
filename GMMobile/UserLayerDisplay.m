@@ -25,23 +25,25 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *fileName;
     NSString *shapeFile;
     
-    fileName = @"PDFBOUNDS.shp";
-    dc.elementType = PDFBounds;
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
+    if (CRAPI.sharedInstance.showPlats)
     {
-        sfd.zoom = _zoom;
-        sfd.processingID = _processingID;
-        [sfd display:context
-displayCharacteristics:dc
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds
-              themes:themes
-         pointInArea:pia];
+        fileName = @"PDFBOUNDS.shp";
+        dc.elementType = PDFBounds;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
     }
-
     fileName = @"wMain.shp";
     dc.elementType = WaterMain;
     shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
