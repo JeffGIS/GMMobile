@@ -1,7 +1,6 @@
 //  AppDelegate.m
 //  GMMobile
 
-int keepProcessing = 1;
 
 #import "AppDelegate.h"
 #import <GoogleMaps/GoogleMaps.h>

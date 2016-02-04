@@ -7,7 +7,6 @@
 #import "BoundaryData.h"
 #import "AlleyWallData.h"
 
-extern int keepProcessing;
 
 @implementation NVDataLoader
 
@@ -74,7 +73,7 @@ Top:
         self.timer = nil;
         self.dbList = nil;
         [_delegate NVDataLoaderSuccess];
-        keepProcessing = 1;
+        CRAPI.sharedInstance.keepProcessing = 1;
         return;
     }
     
@@ -92,7 +91,7 @@ Top:
 
 - (void)getNextDataset:(GetDatabaseSetting)dataSetID
 {
-    keepProcessing = -1;
+    CRAPI.sharedInstance.keepProcessing = -1;
     [self.timer invalidate];
     
     if (!_svc)

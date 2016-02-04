@@ -8,7 +8,6 @@
 #import "CCodeLibrary/NVTextDrawing.h"
 #import "CCodeLibrary/NVColor.h"
 
-extern int keepProcessing;
 @implementation BoundaryAreaData
 
 @end
@@ -262,7 +261,7 @@ extern int keepProcessing;
 
 - (BOOL) continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     return NO;
 }

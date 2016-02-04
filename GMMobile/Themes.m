@@ -5,7 +5,7 @@
 //  Created by JEFFREY E SMITH on 11/17/15.
 //  Copyright © 2015 GSSi. All rights reserved.
 //
-//extern int keepProcessing;
+//extern int CRAPI.sharedInstance.keepProcessing;
 
 #import "Themes.h"
 

@@ -38,7 +38,6 @@ MNMXCORD curbounds;
 @end
 #define COORDINATE_FACTOR 10000000.0
 
-extern int keepProcessing;
 
 @interface PropertyData ()
 
@@ -62,7 +61,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 
 - (BOOL)continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     return NO;
 }

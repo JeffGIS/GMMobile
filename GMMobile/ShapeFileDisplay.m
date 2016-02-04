@@ -18,10 +18,21 @@
 
 - (BOOL)continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     
     return NO;
+}
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+        _documentsDirectory = UserDefaults.defaults.sharedFilePath;
+    }
+    
+    return self;
 }
 
 + (ShapeFileDisplay *)createWithFile:(const char*)shapeFile
@@ -423,6 +434,103 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 lineWidth:size/8];
     
 }
+
+- (int)pickPDFPlat:(LLPOINT *)pt
+{
+    int minRef = 0;
+    dbounds bnds;
+    DPOINT BasePt;
+    //DPOINT point;
+    LPSTR platID;
+    int numPoints, refno;
+    //int numLoops;
+    double mind = DBL_MAX;
+    //CGFloat d;
+    CGFloat pickap = 0.005;
+    DPOINT p1, minpt;
+    //DPOINT p2;
+    NSString *minPlatID = [[NSString alloc] init];
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    bnds.xmn = (p1.x - pickap);
+    bnds.xmx = (p1.x + pickap);
+    bnds.ymn = (p1.y - pickap);
+    bnds.ymx = (p1.y + pickap);
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT STORM_PLAT.id, STORM_PLAT.PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_PLAT,STORM_PLAT_index WHERE STORM_PLAT.id=STORM_PLAT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        refno = sqlite3_column_int(statement, 0);
+        platID = (LPSTR)sqlite3_column_text(statement, 1);
+        BasePt.x = sqlite3_column_double(statement, 2);
+        BasePt.y = sqlite3_column_double(statement, 3);
+        numPoints = sqlite3_column_int(statement,4);
+        //numLoops = sqlite3_column_int(statement,5);
+        //int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
+        //int nBlobBytes = sqlite3_column_bytes(statement,6);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
+        //nBlobBytes = sqlite3_column_bytes(statement,7);
+        
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        if (POINT_IN_AREAD(p1, numPoints, llpoints, 1, 0, 0, 0))
+        {
+            for (int i = 0; i < numPoints; i++)
+            {
+                if (findClosestPoint (&llpoints[i],&minpt,&mind,&p1))
+                {
+                    minRef = refno;
+                    minPlatID = [NSString stringWithUTF8String:platID];
+                }
+            }
+            if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
+            {
+                minRef = refno;
+                minPlatID = [NSString stringWithUTF8String:platID];
+            }
+        }
+        free (llpoints);
+        
+    }
+    SQLOKswr(sqlite3_finalize(statement), _database);
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    
+    NSString *platFile = [NSString stringWithFormat:@"%@/SanPlats/%@.jpg",
+                          _documentsDirectory, minPlatID];
+    
+    if (minRef)
+        CRAPI.sharedInstance.currentPlatImagePath = platFile;
+    return minRef;
+}
+
 
 
 @end

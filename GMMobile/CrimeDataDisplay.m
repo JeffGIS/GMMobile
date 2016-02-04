@@ -16,7 +16,7 @@
 
 - (BOOL)continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     
     return NO;

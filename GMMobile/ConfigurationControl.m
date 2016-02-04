@@ -1,6 +1,5 @@
 //  ConfigurationControl.m
 //  GMMobile
-extern int keepProcessing;
 
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/MapToolbar.h"

@@ -1,7 +1,6 @@
  //  VectorView.m
 //  GMMobile
 
-extern int keepProcessing;
 
 #import "VectorView.h"
 #import "BoundaryData.h"
@@ -147,16 +146,16 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
 - (void)drawRect:(CGRect)rect
 {
-    if (keepProcessing < 0)
+    if (CRAPI.sharedInstance.keepProcessing < 0)
         return;
     int scale = UIScreen.mainScreen.scale;
     _vectorViewContext = UIGraphicsGetCurrentContext();
-    if (!_vectorViewContext || !keepProcessing)
+    if (!_vectorViewContext || !CRAPI.sharedInstance.keepProcessing)
         return;
     if (_haveVectorLayer)
     {
         //CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), _vectorLayer);
-        if (keepProcessing == self.displayID)
+        if (CRAPI.sharedInstance.keepProcessing == self.displayID)
         {
             CGContextScaleCTM(_vectorViewContext,1,-1);
             CGContextTranslateCTM(_vectorViewContext, 0, -rect.size.height);
@@ -168,9 +167,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             [self.delegate vectorViewDidComplete:self];
         return;
     }
-    keepProcessing++;
+    CRAPI.sharedInstance.keepProcessing++;
     
-    self.displayID = keepProcessing;
+    self.displayID = CRAPI.sharedInstance.keepProcessing;
     
     _viewBounds.xmn = (self.bounds.origin.x * scale);
     _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
@@ -194,12 +193,12 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
                                //_bitmapData = bmData;
                                _context = CGLayerGetContext(_vectorLayer);
-                               if (keepProcessing == self.displayID && CRAPI.sharedInstance.showPlats)
+                               if (CRAPI.sharedInstance.keepProcessing == self.displayID && CRAPI.sharedInstance.showPlats)
                                {
                                    if (ConfigurationControl.sharedInstance.currentApp == HCConfigSewers)
                                    {
                                        SewerData *sd = [[SewerData alloc] init];
-                                       sd.processingID = keepProcessing;
+                                       sd.processingID = CRAPI.sharedInstance.keepProcessing;
                                        sd.zoom = _zoom;
                                        
                                        [sd displayPlats:_context
@@ -211,9 +210,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                    else if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
                                    {
                                        UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
-                                       ud.processingID = keepProcessing;
+                                       ud.processingID = CRAPI.sharedInstance.keepProcessing;
                                        ud.zoom = _zoom;
-                                       if (keepProcessing == self.displayID)
+                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                        {
                                            [ud displayLayers:_context
                                       displayCharacteristics:dc
@@ -229,7 +228,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                else
                                {
                                    Themes * themes = [[Themes alloc]init];
-                                   themes.displayID = keepProcessing;
+                                   themes.displayID = CRAPI.sharedInstance.keepProcessing;
                                    
                                    [themes setAppThemes];
                                    switch (_displayDataOption)
@@ -239,7 +238,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                            if (CRAPI.sharedInstance.selectBoundaryFromMapType)
                                            {
                                                BoundaryData *bd = [[BoundaryData alloc] init];
-                                               bd.processingID = keepProcessing;
+                                               bd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                bd.zoom = _zoom;
                                                
                                                [bd display:_context
@@ -260,21 +259,21 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                            }
                                            else
                                            {
-                                               int passID = [themes themesNeedDataPass:keepProcessing];
+                                               int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
                                                while (passID < DonePass)
                                                {
                                                    if (passID == DataPass)
-                                                       [themes themesBeginDataPass:keepProcessing];
+                                                       [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
                                                    else if (passID == DisplayPass)
-                                                       [themes themesBeginDisplayPass:keepProcessing];
-                                                   if (keepProcessing == self.displayID &&
+                                                       [themes themesBeginDisplayPass:CRAPI.sharedInstance.keepProcessing];
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerParcels
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        PropertyData *pd = [[PropertyData alloc] init];
                                                        
-                                                       pd.processingID = keepProcessing;
+                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        
                                                        [pd displayParcels:_context
                                                                 llCorners:&_latlonCornerPoints
@@ -286,28 +285,28 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                     LLBounds:&_latlonBounds
                                                                   viewBounds:&_viewBounds];
                                                    }
-                                                   if (keepProcessing == self.displayID &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                       pd.processingID = keepProcessing;
+                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        pd.zoom = _zoom;
                                                        
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                            [pd displayPlanArea:_context
                                                                      llCorners:&_latlonCornerPoints
                                                                       LLBounds:&_latlonBounds
                                                                     viewBounds:&_viewBounds];
                                                        
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                            [pd displayPlanLine:_context
                                                                      llCorners:&_latlonCornerPoints
                                                                       LLBounds:&_latlonBounds
                                                                     viewBounds:&_viewBounds];
                                                        
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                            [pd displayPlanPoint:_context
                                                                       llCorners:&_latlonCornerPoints
                                                                        LLBounds:&_latlonBounds
@@ -315,37 +314,37 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    }
                                                    
                                                    
-                                                   if (keepProcessing == self.displayID &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerAlleys
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                       pd.processingID = keepProcessing;
+                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        pd.zoom = _zoom;
                                                        
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                            [pd displayAlleyLine:_context
                                                                       llCorners:&_latlonCornerPoints
                                                                        LLBounds:&_latlonBounds
                                                                      viewBounds:&_viewBounds];
                                                        
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                            [pd displayWallPoint:_context
                                                                       llCorners:&_latlonCornerPoints
                                                                        LLBounds:&_latlonBounds
                                                                      viewBounds:&_viewBounds];
                                                    }
-                                                   if (keepProcessing == self.displayID &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                       pd.processingID = keepProcessing;
+                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        pd.zoom = _zoom;
                                                        
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                        {
                                                            [pd displayCurRampIntersectionPoint:_context
                                                                         displayCharacteristics:dc
@@ -355,17 +354,17 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                                         themes:themes];
                                                        }
                                                    }
-                                                   if (keepProcessing == self.displayID &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerCrimes
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
-                                                       cd.processingID = keepProcessing;
+                                                       cd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        cd.zoom = _zoom;
                                                        cd.mode = CRAPI.sharedInstance.crimeMode;
                                                        cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                        {
                                                            [cd displayCrimePoints:_context
                                                            displayCharacteristics:dc
@@ -376,13 +375,13 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                       pointInArea:_pia];
                                                        }
                                                    }
-                                                   if (keepProcessing == self.displayID &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerSewers
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        SewerData *sd = [[SewerData alloc] init];
-                                                       sd.processingID = keepProcessing;
+                                                       sd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        sd.zoom = _zoom;
                                                        
                                                        [sd displayStormLine:_context
@@ -403,15 +402,15 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                  viewBounds:&_viewBounds];
                                                        
                                                    }
-                                                   if (keepProcessing == self.displayID &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
                                                        [ConfigurationControl.sharedInstance layer:HCLayerMapleGrove
                                                                                     visibleAtZoom:_zoom
                                                                                           andPass:passID])
                                                    {
                                                        UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
-                                                       ud.processingID = keepProcessing;
+                                                       ud.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        ud.zoom = _zoom;
-                                                       if (keepProcessing == self.displayID)
+                                                       if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                        {
                                                            [ud displayLayers:_context
                                                       displayCharacteristics:dc
@@ -424,10 +423,10 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    }
                                                    
                                                    
-                                                   /*if (keepProcessing == self.displayID)
+                                                   /*if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                     {
                                                     BoundaryData *bd = [[BoundaryData alloc] init];
-                                                    bd.processingID = keepProcessing;
+                                                    bd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                     bd.zoom = _zoom;
                                                     [bd displayLandUse:_context
                                                     llCorners:&_latlonCornerPoints
@@ -435,10 +434,10 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                     viewBounds:&_viewBounds];
                                                     }
                                                     
-                                                    if (keepProcessing == self.displayID)
+                                                    if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                     {
                                                     BoundaryData *bd = [[BoundaryData alloc] init];
-                                                    bd.processingID = keepProcessing;
+                                                    bd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                     bd.zoom = _zoom;
                                                     [bd displayCensusAreas:_context
                                                     type:@"TRACT"
@@ -447,7 +446,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                     viewBounds:&_viewBounds];
                                                     }*/
                                                    
-                                                   if (keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
                                                        (CRAPI.sharedInstance.showPolylineForBounds ||
                                                         CRAPI.sharedInstance.maskBoundsForBounds))
                                                    {
@@ -460,11 +459,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                 viewBounds:&_viewBounds];
                                                    }
                                                    
-                                                   if (keepProcessing == self.displayID && passID == DisplayPass &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID && passID == DisplayPass &&
                                                        [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
                                                    {
                                                        PipeTrace *pt = [[PipeTrace alloc] init];
-                                                       pt.processingID = keepProcessing;
+                                                       pt.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        
                                                        [pt displayPipeTrace:_context
                                                                   llCorners:&_latlonCornerPoints
@@ -472,9 +471,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                  viewBounds:&_viewBounds];
                                                    }
                                                    if (passID == DataPass)
-                                                       [themes themesEndDataPass:keepProcessing];
+                                                       [themes themesEndDataPass:CRAPI.sharedInstance.keepProcessing];
                                                    else if (passID == DisplayPass)
-                                                       [themes themesEndDisplayPass:keepProcessing];
+                                                       [themes themesEndDisplayPass:CRAPI.sharedInstance.keepProcessing];
                                                    passID++;
                                                }
                                            }
@@ -487,7 +486,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                case PTStormSewerLine:
                                                {
                                                    SewerData *sd = [[SewerData alloc] init];
-                                                   sd.processingID = keepProcessing;
+                                                   sd.processingID = CRAPI.sharedInstance.keepProcessing;
                                                    sd.zoom = _zoom;
                                                    
                                                    [sd highlightStormLine:_context
@@ -511,7 +510,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                
                                    }
                                }
-                               if (keepProcessing == self.displayID)
+                               if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                {
                                    _haveVectorLayer = YES;
                                    dispatch_async(dispatch_get_main_queue(),

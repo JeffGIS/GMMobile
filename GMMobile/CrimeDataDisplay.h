@@ -5,7 +5,6 @@
 //  Created by JEFFREY E SMITH on 11/3/15.
 //  Copyright © 2015 GSSi. All rights reserved.
 //
-extern int keepProcessing;
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"

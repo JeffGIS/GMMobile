@@ -1,7 +1,6 @@
 //  PlanimetricData.m
 //  GMMobile
 
-extern int keepProcessing;
 
 #define COORDINATE_FACTOR 10000000.0
 
@@ -22,7 +21,7 @@ extern int keepProcessing;
 
 - (BOOL)continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     
     return NO;

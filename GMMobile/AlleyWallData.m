@@ -5,7 +5,6 @@
 //  Created by JEFFREY E SMITH on 4/26/15.
 //  Copyright (c) 2015 GSSi. All rights reserved.
 //
-extern int keepProcessing;
 static int fileSequence = 0;
 #define COORDINATE_FACTOR 10000000.0
 
@@ -36,7 +35,7 @@ int SQLOKawd(int sqlReturn, sqlite3 *database)
 
 - (BOOL) continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     return NO;
 }

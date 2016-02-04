@@ -3,7 +3,6 @@
 
 #import "PipeTrace.h"
 
-extern int keepProcessing;
 
 typedef struct {int SEQUENCE;
     char NXTFID[14];
@@ -653,7 +652,7 @@ $RETURN(1);
 
 - (BOOL) continue
 {
-    if (self.processingID == keepProcessing)
+    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     return NO;
 }

@@ -1,7 +1,6 @@
 //  MapViewController.m
 //  GMMobile
 
-extern int keepProcessing;
 
 #import "MapViewController.h"
 #import "WebKitViewController.h"
@@ -1666,6 +1665,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             LLPOINT llp;
             llp.lat = gestureLocation.latitude;
             llp.lon = gestureLocation.longitude;
+            
+            
             int platRefno = [sewerData pickSanPlat:&llp];
             
             if (platRefno != _selectedPlatRefno)
@@ -2316,7 +2317,7 @@ haveVV:
     if (!_showsPanarama)
     {
         [_vectorViewTimer invalidate];
-        keepProcessing++;
+        CRAPI.sharedInstance.keepProcessing++;
         NSLog(@"Vector view clear");
         
         if (!_vectorView)
@@ -2398,7 +2399,7 @@ haveVV:
 {
    _waitForVectorViewRefresh = NO;
     
-    if (vectorView.displayID != keepProcessing)
+    if (vectorView.displayID != CRAPI.sharedInstance.keepProcessing)
         vectorViews[vectorView.ivv] = nil;
     
     else dispatch_async(dispatch_get_main_queue(),
@@ -5021,7 +5022,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                   coords:(CLLocationCoordinate2D)coords
                                     type:(NSInteger)type
 {
-    keepProcessing++;
+    CRAPI.sharedInstance.keepProcessing++;
 
     switch (type)
     {
