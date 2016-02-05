@@ -21,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *markSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *mapSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *platSwitch;
+@property (weak, nonatomic) IBOutlet UILabel *databaseSize;
 
 @end
 
