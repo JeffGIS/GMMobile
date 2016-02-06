@@ -22,10 +22,96 @@
 @property (nonatomic) NSString *iapFilePath;
 @property (nonatomic) MPMoviePlayerController *mpController;
 @property (nonatomic) GLKView *glView;
+@property (nonatomic) CADisplayLink *displayLink;
+@property (nonatomic) GLKBaseEffect *effect;
 
 @end
 
 @implementation SettingOptionsViewController
+
+- (void)createGLView
+{
+    EAGLContext *context = CreateBestEAGLContext();
+    EAGLContext.currentContext = context;
+    
+    _glView = [[GLKView alloc] initWithFrame:UIScreen.mainScreen.bounds
+                                     context:context];
+    
+    _glView.delegate = self;
+    [self.view addSubview:_glView];
+    
+    _effect = [[GLKBaseEffect alloc] init];
+    
+    CGFloat aspect = fabs(UIScreen.mainScreen.bounds.size.width / UIScreen.mainScreen.bounds.size.height);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0), aspect, 0.1, 10.0);
+    _effect.transform.projectionMatrix = projectionMatrix;
+    
+    _effect.transform.modelviewMatrix = GLKMatrix4MakeLookAt(0, 0, 2,
+                                                             0, 0, 0,
+                                                             0, 1, 0);
+    
+    _displayLink = [CADisplayLink displayLinkWithTarget:self
+                                               selector:@selector(drawFrame)];
+    
+    [_displayLink addToRunLoop:NSRunLoop.currentRunLoop
+                       forMode:NSDefaultRunLoopMode];
+    
+    self.tabBarController.tabBar.hidden = YES;
+}
+
+EAGLContext *CreateBestEAGLContext()
+{
+    EAGLContext *context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+    
+    if (!context)
+        context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    
+    return context;
+}
+
+- (void)drawFrame
+{
+    [_glView setNeedsDisplay];
+}
+
+- (void)glkView:(GLKView *)view
+     drawInRect:(CGRect)rect
+{
+    glClearColor(0.65, 0.65, 0.65, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glDepthFunc(GL_LEQUAL);
+    
+    GLfloat vertices[] = {
+        0.0, 0.5, 0.0,
+        -0.5, 0.0, 0.0,
+        0.5, 0.0, 0.0,
+        0.0, -0.5, 0.0,
+        0.5, 0.0, 0.0,
+        -0.5, 0.0, 0.0};
+    
+    _effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);
+    [_effect prepareToDraw];
+    
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, 0, 0, vertices);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches
+           withEvent:(UIEvent *)event
+{
+    if ([self.view.subviews containsObject:_glView])
+    {
+        [_displayLink invalidate];
+        [_glView removeFromSuperview];
+        _glView = nil;
+        _effect = nil;
+        self.tabBarController.tabBar.hidden = NO;
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -271,23 +357,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test OpenGLES"])
     {
-        EAGLContext *context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-        
-        _glView = [[GLKView alloc] initWithFrame:UIScreen.mainScreen.bounds
-                                         context:context];
-        
-        _glView.delegate = self;
-        [self.view addSubview:_glView];
-        
-        EAGLContext.currentContext = context;
-        
-        CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self
-                                                                 selector:@selector(drawFrame)];
-        
-        [displayLink addToRunLoop:NSRunLoop.currentRunLoop
-                          forMode:NSDefaultRunLoopMode];
-        
-        self.tabBarController.tabBar.hidden = YES;
+        [self createGLView];
     }
     
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -330,18 +400,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(alert)
         }
     }*/
-}
-
-- (void)drawFrame
-{
-    [_glView setNeedsDisplay];
-}
-
-- (void)glkView:(GLKView *)view
-     drawInRect:(CGRect)rect
-{
-    glClearColor(1.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
@@ -649,16 +707,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         UploadViewController *uploadViewController = segue.destinationViewController;
         uploadViewController.delegate = self;
-    }
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches
-           withEvent:(UIEvent *)event
-{
-    if ([self.view.subviews containsObject:_glView])
-    {
-        [_glView removeFromSuperview];
-        self.tabBarController.tabBar.hidden = NO;
     }
 }
 
