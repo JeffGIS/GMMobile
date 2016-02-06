@@ -79,6 +79,7 @@ typedef struct NVRegionQuadrants {
 @property NVColorOption currentColorOption;
 @property BOOL emailPDFAfterUpdate, showsPanarama;
 @property (nonatomic) NVRegionQuadrants regionQuads;
+@property (nonatomic) ReaderViewController *readerVC;
 
 @end
 
@@ -1641,9 +1642,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     
     if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                     visibleAtZoom:_mapView.camera.zoom
+                                      visibleAtZoom:_mapView.camera.zoom
                                             andPass:PickPass])
         return;
+    
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
@@ -1754,6 +1756,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        andStatusString:(NSString*)statusString
               filePath:(NSString *)path
 {
+    NSLog(@"%i:%@", status, statusString);
+    
     if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
         [_popover hide];
@@ -1779,24 +1783,24 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 CRAPI.sharedInstance.currentPlatImagePath = path;
                 CRAPI.sharedInstance.currentPlatType = @"pdf";
+                
                 ReaderDocument *document = [ReaderDocument withDocumentFilePath:path
                                                                        password:nil];
                 
-                if (document)
+                if (document && ![self.childViewControllers containsObject:_readerVC])
                 {
-                    ReaderViewController *readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
+                    _readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
                     
-                    readerVC.delegate = self;
-                    readerVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-                    readerVC.modalPresentationStyle = UIModalPresentationFullScreen;
+                    _readerVC.delegate = self;
+                    _readerVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                    _readerVC.modalPresentationStyle = UIModalPresentationFullScreen;
                     
-                    [self presentViewController:readerVC
+                    [self presentViewController:_readerVC
                                        animated:YES
                                      completion:nil];
                 }
             }
                 break;
-
         }
     }
     
@@ -1817,7 +1821,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
 {
     [self dismissViewControllerAnimated:YES
-                             completion:nil];
+                             completion:^{
+                                 _readerVC = nil;
+                             }];
 }
 
 - (void)removePreviousInfoWindow
