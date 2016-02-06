@@ -12,6 +12,8 @@
 @import MediaPlayer;
 @import GLKit;
 
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
 @interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate,GLKViewDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
@@ -23,6 +25,9 @@
 @property (nonatomic) GLKView *glView;
 @property (nonatomic) CADisplayLink *displayLink;
 @property (nonatomic) GLKBaseEffect *effect;
+@property (nonatomic) EAGLContext *context;
+@property (nonatomic) GLuint vertexBuffer;
+@property (nonatomic) CGFloat rotation;
 
 @end
 
@@ -30,24 +35,21 @@
 
 - (void)createGLView
 {
-    EAGLContext *context = CreateBestEAGLContext();
-    EAGLContext.currentContext = context;
+    _context = CreateBestEAGLContext();
+    
+    if (!_context)
+        NSLog(@"Failed to create OpenGLES context");
+    
+    EAGLContext.currentContext = _context;
     
     _glView = [[GLKView alloc] initWithFrame:UIScreen.mainScreen.bounds
-                                     context:context];
+                                     context:_context];
     
     _glView.delegate = self;
+    _glView.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     [self.view addSubview:_glView];
     
-    _effect = [[GLKBaseEffect alloc] init];
-    
-    CGFloat aspect = fabs(UIScreen.mainScreen.bounds.size.width / UIScreen.mainScreen.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0), aspect, 0.1, 10.0);
-    _effect.transform.projectionMatrix = projectionMatrix;
-    
-    _effect.transform.modelviewMatrix = GLKMatrix4MakeLookAt(0, 0, 2,
-                                                             0, 0, 0,
-                                                             0, 1, 0);
+    [self setUpGL];
     
     _displayLink = [CADisplayLink displayLinkWithTarget:self
                                                selector:@selector(drawFrame)];
@@ -56,6 +58,69 @@
                        forMode:NSDefaultRunLoopMode];
     
     self.tabBarController.tabBar.hidden = YES;
+}
+
+- (void)setUpGL
+{
+    [EAGLContext setCurrentContext:self.context];
+    
+    _effect = [[GLKBaseEffect alloc] init];
+    _effect.light0.enabled = GL_TRUE;
+    _effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
+    
+    GLfloat gCubeVertexData[216] =
+    {
+        1.0, -1.0, -1.0,         1.0,  0.0,  0.0,
+        1.0,  1.0, -1.0,         1.0,  0.0,  0.0,
+        1.0, -1.0,  1.0,         1.0,  0.0,  0.0,
+        1.0, -1.0,  1.0,         1.0,  0.0,  0.0,
+        1.0,  1.0,  1.0,         1.0,  0.0,  0.0,
+        1.0,  1.0, -1.0,         1.0,  0.0,  0.0,
+        
+        1.0,  1.0, -1.0,         0.0,  1.0,  0.0,
+       -1.0,  1.0, -1.0,         0.0,  1.0,  0.0,
+        1.0,  1.0,  1.0,         0.0,  1.0,  0.0,
+        1.0,  1.0,  1.0,         0.0,  1.0,  0.0,
+       -1.0,  1.0, -1.0,         0.0,  1.0,  0.0,
+       -1.0,  1.0,  1.0,         0.0,  1.0,  0.0,
+        
+       -1.0,  1.0, -1.0,        -1.0,  0.0,  0.0,
+       -1.0, -1.0, -1.0,        -1.0,  0.0,  0.0,
+       -1.0,  1.0,  1.0,        -1.0,  0.0,  0.0,
+       -1.0,  1.0,  1.0,        -1.0,  0.0,  0.0,
+       -1.0, -1.0, -1.0,        -1.0,  0.0,  0.0,
+       -1.0, -1.0,  1.0,        -1.0,  0.0,  0.0,
+        
+       -1.0, -1.0, -1.0,         0.0, -1.0,  0.0,
+        1.0, -1.0, -1.0,         0.0, -1.0,  0.0,
+       -1.0, -1.0,  1.0,         0.0, -1.0,  0.0,
+       -1.0, -1.0,  1.0,         0.0, -1.0,  0.0,
+        1.0, -1.0, -1.0,         0.0, -1.0,  0.0,
+        1.0, -1.0,  1.0,         0.0, -1.0,  0.0,
+        
+        1.0,  1.0,  1.0,         0.0,  0.0,  1.0,
+       -1.0,  1.0,  1.0,         0.0,  0.0,  1.0,
+        1.0, -1.0,  1.0,         0.0,  0.0,  1.0,
+        1.0, -1.0,  1.0,         0.0,  0.0,  1.0,
+       -1.0,  1.0,  1.0,         0.0,  0.0,  1.0,
+       -1.0, -1.0,  1.0,         0.0,  0.0,  1.0,
+        
+        1.0, -1.0, -1.0,         0.0,  0.0, -1.0,
+       -1.0, -1.0, -1.0,         0.0,  0.0, -1.0,
+        1.0,  1.0, -1.0,         0.0,  0.0, -1.0,
+        1.0,  1.0, -1.0,         0.0,  0.0, -1.0,
+       -1.0, -1.0, -1.0,         0.0,  0.0, -1.0,
+       -1.0,  1.0, -1.0,         0.0,  0.0, -1.0
+    };
+    
+    glEnable(GL_DEPTH_TEST);
+    glGenBuffers(1, &_vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
 }
 
 EAGLContext *CreateBestEAGLContext()
@@ -76,27 +141,22 @@ EAGLContext *CreateBestEAGLContext()
 - (void)glkView:(GLKView *)view
      drawInRect:(CGRect)rect
 {
-    glClearColor(0.65, 0.65, 0.65, 1.0);
+    CGFloat aspect = fabs(UIScreen.mainScreen.bounds.size.width / UIScreen.mainScreen.bounds.size.height);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective
+    (GLKMathDegreesToRadians(50.0), aspect, 0.1, 100.0);
+    _effect.transform.projectionMatrix = projectionMatrix;
+    
+    GLKMatrix4 modelMatrix = GLKMatrix4MakeTranslation(0.0, 0.0, -7.0);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 1.0, 1.0, 0.7);
+    _effect.transform.modelviewMatrix = modelMatrix;
+    _rotation += 0.02;
+    
+    glClearColor(0.6, 0.6, 0.65, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glDepthFunc(GL_LEQUAL);
-    
-    GLfloat vertices[] = {
-        0.0, 0.5, 0.0,
-        -0.5, 0.0, 0.0,
-        0.5, 0.0, 0.0,
-        0.0, -0.5, 0.0,
-        0.5, 0.0, 0.0,
-        -0.5, 0.0, 0.0};
-    
-    _effect.constantColor = GLKVector4Make(1.0, 0.0, 0.0, 1.0);
     [_effect prepareToDraw];
     
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, 0, 0, vertices);
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches
@@ -105,6 +165,13 @@ EAGLContext *CreateBestEAGLContext()
     if ([self.view.subviews containsObject:_glView])
     {
         [_displayLink invalidate];
+        glDeleteBuffers(1, &_vertexBuffer);
+        
+        if (EAGLContext.currentContext == _context)
+            EAGLContext.currentContext = nil;
+        
+        self.context = nil;
+        
         [_glView removeFromSuperview];
         _glView = nil;
         _effect = nil;
