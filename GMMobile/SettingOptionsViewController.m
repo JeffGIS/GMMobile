@@ -11,8 +11,9 @@
 #import "AppDelegate.h"
 @import MediaPlayer;
 #import "ReaderViewController.h"
+@import GLKit;
 
-@interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate>
+@interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate,GLKViewDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -20,6 +21,7 @@
 @property (nonatomic) NSArray *products;
 @property (nonatomic) NSString *iapFilePath;
 @property (nonatomic) MPMoviePlayerController *mpController;
+@property (nonatomic) GLKView *glView;
 
 @end
 
@@ -67,7 +69,7 @@
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Access Documents", @"Test PDF Reader Core" /*, @"Test Compression & Upload"*/];
+                  @"Access Documents", @"Test PDF Reader Core", @"Test OpenGLES" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -266,6 +268,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test OpenGLES"])
+    {
+        EAGLContext *context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        
+        _glView = [[GLKView alloc] initWithFrame:UIScreen.mainScreen.bounds
+                                         context:context];
+        
+        _glView.delegate = self;
+        [self.view addSubview:_glView];
+        
+        EAGLContext.currentContext = context;
+        
+        CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self
+                                                                 selector:@selector(drawFrame)];
+        
+        [displayLink addToRunLoop:NSRunLoop.currentRunLoop
+                          forMode:NSDefaultRunLoopMode];
+        
+        self.tabBarController.tabBar.hidden = YES;
+    }
+    
     /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Compression & Upload"])
     {
@@ -306,6 +330,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(alert)
         }
     }*/
+}
+
+- (void)drawFrame
+{
+    [_glView setNeedsDisplay];
+}
+
+- (void)glkView:(GLKView *)view
+     drawInRect:(CGRect)rect
+{
+    glClearColor(1.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
@@ -613,6 +649,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         UploadViewController *uploadViewController = segue.destinationViewController;
         uploadViewController.delegate = self;
+    }
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches
+           withEvent:(UIEvent *)event
+{
+    if ([self.view.subviews containsObject:_glView])
+    {
+        [_glView removeFromSuperview];
+        self.tabBarController.tabBar.hidden = NO;
     }
 }
 
