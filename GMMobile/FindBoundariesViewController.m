@@ -463,7 +463,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *type = [_topTableView cellForRowAtIndexPath:_topTableView.indexPathForSelectedRow].textLabel.text;
     CRAPI.sharedInstance.selectBoundaryFromMapType = type;
-    CRAPI.sharedInstance.colorForAreaDictionary = NSMutableDictionary.dictionary;
     
     if (_delegate)
     {

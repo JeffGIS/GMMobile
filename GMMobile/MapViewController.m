@@ -1642,9 +1642,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     
     if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                     visibleAtZoom:_mapView.camera.zoom
+                                      visibleAtZoom:_mapView.camera.zoom
                                             andPass:PickPass])
         return;
+    
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
