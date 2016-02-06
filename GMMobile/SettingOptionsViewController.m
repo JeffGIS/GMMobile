@@ -42,12 +42,22 @@
     
     EAGLContext.currentContext = _context;
     
-    _glView = [[GLKView alloc] initWithFrame:UIScreen.mainScreen.bounds
-                                     context:_context];
-    
+    _glView = [[GLKView alloc] init];
+    _glView.translatesAutoresizingMaskIntoConstraints = NO;
+    _glView.context = _context;
     _glView.delegate = self;
     _glView.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     [self.view addSubview:_glView];
+    
+    self.tabBarController.tabBar.hidden = YES;
+    
+    [_glView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
+    
+    [_glView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
+                                         constant:self.tabBarController.tabBar.frame.size.height].active = YES;
+    
+    [_glView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
+    [_glView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
     
     [self setUpGL];
     
@@ -56,8 +66,6 @@
     
     [_displayLink addToRunLoop:NSRunLoop.currentRunLoop
                        forMode:NSDefaultRunLoopMode];
-    
-    self.tabBarController.tabBar.hidden = YES;
 }
 
 - (void)setUpGL
