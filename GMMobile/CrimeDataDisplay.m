@@ -35,6 +35,8 @@
 
 - (void)dealloc
 {
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
     [_cd close];
     NSLog(@"Crime Database dealloc");
 }
@@ -253,6 +255,7 @@ NextPass:
     else if (_mode == HOTSPOT)
     {
         [hs display:context];
+//        [hs dump:outFile];
     }
     [_cd close];
 }
