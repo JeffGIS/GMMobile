@@ -241,10 +241,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     }
                 }
                     break;
+                    
                 default:
                 {
                     int fieldWidth, nDecimals, iField;
                     char fieldName[32];
+                    
                     switch (_dc.elementType)
                     {
                         case WaterMain:
@@ -284,23 +286,29 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         case PDFBounds:
                         {
                             iField = DBFGetFieldIndex(_hDBF, "UDI");
+                            
                             if (iField >= 0)
                             {
-                                DBFGetFieldInfo(_hDBF,iField,
-                                                fieldName, &fieldWidth, &nDecimals );
-                                const char * cUDI = DBFReadStringAttribute( _hDBF,irec,iField );
+                                DBFGetFieldInfo(_hDBF,iField, fieldName, &fieldWidth, &nDecimals );
+                                const char *cUDI = DBFReadStringAttribute(_hDBF,irec,iField);
                                 _dc.string2 = [NSString stringWithUTF8String:cUDI];
+                                
                                 if (_dc.refno == CRAPI.sharedInstance.showPlats)
                                     _dc.color = UIColor.grayColor;
+                                
                                 else
+                                {
                                     _dc.color = [NVColor randomColorFromArray:NVColor.pastelColors
                                                                forString:_dc.string2];
-                                
+                                }
                             }
-                            
                         }
                             break;
+                        
+                        default:
+                            break;
                     }
+                    
                     if ([themes setDisplayCharacteristics:_dc
                                                 displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                     {

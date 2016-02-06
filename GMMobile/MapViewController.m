@@ -1674,14 +1674,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
                 ud.processingID = CRAPI.sharedInstance.keepProcessing;
+                
                 CRAPI.sharedInstance.selectedPDFID = [ud pickPDFPlat:&llp
-                         platRefno:&platRefno];
+                                                           platRefno:&platRefno];
            }
+            
             else
             {
                 SewerData *sewerData = [[SewerData alloc] init];
                 platRefno = [sewerData pickSanPlat:&llp];
             }
+            
             if (platRefno != _selectedPlatRefno)
             {
                 _selectedPlatRefno = platRefno;
@@ -1728,6 +1731,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         if (_selectedPlatRefno)
         {
             SewerData *sd = [[SewerData alloc] init];
+            
             if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
             {
                 [sd loadPlat:CRAPI.sharedInstance.selectedPDFID
@@ -1753,15 +1757,15 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 }
 - (void)FTPdidComplete:(int)option
             withStatus:(int)status
-       andStatusString:(NSString*)statusString
+       andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
+    [_popover hide];
+    
     NSLog(@"%i:%@", status, statusString);
     
     if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
-        [_popover hide];
-        
         switch (option)
         {
             case GET_STORMPLAT:
@@ -1806,16 +1810,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     else
     {
-        [_popover hide];
-        
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:[NSString stringWithFormat:@"Error getting plat file:%@", statusString]
+                                                             title:[NSString stringWithFormat:@"FTP Error:Cannot get %@ (%@)",
+                                                                    path.lastPathComponent, statusString]
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
 #pragma unused(alert)
     }
-
 }
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
@@ -2557,7 +2559,10 @@ haveVV:
                        for (NVAlertView *alert in self.view.subviews)
                        {
                            if ([alert isKindOfClass:NVAlertView.class])
+                           {
+                               [self.view bringSubviewToFront:alert.overlayView];
                                [self.view bringSubviewToFront:alert];
+                           }
                        }
                        
                        if (_emailPDFAfterUpdate)
