@@ -16,6 +16,7 @@
 #import "NVPageController.h"
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
+#import "ReaderViewController.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
@@ -27,7 +28,7 @@ typedef struct NVRegionQuadrants {
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate, ReaderViewControllerDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -1778,7 +1779,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 CRAPI.sharedInstance.currentPlatImagePath = path;
                 CRAPI.sharedInstance.currentPlatType = @"pdf";
-                //Bill: Add code to display PDF file
+                ReaderDocument *document = [ReaderDocument withDocumentFilePath:path
+                                                                       password:nil];
+                
+                if (document)
+                {
+                    ReaderViewController *readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
+                    
+                    readerVC.delegate = self;
+                    readerVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+                    readerVC.modalPresentationStyle = UIModalPresentationFullScreen;
+                    
+                    [self presentViewController:readerVC
+                                       animated:YES
+                                     completion:nil];
+                }
             }
                 break;
 
@@ -1798,6 +1813,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 
 }
+
+- (void)dismissReaderViewController:(ReaderViewController *)viewController
+{
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
+}
+
 - (void)removePreviousInfoWindow
 {
     for (UIView *views in self.view.subviews)
