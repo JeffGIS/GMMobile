@@ -332,6 +332,8 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         case HCConfigMapleGrove:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
             CRAPI.sharedInstance.parcelTextOption = 1;
+            configLayerZoom[HCConfigMapleGrove][HCLayerSewers] = 12;
+
             break;
         default:
             CRAPI.sharedInstance.parcelTextOption = 0;
@@ -469,7 +471,7 @@ visibleAtZoom:(CGFloat)zoom
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index
 {
     int identifier =-1;
-    HardCodedLayers i;
+    int i;
     
     for (i = 0; i < NUMHardCodedLayers; i++)
     {

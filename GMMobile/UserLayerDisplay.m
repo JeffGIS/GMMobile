@@ -44,87 +44,122 @@ displayCharacteristics:(DisplayCharacteristics *)dc
              pointInArea:pia];
         }
     }
-    fileName = @"wMain.shp";
-    dc.elementType = WaterMain;
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
+    else
     {
-        sfd.zoom = _zoom;
-        sfd.processingID = _processingID;
-        [sfd display:context
-displayCharacteristics:dc
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds
-              themes:themes
-         pointInArea:pia];
+        fileName = @"wMain.shp";
+        dc.elementType = WaterMain;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
+        
+        fileName = @"wHydrant.shp";
+        dc.elementType = Hydrant;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
+        fileName = @"wMeter.shp";
+        dc.elementType = WaterMeter;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
+        fileName = @"MG_FiberLines.shp";
+        dc.elementType = FiberLines;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
+        fileName = @"MG_FiberPoints.shp";
+        dc.elementType = FiberPoints;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
     }
+}
+- (NSString *)pickPDFPlat:(LLPOINT *)pt
+                platRefno:(int *)platRef
+{
+    int ref = 0;
+    NSString * platID = @"";
+    NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
+    ShapeFileDisplay *sfd;
+    NSString *fileName;
+    NSString *shapeFile;
+    NSMutableArray *hltList = [NSMutableArray new];
     
-    fileName = @"wHydrant.shp";
-    dc.elementType = Hydrant;
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
+    if (CRAPI.sharedInstance.showPlats)
     {
-        sfd.zoom = _zoom;
-        sfd.processingID = _processingID;
-        [sfd display:context
-displayCharacteristics:dc
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds
-              themes:themes
-         pointInArea:pia];
+        fileName = @"PDFBOUNDS.shp";
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.processingID = _processingID;
+            hltList = [sfd pickPDFPlat:pt];
+        }
     }
-    fileName = @"wMeter.shp";
-    dc.elementType = WaterMeter;
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
+    if (hltList.count > 0)
     {
-        sfd.zoom = _zoom;
-        sfd.processingID = _processingID;
-        [sfd display:context
-displayCharacteristics:dc
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds
-              themes:themes
-         pointInArea:pia];
+        PickedItem *pi = hltList[0];
+        ref = (int)pi.refno;
+        platID = pi.identifier;
     }
-    fileName = @"MG_FiberLines.shp";
-    dc.elementType = FiberLines;
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
-    {
-        sfd.zoom = _zoom;
-        sfd.processingID = _processingID;
-        [sfd display:context
-displayCharacteristics:dc
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds
-              themes:themes
-         pointInArea:pia];
-    }
-    fileName = @"MG_FiberPoints.shp";
-    dc.elementType = FiberPoints;
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
-    {
-        sfd.zoom = _zoom;
-        sfd.processingID = _processingID;
-        [sfd display:context
-displayCharacteristics:dc
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds
-              themes:themes
-         pointInArea:pia];
-    }
+    *platRef = ref;
+    return platID;
 }
 
 

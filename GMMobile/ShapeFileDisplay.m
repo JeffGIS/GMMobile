@@ -57,9 +57,9 @@
         return NULL;
     
 Top:
-    if (first)
+/*    if (first)
         hSHP = NULL;
-    else
+    else*/
         hSHP = SHPOpen( outFile, "rb" );
     if( hSHP != NULL )
     {
@@ -115,29 +115,47 @@ displayCharacteristics:(DisplayCharacteristics *)dc
           themes:(Themes*)themes
      pointInArea:(PointInArea *)pia
 {
-    CGFloat size = 20;
-    CGFloat sizeFactor = 5;
+    _dc = dc;
+    _dc.size = 1;
+    _dc.width = 1;
+    _sizeFactor = 100;
 
     if (_zoom > 18)
-        sizeFactor *= (2.0 *(_zoom - 18.0));
+        _sizeFactor *= (2.0 *(_zoom - 18.0));
     else if (_zoom < 18)
-        sizeFactor /= (2.0 * (18.0 - _zoom));
+        _sizeFactor /= (2.0 * (18.0 - _zoom));
+    _widthFactor = _sizeFactor / 15;
     
     dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
     dc.string1 = _fileName;
-    PointSymbols sym = CircleSym;
+    dc.pointSymbol = CircleSym;
     
     if ([_fileName containsString:@"Meter"])
     {
-        sym = Star2Sym;
+        dc.pointSymbol = Star2Sym;
         dc.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
-        sizeFactor *=1.5;
+        _sizeFactor *=1.5;
     }
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    [self processShape:context highlightList:nil LLBounds:platlonBounds themes:themes];
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+}
+
+- (void)processShape:(CGContextRef)context
+       highlightList:(NSMutableArray*)hlist
+            LLBounds:(MNMXCORD *)platlonBounds
+              themes:(Themes*)themes
+{
+    double mind = DBL_MAX;
+    DPOINT midpt, minpt;
+    NSInteger minRef = 0;
+    NSString * minPlatID = @"";
     
+    midpt = DBoundsMid(platlonBounds);
     for (int irec = 0; irec < _hSHP->nRecords; irec++)
     {
         if (![self continue])
@@ -148,6 +166,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         SHPBounds.xmx = psCShape->dfXMax;
         SHPBounds.ymn = psCShape->dfYMin;
         SHPBounds.ymx = psCShape->dfYMax;
+        _dc.refno = irec;
         if (BoundsInBounds (&SHPBounds,platlonBounds,1))
         {
             
@@ -163,7 +182,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     pt = TranDPOINT(&pt, _pTranLLtoView);
                     int iField, fieldWidth, nDecimals;
                     char fieldName[32];
-                    switch (dc.elementType)
+                    switch (_dc.elementType)
                     {
                         case Hydrant:
                         {
@@ -174,10 +193,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                                 fieldName, &fieldWidth, &nDecimals );
                                 const char * cModel = DBFReadStringAttribute( _hDBF,irec,iField );
                                 if (!strcasecmp (cModel,"Single Pumper"))
-                                    sym = TriangleSym;
+                                    _dc.pointSymbol = TriangleSym;
                                 else if (!strcasecmp (cModel,"Double Pumper"))
-                                    sym = SquareSym;
-                                else sym = Star1Sym;
+                                    _dc.pointSymbol = SquareSym;
+                                else _dc.pointSymbol = Star1Sym;
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Nozzle");
                             if (iField >= 0)
@@ -185,44 +204,48 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
                                 const char * cNozzle = DBFReadStringAttribute( _hDBF,irec,iField );
-                                dc.string2 = [NSString stringWithUTF8String:cNozzle];
+                                _dc.string2 = [NSString stringWithUTF8String:cNozzle];
                             }
                         }
                             break;
                         case FiberPoints:
                         {
-                            sym = Star1Sym;
+                            _dc.pointSymbol = Star1Sym;
                             iField = DBFGetFieldIndex(_hDBF, "TYPE_OF_ST");
                             if (iField >= 0)
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
                                 const char * cType = DBFReadStringAttribute( _hDBF,irec,iField );
-                                dc.string2 = [NSString stringWithUTF8String:cType];
+                                _dc.string2 = [NSString stringWithUTF8String:cType];
                             }
                         }
                             break;
                             
                         default:
                             break;
-                   }
-                    if ([themes setDisplayCharacteristics:dc
+                    }
+                    if ([themes setDisplayCharacteristics:_dc
                                                 displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                     {
-                        [self drawPoint:context
-                                atPoint:&pt
-                            usingSymbol:sym
-                              withColor:dc.color.CGColor
-                                andSize:(size * sizeFactor)];
+                        if (hlist)
+                        {
+                            
+                        }
+                        else
+                            [self drawPoint:context
+                                    atPoint:&pt
+                                usingSymbol:_dc.pointSymbol
+                                  withColor:_dc.color.CGColor
+                                    andSize:(_dc.size * _sizeFactor)];
                     }
                 }
                     break;
                 default:
                 {
-                    double width=1;
                     int fieldWidth, nDecimals, iField;
                     char fieldName[32];
-                    switch (dc.elementType)
+                    switch (_dc.elementType)
                     {
                         case WaterMain:
                         {
@@ -231,7 +254,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
-                                width = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                                _dc.width = DBFReadDoubleAttribute( _hDBF,irec,iField );
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Material");
                             if (iField >= 0)
@@ -239,7 +262,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
                                 const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
-                                dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                                _dc.string2 = [NSString stringWithUTF8String:cMaterial];
                             }
                         }
                             break;
@@ -252,8 +275,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                                 fieldName, &fieldWidth, &nDecimals );
                                 double segments = DBFReadDoubleAttribute( _hDBF,irec,iField );
                                 int iSegments = segments;
-                                dc.UCR = iSegments;
-                                width = iSegments/2;
+                                _dc.UCR = iSegments;
+                                _dc.width = iSegments/4;
                             }
                             
                         }
@@ -266,19 +289,22 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
                                 const char * cUDI = DBFReadStringAttribute( _hDBF,irec,iField );
-                                dc.string2 = [NSString stringWithUTF8String:cUDI];
-                                dc.color = [NVColor randomColorFromArray:NVColor.pastelColors
-                                                                        forString:dc.string2];
-
+                                _dc.string2 = [NSString stringWithUTF8String:cUDI];
+                                if (_dc.refno == CRAPI.sharedInstance.showPlats)
+                                    _dc.color = UIColor.grayColor;
+                                else
+                                    _dc.color = [NVColor randomColorFromArray:NVColor.pastelColors
+                                                               forString:_dc.string2];
+                                
                             }
                             
                         }
                             break;
                     }
-                    if ([themes setDisplayCharacteristics:dc
+                    if ([themes setDisplayCharacteristics:_dc
                                                 displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                     {
-                        if (dc.elementType == PDFBounds)
+                        if (_dc.elementType == PDFBounds)
                         {
                             LPDPOINT llpoints = malloc(psCShape->nVertices * sizeof(DPOINT) + 4);
                             
@@ -289,21 +315,49 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 llpoints[i].y = psCShape->padfY[i];
                                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
                             }
-                            [self fillArea:context nPoints:psCShape->nVertices
-                                    points:llpoints
-                                 withColor:dc.color.CGColor];
+                            if (hlist)
+                            {
+                                if (POINT_IN_AREAD(midpt, psCShape->nVertices, llpoints, 1, 0, 0, 0))
+                                {
+                                    for (int i = 0; i < psCShape->nVertices; i++)
+                                    {
+                                        if (findClosestPoint (&llpoints[i],&minpt,&mind,&midpt))
+                                        {
+                                            minRef = _dc.refno;
+                                            minPlatID = _dc.string2;
+                                            PickedItem *pi = [PickedItem new];
+                                            pi.refno = _dc.refno;
+                                            pi.identifier = minPlatID;
+                                            pi.itemType = _dc.elementType;
+                                            pi.pickedPoint = llpoints[i];
+                                            pi.distance = mind;
+                                            [hlist addObject:pi];
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            else
+                                [self fillArea:context nPoints:psCShape->nVertices
+                                        points:llpoints
+                                     withColor:_dc.color.CGColor];
                             
                         }
                         else
                         {
-                            [self drawLine:context
-                                   nPoints:psCShape->nVertices
-                                    nLoops:psCShape->nParts
-                                   partLen:psCShape->panPartStart
-                                         x:psCShape->padfX
-                                         y:psCShape->padfY
-                                 withColor:dc.color.CGColor
-                                  andWidth:width*sizeFactor];
+                            if (hlist)
+                            {
+                                
+                            }
+                            else
+                                [self drawLine:context
+                                       nPoints:psCShape->nVertices
+                                        nLoops:psCShape->nParts
+                                       partLen:psCShape->panPartStart
+                                             x:psCShape->padfX
+                                             y:psCShape->padfY
+                                     withColor:_dc.color.CGColor
+                                      andWidth:_dc.width*_widthFactor];
                         }
                     }
                 }
@@ -311,10 +365,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         SHPDestroyObject ( psCShape );
     }
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
-}
 
+}
 - (void)fillArea:(CGContextRef)context
            nPoints:(int)np
             points:(LPDPOINT)pPoints
@@ -435,16 +487,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
 }
 
-- (int)pickPDFPlat:(LLPOINT *)pt
+- (NSMutableArray*)pickPDFPlat:(LLPOINT *)pt
+
 {
+    NSMutableArray * highlightList = [[NSMutableArray alloc]init];
     int minRef = 0;
     dbounds bnds;
-    DPOINT BasePt;
-    //DPOINT point;
-    LPSTR platID;
-    int numPoints, refno;
-    //int numLoops;
-    double mind = DBL_MAX;
     //CGFloat d;
     CGFloat pickap = 0.005;
     DPOINT p1, minpt;
@@ -458,68 +506,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     bnds.xmx = (p1.x + pickap);
     bnds.ymn = (p1.y - pickap);
     bnds.ymx = (p1.y + pickap);
+    _dc = [DisplayCharacteristics new];
+    _dc.elementType = PDFBounds;
     
-    NSString *query = [NSString stringWithFormat:@"SELECT STORM_PLAT.id, STORM_PLAT.PLAT_NAME, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM STORM_PLAT,STORM_PLAT_index WHERE STORM_PLAT.id=STORM_PLAT_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    [self processShape:nil highlightList:highlightList LLBounds:&bnds themes:nil];
     
-    sqlite3_stmt *statement = NULL;
-    
-    SQLOKswr(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        refno = sqlite3_column_int(statement, 0);
-        platID = (LPSTR)sqlite3_column_text(statement, 1);
-        BasePt.x = sqlite3_column_double(statement, 2);
-        BasePt.y = sqlite3_column_double(statement, 3);
-        numPoints = sqlite3_column_int(statement,4);
-        //numLoops = sqlite3_column_int(statement,5);
-        //int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-        //int nBlobBytes = sqlite3_column_bytes(statement,6);
-        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-        //nBlobBytes = sqlite3_column_bytes(statement,7);
-        
-        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-        
-        if (numPoints < 0)
-        {
-            numPoints = -numPoints;
-            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
-            
-            for (int i = 0; i < numPoints; i++)
-            {
-                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-            }
-        }
-        
-        else for (int i = 0; i < numPoints; i++)
-        {
-            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-        }
-        if (POINT_IN_AREAD(p1, numPoints, llpoints, 1, 0, 0, 0))
-        {
-            for (int i = 0; i < numPoints; i++)
-            {
-                if (findClosestPoint (&llpoints[i],&minpt,&mind,&p1))
-                {
-                    minRef = refno;
-                    minPlatID = [NSString stringWithUTF8String:platID];
-                }
-            }
-            if (findClosestPoint (&BasePt,&minpt,&mind,&p1))
-            {
-                minRef = refno;
-                minPlatID = [NSString stringWithUTF8String:platID];
-            }
-        }
-        free (llpoints);
-        
-    }
-    SQLOKswr(sqlite3_finalize(statement), _database);
     pt->lon = minpt.x;
     pt->lat = minpt.y;
     
@@ -528,7 +519,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     if (minRef)
         CRAPI.sharedInstance.currentPlatImagePath = platFile;
-    return minRef;
+    return highlightList;
 }
 
 

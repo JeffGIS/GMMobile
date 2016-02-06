@@ -19,11 +19,13 @@
 @property DBFHandle hDBF;
 @property int processingID;
 @property int zoom;
+@property CGFloat sizeFactor;
+@property CGFloat widthFactor;
 @property NSString * fileName;
 @property NSString * filePath;
 @property NSString * documentsDirectory;
 @property sqlite3 *database;
-
+@property DisplayCharacteristics * dc;
 
 + (ShapeFileDisplay *)createWithFile:(const char*)shapeFile;
 -(void)  display:(CGContextRef)context
@@ -33,5 +35,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
       viewBounds:(MNMXCORD *)pvbounds
           themes:(Themes*)themes
      pointInArea:(PointInArea *)pia;
+- (NSMutableArray*)pickPDFPlat:(LLPOINT *)pt;
 
 @end

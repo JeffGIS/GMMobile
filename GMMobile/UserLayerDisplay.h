@@ -23,6 +23,7 @@
                viewBounds:(MNMXCORD *)pvbounds
                    themes:(Themes*)themes
               pointInArea:(PointInArea *)pia;
-
+- (NSString *)pickPDFPlat:(LLPOINT *)pt
+                platRefno:(int *)platRef;
 
 @end

@@ -15,6 +15,7 @@
 #import "CCodeLibrary/IntersectionsDatabase.h"
 #import "NVPageController.h"
 #import "CrimeDataOptions.h"
+#import "UserLayerDisplay.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
@@ -1661,14 +1662,23 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             CGPoint gesturePoint = [gesture locationInView:self.view];
             CLLocationCoordinate2D gestureLocation = [_mapView.projection coordinateForPoint:gesturePoint];
-            SewerData *sewerData = [[SewerData alloc] init];
             LLPOINT llp;
             llp.lat = gestureLocation.latitude;
             llp.lon = gestureLocation.longitude;
+            int platRefno = 0;
             
-            
-            int platRefno = [sewerData pickSanPlat:&llp];
-            
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+            {
+                UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+                ud.processingID = CRAPI.sharedInstance.keepProcessing;
+                CRAPI.sharedInstance.selectedPDFID = [ud pickPDFPlat:&llp
+                         platRefno:&platRefno];
+           }
+            else
+            {
+                SewerData *sewerData = [[SewerData alloc] init];
+                platRefno = [sewerData pickSanPlat:&llp];
+            }
             if (platRefno != _selectedPlatRefno)
             {
                 _selectedPlatRefno = platRefno;
@@ -1715,14 +1725,23 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         if (_selectedPlatRefno)
         {
             SewerData *sd = [[SewerData alloc] init];
-            
-            NSString *platID = [sd getPlatIDofType:@"storm"
-                                         fromRefno:_selectedPlatRefno];
-            
-            [sd loadPlat:platID
-                  ofType:@"storm"
-            usingPopover:_popover
-             andDelegate:self];
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+            {
+                [sd loadPlat:CRAPI.sharedInstance.selectedPDFID
+                      ofType:@"pdf"
+                usingPopover:_popover
+                 andDelegate:self];
+            }
+            else
+            {
+                
+                NSString *platID = [sd getPlatIDofType:@"storm"
+                                             fromRefno:_selectedPlatRefno];
+                [sd loadPlat:platID
+                      ofType:@"storm"
+                usingPopover:_popover
+                 andDelegate:self];
+            }
         }
         
         [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1754,6 +1773,15 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
                 }
             }
+                break;
+            case GET_PDFFILE:
+            {
+                CRAPI.sharedInstance.currentPlatImagePath = path;
+                CRAPI.sharedInstance.currentPlatType = @"pdf";
+                //Bill: Add code to display PDF file
+            }
+                break;
+
         }
     }
     
