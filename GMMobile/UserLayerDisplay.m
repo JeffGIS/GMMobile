@@ -46,6 +46,40 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     else
     {
+        fileName = @"swGravityMain.shp";
+        dc.elementType = StormMain;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
+        
+        fileName = @"ssGravityMain.shp";
+        dc.elementType = SanitaryMain;
+        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+        if (sfd)
+        {
+            sfd.zoom = _zoom;
+            sfd.processingID = _processingID;
+            [sfd display:context
+  displayCharacteristics:dc
+               llCorners:latlonCornerPoints
+                LLBounds:platlonBounds
+              viewBounds:pvbounds
+                  themes:themes
+             pointInArea:pia];
+        }
+        
         fileName = @"wMain.shp";
         dc.elementType = WaterMain;
         shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];

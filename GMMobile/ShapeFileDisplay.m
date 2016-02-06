@@ -247,6 +247,48 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     char fieldName[32];
                     switch (_dc.elementType)
                     {
+                        case StormMain:
+                        {
+                            _dc.width = 3;
+                            iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/4,2);
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "Material");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
+                                _dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                            }
+                            _dc.color = UIColor.magentaColor;
+                        }
+                            break;
+                        case SanitaryMain:
+                        {
+                            _dc.width = 3;
+                            iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/4,2);
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "Material");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
+                                _dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                            }
+                            _dc.color = UIColor.orangeColor;
+                        }
+                            break;
                         case WaterMain:
                         {
                             iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
@@ -276,7 +318,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 double segments = DBFReadDoubleAttribute( _hDBF,irec,iField );
                                 int iSegments = segments;
                                 _dc.UCR = iSegments;
-                                _dc.width = iSegments/4;
+                                _dc.width = iSegments/8;
                             }
                             
                         }
