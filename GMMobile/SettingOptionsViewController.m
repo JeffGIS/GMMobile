@@ -5,12 +5,11 @@
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/NVCalibrationController.h"
 #import "CCodeLibrary/GSSiPopoverView.h"
-#import "CCodeLibrary/NSData+Compression.h"
 #import <CommonCrypto/CommonDigest.h>
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
-@import MediaPlayer;
 #import "ReaderViewController.h"
+@import MediaPlayer;
 @import GLKit;
 
 @interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate,GLKViewDelegate>
@@ -359,47 +358,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self createGLView];
     }
-    
-    /*else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test Compression & Upload"])
-    {
-        NSString *filePath = [NSString stringWithFormat:@"%@/Sewer.sqlite",
-                              UserDefaults.defaults.sharedFilePath];
-        
-        NSData *rawFile = [NSData dataWithContentsOfFile:filePath];
-        NSString *md5 = rawFile.MD5;
-        NSString *sha256 = rawFile.SHA256;
-        NSLog(@"MD5:%@", md5);
-        NSLog(@"SHA256:%@", sha256);
-        
-        NSData *compressedData = [NSData compressFileAtPath:filePath];
-        compressedData = [NSData lzCompressFileAtPath:filePath];
-        
-        _push = FTPDataPush.push;
-        _push.delegate = self;
-        
-        GSSiPopoverView *popover = [[GSSiPopoverView alloc] initWithView:self.view];
-        _push.popover = popover;
-        
-        [_push.popover showAfter:0.0
-                       withTitle:@"Upload Property.sqlite"];
-        
-        if (![_push sendFile:@"Sewer.sqlite"
-               fromDirectory:UserDefaults.defaults.sharedFilePath
-                      toFile:@"Sewer.sqlite"
-                 toDirectory:@"GMMobileUploads"
-              deleteWhenDone:NO])
-        {
-            [_push.popover hide];
-            
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                              delegate:self
-                                                                 title:@"Upload Failed"
-                                                       buttonTextArray:@[@"OK"]
-                                                      destructiveIndex:NVLargeAlertIndexNone];
-#pragma unused(alert)
-        }
-    }*/
 }
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
