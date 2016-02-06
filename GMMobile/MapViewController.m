@@ -1755,6 +1755,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
        andStatusString:(NSString*)statusString
               filePath:(NSString *)path
 {
+    NSLog(@"%i:%@", status, statusString);
+    
     if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
         [_popover hide];
@@ -1818,7 +1820,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
 {
     [self dismissViewControllerAnimated:YES
-                             completion:nil];
+                             completion:^{
+                                 _readerVC = nil;
+                             }];
 }
 
 - (void)removePreviousInfoWindow
