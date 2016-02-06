@@ -28,24 +28,6 @@
 
 - (void) initFromDataLoader:(GSSiPopoverView*)popover;
 
-- (IBAction)loadDatabase:(id)sender;
-- (IBAction)preloadTiles:(id)sender;
-- (IBAction)loadParcels:(id)sender;
-- (IBAction)deleteDatabase:(id)sender;
-- (IBAction)loadAreas:(id)sender;
-- (IBAction)loadSewer:(id)sender;
-- (IBAction)loadPlats:(id)sender;
-- (IBAction)loadPlan:(id)sender;
-- (IBAction)loadCensus:(id)sender;
-- (IBAction)loadAlleyWall:(id)sender;
-- (IBAction)loadCurbRamps:(id)sender;
-- (IBAction)loadCrimeData:(id)sender;
-- (IBAction)loadMapleGrove:(id)sender;
-- (IBAction)compressDatabase:(id)sender;
-- (IBAction)emailFileList:(id)sender;
-
-@property (weak, nonatomic) IBOutlet UILabel *databaseSize;
-
 @property int nComplete, nFailed;
 @property NSCondition *condition;
 @property BOOL keepGoing;
