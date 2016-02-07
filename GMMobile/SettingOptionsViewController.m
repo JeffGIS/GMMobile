@@ -70,8 +70,6 @@
 
 - (void)setUpGL
 {
-    [EAGLContext setCurrentContext:self.context];
-    
     _effect = [[GLKBaseEffect alloc] init];
     _effect.light0.enabled = GL_TRUE;
     _effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
@@ -178,7 +176,7 @@ EAGLContext *CreateBestEAGLContext()
         if (EAGLContext.currentContext == _context)
             EAGLContext.currentContext = nil;
         
-        self.context = nil;
+        _context = nil;
         
         [_glView removeFromSuperview];
         _glView = nil;
