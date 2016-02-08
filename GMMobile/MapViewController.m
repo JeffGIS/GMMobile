@@ -1093,16 +1093,6 @@ typedef struct NVRegionQuadrants {
     [self updateCompassPosition];
 }
 
-- (void)documentManagerWasCancelled
-{
-    NSLog(@"%s", __FUNCTION__);
-}
-
-- (void)documentManagerDidComplete
-{
-    NSLog(@"%s", __FUNCTION__);
-}
-
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
                                    statusString:(NSString *)statusString
                                       directory:(NSString *)directory
