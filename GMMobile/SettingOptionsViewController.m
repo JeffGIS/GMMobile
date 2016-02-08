@@ -26,7 +26,7 @@
 @property (nonatomic) CADisplayLink *displayLink;
 @property (nonatomic) GLKBaseEffect *effect;
 @property (nonatomic) EAGLContext *context;
-@property (nonatomic) GLuint vertexBuffer;
+@property (nonatomic) GLuint vertexArray, vertexBuffer, indexBuffer;
 @property (nonatomic) CGFloat rotation;
 
 @end
@@ -70,9 +70,25 @@
 
 - (void)setUpGL
 {
+    UIImage *image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"brick_texture"
+                                                                                    ofType:@"png"]];
+    
+    NSError *error;
+    
+    GLKTextureInfo *texture = [GLKTextureLoader textureWithCGImage:image.CGImage
+                                                           options:nil
+                                                             error:&error];
+    
+    if (!texture)
+        NSLog(@"ERROR loading texture: %@", error.localizedDescription);
+    
     _effect = [[GLKBaseEffect alloc] init];
     _effect.light0.enabled = GL_TRUE;
     _effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
+    _effect.texture2d0.enabled = GL_TRUE;
+    _effect.texture2d0.envMode = GLKTextureEnvModeReplace;
+    _effect.texture2d0.name = texture.name;
+    _effect.texture2d0.target = texture.target;
     
     GLfloat gCubeVertexData[216] =
     {
