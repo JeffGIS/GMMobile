@@ -763,7 +763,7 @@ int getThemeOpt(ThemeTypes type)
                 val = 0;
                 for (ThemeClass * cls in _classes)
                 {
-                    if ([cls.title containsString:dc.string2])
+                    if (dc.string2 && [cls.title containsString:dc.string2])
                     {
                         if ([self incrementCount:val
                                               by:1

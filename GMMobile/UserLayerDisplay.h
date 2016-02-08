@@ -15,6 +15,7 @@
 @interface UserLayerDisplay : NSObject
 @property int processingID;
 @property int zoom;
+@property int passID;
 
 -(void)displayLayers:(CGContextRef)context
    displayCharacteristics:(DisplayCharacteristics *)dc

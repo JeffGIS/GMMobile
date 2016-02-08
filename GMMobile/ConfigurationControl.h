@@ -32,10 +32,10 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigSewers,
     HCConfigMetroProp,
     HCConfigCrimes,
-    HCConfigMapleGrove,
+    HCConfigMapleGrove
 };
 
-#define NUMHardCodedLayers 8
+#define NUMHardCodedLayers 9
 
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
@@ -46,7 +46,8 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerAlleys,
     HCLayerCurbRamps,
     HCLayerCrimes,
-    HCLayerMapleGrove,
+    HCLayerMapleGroveWater,
+    HCLayerMapleGroveFiber,
 };
 
 @interface ApplicationObject : NSObject

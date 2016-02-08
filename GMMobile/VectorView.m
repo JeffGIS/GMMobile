@@ -403,13 +403,12 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        
                                                    }
                                                    if (CRAPI.sharedInstance.keepProcessing == self.displayID &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerMapleGrove
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
+                                                       ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
                                                    {
                                                        UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
                                                        ud.processingID = CRAPI.sharedInstance.keepProcessing;
                                                        ud.zoom = _zoom;
+                                                       ud.passID = passID;
                                                        if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                        {
                                                            [ud displayLayers:_context

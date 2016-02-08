@@ -46,120 +46,204 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     else
     {
-        fileName = @"swGravityMain.shp";
-        dc.elementType = StormMain;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
+        dc.pointSymbol = CircleSym;
+
+        if ([ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
         {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
+            fileName = @"swGravityMain.shp";
+            dc.elementType = StormMain;
+            dc.color = UIColor.greenColor;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            
+            fileName = @"swPressurePipe.shp";
+            dc.elementType = StormPressurePipe;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            
+            fileName = @"swManhole.shp";
+            dc.elementType = StormManhole;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            
+            fileName = @"ssGravityMain.shp";
+            dc.elementType = SanitaryMain;
+            dc.color = UIColor.blueColor;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            fileName = @"ssPressurizedMain.shp";
+            dc.elementType = SanitaryPressurizedMain;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            fileName = @"ssManhole.shp";
+            dc.elementType = SanitaryManhole;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
         }
-        
-        fileName = @"ssGravityMain.shp";
-        dc.elementType = SanitaryMain;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
+        if ([ConfigurationControl.sharedInstance layer:HCLayerMapleGroveWater
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
         {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
+            fileName = @"wMain.shp";
+            dc.elementType = WaterMain;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            
+            fileName = @"wHydrant.shp";
+            dc.elementType = Hydrant;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            fileName = @"wMeter.shp";
+            dc.elementType = WaterMeter;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
         }
-        
-        fileName = @"wMain.shp";
-        dc.elementType = WaterMain;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
+        if ([ConfigurationControl.sharedInstance layer:HCLayerMapleGroveFiber
+                                         visibleAtZoom:_zoom
+                                               andPass:_passID])
         {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
-        }
-        
-        fileName = @"wHydrant.shp";
-        dc.elementType = Hydrant;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
-        {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
-        }
-        fileName = @"wMeter.shp";
-        dc.elementType = WaterMeter;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
-        {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
-        }
-        fileName = @"MG_FiberLines.shp";
-        dc.elementType = FiberLines;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
-        {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
-        }
-        fileName = @"MG_FiberPoints.shp";
-        dc.elementType = FiberPoints;
-        shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-        sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-        if (sfd)
-        {
-            sfd.zoom = _zoom;
-            sfd.processingID = _processingID;
-            [sfd display:context
-  displayCharacteristics:dc
-               llCorners:latlonCornerPoints
-                LLBounds:platlonBounds
-              viewBounds:pvbounds
-                  themes:themes
-             pointInArea:pia];
+            fileName = @"MG_FiberLines.shp";
+            dc.elementType = FiberLines;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
+            fileName = @"MG_FiberPoints.shp";
+            dc.elementType = FiberPoints;
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.zoom = _zoom;
+                sfd.processingID = _processingID;
+                [sfd display:context
+      displayCharacteristics:dc
+                   llCorners:latlonCornerPoints
+                    LLBounds:platlonBounds
+                  viewBounds:pvbounds
+                      themes:themes
+                 pointInArea:pia];
+            }
         }
     }
 }

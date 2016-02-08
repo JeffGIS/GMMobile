@@ -112,7 +112,8 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         strcpy(layerName[HCLayerAlleys], "Alleys");
         strcpy(layerName[HCLayerCurbRamps], "Curb Ramps");
         strcpy(layerName[HCLayerCrimes], "Crimes");
-        strcpy(layerName[HCLayerMapleGrove], "Maple Grove Data");
+        strcpy(layerName[HCLayerMapleGroveWater], "Water");
+        strcpy(layerName[HCLayerMapleGroveFiber], "Fiber");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
@@ -121,16 +122,17 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerDefaultZoom[HCLayerAlleys] = 14;
         layerDefaultZoom[HCLayerAlleys] = 13;
         layerDefaultZoom[HCLayerCrimes] = 11;
-        layerDefaultZoom[HCLayerMapleGrove] = 11;
+        layerDefaultZoom[HCLayerMapleGroveFiber] = 11;
+        layerDefaultZoom[HCLayerMapleGroveWater] = 11;
         
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
-        layerHasSymbols[HCLayerSewers] = NO;
+        layerHasSymbols[HCLayerSewers] = YES;
         layerHasSymbols[HCLayerPlanimetric] = YES;
         layerHasSymbols[HCLayerAlleys] = YES;
-        layerHasSymbols[HCLayerAlleys] = NO;
         layerHasSymbols[HCLayerCrimes] = NO;
-        layerHasSymbols[HCLayerMapleGrove] = YES;
+        layerHasSymbols[HCLayerMapleGroveWater] = NO;
+        layerHasSymbols[HCLayerMapleGroveFiber] = NO;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
@@ -268,7 +270,8 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigMapleGrove][HCLayerAlleys] = NO;
         configLayers[HCConfigMapleGrove][HCLayerCurbRamps] = NO;
         configLayers[HCConfigMapleGrove][HCLayerCrimes] = NO;
-        configLayers[HCConfigMapleGrove][HCLayerMapleGrove] = YES;
+        configLayers[HCConfigMapleGrove][HCLayerMapleGroveWater] = YES;
+        configLayers[HCConfigMapleGrove][HCLayerMapleGroveFiber] = YES;
         
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
@@ -552,23 +555,24 @@ visibleAtZoom:(CGFloat)zoom
             
         }
             break;
-        case HCLayerMapleGrove:
+        case HCLayerSewers:
         {
-            LayerObject * lo = [[LayerObject alloc]initWithName:@"WATER"
+            LayerObject * lo = [[LayerObject alloc]initWithName:@"SEWER"
                                                           andID:-1];
             
             [array addObject:lo];
             
-            lo = [[LayerObject alloc]initWithName:@"SEWER"
+            lo = [[LayerObject alloc]initWithName:@"STORM"
                                             andID:-1];
             [array addObject:lo];
             
-            lo = [[LayerObject alloc]initWithName:@"FIBER"
+            lo = [[LayerObject alloc]initWithName:@"SANITARY"
                                             andID:-1];
             [array addObject:lo];
             
         }
             break;
+            
             
         default:
             break;

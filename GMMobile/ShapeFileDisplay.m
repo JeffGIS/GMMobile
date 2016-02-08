@@ -115,7 +115,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
           themes:(Themes*)themes
      pointInArea:(PointInArea *)pia
 {
-    _dc = dc;
+    _dc = dc.copy;
     _dc.size = 1;
     _dc.width = 1;
     _sizeFactor = 100;
@@ -126,9 +126,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         _sizeFactor /= (2.0 * (18.0 - _zoom));
     _widthFactor = _sizeFactor / 15;
     
-    dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
     dc.string1 = _fileName;
-    dc.pointSymbol = CircleSym;
     
     if ([_fileName containsString:@"Meter"])
     {
@@ -267,7 +265,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
                                 _dc.string2 = [NSString stringWithUTF8String:cMaterial];
                             }
-                            _dc.color = UIColor.magentaColor;
                         }
                             break;
                         case SanitaryMain:
@@ -288,7 +285,26 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
                                 _dc.string2 = [NSString stringWithUTF8String:cMaterial];
                             }
-                            _dc.color = UIColor.orangeColor;
+                        }
+                            break;
+                        case SanitaryManhole:
+                        {
+                            _dc.width = 3;
+                            iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/4,2);
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "Material");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
+                                _dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                            }
                         }
                             break;
                         case WaterMain:
@@ -298,7 +314,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
-                                _dc.width = DBFReadDoubleAttribute( _hDBF,irec,iField );
+                                _dc.width = DBFReadDoubleAttribute( _hDBF,irec,iField )/2;
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Material");
                             if (iField >= 0)
@@ -400,6 +416,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 
                             }
                             else
+                            {
+                                _dc.width = max (1,_dc.width);
                                 [self drawLine:context
                                        nPoints:psCShape->nVertices
                                         nLoops:psCShape->nParts
@@ -408,6 +426,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                              y:psCShape->padfY
                                      withColor:_dc.color.CGColor
                                       andWidth:_dc.width*_widthFactor];
+                            }
                         }
                     }
                 }
@@ -453,7 +472,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CGContextSetLineJoin(context,kCGLineJoinRound);
     CGContextSetLineCap(context,kCGLineCapRound);
     LPDPOINT llpoints = malloc(np * sizeof(DPOINT) + 4);
-    //symName = (LPSTR)sqlite3_column_text(statement,6);
     
     
     for (int i = 0; i < np; i++)
@@ -469,8 +487,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
         for (int loop=0; loop < nLoops; loop++)
         {
-            CGContextMoveToPoint(context, llpoints[ip].x, llpoints[ip].y);
             ip = pPartIndex[loop];
+            CGContextMoveToPoint(context, llpoints[ip].x, llpoints[ip].y);
+            ip++;
             //ii = pPartLen[loop];
             int lp = np - pPartIndex[loop];
             if (loop < nLoops - 1)
