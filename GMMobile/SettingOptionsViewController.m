@@ -14,7 +14,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate,GLKViewDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -26,7 +26,7 @@
 @property (nonatomic) CADisplayLink *displayLink;
 @property (nonatomic) GLKBaseEffect *effect;
 @property (nonatomic) EAGLContext *context;
-@property (nonatomic) GLuint vertexBuffer;
+@property (nonatomic) GLuint vertexArray, vertexBuffer, indexBuffer;
 @property (nonatomic) CGFloat rotation;
 
 @end
@@ -70,11 +70,25 @@
 
 - (void)setUpGL
 {
-    [EAGLContext setCurrentContext:self.context];
+    UIImage *image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"brick_texture"
+                                                                                    ofType:@"png"]];
+    
+    NSError *error;
+    
+    GLKTextureInfo *texture = [GLKTextureLoader textureWithCGImage:image.CGImage
+                                                           options:nil
+                                                             error:&error];
+    
+    if (!texture)
+        NSLog(@"ERROR loading texture: %@", error.localizedDescription);
     
     _effect = [[GLKBaseEffect alloc] init];
     _effect.light0.enabled = GL_TRUE;
     _effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
+    _effect.texture2d0.enabled = GL_TRUE;
+    _effect.texture2d0.envMode = GLKTextureEnvModeReplace;
+    _effect.texture2d0.name = texture.name;
+    _effect.texture2d0.target = texture.target;
     
     GLfloat gCubeVertexData[216] =
     {
@@ -178,7 +192,7 @@ EAGLContext *CreateBestEAGLContext()
         if (EAGLContext.currentContext == _context)
             EAGLContext.currentContext = nil;
         
-        self.context = nil;
+        _context = nil;
         
         [_glView removeFromSuperview];
         _glView = nil;
@@ -229,7 +243,7 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Access Documents", @"Test PDF Reader Core", @"Test OpenGLES" /*, @"Test Compression & Upload"*/];
+                  @"Test PDF Reader Core", @"Test OpenGLES" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -384,21 +398,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Access Documents"])
-    {
-        UIDocumentPickerViewController *documentPicker =
-        [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.content", @"public.composite-content", @"public.data"]
-                                                               inMode:UIDocumentPickerModeImport];
-        
-        documentPicker.delegate = self;
-        documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-        
-        [self presentViewController:documentPicker
-                           animated:NO
-                         completion:nil];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Select Organization"])
     {
         [self performSegueWithIdentifier:@"SelectOrganization"
@@ -439,28 +438,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller
-  didPickDocumentAtURL:(NSURL *)url
-{
-    if (controller.documentPickerMode == UIDocumentPickerModeImport)
-    {
-        NSString *alertMessage = [NSString stringWithFormat:@"Successfully imported %@", url.lastPathComponent];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view delegate:self
-                                                                 title:alertMessage
-                                                       buttonTextArray:@[@"OK"]
-                                                      destructiveIndex:0];
-#pragma unused(alert)
-        });
-    }
-}
-
-- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
-{
-    
 }
 
 - (void)productsRequest:(SKProductsRequest *)request

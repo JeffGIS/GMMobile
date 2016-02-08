@@ -77,6 +77,7 @@
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
+		6998225B1C6850C9003476DD /* brick_texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 6998225A1C6850C9003476DD /* brick_texture.png */; };
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
@@ -303,6 +304,7 @@
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
+		6998225A1C6850C9003476DD /* brick_texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = brick_texture.png; sourceTree = "<group>"; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
@@ -614,6 +616,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6998225A1C6850C9003476DD /* brick_texture.png */,
 				69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */,
 				69985FE91C5FC4D800FCC332 /* criminal.png */,
 				694F93B41C30475500723155 /* questionMark.png */,
@@ -1086,6 +1089,7 @@
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				694FB1E91C588363005410F6 /* Reader-Print@2x.png in Resources */,
 				694F00741C1B229C0074AF72 /* clearMarkers.png in Resources */,
+				6998225B1C6850C9003476DD /* brick_texture.png in Resources */,
 				69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */,
 				A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */,
 				A9A1C0A21B55652200A3DFD8 /* GoogleMaps.bundle in Resources */,
