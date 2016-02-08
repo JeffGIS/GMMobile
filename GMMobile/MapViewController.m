@@ -17,7 +17,6 @@
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
 #import "ReaderViewController.h"
-#import "CCodeLibrary/NVDocumentManager.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
@@ -29,7 +28,7 @@ typedef struct NVRegionQuadrants {
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate, ReaderViewControllerDelegate, NVDocumentManagerDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate, ReaderViewControllerDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -1092,12 +1091,6 @@ typedef struct NVRegionQuadrants {
         _compassMargin = 6.0;
     
     [self updateCompassPosition];
-    
-    NSString *filepath = [NSBundle.mainBundle pathForResource:@"ManageMyLocationMap"
-                                                       ofType:@"pdf"];
-    
-    [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath
-                                                       delegate:self];
 }
 
 - (void)documentManagerWasCancelled
