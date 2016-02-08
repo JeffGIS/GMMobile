@@ -14,7 +14,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <UIDocumentPickerDelegate,ReaderViewControllerDelegate,GLKViewDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -243,7 +243,7 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Access Documents", @"Test PDF Reader Core", @"Test OpenGLES" /*, @"Test Compression & Upload"*/];
+                  @"Test PDF Reader Core", @"Test OpenGLES" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -398,21 +398,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Access Documents"])
-    {
-        UIDocumentPickerViewController *documentPicker =
-        [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.content", @"public.composite-content", @"public.data"]
-                                                               inMode:UIDocumentPickerModeImport];
-        
-        documentPicker.delegate = self;
-        documentPicker.modalPresentationStyle = UIModalPresentationFormSheet;
-        
-        [self presentViewController:documentPicker
-                           animated:NO
-                         completion:nil];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Select Organization"])
     {
         [self performSegueWithIdentifier:@"SelectOrganization"
@@ -453,28 +438,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller
-  didPickDocumentAtURL:(NSURL *)url
-{
-    if (controller.documentPickerMode == UIDocumentPickerModeImport)
-    {
-        NSString *alertMessage = [NSString stringWithFormat:@"Successfully imported %@", url.lastPathComponent];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view delegate:self
-                                                                 title:alertMessage
-                                                       buttonTextArray:@[@"OK"]
-                                                      destructiveIndex:0];
-#pragma unused(alert)
-        });
-    }
-}
-
-- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
-{
-    
 }
 
 - (void)productsRequest:(SKProductsRequest *)request
