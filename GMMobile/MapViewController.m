@@ -1092,12 +1092,6 @@ typedef struct NVRegionQuadrants {
         _compassMargin = 6.0;
     
     [self updateCompassPosition];
-    
-    NSString *filepath = [NSBundle.mainBundle pathForResource:@"ManageMyLocationMap"
-                                                       ofType:@"pdf"];
-    
-    [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath
-                                                       delegate:self];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
