@@ -254,8 +254,10 @@ NextPass:
     }
     else if (_mode == HOTSPOT)
     {
+        static BOOL dump=FALSE;
         [hs display:context];
-//        [hs dump:outFile];
+        if (dump)
+            [hs dump:@"hotspottest"];
     }
     [_cd close];
 }

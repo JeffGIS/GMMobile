@@ -33,4 +33,5 @@
 @property BOOL keepGoing;
 @property (nonatomic) NSTimer *timer;
 
+- (IBAction)outputFile:(id)sender;
 @end

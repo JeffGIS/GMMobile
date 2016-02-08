@@ -1080,4 +1080,10 @@ didReturnTimeInterval:(NSString *)timeInterval
                              completion:nil];
 }
 
+- (IBAction)outputFile:(id)sender {
+    NSString * outFile = @"hotspottest";
+    NSString * filepath = [NSString stringWithFormat:@"%@/%@.bin",CRAPI.sharedInstance.sharedFilePath,outFile];
+    [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath delegate:self];
+
+}
 @end
