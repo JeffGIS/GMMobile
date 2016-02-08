@@ -17,7 +17,6 @@
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
 #import "ReaderViewController.h"
-#import "CCodeLibrary/NVDocumentManager.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
