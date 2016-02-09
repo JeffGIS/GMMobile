@@ -28,6 +28,7 @@
 @property (nonatomic) EAGLContext *context;
 @property (nonatomic) GLuint vertexArray, vertexBuffer, indexBuffer;
 @property (nonatomic) CGFloat rotation;
+@property (nonatomic) UIImageView *hotspotView;
 
 @end
 
@@ -38,15 +39,57 @@
     const char *filepath = [NSBundle.mainBundle pathForResource:@"hotspottest"
                                                        ofType:@"bin"].UTF8String;
     
-    int height = 0, width = 0;
-    
     FILE *fid = fopen(filepath, "rb");
-    fread(&height, sizeof(int), 1, fid);
-    fread(&width, sizeof(int), 1, fid);
-    fclose(fid);
     
-    NSLog(@"%i,%i", height, width);
-    
+    if (fid)
+    {
+        int height = 0, width = 0;
+        fread(&height, sizeof(int), 1, fid);
+        fread(&width, sizeof(int), 1, fid);
+        int len = (width * height);
+        BYTE *pgrid = malloc(len * sizeof(BYTE) + 4);
+        fread(pgrid, sizeof(BYTE), len, fid);
+        fclose(fid);
+        
+        for (int i = 0; i < len; i++)
+        {
+            if (pgrid[i] > 0)
+                pgrid[i] *= 8;
+            
+            pgrid[i] = (255 - pgrid[i]);
+        }
+        
+        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
+        CFDataRef imageData = CFDataCreate(NULL, pgrid, len);
+        free(pgrid);
+        CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
+        
+        CGImageRef gridImageRef = CGImageCreate(width, height, 8, 8, width, colorspace,
+                                                kCGBitmapByteOrderDefault, provider,
+                                                NULL, YES, kCGRenderingIntentDefault);
+        CFRelease(imageData);
+        CGDataProviderRelease(provider);
+        CGColorSpaceRelease(colorspace);
+        UIImage *gridImage = [UIImage imageWithCGImage:gridImageRef];
+        _hotspotView = [[UIImageView alloc] initWithImage:gridImage];
+        _hotspotView.backgroundColor = UIColor.blackColor;
+        _hotspotView.contentMode = UIViewContentModeScaleAspectFit;
+        _hotspotView.translatesAutoresizingMaskIntoConstraints = NO;
+        _hotspotView.userInteractionEnabled = YES;
+        [self.view addSubview:_hotspotView];
+        
+        self.tabBarController.tabBar.hidden = YES;
+        
+        [_hotspotView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
+        
+        [_hotspotView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
+                                                  constant:self.tabBarController.tabBar.frame.size.height].active = YES;
+        
+        [_hotspotView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
+        [_hotspotView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+        
+        CGImageRelease(gridImageRef);
+    }
 }
 
 - (void)createGLView
@@ -86,7 +129,7 @@
 
 - (void)setUpGL
 {
-    UIImage *image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"brick_texture"
+    /*UIImage *image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"brick_texture"
                                                                                     ofType:@"png"]];
     
     NSError *error;
@@ -96,15 +139,15 @@
                                                              error:&error];
     
     if (!texture)
-        NSLog(@"ERROR loading texture: %@", error.localizedDescription);
+        NSLog(@"ERROR loading texture: %@", error.localizedDescription);*/
     
     _effect = [[GLKBaseEffect alloc] init];
     _effect.light0.enabled = GL_TRUE;
     _effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
-    _effect.texture2d0.enabled = GL_TRUE;
+    /*_effect.texture2d0.enabled = GL_TRUE;
     _effect.texture2d0.envMode = GLKTextureEnvModeReplace;
     _effect.texture2d0.name = texture.name;
-    _effect.texture2d0.target = texture.target;
+    _effect.texture2d0.target = texture.target;*/
     
     GLfloat gCubeVertexData[216] =
     {
@@ -213,8 +256,12 @@ EAGLContext *CreateBestEAGLContext()
         [_glView removeFromSuperview];
         _glView = nil;
         _effect = nil;
-        self.tabBarController.tabBar.hidden = NO;
     }
+    
+    else if ([self.view.subviews containsObject:_hotspotView])
+        [_hotspotView removeFromSuperview];
+    
+    self.tabBarController.tabBar.hidden = NO;
 }
 
 - (void)viewDidLoad
