@@ -285,6 +285,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
         configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
         configLayerZoom[HCConfigCrimes][HCLayerAerials] = 17;
+        configLayerZoom[HCConfigMapleGrove][HCLayerAerials] = 17;
         
         userAerials[HCConfigAlleyWalls] = YES;
         configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
@@ -390,6 +391,10 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                     
                 case HCLayerCurbRamps:
                     [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCurbRamp]];
+                    break;
+                    
+                case HCLayerMapleGroveFiber:
+                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingMapleGrove]];
                     break;
             }
         }

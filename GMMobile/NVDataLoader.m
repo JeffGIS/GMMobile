@@ -6,6 +6,7 @@
 #import "PropertyData.h"
 #import "BoundaryData.h"
 #import "AlleyWallData.h"
+#import "ShapeFileDisplay.h"
 
 
 @implementation NVDataLoader
@@ -137,6 +138,10 @@ Top:
             sel = @selector(loadAreas:);
             break;
             
+        case GetDatabaseSettingMapleGrove:
+            sel = @selector(loadMapleGrove);
+            break;
+            
         default:
             break;
     }
@@ -225,6 +230,20 @@ Top:
             
             if (pd.planDatasetVersion >= 0)
                 rtn = YES;
+        }
+            break;
+            
+        case GetDatabaseSettingMapleGrove:
+        {
+            NSString *fileName = @"swPressurePipe.shp";
+            NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
+            NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
+
+            NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+                rtn = YES;
+
         }
             break;
             
