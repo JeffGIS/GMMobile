@@ -51,20 +51,25 @@
         fread(pgrid, sizeof(BYTE), len, fid);
         fclose(fid);
         
+        BYTE *blueGrid = malloc((len * 4) * sizeof(BYTE) + 4);
+        
         for (int i = 0; i < len; i++)
         {
-            if (pgrid[i] > 0)
-                pgrid[i] *= 8;
-            
-            pgrid[i] = (255 - pgrid[i]);
+            int j = (i * 4);
+            BYTE rgVal = (255 - (pgrid[i] * 8));
+            blueGrid[j] = rgVal;
+            blueGrid[j + 1] = rgVal;
+            blueGrid[j + 2] = 255;
+            blueGrid[j + 3] = 255;
         }
         
-        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
-        CFDataRef imageData = CFDataCreate(NULL, pgrid, len);
         free(pgrid);
+        
+        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+        CFDataRef imageData = CFDataCreate(NULL, blueGrid, (len * 4));
         CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
         
-        CGImageRef gridImageRef = CGImageCreate(width, height, 8, 8, width, colorspace,
+        CGImageRef gridImageRef = CGImageCreate(width, height, 8, 32, (width * 4), colorspace,
                                                 kCGBitmapByteOrderDefault, provider,
                                                 NULL, YES, kCGRenderingIntentDefault);
         CFRelease(imageData);
