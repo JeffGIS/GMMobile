@@ -29,6 +29,8 @@
 @property (nonatomic) GLuint vertexArray, vertexBuffer, indexBuffer;
 @property (nonatomic) CGFloat rotation;
 @property (nonatomic) UIImageView *hotspotView;
+@property (nonatomic) vec3 *vecGrid;
+@property (nonatomic) int len;
 
 @end
 
@@ -46,14 +48,26 @@
         int height = 0, width = 0;
         fread(&height, sizeof(int), 1, fid);
         fread(&width, sizeof(int), 1, fid);
-        int len = (width * height);
-        BYTE *pgrid = malloc(len * sizeof(BYTE) + 4);
-        fread(pgrid, sizeof(BYTE), len, fid);
+        _len = (width * height);
+        BYTE *pgrid = malloc(_len * sizeof(BYTE) + 4);
+        fread(pgrid, sizeof(BYTE), _len, fid);
         fclose(fid);
         
-        BYTE *blueGrid = malloc((len * 4) * sizeof(BYTE) + 4);
+        _vecGrid = malloc(_len * sizeof(vec3) + 4);
         
-        for (int i = 0; i < len; i++)
+        for (int i = 0; i < _len; i++)
+        {
+            float column = floorf(i / (float)width);
+            float row = (float)(i - (column * width));
+            
+            _vecGrid[i].x = (float)(((row / (width - 1)) * 4.0) - 2.0);
+            _vecGrid[i].y = (float)(((column / (height - 1)) * 4.0) - 2.0);
+            _vecGrid[i].z = (float)((pgrid[i] / 31.0) - 0.5);
+        }
+        
+        /*BYTE *blueGrid = malloc((_len * 4) * sizeof(BYTE) + 4);
+        
+        for (int i = 0; i < _len; i++)
         {
             int j = (i * 4);
             BYTE rgVal = (255 - (pgrid[i] * 8));
@@ -61,12 +75,14 @@
             blueGrid[j + 1] = rgVal;
             blueGrid[j + 2] = 255;
             blueGrid[j + 3] = 255;
-        }
+        }*/
         
         free(pgrid);
         
-        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-        CFDataRef imageData = CFDataCreate(NULL, blueGrid, (len * 4));
+        [self createGLView];
+        
+        /*CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+        CFDataRef imageData = CFDataCreate(NULL, blueGrid, (_len * 4));
         
         free(blueGrid);
         
@@ -97,7 +113,7 @@
         [_hotspotView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
         [_hotspotView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
         
-        CGImageRelease(gridImageRef);
+        CGImageRelease(gridImageRef);*/
     }
 }
 
@@ -152,13 +168,16 @@
     
     _effect = [[GLKBaseEffect alloc] init];
     _effect.light0.enabled = GL_TRUE;
-    _effect.light0.diffuseColor = GLKVector4Make(1.0, 0.4, 0.4, 1.0);
+    _effect.light0.diffuseColor = GLKVector4Make(0.6, 0.6, 0.6, 1.0);
+    _effect.light0.ambientColor = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
+    _effect.material.emissiveColor = GLKVector4Make(0.6, 0.6, 0.6, 1.0);
+    _effect.material.ambientColor = GLKVector4Make(0.4, 0.4, 0.4, 1.0);
     /*_effect.texture2d0.enabled = GL_TRUE;
     _effect.texture2d0.envMode = GLKTextureEnvModeReplace;
     _effect.texture2d0.name = texture.name;
     _effect.texture2d0.target = texture.target;*/
     
-    GLfloat gCubeVertexData[216] =
+    /*GLfloat gCubeVertexData[216] =
     {
         1.0, -1.0, -1.0,         1.0,  0.0,  0.0,
         1.0,  1.0, -1.0,         1.0,  0.0,  0.0,
@@ -201,16 +220,25 @@
         1.0,  1.0, -1.0,         0.0,  0.0, -1.0,
        -1.0, -1.0, -1.0,         0.0,  0.0, -1.0,
        -1.0,  1.0, -1.0,         0.0,  0.0, -1.0
-    };
+    };*/
     
-    glEnable(GL_DEPTH_TEST);
+    /*glEnable(GL_DEPTH_TEST);
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(gCubeVertexData), gCubeVertexData, GL_STATIC_DRAW);
     glEnableVertexAttribArray(GLKVertexAttribPosition);
     glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(GLKVertexAttribNormal);
-    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));*/
+    
+    glEnable(GL_DEPTH_TEST);
+    glGenBuffers(1, &_vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, (sizeof(vec3) * _len), _vecGrid, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(GLKVertexAttribNormal);
+    glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 }
 
 EAGLContext *CreateBestEAGLContext()
@@ -232,8 +260,7 @@ EAGLContext *CreateBestEAGLContext()
      drawInRect:(CGRect)rect
 {
     CGFloat aspect = fabs(UIScreen.mainScreen.bounds.size.width / UIScreen.mainScreen.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective
-    (GLKMathDegreesToRadians(50.0), aspect, 0.1, 100.0);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(50.0), aspect, 0.1, 100.0);
     _effect.transform.projectionMatrix = projectionMatrix;
     
     GLKMatrix4 modelMatrix = GLKMatrix4MakeTranslation(0.0, 0.0, -7.0);
@@ -241,12 +268,12 @@ EAGLContext *CreateBestEAGLContext()
     _effect.transform.modelviewMatrix = modelMatrix;
     _rotation += 0.02;
     
-    glClearColor(0.6, 0.6, 0.65, 1.0);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     [_effect prepareToDraw];
     
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_POINTS, 0, (GLsizei)_len);
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches
@@ -256,6 +283,7 @@ EAGLContext *CreateBestEAGLContext()
     {
         [_displayLink invalidate];
         glDeleteBuffers(1, &_vertexBuffer);
+        free(_vecGrid);
         
         if (EAGLContext.currentContext == _context)
             EAGLContext.currentContext = nil;
