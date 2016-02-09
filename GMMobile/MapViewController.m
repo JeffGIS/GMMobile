@@ -416,7 +416,18 @@ typedef struct NVRegionQuadrants {
     
     if (!_firstTimeAppear)
         [self initTableView];
-    
+    _mapView.mapType = MKMapTypeStandard;
+    if ([ConfigurationControl.sharedInstance haveUserAerials])
+        _mapView.mapType = MKMapTypeStandard;
+    else
+    {
+        if (![ConfigurationControl.sharedInstance useMapTypeControl] &&
+             [ConfigurationControl.sharedInstance layer:HCLayerAerials
+                                          visibleAtZoom:CRAPI.sharedInstance.currentZoom
+                                                andPass:-1])
+            _mapView.mapType = MKMapTypeHybrid;
+    }
+
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
@@ -537,6 +548,7 @@ typedef struct NVRegionQuadrants {
         
         GMSCameraUpdate *camUpdate = [GMSCameraUpdate setTarget:_spreadsheetCoords
                                                            zoom:16.0];
+        [self setMapType];
         
         [_mapView moveCamera:camUpdate];
         _mapToolbar.hidden = YES;
@@ -705,6 +717,7 @@ typedef struct NVRegionQuadrants {
             GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                                      withPadding:0.0];
             
+            [self setMapType];
             [_mapView moveCamera:update];
             _pdfCount++;
         }
@@ -1911,6 +1924,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         if ([helpWebView isKindOfClass:HelpWebView.class])
             [self.view bringSubviewToFront:helpWebView];
     }
+    mapView.mapType = [self setMapType];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -1992,6 +2006,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (!_tableView.hidden)
         [_tableView reloadData];
     
+    [self setMapType];
     if (_rotateZoom)
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
     
@@ -2417,7 +2432,8 @@ haveVV:
     
     NSLog(@"Vector view start: zoom = %f", _vectorViewZoom);
     
-    if ([ConfigurationControl.sharedInstance layer:HCLayerAerials
+    if ([ConfigurationControl.sharedInstance haveUserAerials] &&
+        [ConfigurationControl.sharedInstance layer:HCLayerAerials
                                      visibleAtZoom:_vectorViewZoom
                                            andPass:AerialPass])
     {
@@ -2432,8 +2448,22 @@ haveVV:
         _layer_png.map = nil;
         ConfigurationControl.sharedInstance.GMTilesVisible = NO;
     }
-    
+
     [_vectorView setNeedsDisplay];
+}
+
+- (int)setMapType
+{
+    if (![ConfigurationControl.sharedInstance useMapTypeControl])
+    {
+        if  ([ConfigurationControl.sharedInstance layer:HCLayerAerials
+                                          visibleAtZoom:CRAPI.sharedInstance.currentZoom
+                                                andPass:-1])
+            _mapView.mapType = MKMapTypeHybrid;
+        else
+            _mapView.mapType = MKMapTypeStandard;
+    }
+    return _mapView.mapType;
 }
 
 - (void)highlightVectorView:(PickedItem *)pi
@@ -4348,6 +4378,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
              GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                                       withPadding:40.0];
              
+             [self setMapType];
              [_mapView moveCamera:update];
              [self updateMarkerPosition];
              
@@ -4421,6 +4452,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                                      withPadding:40.0];
             
+            [self setMapType];
             [_mapView moveCamera:update];
             [self updateMarkerPosition];
         }
@@ -4565,6 +4597,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                              withPadding:0.0];
     
+    [self setMapType];
     [_mapView moveCamera:update];
     _emailPDFAfterUpdate = YES;
     _pdfCount++;

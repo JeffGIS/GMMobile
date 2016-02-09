@@ -91,6 +91,8 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index;
 - (NSString *)getLayerName:(int)layerID;
 - (BOOL)layerInConfig:(HardCodedLayers)layerID;
+- (BOOL)haveUserAerials;
+- (BOOL)useMapTypeControl;
 
 - (void)setLayer:(HardCodedLayers)layerID
   visibileAtZoom:(NSInteger)zoom;

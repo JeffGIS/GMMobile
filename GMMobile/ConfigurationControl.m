@@ -11,6 +11,7 @@ static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
 //static BOOL layerPickable[NUMHardCodedLayers]={0};
 static CGFloat layerDefaultZoom[NUMHardCodedLayers]={0};
 static BOOL layerHasSymbols[NUMHardCodedLayers]={0};
+static BOOL userAerials[NUMHardCodedConfigs]={0};
 static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};
 static int  configLayers[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
@@ -209,7 +210,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantDigitize] = NO;
-        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantExtents] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantLegends] = NO;
@@ -263,7 +264,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigCrimes][HCLayerCurbRamps] = NO;
         configLayers[HCConfigCrimes][HCLayerCrimes] = YES;
         
-        configLayers[HCConfigMapleGrove][HCLayerAerials] = NO;
+        configLayers[HCConfigMapleGrove][HCLayerAerials] = YES;
         configLayers[HCConfigMapleGrove][HCLayerParcels] = YES;
         configLayers[HCConfigMapleGrove][HCLayerSewers] = YES;
         configLayers[HCConfigMapleGrove][HCLayerPlanimetric] = NO;
@@ -280,6 +281,12 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         }
         
         configLayerZoom[HCConfigAlleyWalls][HCLayerAerials] = 18;
+        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
+        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
+        configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
+        configLayerZoom[HCConfigCrimes][HCLayerAerials] = 17;
+        
+        userAerials[HCConfigAlleyWalls] = YES;
         configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
         configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
         configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
@@ -591,6 +598,14 @@ visibleAtZoom:(CGFloat)zoom
          
          return [lo1.layerName compare:lo2.layerName];
      }];
+}
+- (BOOL)haveUserAerials
+{
+    return userAerials[_currentApp];
+}
+- (BOOL)useMapTypeControl
+{
+    return configToobarSegs[_currentApp][MapToolbarPropertyWantMapType];
 }
 
 @end
