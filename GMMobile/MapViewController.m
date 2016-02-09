@@ -416,16 +416,19 @@ typedef struct NVRegionQuadrants {
     
     if (!_firstTimeAppear)
         [self initTableView];
-    _mapView.mapType = MKMapTypeStandard;
+    
+    _mapView.mapType = kGMSTypeNormal;
+    
     if ([ConfigurationControl.sharedInstance haveUserAerials])
-        _mapView.mapType = MKMapTypeStandard;
+        _mapView.mapType = kGMSTypeNormal;
+    
     else
     {
         if (![ConfigurationControl.sharedInstance useMapTypeControl] &&
              [ConfigurationControl.sharedInstance layer:HCLayerAerials
                                           visibleAtZoom:CRAPI.sharedInstance.currentZoom
                                                 andPass:-1])
-            _mapView.mapType = MKMapTypeHybrid;
+            _mapView.mapType = kGMSTypeHybrid;
     }
 
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
@@ -1924,6 +1927,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         if ([helpWebView isKindOfClass:HelpWebView.class])
             [self.view bringSubviewToFront:helpWebView];
     }
+    
     mapView.mapType = [self setMapType];
 }
 
@@ -2007,6 +2011,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [_tableView reloadData];
     
     [self setMapType];
+    
     if (_rotateZoom)
         [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
     
@@ -2459,10 +2464,14 @@ haveVV:
         if  ([ConfigurationControl.sharedInstance layer:HCLayerAerials
                                           visibleAtZoom:CRAPI.sharedInstance.currentZoom
                                                 andPass:-1])
-            _mapView.mapType = MKMapTypeHybrid;
+        {
+            _mapView.mapType = kGMSTypeHybrid;
+        }
+        
         else
-            _mapView.mapType = MKMapTypeStandard;
+            _mapView.mapType = kGMSTypeNormal;
     }
+    
     return _mapView.mapType;
 }
 
@@ -4131,20 +4140,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     return 20.0;
-}
-
-- (IBAction)toggleMapType:(UISegmentedControl *)segmentedControl
-{
-    switch (segmentedControl.selectedSegmentIndex)
-    {
-        case 0:
-            _mapView.mapType = MKMapTypeStandard;
-            break;
-            
-        case 1:
-            _mapView.mapType = MKMapTypeHybrid;
-            break;
-    }
 }
 
 - (BOOL)isHennepinCountyPID:(NSString *)PID
