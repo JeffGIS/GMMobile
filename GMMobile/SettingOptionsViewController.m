@@ -343,7 +343,7 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Test PDF Reader Core", @"Test OpenGLES", @"Draw hotspottest.bin" /*, @"Test Compression & Upload"*/];
+                  @"Test PDF Reader Core", /*@"Test OpenGLES",*/ @"Draw hotspottest.bin" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
