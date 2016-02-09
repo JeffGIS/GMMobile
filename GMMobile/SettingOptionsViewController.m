@@ -33,6 +33,22 @@
 
 @implementation SettingOptionsViewController
 
+- (void)setupHotspotTest
+{
+    const char *filepath = [NSBundle.mainBundle pathForResource:@"hotspottest"
+                                                       ofType:@"bin"].UTF8String;
+    
+    int height = 0, width = 0;
+    
+    FILE *fid = fopen(filepath, "rb");
+    fread(&height, sizeof(int), 1, fid);
+    fread(&width, sizeof(int), 1, fid);
+    fclose(fid);
+    
+    NSLog(@"%i,%i", height, width);
+    
+}
+
 - (void)createGLView
 {
     _context = CreateBestEAGLContext();
@@ -243,7 +259,7 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Test PDF Reader Core", @"Test OpenGLES" /*, @"Test Compression & Upload"*/];
+                  @"Test PDF Reader Core", @"Test OpenGLES", @"Draw hotspottest.bin" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -431,6 +447,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Test OpenGLES"])
     {
         [self createGLView];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Draw hotspottest.bin"])
+    {
+        [self setupHotspotTest];
     }
 }
 

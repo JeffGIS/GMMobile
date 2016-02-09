@@ -78,6 +78,7 @@
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		6998225B1C6850C9003476DD /* brick_texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 6998225A1C6850C9003476DD /* brick_texture.png */; };
+		699822611C69734F003476DD /* hotspottest.bin in Resources */ = {isa = PBXBuildFile; fileRef = 699822601C69734F003476DD /* hotspottest.bin */; };
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
@@ -305,6 +306,7 @@
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		6998225A1C6850C9003476DD /* brick_texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = brick_texture.png; sourceTree = "<group>"; };
+		699822601C69734F003476DD /* hotspottest.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = hotspottest.bin; sourceTree = "<group>"; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
@@ -861,6 +863,7 @@
 			isa = PBXGroup;
 			children = (
 				694FB1801C5882D7005410F6 /* PDFReaderCore */,
+				699822601C69734F003476DD /* hotspottest.bin */,
 				A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */,
 				A97B727F1ADB5D4B001ACFAE /* beep.mp3 */,
 				A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */,
@@ -1036,6 +1039,7 @@
 				694FB1EA1C588363005410F6 /* Reader-Print@3x.png in Resources */,
 				69352E511C1A7D57009A486B /* grayscale.png in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
+				699822611C69734F003476DD /* hotspottest.bin in Resources */,
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
