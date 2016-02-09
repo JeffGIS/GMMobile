@@ -37,7 +37,7 @@
 - (void)setupHotspotTest
 {
     const char *filepath = [NSBundle.mainBundle pathForResource:@"hotspottest"
-                                                       ofType:@"bin"].UTF8String;
+                                                         ofType:@"bin"].UTF8String;
     
     FILE *fid = fopen(filepath, "rb");
     
@@ -67,11 +67,15 @@
         
         CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
         CFDataRef imageData = CFDataCreate(NULL, blueGrid, (len * 4));
+        
+        free(blueGrid);
+        
         CGDataProviderRef provider = CGDataProviderCreateWithCFData(imageData);
         
         CGImageRef gridImageRef = CGImageCreate(width, height, 8, 32, (width * 4), colorspace,
                                                 kCGBitmapByteOrderDefault, provider,
                                                 NULL, YES, kCGRenderingIntentDefault);
+        
         CFRelease(imageData);
         CGDataProviderRelease(provider);
         CGColorSpaceRelease(colorspace);
