@@ -366,6 +366,9 @@ typedef struct NVRegionQuadrants {
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
+    
+    if (_tableView)
+        [self deselectTableViewRow];
 }
 
 - (void)viewWillAppear:(BOOL)animated
