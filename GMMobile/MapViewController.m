@@ -93,28 +93,22 @@ typedef struct NVRegionQuadrants {
     [super viewDidLoad];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"FieldOptionsVC"
-                          animated:NO];
+        removeViewControllerWithID:@"FieldOptionsVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"DestinationsVC"
-                          animated:NO];
+        removeViewControllerWithID:@"DestinationsVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"SpreadsheetVC"
-                          animated:NO];
+        removeViewControllerWithID:@"SpreadsheetVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CurbRampDataOptionsVC"
-                          animated:NO];
+        removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"MGThemesVC"
-                          animated:NO];
+        removeViewControllerWithID:@"MGThemesVC"];
     
     [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CrimeDataOptionsVC"
-                          animated:NO];
+        removeViewControllerWithID:@"CrimeDataOptionsVC"];
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -879,38 +873,68 @@ typedef struct NVRegionQuadrants {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
-        UIViewController *crisDataVC = [storyboard instantiateViewControllerWithIdentifier:@"CurbRampDataOptionsVC"];
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
+        
+        UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:crisDataVC
-                               atIndex:1
-                              animated:YES];
+                  insertViewController:cdvc
+                               atIndex:1];
+        
+        UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+           replaceViewControllerWithID:@"FieldOptionsVC"
+                    withViewController:findvc];
+        
+        UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+           replaceViewControllerWithID:@"DestinationsVC"
+                    withViewController:avc];
+    }
+    
+    else
+    {
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"SpreadsheetVC"];
+        
+        UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:lvc
+                               atIndex:1];
+    }
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
+    {
+        UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"CurbRampDataOptionsVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:cdvc
+                               atIndex:1];
     }
     
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CurbRampDataOptionsVC"
-                              animated:YES];
+            removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
-        UIViewController *mgThemesVC = [storyboard instantiateViewControllerWithIdentifier:@"MGThemesVC"];
+        UIViewController *mgtvc = [storyboard instantiateViewControllerWithIdentifier:@"MGThemesVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:mgThemesVC
-                               atIndex:1
-                              animated:YES];
+                  insertViewController:mgtvc
+                               atIndex:1];
     }
     
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"MGThemesVC"
-                              animated:YES];
+            removeViewControllerWithID:@"MGThemesVC"];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
@@ -927,26 +951,22 @@ typedef struct NVRegionQuadrants {
         
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:nvpc
-                               atIndex:1
-                              animated:YES];
+                               atIndex:1];
         
         UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:crimeOptionsVC
-                               atIndex:1
-                              animated:YES];
+                               atIndex:2];
     }
     
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"NVPageController"
-                              animated:YES];
+            removeViewControllerWithID:@"NVPageController"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CrimeDataOptionsVC"
-                              animated:NO];
+            removeViewControllerWithID:@"CrimeDataOptionsVC"];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
@@ -1029,36 +1049,6 @@ typedef struct NVRegionQuadrants {
                  [tlmos removeFromSuperview];
         }
     }
-    
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
-    {
-        UIViewController *ssvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-           replaceViewControllerWithID:@"LayersVC"
-                    withViewController:ssvc];
-    }
-    
-    else
-    {
-        UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-           replaceViewControllerWithID:@"SpreadsheetVC"
-                    withViewController:lvc];
-    }
-    
-    UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-       replaceViewControllerWithID:@"FieldOptionsVC"
-                withViewController:findvc];
-    
-    UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-       replaceViewControllerWithID:@"DestinationsVC"
-                withViewController:avc];
     
     [_mapToolbar configure:_screenSetting];
     
