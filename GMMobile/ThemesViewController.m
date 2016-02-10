@@ -175,7 +175,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [_nvdl loadNVData:_selectedApp
                   popover:_popover];
+        
+        CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+        
+        [self performSelector:@selector(selectMapVC)
+                   withObject:nil
+                   afterDelay:0.25];
     }
+}
+
+- (void)selectMapVC
+{
+    self.tabBarController.selectedIndex = 0;
 }
 
 - (void)NVDataLoaderFailed:(int)status

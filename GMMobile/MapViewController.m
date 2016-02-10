@@ -1305,6 +1305,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         BoundaryData *bd = [[BoundaryData alloc]init];
+        
         if ([bd pickBoundaryArea:llpickPt] == 1)
             [self extentZoom];
         
