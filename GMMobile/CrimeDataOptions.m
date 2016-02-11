@@ -18,9 +18,9 @@
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
-@property (nonatomic) NSArray *legends, *modes;
-@property NSInteger selectedLegend, selectedMode;
-@property (nonatomic, copy) NSString *selectedAreaType;
+@property (nonatomic) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes, *currentArray;
+@property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode;
+@property NVMapModeType selectedModeType;
 
 @end
 
@@ -31,7 +31,6 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _selectedLegend = _selectedMode = 0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -63,13 +62,22 @@
                  @"Auto Theft/Recovery", @"Luring Related Offenses", @"Animal Related Offenses",
                  @"Bike Theft", @"Phone Theft", @"Crisis Related"];
     
-    _modes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals",
-               @"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare", @"Hotspot Map for Month with Monthly Compare",
-               @"Hotspot Map for Week with Weekly Compare",
-               @"Basic Choropleth Map for Precincts", @"Choropleth Map for Precincts by Year",@"Choropleth Map for Precincts by Month",
-               @"Basic Choropleth Map for Wards", @"Choropleth Map for Wards by Year",@"Choropleth Map for Wards by Month",
-               @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",@"Choropleth Map for Sectors by Month",
-               @"Basic Choropleth Map for Neighborhoods",@"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+    _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Choropleth Map"];
+    
+    _pinModes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals"];
+    
+    _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare", @"Hotspot Map for Month with Monthly Compare",
+                      @"Hotspot Map for Week with Weekly Compare"];
+    
+    _choroplethModes = @[@"Basic Choropleth Map for Precincts", @"Choropleth Map for Precincts by Year",@"Choropleth Map for Precincts by Month",
+                         @"Basic Choropleth Map for Wards", @"Choropleth Map for Wards by Year",@"Choropleth Map for Wards by Month",
+                         @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",@"Choropleth Map for Sectors by Month",
+                         @"Basic Choropleth Map for Neighborhoods",@"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+    
+    _modes = @[_pinModes, _hotspotModes, _choroplethModes];
+    _currentArray = _modeTypes;
+    _selectedLegend = _legends[0];
+    _selectedMode = _modes[0][0];
     
     _modeButton.selected = YES;
     _areaTypeButton.selected = NO;
@@ -84,10 +92,10 @@
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
     
-    [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _legends[_selectedLegend]]
+    [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _selectedLegend]
                    forState:UIControlStateNormal];
     
-    [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _modes[_selectedMode]]
+    [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
                  forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
@@ -231,6 +239,7 @@ didReturnFromDate:(NSInteger)fromDate
         _legendButton.selected = YES;
         _areaTypeButton.selected = NO;
         _modeButton.selected = NO;
+        _currentArray = _legends;
         
         [self updateButtons];
         [_tableView reloadData];
@@ -244,8 +253,15 @@ didReturnFromDate:(NSInteger)fromDate
         _modeButton.selected = YES;
         _areaTypeButton.selected = NO;
         _legendButton.selected = NO;
+        _currentArray = _modeTypes;
         
         [self updateButtons];
+        [_tableView reloadData];
+    }
+    
+    else if (_currentArray != _modeTypes)
+    {
+        _currentArray = _modeTypes;
         [_tableView reloadData];
     }
 }
@@ -253,11 +269,7 @@ didReturnFromDate:(NSInteger)fromDate
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    if (_legendButton.selected)
-        return _legends.count;
-    
-    else
-        return _modes.count;
+    return _currentArray.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView
@@ -288,11 +300,11 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
     
-    if (_areaTypeButton.selected)
-        headerLabel.text = @"Select Bounding Area";
-    
-    else if (_legendButton.selected)
+    if (_currentArray == _legends)
         headerLabel.text = @"Select Legend";
+    
+    else if (_currentArray == _modeTypes)
+        headerLabel.text = @"Select Mode Type";
     
     else
         headerLabel.text = @"Select Mode";
@@ -314,28 +326,27 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
-    if (_legendButton.selected)
+    if (_currentArray == _modeTypes)
     {
-        cell.textLabel.text = _legends[indexPath.row];
-        
-        if (indexPath.row == _selectedLegend)
-            cell.accessoryView = _checkmarkView;
-        
-        else
-            cell.accessoryView = nil;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryView = nil;
     }
     
     else
     {
-        cell.textLabel.text = _modes[indexPath.row];
+        cell.accessoryType = UITableViewCellAccessoryNone;
         
-        if (indexPath.row == _selectedMode)
+        if ([_currentArray[indexPath.row] isEqualToString:_selectedLegend] ||
+            [_currentArray[indexPath.row] isEqualToString:_selectedMode])
+        {
             cell.accessoryView = _checkmarkView;
+        }
         
         else
             cell.accessoryView = nil;
     }
     
+    cell.textLabel.text = _currentArray[indexPath.row];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.textColor = UIColor.blackColor;
     cell.userInteractionEnabled = YES;
@@ -350,34 +361,50 @@ viewForHeaderInSection:(NSInteger)section
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (_legendButton.selected)
+    if (_currentArray == _legends)
     {
-        _selectedLegend = indexPath.row;
+        _selectedLegend = _legends[indexPath.row];
         
-        [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _legends[_selectedLegend]]
+        [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _selectedLegend]
                        forState:UIControlStateNormal];
+    }
+    
+    else if (_currentArray == _modeTypes)
+    {
+        _currentArray = _modes[indexPath.row];
+        _selectedModeType = (NVMapModeType)indexPath.row;
     }
     
     else
     {
-        _selectedMode = indexPath.row;
-        NSString * mode = [_modes[_selectedMode] uppercaseString];
-        if ([mode containsString:@"PIN"])
+        _selectedMode = _modes[_selectedModeType][indexPath.row];
+        NSString *uppercaseMode = _selectedMode.uppercaseString;
+        
+        if ([uppercaseMode containsString:@"PIN"])
             CRAPI.sharedInstance.crimeMode = PINMAP;
-        if ([mode containsString:@"CHOROPLETH"])
+        
+        else if ([uppercaseMode containsString:@"CHOROPLETH"])
             CRAPI.sharedInstance.crimeMode = CHOROPLETH;
-        if ([mode containsString:@"HOTSPOT"])
+        
+        else if ([uppercaseMode containsString:@"HOTSPOT"])
             CRAPI.sharedInstance.crimeMode = HOTSPOT;
-        if ([mode containsString:@"PRECINCTS"])
+        
+        else if ([uppercaseMode containsString:@"PRECINCTS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Precincts";
-        if ([mode containsString:@"NEIGHBORHOODS"])
+        
+        else if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
-        if ([mode containsString:@"WARDS"])
+        
+        else if ([uppercaseMode containsString:@"WARDS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Wards";
-        if ([mode containsString:@"SECTORS"])
+        
+        else if ([uppercaseMode containsString:@"SECTORS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
-        [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _modes[_selectedMode]]
+        
+        [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
                      forState:UIControlStateNormal];
+        
+        _currentArray = _modeTypes;
     }
     
     [_tableView reloadData];
