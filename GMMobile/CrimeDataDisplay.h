@@ -21,7 +21,7 @@
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property int processingID;
-@property int zoom;
+@property CGFloat zoom;
 @property int minUCR, maxUCR;
 
 -(void)displayCrimePoints:(CGContextRef)context

@@ -2453,7 +2453,8 @@ haveVV:
 
 - (int)setMapType
 {
-    if (![ConfigurationControl.sharedInstance useMapTypeControl])
+    if (![ConfigurationControl.sharedInstance haveUserAerials] &&
+        ![ConfigurationControl.sharedInstance useMapTypeControl])
     {
         if  ([ConfigurationControl.sharedInstance layer:HCLayerAerials
                                           visibleAtZoom:CRAPI.sharedInstance.currentZoom

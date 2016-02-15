@@ -215,7 +215,7 @@ NextPass:
             controlNbr = sqlite3_column_int(statement,0);
             Point.x = sqlite3_column_int(statement,1);
             Point.y = sqlite3_column_int(statement,2);
-            int seq = sqlite3_column_int(statement,3);
+            int seq = sqlite3_column_int(statement,3)+1;
             PointSymbols sym = sqlite3_column_int(statement,4);
             CGFloat size = sqlite3_column_double(statement,5);
             CGColorRef clr = (CGColorRef)sqlite3_column_int64(statement,6);
@@ -227,7 +227,8 @@ NextPass:
                          atPoint:&BasePt
                      usingSymbol:sym
                        withColor:clr
-                         andSize:size];
+                         andSize:size
+                       dispersed:seq > 1];
         }
         SQLOK(sqlite3_finalize(statement), _cd.database);
     }
@@ -267,6 +268,7 @@ NextPass:
            usingSymbol:(PointSymbols)sym
              withColor:(CGColorRef)color
                andSize:(CGFloat)size
+             dispersed:(BOOL)dispersed
 
 {
     
@@ -276,7 +278,7 @@ NextPass:
                                      Size:size
                                 fillColor:color
                                 lineColor:0
-                                lineWidth:2];
+                                lineWidth:dispersed ? -2 : 2];
 
 }
 
@@ -409,8 +411,8 @@ POINT AddjustPointLoc (POINT Point,float Size,int Sequence)
             goto Top;
         }
         shiftdist = shift * 0.25 * Size;	
-        Point.x += IDNINT (xmove * Size*1.2 + shiftdist);
-        Point.y += IDNINT (-ymove * Size*1.2 + shiftdist);
+        Point.x += IDNINT (xmove * Size*1.1 + shiftdist);
+        Point.y += IDNINT (ymove * Size*1.1 + shiftdist);
         {
 #if ENABLETRACE
             GSSiExitProg (1331);
