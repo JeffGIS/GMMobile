@@ -63,7 +63,7 @@
 {
     NSString *query;
     sqlite3_stmt *statement = NULL;
-    DPOINT BasePt;
+    DPOINT BasePt[2];
     //int UCR;
     int controlNbr = 0;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
@@ -81,7 +81,7 @@
     int iPass = 1;
 
     if (_zoom > 14)
-        sizeFactor += _zoom - 14;
+        sizeFactor += _zoom - 15;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     [_cd open];
     [_cd startTransaction];
@@ -106,7 +106,7 @@ usingPointInArea:pia
     }
     
     if (![self continue])
-        return;
+        goto Exit;
 
 NextPass:
     if (_mode == HOTSPOT)
@@ -151,10 +151,10 @@ NextPass:
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 controlNbr = sqlite3_column_int(statement,0);
-                BasePt.x = sqlite3_column_double(statement,1);
-                BasePt.y = sqlite3_column_double(statement,2);
+                BasePt[0].x = sqlite3_column_double(statement,1);
+                BasePt[0].y = sqlite3_column_double(statement,2);
                 offense = (LPSTR)sqlite3_column_text(statement,3);
-                dc.dPoint = BasePt;
+                dc.dPoint = BasePt[0];
                 dc.UCR = sqlite3_column_int(statement,4);
                 dc.itemBeginTime = sqlite3_column_int(statement,5);
                 [CRAPI.sharedInstance updateProgress:tot
@@ -168,11 +168,11 @@ NextPass:
                 dc.string2 = [NSString stringWithUTF8String:dept];
                 dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
                 size = 25;
-                if ((!pia || [pia DPointInArea:&BasePt]) &&
+                if ((!pia || [pia DPointInArea:BasePt]) &&
                     [themes setDisplayCharacteristics:dc
                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                 {
-                    DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+                    DPOINT llpoint = TranDPOINT(BasePt, _pTranLLtoView);
                     if (_mode == PINMAP)
                     {
                         [dp addPoint:&llpoint
@@ -203,28 +203,34 @@ NextPass:
         goto NextPass;
     
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
-    if (_mode == PINMAP)
+    if (![self continue])
+        ;
+    else if (_mode == PINMAP)
     {
         query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Sequence,Symbol,Size,Color FROM DISPERSE"];
         SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
-            POINT Point;
+            POINT Point, origPoint;
             static BOOL doDisperse = TRUE;
             controlNbr = sqlite3_column_int(statement,0);
             Point.x = sqlite3_column_int(statement,1);
             Point.y = sqlite3_column_int(statement,2);
+            origPoint = Point;
             int seq = sqlite3_column_int(statement,3)+1;
             PointSymbols sym = sqlite3_column_int(statement,4);
             CGFloat size = sqlite3_column_double(statement,5);
             CGColorRef clr = (CGColorRef)sqlite3_column_int64(statement,6);
             if (doDisperse)
                 Point = AddjustPointLoc (Point,size,seq);
-            BasePt.x = Point.x;
-            BasePt.y = Point.y;
+            BasePt[0].x = Point.x;
+            BasePt[0].y = Point.y;
+            BasePt[1].x = origPoint.x;
+            BasePt[1].y = origPoint.y;
             [self drawCrimePoint:context
-                         atPoint:&BasePt
+                         atPoint:BasePt
+                       origPoint:&origPoint
                      usingSymbol:sym
                        withColor:clr
                          andSize:size
@@ -260,11 +266,79 @@ NextPass:
         if (dump)
             [hs dump:@"hotspottest"];
     }
+Exit:
     [_cd close];
 }
 
+/*- (int)pickCrimePoint:(LLPOINT *)pt
+        highlightList:(NSMutableArray*)hlist
+{
+    if (![ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                      visibleAtZoom:_zoom
+                                            andPass:PickPass])
+        return 0;
+    
+    NSString *minPID = [[NSString alloc] init];
+    CGFloat d, mind = DBL_MAX;
+    DPOINT p1, p2, minpt;
+    int minref = 0;
+    int npicked = 0;
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
+    BOOL opened = [_cd open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 34);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int refno = sqlite3_column_int(statement, 0);
+        LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 1);
+        CGFloat lat = sqlite3_column_double(statement, 2);
+        CGFloat lon = sqlite3_column_double(statement, 3);
+        p2.x = lon;
+        p2.y = lat;
+        d = ArcDistance(p1, p2);
+        
+        if (d < mind)
+        {
+            npicked++;
+            minref = refno;
+            mind = d;
+            minpt = p2;
+            minPID = [NSString stringWithUTF8String:cpid];
+        }
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), _database, 35);
+    [self close:opened];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    if (npicked)
+    {
+        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTPid;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minPID;
+        pi.symbolName = @"PARCEL";
+        pi.refno = minref;
+        [hlist addObject:pi];
+    }
+    return npicked;
+}*/
+
+
 - (void)drawCrimePoint:(CGContextRef)context
                atPoint:(DPOINT *)pPoint
+             origPoint:(POINT *)origPoint
            usingSymbol:(PointSymbols)sym
              withColor:(CGColorRef)color
                andSize:(CGFloat)size
@@ -411,8 +485,8 @@ POINT AddjustPointLoc (POINT Point,float Size,int Sequence)
             goto Top;
         }
         shiftdist = shift * 0.25 * Size;	
-        Point.x += IDNINT (xmove * Size*1.1 + shiftdist);
-        Point.y += IDNINT (ymove * Size*1.1 + shiftdist);
+        Point.x += IDNINT (xmove * Size + shiftdist);
+        Point.y += IDNINT (ymove * Size + shiftdist);
         {
 #if ENABLETRACE
             GSSiExitProg (1331);
@@ -423,7 +497,6 @@ POINT AddjustPointLoc (POINT Point,float Size,int Sequence)
     }
 #endif
 } 
-
 
 @end
 

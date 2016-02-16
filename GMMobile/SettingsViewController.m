@@ -253,6 +253,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         else if (option == GetDatabaseSettingCrimes)
                         {
                             crimed = [[CrimeData alloc] init];
+                            [crimed clear];
                             [crimed open];
                         }
                         else if (option == GetDatabaseSettingCurbRamp)
