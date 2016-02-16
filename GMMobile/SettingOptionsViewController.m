@@ -550,7 +550,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)testCalendar
 {
-    NVCalendarVC *calendarVC = [[NVCalendarVC alloc] init];
+    NVCalendarVC *calendarVC = [[NVCalendarVC alloc] initWithCalendarName:@"TestCalendar"];
     
     [self presentViewController:calendarVC
                        animated:YES
