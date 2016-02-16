@@ -11,6 +11,7 @@
 #import "ReaderViewController.h"
 @import MediaPlayer;
 @import GLKit;
+#import "CCodeLibrary/NVCalendarVC.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -343,7 +344,8 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Test PDF Reader Core", /*@"Test OpenGLES",*/ @"Draw hotspottest.bin" /*, @"Test Compression & Upload"*/];
+                  @"Test PDF Reader Core", @"Test Calendar Interface",/*@"Test OpenGLES",*/
+                  @"Draw hotspottest.bin" /*, @"Test Compression & Upload"*/];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -538,6 +540,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self setupHotspotTest];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test Calendar Interface"])
+    {
+        [self testCalendar];
+    }
+}
+
+- (void)testCalendar
+{
+    NVCalendarVC *calendarVC = [[NVCalendarVC alloc] init];
+    
+    [self presentViewController:calendarVC
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
