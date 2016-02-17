@@ -55,6 +55,7 @@ typedef struct NVRegionQuadrants {
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
+@property NSInteger selectedCrime;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
@@ -1315,25 +1316,35 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
     else
     {
-        LLPOINT llpickPt, llSewerPt, llPropPt;
+        LLPOINT llpickPt, llSewerPt, llPropPt, llCrimePt;
         //CGFloat dist;
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         llPropPt = llpickPt;
         llSewerPt = llpickPt;
+        llCrimePt = llpickPt;
         CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
-        
+        CGPoint screenCoord = [_mapView.projection pointForCoordinate:coordinate];
+
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
         PlanimetricData *planData = [[PlanimetricData alloc] init];
-        
+        DispersePoint *dp = [[DispersePoint alloc]init];
         sewerData.zoom = _mapView.camera.zoom;
         propData.zoom = _mapView.camera.zoom;
         planData.zoom = _mapView.camera.zoom;
         
         [propData pickPID:&llPropPt
             highlightList:highlightList];
+        
+        if ([ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                         visibleAtZoom:_vectorViewZoom
+                                               andPass:PickPass])
+        {
+            [dp pickDispersedPoint:&llCrimePt
+                   highlightList:highlightList];
+        }
         
         if ([ConfigurationControl.sharedInstance layer:HCLayerSewers
                                          visibleAtZoom:_vectorViewZoom
@@ -1380,6 +1391,19 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             switch (pi.itemType)
             {
+                case PTCrime:
+                {
+                    _selectedCrime = pi.refno;
+                    marker.snippet = pi.identifier;
+                    NSDateFormatter *dateFormatter = NSDateFormatter.new;
+                    dateFormatter.timeStyle = NSDateFormatterShortStyle;
+                    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+                    NSString *dateString = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:pi.time]];
+                    marker.title = dateString;
+                    _infoWindow.type = marker.type = MarkerInfoWindowTypeCrime;
+                }
+                    break;
+                    
                 case PTAlleyLine:
                     _selectedAlleySeg = pi.identifier;
                     marker.title = _selectedAlleySeg;

@@ -49,6 +49,7 @@
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     _pTranLLtoView = STRANCornersToBounds(corners, pvbounds);
+    _pTranViewtoLL = STRANBoundsToCorners(corners, pvbounds);
 }
 
 
@@ -90,7 +91,8 @@
     {
         dp = [DispersePoint initWithWidth:MNMXCORDWidth(pvbounds)
                                    Height:MNMXCORDHeight(pvbounds)
-                              andDatabase:_cd];
+                                     tran1:_pTranLLtoView
+                                     tran2:_pTranViewtoLL];
     }
     else if (_mode == CHOROPLETH)
     {
@@ -114,7 +116,8 @@ NextPass:
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
                            NumGrids:1
-                          PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32];
+                          PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
+                               tran:_pTranLLtoView];
     }
    
     numUCRRanges  = [themes getNumUCRRanges];
@@ -177,6 +180,8 @@ NextPass:
                     {
                         [dp addPoint:&llpoint
                           controlNbr:controlNbr
+                                time:dc.itemBeginTime
+                             offense:dc.string1
                          usingSymbol:dc.pointSymbol
                            withColor:dc.color.CGColor
                              andSize:(size * sizeFactor)];
@@ -207,23 +212,22 @@ NextPass:
         ;
     else if (_mode == PINMAP)
     {
-        query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Sequence,Symbol,Size,Color FROM DISPERSE"];
-        SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+        query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,DispersedX,DispersedY,Sequence,Symbol,Size,Color FROM DISPERSE"];
+        SQLOK(sqlite3_prepare_v2(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
             POINT Point, origPoint;
             static BOOL doDisperse = TRUE;
             controlNbr = sqlite3_column_int(statement,0);
-            Point.x = sqlite3_column_int(statement,1);
-            Point.y = sqlite3_column_int(statement,2);
-            origPoint = Point;
-            int seq = sqlite3_column_int(statement,3)+1;
-            PointSymbols sym = sqlite3_column_int(statement,4);
-            CGFloat size = sqlite3_column_double(statement,5);
-            CGColorRef clr = (CGColorRef)sqlite3_column_int64(statement,6);
-            if (doDisperse)
-                Point = AddjustPointLoc (Point,size,seq);
+            origPoint.x = sqlite3_column_int(statement,1);
+            origPoint.y = sqlite3_column_int(statement,2);
+            Point.x = sqlite3_column_int(statement,3);
+            Point.y = sqlite3_column_int(statement,4);
+            int seq = sqlite3_column_int(statement,5)+1;
+            PointSymbols sym = sqlite3_column_int(statement,6);
+            CGFloat size = sqlite3_column_double(statement,7);
+            CGColorRef clr = (CGColorRef)sqlite3_column_int64(statement,8);
             BasePt[0].x = Point.x;
             BasePt[0].y = Point.y;
             BasePt[1].x = origPoint.x;
@@ -236,7 +240,9 @@ NextPass:
                          andSize:size
                        dispersed:seq > 1];
         }
-        SQLOK(sqlite3_finalize(statement), _cd.database);
+        if ([self continue])
+            [dp commitTransaction];
+        SQLOK(sqlite3_finalize(statement), dp.database);
     }
     else if (_mode == CHOROPLETH)
     {
@@ -270,71 +276,6 @@ Exit:
     [_cd close];
 }
 
-/*- (int)pickCrimePoint:(LLPOINT *)pt
-        highlightList:(NSMutableArray*)hlist
-{
-    if (![ConfigurationControl.sharedInstance layer:HCLayerCrimes
-                                      visibleAtZoom:_zoom
-                                            andPass:PickPass])
-        return 0;
-    
-    NSString *minPID = [[NSString alloc] init];
-    CGFloat d, mind = DBL_MAX;
-    DPOINT p1, p2, minpt;
-    int minref = 0;
-    int npicked = 0;
-    
-    p1.x = pt->lon;
-    p1.y = pt->lat;
-    minpt = p1;
-    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    BOOL opened = [_cd open];
-    
-    NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
-                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
-    
-    sqlite3_stmt *statement = NULL;
-    
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 34);
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        int refno = sqlite3_column_int(statement, 0);
-        LPSTR cpid = (LPSTR)sqlite3_column_text(statement, 1);
-        CGFloat lat = sqlite3_column_double(statement, 2);
-        CGFloat lon = sqlite3_column_double(statement, 3);
-        p2.x = lon;
-        p2.y = lat;
-        d = ArcDistance(p1, p2);
-        
-        if (d < mind)
-        {
-            npicked++;
-            minref = refno;
-            mind = d;
-            minpt = p2;
-            minPID = [NSString stringWithUTF8String:cpid];
-        }
-    }
-    
-    SQLOKpd(sqlite3_finalize(statement), _database, 35);
-    [self close:opened];
-    pt->lon = minpt.x;
-    pt->lat = minpt.y;
-    if (npicked)
-    {
-        PickedItem *pi = [[PickedItem alloc]init];
-        pi.itemType = PTPid;
-        pi.distance = mind;
-        pi.pickedPoint = minpt;
-        pi.identifier = minPID;
-        pi.symbolName = @"PARCEL";
-        pi.refno = minref;
-        [hlist addObject:pi];
-    }
-    return npicked;
-}*/
-
 
 - (void)drawCrimePoint:(CGContextRef)context
                atPoint:(DPOINT *)pPoint
@@ -356,147 +297,6 @@ Exit:
 
 }
 
-
-POINT AddjustPointLoc (POINT Point,float Size,int Sequence)
-#if ENABLETRACE
-{GSSiEnterProg (1331);
-#endif
-    {
-        short	xmove, ymove, shift=0;
-        float	shiftdist;
-        
-        if (Sequence <= 1)
-        {
-#if ENABLETRACE
-            GSSiExitProg (1331);
-#endif
-            return Point;
-        }
-    Top:
-        if (Sequence == 1)
-        {
-            xmove = 0;
-            ymove = 0;
-        }
-        else if (Sequence < 4)
-        {
-            xmove = -1;
-            ymove = Sequence - 2;
-        }
-        else if (Sequence < 6)
-        {
-            ymove = 1;
-            xmove = Sequence - 4;
-        }
-        else if (Sequence < 8)
-        {
-            xmove = 1;
-            ymove = -(Sequence - 6);
-        }
-        else if (Sequence < 10)
-        {
-            ymove = -1;
-            xmove = -(Sequence - 8);
-        }
-        else if (Sequence < 14)
-        {
-            xmove = -2;
-            ymove = Sequence - 11;
-        }
-        else if (Sequence < 18)
-        {
-            ymove = 2;
-            xmove = Sequence - 15;
-        }
-        else if (Sequence < 22)
-        {
-            xmove = 2;
-            ymove = -(Sequence - 19);
-        }
-        else if (Sequence < 27)
-        {
-            ymove = -2;
-            xmove = -(Sequence - 23);
-        }
-        else if (Sequence < 32)
-        {
-            xmove = -3;
-            ymove = Sequence - 28;
-        }
-        else if (Sequence < 38)
-        {
-            ymove = 3;
-            xmove = Sequence - 34;
-        }
-        else if (Sequence < 44)
-        {
-            xmove = 3;
-            ymove = -(Sequence - 40);
-        }
-        else if (Sequence < 51)
-        {
-            ymove = -3;
-            xmove = -(Sequence - 46);
-        }
-        else if (Sequence < 58)
-        {
-            xmove = -4;
-            ymove = Sequence - 53;
-        }
-        else if (Sequence < 66)
-        {
-            ymove = 4;
-            xmove = Sequence - 61;
-        }
-        else if (Sequence < 74)
-        {
-            xmove = 4;
-            ymove = -(Sequence - 69);
-        }	
-        else if (Sequence < 83)
-        {  
-            ymove = -4;
-            xmove = -(Sequence - 77);
-        }	
-        else if (Sequence < 92)
-        {  
-            xmove = -5;
-            ymove = Sequence - 86;
-        }	
-        else if (Sequence < 102)
-        {  
-            ymove = 5;
-            xmove = Sequence - 96;
-        }	
-        else if (Sequence < 112)
-        {  
-            xmove = 5;
-            ymove = -(Sequence - 106);
-        }	
-        else if (Sequence < 122)
-        {  
-            ymove = -5;
-            xmove = -(Sequence - 116);
-        }	
-        else 
-        {  
-            shift++;
-            Sequence -= 121;
-            goto Top;
-        }
-        shiftdist = shift * 0.25 * Size;	
-        Point.x += IDNINT (xmove * Size + shiftdist);
-        Point.y += IDNINT (ymove * Size + shiftdist);
-        {
-#if ENABLETRACE
-            GSSiExitProg (1331);
-#endif
-            return Point;
-        }
-#if ENABLETRACE
-    }
-#endif
-} 
 
 @end
 
