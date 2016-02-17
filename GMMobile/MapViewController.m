@@ -1470,6 +1470,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         [_markerArray removeObject:marker];
         _infoWindow = [[MarkerInfoWindow alloc] init];
+        _selectedPIDCoords = marker.position;
         
         switch (marker.type)
         {
@@ -1479,7 +1480,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
             case MarkerInfoWindowTypePID:
                 _selectedPID = _infoWindow.title = marker.title;
-                _selectedPIDCoords = marker.position;
                 break;
                 
             case MarkerInfoWindowTypeAlleyWall:
@@ -3287,50 +3287,84 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Perform 3D Fly Around"])
     {
-        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
-                                        forKey:@"FlyOverType"];
+        const char *filePath = [NSString stringWithFormat:@"%@/flyaround_polydata.bin",
+                                UserDefaults.defaults.sharedFilePath].UTF8String;
         
-        int numPoints = 0, numLoops = 0;
-        int *polyPartLen = 0;
-        
-        CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
-        
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
-        
-        LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
-                                                         numPoints:&numPoints
-                                                          numLoops:&numLoops
-                                                       polyPartLen:&polyPartLen];
-        
-        const char *filePath = [NSString stringWithFormat:@"%@/flyaround_polydata.bin", UserDefaults.defaults.sharedFilePath].UTF8String;
-        FILE *pidPolyFile = fopen(filePath, "wb");
-        
-        if (!pidPolyFile)
+        if (_infoWindow.type == MarkerInfoWindowTypeCrime)
         {
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                              delegate:self
-                                                                 title:@"Polygon Data File Write ERROR"
-                                                       buttonTextArray:@[@"OK"]
-                                                      destructiveIndex:0];
+            [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeCrime
+                                            forKey:@"FlyOverType"];
             
-            alert.identifier = @"PolygonDataFileWriteError";
+            CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
+            
+            FILE *pidPolyFile = fopen(filePath, "wb");
+            
+            if (!pidPolyFile)
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                  delegate:self
+                                                                     title:@"Crime Point File Write ERROR"
+                                                           buttonTextArray:@[@"OK"]
+                                                          destructiveIndex:0];
+                
+                alert.identifier = @"PolygonDataFileWriteError";
+            }
+            
+            else
+            {
+                fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
+                fclose(pidPolyFile);
+                
+                [self perform3DFlyAround];
+            }
         }
         
         else
         {
-            fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
-            fwrite(&numPoints, sizeof(int), 1, pidPolyFile);
-            fwrite(&numLoops, sizeof(int), 1, pidPolyFile);
-            fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
-            fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
-            fclose(pidPolyFile);
+            [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
+                                            forKey:@"FlyOverType"];
             
-            [self perform3DFlyAround];
+            int numPoints = 0, numLoops = 0;
+            int *polyPartLen = 0;
+            
+            CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
+            
+            PropertyData *propData = [[PropertyData alloc] init];
+            
+            MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
+            
+            LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
+                                                             numPoints:&numPoints
+                                                              numLoops:&numLoops
+                                                           polyPartLen:&polyPartLen];
+            
+            FILE *pidPolyFile = fopen(filePath, "wb");
+            
+            if (!pidPolyFile)
+            {
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                  delegate:self
+                                                                     title:@"Polygon Data File Write ERROR"
+                                                           buttonTextArray:@[@"OK"]
+                                                          destructiveIndex:0];
+                
+                alert.identifier = @"PolygonDataFileWriteError";
+            }
+            
+            else
+            {
+                fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
+                fwrite(&numPoints, sizeof(int), 1, pidPolyFile);
+                fwrite(&numLoops, sizeof(int), 1, pidPolyFile);
+                fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
+                fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
+                fclose(pidPolyFile);
+                
+                [self perform3DFlyAround];
+            }
+            
+            free (llpoints);
         }
-        
-        free (llpoints);
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -3525,7 +3559,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Alley Line Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Intersection Marker"])
+              isEqualToString:@"Remove Intersection Marker"] ||
+             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Remove Crime Point Marker"])
+        
         
     {
         [self dismissTableView];
@@ -4043,6 +4080,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [alertView hideLargeAlertView:YES];
+    [self deselectTableViewRow];
     
     if ([alertView.identifier isEqualToString:@"DeleteWallAlert"])
     {
@@ -4066,7 +4104,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         switch (buttonIndex)
         {
             case CensusZoomSettingCancel:
-                [self deselectTableViewRow];
                 break;
                 
             case CensusZoomSettingBlock:
@@ -4091,7 +4128,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         switch (buttonIndex)
         {
             case ParcelTextSettingCancel:
-                [self deselectTableViewRow];
                 break;
                 
             case ParcelTextSettingOwnerTax:
@@ -5131,22 +5167,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                     type:(NSInteger)type
 {
     CRAPI.sharedInstance.keepProcessing++;
+    _selectedPIDCoords = coords;
 
     switch (type)
     {
         case MarkerInfoWindowTypePID:
             _selectedPID = title;
-            _selectedPIDCoords = coords;
             
             if ([self isHennepinCountyPID:_selectedPID])
             {
-                _options = @[@"Property Report", @"Hennepin County Website", @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Remove Property Marker"];
+                _options = @[@"Remove Property Marker", @"Property Report", @"Hennepin County Website",
+                             @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
+                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {
-                    NSMutableArray *newArray = [[NSMutableArray alloc] init];
-                    [newArray addObjectsFromArray:_options];
+                    NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:_options];
                     
                     [newArray insertObject:@"Perform 3D Fly Around"
                                    atIndex:7];
@@ -5163,14 +5199,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             else
             {
-                _options = @[@"Property Report", @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                              @"Add to Property List",@"Add to Destinations", @"Route From Current Location", @"Remove Property Marker"];
+                _options = @[@"Remove Property Marker", @"Property Report", @"Display Street View",
+                             @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
+                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
 
-                
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {
-                    NSMutableArray *newArray = [[NSMutableArray alloc] init];
-                    [newArray addObjectsFromArray:_options];
+                    NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:_options];
                     
                     [newArray insertObject:@"Perform 3D Fly Around"
                                    atIndex:6];
@@ -5191,9 +5226,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedSewerPipe = title;
             
-            _options = @[@"Display Pipe Attributes", @"Trace Pipe Upstream",
+            _options = @[@"Remove Pipe Marker", @"Display Pipe Attributes", @"Trace Pipe Upstream",
                          @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
-                         @"Update Inspection Notes", @"Remove Pipe Marker"];
+                         @"Update Inspection Notes"];
            
             PipeTrace *pipeTrace = [[PipeTrace alloc] init];
             
@@ -5208,31 +5243,47 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 _options = newArray;
             }
         }
-            
             break;
             
         case MarkerInfoWindowTypeAlleyWall:
             _selectedAlleyWall = title;
-            _selectedAlleyWallRefno= refno;
+            _selectedAlleyWallRefno = refno;
             
-            _options = @[@"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
-                         @"View Wall Photos", @"Remove Alley Wall Marker"];
-            
+            _options = @[@"Remove Alley Wall Marker", @"Move Wall Point", @"Delete Wall Point",
+                         @"Edit Wall Attributes", @"View Wall Photos"];
             break;
             
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
             _selectedAlleyLineRefno = refno;
-            _options = @[@"Toggle Alley Line\nCompletion Status", @"Remove Alley Line Marker"];
+            _options = @[@"Remove Alley Line Marker", @"Toggle Alley Line\nCompletion Status"];
             break;
             
         case MarkerInfoWindowTypeCRInt:
             _selectedCRIntPt = title;
-            _options = @[@"Edit Intersection Attributes", @"Edit Intersection Status", @"Remove Intersection Marker"];
+            
+            _options = @[@"Remove Intersection Marker", @"Edit Intersection Attributes",
+                         @"Edit Intersection Status"];
             break;
             
         case MarkerInfoWindowTypeCustom:
-            _options = @[@"Snap to Node", @"Snap to Line", @"Remove Custom Marker"];
+            _options = @[@"Remove Custom Marker", @"Snap to Node", @"Snap to Line"];
+            break;
+            
+        case MarkerInfoWindowTypeCrime:
+            _selectedCrime = refno;
+            _options = @[@"Remove Crime Point Marker", @"Display Street View"];
+            
+            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
+            {
+                NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:_options];
+                
+                [newArray insertObject:@"Perform 3D Fly Around"
+                               atIndex:2];
+                
+                _options = newArray;
+            }
+            
             break;
     }
     
@@ -5252,6 +5303,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        type:(NSInteger)type
 {
     NSInteger option = 0;
+    _selectedPIDCoords = coords;
     
     switch (type)
     {
@@ -5275,7 +5327,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                     
                 case PropertyTableViewSettingStreetView:
-                    _selectedPIDCoords = coords;
                     [self showStreetView];
                     break;
                     
