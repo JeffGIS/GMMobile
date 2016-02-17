@@ -89,6 +89,10 @@
 		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
 		69CE00FC1C6160D700DC56E2 /* GMMobileIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
+		69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47841C74CEFC0042E47F /* singleArrowReverse.png */; };
+		69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47851C74CEFC0042E47F /* singleArrowForward.png */; };
+		69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47861C74CEFC0042E47F /* doubleArrowForward.png */; };
+		69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47871C74CEFC0042E47F /* doubleArrowReverse.png */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
 		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
@@ -321,6 +325,10 @@
 		69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GMMobileIcon.png; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
+		69DA47841C74CEFC0042E47F /* singleArrowReverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowReverse.png; sourceTree = "<group>"; };
+		69DA47851C74CEFC0042E47F /* singleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowForward.png; sourceTree = "<group>"; };
+		69DA47861C74CEFC0042E47F /* doubleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowForward.png; sourceTree = "<group>"; };
+		69DA47871C74CEFC0042E47F /* doubleArrowReverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowReverse.png; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		69DB8AD91BE3D83D009372AC /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		69DB8ADB1BE3D862009372AC /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -618,6 +626,10 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69DA47841C74CEFC0042E47F /* singleArrowReverse.png */,
+				69DA47851C74CEFC0042E47F /* singleArrowForward.png */,
+				69DA47861C74CEFC0042E47F /* doubleArrowForward.png */,
+				69DA47871C74CEFC0042E47F /* doubleArrowReverse.png */,
 				6998225A1C6850C9003476DD /* brick_texture.png */,
 				69CE00FB1C6160D700DC56E2 /* GMMobileIcon.png */,
 				69985FE91C5FC4D800FCC332 /* criminal.png */,
@@ -1032,6 +1044,7 @@
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				694FB1DF1C588363005410F6 /* Reader-Export.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
+				69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */,
 				692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */,
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				694FB1D71C588363005410F6 /* Reader-Button-H@2x.png in Resources */,
@@ -1051,8 +1064,10 @@
 				69B46EFE1BC215F100BB7724 /* destinations.png in Resources */,
 				A95EC7E41B224BFC0031B903 /* uploadCloud.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
+				69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */,
 				69CE00FC1C6160D700DC56E2 /* GMMobileIcon.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
+				69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				694FB1DB1C588363005410F6 /* Reader-Button-N@3x.png in Resources */,
 				694FB1D81C588363005410F6 /* Reader-Button-H@3x.png in Resources */,
@@ -1088,6 +1103,7 @@
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				694FB1E71C588363005410F6 /* Reader-Mark-Y@3x.png in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
+				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,
 				69C8DB4C1C515B440062AE84 /* .gitignore in Resources */,
 				69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
