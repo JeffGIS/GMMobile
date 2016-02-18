@@ -1393,6 +1393,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 case PTCrime:
                 {
+                    NSString *rep = [CrimeData reportForControlNumber:_selectedCrime];
                     _selectedCrime = pi.refno;
                     marker.snippet = pi.identifier;
                     NSDateFormatter *dateFormatter = NSDateFormatter.new;

@@ -1,0 +1,135 @@
+ MPD Non-Public Case Information (Page 0)
+           MPD NON-PUBLIC CASE INFORMATION
+
+MP-2016-031455  Precinct: 03          Controlnbr: 3503921
+  Offense(s):RXFRD(11) - DAS(99) - WT(99)
+  Location: 2504 18 AV S
+  Business Name:  
+  Begin: 1/28/16 23:44 Thursday   End: 1/29/16 0:05 Friday
+  Reported: 1/29/16 0:19
+  People:
+
+	 A- Buffington , Nicole Erin   BF 20 Bld:ST Ht:505 to  DOB:1995-06-12
+	    Home: 7939 France AV N Brooklyn Park, MN Phone:913-2405
+	    MPDNBR:0020150517
+	    NCICNbr: Nickname:
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Medium                		 - 
+	     Complexion            			- Light Brown           		 - 
+	     Appearance            			- Nervous               		 - 
+	     Identification        			- MN SID                		 - 
+
+	 O- BUFFINGTON , ANGELA LOUISE   BF 49 Bld:ME Ht:502 to 502 DOB:1966-02-27
+	    Home: 2732 Xylon AV 1 NEW HOPE, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	OT- FRANKLIN , MARKING JAMES   BM 18 Bld:ME Ht:508 to 508 DOB:1997-04-07
+	    Home: 2472 Ogema PL MINNEAPOLIS, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Medium                		 - 
+	     Hair Style            			- Dread Locks           		 - 
+	     Facial Hair           			- Moustache             		 - LIGHT
+	     Complexion            			- Light Brown           		 - 
+	     Appearance            			- Nervous               		 - 
+	     Identification        			- Other                 		 - DVS
+
+	OT- BURNETT , DERIUS FEROME   BM 22 Bld:ME Ht:600 to 600 DOB:1993-07-07
+	    Home: 2815 Pleasant AV S 2 MINNEAPOLIS, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Short                 		 - 
+	     Hair Style            			- Straight              		 - 
+	     Facial Hair           			- Goatee                		 - 
+	     Complexion            			- Dark                  		 - 
+	     Appearance            			- Uncooperative         		 - 
+	     Identification        			- Other                 		 - DVS
+
+	OT- PACHECO , HAILEE JEAN   IF 20 Bld:ST Ht:503 to 503 DOB:1995-11-11
+	    Home: 2521 17 AV S MINNEAPOLIS, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Cultural Ethnic       			- Other/Specify         		 - NATIVE AMERICAN
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Medium                		 - 
+	     Hair Style            			- Pony Tail             		 - 
+	     Complexion            			- Light Brown           		 - 
+	     Identification        			- Other                 		 - DVS
+  MO:
+	Crime Elements        		- Arrest(s) Made         
+	Crime Elements        		- Arrest(s) Made         
+	Crime Elements        		- Arrest(s) Made         
+	Crime Elements        		- Drugs                  
+	Crime Location        		- Auto                   
+	Crime Location        		- Auto                   
+	Crime Location        		- Auto                   
+	Crime Location        		- Street/Sidewalk        
+	Crime Location        		- Street/Sidewalk        
+	Crime Location        		- Street/Sidewalk        
+	Criminal Activity     		- Possessing/Concealing  
+	Type of Drugs         		- Amphetamines           
+	Type of Drugs         		- Comments               Rx Oxycodone
+  Property:
+	Owner:O001        	Quan:-107374176 Value:     .0000		: BREEZE
+	Owner:A001        	Quan:    4 Value:     .0000		NARC:round white "4839 v" pills  
+	Owner:A001        	Quan:    1 Value:    1.0000		MISC:env. w/original packaging from p.i. # 3174-16 
+	Owner:A001        	Quan:    1 Value:    1.0000		MISC:sections of plastic ink pen  
+	Owner:            	Quan:    1 Value:    1.0000		ID:PATIENT RX HISTORY BUFFINGTON 
+	Owner:            	Quan:    1 Value:    1.0000		VIEW:VIDEO DISC, HCJ SALLYPORT VIDEO 
+	Owner:            	Quan:    1 Value:    1.0000		ID:HCSO INCIDENT REPORT 
+	Owner:            	Quan:    1 Value:    1.0000		ID:HCSO INMATE BOOKING SHEET 
+  Vehicles:
+	Plate: 251DUC   State:MN  Year:96 96		Aban: Dam: Imp:Y Recov: Stolen: PLYM 4DR SEDAN
+		Vehicle Make          		- Plymouth               
+  Narrative:
+        Officers made a suspicious vehicle stop at the above
+        location. The driver (A1) was arrested for a warrant.
+        Oxycodone pills were subsequently found on her person
+        during a search. A1 booked HCJ for PC NARC. Vehicle towed
+        from the scene. Evidence was inventoried. 
+         
+        RE:FURTHER INVESTIGATION
+         
+        JUDICIAL PROBABLE CAUSE: THE COMPLAINANT, BEING DULY SWORN,
+        SWEARS THE BELOW FACTS ARE TRUE AND CORRECT TO THE BEST OF
+        COMPLAINANT'S KNOWLEDGE AND BELIEF AND CONSTITUTE PROBABLE
+        CAUSE TO BELIEVE THAT THE BELOW-NAMED ARRESTEE COMMITTED
+        THE OFFENSE (S) DESCRIBED HEREIN.
+         
+        OFFICERS WERE IN THE AREA FOR A PERSON WITH A GUN CALL.
+        OFFICERS OBSERVED THE LISTED VEHICLE PARKED ON THE STREET
+        AT THE REPORTED CALL LOCATION. THE VEHICLE WAS RUNNING BUT
+        DID NOT HAVE ANY PARKING LIGHTS ON WAS AND OCCUPIED BY FOUR
+        PEOPLE.  THE OCCUPANTS WERE IDENTIFIED.  THE DRIVER (AP1)
+        WAS FOUND TO HAVE AN ACTIVE ARREST WARRANT AND A SUSPENDED
+        DL. UPON SEARCH OF AP1 INCIDENT TO ARREST, 2 HALVES OF AN
+        OXYCODONE PILL (SCHEDULE 2 CONTROLLED SUBSTANCE) WERE FOUND
+        IN HER POCKET. SHE ADMITTED SEVERAL MORE WERE HIDDEN IN HER
+        BRA. SHE ADMITTED SHE DID NOT HAVE A PRESCRIPTION FOR THESE
+        PILLS. SEARCH INCIDENT TO ARREST OF THE VEHICLE YIELDED 2
+        STRAWS WITH WHITE RESIDUE INSIDE USED FOR SNORTHING CRUSHED
+        UP PILLS LIKE THE OXYCODONE LOCATED ON AP1. AP1 WAS BOOKED
+        FOR PC NARC. UPON BOOKING AT JAIL, 4 ADDITIONAL OXYCODONE
+        PILLS WERE RECOVERED FROM HER BRA, PACKAGED IN PLASTIC AS
+        IF FOR PURCHASE / SALE ON THE STREET.  
+         
+        COMPLAINANT'S SIGNATURE _______________________________ 
+         
+        NOTARY SIGNATURE AND STAMP ____________________________
+         
+        SUBMITTED UNDER OATH BY ____________________________
+         
+        SIGNATURE OF NOTARY ____________________________
+         
+        A.B.,Peace Officer License Number_______, Hennepin County,
+        Minnesota. 
+        My license expires on June 30, ____. 
+         
+

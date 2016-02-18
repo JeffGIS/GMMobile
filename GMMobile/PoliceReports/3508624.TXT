@@ -1,0 +1,116 @@
+ MPD Non-Public Case Information (Page 0)
+           MPD NON-PUBLIC CASE INFORMATION
+
+MP-2016-048870  Precinct: 03          Controlnbr: 3508624
+  Offense(s):FLEE(40) - RECVEH(99) - HRPD(99)
+  Location: 0 39 AV S 52 ST E
+  Business Name:  
+  Begin: 2/12/16 4:23 Friday   End: 2/12/16 4:35 Friday
+  Reported: 2/12/16 5:30
+  People:
+
+	 O- Rojas , Felix Maduca    0 Bld: Ht: to  DOB:
+	    Home: 8224 Goodrich RD Bloomington, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 O- Long , Elizabeth Marie   UF 36 Bld: Ht: to  DOB:1979-06-03
+	    Home: 1829 Furness ST 206 Maplewood, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 S- Unknown , Unknown   WM 20 Bld:ME Ht: to  DOB:
+	    Home: 0 Unk , Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 S- Unknown , Unknown   IM 20 Bld:ME Ht: to  DOB:
+	    Home: 0 Unk , Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 S- Unknown , Unknown   WM 20 Bld:ME Ht: to  DOB:
+	    Home: 0 Unk , Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 S- Oneill , Jude Thomas Mary   OM 18 Bld: Ht: to  DOB:1997-03-17
+	    Home: 4320 38 AV S Minneapolis, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Complexion            			- Light                 		 - 
+	     Appearance            			- Nervous               		 - 
+	     Appearance            			- Uncooperative         		 - 
+
+	 S- Boshey , Samantha Rose   OF 23 Bld:ME Ht:506 to 508 DOB:1992-02-21
+	    Home: 907 Oliver AV N Minneapolis, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Medium                		 - 
+	     Complexion            			- Light                 		 - 
+	     Appearance            			- Nervous               		 - 
+	     Appearance            			- Uncooperative         		 - 
+  MO:
+	Crime Elements        		- Limited Opportunity    
+	Crime Elements        		- Limited Opportunity    
+	Crime Elements        		- Limited Opportunity    
+	Crime Location        		- Auto                   
+	Crime Location        		- Auto                   
+	Crime Location        		- Auto                   
+	Crime Location        		- Street/Sidewalk        
+	Crime Location        		- Street/Sidewalk        
+	Crime Location        		- Street/Sidewalk        
+  Property:
+	Owner:            	Quan:    1 Value:    1.0000		MISC:CROSSFIRE AMP 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:CRAFTSMAN TOOL KIT 
+	Owner:            	Quan:    1 Value:    1.0000		PACK:BLUE BACK PACK CNTG LINE 1 AND 2 
+	Owner:            	Quan:    1 Value:    1.0000		PACK:GREEN BACKPACK CNTG GLOVES PRY BAR AND ST SCHOLASTICA WELLNESS CENTER CARD DALE PETERSON 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:GARMIN NUVI GPS 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:DIGITAL TIRE GAUGE 
+	Owner:            	Quan:    1 Value:    1.0000		PACK:BLUE/BLACK BACKPACK CNTG LINES 1 AND 2 W/AMY CRAWFORD LUGGAGE TAG  
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:CRAFTSMAN BAG CNTG BOSCH CORDLESS DRILL W/ CHARGER 
+	Owner:            	Quan:    1 Value:    1.0000		CLOTH:BLACK HAT CASE CNTG 3 HATS 
+	Owner:            	Quan:    1 Value:    1.0000		PACK:BROWN DUFFEL BAG CNTG LINES 1 AND 2 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:BLACK CASE CNTG CHEFS KNIVES AND ITEMS/NICHOLAS RYAN 
+	Owner:            	Quan:    1 Value:    1.0000		AUTOP:USED HONDA COMPRESSOR IN BOX/CHRIS RYAN 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DREMEL MULTI MAX IN "GUSE HARDWARE CASE" 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT CORDLESS SAW 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:BOSTICH BRAD NAILER IN CASE 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:EYE GLASS CASE CNTG MISC TOOLS 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:CRAFTSMAN STANDARD SCREWDRIVER 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:PORTER CABLE ORBITAL SANDER IN CASE 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:BLUE DUFFEL BAG W/C S JOHNSON TAG CNTG LINES 1 THRU 8 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:METAL BOX CNTG MISC HARDWARE "GUSE VAN" 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:QUANTITY OF CRESENT HANDTOOLS IN CASE 
+	Owner:            	Quan:    1 Value:    1.0000		PACK:BLUE SHOULDER BAG CNTG LINES 1 AND 2 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:6' BROWN SHOP FLOOR MAT 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:GARBAGE BAG CNTG QUANTITY OF CAMPING GEAR 
+	Owner:            	Quan:    3 Value:    1.0000		MISC:CAMPING/FOLDING CHAIRS 
+	Owner:            	Quan:    1 Value:    1.0000		ID:CATHOLIC CHARITIES ID SAMANTHA BOSHEY 
+	Owner:S001        	Quan:-107374176 Value:    1.0000		: XTERRA
+	Owner:O002        	Quan:-107374176 Value:    1.0000		: Escort
+  Vehicles:
+	Plate: 298REY   State:MN  Year:1993 		Aban: Dam:Y Imp: Recov:Y Stolen: 
+		Vehicle Make          		- Ford                   
+	Plate: 889MCH   State:MN  Year:6 6		Aban: Dam:Y Imp:Y Recov: Stolen:Y NISS 4DR WAGON
+		Vehicle Make          		- Nissan                 
+  Narrative:
+        Officers responded to a property damage hit and run
+        accident where a vehicle was left unoccupied in a snowbank.
+         Upon arrival Officers observed several people and another
+        suspect vehicle possibly attempting to remove the suspect
+        vehicle from the snowbank.  This other vehicle fled from
+        Officers when they arrived.  Officers attempted to stop the
+        fleeing vehicle but quickly lost sight of it.  The fleeing
+        vehicle was located about 30 minutes later crashed into a
+        tree and unoccupied.  Fleeing vehicle was a reported stolen
+        and towed to the Minneapolis Impound Lot.  The original
+        suspect vehicle stuck in the snow bank also appeared to be
+        a stolen vehicle as it had a KOPS alert out for it being
+        that it was taken with a breach of trust from Maplewood. 
+        That vehicle was also towed to the Minneapolis Impound Lot.
+         State Accident Report was completed.  3rd Precinct
+        Supervisor was notified. 
+         
+

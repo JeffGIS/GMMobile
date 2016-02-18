@@ -1,0 +1,163 @@
+ MPD Non-Public Case Information (Page 0)
+           MPD NON-PUBLIC CASE INFORMATION
+
+MP-2016-005482  Precinct: 04          Controlnbr: 3496486
+  Offense(s):NARC(28) - WT(99) - FC(99)
+  Location: 4635 Queen AV N
+  Business Name:  
+  Begin: 1/6/16 12:57 Wednesday   End: 1/6/16 12:57 Wednesday
+  Reported: 1/6/16 15:04
+  People:
+
+	 A- TIEDENS , BRYAN JONATHAN   WM 33 Bld:ME Ht:602 to 602 DOB:1982-09-02
+	    Home: 4635 Queen AV N MINNEAPOLIS, MN Phone:919-0318
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Hair Color            			- Brown                 		 - 
+	     Hair Length           			- Medium                		 - 
+	     Hair Style            			- Straight              		 - 
+	     Complexion            			- Light                 		 - 
+	     Appearance            			- Disturbed             		 - 
+
+	 A- Stanley , Brent Edward   WM 32 Bld:ME Ht:509 to  DOB:1983-02-19
+	    Home: 220 Clay ST Anoka, MN Phone:464-7591
+	    MPDNBR:0020160063
+	    NCICNbr: Nickname:
+	     Hair Color            			- Brown                 		 - 
+	     Hair Length           			- Short                 		 - 
+	     Hair Style            			- Straight              		 - 
+	     Facial Hair           			- Beard                 		 - 
+	     Complexion            			- Light                 		 - 
+	     Appearance            			- Disturbed             		 - 
+	     PhyFeat-Tattoos       			- Head/Neck             		 - L/arm Dragon
+	     Desc. Comments        			- Comments              		 - Alt add: 470 Arden Circle, Shoreview, MN
+
+	 A- Dow , Sandra Kay   IF 34 Bld:ME Ht:505 to  DOB:1981-07-11
+	    Home: 5751 Yates AV N Crystal, MN Phone:584-0711
+	    MPDNBR:0020152688
+	    NCICNbr: Nickname:
+	     Hair Color            			- Brown                 		 - 
+	     Hair Length           			- Long                  		 - 
+	     Hair Style            			- Straight              		 - 
+	     Complexion            			- Light                 		 - 
+	     Appearance            			- Disturbed             		 - 
+	     Person Wore           			- Glasses               		 - 
+	     Desc. Comments        			- Comments              		 - Alt add: 4365 Queen Av. N., Mpls, MN
+
+	 A- Shinder , Taurus Grant   BM 33 Bld:LI Ht:508 to  DOB:1982-12-05
+	    Home: 4335 Humboldt AV N Minneapolis, MN Phone:636-8518
+	    MPDNBR:0020160100
+	    NCICNbr: Nickname:
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Medium                		 - 
+	     Hair Style            			- Curly/Wavy            		 - 
+	     Facial Hair           			- Beard                 		 - 
+	     Complexion            			- Light Brown           		 - 
+	     Appearance            			- Disturbed             		 - 
+	     PhyFeat-Tattoos       			- Head/Neck             		 - R/neck chinese symbols
+
+	OT- KRAUSE , TAMMY LYNN   WF 33 Bld:ME Ht:505 to 505 DOB:1982-12-07
+	    Home: 4651 Aldrich AV N MINNEAPOLIS, MN Phone:644-1130
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Hair Color            			- Blond                 		 - 
+	     Hair Length           			- Long                  		 - 
+	     Appearance            			- Disturbed             		 - 
+
+	OT- LEVILLE , SAMUEL FREDRIC   WM 19 Bld:LI Ht:508 to 508 DOB:1996-04-11
+	    Home: 4816 Regent AV N Crystal, MN Phone:none
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Hair Color            			- Brown                 		 - 
+	     Hair Length           			- Long                  		 - 
+	     Hair Style            			- Curly/Wavy            		 - 
+	     Facial Hair           			- Beard                 		 - 
+	     Complexion            			- Light                 		 - 
+	     Appearance            			- Disturbed             		 - 
+  MO:
+	Crime Elements        		- Arrest(s) Made         
+	Crime Elements        		- Arrest(s) Made         
+	Crime Elements        		- Arrest(s) Made         
+	Crime Location        		- Single Family          
+	Crime Location        		- Single Family          
+	Crime Location        		- Single Family          
+	Criminal Activity     		- Possessing/Concealing  
+	Type of Drugs         		- Amphetamines           
+  Property:
+	Owner:            	Quan:-107374176 Value:          		: 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:FIREWORK 
+	Owner:            	Quan:    1 Value:     .0000		NARC:QTY OF SUSPECTED METHAMPHETAMINE W/CONTAINER 
+	Owner:            	Quan:    1 Value:     .0000		NARC:BAGGIE CNTG SUSPECTED METHAMPHETAMINE 
+	Owner:            	Quan:    1 Value:     .0000		NARC:BAGGIE CNTG SUSPECTED METHAMPHETAMINE 
+	Owner:            	Quan:    1 Value:     .0000		NARC:RX BOTTLE CNTG QTY OF PILLS, OBLONG, WHITE "IP 466" 
+	Owner:            	Quan:    1 Value:     .0000		NARC:RX BOTTLE CNTG QTY OF PILLS, ROUND, WHITE "512" 
+	Owner:            	Quan:    1 Value:     .0000		NARC:RX BOTTLE CNTG QTY OF PILLS, ROUND, WHITE "GPI A325" 
+	Owner:            	Quan:    1 Value:    1.0000		NARCP:QTY OF PLASTIC BAGGIES 
+	Owner:            	Quan:    1 Value:    1.0000		NARCP:NACOTIC TYPE PIPE 
+	Owner:            	Quan:    1 Value:    1.0000		NARCP:RX BOTTLE (EMPTY) AND CONTAINERS (EMPTY) 
+	Owner:            	Quan:    2 Value:    1.0000		NARCP:DIGITAL SCALES 
+	Owner:            	Quan:    1 Value:    1.0000		MISC:LABEL MAKER "DYMO LETRATAG" 
+	Owner:            	Quan:    1 Value:    1.0000		AUDIO:BABY MONITOR, WHITE "VTECH"  
+	Owner:            	Quan:    1 Value:    1.0000		ID:QTY OF RECEIPTS 
+	Owner:            	Quan:    1 Value:    1.0000		ID:QTY OF FORMS "TIEDENS TOWING & RECOVERY INC" W/QTY OF BUSSINES CARDS 
+	Owner:            	Quan:    1 Value:    1.0000		ID:CHECK "HENNEPIN COUNTY ADD" PAYABLE TO SAMUEL LEVILLE "$27.41" 
+	Owner:            	Quan:    1 Value:    1.0000		ID:MAILING NAME/ BRYAN TIEDENS 
+	Owner:            	Quan:    1 Value:    1.0000		COMPU:LAPTOP, HP, RED 
+	Owner:            	Quan:    1 Value:    1.0000		AUTOP:LICENSE PLATE/ REPOMAN 
+	Owner:            	Quan:    1 Value:    1.0000		COMPU:HARD DRIVE FOR SURVEILLANCE SYSTEM "NIGHT OWL" "8 CHANNEL DVR" 
+	Owner:            	Quan:    1 Value:    1.0000		VIEW:USB FLASH DRIVE, TWO MEMORY CARDS & QTY OF PHONE CHIPS 
+	Owner:A001        	Quan:-107374176 Value:  510.0000		: GRAND PRIX SE (
+	Owner:A001        	Quan:-107374176 Value: 2300.0000		: GMT-400
+	Owner:A001        	Quan:-107374176 Value: 1100.0000		: CARAVAN
+	Owner:            	Quan:    2 Value:    1.0000		TOOLS:BLUE BINS CONTAINING HAND TOOLS 
+	Owner:            	Quan:    2 Value:    1.0000		TOOLS:STEEL JACK STANDS 
+	Owner:            	Quan:    2 Value:    1.0000		ID:BOXES REPAIR MANUALS, CAR MAGAZINES 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:PORTER CABLE COMPRESSOR 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:SUN DIAGNOSTIC SET W/ BOB KENNEDY WRITTEN ON IT 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT CORDLESS GREASE GUN Dcgg571
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:RIDGID  RP330 PRESS IN CASE WITH ACC. W/ ERICSON PHC 763- (REST OF INFO GROUND OFF) Rp330
+	Owner:            	Quan:    2 Value:    1.0000		TOOLS:DEWALT BOXES CONTAINING MISC. HARDWARE 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:YELLOW GREENLEE STORAGE BOX 
+	Owner:            	Quan:    2 Value:    1.0000		MISC:TOM TOM'S NEW IN BOX (IN LINE 9) 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT 20V IMPACT  DRIVER/DRILL SET, NEW IN BOX (IN LINE 9) 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT 20V DCD995M2 HAMMERDRILL KIT, NEW IN CASE (IN LINE 9) Dcd995m2
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT 20V DCD995M2 HAMMERDRILL KIT, NEW IN CASE, FROM HOME DEPOT JOLIET IL (IN LINE 9) Dcd995m2
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT 18V IMPACT  WREHCN KIT, NEW IN BOX  FROM COTTENS NAPA OSSEO,  (IN LINE 9) C823ka
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:RYOBI 7 1/4 CIRCULAR SAW IN CASE (IN LINE 9) Csv140lz
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:SNAPON SOULESS PRO DIGNOSTIC SCANNER IN BOX (IN LINE 9) 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:PASLODE FRAMING NAILER (IN LINE 9) 350s
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:HITACHI FRAMING NAILER (IN LINE 9) Nr90ad
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:MAKITA SANDER (IN LINE 9) Gv510
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:MILWAUKEE IMPACT WRENCH (IN LINE 9) 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:PASLODE FRAMING NAILER IN CASE (IN LINE 9) Imct
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:PASLODE FINISH NAILER IN CASE (IN LINE 9) Im250a
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT 20V HAMMER DRILL IN CASE (IN LINE 9) Dch253
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT RECIPROCATING IN CASE (IN LINE 9) D25213
+	Owner:            	Quan:    1 Value:    1.0000		COMPU:HP PAVILLION LAPTOP (IN LINE 9) Pavillion
+	Owner:            	Quan:    1 Value:    1.0000		ID:FILE BOX CONTAINING BUSINESS INFORMATION 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:BAG CONTAINING ASSORTED DEWALT POWER TOOLS, MOST MISSING BATTERIES 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:MILWAKEE SAWZALL IN RED METAL CASE 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:DEWALT ROTARY HAMMER IN CASE 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:RYOBI 18V RECIPROCATING SAW IN CASE WITH BATTERY 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:GRAY TOOL BOX CONTAINING HAND TOOLS 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:BOSCH HAMMER DRILL IN CASE 11236es
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:GREEN PLASTIC BIN CONTAINING HAND TOOLS 
+	Owner:            	Quan:    1 Value:    1.0000		COMPU:HP PAVILLION ALL-IN-ONE COMPUTER, NEW IN BOX 22a113w
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:EXTREME TOOL ROLLING TOOL CHEST CONTAINING HAND TOOLS AND PAPERS, BLUE 
+	Owner:            	Quan:    1 Value:    1.0000		TOOLS:EXTREME TOOL ROLLING TOOL CHEST CONTAINING HAND TOOLS AND PAPERS, RED 
+	Owner:            	Quan:   15 Value:    1.0000		MISC:BOTTLE ROCKETS 
+	Owner:            	Quan:    2 Value:    2.0000		CASH:PARTIAL $1.00 BILLS 
+  Vehicles:
+	Plate: 075HMJ   State:MN  Year:2 2		Aban: Dam: Imp:Y Recov: Stolen: PONT 4DR SEDAN
+		Vehicle Make          		- Pontiac                
+	Plate: 859EAA   State:MN  Year:94 94		Aban: Dam: Imp:Y Recov: Stolen: CHEV PICKUP
+		Vehicle Make          		- Chevrolet              
+	Plate: 754TKV   State:MN  Year:1 1		Aban: Dam: Imp:Y Recov: Stolen: DODG SPRT VAN
+		Vehicle Make          		- Dodge                  
+  Narrative:
+        MPD and MPLS Housing Inspections executed a search warrant
+        for evidences of illegal repair shop occurring at the
+        listed location where we recovered numerous mechanic tools
+        and amount of meth.
+

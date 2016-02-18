@@ -1,0 +1,177 @@
+ MPD Non-Public Case Information (Page 0)
+           MPD NON-PUBLIC CASE INFORMATION
+
+MP-2016-006064  Precinct: 04          Controlnbr: 3496627
+  Offense(s):ROBPAG(04)
+  Location: 1604 Broadway AV W
+  Business Name:  
+  Begin: 1/6/16 22:52 Wednesday   End: 1/7/16 1:00 Thursday
+  Reported: 1/7/16 1:10
+  People:
+
+	 A- Butler , Michael Samuel   BM 16 Bld:LI Ht:600 to  DOB:1999-10-06
+	    Home: 2007 Queen AV N Minneapolis, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Robbery Sus. Action   			- Demanded Money        		 - 
+	     Weapon Used           			- Handgun               		 - 
+
+	 A- Owens , Andre   BM 16 Bld:LI Ht:601 to  DOB:1999-02-07
+	    Home: 915 Vincent AV N Minneapolis, MN Phone:802-4411
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Robbery Sus. Action   			- Demanded Money        		 - 
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Short                 		 - 
+	     Hair Style            			- Afro/Natural          		 - 
+	     Complexion            			- Light Brown           		 - 
+	     Appearance            			- Nervous               		 - 
+
+	 A- Jackson , Phillip Keith   BM 15 Bld:ME Ht:511 to  DOB:2000-07-16
+	    Home: 1819 Newton AV N Minneapolis, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	OT- SCOTT JR , JR,FREDDY LE   BM 20 Bld:ME Ht:506 to 506 DOB:1995-12-23
+	    Home: 3551 Knox AV N MINNEAPOLIS, MN Phone:unknown
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	OT- Robinson , Darryl Lakeith   BM 19 Bld: Ht: to  DOB:1996-02-07
+	    Home: 0 Unknown , Phone:unknown
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	PG- Bratton , Julie   F 0 Bld: Ht: to  DOB:
+	    Home: 2007 Queen AV N Minneapolis, MN Phone:839-8530
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	PG- Washington , Kizzy   F 0 Bld: Ht: to  DOB:
+	    Home: 915 Vincent AV N Minneapolis, MN Phone:802-4411
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	PG- Washington , Kizzy    0 Bld: Ht: to  DOB:
+	    Home: 915 Vincent AV N Minneapolis, MN Phone:802-4411
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 S- Jackson , Phillip Keith   BM 15 Bld: Ht: to  DOB:2000-07-16
+	    Home: 1819 Newton AV N Minneapolis, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+
+	 V- WILLIAMS , TREMAYNE ROMONDO HEN   BM 18 Bld:LI Ht:506 to 506 DOB:1997-07-06
+	    Home: 1901 Oliver AV N MINNEAPOLIS, MN Phone:742-2168
+	    MPDNBR:
+	    NCICNbr: Nickname:
+	     Eye Color             			- Brown                 		 - 
+	     Hair Color            			- Black                 		 - 
+	     Hair Length           			- Short                 		 - 
+	     Hair Style            			- Afro/Natural          		 - 
+	     Complexion            			- Dark                  		 - 
+	     Injury Type           			- None                  		 - 
+	     Injury Location       			- Other                 		 - NONE
+
+	 W- Williams , Lois   BF 24 Bld: Ht: to  DOB:1991-05-05
+	    Home: 2007 Queen AV N Minneapolis, MN Phone:
+	    MPDNBR:
+	    NCICNbr: Nickname:
+  MO:
+	Crime Elements        		- Limited Opportunity    
+	Crime Elements        		- Arrest(s) Made         
+	Suspect Action        		- Demanded Money         
+	Crime Location        		- Gas Station            
+	Crime Location        		- Street/Sidewalk        
+  Property:
+	Owner:            	Quan:    1 Value:   80.0000		CLOTH:PURPLE MINNESOTA VIKING JACKET 
+	Owner:            	Quan:    1 Value:  100.0000		CLOTH:1 PAIR OF WHEAT AIR FORCE ONE Air Force One
+	Owner:            	Quan:    1 Value:  750.0000		CELL:WHT/GLD iPHONE 6 WITH A BLACK CASE Iphone
+	Owner:            	Quan:    1 Value:    5.0000		CASH:$5 DOLLAR BILL 
+	Owner:A001        	Quan:    1 Value:    1.0000		CLOTH:FLEECE TYPE JACKET, BLACK 
+	Owner:A001        	Quan:    1 Value:    1.0000		CLOTH:TYPE JACKET, BLACK 
+	Owner:A001        	Quan:    1 Value:    1.0000		CLOTH:BELT, WHITE 
+	Owner:A001        	Quan:    1 Value:    1.0000		CLOTH:PR. JEANS, BLUE 
+	Owner:A001        	Quan:    1 Value:    1.0000		CLOTH:PR. ATHLETIC SHOES, WHITE, NIKE 
+	Owner:A001        	Quan:    1 Value:    1.0000		JEWEL:SILVER COLORED CHAIN W/GOLD AND SILVER COLORED LION PENDANT 
+	Owner:A002        	Quan:    1 Value:    1.0000		CLOTH:KNIT CAP, GRAY 
+	Owner:A002        	Quan:    1 Value:    1.0000		CLOTH:SWEATSHIRT, BLUE, (LONDON) 
+	Owner:A002        	Quan:    1 Value:    1.0000		CLOTH:HOODED SWEATSHIRT, PURPLE, (VIKINGS) 
+	Owner:A002        	Quan:    1 Value:    1.0000		CLOTH:HOODED SWEATSHIRT, BLUE/GRAY 
+	Owner:A002        	Quan:    1 Value:    1.0000		CLOTH:PR. SWEATPANTS, GRAY 
+	Owner:A002        	Quan:    1 Value:    1.0000		CLOTH:PR. ATHLETIC SHOES, GRAY, AIR JORDAN 
+	Owner:            	Quan:    1 Value:    1.0000		GUNS:RAVEN ARMS .25 CAL. SEMI AUTO PISTOL, 2 3/8" BBL, US MFG., INDUSTRY, CA. P25
+	Owner:            	Quan:    1 Value:    1.0000		AMMO:.25 CAL. LIVE CARTRIDGE 
+	Owner:            	Quan:    1 Value:    1.0000		WEAP:MAGAZINE 
+	Owner:            	Quan:    1 Value:    1.0000		NARCP:DIGITAL SCALE 
+	Owner:            	Quan:    2 Value:    1.0000		NARCP:GLASS MARIJUANA PIPES 
+	Owner:            	Quan:    1 Value:    1.0000		CELL:APPLE IPHONE, BLK, (SCREEN SAVER/PICTURE OF THREE FEMALES) 
+	Owner:            	Quan:    1 Value:    1.0000		CELL:APPLE IPHONE, WHITE, W/BLK CASE, (THIS IPHONE STOLEN NOTIFY ME WHEN FOUND, 763-742-2168) 
+	Owner:            	Quan:    1 Value:    1.0000		CELL:LG, VERIZON, CAMERA/CELL PHONE, BLK, DAMAGED 
+	Owner:            	Quan:    1 Value:    1.0000		CELL:KYOCERA, CAMERA/CELL PHONE, BLK, (MISSING BATTERY AND BACK COVER) 
+	Owner:            	Quan:    1 Value:    1.0000		CELL:KYOCERA, CAMERA/CELL PHONE, BLK 
+	Owner:            	Quan:    1 Value:    1.0000		CELL:LG, CAMERA/CELL PHONE, BLK, DAMAGED, W/CASE 
+	Owner:            	Quan:    1 Value:    1.0000		CLOTH:ZIP UP HOODED SWEATSHIRT, GRAY 
+	Owner:V001        	Quan:    1 Value:    1.0000		CLOTH:JACKET, PURPLE, (VIKINGS) 
+	Owner:V001        	Quan:    1 Value:    1.0000		CLOTH:PR. ATHLETIC SHOES, TAN, NIKE 
+	Owner:            	Quan:    2 Value:    1.0000		ID:MPD CONSENT TO SEARCH RECEIPT AND INVENTORY FORM, (WHITE AND YELLOW COPIES) 
+	Owner:V001        	Quan:    5 Value:    5.0000		CASH:ONE DOLLAR BILLS, (FROM VIKINGS JACKET) 
+	Owner:V001        	Quan:    1 Value:     .2500		CASH:QUARTER, (FROM VIKINGS JACKET) 
+	Owner:V001        	Quan:    2 Value:     .2000		CASH:DIMES, (FROM VIKINGS JACKET) 
+	Owner:V001        	Quan:    1 Value:     .0100		CASH:PENNY, (FROM VIKINGS JACKET) 
+	Owner:A002        	Quan:    1 Value:    1.0000		JEWEL:ALDO WRISTWATCH, BLACK, (DAMAGED) 
+	Owner:            	Quan:    1 Value:    1.0000		SPCMN:BUCCAL SWAB (BUTLER, A1) 
+	Owner:            	Quan:    1 Value:    1.0000		ID:SEALED ENV CNTG BCA KNOWN SAMPLE COLLECTION KIT FORM (FOR BUTLER, A1) 
+	Owner:            	Quan:    1 Value:    1.0000		ID:MPD CONSENT TO SEARCH RECEIPT AND INVENTORY FORM (BUTLER) 
+	Owner:            	Quan:    1 Value:    1.0000		SPCMN:SEALED ENV CNTG BUCCAL SWAB FM/ A002/OWENS 
+	Owner:            	Quan:    1 Value:    1.0000		SPCMN:SEALED ENV CONT DNA SWABS FM PISTOL PI 16-629 LN 1 
+	Owner:            	Quan:    1 Value:    1.0000		SPCMN:SEALED ENV CONT DNA SWAB FM LIVE CARTIDGE PI 16-629 LN 2 
+	Owner:            	Quan:    1 Value:    1.0000		SPCMN:BUCCAL SWAB, A3 (JACKSON) 
+	Owner:A003        	Quan:    1 Value:    1.0000		CELL:CAMERA CELL PHONE, BLACK/GOLD COLORED HTC (DAMAGED) 
+	Owner:            	Quan:    1 Value:    1.0000		ID:CONSENT TO SEARCH SIGNED BY JACKSON 
+	Owner:            	Quan:    1 Value:    1.0000		ID:SCREENSHOT FM FACEBOOK OF JACKSON 
+  Vehicles:
+  Narrative:
+        Ap1 and Ap2 were booked at JDC for Aggrevated Robbery.
+         
+        JUDICIAL PROBABLE CAUSE: THE COMPLAINANT, BEING DULY SWORN,
+        SWEARS THE BELOW FACTS ARE TRUE AND CORRECT TO THE BEST OF
+        COMPLAINANT'S KNOWLEDGE AND BELIEF AND CONSTITUTE PROBABLE
+        CAUSE TO BELIEVE THAT THE BELOW-NAMED ARRESTEE COMMITTED
+        THE OFFENSE (S) DESCRIBED HEREIN.
+         
+        COMPLAINANT'S SIGNATURE _______________________________ 
+         
+        NOTARY SIGNATURE AND STAMP ____________________________
+         
+        SUBMITTED UNDER OATH BY ____________________________
+         
+        SIGNATURE OF NOTARY ____________________________
+         
+        A.B.,Peace Officer License Number_______, Hennepin County,
+        Minnesota.
+        My license expires on June 30, ____.
+         
+        OFFICERS RESPONDED TO THE LISTED ADDRESS FOR AN AGGRAVATED
+        ROBBERY. UPON ARRIVAL OFFICERS SPOKE WITH V1 WHO STATED HE
+        WAS ROBBED AT GUNPOINT FOR HIS JACKET, PHONE, AND SHOES.
+        OFFICERS TOOK A STATEMENT FROM V1 AND TRANSPORTED HIM HOME.
+        AT V1'S ADDRESS HE USED HIS MOTHER'S PHONE TO USE FIND MY
+        IPHONE. IT SHOWED HIS PHONE MAPPING CLOSEST TO 1825 NEWTON
+        AV N. THAT ADDRESS APPEARED TO BE ALL DARK AND QUIET.
+        OFFICERS OBSERVED TWO MALES WHO FIT THE DESCRIPTION OF THE
+        ROBBERY SUSPECTS WALK INTO 1819 NEWTON. OFFICERS RECENTLY
+        ARRESTED A MALE  AT THIS ADDRESS FOR ARMED ROBBERY. 
+        OFFICERS MADE CONTACT AT THE ADDRESS AND WAS GREETED BY S1,
+        WHO INVITED OFFICERS IN AND STATED HE WAS WITH OTHER MALES.
+        WHILE IN THE ADDRESS OFFICERS OBSERVED IN PLAIN VIEW THE
+        VICTIMS JACKET, PHONE, AND SHOES. HOMEOWNER SIGNED CONSENT
+        TO SEARCH FORM AND THE GUN SUSPECTED BEING USED IN THE
+        ROBBERY WAS LATER FOUND. OFFICERS PERFORMED A SHOW UP WITH
+        THE VICTIM AND HE POSITIVELY IDENTIFIED A1 AND A2 AS THE
+        SUSPECTS WHO ROBBED HIM.  A1 AND A2 WERE TRANSPORTED TO THE
+        JUVENILE UNIT WHERE THEY WERE PROCESSED. A1 AND A2 WERE
+        THEN BOOKED TO JDC. PC AUTHORIZED BY SGT. LIOTTA
+
