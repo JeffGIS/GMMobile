@@ -29,5 +29,6 @@
 @property (nonatomic) NSInteger refno;
 @property (nonatomic) CLLocationCoordinate2D position;
 @property (nonatomic) MarkerInfoWindowType type;
+@property (nonatomic) int symbol;
 
 @end

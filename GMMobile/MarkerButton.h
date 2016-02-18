@@ -22,6 +22,7 @@
 @property (nonatomic) NSInteger refno;
 @property (nonatomic) NSString *title;
 @property (nonatomic) NSString *snippet;
+@property (nonatomic) int symbol;
 
 + (MarkerButton *)markerWithPosition:(CLLocationCoordinate2D)position
                                 view:(UIView *)view

@@ -1442,6 +1442,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
             
             marker.refno = pi.refno;
+            marker.symbol = pi.symbol;
             
             [_markerArray addObject:marker];
             
@@ -1449,6 +1450,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             _infoWindow.delegate = self;
             _infoWindow.title = marker.title;
             _infoWindow.snippet = marker.snippet;
+            _infoWindow.symbol = marker.symbol;
             _infoWindow.position = marker.position;
             _infoWindow.refno = marker.refno;
             [self.view addSubview:_infoWindow];
@@ -1500,6 +1502,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         }
         
         _infoWindow.type = marker.type;
+        _infoWindow.symbol = marker.symbol;
         
         [_markerArray addObject:marker];
         CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
@@ -3297,6 +3300,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                             forKey:@"FlyOverType"];
             
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
+            int symbol = _infoWindow.symbol;
             
             FILE *pidPolyFile = fopen(filePath, "wb");
             
@@ -3314,6 +3318,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             else
             {
                 fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
+                fwrite(&symbol, sizeof(int), 1, pidPolyFile);
                 fclose(pidPolyFile);
                 
                 [self perform3DFlyAround];
