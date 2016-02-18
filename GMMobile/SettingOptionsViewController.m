@@ -32,6 +32,7 @@
 @property (nonatomic) UIImageView *hotspotView;
 @property (nonatomic) vec3 *vecGrid;
 @property (nonatomic) int len;
+@property (nonatomic) CrimeData *cd;
 
 @end
 
@@ -467,6 +468,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Load Data"])
     {
         [self loadData];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Update Data"])
+    {
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+        {
+            _cd = [CrimeData new];
+            [_cd update:self.view];
+        }
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
