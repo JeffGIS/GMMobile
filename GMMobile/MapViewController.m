@@ -17,6 +17,7 @@
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
 #import "ReaderViewController.h"
+#import "CCodeLibrary/NVTextVC.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
@@ -1393,7 +1394,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 case PTCrime:
                 {
-                    NSString *rep = [CrimeData reportForControlNumber:_selectedCrime];
                     _selectedCrime = pi.refno;
                     marker.snippet = pi.identifier;
                     NSDateFormatter *dateFormatter = NSDateFormatter.new;
@@ -3555,6 +3555,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Display Report"])
+    {
+        [self displayCrimeReport];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Property Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Pipe Marker"] ||
@@ -3577,6 +3583,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    withObject:nil
                    afterDelay:0.3];
     }
+}
+
+- (void)displayCrimeReport
+{
+    NSString *reportText = [CrimeData reportForControlNumber:_selectedCrime];
+    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText];
+    
+    [self presentViewController:textVC
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)showPropReport
@@ -3745,7 +3761,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSString *flyOverURL = @"NVMapKitFlyover:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
-                                 forKey:@"SourceApplication"];
+                                 forKey:@"FlyoverSourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
@@ -5278,7 +5294,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeCrime:
             _selectedCrime = refno;
-            _options = @[@"Remove Crime Point Marker", @"Display Street View"];
+            _options = @[@"Remove Crime Point Marker", @"Display Report", @"Display Street View"];
             
             if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
             {
