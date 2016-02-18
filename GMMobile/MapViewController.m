@@ -3761,7 +3761,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSString *flyOverURL = @"NVMapKitFlyover:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
-                                 forKey:@"SourceApplication"];
+                                 forKey:@"FlyoverSourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
