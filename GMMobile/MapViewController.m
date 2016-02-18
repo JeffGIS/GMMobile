@@ -1497,6 +1497,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _selectedAlleySeg = _infoWindow.title = marker.title;
                 break;
                 
+            case MarkerInfoWindowTypeCrime:
+                _selectedCrime = _infoWindow.refno = marker.refno;
+                _infoWindow.title = marker.title;
+                break;
+                
             default:
                 break;
         }
