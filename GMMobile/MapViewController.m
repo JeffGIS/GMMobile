@@ -3593,7 +3593,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)displayCrimeReport
 {
     NSString *reportText = [CrimeData reportForControlNumber:_selectedCrime];
-    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText];
+    
+    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText
+                                             fontSize:16.0];
     
     [self presentViewController:textVC
                        animated:YES
