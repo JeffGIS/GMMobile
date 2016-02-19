@@ -568,9 +568,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     NSUInteger index = ((alertView.tag / 333) - 1);
     ThemeLegend *tl = (ThemeLegend *)_legends[index + _startingIndex];
+    BOOL disablePaging = NO;
     
     [alertView hideLargeAlertView:YES];
-    [_controller enablePaging];
     
     if (buttonIndex > 0)
     {
@@ -689,6 +689,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else if ([alertView.identifier isEqualToString:@"RandomColorAlert"] ||
                  [alertView.identifier isEqualToString:@"RandomColorConfirmation"])
         {
+            [_controller disablePaging];
+            disablePaging = YES;
             
             if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
                 _currentColorPalette = buttonIndex;
@@ -726,6 +728,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                      }];
     
     self.tabBarController.tabBar.userInteractionEnabled = YES;
+    
+    if (!disablePaging)
+        [_controller enablePaging];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
