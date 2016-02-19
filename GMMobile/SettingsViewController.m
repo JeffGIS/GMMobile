@@ -104,16 +104,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [super didReceiveMemoryWarning];
 }
 
-- (void)FTPdidComplete:(int)option
+- (void)FTPdidComplete:(FTPDataType)dataType
             withStatus:(int)status
        andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
     if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
-        switch (option)
+        switch (dataType)
         {
-            case GET_STORMPLAT:
+            case FTPDataPlat:
                 self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                               target:self
                                                             selector:@selector(getNextPlat)
@@ -138,7 +138,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
                     break;
                 
-                switch (option)
+                switch (dataType)
                 {
                     case GetDatabaseSettingParcels:
                     {
@@ -235,28 +235,28 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         BoundaryData *bd;
                         BOOL opened = NO;
                         
-                        if (option == GetDatabaseSettingSewer)
+                        if (dataType == GetDatabaseSettingSewer)
                         {
                             sd = [[SewerData alloc] init];
                             [sd open];
                         }
-                        else if (option == GetDatabaseSettingAreas)
+                        else if (dataType == GetDatabaseSettingAreas)
                         {
                             bd = [[BoundaryData alloc] init];
                             opened = [bd open];
                         }
-                        else if (option == GetDatabaseSettingAlleyWall)
+                        else if (dataType == GetDatabaseSettingAlleyWall)
                         {
                             awd = [[AlleyWallData alloc] init];
                             [awd open];
                         }
-                        else if (option == GetDatabaseSettingCrimes)
+                        else if (dataType == GetDatabaseSettingCrimes)
                         {
                             crimed = [[CrimeData alloc] init];
                             [crimed clear];
                             [crimed open];
                         }
-                        else if (option == GetDatabaseSettingCurbRamp)
+                        else if (dataType == GetDatabaseSettingCurbRamp)
                         {
                             crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
                                                           create:NO];
@@ -274,19 +274,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         CGFloat totLen = ftell(fid);
                         fseek(fid, 0, SEEK_SET);
                         
-                        if (option == GetDatabaseSettingSewer)
+                        if (dataType == GetDatabaseSettingSewer)
                             [sd startTransaction];
                         
-                        else if (option == GetDatabaseSettingAreas)
+                        else if (dataType == GetDatabaseSettingAreas)
                             [bd startTransaction];
                         
-                        else if (option == GetDatabaseSettingAlleyWall)
+                        else if (dataType == GetDatabaseSettingAlleyWall)
                             [awd startTransaction];
                         
-                        else if (option == GetDatabaseSettingCurbRamp)
+                        else if (dataType == GetDatabaseSettingCurbRamp)
                             [crd startTransaction];
                         
-                        else if (option == GetDatabaseSettingCrimes)
+                        else if (dataType == GetDatabaseSettingCrimes)
                             [crimed startTransaction];
                         
                         else
@@ -294,21 +294,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         
                         while (_keepGoing && fgetstring(str, (INPUTBUFSIZE - 2), fid))
                         {
-                            if (option == GetDatabaseSettingSewer)
+                            if (dataType == GetDatabaseSettingSewer)
                                 [sd executeCmd:str];
                             
-                            else if (option == GetDatabaseSettingAreas)
+                            else if (dataType == GetDatabaseSettingAreas)
                                 [bd executeCmd:str];
                             
-                            else if (option == GetDatabaseSettingCrimes)
+                            else if (dataType == GetDatabaseSettingCrimes)
                                 [crimed executeCmd:str];
                             
-                            else if (option == GetDatabaseSettingCurbRamp)
+                            else if (dataType == GetDatabaseSettingCurbRamp)
                                 [crd executeCmd:str
                                    sendToServer:NO
                                   useUniqueFile:NO];
                             
-                            else if (option == GetDatabaseSettingAlleyWall)
+                            else if (dataType == GetDatabaseSettingAlleyWall)
                             {
                                 [awd executeCmd:str
                                    sendToServer:NO
@@ -324,25 +324,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            });
                         }
                         
-                        if (option == GetDatabaseSettingSewer)
+                        if (dataType == GetDatabaseSettingSewer)
                             [sd commitTransaction];
                         
-                        else if (option == GetDatabaseSettingAreas)
+                        else if (dataType == GetDatabaseSettingAreas)
                             [bd commitTransaction];
                         
-                        else if (option == GetDatabaseSettingAlleyWall)
+                        else if (dataType == GetDatabaseSettingAlleyWall)
                             [awd commitTransaction];
                         
-                        else if (option == GetDatabaseSettingCrimes)
+                        else if (dataType == GetDatabaseSettingCrimes)
                             [crimed commitTransaction];
                         
-                        else if (option == GetDatabaseSettingCurbRamp)
+                        else if (dataType == GetDatabaseSettingCurbRamp)
                             [crd commitTransaction];
                         
                         else
                             [pd commitTransaction];
                         
-                        if (option == GetDatabaseSettingParcels)
+                        if (dataType == GetDatabaseSettingParcels)
                         {
                             dispatch_async(dispatch_get_main_queue(),
                                            ^{
@@ -354,19 +354,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             [pd commitTransaction];
                         }
                         
-                        if (option == GetDatabaseSettingSewer)
+                        if (dataType == GetDatabaseSettingSewer)
                             [sd close];
                         
-                        if (option == GetDatabaseSettingAreas)
+                        if (dataType == GetDatabaseSettingAreas)
                             [bd close:opened];
                         
-                        if (option == GetDatabaseSettingCrimes)
+                        if (dataType == GetDatabaseSettingCrimes)
                             [crimed close];
                         
-                        if (option == GetDatabaseSettingCurbRamp)
+                        if (dataType == GetDatabaseSettingCurbRamp)
                             [crd close:YES];
                         
-                        else if (option == GetDatabaseSettingAlleyWall)
+                        else if (dataType == GetDatabaseSettingAlleyWall)
                         {
                             NSString *deviceName = UIDevice.currentDevice.name;
                             BOOL sendToServer = NO;
@@ -436,7 +436,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        if (option == GET_STORMPLAT)
+        if (dataType == FTPDataPlat)
         {
             self.timer = [NSTimer scheduledTimerWithTimeInterval:0.15
                                                           target:self
@@ -474,7 +474,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingTiles;
+    pull.dataType = GetDatabaseSettingTiles;
     
     [_popover showAfter:0.5
               withTitle:@"Get Tilelist File"];
@@ -499,7 +499,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingProperty;
+    pull.dataType = GetDatabaseSettingProperty;
     
     [_popover showAfter:0.5
               withTitle:@"Get Property File"];
@@ -524,7 +524,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingParcels;
+    pull.dataType = GetDatabaseSettingParcels;
     
     [_popover showAfter:0.5
               withTitle:@"Get Parcel File"];
@@ -546,7 +546,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingCensus;
+    pull.dataType = GetDatabaseSettingCensus;
     
     [_popover showAfter:0.5
               withTitle:@"Get Census File"];
@@ -569,7 +569,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingAreas;
+    pull.dataType = GetDatabaseSettingAreas;
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
@@ -590,7 +590,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingCrimes;
+    pull.dataType = GetDatabaseSettingCrimes;
     
     [_popover showAfter:0.5
               withTitle:@"Get Crime File"];
@@ -616,7 +616,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingMapleGrove;
+    pull.dataType = GetDatabaseSettingMapleGrove;
     
     [_popover showAfter:0.5
               withTitle:@"Get Shape Files"];
@@ -651,7 +651,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingPlan;
+    pull.dataType = GetDatabaseSettingPlan;
     
     [_popover showAfter:0.5
               withTitle:@"Get Planimetric File"];
@@ -673,7 +673,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingAlleyWall;
+    pull.dataType = GetDatabaseSettingAlleyWall;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -694,7 +694,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingCurbRamp;
+    pull.dataType = GetDatabaseSettingCurbRamp;
     
     [_popover showAfter:0.5
               withTitle:@"Get Curb Ramp File"];
@@ -715,7 +715,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.option = GetDatabaseSettingSewer;
+    pull.dataType = GetDatabaseSettingSewer;
     
     [_popover showAfter:0.5
               withTitle:@"Get Sewer File"];

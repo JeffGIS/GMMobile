@@ -1798,7 +1798,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                          atZoom:_mapView.camera.zoom];
     }
 }
-- (void)FTPdidComplete:(int)option
+- (void)FTPdidComplete:(FTPDataType)dataType
             withStatus:(int)status
        andStatusString:(NSString *)statusString
               filePath:(NSString *)path
@@ -1809,9 +1809,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
-        switch (option)
+        switch (dataType)
         {
-            case GET_STORMPLAT:
+            case FTPDataPlat:
             {
                 CRAPI.sharedInstance.currentPlatImagePath = path;
                 CRAPI.sharedInstance.currentPlatType = @"storm";
@@ -1826,7 +1826,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
             }
                 break;
-            case GET_PDFFILE:
+            case FTPDataPDF:
             {
                 CRAPI.sharedInstance.currentPlatImagePath = path;
                 CRAPI.sharedInstance.currentPlatType = @"pdf";

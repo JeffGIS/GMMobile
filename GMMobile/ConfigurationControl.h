@@ -11,17 +11,6 @@
 typedef NS_ENUM(NSInteger, GetDatabaseSetting)
 {
     GetDatabaseSettingDefault,
-    GetDatabaseSettingProperty,
-    GetDatabaseSettingTiles,
-    GetDatabaseSettingParcels,
-    GetDatabaseSettingAreas,
-    GetDatabaseSettingSewer,
-    GetDatabaseSettingPlan,
-    GetDatabaseSettingCensus,
-    GetDatabaseSettingAlleyWall,
-    GetDatabaseSettingCurbRamp,
-    GetDatabaseSettingCrimes,
-    GetDatabaseSettingMapleGrove,
 };
 
 typedef NS_ENUM(NSInteger, HardCodedConfigs)
