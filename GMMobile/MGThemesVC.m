@@ -653,15 +653,6 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [self reloadTableViews];
-    
-    for (NVAlertView *alert in self.view.subviews)
-    {
-        if ([alert isKindOfClass:NVAlertView.class])
-        {
-            [self.view bringSubviewToFront:alert];
-            [alert willRotateWithDuration:duration];
-        }
-    }
 }
 
 - (void)addLegend:(UIButton *)button

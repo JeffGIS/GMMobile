@@ -8,6 +8,7 @@
 #import "CCodeLibrary/SymbolDictionary.h"
 #import "MapViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "NVPageController.h"
 
 @interface NVPageView () <UITableViewDataSource, UITableViewDelegate,UIGestureRecognizerDelegate>
 
@@ -18,8 +19,8 @@
 @property (nonatomic) NSMutableArray *countLengths, *dragSelectedCells;
 @property (nonatomic) MapViewController *mapVC;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
-@property (nonatomic) UIPageControl *pageControl;
 @property NVPageViewArrangement pageArrangement;
+@property (nonatomic) NVPageController *controller;
 
 @end
 
@@ -27,13 +28,14 @@
 
 + (instancetype)pageViewWithNumLegends:(NSUInteger)numLegends
                          startingIndex:(NSUInteger)startingIndex
-                           pageControl:(UIPageControl *)pageControl
-                       pageArrangement:(NVPageViewArrangement)pageArrangement;
+                       pageArrangement:(NVPageViewArrangement)pageArrangement
+                            controller:(NVPageController *)controller;
 {
     NVPageView *nvpv = NVPageView.new;
     nvpv.numLegends = numLegends;
     nvpv.startingIndex = startingIndex;
     nvpv.pageArrangement = pageArrangement;
+    nvpv.controller = controller;
     return nvpv;
 }
 
@@ -558,6 +560,7 @@ viewForHeaderInSection:(NSInteger)section
     
     alert.identifier = @"TopLevelAlert";
     alert.tag = button.tag;
+    [_controller disablePaging];
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -567,6 +570,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegend *tl = (ThemeLegend *)_legends[index + _startingIndex];
     
     [alertView hideLargeAlertView:YES];
+    [_controller enablePaging];
     
     if (buttonIndex > 0)
     {
@@ -933,10 +937,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     for (NVAlertView *alert in self.view.subviews)
     {
         if ([alert isKindOfClass:NVAlertView.class])
-        {
             [self.view bringSubviewToFront:alert];
-            [alert willRotateWithDuration:duration];
-        }
     }
 }
 

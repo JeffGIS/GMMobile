@@ -2346,15 +2346,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             }
         }
     }
-    
-    for (NVAlertView *alert in self.view.subviews)
-    {
-        if ([alert isKindOfClass:NVAlertView.class])
-        {
-            [self.view bringSubviewToFront:alert];
-            [alert willRotateWithDuration:duration];
-        }
-    }
 }
 
 - (BOOL)legendIsExpanded

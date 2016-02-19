@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, NVPageViewArrangement)
 
 + (instancetype)pageViewWithNumLegends:(NSUInteger)numLegends
                          startingIndex:(NSUInteger)startingIndex
-                           pageControl:(UIPageControl *)pageControl
-                       pageArrangement:(NVPageViewArrangement)pageArrangement;
+                       pageArrangement:(NVPageViewArrangement)pageArrangement
+                            controller:(UIPageViewController *)controller;
 
 @end

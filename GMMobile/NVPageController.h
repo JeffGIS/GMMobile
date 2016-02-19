@@ -9,5 +9,7 @@
 + (instancetype)pageControllerWithArrangementArray:(NSArray *)arrangementArray;
 
 - (void)addViewController:(UIViewController *)viewController;
+- (void)disablePaging;
+- (void)enablePaging;
 
 @end

@@ -736,15 +736,6 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [_intersectionsTV reloadData];
     [_rampTypeTV reloadData];
-    
-    for (NVAlertView *alert in self.view.subviews)
-    {
-        if ([alert isKindOfClass:NVAlertView.class])
-        {
-            [self.view bringSubviewToFront:alert];
-            [alert willRotateWithDuration:duration];
-        }
-    }
 }
 
 - (void)addLegend:(UIButton *)button

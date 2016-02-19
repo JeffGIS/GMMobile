@@ -4,7 +4,7 @@
 #import "NVPageController.h"
 #import "ConfigurationControl.h"
 
-@interface NVPageController ()  <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
+@interface NVPageController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate>
 
 @property (nonatomic) NSMutableArray *pages;
 @property (nonatomic) UIPageControl *pageControl;
@@ -71,8 +71,8 @@
     
     NVPageView *rootPV = [NVPageView pageViewWithNumLegends:numLegends
                                               startingIndex:0
-                                                pageControl:_pageControl
-                                            pageArrangement:rootPVArr];
+                                            pageArrangement:rootPVArr
+                                                 controller:self];
     
     index += numLegends;
     
@@ -85,8 +85,8 @@
         
         NVPageView *pv = [NVPageView pageViewWithNumLegends:numLegends
                                               startingIndex:index
-                                                pageControl:_pageControl
-                                            pageArrangement:pvArr];
+                                            pageArrangement:pvArr
+                                                 controller:self];
         
         [_pages addObject:pv];
     }
@@ -208,6 +208,16 @@
     }
     
     return numPages;
+}
+
+- (void)disablePaging
+{
+    self.dataSource = nil;
+}
+
+- (void)enablePaging
+{
+    self.dataSource = self;
 }
 
 @end
