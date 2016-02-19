@@ -1497,6 +1497,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _selectedAlleySeg = _infoWindow.title = marker.title;
                 break;
                 
+            case MarkerInfoWindowTypeCrime:
+                _selectedCrime = _infoWindow.refno = marker.refno;
+                _infoWindow.title = marker.title;
+                break;
+                
             default:
                 break;
         }
@@ -3588,7 +3593,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)displayCrimeReport
 {
     NSString *reportText = [CrimeData reportForControlNumber:_selectedCrime];
-    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText];
+    
+    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText
+                                             fontSize:16.0];
     
     [self presentViewController:textVC
                        animated:YES
