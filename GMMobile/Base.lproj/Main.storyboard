@@ -323,6 +323,7 @@
                             <constraint firstItem="Qkl-3k-69c" firstAttribute="leading" secondItem="flo-CK-0wd" secondAttribute="leading" id="bEb-fo-xMD"/>
                             <constraint firstItem="ImJ-e6-5Kh" firstAttribute="leading" secondItem="qOH-ol-jJa" secondAttribute="leading" id="bL4-IL-PEZ"/>
                             <constraint firstItem="ImJ-e6-5Kh" firstAttribute="width" secondItem="Qkl-3k-69c" secondAttribute="width" id="dnd-Pl-uNE"/>
+                            <constraint firstItem="8vt-Np-hlw" firstAttribute="leading" secondItem="flo-CK-0wd" secondAttribute="leading" id="dwm-C0-YRj"/>
                             <constraint firstItem="Qkl-3k-69c" firstAttribute="trailing" secondItem="qOH-ol-jJa" secondAttribute="trailing" id="fz5-E8-LR8"/>
                             <constraint firstItem="Qkl-3k-69c" firstAttribute="trailing" secondItem="flo-CK-0wd" secondAttribute="trailing" id="hx3-Ff-CiF"/>
                             <constraint firstItem="8vt-Np-hlw" firstAttribute="top" secondItem="qOH-ol-jJa" secondAttribute="bottom" constant="8" id="iKC-gq-XJg">
@@ -374,6 +375,7 @@
                                 <exclude reference="yss-o9-Wnd"/>
                                 <exclude reference="7JS-ao-9ez"/>
                                 <exclude reference="0l2-sK-xlV"/>
+                                <exclude reference="dwm-C0-YRj"/>
                                 <exclude reference="iKC-gq-XJg"/>
                                 <exclude reference="nbJ-ZJ-lvL"/>
                                 <exclude reference="HMD-tS-m7Z"/>
@@ -424,6 +426,11 @@
                         <variation key="heightClass=regular-widthClass=compact">
                             <mask key="constraints">
                                 <include reference="nbJ-ZJ-lvL"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=regular">
+                            <mask key="constraints">
+                                <include reference="dwm-C0-YRj"/>
                             </mask>
                         </variation>
                     </view>
