@@ -14,12 +14,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *legendButton;
 @property (weak, nonatomic) IBOutlet UIButton *modeButton;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIButton *multipleOffenseButton;
 
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
-@property (nonatomic) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes, *currentArray;
-@property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode;
+@property (nonatomic) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
+@property (nonatomic) NSArray *multipleOffenseOptions, *currentArray;
+@property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode, *selectedMultipleOffenseOption;
 @property NVMapModeType selectedModeType;
 
 @end
@@ -66,28 +68,35 @@
     
     _pinModes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals"];
     
-    _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare", @"Hotspot Map for Month with Monthly Compare",
-                      @"Hotspot Map for Week with Weekly Compare"];
+    _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare",
+                      @"Hotspot Map for Month with Monthly Compare", @"Hotspot Map for Week with Weekly Compare"];
     
-    _choroplethModes = @[@"Basic Choropleth Map for Precincts", @"Choropleth Map for Precincts by Year",@"Choropleth Map for Precincts by Month",
-                         @"Basic Choropleth Map for Wards", @"Choropleth Map for Wards by Year",@"Choropleth Map for Wards by Month",
-                         @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",@"Choropleth Map for Sectors by Month",
-                         @"Basic Choropleth Map for Neighborhoods",@"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+    _choroplethModes = @[@"Basic Choropleth Map for Precincts", @"Choropleth Map for Precincts by Year",
+                         @"Choropleth Map for Precincts by Month", @"Basic Choropleth Map for Wards",
+                         @"Choropleth Map for Wards by Year", @"Choropleth Map for Wards by Month",
+                         @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",
+                         @"Choropleth Map for Sectors by Month", @"Basic Choropleth Map for Neighborhoods",
+                         @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+    
+    _multipleOffenseOptions = @[@"Single Most Serious Offense per Incident", @"All Offenses"];
     
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
     _selectedLegend = _legends[0];
     _selectedMode = _modes[0][0];
+    _selectedMultipleOffenseOption = _multipleOffenseOptions[0];
     
     _modeButton.selected = YES;
     _areaTypeButton.selected = NO;
     _legendButton.selected = NO;
     _dateRangeButton.selected = NO;
+    _multipleOffenseButton.selected = NO;
     
     [self setupButton:_dateRangeButton];
     [self setupButton:_areaTypeButton];
     [self setupButton:_legendButton];
     [self setupButton:_modeButton];
+    [self setupButton:_multipleOffenseButton];
     
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
@@ -97,6 +106,9 @@
     
     [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
                  forState:UIControlStateNormal];
+    
+    [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offense Option:%@", _selectedMultipleOffenseOption]
+                                                       forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
                                                          [NSBundle.mainBundle pathForResource:@"checkmark"
@@ -230,6 +242,7 @@ didReturnFromDate:(NSInteger)fromDate
     [self updateButton:_legendButton];
     [self updateButton:_modeButton];
     [self updateButton:_dateRangeButton];
+    [self updateButton:_multipleOffenseButton];
 }
 
 - (IBAction)legend:(UIButton *)sender
@@ -239,6 +252,7 @@ didReturnFromDate:(NSInteger)fromDate
         _legendButton.selected = YES;
         _areaTypeButton.selected = NO;
         _modeButton.selected = NO;
+        _multipleOffenseButton.selected = NO;
         _currentArray = _legends;
         
         [self updateButtons];
@@ -253,6 +267,7 @@ didReturnFromDate:(NSInteger)fromDate
         _modeButton.selected = YES;
         _areaTypeButton.selected = NO;
         _legendButton.selected = NO;
+        _multipleOffenseButton.selected = NO;
         _currentArray = _modeTypes;
         
         [self updateButtons];
@@ -262,6 +277,21 @@ didReturnFromDate:(NSInteger)fromDate
     else if (_currentArray != _modeTypes)
     {
         _currentArray = _modeTypes;
+        [_tableView reloadData];
+    }
+}
+
+- (IBAction)multipleOffense:(id)sender
+{
+    if (!_multipleOffenseButton.selected)
+    {
+        _multipleOffenseButton.selected = YES;
+        _legendButton.selected = NO;
+        _areaTypeButton.selected = NO;
+        _modeButton.selected = NO;
+        _currentArray = _multipleOffenseOptions;
+        
+        [self updateButtons];
         [_tableView reloadData];
     }
 }
@@ -306,6 +336,9 @@ viewForHeaderInSection:(NSInteger)section
     else if (_currentArray == _modeTypes)
         headerLabel.text = @"Select Mode Type";
     
+    else if (_currentArray == _multipleOffenseOptions)
+        headerLabel.text = @"Select Multiple Offense Option";
+    
     else
         headerLabel.text = @"Select Mode";
     
@@ -337,7 +370,8 @@ viewForHeaderInSection:(NSInteger)section
         cell.accessoryType = UITableViewCellAccessoryNone;
         
         if ([_currentArray[indexPath.row] isEqualToString:_selectedLegend] ||
-            [_currentArray[indexPath.row] isEqualToString:_selectedMode])
+            [_currentArray[indexPath.row] isEqualToString:_selectedMode] ||
+            [_currentArray[indexPath.row] isEqualToString:_selectedMultipleOffenseOption])
         {
             cell.accessoryView = _checkmarkView;
         }
@@ -373,6 +407,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _currentArray = _modes[indexPath.row];
         _selectedModeType = (NVMapModeType)indexPath.row;
+    }
+    
+    else if (_currentArray == _multipleOffenseOptions)
+    {
+        _selectedMultipleOffenseOption = _multipleOffenseOptions[indexPath.row];
+        
+        [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offense Option:%@", _selectedMultipleOffenseOption]
+                                forState:UIControlStateNormal];
     }
     
     else

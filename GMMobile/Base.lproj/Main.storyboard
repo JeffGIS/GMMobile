@@ -269,6 +269,9 @@
                                 <state key="normal" title="multiple offense">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="multipleOffense:" destination="JyG-yu-lnh" eventType="touchUpInside" id="7zW-IJ-PHB"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -400,6 +403,7 @@
                         <outlet property="dateRangeButton" destination="ImJ-e6-5Kh" id="IHK-Iz-JQB"/>
                         <outlet property="legendButton" destination="qOH-ol-jJa" id="IHx-Z2-Pfi"/>
                         <outlet property="modeButton" destination="flo-CK-0wd" id="zHQ-ne-CQj"/>
+                        <outlet property="multipleOffenseButton" destination="8vt-Np-hlw" id="3jq-13-tqR"/>
                         <outlet property="tableView" destination="0gV-b1-Qb4" id="nNA-Zu-R3n"/>
                     </connections>
                 </viewController>
