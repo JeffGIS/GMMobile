@@ -52,7 +52,41 @@
     _pTranViewtoLL = STRANBoundsToCorners(corners, pvbounds);
 }
 
+- (BOOL) createCNUMCheckTable
+{
+    BOOL rtn = FALSE;
+    
+    NSString * cmd = @"DROP TABLE IF EXISTS CNUMCHECK;CREATE TEMP TABLE CNUMCHECK (ControlNbr INTEGER PRIMARY KEY ASC,UCR INT);";
+    [_cd executeCmd:(LPSTR)cmd.UTF8String];
+    return rtn;
+}
 
+- (BOOL) alreadyHaveThisCNUM:(int)controlNbr
+                         UCR:(int)UCR
+{
+    BOOL rtn = FALSE;
+    BOOL outOfOrder = FALSE;
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT UCR FROM CNUMCHECK WHERE ControlNbr = %i",controlNbr];
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int ucr = sqlite3_column_int(statement, 0);
+        if (UCR < ucr)
+            outOfOrder = TRUE;
+        rtn = TRUE;
+    }
+    SQLOK(sqlite3_finalize(statement), _cd.database);
+    if (!rtn)
+    {
+        query = [NSString stringWithFormat:@"INSERT INTO CNUMCHECK VALUES(%i,%i);",controlNbr,UCR];
+        [_cd executeCmd:(LPSTR)query.UTF8String];
+    }
+    return rtn;
+}
 
 - (void)displayCrimePoints:(CGContextRef)context
     displayCharacteristics:(DisplayCharacteristics *)dc
@@ -80,12 +114,19 @@
     HotSpot * hs = nil;
     DispersePoint *dp = nil;
     int iPass = 1;
+    BOOL wantAll = FALSE;
 
     if (_zoom > 14)
         sizeFactor += _zoom - 15;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     [_cd open];
     [_cd startTransaction];
+    
+    ConfigurationControl.sharedInstance.wantAllCrimes = TRUE;
+    if (!ConfigurationControl.sharedInstance.wantAllCrimes)
+        [self createCNUMCheckTable];
+    else
+        wantAll = TRUE;
     
     if (_mode == PINMAP)
     {
@@ -130,7 +171,6 @@ NextPass:
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
             BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
-            
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.minTime >=%f AND\
                      OFFENSEXY_index.maxTime <=%f AND\
@@ -154,11 +194,14 @@ NextPass:
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 controlNbr = sqlite3_column_int(statement,0);
+                dc.UCR = sqlite3_column_int(statement,4);
+                if (!wantAll && [self alreadyHaveThisCNUM:controlNbr
+                                          UCR:dc.UCR])
+                    continue;
                 BasePt[0].x = sqlite3_column_double(statement,1);
                 BasePt[0].y = sqlite3_column_double(statement,2);
                 offense = (LPSTR)sqlite3_column_text(statement,3);
                 dc.dPoint = BasePt[0];
-                dc.UCR = sqlite3_column_int(statement,4);
                 dc.itemBeginTime = sqlite3_column_int(statement,5);
                 [CRAPI.sharedInstance updateProgress:tot
                                              current:dc.itemBeginTime-fromTime
