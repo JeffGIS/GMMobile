@@ -5,6 +5,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/NVAlertView.h"
+#import "ConfigurationControl.h"
 #import "FindBoundariesViewController.h"
 
 @interface CrimeDataOptions () <FindBoundsViewControllerDelegate>
@@ -78,7 +79,7 @@
                          @"Choropleth Map for Sectors by Month", @"Basic Choropleth Map for Neighborhoods",
                          @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
     
-    _multipleOffenseOptions = @[@"Single Most Serious Offense per Incident", @"All Offenses"];
+    _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
     
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
@@ -107,7 +108,7 @@
     [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
                  forState:UIControlStateNormal];
     
-    [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offense Option:%@", _selectedMultipleOffenseOption]
+    [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                                                        forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
@@ -413,8 +414,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _selectedMultipleOffenseOption = _multipleOffenseOptions[indexPath.row];
         
-        [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offense Option:%@", _selectedMultipleOffenseOption]
+        [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                                 forState:UIControlStateNormal];
+        ConfigurationControl.sharedInstance.wantAllCrimes = [_selectedMultipleOffenseOption isEqualToString:@"All Offenses"];
+
+
     }
     
     else
@@ -425,22 +429,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if ([uppercaseMode containsString:@"PIN"])
             CRAPI.sharedInstance.crimeMode = PINMAP;
         
-        else if ([uppercaseMode containsString:@"CHOROPLETH"])
+        if ([uppercaseMode containsString:@"CHOROPLETH"])
             CRAPI.sharedInstance.crimeMode = CHOROPLETH;
         
-        else if ([uppercaseMode containsString:@"HOTSPOT"])
+        if ([uppercaseMode containsString:@"HOTSPOT"])
             CRAPI.sharedInstance.crimeMode = HOTSPOT;
         
-        else if ([uppercaseMode containsString:@"PRECINCTS"])
+        if ([uppercaseMode containsString:@"PRECINCTS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Precincts";
         
-        else if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
+        if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
         
-        else if ([uppercaseMode containsString:@"WARDS"])
+        if ([uppercaseMode containsString:@"WARDS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Wards";
         
-        else if ([uppercaseMode containsString:@"SECTORS"])
+        if ([uppercaseMode containsString:@"SECTORS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
         
         [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]

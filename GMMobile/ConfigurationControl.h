@@ -71,7 +71,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @property HardCodedConfigs legendApp;
 @property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible;
-
+@property BOOL wantAllCrimes;
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
 - (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;

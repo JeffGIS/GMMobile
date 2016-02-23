@@ -397,11 +397,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
                                            }
                                            
-                                           if (![fileManager removeItemAtPath:file
+                                           /*if (![fileManager removeItemAtPath:file
                                                                         error:&error])
                                            {
                                                NSLog(@"Could not delete %@:%@", file, error.localizedDescription);
-                                           }
+                                           }*/
                                        });
                     }
                     
