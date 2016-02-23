@@ -2090,6 +2090,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     [self clearVectorView];
     
+    if ([self.view.subviews containsObject:_nvdv])
+    {
+        [_nvdv clearDigitizerView];
+        [_nvdv placeTargetInCenter];
+    }
+    
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight +
