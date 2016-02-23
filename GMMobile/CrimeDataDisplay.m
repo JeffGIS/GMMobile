@@ -122,7 +122,6 @@
     [_cd open];
     [_cd startTransaction];
     
-    ConfigurationControl.sharedInstance.wantAllCrimes = TRUE;
     if (!ConfigurationControl.sharedInstance.wantAllCrimes)
         [self createCNUMCheckTable];
     else
