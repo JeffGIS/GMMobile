@@ -18,6 +18,7 @@
 #import "UserLayerDisplay.h"
 #import "ReaderViewController.h"
 #import "CCodeLibrary/NVTextVC.h"
+#import "CCodeLibrary/NVDigitizerView.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
@@ -29,7 +30,7 @@ typedef struct NVRegionQuadrants {
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate, ReaderViewControllerDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -82,6 +83,7 @@ typedef struct NVRegionQuadrants {
 @property BOOL emailPDFAfterUpdate, showsPanarama;
 @property (nonatomic) NVRegionQuadrants regionQuads;
 @property (nonatomic) ReaderViewController *readerVC;
+@property (nonatomic) NVDigitizerView *nvdv;
 
 @end
 
@@ -1916,6 +1918,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     
     [self clearVectorView];
     
+    if ([self.view.subviews containsObject:_nvdv])
+        [_nvdv clearDigitizerView];
+    
     if (_firstView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_firstView];
     
@@ -2021,6 +2026,9 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if (position.bearing == 0.0 && !_compass.hidden)
         [self hideCompass];
+    
+    if ([self.view.subviews containsObject:_nvdv])
+        [_nvdv setNeedsDisplay];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -2587,6 +2595,9 @@ haveVV:
                            
                            if([self.view viewWithTag:654321])
                                [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
+                           
+                           if ([self.view.subviews containsObject:_nvdv])
+                               [self.view bringSubviewToFront:_nvdv];
                            
                            if (_displayRandomColorAlert)
                            {
@@ -4690,8 +4701,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             break;
             
         case HCConfigMetroProp:
+        {
             _digitizationMode = DigitizationModeProperty;
-            break;
+            [self hideMarkersAndInfoWindows];
+            [_mapToolbar hide];
+            
+            _nvdv = [NVDigitizerView showDigitizerInView:self.view
+                                       constrainedToView:_mapView
+                                                delegate:self];
+            return;
+        }
         
         case HCConfigSewers:
             _digitizationMode = DigitizationModeSewer;
@@ -5741,6 +5760,16 @@ NVRegionQuadrants divideRegionIntoQuads(GMSVisibleRegion region)
     regionQuads.lowerLeftRegion.farRight = regionQuads.upperLeftRegion.nearRight;
     
     return regionQuads;
+}
+
+- (CLLocationCoordinate2D)coordinateForPoint:(CGPoint)point
+{
+    return [_mapView.projection coordinateForPoint:point];
+}
+
+- (CGPoint)pointForCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    return [_mapView.projection pointForCoordinate:coordinate];
 }
 
 @end

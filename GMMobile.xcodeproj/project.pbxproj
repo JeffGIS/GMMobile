@@ -74,6 +74,7 @@
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
+		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -311,6 +312,7 @@
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
+		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
@@ -651,6 +653,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */,
 				69DA47841C74CEFC0042E47F /* singleArrowReverse.png */,
 				69DA47851C74CEFC0042E47F /* singleArrowForward.png */,
 				69DA47861C74CEFC0042E47F /* doubleArrowForward.png */,
@@ -1160,6 +1163,7 @@
 				694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 				A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */,
+				6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
