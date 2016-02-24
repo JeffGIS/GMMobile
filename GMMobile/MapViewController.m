@@ -5778,4 +5778,12 @@ NVRegionQuadrants divideRegionIntoQuads(GMSVisibleRegion region)
     return [_mapView.projection pointForCoordinate:coordinate];
 }
 
+- (void)digitizerViewDidComplete:(NVDigitizerView *)digitizerView
+{
+    [digitizerView removeFromSuperview];
+    
+    [self showMarkersAndInfoWindows];
+    [_mapToolbar show];
+}
+
 @end
