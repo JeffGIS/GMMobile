@@ -288,6 +288,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayerZoom[HCConfigCrimes][HCLayerAerials] = 17;
         configLayerZoom[HCConfigMapleGrove][HCLayerAerials] = 17;
         
+        userAerials[HCConfigSewers] = YES;
         userAerials[HCConfigAlleyWalls] = YES;
         userAerials[HCConfigCrimes] = YES;
         configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
