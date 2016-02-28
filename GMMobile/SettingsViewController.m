@@ -135,7 +135,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
                 NSString *file;
                 
-                if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String))
+                if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String,0,0))
                     break;
                 
                 switch (dataType)
@@ -270,10 +270,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             opened = [pd open];
                         }
                         
-                        fseek(fid, 0, SEEK_END);
-                        CGFloat totLen = ftell(fid);
-                        fseek(fid, 0, SEEK_SET);
-                        
+                        CGFloat totLen = FileLength (fid);
                         if (dataType == GetDatabaseSettingSewer)
                             [sd startTransaction];
                         
