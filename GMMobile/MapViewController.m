@@ -5786,4 +5786,16 @@ NVRegionQuadrants divideRegionIntoQuads(GMSVisibleRegion region)
     [_mapToolbar show];
 }
 
+- (void)zoomMapToNearLeft:(CLLocationCoordinate2D)nearLeft
+                 farRight:(CLLocationCoordinate2D)farRight
+{
+    GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:farRight
+                                                                       coordinate:nearLeft];
+    
+    GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
+                                             withPadding:20.0];
+    
+    [_mapView animateWithCameraUpdate:update];
+}
+
 @end
