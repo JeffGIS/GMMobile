@@ -65,6 +65,14 @@ typedef NS_ENUM(NSInteger, AlleyWallSetting)
     AlleyWallSettingViewWallPhotos,
 };
 
+typedef NS_ENUM(NSInteger, CrimePointSetting)
+{
+    CrimePointSettingDefault,
+    CrimePointSettingDisplayReport,
+    CrimePointSettingPerformFlyAround,
+    CrimePointSettingDisplayStreetView,
+};
+
 typedef NS_ENUM(NSInteger, AlleyLineSetting)
 {
     AlleyLineSettingDefault,
