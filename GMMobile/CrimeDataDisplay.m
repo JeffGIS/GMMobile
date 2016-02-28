@@ -115,6 +115,7 @@
     DispersePoint *dp = nil;
     int iPass = 1;
     BOOL wantAll = FALSE;
+    int ii;
 
     if (_zoom > 14)
         sizeFactor += _zoom - 15;
@@ -170,7 +171,7 @@ NextPass:
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
             BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
-            query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
+            query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE, Attempt FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.minTime >=%f AND\
                      OFFENSEXY_index.maxTime <=%f AND\
                      OFFENSEXY_index.MinUCR  >=%f AND\
@@ -192,6 +193,7 @@ NextPass:
             
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
+                BOOL attempted = FALSE;;
                 controlNbr = sqlite3_column_int(statement,0);
                 dc.UCR = sqlite3_column_int(statement,4);
                 if (!wantAll && [self alreadyHaveThisCNUM:controlNbr
@@ -209,6 +211,9 @@ NextPass:
                 dc.itemEndTime = sqlite3_column_int(statement,6);
                 dept = (LPSTR)sqlite3_column_text(statement,7);
                 dc.sunAngle = sqlite3_column_int(statement,8);
+                LPSTR attempt = (LPSTR)sqlite3_column_text(statement,9);
+                if (*attempt == 'Y' || *attempt == 'y')
+                    attempted = TRUE;
                 dc.string1 = [NSString stringWithUTF8String:offense];
                 dc.string2 = [NSString stringWithUTF8String:dept];
                 dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
