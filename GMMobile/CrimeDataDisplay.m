@@ -218,7 +218,7 @@ NextPass:
                 dc.string2 = [NSString stringWithUTF8String:dept];
                 dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
                 size = 25;
-                if ((!pia || [pia DPointInArea:BasePt]) &&
+                if ((!pia || [pia DPointInArea:BasePt]) && attempted &&
                     [themes setDisplayCharacteristics:dc
                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
                 {

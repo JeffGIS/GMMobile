@@ -356,7 +356,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         NSSortDescriptor *sort = nil;
         
-        if ([_selectedType isEqualToString:@"Minneapolis Wards"])
+        if ([_selectedType isEqualToString:@"Entire City"])
+        {
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
+            CRAPI.sharedInstance.parcelTextOption = 2;
+            CRAPI.sharedInstance.currentOverallBoundaryName = @"Minneapolis";
+            CRAPI.sharedInstance.currentOverallBoundaryType = @"City";
+            CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+            self.tabBarController.selectedIndex = 0;
+            return;
+        }
+        else if ([_selectedType isEqualToString:@"Minneapolis Wards"])
         {
             sort = [NSSortDescriptor sortDescriptorWithKey:@"name"
                                                  ascending:YES

@@ -7,6 +7,7 @@
 #import "PropertyData.h"
 #import "CCodeLibrary/NVTextDrawing.h"
 #import "CCodeLibrary/NVColor.h"
+#import "ConfigurationControl.h"
 
 @implementation BoundaryAreaData
 
@@ -268,31 +269,43 @@
 - (NSMutableArray *)getBoundaryAreaTypes
 {
     NSMutableArray * types=[[NSMutableArray alloc] init];
-    sqlite3_stmt *statement = NULL;
-    NSString *query = [[NSString alloc] init];
     
-    BOOL opened = [self open];
-    
-    switch (CRAPI.sharedInstance.project)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
-        case PROJECT_METROGIS:
-            query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREA";
-            break;
+        [types addObject:@"Entire City"];
+        [types addObject:@"Minneapolis Precincts"];
+        [types addObject:@"Minneapolis Wards"];
+        [types addObject:@"Minneapolis Neighborhoods"];
+        [types addObject:@"Minneapolis Sectors"];
+        [types addObject:@"Other"];
     }
-    
-    SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    else
     {
-        LPSTR type = (LPSTR)sqlite3_column_text(statement, 0);
-        NSString *outString = [NSString stringWithFormat:@"%s", type];
-        [types addObject:outString];
+        sqlite3_stmt *statement = NULL;
+        NSString *query = [[NSString alloc] init];
+        
+        BOOL opened = [self open];
+        
+        switch (CRAPI.sharedInstance.project)
+        {
+            case PROJECT_METROGIS:
+                query = @"SELECT DISTINCT TYPE FROM BOUNDARYAREA";
+                break;
+        }
+        
+        SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            LPSTR type = (LPSTR)sqlite3_column_text(statement, 0);
+            NSString *outString = [NSString stringWithFormat:@"%s", type];
+            [types addObject:outString];
+        }
+        
+        SQLOK(sqlite3_finalize(statement), _database);
+        
+        [self close:opened];
     }
-    
-    SQLOK(sqlite3_finalize(statement), _database);
-    
-    [self close:opened];
-    
     return types;
 }
 
