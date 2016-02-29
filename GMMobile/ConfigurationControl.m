@@ -343,6 +343,9 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         case HCConfigCrimes:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
             CRAPI.sharedInstance.parcelTextOption = 2;
+            CRAPI.sharedInstance.currentOverallBoundaryName = @"Minneapolis";
+            CRAPI.sharedInstance.currentOverallBoundaryType = @"City";
+
             break;
         case HCConfigMapleGrove:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
