@@ -3195,8 +3195,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showStreetView];
         
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetView
-                                      forKey:@"PIDOption"];
+        switch (_infoWindow.type)
+        {
+            case MarkerInfoWindowTypePID:
+                [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetView
+                                              forKey:@"PIDOption"];
+                break;
+                
+            case MarkerInfoWindowTypeCrime:
+                [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetView
+                                              forKey:@"CrimePointOption"];
+                break;
+                
+            default:
+                break;
+        }
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -3571,6 +3584,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Display Report"])
     {
         [self displayCrimeReport];
+        
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayReport
+                                      forKey:@"CrimePointOption"];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -5488,6 +5504,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     [self snapToNode];
                     break;
                     
+                default:
+                    break;
+            }
+        }
+            
+        case MarkerInfoWindowTypeCrime:
+        {
+            option = [UserDefaults.defaults integerForKey:@"CrimePointOption"];
+            
+            switch (option)
+            {
+                case CrimePointSettingDisplayReport:
+                    [self displayCrimeReport];
+                    break;
+                    
+                case CrimePointSettingDisplayStreetView:
+                    [self showStreetView];
+                    break;
+                
                 default:
                     break;
             }
