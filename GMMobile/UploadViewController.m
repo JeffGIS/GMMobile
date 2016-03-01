@@ -149,10 +149,8 @@ Top:;
     
     [self setupLabels];
     
-    _progressView = [[NVProgressView alloc] initWithCenter:CGPointMake((self.view.frame.size.width / 2.0), 184.0)
-                                                     width:(self.view.frame.size.width - 80.0)
-                                                trackColor:UIColor.whiteColor
-                                             progressColor:UIColor.blackColor];
+    _progressView = [[NVProgressView alloc] initWithTrackColor:UIColor.whiteColor
+                                                 progressColor:UIColor.blackColor];
     
     _progressView.progress = 0;
     _progressView.hidden = YES;
