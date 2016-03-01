@@ -1087,23 +1087,35 @@ didReturnTimeInterval:(NSString *)timeInterval
                              completion:nil];
 }
 
-- (IBAction)uploadDatabases:(id)sender {
+- (IBAction)uploadDatabases:(id)sender
+{
     _push = [FTPDataPush push];
-    
     _push.delegate = self;
-    NSString * file;
-    NSString * fromDir;
-    NSString * toDir = @"NVMobile/UploadedDatabases";
+    _push.popover = _popover;
     
-    fromDir = CRAPI.sharedInstance.sharedFilePath;
-    file = @"Crimes.sqlite";
-    [_push sendFile:file fromDirectory:fromDir toFile:file toDirectory:toDir deleteWhenDone:NO];
+    NSString *file = @"Crimes.sqlite";
+    NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
+    NSString *toDir = @"NVMobile/UploadedDatabases";
+    
+    [_popover showAfter:0.5
+              withTitle:@"Upload Crimes Database"];
+    
+    [_push sendFile:file
+      fromDirectory:fromDir
+             toFile:file
+        toDirectory:toDir
+     deleteWhenDone:NO];
 }
 
-- (IBAction)outputFile:(id)sender {
-    NSString * outFile = @"hotspottest";
-    NSString * filepath = [NSString stringWithFormat:@"%@/%@.bin",CRAPI.sharedInstance.sharedFilePath,outFile];
-    [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath delegate:self];
-
+- (IBAction)outputFile:(id)sender
+{
+    NSString *outFile = @"hotspottest";
+    
+    NSString *filepath = [NSString stringWithFormat:@"%@/%@.bin",
+                           CRAPI.sharedInstance.sharedFilePath,outFile];
+    
+    [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath
+                                                       delegate:self];
 }
+
 @end
