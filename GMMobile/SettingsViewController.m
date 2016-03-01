@@ -22,6 +22,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *mapSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *platSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
+@property FTPDataPush *push;
 
 @end
 
@@ -102,6 +103,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)FTPPushDidComplete:(FTPDataType)dataType
+            withStatus:(int)status
+       andStatusString:(NSString *)statusString
+              filePath:(NSString *)path
+{
+    status = 1;
 }
 
 - (void)FTPdidComplete:(FTPDataType)dataType
@@ -1076,6 +1085,19 @@ didReturnTimeInterval:(NSString *)timeInterval
 {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
+}
+
+- (IBAction)uploadDatabases:(id)sender {
+    _push = [FTPDataPush push];
+    
+    _push.delegate = self;
+    NSString * file;
+    NSString * fromDir;
+    NSString * toDir = @"NVMobile/UploadedDatabases";
+    
+    fromDir = CRAPI.sharedInstance.sharedFilePath;
+    file = @"Crimes.sqlite";
+    [_push sendFile:file fromDirectory:fromDir toFile:file toDirectory:toDir deleteWhenDone:NO];
 }
 
 - (IBAction)outputFile:(id)sender {

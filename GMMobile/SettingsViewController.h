@@ -19,7 +19,7 @@
 @end
 
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate,MFMailComposeViewControllerDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,FTPDataPushDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate,MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, weak) id <SettingsViewControllerDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
@@ -33,5 +33,6 @@
 @property BOOL keepGoing;
 @property (nonatomic) NSTimer *timer;
 
+- (IBAction)uploadDatabases:(id)sender;
 - (IBAction)outputFile:(id)sender;
 @end

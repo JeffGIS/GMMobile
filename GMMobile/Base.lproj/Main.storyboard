@@ -5214,7 +5214,7 @@
                                 <rect key="frame" x="304" y="500" width="288" height="40"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                <state key="normal" title="Extra Button">
+                                <state key="normal" title="Upload Databases">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <variation key="heightClass=compact">
@@ -5223,6 +5223,9 @@
                                 <variation key="heightClass=regular-widthClass=compact">
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 </variation>
+                                <connections>
+                                    <action selector="uploadDatabases:" destination="nWl-XI-pP2" eventType="touchUpInside" id="p3I-lP-WLY"/>
+                                </connections>
                             </button>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lE2-Qe-58f">
                                 <rect key="frame" x="207" y="548" width="51" height="31"/>

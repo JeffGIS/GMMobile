@@ -13,6 +13,13 @@ typedef NS_ENUM(NSInteger, GetDatabaseSetting)
     GetDatabaseSettingDefault,
 };
 
+typedef NS_ENUM(NSInteger, AttemptedCrimeOptions)
+{
+    IncludeAttempts,
+    IgnoreAttempts,
+    OnlyAttempts
+};
+
 typedef NS_ENUM(NSInteger, HardCodedConfigs)
 {
     HCConfigAlleyWalls,
@@ -72,6 +79,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible;
 @property BOOL wantAllCrimes;
+@property AttemptedCrimeOptions  attemptedCrimeOption;
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
 - (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;

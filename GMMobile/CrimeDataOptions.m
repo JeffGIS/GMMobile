@@ -116,7 +116,7 @@
     [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                                                        forState:UIControlStateNormal];
     
-    [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Options:%@", _selectedAttemptOption]
+    [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Option:%@", _selectedAttemptOption]
                           forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
@@ -456,8 +456,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _selectedAttemptOption = _attemptOptions[indexPath.row];
         
-        [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Options:%@", _selectedAttemptOption]
+        [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Option:%@", _selectedAttemptOption]
                               forState:UIControlStateNormal];
+        ConfigurationControl.sharedInstance.attemptedCrimeOption = (int)indexPath.row;
     }
     
     else
