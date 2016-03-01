@@ -32,6 +32,7 @@
 {
     NSLog (@"SettingsVC released");
 }
+
 - (void) initFromDataLoader:(GSSiPopoverView*)popover
 {
     _fromDataLoader = YES;
@@ -106,11 +107,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)FTPPushDidComplete:(FTPDataType)dataType
-            withStatus:(int)status
-       andStatusString:(NSString *)statusString
-              filePath:(NSString *)path
+                withStatus:(int)status
+           andStatusString:(NSString *)statusString
+                  filePath:(NSString *)path
 {
-    status = 1;
+    NSLog(@"FTP push completed:%@", statusString);
 }
 
 - (void)FTPdidComplete:(FTPDataType)dataType
@@ -214,6 +215,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
                         _popover.title = @"Load Property Tables";
                     }
+                        break;
+                        
+                    default:
                         break;
                 }
                 
@@ -436,6 +440,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 //[self loadTilesFromList:path
                           //updatePopover:_popover];
             }
+                break;
+                
+            default:
                 break;
         }
     }
