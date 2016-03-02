@@ -19,13 +19,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NVMetroAppStoreIcon.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="577-3y-h6k">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="GMMobileIconAppStore.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="577-3y-h6k">
                                 <rect key="frame" x="60" y="60" width="480" height="480"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="577-3y-h6k" secondAttribute="height" multiplier="1:1" id="mgp-v8-xj6"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NVMetro" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pkF-Av-ODh">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GMMobile" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pkF-Av-ODh">
                                 <rect key="frame" x="60" y="548" width="480" height="44"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="40"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
@@ -53,6 +53,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NVMetroAppStoreIcon.jpg" width="1024" height="1024"/>
+        <image name="GMMobileIconAppStore.jpg" width="1024" height="1024"/>
     </resources>
 </document>

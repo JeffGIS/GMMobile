@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
@@ -74,7 +75,6 @@
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
-		6982095C1C87716F00A22F91 /* NVMetroAppStoreIcon.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6982095B1C87716F00A22F91 /* NVMetroAppStoreIcon.jpg */; };
 		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
@@ -225,6 +225,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = GMMobileIconAppStore.jpg; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
@@ -312,7 +313,6 @@
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
-		6982095B1C87716F00A22F91 /* NVMetroAppStoreIcon.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NVMetroAppStoreIcon.jpg; sourceTree = "<group>"; };
 		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -653,7 +653,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				6982095B1C87716F00A22F91 /* NVMetroAppStoreIcon.jpg */,
+				69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */,
 				6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */,
 				69DA47841C74CEFC0042E47F /* singleArrowReverse.png */,
 				69DA47851C74CEFC0042E47F /* singleArrowForward.png */,
@@ -1068,7 +1068,6 @@
 				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				694FB1EB1C588363005410F6 /* Reader-Thumbs.png in Resources */,
-				6982095C1C87716F00A22F91 /* NVMetroAppStoreIcon.jpg in Resources */,
 				694F93B51C30475500723155 /* questionMark.png in Resources */,
 				692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */,
 				69DE24221C761AEE00680B00 /* 3496627.TXT in Resources */,
@@ -1151,6 +1150,7 @@
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				694FB1EC1C588363005410F6 /* Reader-Thumbs@2x.png in Resources */,
+				69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */,
 				694FB1E01C588363005410F6 /* Reader-Export@2x.png in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
