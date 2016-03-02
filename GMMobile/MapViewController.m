@@ -310,6 +310,7 @@ typedef struct NVRegionQuadrants {
                                                   view:self.view
                                               delegate:self];
     
+    
     CRAPI.sharedInstance.mapToolbar = _mapToolbar;
     CRAPI.sharedInstance.mapVC = self;
     
