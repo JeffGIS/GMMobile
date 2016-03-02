@@ -1096,15 +1096,17 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     int numPoints = 0, numLoops = 0;
     int *polyPartLen = 0;
     //int ii=0;
-     UIColor *textColor = nil;
+    UIColor *textColor = nil;
     
-     if (ConfigurationControl.sharedInstance.GMTilesVisible)
-         textColor = UIColor.redColor;
+    if (text.length < 1)
+        return;
+    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+        textColor = UIColor.redColor;
     
-     else
-         textColor = UIColor.blackColor;
+    else
+        textColor = UIColor.blackColor;
     
-   
+    
     text = [text stringByReplacingOccurrencesOfString:@"& "
                                            withString:@"&\n"];
     
