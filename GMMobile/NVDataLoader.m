@@ -14,11 +14,13 @@
 - (void) dealloc
 {
     NSLog (@"Dataloader released");
+    [UIApplication.sharedApplication setIdleTimerDisabled:NO];
 }
 
 - (void)loadNVData:(HardCodedConfigs)appID
            popover:(GSSiPopoverView *)popover
 {
+    [UIApplication.sharedApplication setIdleTimerDisabled:YES];
     _popover = popover;
     _saveDelegate = popover.delegate;
     _popover.delegate = self;

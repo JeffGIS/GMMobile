@@ -40,7 +40,6 @@
     _keepGoing = NO;
     _saveDelegate = popover.delegate;
     _popover.delegate = self;
-    [UIApplication.sharedApplication setIdleTimerDisabled:YES];
 }
 
 - (void)viewDidLoad
@@ -428,7 +427,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             else
                                 [_delegate SettingsViewControllerFailed:status];
                         }
-                        [UIApplication.sharedApplication setIdleTimerDisabled:NO];
+
 
                     }
                 });
