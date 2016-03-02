@@ -97,7 +97,8 @@ typedef struct NVRegionQuadrants {
 {
     [super viewDidLoad];
     
-    NSLog(@"available storage space:%lu bytes", (unsigned long)UIDevice.availableStorageSpace);
+    NSLog(@"available storage space:%llu bytes",
+          (unsigned long long)UIDevice.availableStorageSpace);
     
     [NVTabBarEdit tabBarController:self.tabBarController
         removeViewControllerWithID:@"FieldOptionsVC"];
