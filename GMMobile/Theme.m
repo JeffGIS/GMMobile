@@ -801,7 +801,7 @@ int getThemeOpt(ThemeTypes type)
                 val = 0;
                 for (ThemeClass * cls in _classes)
                 {
-                    int classVal = [cls.title integerValue];
+                    int classVal = cls.title.intValue;
                     if (dc.UCR == classVal)
                     {
                         if ([self incrementCount:val

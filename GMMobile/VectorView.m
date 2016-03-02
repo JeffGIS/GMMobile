@@ -489,7 +489,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    sd.zoom = _zoom;
                                                    
                                                    [sd highlightStormLine:_context
-                                                                    refno:_pickedItem.refno
+                                                                    refno:(int)_pickedItem.refno
                                                                 llCorners:&_latlonCornerPoints
                                                                  LLBounds:&_latlonBounds
                                                                viewBounds:&_viewBounds];

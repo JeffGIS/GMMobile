@@ -1854,6 +1854,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
             }
                 break;
+                
+            default:
+                break;
         }
     }
     
