@@ -19,6 +19,7 @@
 #import "ReaderViewController.h"
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
+#import "CCodeLibrary/UIDevice+Storage.h"
 
 typedef struct NVRegionQuadrants {
     GMSVisibleRegion fullRegion;
@@ -95,6 +96,8 @@ typedef struct NVRegionQuadrants {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    NSLog(@"available storage space:%lu bytes", (unsigned long)UIDevice.availableStorageSpace);
     
     [NVTabBarEdit tabBarController:self.tabBarController
         removeViewControllerWithID:@"FieldOptionsVC"];
