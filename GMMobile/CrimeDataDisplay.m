@@ -195,7 +195,7 @@ NextPass:
             {
                 BOOL attempted = FALSE;;
                 controlNbr = sqlite3_column_int(statement,0);
-                dc.UCR = sqlite3_column_int(statement,4);
+                dc.UCR =sqlite3_column_int(statement,4);
                 if (!wantAll && [self alreadyHaveThisCNUM:controlNbr
                                           UCR:dc.UCR])
                     continue;
