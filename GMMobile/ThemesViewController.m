@@ -191,9 +191,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)NVDataLoaderFailed:(int)status
 {
-    _nvdl.popover = nil;
-    _nvdl.delegate = nil;
-    _nvdl = nil;
 }
 
 - (void)NVDataLoaderSuccess
@@ -215,6 +212,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
+//    _nvdl.popover = nil;
+//    _nvdl.delegate = nil;
+//    _nvdl = nil;
     
 }
 

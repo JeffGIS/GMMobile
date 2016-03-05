@@ -995,7 +995,8 @@ NextPass:
                        withinBounds:pvbounds
                            fontSize:fontSize
                         minFontSize:minFontSize
-                          textColor:textColor];
+                          textColor:textColor
+                       processingID:0];
         }
         free (llpoints);
     }

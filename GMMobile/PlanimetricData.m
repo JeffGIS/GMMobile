@@ -948,7 +948,8 @@
                withinBounds:0
                    fontSize:fontSize
                 minFontSize:minFontSize
-                  textColor:[UIColor blackColor]];
+                  textColor:[UIColor blackColor]
+                processingID:0];
     free (pPoints);
 
 }

@@ -144,17 +144,20 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     BOOL opened = [self open];
     if (_isOpen && _fileSize > 0)
     {
-        NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM PROPINFO"];
+        NSString *query = [NSString stringWithFormat:@"SELECT id FROM PROPINFO"];
         
         sqlite3_stmt *statement = NULL;
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 6);
         
-        if (sqlite3_step(statement) == SQLITE_ROW)
+        while (sqlite3_step(statement) == SQLITE_ROW)
         {
             int maxID = sqlite3_column_int(statement, 0);
             if (maxID > 0)
+            {
                 rtn = 0;
+                break;
+            }
         }
         
         SQLOKpd(sqlite3_finalize(statement), _database, 7);
@@ -1091,14 +1094,18 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     extern MNMXCORD curbounds;
     //BOOL dbug = NO;
-    CGFloat fontSize = 32.0;
-    CGFloat minFontSize = 8.0;
+    CGFloat scale = [UIScreen mainScreen].scale;
+    scale = [UIScreen mainScreen].nativeScale;
+    CGFloat fontSize = 28.0 * scale;
+    CGFloat minFontSize = 4.0 * scale;
     int numPoints = 0, numLoops = 0;
     int *polyPartLen = 0;
     //int ii=0;
     UIColor *textColor = nil;
     
     if (text.length < 1)
+        return;
+    if (text.length * minFontSize * minFontSize > maxPixels)
         return;
     if (ConfigurationControl.sharedInstance.GMTilesVisible)
         textColor = UIColor.redColor;
@@ -1169,7 +1176,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                withinBounds:&curbounds
                    fontSize:fontSize
                 minFontSize:minFontSize
-                  textColor:textColor];
+                  textColor:textColor
+               processingID:_processingID];
     if (polyPartLen)
         free (polyPartLen);
     
