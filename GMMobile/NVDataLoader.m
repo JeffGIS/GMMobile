@@ -140,8 +140,12 @@ Top:
             sel = @selector(loadAreas:);
             break;
             
+        case GetDatabaseSettingNVMetro:
+            sel = @selector(loadNVMetro:);
+            break;
+            
         case GetDatabaseSettingMapleGrove:
-            sel = @selector(loadMapleGrove);
+            sel = @selector(loadMapleGrove:);
             break;
             
         default:
@@ -163,6 +167,7 @@ Top:
     
     switch (dataSetID)
     {
+        case GetDatabaseSettingNVMetro:
         case GetDatabaseSettingParcels:
         {
             PropertyData *pd = [[PropertyData alloc] init];

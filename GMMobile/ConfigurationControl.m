@@ -370,46 +370,53 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 {
     NSMutableArray *list = [[NSMutableArray alloc] init];
 
-    NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingAreas];
-    [list addObject:dsid];
-    
-    for (int layer = 0; layer < NUMHardCodedLayers; layer++)
+    if (appID == HCConfigMetroProp)
     {
-        if (configLayers[appID][layer])
+        NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingNVMetro];
+        [list addObject:dsid];
+    }
+    else
+    {
+        NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingAreas];
+        [list addObject:dsid];
+        
+        for (int layer = 0; layer < NUMHardCodedLayers; layer++)
         {
-            switch (layer)
+            if (configLayers[appID][layer])
             {
-                case HCLayerParcels:
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingProperty]];
-                    break;
-                    
-                case HCLayerSewers:
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingSewer]];
-                    break;
-                    
-                case HCLayerPlanimetric:
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
-                    break;
-                    
-                case HCLayerAlleys:
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAlleyWall]];
-                    break;
-                    
-                case HCLayerCurbRamps:
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCurbRamp]];
-                    break;
-                    
-                case HCLayerMapleGroveFiber:
-                    [list addObject:[NSNumber numberWithInt:GetDatabaseSettingMapleGrove]];
-                    break;
+                switch (layer)
+                {
+                    case HCLayerParcels:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingProperty]];
+                        break;
+                        
+                    case HCLayerSewers:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingSewer]];
+                        break;
+                        
+                    case HCLayerPlanimetric:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
+                        break;
+                        
+                    case HCLayerAlleys:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAlleyWall]];
+                        break;
+                        
+                    case HCLayerCurbRamps:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCurbRamp]];
+                        break;
+                        
+                    case HCLayerMapleGroveFiber:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingMapleGrove]];
+                        break;
+                }
             }
         }
+        
+        if (appID == HCConfigMetroProp)
+            [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
     }
-    
-    if (appID == HCConfigMetroProp)
-        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
-    
     return list;
 }
 

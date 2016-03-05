@@ -45,4 +45,5 @@
 - (IBAction)loadCensus:(id)sender;
 - (IBAction)loadParcels:(id)sender;
 - (IBAction)loadDatabase:(id)sender;
+- (IBAction)loadNVMetro:(id)sender;
 @end

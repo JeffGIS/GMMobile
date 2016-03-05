@@ -149,6 +149,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
                 switch (dataType)
                 {
+                    case GetDatabaseSettingNVMetro:
+                    {
+                        [_popover hide];
+                        NSFileManager *fileManager = NSFileManager.defaultManager;
+                        NSError *error;
+                        
+                        if (![fileManager removeItemAtPath:path
+                                                     error:&error])
+                        {
+                            NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
+                        }
+                        goto Exit;
+                    }
+                        break;
                     case GetDatabaseSettingParcels:
                     {
                         file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
@@ -481,6 +495,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
     }
+Exit:
+    return;
 }
 
 - (IBAction)preloadTiles:(id)sender
@@ -568,6 +584,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [_popover showAfter:0.5
               withTitle:@"Get Census File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"GMMobile"
+           toFile:fileName
+      toDirectory:documentsDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+- (IBAction)loadNVMetro:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"MetroGIS_property.gcf";
+    
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.useOnlyPrimaryFTP = NO;
+    pull.dataType = GetDatabaseSettingCensus;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Data File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"
@@ -1105,12 +1142,14 @@ didReturnTimeInterval:(NSString *)timeInterval
     _push.delegate = self;
     _push.popover = _popover;
     
-    NSString *file = @"Crimes.sqlite";
-    NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
+    //NSString *file = @"Crimes.sqlite";
+    //NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
+    NSString *file = @"Property.sqlite";
+    NSString *fromDir = UserDefaults.defaults.localFilePath;
     NSString *toDir = @"NVMobile/UploadedDatabases";
     
     [_popover showAfter:0.5
-              withTitle:@"Upload Crimes Database"];
+              withTitle:@"Upload Database"];
     
     [_push sendFile:file
       fromDirectory:fromDir
