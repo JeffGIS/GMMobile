@@ -353,7 +353,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                             else
                                 [pd commitTransaction];
                             
-                            if (dataType == GetDatabaseSettingParcels)
+                           /* if (dataType == GetDatabaseSettingParcels)
                             {
                                 dispatch_async(dispatch_get_main_queue(),
                                                ^{
@@ -363,7 +363,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                 [pd startTransaction];
                                 [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
                                 [pd commitTransaction];
-                            }
+                            }*/
                             
                             if (dataType == GetDatabaseSettingSewer)
                                 [sd close];

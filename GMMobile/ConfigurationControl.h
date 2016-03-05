@@ -8,11 +8,6 @@
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 7
 
-typedef NS_ENUM(NSInteger, GetDatabaseSetting)
-{
-    GetDatabaseSettingDefault,
-};
-
 typedef NS_ENUM(NSInteger, AttemptedCrimeOptions)
 {
     IncludeAttempts,

@@ -65,7 +65,7 @@
 
 - (void)checkNextDataset:(NSTimer *)timer
 {
-    GetDatabaseSetting dataSetID = GetDatabaseSettingDefault;
+    FTPDataType dataSetID = 0;
     [self.timer invalidate];
 Top:
     if (!_dbList.count)
@@ -81,7 +81,7 @@ Top:
     }
     
     NSNumber *dsid = _dbList[0];
-    dataSetID = dsid.integerValue;
+    dataSetID = (FTPDataType)dsid.integerValue;
     
     if ([self haveDataset:dataSetID])
     {
@@ -92,7 +92,7 @@ Top:
     [self getNextDataset:dataSetID];
 }
 
-- (void)getNextDataset:(GetDatabaseSetting)dataSetID
+- (void)getNextDataset:(FTPDataType)dataSetID
 {
     CRAPI.sharedInstance.keepProcessing = -1;
     [self.timer invalidate];
@@ -157,7 +157,7 @@ Top:
     
 }
 
-- (BOOL)haveDataset:(GetDatabaseSetting)dataSetID
+- (BOOL)haveDataset:(FTPDataType)dataSetID
 {
     BOOL rtn = NO;
     

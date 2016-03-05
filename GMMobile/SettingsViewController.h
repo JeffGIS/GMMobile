@@ -35,4 +35,14 @@
 
 - (IBAction)uploadDatabases:(id)sender;
 - (IBAction)outputFile:(id)sender;
+- (IBAction)loadAreas:(id)sender;
+- (IBAction)loadCrimeData:(id)sender;
+- (IBAction)loadMapleGrove:(id)sender;
+- (IBAction)loadPlan:(id)sender;
+- (IBAction)loadAlleyWall:(id)sender;
+- (IBAction)loadCurbRamps:(id)sender;
+- (IBAction)loadSewer:(id)sender;
+- (IBAction)loadCensus:(id)sender;
+- (IBAction)loadParcels:(id)sender;
+- (IBAction)loadDatabase:(id)sender;
 @end
