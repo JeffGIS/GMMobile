@@ -140,6 +140,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingCensus:
             case GetDatabaseSettingCrimes:
             case GetDatabaseSettingMapleGrove:
+            case GetDatabaseSettingNVMetro:
             {
                 NSString *toDirectory = path.stringByDeletingLastPathComponent;
                 NSString *file;
@@ -594,14 +595,14 @@ Exit:
 - (IBAction)loadNVMetro:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MetroGIS_property.gcf";
+    NSString *fileName = @"MetroGIS_database.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
-    pull.dataType = GetDatabaseSettingCensus;
+    pull.dataType = GetDatabaseSettingNVMetro;
     
     [_popover showAfter:0.5
               withTitle:@"Get Data File"];
