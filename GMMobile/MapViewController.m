@@ -1342,7 +1342,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         propData.zoom = _mapView.camera.zoom;
         planData.zoom = _mapView.camera.zoom;
         
-        [propData pickPID:&llPropPt
+        [propData pickParcel:&llPropPt
             highlightList:highlightList];
         
         if ([ConfigurationControl.sharedInstance layer:HCLayerCrimes

@@ -63,6 +63,9 @@ typedef struct {int nMatchingProperties;
 
 - (int)pickPID:(LLPOINT *)pt
   highlightList:(NSMutableArray *)hlist;
+- (int)pickParcel:(LLPOINT *)pt
+    highlightList:(NSMutableArray*)hlist;
+
 - (BOOL)getAddressForPID:(NSString *)PID
          houseNumAndUnit:(NSString **)houseAndUnit
               streetName:(NSString **)streetName
