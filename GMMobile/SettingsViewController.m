@@ -142,278 +142,30 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingMapleGrove:
             case GetDatabaseSettingNVMetro:
             {
-                NSString *toDirectory = path.stringByDeletingLastPathComponent;
-                NSString *file;
-                
-                if (!DecompressGMZipFile((LPSTR)path.UTF8String, (LPSTR)toDirectory.UTF8String,0,0))
-                    break;
-                
-                switch (dataType)
-                {
-                    case GetDatabaseSettingNVMetro:
-                    {
-                        [_popover hide];
-                        NSFileManager *fileManager = NSFileManager.defaultManager;
-                        NSError *error;
-                        
-                        if (![fileManager removeItemAtPath:path
-                                                     error:&error])
-                        {
-                            NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
-                        }
-                        goto Exit;
-                    }
-                        break;
-                    case GetDatabaseSettingParcels:
-                    {
-                        file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
-                        _popover.title = @"Load Parcel Tables";
-                    }
-                        break;
-                        
-                    case GetDatabaseSettingCensus:
-                    {
-                        file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
-                        _popover.title = @"Load Census Tables";
-                    }
-                        break;
-                    case GetDatabaseSettingCrimes:
-                    {
-                        file = [NSString stringWithFormat:@"%@/crimes_latlon.sqltran",toDirectory];
-                        _popover.title = @"Load Crime Tables";
-                    }
-                        break;
-                    case GetDatabaseSettingMapleGrove:
-                    {
-                        [_popover hide];
-                        return;
-                    }
-                        break;
-                    case GetDatabaseSettingAreas:
-                    {
-                        file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
-                        _popover.title = @"Load Area Tables";
-                    }
-                        break;
-                        
-                    case GetDatabaseSettingPlan:
-                    {
-                        file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
-                        _popover.title = @"Load Planimetric Tables";
-                    }
-                        break;
-                        
-                    case GetDatabaseSettingAlleyWall:
-                    {
-                        file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
-                        _popover.title = @"Load AlleyWall Tables";
-                    }
-                        break;
-                        
-                    case GetDatabaseSettingCurbRamp:
-                    {
-                        file = [NSString stringWithFormat:@"%@/CurbRamp.sqltran",toDirectory];
-                        _popover.title = @"Load Curb Ramp Tables";
-                    }
-                        break;
-                        
-                    case GetDatabaseSettingSewer:
-                    {
-                        file = [NSString stringWithFormat:@"%@/sewer.sqltran",toDirectory];
-                        _popover.title = @"Load Sewer Tables";
-                    }
-                        break;
-                        
-                    case GetDatabaseSettingProperty:
-                    {
-                        file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
-                        _popover.title = @"Load Property Tables";
-                    }
-                        break;
-                        
-                    default:
-                        break;
-                }
-                
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
                 
                 dispatch_async(overallQueue,
-                ^{
-                    int status = 0;
-                    FILE *fid = fopen(file.UTF8String, "rb");
-                    if (fid)
-                    {
-                        LPSTR str = malloc(INPUTBUFSIZE);
-                        
-                        if (!str)
-                        {
-                            dispatch_async(dispatch_get_main_queue(),
-                                           ^{
-                                               _popover.title = @"Failed to get memory. Hit cancel to continue";
-                                           });
-                        }
-                        
-                        else
-                        {
-                            _keepGoing = YES;
-                            PropertyData *pd;
-                            SewerData *sd;
-                            AlleyWallData *awd;
-                            CurbRampData *crd;
-                            CrimeData *crimed;
-                            BoundaryData *bd;
-                            BOOL opened = NO;
-                            
-                            if (dataType == GetDatabaseSettingSewer)
-                            {
-                                sd = [[SewerData alloc] init];
-                                [sd open];
-                            }
-                            else if (dataType == GetDatabaseSettingAreas)
-                            {
-                                bd = [[BoundaryData alloc] init];
-                                opened = [bd open];
-                            }
-                            else if (dataType == GetDatabaseSettingAlleyWall)
-                            {
-                                awd = [[AlleyWallData alloc] init];
-                                [awd open];
-                            }
-                            else if (dataType == GetDatabaseSettingCrimes)
-                            {
-                                crimed = [[CrimeData alloc] init];
-                                [crimed clear];
-                                [crimed open];
-                            }
-                            else if (dataType == GetDatabaseSettingCurbRamp)
-                            {
-                                crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
-                                                              create:NO];
-                                [crd createIntersectionsTable:YES];
-                                [crd open];
-                            }
-                            
-                            else
-                            {
-                                pd = [[PropertyData alloc] init];
-                                opened = [pd open];
-                            }
-                            
-                            CGFloat totLen = FileLength (fid);
-                            if (dataType == GetDatabaseSettingSewer)
-                                [sd startTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingAreas)
-                                [bd startTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingAlleyWall)
-                                [awd startTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingCurbRamp)
-                                [crd startTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingCrimes)
-                                [crimed startTransaction];
-                            
-                            else
-                                [pd startTransaction];
-                            
-                            while (_keepGoing && fgetstring(str, (INPUTBUFSIZE - 2), fid))
-                            {
-                                if (dataType == GetDatabaseSettingSewer)
-                                    [sd executeCmd:str];
-                                
-                                else if (dataType == GetDatabaseSettingAreas)
-                                    [bd executeCmd:str];
-                                
-                                else if (dataType == GetDatabaseSettingCrimes)
-                                    [crimed executeCmd:str];
-                                
-                                else if (dataType == GetDatabaseSettingCurbRamp)
-                                    [crd executeCmd:str
-                                       sendToServer:NO
-                                      useUniqueFile:NO];
-                                
-                                else if (dataType == GetDatabaseSettingAlleyWall)
-                                {
-                                    [awd executeCmd:str
-                                       sendToServer:NO
-                                      useUniqueFile:NO];
-                                }
-                                
-                                else
-                                    [pd executeCmd:str];
-                                
-                                dispatch_async(dispatch_get_main_queue(),
-                                               ^{
-                                                   [_popover updateProgress:ftell(fid) / totLen];
-                                               });
-                            }
-                            
-                            if (dataType == GetDatabaseSettingSewer)
-                                [sd commitTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingAreas)
-                                [bd commitTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingAlleyWall)
-                                [awd commitTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingCrimes)
-                                [crimed commitTransaction];
-                            
-                            else if (dataType == GetDatabaseSettingCurbRamp)
-                                [crd commitTransaction];
-                            
-                            else
-                                [pd commitTransaction];
-                            
-                           /* if (dataType == GetDatabaseSettingParcels)
-                            {
-                                dispatch_async(dispatch_get_main_queue(),
-                                               ^{
-                                                   _popover.title = @"Create Parcel Index";
-                                               });
-                                
-                                [pd startTransaction];
-                                [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
-                                [pd commitTransaction];
-                            }*/
-                            
-                            if (dataType == GetDatabaseSettingSewer)
-                                [sd close];
-                            
-                            if (dataType == GetDatabaseSettingAreas)
-                                [bd close:opened];
-                            
-                            if (dataType == GetDatabaseSettingCrimes)
-                                [crimed close];
-                            
-                            if (dataType == GetDatabaseSettingCurbRamp)
-                                [crd close:YES];
-                            
-                            else if (dataType == GetDatabaseSettingAlleyWall)
-                            {
-                                NSString *deviceName = UIDevice.currentDevice.name;
-                                BOOL sendToServer = NO;
-                                
-                                if ([deviceName isEqualToString:@"GSSi-001"])
-                                    sendToServer = YES;
-                                
-                                [awd createNewTable:sendToServer];
-                                [awd transferExistingTableIntoNewTable:sendToServer];
-                                [awd close];
-                            }
-                            else
-                                [pd close:opened];
-                            
-                            fclose(fid);
-                            free(str);
-                            
-                            dispatch_async(dispatch_get_main_queue(),
-                                           ^{
-                                               [_popover hide];
-                                               
+                               ^{
+                                   NSString *toDirectory = path.stringByDeletingLastPathComponent;
+                                   NSString *file;
+                                   
+                                   CompressDecompress *cdc = [[CompressDecompress alloc]init];
+                                   cdc.popover = _popover;
+                                   dispatch_async(dispatch_get_main_queue(),
+                                                  ^{
+                                                      _popover.title = @"Installing Database";
+                                                  });
+                                   if ([cdc DecompressGMZipFile:(LPSTR)path.UTF8String
+                                                    toDirectory:(LPSTR)toDirectory.UTF8String])
+                                   {
+                                       switch (dataType)
+                                       {
+                                           case GetDatabaseSettingNVMetro:
+                                           {
+                                               dispatch_async(dispatch_get_main_queue(),
+                                                              ^{
+                                                                  [_popover hide];
+                                                              });
                                                NSFileManager *fileManager = NSFileManager.defaultManager;
                                                NSError *error;
                                                
@@ -422,41 +174,300 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                {
                                                    NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
                                                }
+                                               goto Exit;
+                                           }
+                                               break;
+                                           case GetDatabaseSettingParcels:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/parcelpoly.sqltran",toDirectory];
+                                               _popover.title = @"Load Parcel Tables";
+                                           }
+                                               break;
                                                
-                                               /*if (![fileManager removeItemAtPath:file
-                                                error:&error])
+                                           case GetDatabaseSettingCensus:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
+                                               _popover.title = @"Load Census Tables";
+                                           }
+                                               break;
+                                           case GetDatabaseSettingCrimes:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/crimes_latlon.sqltran",toDirectory];
+                                               _popover.title = @"Load Crime Tables";
+                                           }
+                                               break;
+                                           case GetDatabaseSettingMapleGrove:
+                                           {
+                                               [_popover hide];
+                                               return;
+                                           }
+                                               break;
+                                           case GetDatabaseSettingAreas:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/areapoly.sqltran",toDirectory];
+                                               _popover.title = @"Load Area Tables";
+                                           }
+                                               break;
+                                               
+                                           case GetDatabaseSettingPlan:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/planimetric.sqltran",toDirectory];
+                                               _popover.title = @"Load Planimetric Tables";
+                                           }
+                                               break;
+                                               
+                                           case GetDatabaseSettingAlleyWall:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/alleywall.sqltran",toDirectory];
+                                               _popover.title = @"Load AlleyWall Tables";
+                                           }
+                                               break;
+                                               
+                                           case GetDatabaseSettingCurbRamp:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/CurbRamp.sqltran",toDirectory];
+                                               _popover.title = @"Load Curb Ramp Tables";
+                                           }
+                                               break;
+                                               
+                                           case GetDatabaseSettingSewer:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/sewer.sqltran",toDirectory];
+                                               _popover.title = @"Load Sewer Tables";
+                                           }
+                                               break;
+                                               
+                                           case GetDatabaseSettingProperty:
+                                           {
+                                               file = [NSString stringWithFormat:@"%@/property.sqltran",toDirectory];
+                                               _popover.title = @"Load Property Tables";
+                                           }
+                                               break;
+                                               
+                                           default:
+                                               break;
+                                       }
+                                       
+                                       int status = 0;
+                                       FILE *fid = fopen(file.UTF8String, "rb");
+                                       if (fid)
+                                       {
+                                           LPSTR str = malloc(INPUTBUFSIZE);
+                                           
+                                           if (!str)
+                                           {
+                                               dispatch_async(dispatch_get_main_queue(),
+                                                              ^{
+                                                                  _popover.title = @"Failed to get memory. Hit cancel to continue";
+                                                              });
+                                           }
+                                           
+                                           else
+                                           {
+                                               _keepGoing = YES;
+                                               PropertyData *pd;
+                                               SewerData *sd;
+                                               AlleyWallData *awd;
+                                               CurbRampData *crd;
+                                               CrimeData *crimed;
+                                               BoundaryData *bd;
+                                               BOOL opened = NO;
+                                               
+                                               if (dataType == GetDatabaseSettingSewer)
+                                               {
+                                                   sd = [[SewerData alloc] init];
+                                                   [sd open];
+                                               }
+                                               else if (dataType == GetDatabaseSettingAreas)
+                                               {
+                                                   bd = [[BoundaryData alloc] init];
+                                                   opened = [bd open];
+                                               }
+                                               else if (dataType == GetDatabaseSettingAlleyWall)
+                                               {
+                                                   awd = [[AlleyWallData alloc] init];
+                                                   [awd open];
+                                               }
+                                               else if (dataType == GetDatabaseSettingCrimes)
+                                               {
+                                                   crimed = [[CrimeData alloc] init];
+                                                   [crimed clear];
+                                                   [crimed open];
+                                               }
+                                               else if (dataType == GetDatabaseSettingCurbRamp)
+                                               {
+                                                   crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
+                                                                                 create:NO];
+                                                   [crd createIntersectionsTable:YES];
+                                                   [crd open];
+                                               }
+                                               
+                                               else
+                                               {
+                                                   pd = [[PropertyData alloc] init];
+                                                   opened = [pd open];
+                                               }
+                                               
+                                               CGFloat totLen = FileLength (fid);
+                                               if (dataType == GetDatabaseSettingSewer)
+                                                   [sd startTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingAreas)
+                                                   [bd startTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingAlleyWall)
+                                                   [awd startTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingCurbRamp)
+                                                   [crd startTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingCrimes)
+                                                   [crimed startTransaction];
+                                               
+                                               else
+                                                   [pd startTransaction];
+                                               
+                                               while (_keepGoing && fgetstring(str, (INPUTBUFSIZE - 2), fid))
+                                               {
+                                                   if (dataType == GetDatabaseSettingSewer)
+                                                       [sd executeCmd:str];
+                                                   
+                                                   else if (dataType == GetDatabaseSettingAreas)
+                                                       [bd executeCmd:str];
+                                                   
+                                                   else if (dataType == GetDatabaseSettingCrimes)
+                                                       [crimed executeCmd:str];
+                                                   
+                                                   else if (dataType == GetDatabaseSettingCurbRamp)
+                                                       [crd executeCmd:str
+                                                          sendToServer:NO
+                                                         useUniqueFile:NO];
+                                                   
+                                                   else if (dataType == GetDatabaseSettingAlleyWall)
+                                                   {
+                                                       [awd executeCmd:str
+                                                          sendToServer:NO
+                                                         useUniqueFile:NO];
+                                                   }
+                                                   
+                                                   else
+                                                       [pd executeCmd:str];
+                                                   
+                                                   dispatch_async(dispatch_get_main_queue(),
+                                                                  ^{
+                                                                      [_popover updateProgress:ftell(fid) / totLen];
+                                                                  });
+                                               }
+                                               
+                                               if (dataType == GetDatabaseSettingSewer)
+                                                   [sd commitTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingAreas)
+                                                   [bd commitTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingAlleyWall)
+                                                   [awd commitTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingCrimes)
+                                                   [crimed commitTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingCurbRamp)
+                                                   [crd commitTransaction];
+                                               
+                                               else
+                                                   [pd commitTransaction];
+                                               
+                                               /* if (dataType == GetDatabaseSettingParcels)
                                                 {
-                                                NSLog(@"Could not delete %@:%@", file, error.localizedDescription);
+                                                dispatch_async(dispatch_get_main_queue(),
+                                                ^{
+                                                _popover.title = @"Create Parcel Index";
+                                                });
+                                                
+                                                [pd startTransaction];
+                                                [pd executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
+                                                [pd commitTransaction];
                                                 }*/
-                                           });
-                        }
-                    }
-                    else
-                        _popover.title = @"Invalid file";
-                    if (_fromDataLoader)
-                    {
-                        if (!_keepGoing)
-                            status = DLSTATUS_USER_CANCELLED;
-                        
-                        if (_delegate)
-                        {
-                            if (!status)
-                                [_delegate SettingsViewControllerSuccess];
-                            
-                            else
-                                [_delegate SettingsViewControllerFailed:status];
-                        }
-
-
-                    }
-                });
+                                               
+                                               if (dataType == GetDatabaseSettingSewer)
+                                                   [sd close];
+                                               
+                                               if (dataType == GetDatabaseSettingAreas)
+                                                   [bd close:opened];
+                                               
+                                               if (dataType == GetDatabaseSettingCrimes)
+                                                   [crimed close];
+                                               
+                                               if (dataType == GetDatabaseSettingCurbRamp)
+                                                   [crd close:YES];
+                                               
+                                               else if (dataType == GetDatabaseSettingAlleyWall)
+                                               {
+                                                   NSString *deviceName = UIDevice.currentDevice.name;
+                                                   BOOL sendToServer = NO;
+                                                   
+                                                   if ([deviceName isEqualToString:@"GSSi-001"])
+                                                       sendToServer = YES;
+                                                   
+                                                   [awd createNewTable:sendToServer];
+                                                   [awd transferExistingTableIntoNewTable:sendToServer];
+                                                   [awd close];
+                                               }
+                                               else
+                                                   [pd close:opened];
+                                               
+                                               fclose(fid);
+                                               free(str);
+                                               
+                                               dispatch_async(dispatch_get_main_queue(),
+                                                              ^{
+                                                                  [_popover hide];
+                                                                  
+                                                                  NSFileManager *fileManager = NSFileManager.defaultManager;
+                                                                  NSError *error;
+                                                                  
+                                                                  if (![fileManager removeItemAtPath:path
+                                                                                               error:&error])
+                                                                  {
+                                                                      NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
+                                                                  }
+                                                                  
+                                                                  /*if (![fileManager removeItemAtPath:file
+                                                                   error:&error])
+                                                                   {
+                                                                   NSLog(@"Could not delete %@:%@", file, error.localizedDescription);
+                                                                   }*/
+                                                              });
+                                           }
+                                       }
+                                       else
+                                           _popover.title = @"Invalid file";
+                                       if (_fromDataLoader)
+                                       {
+                                           if (!_keepGoing)
+                                               status = DLSTATUS_USER_CANCELLED;
+                                           
+                                           if (_delegate)
+                                           {
+                                               if (!status)
+                                                   [_delegate SettingsViewControllerSuccess];
+                                               
+                                               else
+                                                   [_delegate SettingsViewControllerFailed:status];
+                                           }
+                                           
+                                           
+                                       }
+                                   }
+                               Exit:;
+                               });
             }
                 break;
                 
             case GetDatabaseSettingTiles:
             {
                 //[self loadTilesFromList:path
-                          //updatePopover:_popover];
+                //updatePopover:_popover];
             }
                 break;
                 
@@ -486,8 +497,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
             else
             {
-               [_popover hide];
-               NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                [_popover hide];
+                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                                   delegate:self
                                                                      title:statusString
                                                            buttonTextArray:@[@"OK"]

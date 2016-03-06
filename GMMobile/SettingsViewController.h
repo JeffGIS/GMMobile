@@ -5,6 +5,7 @@
 #import <MessageUI/MessageUI.h>
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/NVAlertView.h"
+#import "CCodeLibrary/CompressDecompress.h"
 
 #define DLSTATUS_USER_CANCELLED 1
 #define DLSTATUS_FTP_FAILED 2
