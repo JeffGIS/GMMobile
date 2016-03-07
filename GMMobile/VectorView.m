@@ -146,8 +146,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
 - (void)drawRect:(CGRect)rect
 {
+    
+    
     if (CRAPI.sharedInstance.keepProcessing < 0)
         return;
+    
     int scale = UIScreen.mainScreen.scale;
     _vectorViewContext = UIGraphicsGetCurrentContext();
     if (!_vectorViewContext || !CRAPI.sharedInstance.keepProcessing)
@@ -536,7 +539,6 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                //[self freeResources];
                                NSLog (@"Vector view complete");
                            });
-        
     }
 }
 

@@ -85,6 +85,7 @@ typedef struct NVRegionQuadrants {
 @property (nonatomic) NVRegionQuadrants regionQuads;
 @property (nonatomic) ReaderViewController *readerVC;
 @property (nonatomic) NVDigitizerView *nvdv;
+@property (nonatomic) CrimeData *cd;
 
 @end
 
@@ -359,6 +360,7 @@ typedef struct NVRegionQuadrants {
                                                                                              ofType:@"png"]];
     
     [self.view addSubview:_myLocationMarker];
+    [self becomeFirstResponder];
 }
 
 - (void)becameActive:(id)selector
@@ -2454,6 +2456,7 @@ haveVV:
 {
     if (!_showsPanarama)
     {
+        CRAPI.sharedInstance.blockShake = YES;
         [self clearVectorView];
         _vectorViewZoom = zoom;
         
@@ -2649,6 +2652,8 @@ haveVV:
                        
                        if (_emailPDFAfterUpdate)
                            [self emailPDF:nil];
+                       
+                       CRAPI.sharedInstance.blockShake = NO;
                    });
 }
 
@@ -5838,6 +5843,24 @@ NVRegionQuadrants divideRegionIntoQuads(GMSVisibleRegion region)
                                              withPadding:20.0];
     
     [_mapView animateWithCameraUpdate:update];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)motionEnded:(UIEventSubtype)motion
+          withEvent:(UIEvent *)event
+{
+    if (motion == UIEventSubtypeMotionShake && !CRAPI.sharedInstance.blockShake)
+    {
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+        {
+            _cd = [CrimeData new];
+            [_cd update:self.view];
+        }
+    }
 }
 
 @end
