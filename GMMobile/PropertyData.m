@@ -764,6 +764,101 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
      CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
      */
 }
+- (int)pickParcel:(LLPOINT *)pt
+ highlightList:(NSMutableArray*)hlist
+{
+    if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
+                                      visibleAtZoom:_zoom
+                                            andPass:PickPass])
+        return 0;
+    
+    NSString *minPID = [[NSString alloc] init];
+    CGFloat d, mind = DBL_MAX;
+    DPOINT p1, p2, minpt;
+    int minref = 0;
+    int refno;
+    int npicked = 0;
+    DPOINT BasePt;
+    LPSTR pid;
+    int numPoints, numLoops;
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
+    BOOL opened = [self open];
+    
+    /*    NSString *query = [NSString stringWithFormat:@"SELECT PROPINFO.id, PIN, LATITUDE, LONGITUDE FROM PROPINFO,PROPINFO_index WHERE PROPINFO.id=PROPINFO_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+     bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];*/
+    NSString *query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id FROM PARCELPOLY,PARCELPOLY_index WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                       bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 34);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        pid = (LPSTR)sqlite3_column_text(statement, 0);
+        BasePt.x = sqlite3_column_double(statement,1);
+        BasePt.y = sqlite3_column_double(statement,2);
+        numPoints = sqlite3_column_int(statement,3);
+        numLoops = sqlite3_column_int(statement,4);
+        int *polyPartLen = (int *)sqlite3_column_blob(statement,5);
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,6);
+        refno = sqlite3_column_int(statement,7);
+        
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        
+        if (numPoints < 0)
+        {
+            numPoints = -numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < numPoints; i++)
+            {
+                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            }
+        }
+        
+        else for (int i = 0; i < numPoints; i++)
+        {
+            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        }
+        if (POINT_IN_AREAD(p1, numPoints, llpoints, 1, 0, 0, 0))
+        {
+            npicked++;
+            minref = refno;
+            mind = 0;
+            minpt = p1;
+            minPID = [NSString stringWithUTF8String:pid];
+        }
+        free (llpoints);
+        if (npicked)
+            break;
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), _database, 35);
+    [self close:opened];
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    if (npicked)
+    {
+        PickedItem *pi = [[PickedItem alloc]init];
+        pi.itemType = PTPid;
+        pi.distance = mind;
+        pi.pickedPoint = minpt;
+        pi.identifier = minPID;
+        pi.symbolName = @"PARCEL";
+        pi.refno = minref;
+        [hlist addObject:pi];
+    }
+    return npicked;
+}
 
 - (void)displayParcels:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
