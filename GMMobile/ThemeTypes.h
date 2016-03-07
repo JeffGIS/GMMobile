@@ -12,6 +12,8 @@
 typedef NS_ENUM(NSInteger, ThemeTypes)
 {
     Part1Theme,
+    Part2Theme,
+    AssaultTheme,
     DepartmentTheme,
     DayNightTheme,
     YearTheme,
