@@ -360,7 +360,6 @@ typedef struct NVRegionQuadrants {
                                                                                              ofType:@"png"]];
     
     [self.view addSubview:_myLocationMarker];
-    [self becomeFirstResponder];
 }
 
 - (void)becameActive:(id)selector
