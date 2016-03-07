@@ -345,8 +345,7 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Test PDF Reader Core", @"Test Calendar Interface",/*@"Test OpenGLES",*/
-                  @"Draw hotspottest.bin" /*, @"Test Compression & Upload"*/];
+                  @"Test Calendar Interface", @"Draw hotspottest.bin"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
@@ -538,12 +537,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                animated:YES
                              completion:nil];
         }
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test OpenGLES"])
-    {
-        [self createGLView];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
