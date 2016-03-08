@@ -116,9 +116,11 @@
     int iPass = 1;
     BOOL wantAll = FALSE;
     int ii;
+    CGFloat scale = [UIScreen mainScreen].nativeScale;
 
-    if (_zoom > 14)
-        sizeFactor += _zoom - 15;
+    if (_zoom > 15)
+        sizeFactor += (_zoom - 15)/2;
+    sizeFactor *= scale/2;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     [_cd open];
     [_cd startTransaction];
