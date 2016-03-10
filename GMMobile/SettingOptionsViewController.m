@@ -324,10 +324,7 @@ EAGLContext *CreateBestEAGLContext()
     UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
                                                                                         ofType:@"png"]];
     
-    UIImage *shopping = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"shoppingCart"
-                                                                                       ofType:@"png"]];
-    
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, shopping, nil];
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, nil];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
@@ -344,7 +341,7 @@ EAGLContext *CreateBestEAGLContext()
     [super viewWillAppear:animated];
     
     _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Make In-App Purchase", @"Access Contacts", @"Track User Location", @"Select Organization",
+                  @"Access Contacts", @"Track User Location", @"Select Organization",
                   @"Test Calendar Interface", @"Draw hotspottest.bin"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
@@ -494,17 +491,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Make In-App Purchase"])
-    {
-        NSSet *prodID = [NSSet setWithObjects:@"com.gssi.gmmobile_TestVideo",
-                         @"com.gssi.gmmobile_NVMetroPropData", nil];
-        
-        SKProductsRequest *skpr = [[SKProductsRequest alloc] initWithProductIdentifiers:prodID];
-        skpr.delegate = self;
-        [skpr start];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Access Contacts"])
     {
         _nvcp = [NVContactPicker presentContactPickerInDelegate:self];
@@ -566,128 +552,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
-}
-
-- (void)productsRequest:(SKProductsRequest *)request
-     didReceiveResponse:(SKProductsResponse *)response
-{
-    _products = response.products;
-    
-    NSMutableArray *prodNames = NSMutableArray.array;
-    
-    for (SKProduct *prods in _products)
-    {
-        [prodNames addObject:[NSString stringWithFormat:@"%@\n$%@",
-                              prods.localizedDescription, prods.price]];
-    }
-    
-    [prodNames addObject:@"Cancel"];
-    
-    for (NSString *IDs in response.invalidProductIdentifiers)
-        NSLog(@"INVALID PRODUCT:%@", IDs);
-    
-    if (_products.count)
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:@"Available In-App Purchases"
-                                                   buttonTextArray:prodNames
-                                                  destructiveIndex:0];
-
-        alert.tag = 12345;
-    }
-}
-
-- (void)paymentQueue:(SKPaymentQueue *)queue
- updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions
-{
-    for (SKPaymentTransaction *trans in transactions)
-    {
-        if (trans.transactionState == SKPaymentTransactionStatePurchased)
-        {
-            [SKPaymentQueue.defaultQueue startDownloads:trans.downloads];
-        }
-    }
-}
-
-- (void)paymentQueue:(SKPaymentQueue *)queue
-    updatedDownloads:(NSArray<SKDownload *> *)downloads
-{
-    for (SKDownload *dload in downloads)
-    {
-        NSLog(@"IAP Download Progress:%f%%", (dload.progress * 100.0));
-        
-        if (dload.progress == 1.0)
-        {
-            NSString *cachesPath = dload.contentURL.relativePath;
-            NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-            NSError *error = nil;
-            BOOL isVideo = NO;
-            
-            NSString *contentsPath = [NSString stringWithFormat:@"%@/Contents", cachesPath];
-            
-            NSArray *dirContents = [NSFileManager.defaultManager contentsOfDirectoryAtPath:contentsPath
-                                                                                     error:&error];
-            
-            if (error)
-                NSLog(@"DIR CONTENTS ERROR:%@", error.localizedDescription);
-            
-            for (NSString *fileName in dirContents)
-            {
-                if ([fileName containsString:@".mp4"] || [fileName containsString:@".sqlite"])
-                {
-                    _iapFilePath = [NSString stringWithFormat:@"%@/%@", documentsDirectory, fileName];
-                    NSString *oldFilePath = [NSString stringWithFormat:@"%@/%@", contentsPath, fileName];
-                    
-                    if ([NSFileManager.defaultManager moveItemAtPath:oldFilePath
-                                                              toPath:_iapFilePath
-                                                               error:&error])
-                    {
-                        NSLog(@"IAP FilePath:%@", _iapFilePath.description);
-                    }
-                    
-                    else
-                        NSLog(@"FILE MOVE ERROR (%@):%@", fileName, error.localizedDescription);
-                    
-                    isVideo = [fileName containsString:@".mp4"];
-                }
-            }
-            
-            [queue finishTransaction:dload.transaction];
-            [self playPromoVideo];
-        }
-    }
-}
-
-- (void)playPromoVideo
-{
-    _mpController = [[MPMoviePlayerController alloc] initWithContentURL:
-                     [NSURL fileURLWithPath:_iapFilePath]];
-    
-    _mpController.controlStyle = MPMovieControlStyleFullscreen;
-    [_mpController prepareToPlay];
-    
-    UIWindow *backgroundWindow = UIApplication.sharedApplication.keyWindow;
-    _mpController.view.frame = backgroundWindow.frame;
-    [backgroundWindow addSubview:_mpController.view];
-    
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(promoVideoFinished:)
-                                               name:MPMoviePlayerPlaybackDidFinishNotification
-                                             object:_mpController];
-    
-    [_mpController play];
-}
-
-- (void)promoVideoFinished:(NSNotification *)notification
-{
-    [_mpController.view removeFromSuperview];
-    
-    [NSNotificationCenter.defaultCenter removeObserver:self
-                                                  name:MPMoviePlayerPlaybackDidFinishNotification
-                                                object:_mpController];
-    
-    _mpController = nil;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -785,31 +649,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)alertView:(NVAlertView *)alertView
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (alertView.tag == 12345)
+    if (buttonIndex == 1)
     {
-        if (buttonIndex < _products.count)
-        {
-            SKProduct *product = _products[buttonIndex];
-            
-            SKPayment *payment = [SKPayment paymentWithProduct:product];
-            SKPaymentQueue *payQueue = SKPaymentQueue.defaultQueue;
-            
-            [payQueue addTransactionObserver:self];
-            [payQueue addPayment:payment];
-        }
-    }
-    
-    else
-    {
-        if (buttonIndex == 1)
-        {
-            NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
-                                                             delegate:self
-                                                                title:@"Password Required for Access to Load Data"];
-            
-            textAlert.keyboardType = UIKeyboardTypeNumberPad;
-            textAlert.minimumCharacters = 0;
-        }
+        NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
+                                                         delegate:self
+                                                            title:@"Password Required for Access to Load Data"];
+        
+        textAlert.keyboardType = UIKeyboardTypeNumberPad;
+        textAlert.minimumCharacters = 0;
     }
     
     [alertView hideLargeAlertView:YES];
