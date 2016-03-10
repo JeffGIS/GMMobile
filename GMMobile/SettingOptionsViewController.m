@@ -615,13 +615,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     for (SKDownload *dload in downloads)
     {
+        NSLog(@"IAP Download Progress:%f%%", (dload.progress * 100.0));
+        
         if (dload.progress == 1.0)
         {
             NSString *cachesPath = dload.contentURL.relativePath;
-            
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *documentsDirectory = paths.firstObject;
-            NSError *error;
+            NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+            NSError *error = nil;
+            BOOL isVideo = NO;
             
             NSString *contentsPath = [NSString stringWithFormat:@"%@/Contents", cachesPath];
             
@@ -633,7 +634,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             
             for (NSString *fileName in dirContents)
             {
-                if ([fileName containsString:@".mp4"])
+                if ([fileName containsString:@".mp4"] || [fileName containsString:@".sqlite"])
                 {
                     _iapFilePath = [NSString stringWithFormat:@"%@/%@", documentsDirectory, fileName];
                     NSString *oldFilePath = [NSString stringWithFormat:@"%@/%@", contentsPath, fileName];
@@ -647,6 +648,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                     
                     else
                         NSLog(@"FILE MOVE ERROR (%@):%@", fileName, error.localizedDescription);
+                    
+                    isVideo = [fileName containsString:@".mp4"];
                 }
             }
             
