@@ -568,8 +568,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
-- (void)FTPdidComplete:(int)status
-              filePath:(NSString *)path
+- (void)FTPPushDidComplete:(FTPDataType)dataType
+                withStatus:(int)status
+           andStatusString:(NSString *)statusString
+                  filePath:(NSString *)path
 {
     [_push.popover hide];
     NSLog(@"Upload complete!");
