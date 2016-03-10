@@ -496,7 +496,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Make In-App Purchase"])
     {
-        NSSet *prodID = [NSSet setWithObjects:@"com.gssi.gmmobile_TestVideo", nil];
+        NSSet *prodID = [NSSet setWithObjects:@"com.gssi.gmmobile_TestVideo",
+                         @"com.gssi.gmmobile_NVMetroPropData", nil];
         
         SKProductsRequest *skpr = [[SKProductsRequest alloc] initWithProductIdentifiers:prodID];
         skpr.delegate = self;
