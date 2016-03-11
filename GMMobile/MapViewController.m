@@ -853,7 +853,7 @@ typedef struct NVRegionQuadrants {
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
-    NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
+    /*NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
     //organizationName = nil;
     
     if (!organizationName || [organizationName isEqualToString:@""])
@@ -880,7 +880,7 @@ typedef struct NVRegionQuadrants {
     {
         CRAPI.sharedInstance.organizationName = organizationName;
         CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
-    }
+    }*/
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
