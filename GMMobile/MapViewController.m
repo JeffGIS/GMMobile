@@ -134,14 +134,18 @@ typedef struct NVRegionQuadrants {
     
     CGFloat legendScrollWidth = (ThemeLegendMapOverlay.width + 4.0);
     
-    _legendScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake((self.view.frame.size.width - legendScrollWidth),
-                                                                       statusBarHeight, legendScrollWidth,
-                                                                       (tabBarTop - statusBarHeight))];
-                         
+    _legendScrollView = UIScrollView.new;
+    _legendScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
     _legendScrollView.alpha = 0.0;
+    
     [self.view addSubview:_legendScrollView];
     
+    [_legendScrollView.leadingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-legendScrollWidth].active = YES;
+    [_legendScrollView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+    [_legendScrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:statusBarHeight].active = YES;
+    [_legendScrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+                         
     _polylines = [[NSMutableSet alloc] init];
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
@@ -153,24 +157,22 @@ typedef struct NVRegionQuadrants {
     _digitizationMode = DigitizationModeCustom;
     _locationCount = 0;
     _mapViewLegendOffset = 0.0;
-    
-    CGRect mapViewFrame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
-                                     (tabBarTop - statusBarHeight));
-    
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
-    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                               zoom:12.0];
-    
-    _mapView = [GMSMapView mapWithFrame:mapViewFrame
-                                 camera:camera];
-    
+    _mapView = GMSMapView.new;
+    _mapView.translatesAutoresizingMaskIntoConstraints = NO;
     _mapView.delegate = self;
     _mapView.mapType = kGMSTypeNormal;
     _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
+    
+    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target
+                                                     zoom:12.0];
+    
     [self.view addSubview:_mapView];
+    
+    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
     _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
     
@@ -543,16 +545,11 @@ typedef struct NVRegionQuadrants {
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
     if (_fromSpreadsheet)
     {
         self.tabBarController.tabBar.hidden = YES;
-        self.view.frame = UIScreen.mainScreen.bounds;
-        
-        _mapView.frame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
-                                         (self.view.frame.size.height - statusBarHeight));
-        
+        [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
         _mapView.userInteractionEnabled = NO;
         
         GMSCameraUpdate *camUpdate = [GMSCameraUpdate setTarget:_spreadsheetCoords
@@ -597,19 +594,12 @@ typedef struct NVRegionQuadrants {
     else
     {
         self.tabBarController.tabBar.hidden = NO;
-        self.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, tabBarTop);
         
         if (_legendsAreOffMap)
-        {
-            _mapView.frame = CGRectMake(0.0, statusBarHeight,  (self.view.frame.size.width - _mapViewLegendOffset),
-                                        (tabBarTop - statusBarHeight));
-        }
+            [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
         
         else
-        {
-            _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
-                                        (tabBarTop - statusBarHeight));
-        }
+            [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
         
         _mapView.userInteractionEnabled = YES;
         _mapToolbar.hidden = NO;
@@ -837,10 +827,6 @@ typedef struct NVRegionQuadrants {
     if (_firstTimeAppear)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-        
-        _mapView.frame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
-                                    (tabBarTop - statusBarHeight));
         
         _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
                                          (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
@@ -1041,10 +1027,7 @@ typedef struct NVRegionQuadrants {
         if (_legendsAreOffMap)
         {
             CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-            CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
-            
-            _mapView.frame = CGRectMake(0.0, statusBarHeight,  self.view.frame.size.width,
-                                            (tabBarTop - statusBarHeight));
+            [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
             
            for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
            {
@@ -1939,6 +1922,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         [self.view bringSubviewToFront:_mapToolbar];
         [self.view bringSubviewToFront:_compass];
+        
+        if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
+            [self.view bringSubviewToFront:_legendScrollView];
     }
     
     if (!_tableView.hidden && ![self alertVisible] && !_showsPanarama)
@@ -2047,6 +2033,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    [self updateMarkerPosition];
+    [self showMarkersAndInfoWindows];
+    
     if (![self legendIsExpanded] && ![self alertVisible])
         [self updateLegendPositions];
     
@@ -2097,6 +2086,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                 duration:(NSTimeInterval)duration
 {
     [self clearVectorView];
+    [self hideMarkersAndInfoWindows];
     
     if ([self.view.subviews containsObject:_nvdv])
     {
@@ -2160,8 +2150,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (!_compass.hidden)
         _compass.transform = CGAffineTransformMakeRotation(0.0);
     
-    
-    
     [UIView animateWithDuration:duration
                      animations:^{
                          [self updateCompassPosition];
@@ -2176,13 +2164,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     switch (_screenSetting)
     {
         case MapViewScreenSettingFullscreen:
-        {
-            [UIView animateWithDuration:duration
-                             animations:^{
-                                 _mapView.frame = _vectorView.frame = frame3;
-                                 [self updateMarkerPosition];
-                             }];
-        }
             break;
             
         case MapViewScreenSettingSplitScreen:
@@ -2193,8 +2174,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 2.0));
-                                 
-                                 [self updateMarkerPosition];
                              }];
             
             [UIView animateWithDuration:duration
@@ -2218,8 +2197,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                  CGRectMake(0.0, statusBarHeight,
                                             (self.view.frame.size.height + _tabBarHeight),
                                             ((self.view.frame.size.width - _tabBarHeight - statusBarHeight) / 3.0));
-                                 
-                                 [self updateMarkerPosition];
                              }];
             
             [UIView animateWithDuration:duration
@@ -2275,21 +2252,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
         CGFloat viewHeight = (self.view.frame.size.width + statusBarHeight);
-        CGFloat xOrigin = (viewWidth - scrollWidth);
         CGFloat contentOffset = _legendScrollView.contentOffset.y;
         
         if (_legendsAreOffMap)
         {
-            if ([self.view.subviews containsObject:_legendScrollView] && ![self legendIsExpanded])
-            {
-                [UIView animateWithDuration:duration
-                                 animations:^{
-                                     _legendScrollView.frame =
-                                     CGRectMake(xOrigin, statusBarHeight, scrollWidth,
-                                                ((self.view.frame.size.width - statusBarHeight) - _tabBarHeight));
-                                 }];
-            }
-            
             for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
             {
                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
@@ -2422,12 +2388,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
 haveVV:
     _vectorView = [[VectorView alloc] init];
+    _vectorView.translatesAutoresizingMaskIntoConstraints = NO;
     vectorViews[ivv] = _vectorView;
     _vectorView.ivv = ivv;
-    _vectorView.frame = _mapView.frame;
     _vectorView.userInteractionEnabled = NO;
     _vectorView.delegate = self;
     [self.view addSubview:_vectorView];
+    [_vectorView constrainToView:_mapView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
 }
 
 - (void)clearVectorView
@@ -2556,6 +2523,7 @@ haveVV:
                        if (_screenSetting != MapViewScreenSettingPlatView)
                        {
                            [self.view addSubview:_vectorView];
+                           [_vectorView constrainToView:_mapView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
                            
                            if (!_myLocationMarker.hidden)
                                [self.view bringSubviewToFront:_myLocationMarker];
@@ -2569,13 +2537,17 @@ haveVV:
                            if (!_compass.hidden)
                                [self.view bringSubviewToFront:_compass];
                            
+                           [self.view bringSubviewToFront:_mapToolbar];
+                           
+                           if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
+                               [self.view bringSubviewToFront:_legendScrollView];
+                           
                            for (HelpWebView *helpWebView in self.view.subviews)
                            {
                                if ([helpWebView isKindOfClass:HelpWebView.class])
                                    [self.view bringSubviewToFront:helpWebView];
                            }
                            
-                           [self.view bringSubviewToFront:_mapToolbar];
                            [self updateLegendPositions];
                            
                            if (!_tableView.hidden)
@@ -2905,20 +2877,16 @@ haveVV:
 {
     if (!_legendsAreOffMap)
     {
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         _mapViewLegendOffset = _legendScrollView.frame.size.width;
-        CGRect frame = _mapView.frame;
-        frame.size.width -= _mapViewLegendOffset;
         _legendScrollView.alpha = 1.0;
         _vectorView.hidden = _legendsAreOffMap = YES;
         [self updateLegendPositions];
         
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             _mapView.frame = frame;
-                         } completion:^(BOOL finished) {
-                             [self refreshVectorView:_mapView.projection.visibleRegion
+        [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
                                               atZoom:_mapView.camera.zoom];
-                         }];
     }
 }
 
@@ -2927,7 +2895,6 @@ haveVV:
     if (_legendsAreOffMap)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
         
         _mapViewLegendOffset = 0.0;
         _vectorView.hidden = YES;
@@ -2935,15 +2902,10 @@ haveVV:
         _legendsAreOffMap = NO;
         [self updateLegendPositions];
         
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             _mapView.frame = CGRectMake(0.0, statusBarHeight,
-                                                         self.view.frame.size.width,
-                                                         (tabBarTop - statusBarHeight));
-                         } completion:^(BOOL finished) {
-                             [self refreshVectorView:_mapView.projection.visibleRegion
-                                              atZoom:_mapView.camera.zoom];
-                         }];
+        [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
     }
 }
 
@@ -5154,6 +5116,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     [self.view bringSubviewToFront:_mapToolbar];
     [self updateCompassPosition];
+    
+    if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
+        [self.view bringSubviewToFront:_legendScrollView];
 }
 
 - (void)mapToolbarDidWantExpand
