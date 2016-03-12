@@ -1315,7 +1315,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llSewerPt = llpickPt;
         llCrimePt = llpickPt;
         CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
-        CGPoint screenCoord = [_mapView.projection pointForCoordinate:coordinate];
 
         NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
@@ -2249,7 +2248,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
-        CGFloat scrollWidth = _legendScrollView.frame.size.width;
         CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
         CGFloat viewHeight = (self.view.frame.size.width + statusBarHeight);
         CGFloat contentOffset = _legendScrollView.contentOffset.y;
