@@ -132,7 +132,7 @@ typedef struct NVRegionQuadrants {
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _emailPDFAfterUpdate = _showsPanarama = NO;
     
-    CGFloat legendScrollWidth = (ThemeLegendMapOverlay.width + 4.0);
+    _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
     _legendScrollView = UIScrollView.new;
     _legendScrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -141,7 +141,7 @@ typedef struct NVRegionQuadrants {
     
     [self.view addSubview:_legendScrollView];
     
-    [_legendScrollView.leadingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-legendScrollWidth].active = YES;
+    [_legendScrollView.leadingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-_mapViewLegendOffset].active = YES;
     [_legendScrollView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
     [_legendScrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:statusBarHeight].active = YES;
     [_legendScrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
@@ -156,7 +156,6 @@ typedef struct NVRegionQuadrants {
     _firstTimeAppear = _firstTimeMap = YES;
     _digitizationMode = DigitizationModeCustom;
     _locationCount = 0;
-    _mapViewLegendOffset = 0.0;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     _mapView = GMSMapView.new;
@@ -2248,86 +2247,37 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
-        CGFloat viewWidth = (self.view.frame.size.height + _tabBarHeight);
-        CGFloat viewHeight = (self.view.frame.size.width + statusBarHeight);
-        CGFloat contentOffset = _legendScrollView.contentOffset.y;
-        
-        if (_legendsAreOffMap)
+        if (!_legendsAreOffMap)
         {
-            for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+            for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
             {
                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
                 {
-                    if (tlmos.isExpanded)
+                    if (!tlmos.isExpanded)
                     {
-                        CGFloat maxRowHeight = MIN((ThemeLegendMapOverlay.rowHeight * 4.0),
-                                                   ((self.view.frame.size.width - statusBarHeight - 8.0) / (tlmos.legend.numCells + 1)));
+                        if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
+                            toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
+                        {
+                            [UIView animateWithDuration:duration
+                                             animations:^{
+                                                 tlmos.frame = CGRectMake(tlmos.legend.landscapeMapOrigin.x,
+                                                                          tlmos.legend.landscapeMapOrigin.y,
+                                                                          tlmos.frame.size.width,
+                                                                          tlmos.frame.size.height);
+                                             }];
+                        }
                         
-                        tlmos.rowHeight = tlmos.headerHeight = maxRowHeight;
-                        tlmos.tableView.rowHeight = tlmos.rowHeight;
-                        CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
-                        
-                        [UIView animateWithDuration:duration
-                                         animations:^{
-                                             tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
-                                                                      (viewWidth * 0.9), legendHeight);
-                                             
-                                             tlmos.center = CGPointMake((viewWidth / 2.0), ((viewHeight / 2.0) + contentOffset));
-                                             tlmos.tableView.frame = tlmos.bounds;
-                                         } completion:^(BOOL finished) {
-                                             [tlmos.tableView reloadData];
-                                         }];
+                        else
+                        {
+                            [UIView animateWithDuration:duration
+                                             animations:^{
+                                                 tlmos.frame = CGRectMake(tlmos.legend.portraitMapOrigin.x,
+                                                                          tlmos.legend.portraitMapOrigin.y,
+                                                                          tlmos.frame.size.width,
+                                                                          tlmos.frame.size.height);
+                                             }];
+                        }
                     }
-                }
-            }
-        }
-        
-        else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
-        {
-            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-            {
-                if (tlmos.isExpanded)
-                {
-                    CGFloat maxRowHeight = MIN((ThemeLegendMapOverlay.rowHeight * 4.0),
-                                               ((self.view.frame.size.width - statusBarHeight - 8.0) / (tlmos.legend.numCells + 1)));
-                    
-                    tlmos.rowHeight = tlmos.headerHeight = maxRowHeight;
-                    tlmos.tableView.rowHeight = tlmos.rowHeight;
-                    CGFloat legendHeight = (tlmos.rowHeight * (tlmos.legend.numCells + 1));
-                    
-                    [UIView animateWithDuration:duration
-                                     animations:^{
-                                         tlmos.frame = CGRectMake(tlmos.frame.origin.x, tlmos.frame.origin.y,
-                                                                  (viewWidth * 0.9), legendHeight);
-                                         
-                                         tlmos.center = CGPointMake((viewWidth / 2.0), ((viewHeight / 2.0) + contentOffset));
-                                         tlmos.tableView.frame = tlmos.bounds;
-                                     } completion:^(BOOL finished) {
-                                         [tlmos.tableView reloadData];
-                                     }];
-                }
-                
-                else if (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
-                         toInterfaceOrientation == UIInterfaceOrientationLandscapeRight)
-                {
-                    [UIView animateWithDuration:duration
-                                     animations:^{
-                                         tlmos.frame = CGRectMake(tlmos.legend.landscapeMapOrigin.x,
-                                                                  tlmos.legend.landscapeMapOrigin.y,
-                                                                  tlmos.frame.size.width,
-                                                                  tlmos.frame.size.height);
-                                     }];
-                }
-                
-                else
-                {
-                    [UIView animateWithDuration:duration
-                                     animations:^{
-                                         tlmos.frame = CGRectMake(tlmos.legend.portraitMapOrigin.x,
-                                                                  tlmos.legend.portraitMapOrigin.y,
-                                                                  tlmos.frame.size.width,
-                                                                  tlmos.frame.size.height);
-                                     }];
                 }
             }
         }
@@ -2758,7 +2708,7 @@ haveVV:
                 }
             }
             
-            _legendScrollView.contentSize = CGSizeMake(_legendScrollView.frame.size.width, scrollHeight);
+            _legendScrollView.contentSize = CGSizeMake(_mapViewLegendOffset, scrollHeight);
         }
             
         for (int i = 0; i < legends.count; i++)
@@ -2774,7 +2724,7 @@ haveVV:
                     xOriginLandscape = yFactor;
                     
                     if (landscapeColumnCount == 2)
-                        xOriginLandscape = _legendScrollView.frame.size.width;
+                        xOriginLandscape = _mapViewLegendOffset;
                     
                     yOriginLandscape = (statusBarHeight + yFactor);
                     landscapeColumnCount++;
@@ -2785,7 +2735,7 @@ haveVV:
                     xOriginPortrait = yFactor;
                     
                     if (portraitColumnCount == 2)
-                        xOriginPortrait = _legendScrollView.frame.size.width;
+                        xOriginPortrait = _mapViewLegendOffset;
                     
                     yOriginPortrait = (statusBarHeight + yFactor);
                     portraitColumnCount++;
@@ -2876,7 +2826,6 @@ haveVV:
     if (!_legendsAreOffMap)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        _mapViewLegendOffset = _legendScrollView.frame.size.width;
         _legendScrollView.alpha = 1.0;
         _vectorView.hidden = _legendsAreOffMap = YES;
         [self updateLegendPositions];
@@ -2894,7 +2843,6 @@ haveVV:
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         
-        _mapViewLegendOffset = 0.0;
         _vectorView.hidden = YES;
         _legendScrollView.alpha = 0.0;
         _legendsAreOffMap = NO;
@@ -4460,7 +4408,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
          }
      }];
 }
-
 
 - (void)beginLocationRouteTrace
 {
