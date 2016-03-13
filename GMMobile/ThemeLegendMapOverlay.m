@@ -705,8 +705,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _dragButton.alpha = 0.0;
         _tabBar.alpha = 0.0;
         
-        NSLog(@"%f", contentOffset);
-        
         [self.leadingAnchor constraintEqualToAnchor:self.superview.centerXAnchor
                                            constant:(-shortestSide * 0.45)].active = YES;
         
@@ -733,6 +731,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     else
     {
         UIView *overlayView = nil;
+        [self removeAllConstraints];
         self.translatesAutoresizingMaskIntoConstraints = YES;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
