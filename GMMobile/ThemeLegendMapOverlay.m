@@ -661,6 +661,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             superSize = legendScroll.superview.frame.size;
             expandCorrection = (legendScroll.contentSize.height - longestSide);
             contentOffset = MIN(legendScroll.contentOffset.y, expandCorrection);
+            contentOffset = MAX(contentOffset, 0.0);
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
@@ -703,6 +704,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         _dragButton.alpha = 0.0;
         _tabBar.alpha = 0.0;
+        
+        NSLog(@"%f", contentOffset);
         
         [self.leadingAnchor constraintEqualToAnchor:self.superview.centerXAnchor
                                            constant:(-shortestSide * 0.45)].active = YES;
