@@ -93,9 +93,8 @@
     CGFloat height = ((tlmo.legend.numCells * tlmo.rowHeight) + tlmo.headerHeight);
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
     
-    tlmo.tableView = [[UITableView alloc] initWithFrame:tlmo.bounds
-                                                  style:UITableViewStylePlain];
-    
+    tlmo.tableView = UITableView.new;
+    tlmo.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     tlmo.tableView.delegate = tlmo;
     tlmo.tableView.dataSource = tlmo;
     tlmo.tableView.backgroundColor = UIColor.blackColor;
@@ -118,6 +117,7 @@
     [tlmo.tableView addGestureRecognizer:lpgr];
     
     [tlmo addSubview:tlmo.tableView];
+    [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [view addSubview:tlmo];
     
     return tlmo;
@@ -583,9 +583,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     BOOL significantMove = ((originXTrans > self.frame.size.width) ||
                             (originYTrans > self.frame.size.height));
     
-    if (self.superview.superview)
-        [self.superview.superview sendSubviewToBack:self.superview];
-    
     if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
         [_delegate themeLegendWasDraggedOffRightSide];
     
@@ -640,8 +637,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         CGRect bounds = UIScreen.mainScreen.bounds;
         CGFloat longestSide = MAX(bounds.size.height, bounds.size.width);
+        CGFloat shortestSide = MIN(bounds.size.height, bounds.size.width);
+        self.translatesAutoresizingMaskIntoConstraints = NO;
         
-        UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, longestSide, longestSide)];
+        UIView *overlayView = UIView.new;
+        overlayView.translatesAutoresizingMaskIntoConstraints = NO;
         overlayView.backgroundColor = UIColor.blackColor;
         overlayView.alpha = 0.0;
         overlayView.tag = 123456789;
@@ -659,23 +659,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _previousContentOffset = legendScroll.contentOffset;
             
             superSize = legendScroll.superview.frame.size;
-            
             expandCorrection = (legendScroll.contentSize.height - longestSide);
-            
             contentOffset = MIN(legendScroll.contentOffset.y, expandCorrection);
+            contentOffset = MAX(contentOffset, 0.0);
         }
         
         else if (![self.superview.subviews containsObject:[self.superview viewWithTag:123456789]])
         {
             [self.superview addSubview:overlayView];
+            [overlayView constrainToView:self.superview leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
             [self.superview bringSubviewToFront:self];
         }
         
         _previousFrame = self.frame;
-        CGFloat superHeight = ((superSize.height + _tabBar.frame.size.height) - statusBarHeight);
         
         CGFloat maxRowHeight = MIN((ThemeLegendMapOverlay.rowHeight * 4.0),
-                                   ((superHeight - 8.0) / (_legend.numCells + 1)));
+                                   ((shortestSide * 0.9) / (_legend.numCells + 1)));
         
         _rowHeight = _headerHeight = maxRowHeight;
         _tableView.rowHeight = _rowHeight;
@@ -689,44 +688,51 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         CGFloat legendHeight = (_rowHeight * (_legend.numCells + 1));
         
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             if (![self.superview isKindOfClass:UIScrollView.class])
-                                 overlayView.alpha = 0.7;
-                             
-                             _dragButton.alpha = 0.0;
-                             _tabBar.alpha = 0.0;
-                             
-                             if ([self.superview isKindOfClass:UIScrollView.class])
-                             {
-                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
-                                 legendScroll.frame = overlayView.frame;
-                             }
-                             
-                             self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y,
-                                                      (superSize.width * 0.9), legendHeight);
-                             
-                             self.center = CGPointMake((superSize.width / 2.0),
-                                                       (((superHeight / 2.0) + contentOffset) + statusBarHeight));
-                             
-                             _tableView.frame = self.bounds;
-                             
-                             for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
-                             {
-                                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
-                                     tlmos.alpha = 0.0;
-                             }
-                             
-                         } completion:^(BOOL finished) {
-                             [_tableView reloadData];
-                             _isExpanded = YES;
-                             button.selected = YES;
-                         }];
+        if ([self.superview isKindOfClass:UIScrollView.class])
+        {
+            UIScrollView *legendScroll = (UIScrollView *)self.superview;
+            
+            [legendScroll constrainToView:legendScroll.superview leading:0.0
+                                 trailing:0.0 top:0.0 bottom:_tabBar.frame.size.height];
+        }
+        
+        else
+        {
+            overlayView.alpha = 0.7;
+            contentOffset += (_tabBar.frame.size.height / 2.0);
+        }
+        
+        _dragButton.alpha = 0.0;
+        _tabBar.alpha = 0.0;
+        
+        [self.leadingAnchor constraintEqualToAnchor:self.superview.centerXAnchor
+                                           constant:(-shortestSide * 0.45)].active = YES;
+        
+        [self.trailingAnchor constraintEqualToAnchor:self.superview.centerXAnchor
+                                            constant:(shortestSide * 0.45)].active = YES;
+        
+        [self.topAnchor constraintEqualToAnchor:self.superview.centerYAnchor
+                                       constant:((-legendHeight / 2.0) + contentOffset)].active = YES;
+        
+        [self.bottomAnchor constraintEqualToAnchor:self.superview.centerYAnchor
+                                          constant:((legendHeight / 2.0) + contentOffset)].active = YES;
+        
+        for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
+                tlmos.alpha = 0.0;
+        }
+        
+        [_tableView reloadData];
+        _isExpanded = YES;
+        button.selected = YES;
     }
     
     else
     {
         UIView *overlayView = nil;
+        [self removeAllConstraints];
+        self.translatesAutoresizingMaskIntoConstraints = YES;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
             overlayView = [self.superview.superview viewWithTag:123456789];
@@ -744,70 +750,65 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                 size:18.0];
         
         _headerFont = [UIFont boldSystemFontOfSize:18.0];
+        _tabBar.alpha = 1.0;
         
-        [UIView animateWithDuration:0.25
-                         animations:^{
-                             overlayView.alpha = 0.0;
-                             _tabBar.alpha = 1.0;
-                             
-                             if ([self.superview isKindOfClass:UIScrollView.class])
-                             {
-                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
-                                 
-                                 legendScroll.frame = CGRectMake((legendScroll.superview.frame.size.width - _previousScrollFrame.size.width),
-                                                                 statusBarHeight, _previousScrollFrame.size.width,
-                                                                 legendScroll.superview.frame.size.height - statusBarHeight);
-                                 
-                                 [legendScroll setContentOffset:_previousContentOffset
-                                                       animated:NO];
-                                 
-                                 self.frame = _previousFrame;
-                                 
-                                 
-                             }
-                             
-                             else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                                      UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                             {
-                                 
-                                 
-                                 self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
-                                                         _legend.landscapeMapOrigin.y,
-                                                         _previousFrame.size.width,
-                                                         _previousFrame.size.height);
-                             }
-                             
-                             else
-                             {
-                                 self.frame = CGRectMake(_legend.portraitMapOrigin.x,
-                                                         _legend.portraitMapOrigin.y,
-                                                         _previousFrame.size.width,
-                                                         _previousFrame.size.height);
-                             }
-                             
-                             _tableView.frame = self.bounds;
-                             
-                             for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
-                             {
-                                 if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
-                                     tlmos.alpha = 1.0;
-                             }
-                             
-                         } completion:^(BOOL finished) {
-                             [overlayView removeFromSuperview];
-                             [_tableView reloadData];
-                             _isExpanded = NO;
-                             button.selected = NO;
-                             
-                             if ([self.superview isKindOfClass:UIScrollView.class])
-                             {
-                                 UIScrollView *legendScroll = (UIScrollView *)self.superview;
-                                 legendScroll.scrollEnabled = YES;
-                             }
-                             
-                             if (!_preventRefresh && _delegate)
-                                 [_delegate themeLegendDidChangeStatus:YES];
-                         }];
+        if ([self.superview isKindOfClass:UIScrollView.class])
+        {
+            UIScrollView *legendScroll = (UIScrollView *)self.superview;
+            [legendScroll removeAllConstraints];
+            
+            [legendScroll.leadingAnchor constraintEqualToAnchor:legendScroll.superview.trailingAnchor
+                                                       constant:-_previousScrollFrame.size.width].active = YES;
+            
+            [legendScroll.trailingAnchor constraintEqualToAnchor:legendScroll.superview.trailingAnchor].active = YES;
+            
+            [legendScroll.topAnchor constraintEqualToAnchor:legendScroll.superview.topAnchor
+                                                   constant:statusBarHeight].active = YES;
+            
+            [legendScroll.bottomAnchor constraintEqualToAnchor:legendScroll.superview.bottomAnchor].active = YES;
+            
+            [legendScroll setContentOffset:_previousContentOffset
+                                  animated:NO];
+            
+            self.frame = _previousFrame;
+        }
+        
+        else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                 UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
+                                    _legend.landscapeMapOrigin.y,
+                                    _previousFrame.size.width,
+                                    _previousFrame.size.height);
+        }
+        
+        else
+        {
+            self.frame = CGRectMake(_legend.portraitMapOrigin.x,
+                                    _legend.portraitMapOrigin.y,
+                                    _previousFrame.size.width,
+                                    _previousFrame.size.height);
+        }
+        
+        for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class] && tlmos != self)
+                tlmos.alpha = 1.0;
+        }
+        
+        [overlayView removeFromSuperview];
+        [_tableView reloadData];
+        _isExpanded = NO;
+        button.selected = NO;
+        
+        if ([self.superview isKindOfClass:UIScrollView.class])
+        {
+            UIScrollView *legendScroll = (UIScrollView *)self.superview;
+            legendScroll.scrollEnabled = YES;
+        }
+        
+        if (!_preventRefresh && _delegate)
+            [_delegate themeLegendDidChangeStatus:YES];
     }
 }
 
@@ -832,7 +833,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
     
     NSMutableString *text = tlc.label.mutableCopy;
-        
+    
     if (_legend.appendClassCount)
     {
         NSMutableString *countString = NSMutableString.string;

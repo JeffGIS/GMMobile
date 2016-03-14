@@ -41,5 +41,4 @@
         [_delegate markerButtonWasTapped:self];
 }
 
-
 @end
