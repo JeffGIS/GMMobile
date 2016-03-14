@@ -1688,47 +1688,6 @@ Exit:
     [self close:opened];
 }
 
--(NSString*) censusFT1Value:(NSString*)valueName
-                    inTract:(NSString*) tractID
-{
-    NSString * value=@"";
-    
-    return value;
-}
--(NSString*) censusFT1Value:(NSString*)valueName
-               inBlockGroup:(NSString*) blockGroupID
-{
-    NSString * value=@"";
-    
-    return value;
-}
--(NSString*) censusFT1Value:(NSString*)valueName
-                    inBlock:(NSString*) blockID
-{
-    sqlite3_stmt *statement = NULL;
-    
-    NSString * value=@"";
-    NSString *query = [NSString stringWithFormat:@"SELECT '%@' FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%@'",valueName,blockID];
-    BOOL opened = [self open];
-    
-    
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 50);
-    
-    if (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        LPSTR cvalue = (LPSTR)sqlite3_column_text(statement,0);
-        value = [NSString stringWithUTF8String:cvalue];
-    }
-    
-    
-    SQLOKpd(sqlite3_finalize(statement), _database, 51);
-    
-    [self close:opened];
-    return value;
-    
-}
-
-
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
 {

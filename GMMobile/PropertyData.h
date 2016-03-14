@@ -78,8 +78,6 @@ typedef struct {int nMatchingProperties;
                    inCensusArea:(LPSTR)cenBlockIN
                          totEMV:(int)totEMV
                         useDesc:(LPSTR) usedescIN;
--(NSString*) censusFT1Value:(NSString*)valueName
-                    inBlock:(NSString*) blockID;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 - (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;
