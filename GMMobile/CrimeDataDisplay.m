@@ -140,6 +140,8 @@
     else if (_mode == CHOROPLETH)
     {
         pias = [[PointInAreas alloc]init];
+        pias.areaType = _choroplethTarget;
+        pias.adjustValue = _choroplethAdjustValue;
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
         [bd load:_choroplethTarget

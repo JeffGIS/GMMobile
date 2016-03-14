@@ -697,6 +697,7 @@ usingPointInArea:(PointInArea*)pia
     NSString * key = areaType;
     NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     
+    pias.areaType = areaType;
     BOOL opened = [self open];
     
     CloseTRANS2(&_pTranLLtoView);

@@ -765,7 +765,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
      */
 }
 - (int)pickParcel:(LLPOINT *)pt
- highlightList:(NSMutableArray*)hlist
+    highlightList:(NSMutableArray*)hlist
 {
     if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
                                       visibleAtZoom:_zoom
@@ -1071,7 +1071,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     SQLOKpd(sqlite3_finalize(statement), _database, 45);
-   
+    
     [self close:opened];
     
     return llpoints;
@@ -1252,7 +1252,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     }
     
     //if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
-        //ii=0;
+    //ii=0;
     
     LPDPOINT pPoints = [self getParcelPolygonPointsForPID:PID
                                                 numPoints:&numPoints
@@ -1261,7 +1261,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     for (int i = 0; i < numPoints; i++)
         pPoints[i] = TranDPOINT(&pPoints[i], _pTranLLtoView);
-  
+    
     [NVTextDrawing drawText:text
                   inContext:context
               withinPolygon:pPoints
@@ -1278,7 +1278,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     free(pPoints);
     
-
+    
 Exit:
     return;
 }
@@ -1451,7 +1451,7 @@ Exit:
                 
                 num = [[NSNumber alloc] initWithDouble:emvTotal];
                 text = [NSString stringWithFormat:@"%s\n%@", name, [dollarFmt stringFromNumber:num]];
-//                text = [NSString stringWithFormat:@"%s", name];
+                //                text = [NSString stringWithFormat:@"%s", name];
             }
                 break;
                 
@@ -1510,7 +1510,7 @@ Exit:
     CGFloat totYears = 0;
     //CGFloat medianAge = 0;
     CGFloat totAcres = 0, totOSAcres = 0;
-
+    
     memset (values,0,sizeof(DATA_FROM_TABLES));
     /*    NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,SALE_DATE,EMV_TOTAL,TOTAL_TAX,HOMESTEAD,YEAR_BUILT,OPEN_SPACE FROM PROPINFO WHERE CENBLOCK='%s'",
      cenBlock];*/
@@ -1602,16 +1602,16 @@ Exit:
              return (NSComparisonResult)NSOrderedSame;
          }];
         
-         int median = (nAge / 2);
-         NSNumber *age1 = (NSNumber *)ageArray[median];
-         
-         if (!(nAge %2))
-         {
-             NSNumber *age2 = (NSNumber *)ageArray[median - 1];
-             values->medianBuiltYear = ((age1.floatValue + age2.floatValue) / 2.0);
-         }
-         else
-             values->medianBuiltYear = age1.intValue;
+        int median = (nAge / 2);
+        NSNumber *age1 = (NSNumber *)ageArray[median];
+        
+        if (!(nAge %2))
+        {
+            NSNumber *age2 = (NSNumber *)ageArray[median - 1];
+            values->medianBuiltYear = ((age1.floatValue + age2.floatValue) / 2.0);
+        }
+        else
+            values->medianBuiltYear = age1.intValue;
     }
     
     [array sortUsingComparator: ^(id obj1, id obj2)
@@ -1687,6 +1687,47 @@ Exit:
     
     [self close:opened];
 }
+
+-(NSString*) censusFT1Value:(NSString*)valueName
+                    inTract:(NSString*) tractID
+{
+    NSString * value=@"";
+    
+    return value;
+}
+-(NSString*) censusFT1Value:(NSString*)valueName
+               inBlockGroup:(NSString*) blockGroupID
+{
+    NSString * value=@"";
+    
+    return value;
+}
+-(NSString*) censusFT1Value:(NSString*)valueName
+                    inBlock:(NSString*) blockID
+{
+    sqlite3_stmt *statement = NULL;
+    
+    NSString * value=@"";
+    NSString *query = [NSString stringWithFormat:@"SELECT '%@' FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%@'",valueName,blockID];
+    BOOL opened = [self open];
+    
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 50);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR cvalue = (LPSTR)sqlite3_column_text(statement,0);
+        value = [NSString stringWithUTF8String:cvalue];
+    }
+    
+    
+    SQLOKpd(sqlite3_finalize(statement), _database, 51);
+    
+    [self close:opened];
+    return value;
+    
+}
+
 
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
@@ -2361,4 +2402,15 @@ int GetNameParts(LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)
     return nParts;
 }
 @end
+
+
+
+
+
+
+
+
+
+
+
 

@@ -78,7 +78,7 @@
                          @"Choropleth Map for Wards by Year", @"Choropleth Map for Wards by Month",
                          @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",
                          @"Choropleth Map for Sectors by Month", @"Basic Choropleth Map for Neighborhoods",
-                         @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month"];
+                         @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month", @"Basic Choropleth Map for Block Groups",@"Basic Choropleth Map For Census Tracts",@"Basic Choropleth Map For Census Tract Housing Units"];
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
     _attemptOptions = @[@"Include Attempts", @"Ignore Attempts", @"Include Only Attempts"];
@@ -114,7 +114,7 @@
                  forState:UIControlStateNormal];
     
     [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
-                                                       forState:UIControlStateNormal];
+                            forState:UIControlStateNormal];
     
     [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Option:%@", _selectedAttemptOption]
                           forState:UIControlStateNormal];
@@ -465,6 +465,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _selectedMode = _modes[_selectedModeType][indexPath.row];
         NSString *uppercaseMode = _selectedMode.uppercaseString;
+        CRAPI.sharedInstance.crimeAdjustValue = nil;
         
         if ([uppercaseMode containsString:@"PIN"])
             CRAPI.sharedInstance.crimeMode = PINMAP;
@@ -486,6 +487,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         if ([uppercaseMode containsString:@"SECTORS"])
             CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
+        
+        if ([uppercaseMode containsString:@"BLOCK GROUPS"])
+            CRAPI.sharedInstance.crimeTarget = @"BLOCKGROUP";
+        
+        if ([uppercaseMode containsString:@"CENSUS TRACTS"])
+            CRAPI.sharedInstance.crimeTarget = @"TRACT";
+        
+        if ([uppercaseMode containsString:@"HOUSING UNIT"])
+            CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";
         
         [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
                      forState:UIControlStateNormal];
