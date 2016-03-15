@@ -19,6 +19,7 @@
 @property int numPass;
 @property NSString * choroplethTarget;
 @property NSString * choroplethAdjustValue;
+@property NSString * choroplethAdjustArea;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
 @property int processingID;
