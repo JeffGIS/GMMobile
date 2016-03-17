@@ -8,11 +8,11 @@
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 7
 
-typedef NS_ENUM(NSInteger, AttemptedCrimeOptions)
+typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
 {
-    IncludeAttempts,
-    IgnoreAttempts,
-    OnlyAttempts
+    None,
+    Population,
+    HousingUnits,
 };
 
 typedef NS_ENUM(NSInteger, HardCodedConfigs)
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible;
 @property BOOL wantAllCrimes;
-@property AttemptedCrimeOptions  attemptedCrimeOption;
+@property AdjustCrimeOptions  adjustCrimeOption;
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
 - (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;

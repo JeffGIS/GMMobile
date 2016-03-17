@@ -22,9 +22,9 @@
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
 @property (nonatomic) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
-@property (nonatomic) NSArray *multipleOffenseOptions, *attemptOptions, *currentArray;
+@property (nonatomic) NSArray *multipleOffenseOptions, *adjustmentOptions, *currentArray;
 @property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode;
-@property (nonatomic, copy) NSString *selectedMultipleOffenseOption, *selectedAttemptOption;
+@property (nonatomic, copy) NSString *selectedMultipleOffenseOption, *selectedAdjustmentOption;
 @property NVMapModeType selectedModeType;
 
 @end
@@ -73,22 +73,19 @@
     _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare",
                       @"Hotspot Map for Month with Monthly Compare", @"Hotspot Map for Week with Weekly Compare"];
     
-    _choroplethModes = @[@"Basic Choropleth Map for Precincts", @"Choropleth Map for Precincts by Year",
-                         @"Choropleth Map for Precincts by Month", @"Basic Choropleth Map for Wards",
-                         @"Choropleth Map for Wards by Year", @"Choropleth Map for Wards by Month",
-                         @"Basic Choropleth Map for Sectors", @"Choropleth Map for Sectors by Year",
-                         @"Choropleth Map for Sectors by Month", @"Basic Choropleth Map for Neighborhoods",
-                         @"Choropleth Map for Neighborhoods by Year", @"Choropleth Map for Neighborhoods by Month", @"Basic Choropleth Map for Block Groups",@"Basic Choropleth Map For Census Tracts",@"Basic Choropleth Map For Census Block Housing Units"];
+    _choroplethModes = @[@"Choropleth Map for Precincts", @"Choropleth Map for Wards",
+                         @"Basic Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
+                        @"Choropleth Map for Block Groups",@"Choropleth Map For Census Tracts"];
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
-    _attemptOptions = @[@"Include Attempts", @"Ignore Attempts", @"Include Only Attempts"];
+    _adjustmentOptions = @[@"None", @"Population", @"Housing Units"];
     
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
     _selectedLegend = _legends[0];
     _selectedMode = _modes[0][0];
     _selectedMultipleOffenseOption = _multipleOffenseOptions[0];
-    _selectedAttemptOption = _attemptOptions[0];
+    _selectedAdjustmentOption = _adjustmentOptions[0];
     
     _modeButton.selected = YES;
     _areaTypeButton.selected = NO;
@@ -115,8 +112,8 @@
     
     [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                             forState:UIControlStateNormal];
-    
-    [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Option:%@", _selectedAttemptOption]
+
+    [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
                           forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
@@ -318,7 +315,7 @@ didReturnFromDate:(NSInteger)fromDate
         _legendButton.selected = NO;
         _areaTypeButton.selected = NO;
         _modeButton.selected = NO;
-        _currentArray = _attemptOptions;
+        _currentArray = _adjustmentOptions;
         
         [self updateButtons];
         [_tableView reloadData];
@@ -368,7 +365,7 @@ viewForHeaderInSection:(NSInteger)section
     else if (_currentArray == _multipleOffenseOptions)
         headerLabel.text = @"Select Multiple Offense Option";
     
-    else if (_currentArray == _attemptOptions)
+    else if (_currentArray == _adjustmentOptions)
         headerLabel.text = @"Select Attempt Option";
     
     else
@@ -404,7 +401,7 @@ viewForHeaderInSection:(NSInteger)section
         if ([_currentArray[indexPath.row] isEqualToString:_selectedLegend] ||
             [_currentArray[indexPath.row] isEqualToString:_selectedMode] ||
             [_currentArray[indexPath.row] isEqualToString:_selectedMultipleOffenseOption] ||
-            [_currentArray[indexPath.row] isEqualToString:_selectedAttemptOption])
+            [_currentArray[indexPath.row] isEqualToString:_selectedAdjustmentOption])
         {
             cell.accessoryView = _checkmarkView;
         }
@@ -452,13 +449,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         ConfigurationControl.sharedInstance.wantAllCrimes = [_selectedMultipleOffenseOption isEqualToString:@"All Offenses"];
     }
     
-    else if (_currentArray == _attemptOptions)
+    else if (_currentArray == _adjustmentOptions)
     {
-        _selectedAttemptOption = _attemptOptions[indexPath.row];
+        _selectedAdjustmentOption = _adjustmentOptions[indexPath.row];
         
-        [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Attempt Option:%@", _selectedAttemptOption]
+        [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
                               forState:UIControlStateNormal];
-        ConfigurationControl.sharedInstance.attemptedCrimeOption = (int)indexPath.row;
+        ConfigurationControl.sharedInstance.adjustCrimeOption = (int)indexPath.row;
     }
     
     else
