@@ -223,11 +223,11 @@ NextPass:
                 dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
                 size = 25;
                 
-                if (attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == IgnoreAttempts)
+/*                if (attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == IgnoreAttempts)
                     continue;
                 if (!attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == OnlyAttempts)
                     continue;
-
+*/
                 if ((!pia || [pia DPointInArea:BasePt]) &&
                     [themes setDisplayCharacteristics:dc
                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
