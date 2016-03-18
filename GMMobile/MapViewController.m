@@ -684,18 +684,8 @@ typedef struct NVRegionQuadrants {
     if (tlov.subviews.count)
         [viewsArray addObject:tlov];
     
-    NSMutableArray *reportsArray = NSMutableArray.array;
-    
-    for (int i = 3520701; i < 3520801; i++)
-    {
-        NSString *report = [CrimeData reportForControlNumber:i];
-        
-        if (report && ![report isEqualToString:@""])
-            [reportsArray addObject:report];
-    }
-
     NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
-                                         reports:reportsArray];
+                                     pickedItems:DispersePoint.getDispersedPoints];
     
     if (_emailPDFAfterUpdate)
     {
