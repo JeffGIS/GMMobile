@@ -141,7 +141,7 @@
     {
         pias = [[PointInAreas alloc]init];
         pias.areaType = _choroplethTarget;
-        pias.adjustValue = _choroplethAdjustValue;
+        pias.adjustValue = nil;
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
         [bd load:_choroplethTarget
@@ -305,7 +305,23 @@ NextPass:
     {
         NSArray * textArray = [NSArray new];
         
-        [pias createDisplayColors];
+        if (_choroplethAdjustValue)
+        {
+            PointInAreas *piasAdjust = [[PointInAreas alloc]init];
+            piasAdjust.areaType = _choroplethAdjustArea;
+            piasAdjust.adjustValue = [ConfigurationControl getAdjustValueString:_choroplethAdjustValue];
+            bd = [[BoundaryData alloc]init];
+            bd.processingID = self.processingID;
+            [bd load:_choroplethTarget
+      toPointInAreas:piasAdjust
+    usingPointInArea:pia
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds];
+            [pias createDisplayColors:piasAdjust];
+        }
+        else
+            [pias createDisplayColors:nil];
         
         [bd display:context
            areaType:_choroplethTarget

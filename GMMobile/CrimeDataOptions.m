@@ -456,13 +456,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
                               forState:UIControlStateNormal];
         ConfigurationControl.sharedInstance.adjustCrimeOption = (int)indexPath.row;
+        ConfigurationControl.sharedInstance.adjustCrimeArea = @"BLOCK";
+
     }
     
     else
     {
         _selectedMode = _modes[_selectedModeType][indexPath.row];
         NSString *uppercaseMode = _selectedMode.uppercaseString;
-        CRAPI.sharedInstance.crimeAdjustValue = nil;
         CRAPI.sharedInstance.crimeAdjustValueArea = nil;
         
         if ([uppercaseMode containsString:@"PIN"])

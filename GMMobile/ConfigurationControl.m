@@ -627,4 +627,22 @@ visibleAtZoom:(CGFloat)zoom
     return configToobarSegs[_currentApp][MapToolbarPropertyWantMapType];
 }
 
++(NSString*) getAdjustValueString:(AdjustCrimeOptions)opt
+{
+    NSString* rtn=@"";
+    
+    switch (opt)
+    {
+        case Population:
+            rtn = @"TOTPOP";
+            break;
+        case HousingUnits:
+            rtn = @"HUNITS";
+            break;
+            
+    }
+    
+    return rtn;
+}
+
 @end

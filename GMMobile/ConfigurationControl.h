@@ -75,6 +75,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @property BOOL GMTilesVisible;
 @property BOOL wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
+@property NSString* adjustCrimeArea;
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
 - (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;
@@ -92,6 +93,8 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID;
++(NSString*) getAdjustValueString:(AdjustCrimeOptions)opt;
+
 
 
 @end

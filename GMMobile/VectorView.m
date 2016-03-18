@@ -367,7 +367,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        cd.zoom = _zoom;
                                                        cd.mode = CRAPI.sharedInstance.crimeMode;
                                                        cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
-                                                       cd.choroplethAdjustValue = CRAPI.sharedInstance.crimeAdjustValue;
+                                                       cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
+                                                       cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
                                                        if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                        {
                                                            [cd displayCrimePoints:_context
