@@ -807,8 +807,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             legendScroll.scrollEnabled = YES;
         }
         
-        if (!_preventRefresh && _delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        if (_delegate)
+            [_delegate themeLegendDidChangeStatus:NO];
     }
 }
 

@@ -1,7 +1,6 @@
 //  MapViewController.m
 //  GMMobile
 
-
 #import "MapViewController.h"
 #import "WebKitViewController.h"
 #import "AppDelegate.h"
@@ -312,6 +311,7 @@ typedef struct NVRegionQuadrants {
                                                   view:self.view
                                               delegate:self];
     
+    _mapToolbar.legendOffset = _mapViewLegendOffset;
     CRAPI.sharedInstance.mapToolbar = _mapToolbar;
     CRAPI.sharedInstance.mapVC = self;
     
@@ -828,7 +828,7 @@ typedef struct NVRegionQuadrants {
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         
-        _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+        _mapToolbar.center = CGPointMake((_mapView.frame.size.width / 2.0),
                                          (_mapToolbar.frame.size.height / 2.0) + statusBarHeight);
         
         _firstTimeAppear = NO;
@@ -1035,7 +1035,7 @@ typedef struct NVRegionQuadrants {
                    [tlmos removeFromSuperview];
            }
             
-            _legendsAreOffMap = NO;
+            _legendsAreOffMap = _mapToolbar.isOffset = NO;
         }
         
         else for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
@@ -1052,7 +1052,7 @@ typedef struct NVRegionQuadrants {
         case MapToolbarOrientationTop:
             [_mapToolbar animateToHorizontalOrientation];
             
-            _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+            _mapToolbar.center = CGPointMake((_mapView.frame.size.width / 2.0),
                                              (_mapToolbar.frame.size.height / 2.0) +
                                              [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
             
@@ -1061,7 +1061,7 @@ typedef struct NVRegionQuadrants {
         case MapToolbarOrientationBottom:
             [_mapToolbar animateToHorizontalOrientation];
             
-            _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+            _mapToolbar.center = CGPointMake((_mapView.frame.size.width / 2.0),
                                              (self.view.frame.size.height -
                                               (_mapToolbar.frame.size.height / 2.0)));
             break;
@@ -1076,7 +1076,7 @@ typedef struct NVRegionQuadrants {
         case MapToolbarOrientationRight:
             [_mapToolbar animateToVerticalOrientation];
             
-            _mapToolbar.center = CGPointMake(self.view.frame.size.width -
+            _mapToolbar.center = CGPointMake(_mapView.frame.size.width -
                                              (_mapToolbar.frame.size.width / 2.0),
                                              (self.view.frame.size.height / 2.0));
             break;
@@ -2035,6 +2035,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self updateMarkerPosition];
     [self showMarkersAndInfoWindows];
     
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    
+    [_mapToolbar didRotateWithDuration:0.25
+                          tabBarHeight:_tabBarHeight
+                       statusBarHeight:statusBarHeight];
+    
     if (![self legendIsExpanded] && ![self alertVisible])
         [self updateLegendPositions];
     
@@ -2828,10 +2834,11 @@ haveVV:
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         _legendScrollView.alpha = 1.0;
-        _vectorView.hidden = _legendsAreOffMap = YES;
+        _vectorView.hidden = _legendsAreOffMap = _mapToolbar.isOffset = YES;
         [self updateLegendPositions];
         
         [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
+        [_mapToolbar adjustFrameToScrollView];
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                                               atZoom:_mapView.camera.zoom];
@@ -2846,10 +2853,11 @@ haveVV:
         
         _vectorView.hidden = YES;
         _legendScrollView.alpha = 0.0;
-        _legendsAreOffMap = NO;
+        _legendsAreOffMap = _mapToolbar.isOffset = NO;
         [self updateLegendPositions];
         
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
+        [_mapToolbar adjustFrameToScrollView];
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
@@ -5011,7 +5019,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                          animations:^{
                              [_mapToolbar animateToHorizontalOrientation];
                              
-                             _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                             _mapToolbar.center = CGPointMake((_mapView.frame.size.width / 2.0),
                                                               (_mapToolbar.frame.size.height / 2.0) +
                                                               [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
                          }];
@@ -5025,7 +5033,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                          animations:^{
                              [_mapToolbar animateToHorizontalOrientation];
                              
-                             _mapToolbar.center = CGPointMake((self.view.frame.size.width / 2.0),
+                             _mapToolbar.center = CGPointMake((_mapView.frame.size.width / 2.0),
                                                               (self.view.frame.size.height -
                                                                (_mapToolbar.frame.size.height / 2.0)));
                          }];
@@ -5033,7 +5041,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _mapToolbar.orientation = MapToolbarOrientationBottom;
     }
     
-    else if (_mapToolbar.center.x < (self.view.frame.size.width / 2.0))
+    else if (_mapToolbar.center.x < (_mapView.frame.size.width / 2.0))
     {
         [UIView animateWithDuration:0.25
                          animations:^{
@@ -5046,13 +5054,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _mapToolbar.orientation = MapToolbarOrientationLeft;
     }
     
-    else if (_mapToolbar.center.x > (self.view.frame.size.width / 2.0))
+    else if (_mapToolbar.center.x > (_mapView.frame.size.width / 2.0))
     {
         [UIView animateWithDuration:0.25
                          animations:^{
                              [_mapToolbar animateToVerticalOrientation];
                              
-                             _mapToolbar.center = CGPointMake(self.view.frame.size.width -
+                             _mapToolbar.center = CGPointMake(_mapView.frame.size.width -
                                                               (_mapToolbar.frame.size.width / 2.0),
                                                               (self.view.frame.size.height / 2.0));
                          }];
