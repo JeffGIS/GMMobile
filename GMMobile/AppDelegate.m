@@ -226,6 +226,10 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     
     [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.offsetForBoundsInMeters
                                 forKey:@"OffsetForBoundsInMeters"];
+    
+    [NSNotificationCenter.defaultCenter postNotificationName:@"didResignActive"
+                                                      object:nil
+                                                    userInfo:nil];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -270,6 +274,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     [NSNotificationCenter.defaultCenter postNotificationName:@"didBecomeActive"
                                                       object:nil
                                                     userInfo:nil];
+    
+    CRAPI.sharedInstance.becameActive = YES;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

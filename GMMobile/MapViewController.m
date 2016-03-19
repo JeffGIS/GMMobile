@@ -123,6 +123,11 @@ typedef struct NVRegionQuadrants {
                                                name:@"didBecomeActive"
                                              object:nil];
     
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(resignedActive:)
+                                               name:@"didResignActive"
+                                             object:nil];
+    
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
@@ -372,13 +377,18 @@ typedef struct NVRegionQuadrants {
         
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
         CRAPI.sharedInstance.setToAlleyWalls = NO;
-        
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
     }
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
     
     if (_tableView)
         [self deselectTableViewRow];
+}
+
+- (void)resignedActive:(id)selector
+{
+    [self clearVectorView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -831,35 +841,6 @@ typedef struct NVRegionQuadrants {
                      atZoom:_mapView.camera.zoom];
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
-    
-    /*NSString *organizationName = [SharedDefaults.defaults stringForKey:@"OrganizationName"];
-    //organizationName = nil;
-    
-    if (!organizationName || [organizationName isEqualToString:@""])
-        organizationName = @"MPLSPubWorks";
-    
-    NSString *deviceNumber = [SharedDefaults.defaults stringForKey:@"DeviceNumber"];
-    //deviceNumber = nil;
-    
-    if (!organizationName || !deviceNumber ||
-        [organizationName isEqualToString:@""] ||
-        [deviceNumber isEqualToString:@""])
-    {
-        NVTwoTextAlert *textAlert = [NVTwoTextAlert showTwoTextAlertInView:self.view
-                                                                  delegate:self
-                                                                     title:@"Please set your Organization Name and Device Number"
-                                                            topPlaceholder:@"Organization Name"
-                                                                   topText:organizationName
-                                                         bottomPlaceholder:@"Device Number"
-                                                                bottomText:nil];
-#pragma unused(textAlert)
-    }
-    
-    else
-    {
-        CRAPI.sharedInstance.organizationName = organizationName;
-        CRAPI.sharedInstance.deviceNumber = (int)[deviceNumber integerValue];
-    }*/
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
@@ -2335,7 +2316,6 @@ haveVV:
 {
     if (!_showsPanarama)
     {
-        CRAPI.sharedInstance.blockShake = YES;
         [self clearVectorView];
         _vectorViewZoom = zoom;
         
@@ -2537,7 +2517,14 @@ haveVV:
                        if (_emailPDFAfterUpdate)
                            [self emailPDF:nil];
                        
-                       CRAPI.sharedInstance.blockShake = NO;
+                       if (CRAPI.sharedInstance.becameActive &&
+                           [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+                       {
+                           _cd = [CrimeData new];
+                           [_cd update:self.view];
+                           CRAPI.sharedInstance.becameActive = NO;
+                       }
                    });
 }
 
@@ -5703,24 +5690,6 @@ NVRegionQuadrants divideRegionIntoQuads(GMSVisibleRegion region)
                                              withPadding:20.0];
     
     [_mapView animateWithCameraUpdate:update];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
-- (void)motionEnded:(UIEventSubtype)motion
-          withEvent:(UIEvent *)event
-{
-    if (motion == UIEventSubtypeMotionShake && !CRAPI.sharedInstance.blockShake)
-    {
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
-        {
-            _cd = [CrimeData new];
-            [_cd update:self.view];
-        }
-    }
 }
 
 @end
