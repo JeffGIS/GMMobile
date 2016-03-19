@@ -340,7 +340,7 @@ EAGLContext *CreateBestEAGLContext()
 {
     [super viewWillAppear:animated];
     
-    _contents = @[@"Auto Upload", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
+    _contents = @[@"Auto Update", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Access Contacts", @"Track User Location", @"Select Organization",
                   @"Test Calendar Interface", @"Draw hotspottest.bin"];
     
@@ -405,7 +405,7 @@ EAGLContext *CreateBestEAGLContext()
     
     BOOL containsSwitch = NO;
     
-    if ([cell.textLabel.text isEqualToString:@"Auto Upload"] ||
+    if ([cell.textLabel.text isEqualToString:@"Auto Update"] ||
         [cell.textLabel.text isEqualToString:@"Track User Location"])
     {
         for (UISwitch *switches in cell.contentView.subviews)
@@ -420,8 +420,11 @@ EAGLContext *CreateBestEAGLContext()
             cellSwitch.tintColor = UIColor.redColor;
             cellSwitch.onTintColor = UIColor.greenColor;
             
-            if ([cell.textLabel.text isEqualToString:@"Auto Upload"])
+            if ([cell.textLabel.text isEqualToString:@"Auto Update"])
+            {
                 cellSwitch.tag = 777;
+                cellSwitch.on = [UserDefaults.defaults boolForKey:@"AutoUpdate"];
+            }
             
             else
             {
@@ -669,7 +672,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     switch (aSwitch.tag)
     {
         case 777://Auto upload
-            NSLog(@"Auto Upload Status:%d", aSwitch.on);
+            [UserDefaults.defaults saveBool:aSwitch.on
+                                     forKey:@"AutoUpdate"];
             break;
             
         case 888://Track location
