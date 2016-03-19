@@ -93,6 +93,7 @@
     _dateRangeButton.selected = NO;
     _multipleOffenseButton.selected = NO;
     _attemptOptionButton.selected = NO;
+    _attemptOptionButton.enabled = NO;
     
     [self setupButton:_dateRangeButton];
     [self setupButton:_areaTypeButton];
@@ -112,7 +113,7 @@
     
     [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                             forState:UIControlStateNormal];
-
+    
     [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
                           forState:UIControlStateNormal];
     
@@ -154,16 +155,13 @@
                  forState:UIControlStateNormal];
     
     [button setTitleColor:UIColor.grayColor
-                 forState:UIControlStateHighlighted];
+                 forState:(UIControlStateHighlighted|UIControlStateSelected)];
     
     [button setTitleColor:UIColor.grayColor
-                 forState:(UIControlStateHighlighted|UIControlStateSelected)];
+                 forState:UIControlStateHighlighted];
     
     [button setTitleColor:UIColor.blackColor
                  forState:UIControlStateSelected];
-    
-    [button setTitleColor:UIColor.blackColor
-                 forState:UIControlStateDisabled];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         button.titleLabel.font = [UIFont boldSystemFontOfSize:22.0];
@@ -181,17 +179,17 @@
 
 - (void)updateButton:(UIButton *)button
 {
-    if (button.enabled)
-    {
-        if (button.selected)
-            button.backgroundColor = UIColor.whiteColor;
-        
-        else
-            button.backgroundColor = UIColor.blackColor;
-    }
+    if (button.selected)
+        button.backgroundColor = UIColor.whiteColor;
     
     else
-        button.backgroundColor = UIColor.grayColor;
+        button.backgroundColor = UIColor.blackColor;
+    
+    if (!button.enabled)
+        button.alpha = 0.4;
+    
+    else
+        button.alpha = 1.0;
 }
 
 - (void)setupTableView
@@ -437,6 +435,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _currentArray = _modes[indexPath.row];
         _selectedModeType = (NVMapModeType)indexPath.row;
+        
+        if (![_modes[_selectedModeType] containsObject:_selectedMode])
+            _selectedMode = _modes[_selectedModeType][0];
+        
+        [self updateModes];
     }
     
     else if (_currentArray == _multipleOffenseOptions)
@@ -455,59 +458,66 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
                               forState:UIControlStateNormal];
+        
         ConfigurationControl.sharedInstance.adjustCrimeOption = (int)indexPath.row;
         ConfigurationControl.sharedInstance.adjustCrimeArea = @"BLOCK";
-
     }
     
     else
     {
         _selectedMode = _modes[_selectedModeType][indexPath.row];
-        NSString *uppercaseMode = _selectedMode.uppercaseString;
-        CRAPI.sharedInstance.crimeAdjustValueArea = nil;
-        
-        if ([uppercaseMode containsString:@"PIN"])
-            CRAPI.sharedInstance.crimeMode = PINMAP;
-        
-        if ([uppercaseMode containsString:@"CHOROPLETH"])
-            CRAPI.sharedInstance.crimeMode = CHOROPLETH;
-        
-        if ([uppercaseMode containsString:@"HOTSPOT"])
-            CRAPI.sharedInstance.crimeMode = HOTSPOT;
-        
-        if ([uppercaseMode containsString:@"PRECINCTS"])
-            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Precincts";
-        
-        if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
-            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
-        
-        if ([uppercaseMode containsString:@"WARDS"])
-            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Wards";
-        
-        if ([uppercaseMode containsString:@"SECTORS"])
-            CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
-        
-        if ([uppercaseMode containsString:@"BLOCK GROUPS"])
-            CRAPI.sharedInstance.crimeTarget = @"BLOCKGROUP";
-        else if ([uppercaseMode containsString:@"BLOCK"])
-            CRAPI.sharedInstance.crimeTarget = @"BLOCK";
-        
-        if ([uppercaseMode containsString:@"CENSUS TRACT"])
-            CRAPI.sharedInstance.crimeTarget = @"TRACT";
-        
-        if ([uppercaseMode containsString:@"HOUSING UNIT"])
-        {
-            CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";
-            CRAPI.sharedInstance.crimeAdjustValueArea = @"TRACT";
-        }
-        
-        [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
-                     forState:UIControlStateNormal];
-        
+        [self updateModes];
         _currentArray = _modeTypes;
     }
     
     [_tableView reloadData];
+}
+
+- (void)updateModes
+{
+    _attemptOptionButton.enabled = (_selectedModeType == NVMapModeTypeChoropleth);
+    [self updateButton:_attemptOptionButton];
+    
+    NSString *uppercaseMode = _selectedMode.uppercaseString;
+    CRAPI.sharedInstance.crimeAdjustValueArea = nil;
+    
+    if ([uppercaseMode containsString:@"PIN"])
+        CRAPI.sharedInstance.crimeMode = PINMAP;
+    
+    if ([uppercaseMode containsString:@"CHOROPLETH"])
+        CRAPI.sharedInstance.crimeMode = CHOROPLETH;
+    
+    if ([uppercaseMode containsString:@"HOTSPOT"])
+        CRAPI.sharedInstance.crimeMode = HOTSPOT;
+    
+    if ([uppercaseMode containsString:@"PRECINCTS"])
+        CRAPI.sharedInstance.crimeTarget = @"Minneapolis Precincts";
+    
+    if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
+        CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
+    
+    if ([uppercaseMode containsString:@"WARDS"])
+        CRAPI.sharedInstance.crimeTarget = @"Minneapolis Wards";
+    
+    if ([uppercaseMode containsString:@"SECTORS"])
+        CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
+    
+    if ([uppercaseMode containsString:@"BLOCK GROUPS"])
+        CRAPI.sharedInstance.crimeTarget = @"BLOCKGROUP";
+    else if ([uppercaseMode containsString:@"BLOCK"])
+        CRAPI.sharedInstance.crimeTarget = @"BLOCK";
+    
+    if ([uppercaseMode containsString:@"CENSUS TRACT"])
+        CRAPI.sharedInstance.crimeTarget = @"TRACT";
+    
+    if ([uppercaseMode containsString:@"HOUSING UNIT"])
+    {
+        CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";
+        CRAPI.sharedInstance.crimeAdjustValueArea = @"TRACT";
+    }
+    
+    [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
+                 forState:UIControlStateNormal];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
