@@ -312,7 +312,7 @@ NextPass:
             piasAdjust.adjustValue = [ConfigurationControl getAdjustValueString:_choroplethAdjustValue];
             bd = [[BoundaryData alloc]init];
             bd.processingID = self.processingID;
-            [bd load:_choroplethTarget
+            [bd load:_choroplethAdjustArea
       toPointInAreas:piasAdjust
     usingPointInArea:pia
            llCorners:latlonCornerPoints

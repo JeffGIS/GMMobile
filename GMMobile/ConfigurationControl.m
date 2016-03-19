@@ -634,10 +634,10 @@ visibleAtZoom:(CGFloat)zoom
     switch (opt)
     {
         case Population:
-            rtn = @"TOTPOP";
+            rtn = @"POPTOTAL";
             break;
         case HousingUnits:
-            rtn = @"HUNITS";
+            rtn = @"HUTOTAL";
             break;
             
     }
