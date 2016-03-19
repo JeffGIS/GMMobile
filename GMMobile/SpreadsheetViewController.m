@@ -142,6 +142,15 @@ duration:(NSTimeInterval)duration
     }
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (_ssv)
+    {
+        [_ssv didRotateWithDuration:0.25
+                       tabBarHeight:self.tabBarController.tabBar.frame.size.height];
+    }
+}
+
 - (void)ssvDidEditText:(NSString *)text
           forCellAtRow:(NSUInteger)row
                 column:(NSUInteger)column
