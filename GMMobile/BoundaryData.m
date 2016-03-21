@@ -677,12 +677,13 @@
     [self close:opened];
 }
 
-- (int)     load:(NSString*)areaType
-  toPointInAreas:(PointInAreas*)pias
-usingPointInArea:(PointInArea*)pia
-       llCorners:(CORNERPOINTS *) latlonCornerPoints
-        LLBounds:(MNMXCORD *)platlonBounds
-      viewBounds:(MNMXCORD *)pvbounds
+- (int)       load:(NSString*)areaType
+    toPointInAreas:(PointInAreas*)pias
+boundsPointInAreas:(PointInAreas*)bpias
+  usingPointInArea:(PointInArea*)pia
+         llCorners:(CORNERPOINTS *) latlonCornerPoints
+          LLBounds:(MNMXCORD *)platlonBounds
+        viewBounds:(MNMXCORD *)pvbounds
 {
     //PointInAreas (pias) will be in screen coord while PointInArea(pia) will be in lat/lon
     int nLoaded = 0;
@@ -704,6 +705,7 @@ usingPointInArea:(PointInArea*)pia
     CloseTRANS2(&_pTranViewtoLL);
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranViewtoLL = STRANBoundsToCorners(latlonCornerPoints, pvbounds);
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
@@ -771,7 +773,8 @@ NextPass:
     }
     
     SQLOK(sqlite3_finalize(statement), self.database);
-    [pias areasLoaded];
+    [pias areasLoaded:bpias
+          convertToLL:_pTranViewtoLL];
     if (pass++ < 3)
         goto NextPass;
     [self close:opened];
@@ -892,7 +895,7 @@ NextPass:
 
 - (int) displayText:(CGContextRef)context
        areaType:(NSString*)areaType
-          textArray:(NSArray *)textArrayx
+          textOptions:(TextOptions *)to
    pointInAreas:(PointInAreas*)pias
       llCorners:(CORNERPOINTS *) latlonCornerPoints
        LLBounds:(MNMXCORD *)platlonBounds
@@ -976,8 +979,9 @@ NextPass:
         double count;
         if (pias)
         {
-            count = [pias countForArea:keyval];
-            text = [NSString stringWithFormat:@"%.0lf",count];
+            count = [pias countForArea:keyval] * to.adjustCount;
+            NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
+            text = [NSString stringWithFormat:fmt,count];
         }
         else
         {

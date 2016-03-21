@@ -144,12 +144,13 @@
         pias.adjustValue = nil;
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
-        [bd load:_choroplethTarget
-  toPointInAreas:pias
-usingPointInArea:pia
-       llCorners:latlonCornerPoints
-        LLBounds:platlonBounds
-      viewBounds:pvbounds];
+        [bd   load:_choroplethTarget
+    toPointInAreas:pias
+boundsPointInAreas:nil
+  usingPointInArea:pia
+         llCorners:latlonCornerPoints
+          LLBounds:platlonBounds
+        viewBounds:pvbounds];
     }
     
     if (![self continue])
@@ -312,28 +313,43 @@ NextPass:
             piasAdjust.adjustValue = [ConfigurationControl getAdjustValueString:_choroplethAdjustValue];
             bd = [[BoundaryData alloc]init];
             bd.processingID = self.processingID;
-            [bd load:_choroplethAdjustArea
-      toPointInAreas:piasAdjust
-    usingPointInArea:pia
-           llCorners:latlonCornerPoints
-            LLBounds:platlonBounds
-          viewBounds:pvbounds];
-            [pias createDisplayColors:piasAdjust];
+           [bd load:_choroplethAdjustArea
+                  toPointInAreas:piasAdjust
+              boundsPointInAreas:pias
+                usingPointInArea:pia
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds];
+            [pias createDisplayColors:piasAdjust mask:pia];
         }
         else
-            [pias createDisplayColors:nil];
+            [pias createDisplayColors:nil mask:pia];
         
         [bd display:context
            areaType:_choroplethTarget
-       pointInAreas:pias
+            pointInAreas:pias
           llCorners:latlonCornerPoints
            LLBounds:platlonBounds
          viewBounds:pvbounds];
         
+        TextOptions *to = [[TextOptions alloc]init];
+        
+        to.numDecimals = 0;
+        to.adjustCount = 1;
+        if (_choroplethAdjustValue == HousingUnits)
+        {
+            to.numDecimals = 1;
+            to.adjustCount = 100;
+        }
+        if (_choroplethAdjustValue == Population)
+        {
+            to.numDecimals = 1;
+            to.adjustCount = 1000;
+        }
         [bd displayText:context
                areaType:_choroplethTarget
-              textArray:textArray
-           pointInAreas:pias
+            textOptions:to
+                pointInAreas:pias
               llCorners:latlonCornerPoints
                LLBounds:platlonBounds
              viewBounds:pvbounds];

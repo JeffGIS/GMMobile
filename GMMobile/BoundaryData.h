@@ -51,12 +51,13 @@
                               numPoints:(int *)numPoints
                                numLoops:(int *)numLoops
                             polyPartLen:(int **)polyPartLen;
-- (int)     load:(NSString*)areaType
-  toPointInAreas:(PointInAreas*)pias
-usingPointInArea:(PointInArea*)pia
-       llCorners:(CORNERPOINTS *) latlonCornerPoints
-        LLBounds:(MNMXCORD *)platlonBounds
-      viewBounds:(MNMXCORD *)pvbounds;
+- (int)       load:(NSString*)areaType
+    toPointInAreas:(PointInAreas*)pias
+boundsPointInAreas:(PointInAreas*)pias
+  usingPointInArea:(PointInArea*)pia
+         llCorners:(CORNERPOINTS *) latlonCornerPoints
+          LLBounds:(MNMXCORD *)platlonBounds
+        viewBounds:(MNMXCORD *)pvbounds;
 
 - (int) display:(CGContextRef)context
        areaType:(NSString*)areaType
@@ -64,9 +65,10 @@ usingPointInArea:(PointInArea*)pia
       llCorners:(CORNERPOINTS *) latlonCornerPoints
        LLBounds:(MNMXCORD *)platlonBounds
      viewBounds:(MNMXCORD *)pvbounds;
+
 - (int) displayText:(CGContextRef)context
            areaType:(NSString*)areaType
-          textArray:(NSArray *)textArray
+          textOptions:(TextOptions *)textOptions
        pointInAreas:(PointInAreas*)pias
           llCorners:(CORNERPOINTS *) latlonCornerPoints
            LLBounds:(MNMXCORD *)platlonBounds

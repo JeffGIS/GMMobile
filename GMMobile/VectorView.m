@@ -253,7 +253,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                
                                                [bd displayText:_context
                                                       areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
-                                                     textArray:nil
+                                                     textOptions:nil
                                                   pointInAreas:nil
                                                      llCorners:&_latlonCornerPoints
                                                       LLBounds:&_latlonBounds

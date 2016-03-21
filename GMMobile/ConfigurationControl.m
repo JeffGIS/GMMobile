@@ -123,7 +123,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         layerDefaultZoom[HCLayerPlanimetric] = 18;
         layerDefaultZoom[HCLayerAlleys] = 14;
         layerDefaultZoom[HCLayerAlleys] = 13;
-        layerDefaultZoom[HCLayerCrimes] = 11;
+        layerDefaultZoom[HCLayerCrimes] = 8;
         layerDefaultZoom[HCLayerMapleGroveFiber] = 11;
         layerDefaultZoom[HCLayerMapleGroveWater] = 11;
         
