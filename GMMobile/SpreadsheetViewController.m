@@ -21,11 +21,10 @@
     self.view.backgroundColor = UIColor.blackColor;
     _selectedRow = _selectedColumn = 0;
     
-    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
     
-    CGRect ssFrame = CGRectMake(0.0, statusBarHeight, self.view.frame.size.width,
-                                self.view.frame.size.height - statusBarHeight - tabBarHeight);
+    CGRect ssFrame = CGRectMake(0.0, 0.0, self.view.frame.size.width,
+                                self.view.frame.size.height - tabBarHeight);
     
     _ssv = [NVSpreadsheetView showSpreadsheetWithRows:40
                                               columns:26
@@ -97,6 +96,16 @@
     }
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
 - (void)PropertyList:(PropertyList *)propList
         returnsValue:(NSString *)value
    forPropertyNumber:(NSInteger)propNum
@@ -106,30 +115,6 @@
     [_ssv setText:value
      forCellAtRow:type
            column:propNum];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
-- (UIStatusBarStyle) preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
-}
-
-- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
-{
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        if (orientation == UIDeviceOrientationLandscapeLeft ||
-            orientation == UIDeviceOrientationLandscapeRight)
-        {
-            return 0.0;
-        }
-    }
-    
-    return 20.0;
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
