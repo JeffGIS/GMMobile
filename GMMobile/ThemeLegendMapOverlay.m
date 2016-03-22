@@ -583,7 +583,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     BOOL significantMove = ((originXTrans > self.frame.size.width) ||
                             (originYTrans > self.frame.size.height));
     
-    if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
+    if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width && _delegate)
+        self.legend.drawOnMap = NO;
+    
+    else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
         [_delegate themeLegendWasDraggedOffRightSide];
     
     else if (self.frame.origin.x < 0.0 && _delegate)
