@@ -21,15 +21,9 @@
     self.view.backgroundColor = UIColor.blackColor;
     _selectedRow = _selectedColumn = 0;
     
-    CGFloat tabBarHeight = self.tabBarController.tabBar.frame.size.height;
-    
-    CGRect ssFrame = CGRectMake(0.0, 0.0, self.view.frame.size.width,
-                                self.view.frame.size.height - tabBarHeight);
-    
     _ssv = [NVSpreadsheetView showSpreadsheetWithRows:40
                                               columns:26
                                                  view:self.view
-                                                frame:ssFrame
                                              editable:NO
                                            selectable:YES
                                              delegate:self];
@@ -115,25 +109,6 @@
     [_ssv setText:value
      forCellAtRow:type
            column:propNum];
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-duration:(NSTimeInterval)duration
-{
-    if (_ssv)
-    {
-        [_ssv willRotateWithDuration:duration
-                        tabBarHeight:self.tabBarController.tabBar.frame.size.height];
-    }
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    if (_ssv)
-    {
-        [_ssv didRotateWithDuration:0.25
-                       tabBarHeight:self.tabBarController.tabBar.frame.size.height];
-    }
 }
 
 - (void)ssvDidEditText:(NSString *)text
