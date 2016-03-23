@@ -14,6 +14,10 @@
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
 		692B4A071BF669D80016CE5D /* ThemeLegendMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */; };
 		692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 692C94351BFCDE9F004D97A1 /* dragIcon.png */; };
+		692D9CF31CA2FB6C00AFCA9A /* whiteUpload.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF11CA2FB6C00AFCA9A /* whiteUpload.png */; };
+		692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF21CA2FB6C00AFCA9A /* whiteTrashCan.png */; };
+		692D9CF71CA2FCAA00AFCA9A /* whiteList.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF51CA2FCAA00AFCA9A /* whiteList.png */; };
+		692D9CF81CA2FCAA00AFCA9A /* whitePlus.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */; };
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
@@ -227,6 +231,10 @@
 		692B4A051BF669D80016CE5D /* ThemeLegendMapOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeLegendMapOverlay.h; sourceTree = "<group>"; };
 		692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeLegendMapOverlay.m; sourceTree = "<group>"; };
 		692C94351BFCDE9F004D97A1 /* dragIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dragIcon.png; sourceTree = "<group>"; };
+		692D9CF11CA2FB6C00AFCA9A /* whiteUpload.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteUpload.png; sourceTree = "<group>"; };
+		692D9CF21CA2FB6C00AFCA9A /* whiteTrashCan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteTrashCan.png; sourceTree = "<group>"; };
+		692D9CF51CA2FCAA00AFCA9A /* whiteList.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteList.png; sourceTree = "<group>"; };
+		692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whitePlus.png; sourceTree = "<group>"; };
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
@@ -628,6 +636,10 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				692D9CF51CA2FCAA00AFCA9A /* whiteList.png */,
+				692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */,
+				692D9CF11CA2FB6C00AFCA9A /* whiteUpload.png */,
+				692D9CF21CA2FB6C00AFCA9A /* whiteTrashCan.png */,
 				69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */,
 				6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */,
 				69DA47841C74CEFC0042E47F /* singleArrowReverse.png */,
@@ -1039,6 +1051,7 @@
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				694FB1DD1C588363005410F6 /* Reader-Email@2x.png in Resources */,
+				692D9CF81CA2FCAA00AFCA9A /* whitePlus.png in Resources */,
 				69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */,
 				A90506451A75E12B00288850 /* find.png in Resources */,
 				694FB1EB1C588363005410F6 /* Reader-Thumbs.png in Resources */,
@@ -1046,6 +1059,7 @@
 				692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */,
 				A905064C1A75E28E00288850 /* themes.png in Resources */,
 				694FB1DF1C588363005410F6 /* Reader-Export.png in Resources */,
+				692D9CF71CA2FCAA00AFCA9A /* whiteList.png in Resources */,
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */,
 				692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */,
@@ -1099,6 +1113,7 @@
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
 				694FB1D61C588363005410F6 /* Reader-Button-H.png in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
+				692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
@@ -1124,6 +1139,7 @@
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
 				694FB1ED1C588363005410F6 /* Reader-Thumbs@3x.png in Resources */,
 				694FB1D91C588363005410F6 /* Reader-Button-N.png in Resources */,
+				692D9CF31CA2FB6C00AFCA9A /* whiteUpload.png in Resources */,
 				694FB1DC1C588363005410F6 /* Reader-Email.png in Resources */,
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
