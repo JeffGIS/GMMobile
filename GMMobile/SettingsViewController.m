@@ -1112,6 +1112,7 @@ didReturnTimeInterval:(NSString *)timeInterval
     else
         NSLog(@"ERROR:No mail account setup on device.");
 }
+
 - (void)mailComposeController:(MFMailComposeViewController *)controller
           didFinishWithResult:(MFMailComposeResult)result
                         error:(NSError *)error
