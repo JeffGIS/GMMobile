@@ -1179,7 +1179,8 @@ didReturnTimeInterval:(NSString *)timeInterval
                            CRAPI.sharedInstance.sharedFilePath,outFile];
     
     [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath
-                                                       delegate:self];
+                                                       delegate:self
+                                                 deleteWhenDone:NO];
 }
 
 @end
