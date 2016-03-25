@@ -696,7 +696,51 @@ typedef struct NVRegionQuadrants {
     if (tlov.subviews.count)
         [viewsArray addObject:tlov];
     
+    NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+    UIView *legendsView = [[UIView alloc] initWithFrame:self.view.frame];
+    
+    legendsView.hidden = YES;
+    legendsView.backgroundColor = UIColor.lightGrayColor;
+    [self.view addSubview:legendsView];
+    
+    CGFloat margin = 10.0, tallestLegend = 0.0;
+    CGFloat xPos = margin, yPos = margin;
+    
+    for (ThemeLegend *tls in legends)
+    {
+        ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tls
+                                                                withTag:0
+                                                               delegate:nil
+                                                                 inView:legendsView
+                                                               atOrigin:CGPointMake(xPos, yPos)
+                                                                 tabBar:nil];
+        
+        tallestLegend = MAX(tallestLegend, tlmo.frame.size.height);
+        xPos += (tlmo.frame.size.width + margin);
+        
+        if (xPos > (legendsView.frame.size.width - tlmo.frame.size.width - margin))
+        {
+            yPos += (tallestLegend + margin);
+            xPos = margin;
+            tallestLegend = 0.0;
+        }
+    }
+    
+    CGFloat maxWidth = 0.0, maxHeight = 0.0;
+    
+    for (ThemeLegendMapOverlay *tlmos in legendsView.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+        {
+            maxWidth = MAX(maxWidth, CGRectGetMaxX(tlmos.frame));
+            maxHeight = MAX(maxHeight, CGRectGetMaxY(tlmos.frame));
+        }
+    }
+    
+    legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
+    
     NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
+                                     legendsView:legendsView
                                      pickedItems:DispersePoint.getDispersedPoints];
     
     if (_emailPDFAfterUpdate)
