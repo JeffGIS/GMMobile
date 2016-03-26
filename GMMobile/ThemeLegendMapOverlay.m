@@ -13,7 +13,7 @@
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
-@property BOOL dragSelectActive, preventRefresh, firstTimeDrag;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat buttonMargin;
@@ -61,6 +61,7 @@
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
                                tabBar:(UITabBar *)tabBar
+                          hideButtons:(BOOL)hideButtons
 {
     ThemeLegendMapOverlay *tlmo = [[ThemeLegendMapOverlay alloc] init];
     tlmo.legend = legend;
@@ -68,6 +69,7 @@
     tlmo.tag = tag;
     tlmo.isExpanded = tlmo.dragSelectActive = NO;
     tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
+    tlmo.hideButtons = hideButtons;
     tlmo.delegate = delegate;
     tlmo.tabBar = tabBar;
     tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
@@ -240,16 +242,17 @@ viewForHeaderInSection:(NSInteger)section
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, _headerHeight)];
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
+    CGSize size = headerView.frame.size;
     
-    if (![headerView.subviews containsObject:_expandButton])
+    if (![headerView.subviews containsObject:_expandButton] && !_hideButtons)
     {
         _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _expandButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
         _expandButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
         _expandButton.selected = _isExpanded;
         
-        _expandButton.frame = CGRectMake((headerView.frame.size.width - (headerView.frame.size.height * _buttonMargin)), 0.0,
-                                         (headerView.frame.size.height * _buttonMargin), headerView.frame.size.height);
+        _expandButton.frame = CGRectMake((size.width - (size.height * _buttonMargin)), 0.0,
+                                         (size.height * _buttonMargin), size.height);
         
         [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeOut"
                                                                                                ofType:@"png"]]
@@ -266,14 +269,12 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:_expandButton];
     }
     
-    if (![headerView.subviews containsObject:_dragButton] && !_isExpanded)
+    if (![headerView.subviews containsObject:_dragButton] && !_isExpanded && !_hideButtons)
     {
         _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
         _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-        
-        _dragButton.frame = CGRectMake(0.0, 0.0,(headerView.frame.size.height * _buttonMargin),
-                                       headerView.frame.size.height);
+        _dragButton.frame = CGRectMake(0.0, 0.0, (size.height * _buttonMargin), size.height);
         
         [_dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
                                                                                              ofType:@"png"]]
@@ -296,9 +297,11 @@ viewForHeaderInSection:(NSInteger)section
     
     if (![headerView.subviews containsObject:_titleButton])
     {
-        _titleButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetMaxX(_dragButton.frame), 0.0,
-                                                                  (_expandButton.frame.origin.x - CGRectGetMaxX(_dragButton.frame)),
-                                                                  headerView.frame.size.height)];
+        _titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        
+        _titleButton.frame = CGRectMake((size.height * _buttonMargin), 0.0,
+                                        ((size.width - (size.height * _buttonMargin)) - (size.height * _buttonMargin)),
+                                        size.height);
         
         _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleButton.titleLabel.font = _headerFont;

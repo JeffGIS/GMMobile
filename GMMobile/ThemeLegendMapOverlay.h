@@ -42,7 +42,8 @@
                              delegate:(id)delegate
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
-                               tabBar:(UITabBar *)tabBar;
+                               tabBar:(UITabBar *)tabBar
+                          hideButtons:(BOOL)hideButtons;
 
 - (void)displayRandomColorAlertInView:(UIView *)view;
 
