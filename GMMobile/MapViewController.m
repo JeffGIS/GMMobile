@@ -75,6 +75,7 @@
 @property (nonatomic) ReaderViewController *readerVC;
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
+@property (nonatomic) NSMutableString *dataString;
 
 @end
 
@@ -3667,12 +3668,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                              delegate:self
                                                         delegateQueue:NSOperationQueue.currentQueue];
     
-    NSString *url = [NSString stringWithFormat:@"https://zillow.com/webservice/GetSearchResults.htm?zws-id=%@&address=%@+%@&citystatezip=%@+MN",
+    NSString *url = [NSString stringWithFormat:@"https://zillow.com/webservice/GetDeepSearchResults.htm?zws-id=%@&address=%@+%@&citystatezip=%@+MN",
                      CRAPI.sharedInstance.zwsID, houseNumber, address, city];
     
     NSURL *zillowURL = [NSURL URLWithString:[url stringByAddingPercentEncodingWithAllowedCharacters:
                                              NSCharacterSet.URLQueryAllowedCharacterSet]];
     
+    _dataString = NSMutableString.string;
     NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:zillowURL];
     dataTask.taskDescription = _selectedPID;
     
@@ -3687,7 +3689,37 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSString *dataString = [[NSString alloc] initWithData:data
                                                  encoding:NSUTF8StringEncoding];
     
-    NSLog(@"%@", dataString);
+    [_dataString appendString:dataString];
+    
+    if ([dataString containsString:@"-->"])
+    {
+        NSString *data = _dataString.copy;
+        
+        data = [data stringByReplacingOccurrencesOfString:@">"
+                                               withString:@">\n"];
+        
+        data = [data stringByReplacingOccurrencesOfString:@"</"
+                                               withString:@"\n</"];
+        
+        data = [data stringByReplacingOccurrencesOfString:@" xsi:"
+                                               withString:@"\nxsi:"];
+        
+        data = [data stringByReplacingOccurrencesOfString:@" https:"
+                                               withString:@"\nhttps:"];
+        
+        data = [data stringByReplacingOccurrencesOfString:@" xmlns:"
+                                               withString:@"\nxmlns:"];
+        
+        NVTextVC *textVC = [[NVTextVC alloc] initWithText:data
+                                                 fontSize:16.0];
+        
+        textVC.clampTextViewToText = YES;
+        textVC.zoomingEnabled = NO;
+        
+        [self presentViewController:textVC
+                           animated:YES
+                         completion:nil];
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session
