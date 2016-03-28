@@ -54,9 +54,81 @@
     thm.legend.labelTxColor = [UIColor blueColor];
     thm.legend.symbolDefaultColor = [UIColor greenColor];
     thm.legend.hasColors = YES;
-    
+
+    CGFloat PropListAlpha = 0.6;
     switch (type)
     {
+        case PropertyListTheme:
+            thm.setColor = YES;
+            thm.legend.title = @"Land Use";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 0;
+            class = [ThemeClass createWithTitle:@"Single Family Residential"];
+            class.values = @[@"111",@"112",@"113",@"116"];
+            class.color = [UIColor colorWithRed:1 green:1 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Multi Family Residential"];
+            class.values = @[@"114",@"115"];
+            class.color = [UIColor colorWithRed:1 green:1 blue:0.5 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Mixed Use Residential"];
+            class.values = @[@"141"];
+            class.color = [UIColor colorWithRed:1 green:1 blue:0.75 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Retail/Commercial"];
+            class.values = @[@"120",@"143"];
+            class.color = [UIColor colorWithRed:0.6 green:0.4 blue:0.2 alpha:PropListAlpha];;
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Office"];
+            class.values = @[@"130"];
+            class.color = [UIColor colorWithRed:1 green:0.5 blue:1 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Industrial"];
+            class.values = @[@"142",@"151",@"153"];
+            class.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Institutional"];
+            class.values = @[@"160"];
+            class.color = [UIColor colorWithRed:1 green:0 blue:1 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Highway/Railway"];
+            class.values = @[@"201",@"202"];
+            class.color = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Airport"];
+            class.values = @[@"203"];
+            class.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Park/Rec/Preserve"];
+            class.values = @[@"170",@"173"];
+            class.color = [UIColor colorWithRed:0.5 green:1 blue:0.5 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Agriculture"];
+            class.values = @[@"100"];
+            class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Undeveloped"];
+            class.values = @[@"210"];
+            class.color = [UIColor colorWithRed:0.75 green:1 blue:0.75 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+            
+            class = [ThemeClass createWithTitle:@"Water"];
+            class.values = @[@"220"];
+            class.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:PropListAlpha];
+            [thm.classes addObject:class];thm.numDesiredClasses++;
+
+            break;
         case Part1Theme:
             thm.minUCR = 1;
             thm.maxUCR = 10;

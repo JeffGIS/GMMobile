@@ -23,6 +23,10 @@
     
     switch (ConfigurationControl.sharedInstance.currentApp)
     {
+        case HCConfigPropListMapit:
+            thm = [Theme createTheme:PropertyListTheme];
+            [_themeList addObject:thm];
+            break;
         case HCConfigCrimes:
             thm = [Theme createTheme:Part1Theme];
             [_themeList addObject:thm];

@@ -427,18 +427,18 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    }
                                                    
                                                    
-                                                   /*if (CRAPI.sharedInstance.keepProcessing == self.displayID)
-                                                    {
-                                                    BoundaryData *bd = [[BoundaryData alloc] init];
-                                                    bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                    bd.zoom = _zoom;
-                                                    [bd displayLandUse:_context
-                                                    llCorners:&_latlonCornerPoints
-                                                    LLBounds:&_latlonBounds
-                                                    viewBounds:&_viewBounds];
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+                                                   {
+                                                        BoundaryData *bd = [[BoundaryData alloc] init];
+                                                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                                        bd.zoom = _zoom;
+                                                        [bd displayLandUse:_context
+                                                        llCorners:&_latlonCornerPoints
+                                                        LLBounds:&_latlonBounds
+                                                        viewBounds:&_viewBounds];
                                                     }
                                                     
-                                                    if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+                                                    /*if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                     {
                                                     BoundaryData *bd = [[BoundaryData alloc] init];
                                                     bd.processingID = CRAPI.sharedInstance.keepProcessing;

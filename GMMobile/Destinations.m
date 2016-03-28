@@ -388,7 +388,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     return rtn;
 }
 
-- (void)getRoute:(NSInteger)routeNum
+- (int)getRoute:(NSInteger)routeNum
         fromProp:(NSInteger)propNum
        fromPoint:(LLPOINT)fromPoint
           toDest:(NSInteger)destinationID
@@ -422,6 +422,11 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     request.departureDate = [NVDestinationOptions getDateForTime:time];
     
     MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
+    if (directions.calculating)
+    {
+        [directions cancel];
+        return -1;
+    }
     
     [directions calculateDirectionsWithCompletionHandler:
      ^(MKDirectionsResponse *response, NSError *error) {
@@ -473,6 +478,7 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
              [_condition unlock];
          }
      }];
+    return 1;
 }
 
 - (void)getRouteFromGoogle:(NSInteger)routeNum

@@ -23,7 +23,8 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigSewers,
     HCConfigMetroProp,
     HCConfigCrimes,
-    HCConfigMapleGrove
+    HCConfigMapleGrove,
+    HCConfigPropListMapit,
 };
 
 #define NUMHardCodedLayers 9
@@ -40,6 +41,17 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerMapleGroveWater,
     HCLayerMapleGroveFiber,
 };
+
+typedef NS_ENUM(NSInteger, PropSheetValues)
+{
+    PSValNone,
+    PSValPCTIndustrial,
+    PSValPCTCommercial,
+    PSValPCTResidential,
+    PSValOpenSpace,
+    PSValWater,
+};
+
 
 @interface ApplicationObject : NSObject
 
@@ -72,6 +84,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 @property NSMutableArray *legendList;
 @property HardCodedConfigs legendApp;
 @property HardCodedConfigs currentApp;
+@property PropSheetValues currentPropSheetValue;
 @property BOOL GMTilesVisible;
 @property BOOL wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;

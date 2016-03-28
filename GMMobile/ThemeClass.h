@@ -10,6 +10,7 @@
 @property double count;
 @property int numItems;
 @property int status;
+@property NSArray * values;
 @property float pctOfTotal;
 @property float symbolWidth;
 @property UIColor *color;
