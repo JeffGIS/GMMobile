@@ -78,6 +78,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.maskBoundsForBounds = ![UserDefaults.defaults boolForKey:@"MaskBoundsForBounds"];
     CRAPI.sharedInstance.offsetForBounds = [UserDefaults.defaults stringForKey:@"OffsetForBounds"];
     CRAPI.sharedInstance.offsetForBoundsInMeters = (int)[UserDefaults.defaults integerForKey:@"OffsetForBoundsInMeters"];
+    CRAPI.sharedInstance.mapPropList = ![UserDefaults.defaults boolForKey:@"MapPropList"];
+    CRAPI.sharedInstance.mapIndividualDest = ![UserDefaults.defaults boolForKey:@"MapIndividualDest"];
+    CRAPI.sharedInstance.mapGroupDest = ![UserDefaults.defaults boolForKey:@"MapGroupDest"];
     
     if (!CRAPI.sharedInstance.offsetForBounds)
         CRAPI.sharedInstance.offsetForBounds = @"0 feet";
@@ -227,6 +230,17 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     
     [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.offsetForBoundsInMeters
                                 forKey:@"OffsetForBoundsInMeters"];
+    
+    NSLog(@"%d", CRAPI.sharedInstance.mapPropList);
+    
+    [UserDefaults.defaults saveBool:!CRAPI.sharedInstance.mapPropList
+                             forKey:@"MapPropList"];
+    
+    [UserDefaults.defaults saveBool:!CRAPI.sharedInstance.mapIndividualDest
+                             forKey:@"MapIndividualDest"];
+    
+    [UserDefaults.defaults saveBool:!CRAPI.sharedInstance.mapGroupDest
+                             forKey:@"MapGroupDest"];
     
     [NSNotificationCenter.defaultCenter postNotificationName:@"didResignActive"
                                                       object:nil

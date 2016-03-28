@@ -546,6 +546,8 @@
     
     if (_fromSpreadsheet)
     {
+        [ConfigurationControl.sharedInstance setApp:HCConfigFromSpreadsheet];
+        
         self.tabBarController.tabBar.hidden = YES;
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
         _mapView.userInteractionEnabled = NO;
@@ -555,38 +557,7 @@
         [self setMapType];
         
         [_mapView moveCamera:camUpdate];
-        _mapToolbar.hidden = YES;
         _compass.hidden = YES;
-        
-        UIButton *returnButton = [[UIButton alloc] initWithFrame:CGRectMake(10.0, (statusBarHeight + 10.0),
-                                                                            160.0, 44.0)];
-        
-        [returnButton setTitle:@"< Return"
-                      forState:UIControlStateNormal];
-        
-        [self setupTempButton:returnButton];
-        returnButton.tag = 123456;
-        
-        [returnButton addTarget:self
-                         action:@selector(returnToSSV:)
-               forControlEvents:UIControlEventTouchUpInside];
-        
-        [self.view addSubview:returnButton];
-        
-        UIButton *emailButton = [[UIButton alloc] initWithFrame:CGRectMake(10.0, (statusBarHeight + 64.0),
-                                                                           160.0, 44.0)];
-        
-        [emailButton setTitle:@"Email PDF"
-                      forState:UIControlStateNormal];
-        
-        [self setupTempButton:emailButton];
-        emailButton.tag = 654321;
-        
-        [emailButton addTarget:self
-                        action:@selector(emailPDF:)
-              forControlEvents:UIControlEventTouchUpInside];
-        
-        [self.view addSubview:emailButton];
     }
     
     else
@@ -600,7 +571,6 @@
             [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
         
         _mapView.userInteractionEnabled = YES;
-        _mapToolbar.hidden = NO;
         _compass.hidden = NO;
     }
 }
@@ -642,9 +612,9 @@
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
 }
 
-- (void)returnToSSV:(UIButton *)button
+- (void)mapToolbarDidSelectReturnButton
 {
-    [button removeFromSuperview];
+    [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
     _fromSpreadsheet = NO;
     
     NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"SpreadsheetVC"
@@ -659,7 +629,7 @@
     }
 }
 
-- (void)emailPDF:(UIButton *)button
+- (void)emailPDF
 {
     NSMutableArray *viewsArray = NSMutableArray.array;
     
@@ -810,24 +780,28 @@
 {
     [super viewDidAppear:animated];
     
-    HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
-    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    
-    if (config)
-        [ConfigurationControl.sharedInstance setApp:(config - 1)];
-    
-    else
-        self.tabBarController.selectedIndex = 3;
+    if (!_fromSpreadsheet)
+    {
+        HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+        
+        if (config)
+            [ConfigurationControl.sharedInstance setApp:(config - 1)];
+        
+        else
+            self.tabBarController.selectedIndex = 3;
+    }
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
     
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main"
                                                          bundle:NSBundle.mainBundle];
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
         
@@ -1874,7 +1848,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self.view bringSubviewToFront:helpWebView];
     }
     
-    mapView.mapType = [self setMapType];
+    [self setMapType];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -2039,9 +2013,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_legendsAreOffMap)
         frame3.size.width -= _mapViewLegendOffset;
     
-    [_mapToolbar willRotateWithDuration:duration
-                           tabBarHeight:_tabBarHeight
-                        statusBarHeight:statusBarHeight];
+    if (_fromSpreadsheet)
+    {
+        [_mapToolbar willRotateWithDuration:duration
+                               tabBarHeight:0.0
+                            statusBarHeight:statusBarHeight];
+    }
+    
+    else
+    {
+        [_mapToolbar willRotateWithDuration:duration
+                               tabBarHeight:_tabBarHeight
+                            statusBarHeight:statusBarHeight];
+    }
     
     for (GSSiDatePicker *datePicker in self.view.subviews)
     {
@@ -2340,7 +2324,7 @@ haveVV:
     [_vectorView setNeedsDisplay];
 }
 
-- (int)setMapType
+- (void)setMapType
 {
     if (![ConfigurationControl.sharedInstance haveUserAerials] &&
         ![ConfigurationControl.sharedInstance useMapTypeControl])
@@ -2355,8 +2339,6 @@ haveVV:
         else
             _mapView.mapType = kGMSTypeNormal;
     }
-    
-    return _mapView.mapType;
 }
 
 - (void)highlightVectorView:(PickedItem *)pi
@@ -4516,9 +4498,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!error)
     {
-        _polyline.map = nil;
-        _polyline = nil;
-        
+        for (GMSPolyline *polylines in _polylines)
+            polylines.map = nil;
+ 
+        [_polylines removeAllObjects];
+ 
         GMSPath *path = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
         _polyline = [GMSPolyline polylineWithPath:path];
         _polyline.strokeWidth = 10.0;
@@ -4548,7 +4532,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-
 - (void)connection:(nonnull NSURLConnection *)connection
   didFailWithError:(nonnull NSError *)error
 {
@@ -4573,14 +4556,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectClearMarkers
 {
+    [self dismissTableView];
+    
+    [self performSelector:@selector(clearMapItems)
+               withObject:nil
+               afterDelay:0.3];
+}
+
+- (void)clearMapItems
+{
     for (MarkerButton *markers in _markerArray)
         [markers removeFromSuperview];
     
     [_markerArray removeAllObjects];
     [self removePreviousInfoWindow];
-
-    _polyline.map = nil;
-    _polyline = nil;
+    
+    for (GMSPolyline *polylines in _polylines)
+        polylines.map = nil;
+    
+    [_polylines removeAllObjects];
 }
 
 - (void)mapToolbarDidSelectGrayscale
@@ -4629,7 +4623,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectEmailPDF
 {
-    [self emailPDF:nil];
+    [self emailPDF];
 }
 
 - (void)mapToolbarDidSelectHelpButton

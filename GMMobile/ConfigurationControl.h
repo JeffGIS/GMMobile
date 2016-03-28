@@ -6,7 +6,7 @@
 #import "Theme.h"
 
 #define MAX_LAYER_NAME 32
-#define NUMHardCodedConfigs 7
+#define NUMHardCodedConfigs 8
 
 typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
 {
@@ -88,10 +88,13 @@ typedef NS_ENUM(NSInteger, PropSheetValues)
 @property BOOL GMTilesVisible;
 @property BOOL wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
-@property NSString* adjustCrimeArea;
+@property NSString *adjustCrimeArea;
+
++ (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
+
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
-- (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;
+- (NSMutableArray *)getDatasetsForApp:(HardCodedConfigs)appID;
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID;
 - (NSArray *)getLayerSymbols;
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index;
@@ -106,8 +109,5 @@ typedef NS_ENUM(NSInteger, PropSheetValues)
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID;
-+(NSString*) getAdjustValueString:(AdjustCrimeOptions)opt;
-
-
 
 @end
