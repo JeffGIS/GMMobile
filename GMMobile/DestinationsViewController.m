@@ -40,15 +40,15 @@
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _rowHeight = 60.0;
-        _font = [UIFont boldSystemFontOfSize:22.0];
+        _rowHeight = 44.0;
+        _font = [UIFont boldSystemFontOfSize:18.0];
         _subFont = [UIFont systemFontOfSize:12.0];
     }
     
     else
     {
-        _rowHeight = 76.0;
-        _font = [UIFont boldSystemFontOfSize:36.0];
+        _rowHeight = 60.0;
+        _font = [UIFont boldSystemFontOfSize:32.0];
         _subFont = [UIFont systemFontOfSize:20.0];
     }
     
@@ -132,6 +132,7 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.font = _font;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.adjustsFontSizeToFitWidth = YES;
     
     if (tableView == _topTableView)
         headerLabel.text = @"Individual Destinations";
