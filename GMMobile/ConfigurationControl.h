@@ -6,7 +6,7 @@
 #import "Theme.h"
 
 #define MAX_LAYER_NAME 32
-#define NUMHardCodedConfigs 7
+#define NUMHardCodedConfigs 8
 
 typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
 {
@@ -23,7 +23,8 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigSewers,
     HCConfigMetroProp,
     HCConfigCrimes,
-    HCConfigMapleGrove
+    HCConfigMapleGrove,
+    HCConfigFromSpreadsheet,
 };
 
 #define NUMHardCodedLayers 9
@@ -68,17 +69,17 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 
 + (ConfigurationControl *)sharedInstance;
 
-@property NSMutableArray *appList;
-@property NSMutableArray *legendList;
-@property HardCodedConfigs legendApp;
-@property HardCodedConfigs currentApp;
-@property BOOL GMTilesVisible;
-@property BOOL wantAllCrimes;
+@property NSMutableArray *appList, *legendList;
+@property HardCodedConfigs legendApp, currentApp;
+@property BOOL GMTilesVisible, wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
-@property NSString* adjustCrimeArea;
+@property NSString *adjustCrimeArea;
+
++ (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
+
 - (BOOL)setApp:(HardCodedConfigs)appID;
 - (NSArray *)getLayers;
-- (NSMutableArray *) getDatasetsForApp:(HardCodedConfigs)appID;
+- (NSMutableArray *)getDatasetsForApp:(HardCodedConfigs)appID;
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID;
 - (NSArray *)getLayerSymbols;
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index;
@@ -93,8 +94,5 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID;
-+(NSString*) getAdjustValueString:(AdjustCrimeOptions)opt;
-
-
 
 @end

@@ -148,6 +148,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigSewers][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantDigitize] = YES;
@@ -160,6 +161,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigAlleyWalls][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantDigitize] = YES;
@@ -172,6 +174,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = NO;
@@ -184,6 +187,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = YES;
@@ -196,6 +200,20 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantReturnButton] = NO;
+        
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantUserLocation] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantExtents] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantGrayscale] = YES;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantClearMarkers] = NO;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantEmailPDF] = YES;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigFromSpreadsheet][MapToolbarPropertyWantReturnButton] = YES;
         
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantDigitize] = NO;
@@ -208,6 +226,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantDigitize] = NO;
@@ -220,6 +239,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantEmailPDF] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantReturnButton] = NO;
         
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
@@ -256,6 +276,13 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configLayers[HCConfigMetroProp][HCLayerPlanimetric] = NO;
         configLayers[HCConfigMetroProp][HCLayerAlleys] = NO;
         configLayers[HCConfigMetroProp][HCLayerCurbRamps] = NO;
+        
+        configLayers[HCConfigFromSpreadsheet][HCLayerAerials] = NO;
+        configLayers[HCConfigFromSpreadsheet][HCLayerParcels] = YES;
+        configLayers[HCConfigFromSpreadsheet][HCLayerSewers] = NO;
+        configLayers[HCConfigFromSpreadsheet][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigFromSpreadsheet][HCLayerAlleys] = NO;
+        configLayers[HCConfigFromSpreadsheet][HCLayerCurbRamps] = NO;
         
         configLayers[HCConfigCrimes][HCLayerAerials] = YES;
         configLayers[HCConfigCrimes][HCLayerParcels] = YES;
@@ -330,14 +357,19 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                                value:configToobarSegs[_currentApp][prop]];
     }
     
-    [UserDefaults.defaults saveInteger:(appID + 1)
-                                forKey:@"CurrentConfig"];
+    if (appID != HCConfigFromSpreadsheet)
+    {
+        [UserDefaults.defaults saveInteger:(appID + 1)
+                                    forKey:@"CurrentConfig"];
+    }
+    
     switch (_currentApp)
     {
         case HCConfigMetroProp:
+        case HCConfigFromSpreadsheet:
             CRAPI.sharedInstance.parcelTextOption = 1;
             break;
-         
+        
         case HCConfigSewers:
         case HCConfigAlleyWalls:
         case HCConfigCrimes:
@@ -345,18 +377,19 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             CRAPI.sharedInstance.parcelTextOption = 2;
             CRAPI.sharedInstance.currentOverallBoundaryName = @"Minneapolis";
             CRAPI.sharedInstance.currentOverallBoundaryType = @"City";
-
             break;
+            
         case HCConfigMapleGrove:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
             CRAPI.sharedInstance.parcelTextOption = 1;
             configLayerZoom[HCConfigMapleGrove][HCLayerSewers] = 12;
-
             break;
+            
         default:
             CRAPI.sharedInstance.parcelTextOption = 0;
             break;
     }
+    
     return rtn;
 }
 
@@ -627,9 +660,9 @@ visibleAtZoom:(CGFloat)zoom
     return configToobarSegs[_currentApp][MapToolbarPropertyWantMapType];
 }
 
-+(NSString*) getAdjustValueString:(AdjustCrimeOptions)opt
++ (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt
 {
-    NSString* rtn=@"";
+    NSString *rtn = @"";
     
     switch (opt)
     {
@@ -640,6 +673,8 @@ visibleAtZoom:(CGFloat)zoom
             rtn = @"HUTOTAL";
             break;
             
+        default:
+            break;
     }
     
     return rtn;
