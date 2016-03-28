@@ -4516,9 +4516,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!error)
     {
-        _polyline.map = nil;
-        _polyline = nil;
-        
+        for (GMSPolyline *polylines in _polylines)
+            polylines.map = nil;
+ 
+        [_polylines removeAllObjects];
+ 
         GMSPath *path = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
         _polyline = [GMSPolyline polylineWithPath:path];
         _polyline.strokeWidth = 10.0;
@@ -4548,7 +4550,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-
 - (void)connection:(nonnull NSURLConnection *)connection
   didFailWithError:(nonnull NSError *)error
 {
@@ -4573,14 +4574,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectClearMarkers
 {
+    [self dismissTableView];
+    
+    [self performSelector:@selector(clearMapItems)
+               withObject:nil
+               afterDelay:0.3];
+}
+
+- (void)clearMapItems
+{
     for (MarkerButton *markers in _markerArray)
         [markers removeFromSuperview];
     
     [_markerArray removeAllObjects];
     [self removePreviousInfoWindow];
-
-    _polyline.map = nil;
-    _polyline = nil;
+    
+    for (GMSPolyline *polylines in _polylines)
+        polylines.map = nil;
+    
+    [_polylines removeAllObjects];
 }
 
 - (void)mapToolbarDidSelectGrayscale
