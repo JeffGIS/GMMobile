@@ -2013,9 +2013,19 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_legendsAreOffMap)
         frame3.size.width -= _mapViewLegendOffset;
     
-    [_mapToolbar willRotateWithDuration:duration
-                           tabBarHeight:_tabBarHeight
-                        statusBarHeight:statusBarHeight];
+    if (_fromSpreadsheet)
+    {
+        [_mapToolbar willRotateWithDuration:duration
+                               tabBarHeight:0.0
+                            statusBarHeight:statusBarHeight];
+    }
+    
+    else
+    {
+        [_mapToolbar willRotateWithDuration:duration
+                               tabBarHeight:_tabBarHeight
+                            statusBarHeight:statusBarHeight];
+    }
     
     for (GSSiDatePicker *datePicker in self.view.subviews)
     {
