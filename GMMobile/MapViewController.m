@@ -22,7 +22,7 @@
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -3105,6 +3105,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Get Zillow Data"])
+    {
+        [self getZillowData];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Perform 3D Route Flyover"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
@@ -3624,6 +3630,72 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (CLLocationManager.headingAvailable)
         [_locationManager startUpdatingLocation];
+}
+
+- (void)getZillowData
+{
+    PropertyData *propData = [[PropertyData alloc] init];
+    
+    _propertyReport = [propData getReport:PDSettingDefault
+                                   forPID:_selectedPID];
+    
+    NSString *houseNumber = removeOpeningSpaces(textAfterFirstColon(_propertyReport[1]));
+    NSString *address = removeOpeningSpaces(textAfterFirstColon(_propertyReport[2]));
+    NSString *city = removeOpeningSpaces(textAfterFirstColon(_propertyReport[4]));
+    
+    NSMutableArray *addressComponents = [address componentsSeparatedByString:@" "].mutableCopy;
+    NSArray *addressEnds = @[@"N", @"S", @"E", @"W", @"NE", @"NW", @"SE", @"SW"];
+    
+    for (NSString *ends in addressEnds)
+    {
+        if ([addressComponents.lastObject isEqualToString:ends])
+        {
+            [addressComponents removeLastObject];
+            break;
+        }
+    }
+    
+    address = [addressComponents componentsJoinedByString:@" "];
+    
+    address = [address stringByReplacingOccurrencesOfString:@" "
+                                                 withString:@"+"];
+    
+    NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+    config.timeoutIntervalForRequest = 5.0;
+    
+    NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:config
+                                                             delegate:self
+                                                        delegateQueue:NSOperationQueue.currentQueue];
+    
+    NSString *url = [NSString stringWithFormat:@"https://zillow.com/webservice/GetSearchResults.htm?zws-id=%@&address=%@+%@&citystatezip=%@+MN",
+                     CRAPI.sharedInstance.zwsID, houseNumber, address, city];
+    
+    NSURL *zillowURL = [NSURL URLWithString:[url stringByAddingPercentEncodingWithAllowedCharacters:
+                                             NSCharacterSet.URLQueryAllowedCharacterSet]];
+    
+    NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:zillowURL];
+    dataTask.taskDescription = _selectedPID;
+    
+    [dataTask resume];
+    [self deselectTableViewRow];
+}
+
+- (void)URLSession:(NSURLSession *)session
+          dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data
+{
+    NSString *dataString = [[NSString alloc] initWithData:data
+                                                 encoding:NSUTF8StringEncoding];
+    
+    NSLog(@"%@", dataString);
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+didCompleteWithError:(NSError *)error
+{
+    if (error)
+        NSLog(@"URLSession ERROR (PID %@):%@", task.taskDescription, error.localizedDescription);
 }
 
 - (void)perform3DFlyAround
@@ -5061,7 +5133,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 _options = @[@"Remove Property Marker", @"Property Report", @"Hennepin County Website",
                              @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
+                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Get Zillow Data"];
                 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {
@@ -5084,7 +5156,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 _options = @[@"Remove Property Marker", @"Property Report", @"Display Street View",
                              @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
+                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Get Zillow Data"];
 
                 if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
                 {

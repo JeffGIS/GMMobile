@@ -55,6 +55,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.resetPropList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
     CRAPI.sharedInstance.clearSpreadsheet = NO;
+    CRAPI.sharedInstance.zwsID = @"X1-ZWz1f7t0n1d7nv_3wguv";
     
     NSInteger fromDate = 0, toDate = 0;
     
