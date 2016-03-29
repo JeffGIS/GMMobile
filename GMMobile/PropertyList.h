@@ -59,13 +59,19 @@ typedef NS_ENUM(NSInteger, PropFieldType)
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID;
 
-- (NSArray*) getPropertyNumbers;
-- (NSArray*)availablePropertyFields;
-- (NSString*) propertyFieldName:(PropFieldType)fieldType;
+- (NSArray *)getPropertyNumbers;
+- (NSArray *)availablePropertyFields;
+- (NSString *)propertyFieldName:(PropFieldType)fieldType;
+
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
-                       forPropertyNumber:(NSInteger)propNum;
+                   forPropertyNumber:(NSInteger)propNum;
+
 - (void)updatePropertyUserID:(NSInteger)propNum
-                      userID:(NSString*)userID;
+                      userID:(NSString *)userID;
+
 - (LLPOINT)getPropertyLatLon:(NSInteger)propNum;
+
+- (NSString *) getFieldValue:(NSInteger)propNum
+                        type:(PropFieldType)fieldType;
 
 @end

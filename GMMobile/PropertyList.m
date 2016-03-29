@@ -354,8 +354,8 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     return;
 }
 
-- (NSString*) getFieldValue:(NSInteger)propNum
-                       type:(PropFieldType)fieldType
+- (NSString *) getFieldValue:(NSInteger)propNum
+                        type:(PropFieldType)fieldType
 {
     NSString *value = nil;
     
