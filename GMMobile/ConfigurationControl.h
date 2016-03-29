@@ -8,6 +8,9 @@
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 8
 
+#define MAPIT_CIRCULAR  1
+#define MAPIT_AREA      2
+
 typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
 {
     None,
@@ -24,7 +27,7 @@ typedef NS_ENUM(NSInteger, HardCodedConfigs)
     HCConfigMetroProp,
     HCConfigCrimes,
     HCConfigMapleGrove,
-    HCConfigPropListMapit,
+    HCConfigFromSpreadsheet,
 };
 
 #define NUMHardCodedLayers 9
@@ -80,15 +83,16 @@ typedef NS_ENUM(NSInteger, PropSheetValues)
 
 + (ConfigurationControl *)sharedInstance;
 
-@property NSMutableArray *appList;
-@property NSMutableArray *legendList;
-@property HardCodedConfigs legendApp;
-@property HardCodedConfigs currentApp;
-@property PropSheetValues currentPropSheetValue;
-@property BOOL GMTilesVisible;
-@property BOOL wantAllCrimes;
+@property NSMutableArray *appList, *legendList;
+@property HardCodedConfigs legendApp, currentApp;
+@property BOOL GMTilesVisible, wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;
+@property PropSheetValues currentPropSheetValue;
+@property int MapitBoundaryOpt;
+@property int MapitBoundaryRefno;
+@property int MapitTargetParcelRefno;
+@property CGFloat MapitCirularBoundaryRadiusInMiles;
 
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
 

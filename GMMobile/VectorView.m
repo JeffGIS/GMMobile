@@ -114,7 +114,11 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
     _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
     
-    if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+    {
+        
+    }
+    else if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
         CRAPI.sharedInstance.maskBoundsForBounds &&
         !CRAPI.sharedInstance.selectBoundaryFromMapType)
     {
@@ -450,7 +454,25 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                     viewBounds:&_viewBounds];
                                                     }*/
                                                    
-                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+                                                   if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+                                                   {
+                                                       if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+                                                       {
+                                                           
+                                                       }
+                                                       else
+                                                       {
+                                                           BoundaryData *bd = [[BoundaryData alloc] init];
+                                                           
+                                                           [bd displayBoundary:ConfigurationControl.sharedInstance.MapitBoundaryRefno
+                                                                     inContext:_context
+                                                                     llCorners:&_latlonCornerPoints
+                                                                      LLBounds:&_latlonBounds
+                                                                    viewBounds:&_viewBounds];
+                                                       }
+                                                       
+                                                   }
+                                                   else if (CRAPI.sharedInstance.keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
                                                        (CRAPI.sharedInstance.showPolylineForBounds ||
                                                         CRAPI.sharedInstance.maskBoundsForBounds))
                                                    {

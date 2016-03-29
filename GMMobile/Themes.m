@@ -23,7 +23,7 @@
     
     switch (ConfigurationControl.sharedInstance.currentApp)
     {
-        case HCConfigPropListMapit:
+        case HCConfigFromSpreadsheet:
             thm = [Theme createTheme:PropertyListTheme];
             [_themeList addObject:thm];
             break;

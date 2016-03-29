@@ -133,7 +133,7 @@
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:@"Spreadsheet Options"
-                                               buttonTextArray:@[@"Map It!", @"Cancel"]
+                                               buttonTextArray:@[@"Map It", @"Cancel"]
                                               destructiveIndex:0];
 #pragma unused(alert)
 }
