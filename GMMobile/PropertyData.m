@@ -576,6 +576,30 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     return nil;
 }
 
++ (NSString *)getCensusBlockForPID:(NSString *)PID
+{
+    NSString * block = @"";
+    PropertyData *pd = [[PropertyData alloc]init];
+    BOOL opened = [pd open];
+    NSString *query = [NSString stringWithFormat:@"SELECT [CENBLOCK] FROM PROPINFO Where PIN = '%@'",
+                       PID];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database, 38);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR owner = (LPSTR)sqlite3_column_text(statement, 0);
+        block = [NSString stringWithUTF8String:owner];
+    }
+    
+    SQLOKpd(sqlite3_finalize(statement), pd.database, 39);
+    [pd close:opened];
+    
+    return block;
+}
+
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID
 {

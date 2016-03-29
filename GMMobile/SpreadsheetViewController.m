@@ -145,6 +145,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         PropertyList *proplist = [[PropertyList alloc] init];
         LLPOINT llpoint = [proplist getPropertyLatLon:_selectedColumn];
+        [proplist setZoomValues:_selectedColumn forRow:_selectedRow-1];
         CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
         NSUInteger index = 0;
         

@@ -4,6 +4,7 @@
 #import "PropertyList.h"
 #import "PropertyData.h"
 #import "Destinations.h"
+#import "ConfigurationControl.h"
 
 //#define CURRENT_VERSION 28
 
@@ -289,6 +290,14 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     return name;
 }
+
+- (int)getBoundaryTypeForField:(PropFieldType) field
+{
+    int type = MAPIT_CIRCULAR;
+    
+    return type;
+}
+
 - (NSArray*) getPropertyNumbers
 {
     NSMutableArray * propNums = [[NSMutableArray alloc]init];
@@ -579,6 +588,33 @@ LLPOINT LLPOINTFromString (NSString* string)
     pt = LLPOINTFromString (value);
     [self close:opened];
     return pt;
+}
+
+- (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row
+{
+    LLPOINT pt;
+    BOOL opened = [self open];
+    NSArray *fields = [self availablePropertyFields];
+    NSNumber *field = fields[row];
+    PropFieldType ifield = field.integerValue;
+    NSString * PID = [self getFieldValue:propNum
+                                      type:PFT_PIN];
+
+    ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
+    if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+    {
+        NSString * value = [self getFieldValue:propNum
+                                          type:PFT_LatLon];
+        pt = LLPOINTFromString (value);
+       
+    }
+    else
+    {
+        NSString * cenBlock = [PropertyData getCensusBlockForPID:PID];
+        ConfigurationControl.sharedInstance.MapitBoundaryRefno = 0;
+    }
+
+     [self close:opened];
 }
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID

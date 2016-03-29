@@ -1172,8 +1172,22 @@
     [self stopTrackingUserLocation:NO];
     GMSCameraPosition *camera;
     MNMXCORD bounds;
+    int boundaryRefno = 0;
     
-    if (CRAPI.sharedInstance.currentOverallBoundaryRefno || CRAPI.sharedInstance.selectBoundaryFromMapType)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+    {
+        if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+        {
+            
+        }
+        else
+            boundaryRefno = ConfigurationControl.sharedInstance.MapitBoundaryRefno;
+
+    }
+    else
+        boundaryRefno = CRAPI.sharedInstance.currentOverallBoundaryRefno;
+    
+    if (boundaryRefno || CRAPI.sharedInstance.selectBoundaryFromMapType)
     {
         BoundaryData *boundData = [[BoundaryData alloc] init];
         
@@ -1183,8 +1197,7 @@
                             CRAPI.sharedInstance.selectBoundaryFromMapType];
         }
         else
-            bounds = [boundData getBoundaryAreaBounds:
-                            CRAPI.sharedInstance.currentOverallBoundaryRefno];
+            bounds = [boundData getBoundaryAreaBounds:boundaryRefno];
         
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
         CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);

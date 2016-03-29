@@ -80,6 +80,7 @@ typedef struct {int nMatchingProperties;
                         useDesc:(LPSTR) usedescIN;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
++ (NSString *)getCensusBlockForPID:(NSString *)PID;
 - (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;
 
 - (void)displayParcels:(CGContextRef)context

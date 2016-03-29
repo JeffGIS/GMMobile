@@ -73,5 +73,6 @@ typedef NS_ENUM(NSInteger, PropFieldType)
 
 - (NSString *) getFieldValue:(NSInteger)propNum
                         type:(PropFieldType)fieldType;
+- (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row;
 
 @end
