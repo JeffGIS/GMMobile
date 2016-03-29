@@ -15,7 +15,7 @@
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIFont *font, *subFont;
 @property (nonatomic) NSArray *individualDestinations, *groupDestinations;
-@property (nonatomic) UIButton *topHeaderButton, *bottomHeaderButton;
+@property (nonatomic) UIButton *topPlusButton, *bottomPlusButton, *topMapItButton, *bottomMapItButton;
 @property (nonatomic) UIImage *editNameImage, *editOptionsImage, *googleImage;
 
 @end
@@ -52,30 +52,82 @@
         _subFont = [UIFont systemFontOfSize:20.0];
     }
     
-    _topHeaderButton = [[UIButton alloc] init];
-    _bottomHeaderButton = [[UIButton alloc] init];
+    _topPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _bottomPlusButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _topMapItButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _bottomMapItButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
-    [_topHeaderButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
-                                                                                              ofType:@"png"]]
-                      forState:UIControlStateNormal];
+    _topPlusButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomPlusButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _topMapItButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomMapItButton.translatesAutoresizingMaskIntoConstraints = NO;
     
-    [_bottomHeaderButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
-                                                                                                 ofType:@"png"]]
-                         forState:UIControlStateNormal];
+    [_topPlusButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                            ofType:@"png"]]
+                    forState:UIControlStateNormal];
+    
+    [_bottomPlusButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                                               ofType:@"png"]]
+                       forState:UIControlStateNormal];
+    
+    [_topMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapItWithX"
+                                                                                             ofType:@"png"]]
+                     forState:UIControlStateNormal];
+    
+    [_topMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapItWithX"
+                                                                                             ofType:@"png"]]
+                     forState:UIControlStateNormal|UIControlStateHighlighted];
+    
+    [_topMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapIt"
+                                                                                             ofType:@"png"]]
+                     forState:UIControlStateSelected];
+    
+    [_topMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapIt"
+                                                                                             ofType:@"png"]]
+                     forState:UIControlStateSelected|UIControlStateHighlighted];
+    
+    [_bottomMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapItWithX"
+                                                                                                ofType:@"png"]]
+                        forState:UIControlStateNormal];
+    
+    [_bottomMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapItWithX"
+                                                                                                ofType:@"png"]]
+                        forState:UIControlStateNormal|UIControlStateHighlighted];
+    
+    [_bottomMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapIt"
+                                                                                                ofType:@"png"]]
+                        forState:UIControlStateSelected];
+    
+    [_bottomMapItButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteMapIt"
+                                                                                                ofType:@"png"]]
+                        forState:UIControlStateSelected|UIControlStateHighlighted];
     
     CGFloat imageInset = (_rowHeight / 10.0);
     UIEdgeInsets edgeInsets = UIEdgeInsetsMake(imageInset, imageInset, imageInset, imageInset);
     
-    _topHeaderButton.imageEdgeInsets = edgeInsets;
-    _bottomHeaderButton.imageEdgeInsets = edgeInsets;
+    _topPlusButton.imageEdgeInsets = edgeInsets;
+    _bottomPlusButton.imageEdgeInsets = edgeInsets;
+    _topMapItButton.imageEdgeInsets = edgeInsets;
+    _bottomMapItButton.imageEdgeInsets = edgeInsets;
     
-    [_topHeaderButton addTarget:self
-                         action:@selector(addIndividual:)
-               forControlEvents:UIControlEventTouchUpInside];
+    _topMapItButton.selected = CRAPI.sharedInstance.mapIndividualDest;
+    _bottomMapItButton.selected = CRAPI.sharedInstance.mapGroupDest;
     
-    [_bottomHeaderButton addTarget:self
-                            action:@selector(addGroup:)
-                  forControlEvents:UIControlEventTouchUpInside];
+    [_topPlusButton addTarget:self
+                       action:@selector(addIndividual:)
+             forControlEvents:UIControlEventTouchUpInside];
+    
+    [_bottomPlusButton addTarget:self
+                          action:@selector(addGroup:)
+                forControlEvents:UIControlEventTouchUpInside];
+    
+    [_topMapItButton addTarget:self
+                        action:@selector(individualMapItToggle:)
+              forControlEvents:UIControlEventTouchUpInside];
+    
+    [_bottomMapItButton addTarget:self
+                           action:@selector(groupMapItToggle:)
+                 forControlEvents:UIControlEventTouchUpInside];
     
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
@@ -126,9 +178,11 @@
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UILabel *headerLabel = [[UILabel alloc] initWithFrame:
-                            CGRectMake(_rowHeight, 0.0, (tableView.frame.size.width - (_rowHeight * 2.0)), _rowHeight)];
+    UIView *headerView = UIView.new;
+    headerView.backgroundColor = UIColor.blackColor;
     
+    UILabel *headerLabel = UILabel.new;
+    headerLabel.translatesAutoresizingMaskIntoConstraints = NO;
     headerLabel.font = _font;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
@@ -140,31 +194,53 @@ viewForHeaderInSection:(NSInteger)section
     else
         headerLabel.text = @"Group Destinations";
     
-    UIView *headerView = [[UIView alloc] initWithFrame:
-                          CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
-    
     [headerView addSubview:headerLabel];
-    headerView.backgroundColor = UIColor.blackColor;
     
     if (tableView == _topTableView)
     {
-        if (![headerView.subviews containsObject:_topHeaderButton])
+        if (![headerView.subviews containsObject:_topPlusButton])
         {
-            _topHeaderButton.frame = CGRectMake((headerView.frame.size.width - _rowHeight),
-                                                0.0, _rowHeight, _rowHeight);
+            [headerView addSubview:_topMapItButton];
+            [headerView addSubview:_topPlusButton];
             
-            [headerView addSubview:_topHeaderButton];
+            [_topMapItButton.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
+            [_topMapItButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+            [_topMapItButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+            [_topMapItButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            
+            [_topPlusButton.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
+            [_topPlusButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+            [_topPlusButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+            [_topPlusButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            
+            [headerLabel.leadingAnchor constraintEqualToAnchor:_topMapItButton.trailingAnchor].active = YES;
+            [headerLabel.trailingAnchor constraintEqualToAnchor:_topPlusButton.leadingAnchor].active = YES;
+            [headerLabel.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+            [headerLabel.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
         }
     }
     
     else
     {
-        if (![headerView.subviews containsObject:_bottomHeaderButton])
+        if (![headerView.subviews containsObject:_bottomPlusButton])
         {
-            _bottomHeaderButton.frame = CGRectMake((headerView.frame.size.width - _rowHeight),
-                                                   0.0, _rowHeight, _rowHeight);
+            [headerView addSubview:_bottomMapItButton];
+            [headerView addSubview:_bottomPlusButton];
             
-            [headerView addSubview:_bottomHeaderButton];
+            [_bottomMapItButton.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
+            [_bottomMapItButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+            [_bottomMapItButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+            [_bottomMapItButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            
+            [_bottomPlusButton.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
+            [_bottomPlusButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+            [_bottomPlusButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+            [_bottomPlusButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            
+            [headerLabel.leadingAnchor constraintEqualToAnchor:_bottomMapItButton.trailingAnchor].active = YES;
+            [headerLabel.trailingAnchor constraintEqualToAnchor:_bottomPlusButton.leadingAnchor].active = YES;
+            [headerLabel.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+            [headerLabel.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
         }
     }
     
@@ -192,10 +268,8 @@ viewForHeaderInSection:(NSInteger)section
         }
     }
     
-    TableViewCellLabel *cellTextLabel = [[TableViewCellLabel alloc] initWithFrame:
-                                         CGRectMake(16.0, 0.0, (cell.contentView.frame.size.width - ((cell.contentView.frame.size.height + 16.0) * 3.0)),
-                                                    cell.contentView.frame.size.height * 0.7)];
-    
+    TableViewCellLabel *cellTextLabel = TableViewCellLabel.new;
+    cellTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     cellTextLabel.adjustsFontSizeToFitWidth = YES;
     cellTextLabel.textColor = UIColor.blackColor;
     cellTextLabel.textAlignment = NSTextAlignmentLeft;
@@ -203,11 +277,8 @@ viewForHeaderInSection:(NSInteger)section
     
     [cell.contentView addSubview:cellTextLabel];
     
-    TableViewCellLabel *cellSubTextLabel = [[TableViewCellLabel alloc] initWithFrame:
-                                            CGRectMake(16.0, (cell.contentView.frame.size.height * 0.7),
-                                                       (cell.contentView.frame.size.width - ((cell.contentView.frame.size.height + 16.0) * 3.0)),
-                                                       (cell.contentView.frame.size.height * 0.3))];
-    
+    TableViewCellLabel *cellSubTextLabel = TableViewCellLabel.new;
+    cellSubTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     cellSubTextLabel.adjustsFontSizeToFitWidth = YES;
     cellSubTextLabel.textColor = UIColor.blackColor;
     cellSubTextLabel.textAlignment = NSTextAlignmentLeft;
@@ -216,6 +287,8 @@ viewForHeaderInSection:(NSInteger)section
     [cell.contentView addSubview:cellSubTextLabel];
     
     Destination *destination = nil;
+    CGSize size = cell.contentView.frame.size;
+    CGFloat margin = 5.0;
     
     if (tableView == _topTableView)
     {
@@ -232,10 +305,8 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     
-    TableViewCellButton *editName = [[TableViewCellButton alloc] initWithFrame:
-                                     CGRectMake((cell.contentView.frame.size.width - (cell.contentView.frame.size.height * 3.0)), 5.0,
-                                                (cell.contentView.frame.size.height - 10.0),
-                                                (cell.contentView.frame.size.height - 10.0))];
+    TableViewCellButton *editName = TableViewCellButton.new;
+    editName.translatesAutoresizingMaskIntoConstraints = NO;
     
     editName.tag = (indexPath.row + 100);
     
@@ -251,11 +322,8 @@ viewForHeaderInSection:(NSInteger)section
                  action:@selector(editNameTapped:)
        forControlEvents:UIControlEventTouchUpInside];
     
-    TableViewCellButton *editOptions = [[TableViewCellButton alloc] initWithFrame:
-                                        CGRectMake((cell.contentView.frame.size.width - (cell.contentView.frame.size.height * 2.0)), 5.0,
-                                                   (cell.contentView.frame.size.height - 10.0),
-                                                   (cell.contentView.frame.size.height - 10.0))];
-    
+    TableViewCellButton *editOptions = TableViewCellButton.new;
+    editOptions.translatesAutoresizingMaskIntoConstraints = NO;
     editOptions.tag = (indexPath.row + 400);
     
     if (tableView == _bottomTableView)
@@ -270,11 +338,8 @@ viewForHeaderInSection:(NSInteger)section
                     action:@selector(editOptionsTapped:)
           forControlEvents:UIControlEventTouchUpInside];
     
-    TableViewCellButton *mapIt = [[TableViewCellButton alloc] initWithFrame:
-                                  CGRectMake((cell.contentView.frame.size.width - cell.contentView.frame.size.height), 5.0,
-                                             (cell.contentView.frame.size.height - 10.0),
-                                             (cell.contentView.frame.size.height - 10.0))];
-    
+    TableViewCellButton *mapIt = TableViewCellButton.new;
+    mapIt.translatesAutoresizingMaskIntoConstraints = NO;
     mapIt.tag = (indexPath.row + 700);
     
     if (tableView == _bottomTableView)
@@ -288,6 +353,31 @@ viewForHeaderInSection:(NSInteger)section
     [mapIt addTarget:self
               action:@selector(mapItTapped:)
     forControlEvents:UIControlEventTouchUpInside];
+    
+    [mapIt.leadingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:(-margin - size.height)].active = YES;
+    [mapIt.trailingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:-margin].active = YES;
+    [mapIt.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:margin].active = YES;
+    [mapIt.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-margin].active = YES;
+    
+    [editOptions.leadingAnchor constraintEqualToAnchor:mapIt.leadingAnchor constant:(-margin - size.height)].active = YES;
+    [editOptions.trailingAnchor constraintEqualToAnchor:mapIt.leadingAnchor constant:-margin].active = YES;
+    [editOptions.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:margin].active = YES;
+    [editOptions.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-margin].active = YES;
+    
+    [editName.leadingAnchor constraintEqualToAnchor:editOptions.leadingAnchor constant:(-margin - size.height)].active = YES;
+    [editName.trailingAnchor constraintEqualToAnchor:editOptions.leadingAnchor constant:-margin].active = YES;
+    [editName.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:margin].active = YES;
+    [editName.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-margin].active = YES;
+    
+    [cellTextLabel.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor constant:(margin * 2.0)].active = YES;
+    [cellTextLabel.trailingAnchor constraintEqualToAnchor:editName.leadingAnchor constant:-margin].active = YES;
+    [cellTextLabel.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor].active = YES;
+    [cellTextLabel.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:(-size.height * 0.3)].active = YES;
+    
+    [cellSubTextLabel.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor constant:(margin * 2.0)].active = YES;
+    [cellSubTextLabel.trailingAnchor constraintEqualToAnchor:editName.leadingAnchor constant:-margin].active = YES;
+    [cellSubTextLabel.topAnchor constraintEqualToAnchor:cellTextLabel.bottomAnchor].active = YES;
+    [cellSubTextLabel.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor].active = YES;
     
     cell.userInteractionEnabled = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -332,13 +422,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
         
         [tableView reloadData];
     }
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                duration:(NSTimeInterval)duration
-{
-    [_topTableView reloadData];
-    [_bottomTableView reloadData];
 }
 
 - (void)editNameTapped:(TableViewCellButton *)button
@@ -468,6 +551,18 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)addGroup:(UIButton *)button
 {
     
+}
+
+- (void)individualMapItToggle:(UIButton *)button
+{
+    button.selected = !button.selected;
+    CRAPI.sharedInstance.mapIndividualDest = button.selected;
+}
+
+- (void)groupMapItToggle:(UIButton *)button
+{
+    button.selected = !button.selected;
+    CRAPI.sharedInstance.mapGroupDest = button.selected;
 }
 
 - (NSArray *)sortedDestinationsArray:(NSArray *)destinationsArray

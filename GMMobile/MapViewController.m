@@ -67,7 +67,7 @@
 @property (nonatomic) NVLegendView *legendView;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
-@property (nonatomic) NSMutableSet *polylines;
+@property (nonatomic) NSMutableSet *polylines, *indDests, *groupDests, *props;
 @property (nonatomic) UIScrollView *legendScrollView;
 @property (nonatomic) UIImageView *myLocationMarker;
 @property NSUInteger currentLegendTag, pdfCount;
@@ -141,7 +141,10 @@
     [_legendScrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:statusBarHeight].active = YES;
     [_legendScrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
                          
-    _polylines = [[NSMutableSet alloc] init];
+    _polylines = NSMutableSet.set;
+    _indDests = NSMutableSet.set;
+    _groupDests = NSMutableSet.set;
+    _props = NSMutableSet.set;
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
@@ -822,6 +825,89 @@
         [NVTabBarEdit tabBarController:self.tabBarController
            replaceViewControllerWithID:@"DestinationsVC"
                     withViewController:avc];
+        
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        {
+            if (CRAPI.sharedInstance.mapIndividualDest)
+            {
+                Destinations *dest = Destinations.new;
+                NSArray *dests = [dest getIndividualDestinations];
+                CLLocationCoordinate2D coord = {0};
+                
+                for (Destination *dts in dests)
+                {
+                    LLPOINT ll = dts.latlon;
+                    coord.latitude = ll.lat;
+                    coord.longitude = ll.lon;
+                    
+                    GMSMarker *marker = [GMSMarker markerWithPosition:coord];
+                    marker.title = dts.destinationName;
+                    marker.icon = [GMSMarker markerImageWithColor:UserDefaults.defaults.appleBlue];
+                    marker.map = _mapView;
+                    [_indDests addObject:marker];
+                }
+            }
+            
+            else for (GMSMarker *markers in _indDests)
+            {
+                if ([markers isKindOfClass:GMSMarker.class])
+                    markers.map = nil;
+            }
+            
+            if (CRAPI.sharedInstance.mapGroupDest)
+            {
+                Destinations *dest = Destinations.new;
+                NSArray *dests = [dest getGroupDestinations];
+                CLLocationCoordinate2D coord = {0};
+                
+                for (Destination *dts in dests)
+                {
+                    LLPOINT ll = dts.latlon;
+                    coord.latitude = ll.lat;
+                    coord.longitude = ll.lon;
+                    
+                    GMSMarker *marker = [GMSMarker markerWithPosition:coord];
+                    marker.title = dts.destinationName;
+                    marker.icon = [GMSMarker markerImageWithColor:UIColor.brownColor];
+                    marker.map = _mapView;
+                    [_groupDests addObject:marker];
+                }
+            }
+            
+            else for (GMSMarker *markers in _groupDests)
+            {
+                if ([markers isKindOfClass:GMSMarker.class])
+                    markers.map = nil;
+            }
+            
+            if (CRAPI.sharedInstance.mapPropList)
+            {
+                PropertyList *pl = PropertyList.new;
+                NSArray *props = [pl getPropertyNumbers];
+                CLLocationCoordinate2D coord = {0};
+                
+                for (NSNumber *numbers in props)
+                {
+                    NSInteger num = numbers.integerValue;
+                    LLPOINT ll = [pl getPropertyLatLon:num];
+                    coord.latitude = ll.lat;
+                    coord.longitude = ll.lon;
+                    
+                    GMSMarker *marker = [GMSMarker markerWithPosition:coord];
+                    
+                    marker.title = [pl getFieldValue:num type:PFT_Address];
+                    marker.icon = [GMSMarker markerImageWithColor:UserDefaults.defaults.green];
+                    marker.map = _mapView;
+                    [_props addObject:marker];
+                }
+            }
+            
+            else for (GMSMarker *markers in _props)
+            {
+                if ([markers isKindOfClass:GMSMarker.class])
+                    markers.map = nil;
+            }
+        }
     }
     
     else
