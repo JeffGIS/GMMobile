@@ -341,33 +341,87 @@
     [self close:opened];
     return data;
 }
+- (NSString *)getTableNameFromType:(NSString*)areaType
+{
+    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",areaType];
+    
+    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+        [areaType isEqualToString:@"Minneapolis Wards"] ||
+        [areaType isEqualToString:@"Minneapolis Sectors"] ||
+        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+    {
+        table = @"BOUNDARYAREA";
+    }
+    return table;
+}
+
+
++ (int)getBoundaryAreaRefnoForType:(NSString *)type
+                           andName:(NSString *)name
+{
+    BoundaryData *bad = [[BoundaryData alloc]init];
+    
+    int refno = 0;
+    sqlite3_stmt *statement = NULL;
+    NSString *query = [[NSString alloc] init];
+    NSString * table = [bad getTableNameFromType:type];
+    
+    BOOL opened = [bad open];
+
+    if ([type isEqualToString:@"Minneapolis Precincts"] ||
+        [type isEqualToString:@"Minneapolis Wards"] ||
+        [type isEqualToString:@"Minneapolis Sectors"] ||
+        [type isEqualToString:@"Minneapolis Neighborhoods"])
+    {
+        table = @"BOUNDARYAREA";
+        query = [NSString stringWithFormat:@"SELECT id FROM %@ WHERE TYPE='%@' AND NAME='%@'",table,type,name];
+
+    }
+    else
+    {
+        query = [NSString stringWithFormat:@"SELECT id FROM %@ WHERE %@='%@'",table,type,name];
+    }
+    SQLOK(sqlite3_prepare_v2(bad.database, query.UTF8String, -1, &statement, 0), bad.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        refno = sqlite3_column_int(statement, 0);
+    }
+    
+    SQLOK(sqlite3_finalize(statement), bad.database);
+    
+    [bad close:opened];
+    return refno;
+}
+
 
 - (MNMXCORD)getBoundaryAreaBounds:(int)refno
+                           ofType:(NSString*)type
 {
     MNMXCORD bounds = {0};
     
     sqlite3_stmt *statement = NULL;
     NSString *query = [[NSString alloc] init];
+    NSString * table = [self getTableNameFromType:type];
     
     BOOL opened = [self open];
     
-    switch (CRAPI.sharedInstance.project)
+    if ([type isEqualToString:@"BOUNDARY"])
     {
-        case PROJECT_MPLS:
-            query = [NSString stringWithFormat:@"SELECT LAT,LON FROM PARCELPOINT Where PID = %i",
-                     refno];
-            break;
-            
-        case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%i AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
-                     refno];
-            break;
+        query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%i AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+                 refno];
+    }
+    else
+    {
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM %@_index WHERE ID=%i",table,refno];
+
     }
     
     SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
+        int ref = sqlite3_column_int(statement, 0);
         bounds.xmn = sqlite3_column_double(statement, 1);
         bounds.xmx = sqlite3_column_double(statement, 2);
         bounds.ymn = sqlite3_column_double(statement, 3);
@@ -696,7 +750,7 @@ boundsPointInAreas:(PointInAreas*)bpias
     int numLoops;
     int pass = 0;
     NSString * key = areaType;
-    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    NSString * table = [self getTableNameFromType:key];
     
     pias.areaType = areaType;
     BOOL opened = [self open];
@@ -712,7 +766,6 @@ boundsPointInAreas:(PointInAreas*)bpias
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
-        table = @"BOUNDARYAREA";
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }

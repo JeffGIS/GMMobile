@@ -8,8 +8,10 @@
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 8
 
-#define MAPIT_CIRCULAR  1
-#define MAPIT_AREA      2
+#define MAPIT_CIRCULAR      1
+#define MAPIT_AREA_BLOCK    2
+#define MAPIT_AREA_BLOCKGRP 3
+#define MAPIT_AREA_TRACT    4
 
 typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
 {
@@ -89,8 +91,10 @@ typedef NS_ENUM(NSInteger, PropSheetValues)
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;
 @property PropSheetValues currentPropSheetValue;
+@property NSString * MapitPID;
 @property int MapitBoundaryOpt;
 @property int MapitBoundaryRefno;
+@property NSString * MapitBoundaryType;
 @property int MapitTargetParcelRefno;
 @property CGFloat MapitCirularBoundaryRadiusInMiles;
 

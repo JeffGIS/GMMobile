@@ -124,7 +124,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     {
         BoundaryData *boundData = [[BoundaryData alloc] init];
         MNMXCORD bounds = [boundData getBoundaryAreaBounds:
-                           CRAPI.sharedInstance.currentOverallBoundaryRefno];
+                           CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                    ofType:@"BOUNDARY"];
         _latlonBounds.xmn = max (_latlonBounds.xmn,bounds.xmn);
         _latlonBounds.ymn = max (_latlonBounds.ymn,bounds.ymn);
         _latlonBounds.xmx = min (_latlonBounds.xmx,bounds.xmx);
@@ -442,7 +443,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                         viewBounds:&_viewBounds];
                                                     }
                                                     
-                                                    /*if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+                                                   /* if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                     {
                                                     BoundaryData *bd = [[BoundaryData alloc] init];
                                                     bd.processingID = CRAPI.sharedInstance.keepProcessing;

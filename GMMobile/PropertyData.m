@@ -590,8 +590,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        LPSTR owner = (LPSTR)sqlite3_column_text(statement, 0);
-        block = [NSString stringWithUTF8String:owner];
+        LPSTR cblock = (LPSTR)sqlite3_column_text(statement, 0);
+        block = [NSString stringWithUTF8String:cblock];
     }
     
     SQLOKpd(sqlite3_finalize(statement), pd.database, 39);

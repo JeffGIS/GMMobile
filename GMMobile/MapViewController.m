@@ -554,12 +554,14 @@
         self.tabBarController.tabBar.hidden = YES;
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
         _mapView.userInteractionEnabled = NO;
-        
-        GMSCameraUpdate *camUpdate = [GMSCameraUpdate setTarget:_spreadsheetCoords
-                                                           zoom:16.0];
+
+        [self extentZoom];
+
+        //GMSCameraUpdate *camUpdate = [GMSCameraUpdate setTarget:_spreadsheetCoords
+        //                                                   zoom:16.0];
         [self setMapType];
         
-        [_mapView moveCamera:camUpdate];
+        //[_mapView moveCamera:camUpdate];
         _compass.hidden = YES;
     }
     
@@ -1173,6 +1175,7 @@
     GMSCameraPosition *camera;
     MNMXCORD bounds;
     int boundaryRefno = 0;
+    NSString *boundaryType = @"BOUNDARY";
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
@@ -1181,7 +1184,10 @@
             
         }
         else
+        {
             boundaryRefno = ConfigurationControl.sharedInstance.MapitBoundaryRefno;
+            boundaryType = ConfigurationControl.sharedInstance.MapitBoundaryType;
+        }
 
     }
     else
@@ -1197,7 +1203,8 @@
                             CRAPI.sharedInstance.selectBoundaryFromMapType];
         }
         else
-            bounds = [boundData getBoundaryAreaBounds:boundaryRefno];
+            bounds = [boundData getBoundaryAreaBounds:boundaryRefno
+                                               ofType:boundaryType];
         
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
         CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);

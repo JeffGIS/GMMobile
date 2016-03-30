@@ -30,7 +30,8 @@
 
 - (NSMutableArray *)getBoundaryAreaTypes;
 - (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type;
-- (MNMXCORD) getBoundaryAreaBounds:(int)refno;
+- (MNMXCORD) getBoundaryAreaBounds:(int)refno
+                            ofType:(NSString*)type;
 
 -(void)displayBoundary:(int)refno
              inContext:(CGContextRef)context
@@ -75,6 +76,8 @@ boundsPointInAreas:(PointInAreas*)pias
          viewBounds:(MNMXCORD *)pvbounds;
 - (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type;
 - (int)pickBoundaryArea:(LLPOINT)point;
++ (int)getBoundaryAreaRefnoForType:(NSString *)type
+                           andName:(NSString *)name;
 
 
 @end

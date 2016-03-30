@@ -4,6 +4,7 @@
 #import "PropertyList.h"
 #import "PropertyData.h"
 #import "Destinations.h"
+#import "BoundaryData.h"
 #import "ConfigurationControl.h"
 
 //#define CURRENT_VERSION 28
@@ -295,9 +296,54 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 {
     int type = MAPIT_CIRCULAR;
     
+    switch (field)
+    {
+        case PFT_Stability5yr_block:
+        case PFT_Stability15yr_block:
+        case PFT_PctHomestead_block:
+        case PFT_PctHomeOwn_block:
+        case PFT_MedianAgePop_block:
+        case PFT_MedianBuiltYear_block:
+        case PFT_MedianAgeAdults_block:
+        case PFT_PctChildren_block:
+        case PFT_PctSenior_block:
+        case PFT_RankEMV_block:
+            type = MAPIT_AREA_BLOCK;
+            break;
+        case PFT_Stability5yr_blockgroup:
+        case PFT_Stability15yr_blockgroup:
+        case PFT_PctHomestead_blockgroup:
+        case PFT_PctHomeOwn_blockgroup:
+        case PFT_MedianAgePop_blockgroup:
+        case PFT_MedianBuiltYear_blockgroup:
+        case PFT_MedianAgeChildren_block:
+        case PFT_PctChildren_blockgroup:
+        case PFT_MedianAgeChildren_blockgroup:
+        case PFT_MedianAgeAdults_blockgroup:
+        case PFT_PctSenior_blockgroup:
+        case PFT_RankEMV_blockgroup:
+            type = MAPIT_AREA_BLOCKGRP;
+            break;
+    }
     return type;
 }
-
+- (CGFloat)getRadiusForField:(PropFieldType) field
+{
+    CGFloat radius = 0.0;
+    
+    switch (field)
+    {
+        case PFT_PctOpenSpace_Mile:
+        case PFT_PctIndustrial_Mile:
+            radius = 1.0;
+            break;
+        case PFT_PctOpenSpace_halfMile:
+        case PFT_PctIndustrial_halfMile:
+            radius = 0.5;
+            break;
+    }
+    return radius;
+}
 - (NSArray*) getPropertyNumbers
 {
     NSMutableArray * propNums = [[NSMutableArray alloc]init];
@@ -599,7 +645,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     PropFieldType ifield = field.integerValue;
     NSString * PID = [self getFieldValue:propNum
                                       type:PFT_PIN];
-
+    ConfigurationControl.sharedInstance.MapitPID = PID;
     ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
     if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
@@ -611,7 +657,17 @@ LLPOINT LLPOINTFromString (NSString* string)
     else
     {
         NSString * cenBlock = [PropertyData getCensusBlockForPID:PID];
-        ConfigurationControl.sharedInstance.MapitBoundaryRefno = 0;
+        NSString * type  = @"BLOCK";
+        if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_AREA_BLOCKGRP)
+        {
+            char blkGrp[20];
+            strncpy (blkGrp,cenBlock.UTF8String,12);
+            blkGrp[12] = 0;
+            cenBlock = [NSString stringWithUTF8String:blkGrp];
+            type = @"BLOCKGROUP";
+        }
+        ConfigurationControl.sharedInstance.MapitBoundaryRefno = [BoundaryData getBoundaryAreaRefnoForType:type andName:cenBlock];
+        ConfigurationControl.sharedInstance.MapitBoundaryType = type;
     }
 
      [self close:opened];
