@@ -58,6 +58,7 @@
     thm.legend.hasColors = YES;
 
     CGFloat PropListAlpha = 0.6;
+    UIColor *selectedColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
     switch (type)
     {
         case PropertyListTheme:
@@ -69,21 +70,29 @@
             class = [ThemeClass createWithTitle:@"Single Family Residential"];
             class.values = @[@"111",@"112",@"113",@"116"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Multi Family Residential"];
             class.values = @[@"114",@"115"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0.5 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Mixed Use Residential"];
             class.values = @[@"141"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0.75 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Retail/Commercial"];
             class.values = @[@"120",@"143"];
             class.color = [UIColor colorWithRed:0.6 green:0.4 blue:0.2 alpha:PropListAlpha];;
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Commercial)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Office"];
@@ -94,6 +103,8 @@
             class = [ThemeClass createWithTitle:@"Industrial"];
             class.values = @[@"142",@"151",@"153"];
             class.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Industrial)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Institutional"];
@@ -114,21 +125,29 @@
             class = [ThemeClass createWithTitle:@"Park/Rec/Preserve"];
             class.values = @[@"170",@"173"];
             class.color = [UIColor colorWithRed:0.5 green:1 blue:0.5 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Agriculture"];
             class.values = @[@"100"];
             class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Undeveloped"];
             class.values = @[@"210"];
             class.color = [UIColor colorWithRed:0.75 green:1 blue:0.75 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Water"];
             class.values = @[@"220"];
             class.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:PropListAlpha];
+            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+                class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
 
             break;
@@ -800,6 +819,10 @@ int getThemeOpt(ThemeTypes type)
             {
                 case PFT_PctIndustrial_Mile:
                 case PFT_PctIndustrial_halfMile:
+                case PFT_PctResidential_Mile:
+                case PFT_PctResidential_halfMile:
+                case PFT_PctCommercial_Mile:
+                case PFT_PctCommercial_halfMile:
                 {
                     val = 0;
                     rtn = DO_NOT_DISPLAY_ITEM;

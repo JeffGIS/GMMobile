@@ -40,7 +40,19 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctOpenSpace_Mile,
     PFT_PctIndustrial_halfMile,
     PFT_PctIndustrial_Mile,
+    PFT_PctResidential_halfMile,
+    PFT_PctResidential_Mile,
+    PFT_PctCommercial_halfMile,
+    PFT_PctCommercial_Mile,
     PFT_END
+};
+typedef NS_ENUM(NSInteger, PropBaseType)
+{
+    PBT_Residential,
+    PBT_Commercial,
+    PBT_Industrial,
+    PBT_Stability,
+    PBT_OpenSpace,
 };
 
 @class PropertyList;
@@ -75,5 +87,6 @@ typedef NS_ENUM(NSInteger, PropFieldType)
 - (NSString *) getFieldValue:(NSInteger)propNum
                         type:(PropFieldType)fieldType;
 - (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row;
++ (PropBaseType)getBaseTypeForField:(PropFieldType) field;
 
 @end

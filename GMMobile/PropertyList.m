@@ -288,6 +288,12 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_PctSenior_blockgroup:
             name = @"PCT Seniors (Block Group)";
             break;
+        case PFT_PctResidential_halfMile:
+            name = @"PCT Residential (Half Mile)";
+            break;
+        case PFT_PctResidential_Mile:
+            name = @"PCT Residential (Mile)";
+            break;
         
             
     }
@@ -330,7 +336,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     }
     return type;
 }
-- (CGFloat)getRadiusForField:(PropFieldType) field
++ (CGFloat)getRadiusForField:(PropFieldType) field
 {
     CGFloat radius = 0.0;
     
@@ -339,16 +345,48 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_Stability_Mile:
         case PFT_PctOpenSpace_Mile:
         case PFT_PctIndustrial_Mile:
+        case PFT_PctResidential_Mile:
             radius = 1.0;
             break;
         case PFT_Stability_halfMile:
         case PFT_PctOpenSpace_halfMile:
         case PFT_PctIndustrial_halfMile:
+        case PFT_PctResidential_halfMile:
             radius = 0.5;
             break;
     }
     return radius;
 }
++ (PropBaseType)getBaseTypeForField:(PropFieldType) field
+{
+    PropBaseType bt=0;
+    
+    switch (field)
+    {
+        case PFT_Stability_Mile:
+        case PFT_Stability_halfMile:
+            bt = PBT_Stability;
+            break;
+        case PFT_PctOpenSpace_Mile:
+        case PFT_PctOpenSpace_halfMile:
+            bt = PBT_OpenSpace;
+            break;
+        case PFT_PctIndustrial_Mile:
+        case PFT_PctIndustrial_halfMile:
+            bt = PBT_Industrial;
+            break;
+        case PFT_PctResidential_Mile:
+        case PFT_PctResidential_halfMile:
+            bt = PBT_Residential;
+            break;
+        case PFT_PctCommercial_Mile:
+        case PFT_PctCommercial_halfMile:
+            bt = PBT_Commercial;
+            break;
+    }
+    return bt;
+}
+
 - (NSArray*) getPropertyNumbers
 {
     NSMutableArray * propNums = [[NSMutableArray alloc]init];
@@ -661,7 +699,7 @@ LLPOINT LLPOINTFromString (NSString* string)
         NSString * value = [self getFieldValue:propNum
                                           type:PFT_LatLon];
         ConfigurationControl.sharedInstance.MapitTargetCenterPoint = LLPOINTFromString (value);
-        ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = [self getRadiusForField:ifield];
+        ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = [PropertyList getRadiusForField:ifield];
     }
     else
     {
