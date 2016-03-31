@@ -93,6 +93,7 @@
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
 		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
 		69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C8DB561C515DC90062AE84 /* MGThemesVC.m */; };
+		69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */; };
 		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47841C74CEFC0042E47F /* singleArrowReverse.png */; };
@@ -336,6 +337,7 @@
 		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .gitignore; path = GMMobile/.gitignore; sourceTree = "<group>"; };
 		69C8DB551C515DC90062AE84 /* MGThemesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGThemesVC.h; sourceTree = "<group>"; };
 		69C8DB561C515DC90062AE84 /* MGThemesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGThemesVC.m; sourceTree = "<group>"; };
+		69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIconHighlighted.png; sourceTree = "<group>"; };
 		69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
@@ -642,6 +644,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */,
 				695984171CACE6F900CA14C0 /* swapIcon.png */,
 				69FEC8961CA9AD0F002BF231 /* whiteMapItWithX.png */,
 				69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */,
@@ -1142,6 +1145,7 @@
 				69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */,
 				A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */,
 				A9A1C0A21B55652200A3DFD8 /* GoogleMaps.bundle in Resources */,
+				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				694FB1EC1C588363005410F6 /* Reader-Thumbs@2x.png in Resources */,
