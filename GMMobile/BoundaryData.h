@@ -3,6 +3,7 @@
 
 #import <sqlite3.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "Themes.h"
 
 @interface BoundaryAreaData : NSObject
 
@@ -35,7 +36,7 @@
 
 -(void)displayBoundary:(int)refno
                 ofType:(NSString*)areaType
-                asMask:(int)mask
+                asMask:(CGFloat)mask
              inContext:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
@@ -43,16 +44,20 @@
 
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radius
-                asMask:(int)mask
+                asMask:(CGFloat)mask
              inContext:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
--(void)displayLandUse:(CGContextRef)context
-            llCorners:(CORNERPOINTS *) latlonCornerPoints
-             LLBounds:(MNMXCORD *)platlonBounds
-           viewBounds:(MNMXCORD *)pvbounds;
+-(void) displayLandUse:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+                themes:(Themes*)themes
+           pointInArea:(PointInArea *)pia;
+
 -(void)displayCensusAreas:(CGContextRef)context
                      type:(NSString *)type
                 llCorners:(CORNERPOINTS *) latlonCornerPoints

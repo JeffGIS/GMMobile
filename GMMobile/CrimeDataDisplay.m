@@ -221,7 +221,7 @@ NextPass:
                     attempted = TRUE;
                 dc.string1 = [NSString stringWithUTF8String:offense];
                 dc.string2 = [NSString stringWithUTF8String:dept];
-                dc.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
+                dc.fillColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
                 size = 25;
                 
 /*                if (attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == IgnoreAttempts)
@@ -241,7 +241,7 @@ NextPass:
                                 time:dc.itemBeginTime
                              offense:dc.string1
                          usingSymbol:dc.pointSymbol
-                           withColor:dc.color.CGColor
+                           withColor:dc.fillColor.CGColor
                              andSize:(size * sizeFactor)];
 
                     }

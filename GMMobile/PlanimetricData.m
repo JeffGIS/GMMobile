@@ -894,7 +894,7 @@
                 [self drawCurbRampIntersection:intID
                                      inContext:context
                                        atPoint:&llpoint
-                                     withColor:dc.color.CGColor
+                                     withColor:dc.fillColor.CGColor
                                        andSize:size*dc.size
                                           text:text];
                 if (_zoom >= 11)
@@ -994,7 +994,7 @@
            [self drawCurbRampIntersection:rampNum
                                 inContext:context
                                    atPoint:&llpoint
-                                 withColor:dc.color.CGColor
+                                 withColor:dc.fillColor.CGColor
                                   andSize:size*0.67
                                      text:text];
  

@@ -654,6 +654,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     NSString * PID = [self getFieldValue:propNum
                                       type:PFT_PIN];
     ConfigurationControl.sharedInstance.MapitPID = PID;
+    ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
     ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
     if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {

@@ -266,6 +266,41 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                     viewBounds:&_viewBounds];
 
                                            }
+                                           else if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+                                           {
+                                               [self        displayMapit:_context
+                                                  displayCharacteristics:dc
+                                                               llCorners:&_latlonCornerPoints
+                                                                LLBounds:&_latlonBounds
+                                                              viewBounds:&_viewBounds
+                                                                  themes:themes
+                                                             pointInArea:_pia];
+
+                                               BoundaryData *bd = [[BoundaryData alloc] init];
+                                               
+                                               if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+                                               {
+                                                   [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
+                                                                      withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
+                                                                          asMask:1
+                                                                       inContext:_context
+                                                                       llCorners:&_latlonCornerPoints
+                                                                        LLBounds:&_latlonBounds
+                                                                      viewBounds:&_viewBounds];
+                                                   
+                                               }
+                                               else
+                                               {
+                                                   [bd displayBoundary:ConfigurationControl.sharedInstance.MapitBoundaryRefno
+                                                                ofType:ConfigurationControl.sharedInstance.MapitBoundaryType
+                                                                asMask:1
+                                                             inContext:_context
+                                                             llCorners:&_latlonCornerPoints
+                                                              LLBounds:&_latlonBounds
+                                                            viewBounds:&_viewBounds];
+                                               }
+                                               
+                                           }
                                            else
                                            {
                                                int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
@@ -433,7 +468,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    }
                                                    
                                                    
-                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+                                                  /* if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                    {
                                                         BoundaryData *bd = [[BoundaryData alloc] init];
                                                         bd.processingID = CRAPI.sharedInstance.keepProcessing;
@@ -444,7 +479,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                         viewBounds:&_viewBounds];
                                                     }
                                                     
-                                                   /* if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+                                                    if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                                                     {
                                                     BoundaryData *bd = [[BoundaryData alloc] init];
                                                     bd.processingID = CRAPI.sharedInstance.keepProcessing;
@@ -456,34 +491,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                     viewBounds:&_viewBounds];
                                                     }*/
                                                    
-                                                   if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
-                                                   {
-                                                       BoundaryData *bd = [[BoundaryData alloc] init];
-                                                       
-                                                       if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
-                                                       {
-                                                           [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
-                                                                        withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
-                                                                        asMask:1
-                                                                     inContext:_context
-                                                                     llCorners:&_latlonCornerPoints
-                                                                      LLBounds:&_latlonBounds
-                                                                    viewBounds:&_viewBounds];
-
-                                                       }
-                                                       else
-                                                       {
-                                                           [bd displayBoundary:ConfigurationControl.sharedInstance.MapitBoundaryRefno
-                                                                        ofType:ConfigurationControl.sharedInstance.MapitBoundaryType
-                                                                        asMask:1
-                                                                     inContext:_context
-                                                                     llCorners:&_latlonCornerPoints
-                                                                      LLBounds:&_latlonBounds
-                                                                    viewBounds:&_viewBounds];
-                                                       }
-                                                       
-                                                   }
-                                                   else if (CRAPI.sharedInstance.keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+                                                   if (CRAPI.sharedInstance.keepProcessing == self.displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
                                                        (CRAPI.sharedInstance.showPolylineForBounds ||
                                                         CRAPI.sharedInstance.maskBoundsForBounds))
                                                    {
@@ -578,5 +586,29 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                            });
     }
 }
+-(void)   displayMapit:(CGContextRef)context
+displayCharacteristics:(DisplayCharacteristics *)dc
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds
+                themes:(Themes*)themes
+           pointInArea:(PointInArea *)pia
+{
+    
+    if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+    {
+        BoundaryData *bd = [[BoundaryData alloc] init];
+        bd.processingID = self.displayID;
+        bd.zoom = _zoom;
+        [bd displayLandUse:_context
+                 llCorners:&_latlonCornerPoints
+                  LLBounds:&_latlonBounds
+                viewBounds:&_viewBounds
+    displayCharacteristics:dc
+                    themes:themes
+               pointInArea:pia];
 
+    }
+
+}
 @end
