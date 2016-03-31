@@ -119,8 +119,60 @@
     SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database);
 }
 
+-(void)displayCircularBoundaryAt:(LLPOINT)pt
+                      withRadius:(double)radiusInMeters
+                          asMask:(int)mask
+                       inContext:(CGContextRef)context
+                       llCorners:(CORNERPOINTS *) latlonCornerPoints
+                        LLBounds:(MNMXCORD *)platlonBounds
+                      viewBounds:(MNMXCORD *)pvbounds
+{
+    int numPoints = 256;
+    
+    LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+    double ainc = (HALFPI * 4) / numPoints;
+    double az = 0;
+    
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    
+    for (int i=0;i<numPoints-1;i++,az+=ainc)
+    {
+        llpoints[i] = NewLatLong(pt.lat, pt.lon, radiusInMeters, az);
+        llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+    }
+    llpoints[numPoints-1] = llpoints[0];
+    if (CRAPI.sharedInstance.showPolylineForBounds)
+    {
+        UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.60];
+        [self drawBoundary:context
+                   nPoints:numPoints
+                    nLoops:0
+                   partLen:0
+                    points:llpoints
+                 withColor:boundaryColor.CGColor];
+    }
+    if (mask)
+    {
+        UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.8];
+        
+        CreateMask(&llpoints, &numPoints,pvbounds);
+        [self fillUseCode:context
+                  nPoints:numPoints
+                   points:llpoints
+                withColor:maskColor.CGColor];
+        
+    }
+    
+    free(llpoints);
+   
+}
 
 -(void)displayBoundary:(int)refno
+                ofType:(NSString*)areaType
+                asMask:(int)mask
              inContext:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
              LLBounds:(MNMXCORD *)platlonBounds
@@ -136,6 +188,7 @@
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     BOOL opened = [self open];
+    NSString * table = [self getTableNameFromType:areaType];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -145,7 +198,7 @@
             break;
             
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i",
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,id FROM %@ WHERE id=%i",table,
                      refno];
     }
     
@@ -194,6 +247,17 @@
                            partLen:polyPartLen
                             points:llpoints
                          withColor:boundaryColor.CGColor];
+            }
+            if (mask)
+            {
+                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.8];
+                
+                CreateMask(&llpoints, &numPoints,pvbounds);
+                [self fillUseCode:context
+                          nPoints:numPoints
+                           points:llpoints
+                        withColor:maskColor.CGColor];
+                
             }
             
             free(llpoints);
@@ -348,7 +412,8 @@
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
-        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+        [areaType isEqualToString:@"Minneapolis Neighborhoods"] ||
+        [areaType isEqualToString:@"BOUNDARY"])
     {
         table = @"BOUNDARYAREA";
     }

@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_Stability15yr_block,
     PFT_Stability15yr_blockgroup,
     PFT_Stability_halfMile,
+    PFT_Stability_Mile,
     PFT_DistanceToDestinations,
     PFT_TimeToDestinations,
     PFT_PctHomestead_block,

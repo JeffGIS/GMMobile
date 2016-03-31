@@ -457,15 +457,24 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                    
                                                    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
                                                    {
+                                                       BoundaryData *bd = [[BoundaryData alloc] init];
+                                                       
                                                        if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
                                                        {
-                                                           
+                                                           [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
+                                                                        withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
+                                                                        asMask:1
+                                                                     inContext:_context
+                                                                     llCorners:&_latlonCornerPoints
+                                                                      LLBounds:&_latlonBounds
+                                                                    viewBounds:&_viewBounds];
+
                                                        }
                                                        else
                                                        {
-                                                           BoundaryData *bd = [[BoundaryData alloc] init];
-                                                           
                                                            [bd displayBoundary:ConfigurationControl.sharedInstance.MapitBoundaryRefno
+                                                                        ofType:ConfigurationControl.sharedInstance.MapitBoundaryType
+                                                                        asMask:1
                                                                      inContext:_context
                                                                      llCorners:&_latlonCornerPoints
                                                                       LLBounds:&_latlonBounds
@@ -480,6 +489,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        BoundaryData *bd = [[BoundaryData alloc] init];
                                                        
                                                        [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                                    ofType:@"BOUNDARY"
+                                                                    asMask:1
                                                                  inContext:_context
                                                                  llCorners:&_latlonCornerPoints
                                                                   LLBounds:&_latlonBounds

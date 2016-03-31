@@ -34,9 +34,19 @@
                             ofType:(NSString*)type;
 
 -(void)displayBoundary:(int)refno
+                ofType:(NSString*)areaType
+                asMask:(int)mask
              inContext:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
-             LLBounds:(MNMXCORD *)platlonBounds
+              LLBounds:(MNMXCORD *)platlonBounds
+            viewBounds:(MNMXCORD *)pvbounds;
+
+-(void)displayCircularBoundaryAt:(LLPOINT)pt
+                      withRadius:(double)radius
+                asMask:(int)mask
+             inContext:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
+              LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds;
 
 -(void)displayLandUse:(CGContextRef)context

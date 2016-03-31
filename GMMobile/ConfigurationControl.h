@@ -96,6 +96,7 @@ typedef NS_ENUM(NSInteger, PropSheetValues)
 @property int MapitBoundaryRefno;
 @property NSString * MapitBoundaryType;
 @property int MapitTargetParcelRefno;
+@property LLPOINT MapitTargetCenterPoint;
 @property CGFloat MapitCirularBoundaryRadiusInMiles;
 
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;

@@ -228,6 +228,9 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_Stability15yr_blockgroup:
             name = @"Stability (15 year Block Group)";
             break;
+        case PFT_Stability_Mile:
+            name = @"Stability (5 year Mile)";
+            break;
         case PFT_Stability_halfMile:
             name = @"Stability (5 year Half Mile)";
             break;
@@ -333,10 +336,12 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     
     switch (field)
     {
+        case PFT_Stability_Mile:
         case PFT_PctOpenSpace_Mile:
         case PFT_PctIndustrial_Mile:
             radius = 1.0;
             break;
+        case PFT_Stability_halfMile:
         case PFT_PctOpenSpace_halfMile:
         case PFT_PctIndustrial_halfMile:
             radius = 0.5;
@@ -638,7 +643,6 @@ LLPOINT LLPOINTFromString (NSString* string)
 
 - (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row
 {
-    LLPOINT pt;
     BOOL opened = [self open];
     NSArray *fields = [self availablePropertyFields];
     NSNumber *field = fields[row];
@@ -651,8 +655,8 @@ LLPOINT LLPOINTFromString (NSString* string)
     {
         NSString * value = [self getFieldValue:propNum
                                           type:PFT_LatLon];
-        pt = LLPOINTFromString (value);
-       
+        ConfigurationControl.sharedInstance.MapitTargetCenterPoint = LLPOINTFromString (value);
+        ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = [self getRadiusForField:ifield];
     }
     else
     {

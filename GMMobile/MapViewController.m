@@ -1173,7 +1173,7 @@
 {
     [self stopTrackingUserLocation:NO];
     GMSCameraPosition *camera;
-    MNMXCORD bounds;
+    MNMXCORD bounds={0};
     int boundaryRefno = 0;
     NSString *boundaryType = @"BOUNDARY";
     
@@ -1181,7 +1181,7 @@
     {
         if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
         {
-            
+            bounds = BoundsFromLLPointAndDist (ConfigurationControl.sharedInstance.MapitTargetCenterPoint,ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE);
         }
         else
         {
@@ -1205,7 +1205,9 @@
         else
             bounds = [boundData getBoundaryAreaBounds:boundaryRefno
                                                ofType:boundaryType];
-        
+    }
+    if (BoundsWidth(&bounds) > 0)
+    {
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
         CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
         
