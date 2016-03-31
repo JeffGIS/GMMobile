@@ -556,12 +556,7 @@
         _mapView.userInteractionEnabled = NO;
 
         [self extentZoom];
-
-        //GMSCameraUpdate *camUpdate = [GMSCameraUpdate setTarget:_spreadsheetCoords
-        //                                                   zoom:16.0];
         [self setMapType];
-        
-        //[_mapView moveCamera:camUpdate];
         _compass.hidden = YES;
     }
     
@@ -987,7 +982,8 @@
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
     
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
@@ -2265,7 +2261,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         if (!_legendsAreOffMap)
         {
@@ -2563,16 +2560,15 @@ haveVV:
                        
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
                            ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
-                           ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
                        {
                            if (!_legendsAreOffMap)
                            {
                                for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
                                {
                                    if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-                                   {
                                        [self.view bringSubviewToFront:tlmos];
-                                   }
                                }
                            }
                        }
@@ -2601,7 +2597,8 @@ haveVV:
 {
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         
@@ -2669,7 +2666,7 @@ haveVV:
         
         for (ThemeLegend *tls in legends)
         {
-            if (tls.drawOnMap)
+            if (tls.drawOnMap || ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
                 legendExistsToDraw = YES;
         }
         
@@ -2736,7 +2733,7 @@ haveVV:
         {
             ThemeLegend *tl = legends[i];
             
-            if (tl.drawOnMap)
+            if (tl.drawOnMap || ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 

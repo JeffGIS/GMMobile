@@ -41,7 +41,6 @@
     thm.legend = [[ThemeLegend alloc]init];
     thm.titles = [[NSMutableArray alloc]init];
     thm.classes = [[NSMutableArray alloc]init];
-    thm.legend.drawOnMap = YES;
     thm.legend.aspectRatio = 0.7;
     thm.legend.numColumns = 1;
     thm.legend.pctBorder = 1;
@@ -58,6 +57,7 @@
     thm.legend.hasColors = YES;
 
     CGFloat PropListAlpha = 0.6;
+    
     switch (type)
     {
         case PropertyListTheme:
