@@ -294,6 +294,12 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_PctResidential_Mile:
             name = @"PCT Residential (Mile)";
             break;
+        case PFT_PctCommercial_halfMile:
+            name = @"PCT Commercial (Half Mile)";
+            break;
+        case PFT_PctCommercial_Mile:
+            name = @"PCT Commercial (Mile)";
+            break;
         
             
     }
@@ -345,12 +351,14 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
         case PFT_Stability_Mile:
         case PFT_PctOpenSpace_Mile:
         case PFT_PctIndustrial_Mile:
+        case PFT_PctCommercial_Mile:
         case PFT_PctResidential_Mile:
             radius = 1.0;
             break;
         case PFT_Stability_halfMile:
         case PFT_PctOpenSpace_halfMile:
         case PFT_PctIndustrial_halfMile:
+        case PFT_PctCommercial_halfMile:
         case PFT_PctResidential_halfMile:
             radius = 0.5;
             break;

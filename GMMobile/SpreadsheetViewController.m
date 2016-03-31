@@ -119,7 +119,7 @@
 - (void)ssvCellWasTappedAtRowIndex:(NSUInteger)rowIndex
                        columnIndex:(NSUInteger)columnIndex
 {
-    _selectedRow = rowIndex;
+    _selectedRow = rowIndex+1;
     _selectedColumn = columnIndex;
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view

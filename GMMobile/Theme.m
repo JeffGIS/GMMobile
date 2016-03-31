@@ -32,6 +32,20 @@
     return iyear;
 }
 
+- (void) adjustClassTitles
+{
+    int maxLen = 0;
+    for (ThemeClass *cls in _classes)
+    {
+        maxLen = max (maxLen,(int)cls.title.length);
+    }
+    for (ThemeClass *cls in _classes)
+    {
+        cls.title = [cls.title stringByPaddingToLength:maxLen withString: @" " startingAtIndex:0];
+    }
+
+}
+
 + (Theme *)createTheme:(ThemeTypes)type
 {
     Theme * thm = [[Theme alloc]init];
@@ -61,8 +75,9 @@
     switch (type)
     {
         case PropertyListTheme:
-            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
             thm.setColor = YES;
+            thm.legend.appendClassCount = YES;
+            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
             thm.legend.title = @"Land Use";
             [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = 0;
@@ -101,7 +116,7 @@
             
             class = [ThemeClass createWithTitle:@"Industrial"];
             class.values = @[@"142",@"151",@"153"];
-            class.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
+            class.color = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Industrial)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
@@ -148,7 +163,7 @@
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
-
+            [thm adjustClassTitles];
             break;
         case Part1Theme:
             thm.minUCR = 1;
@@ -822,6 +837,10 @@ int getThemeOpt(ThemeTypes type)
                 case PFT_PctResidential_halfMile:
                 case PFT_PctCommercial_Mile:
                 case PFT_PctCommercial_halfMile:
+                case PFT_PctOpenSpace_Mile:
+                case PFT_PctOpenSpace_halfMile:
+                case PFT_Stability_halfMile:
+                case PFT_Stability_Mile:
                 {
                     val = 0;
                     rtn = DO_NOT_DISPLAY_ITEM;
