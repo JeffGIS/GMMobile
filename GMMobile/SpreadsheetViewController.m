@@ -24,8 +24,6 @@
     _ssv = [NVSpreadsheetView showSpreadsheetWithRows:40
                                               columns:26
                                                  view:self.view
-                                             editable:NO
-                                           selectable:YES
                                              delegate:self];
 }
 
@@ -59,7 +57,7 @@
        replaceViewControllerWithID:@"ApplicationsVC"
                 withViewController:dvc];
     
-    PropertyList *proplist = [[PropertyList alloc] init];
+    PropertyList *proplist = PropertyList.new;
     proplist.delegate = self;
     NSArray *props = [proplist getPropertyNumbers];
     NSArray *fields = [proplist availablePropertyFields];
@@ -67,13 +65,15 @@
     _ssv.activeColumns = props.count;
     _ssv.activeRows = fields.count;
     
-    NSMutableArray *fieldNames = [[NSMutableArray alloc] init];
+    NSMutableArray *fieldNames = NSMutableArray.array;
     
     for (NSNumber *field in fields)
     {
-        NSInteger ifield = field.integerValue;
-        NSString *fieldName = [proplist propertyFieldName:ifield];
-        [fieldNames addObject:fieldName];
+        if (field.integerValue != PFT_UserID)
+        {
+            NSString *fieldName = [proplist propertyFieldName:field.integerValue];
+            [fieldNames addObject:fieldName];
+        }
     }
     
     [_ssv setRowHeaderText:fieldNames];
@@ -111,17 +111,13 @@
            column:propNum];
 }
 
-- (void)ssvDidEditText:(NSString *)text
-          forCellAtRow:(NSUInteger)row
-                column:(NSUInteger)column
+- (void)ssvDidEditColumnHeaderText:(NSString *)text
+                           atIndex:(NSUInteger)index
 {
-    if (row == PFT_UserID)
-    {
-        PropertyList *proplist = [[PropertyList alloc] init];
-        
-        [proplist updatePropertyUserID:column
-                                userID:text];
-    }
+    PropertyList *proplist = PropertyList.new;
+    
+    [proplist updatePropertyUserID:index
+                            userID:text];
 }
 
 - (void)ssvCellWasTappedAtRowIndex:(NSUInteger)rowIndex

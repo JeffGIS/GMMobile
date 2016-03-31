@@ -370,28 +370,30 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     [self close:opened];
     return propNums.copy;
 }
+
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
                    forPropertyNumber:(NSInteger)propNum;
 {
-    NSString * value = nil;
+    NSString *value = @"";
     
     if (type == PFT_TimeToDestinations)
     {
-        Destinations *dest = [[Destinations alloc]init];
+        Destinations *dest = Destinations.new;
         
         CGFloat val = [dest totalValueForProperty:propNum ofType:type];
-        value = [NSString stringWithFormat:@"%.1f",val/60.0];
+        value = [NSString stringWithFormat:@"%.1f", val/60.0];
     }
+    
     else if (type == PFT_DistanceToDestinations)
     {
-        Destinations *dest = [[Destinations alloc]init];
+        Destinations *dest = Destinations.new;
         
         CGFloat val = [dest totalValueForProperty:propNum ofType:type];
-        value = [NSString stringWithFormat:@"%.1f",val];
+        value = [NSString stringWithFormat:@"%.1f", val];
     }
+    
     else
-        value = [self getFieldValue:propNum
-                                      type:type];
+        value = [self getFieldValue:propNum type:type];
     
     if (value)
     {
@@ -401,6 +403,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
                        andFieldType:type
                          withStatus:0];
     }
+    
     else
     {
         switch (type)
@@ -411,6 +414,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
                 break;
         }
     }
+    
     return;
 }
 

@@ -1,7 +1,6 @@
  //  VectorView.m
 //  GMMobile
 
-
 #import "VectorView.h"
 #import "BoundaryData.h"
 #import "PlanimetricData.h"
@@ -12,6 +11,8 @@
 #import "UserLayerDisplay.h"
 #import "ConfigurationControl.h"
 #import "Themes.h"
+
+#define METERS_PER_MILE 1609.344
 
 @interface VectorView ()
 

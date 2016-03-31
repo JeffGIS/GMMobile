@@ -8,7 +8,6 @@
 #import "CCodeLibrary/NVDestinationOptions.h"
 
 //#define CURRENT_VERSION 22
-#define METERS_PER_MILE 1609.344
 
 @interface Destinations ()
 
