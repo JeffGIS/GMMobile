@@ -344,13 +344,6 @@ EAGLContext *CreateBestEAGLContext()
                   @"Access Contacts", @"Track User Location", @"Select Organization",
                   @"Test Calendar Interface", @"Draw hotspottest.bin"];
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
-    {
-        NSMutableArray *tempArray = _contents.mutableCopy;
-        [tempArray addObject:@"Clear Prop List & Destinations"];
-        _contents = tempArray.copy;
-    }
-    
     [_tableView reloadData];
 }
 
@@ -483,14 +476,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Calibrate Device"])
     {
         [self calibrateDevice];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Clear Prop List & Destinations"])
-    {
-        CRAPI.sharedInstance.resetPropList = YES;
-        CRAPI.sharedInstance.resetDestinations = YES;
-        CRAPI.sharedInstance.clearSpreadsheet = YES;
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
