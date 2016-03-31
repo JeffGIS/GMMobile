@@ -65,6 +65,8 @@
         default:
             break;
     }
+    thm.displayID = _displayID;
+
     if (!ConfigurationControl.sharedInstance.legendList)
     {
         ConfigurationControl.sharedInstance.legendList = [[NSMutableArray alloc]init];

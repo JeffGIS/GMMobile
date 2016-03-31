@@ -131,7 +131,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if ([_fileName containsString:@"Meter"])
     {
         dc.pointSymbol = Star2Sym;
-        dc.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
+        dc.fillColor = [UIColor colorWithRed:0 green:0 blue:1 alpha:1];
+        dc.penColor = [UIColor blackColor];
         _sizeFactor *=1.5;
     }
     CloseTRANS2(&_pTranLLtoView);
@@ -234,7 +235,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             [self drawPoint:context
                                     atPoint:&pt
                                 usingSymbol:_dc.pointSymbol
-                                  withColor:_dc.color.CGColor
+                                  withColor:_dc.fillColor.CGColor
                                     andSize:(_dc.size * _sizeFactor)];
                     }
                 }
@@ -352,11 +353,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 _dc.string2 = [NSString stringWithUTF8String:cUDI];
                                 
                                 if (_dc.refno == CRAPI.sharedInstance.showPlats)
-                                    _dc.color = UIColor.grayColor;
+                                    _dc.fillColor = UIColor.grayColor;
                                 
                                 else
                                 {
-                                    _dc.color = [NVColor randomColorFromArray:NVColor.pastelColors
+                                    _dc.fillColor = [NVColor randomColorFromArray:NVColor.pastelColors
                                                                forString:_dc.string2];
                                 }
                             }
@@ -406,7 +407,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             else
                                 [self fillArea:context nPoints:psCShape->nVertices
                                         points:llpoints
-                                     withColor:_dc.color.CGColor];
+                                     withColor:_dc.fillColor.CGColor];
                             
                         }
                         else
@@ -424,7 +425,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                        partLen:psCShape->panPartStart
                                              x:psCShape->padfX
                                              y:psCShape->padfY
-                                     withColor:_dc.color.CGColor
+                                     withColor:_dc.penColor.CGColor
                                       andWidth:_dc.width*_widthFactor];
                             }
                         }

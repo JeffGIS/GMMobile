@@ -9,6 +9,7 @@
 #import "Theme.h"
 #import "ThemeLegend.h"
 #import "ConfigurationControl.h"
+#import "PropertyList.h"
 
 @implementation Theme
 
@@ -40,6 +41,7 @@
     thm.legend = [[ThemeLegend alloc]init];
     thm.titles = [[NSMutableArray alloc]init];
     thm.classes = [[NSMutableArray alloc]init];
+    thm.legend.drawOnMap = YES;
     thm.legend.aspectRatio = 0.7;
     thm.legend.numColumns = 1;
     thm.legend.pctBorder = 1;
@@ -59,6 +61,7 @@
     switch (type)
     {
         case PropertyListTheme:
+            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
             thm.setColor = YES;
             thm.legend.title = @"Land Use";
             [thm.titles addObject:thm.legend.title];
@@ -720,7 +723,7 @@ int getThemeOpt(ThemeTypes type)
                 
                 if (_setColor)
                 {
-                    dc.color = cls.color;
+                    dc.fillColor = cls.color;
                     dc.size = cls.size;
                 }
                 
@@ -769,6 +772,16 @@ int getThemeOpt(ThemeTypes type)
     return iclass;
 }
 
+- (BOOL) classValues:(NSArray*)values
+      containInteger:(int)ival
+{
+    for (NSNumber *num in values)
+    {
+        if (num.integerValue == ival)
+            return TRUE;
+    }
+    return FALSE;
+}
 - (int) processTheme:(DisplayCharacteristics *)dc
            displayID:(int)displayID
             testPass:(BOOL)test
@@ -782,6 +795,32 @@ int getThemeOpt(ThemeTypes type)
         int val;
         switch (_type)
         {
+            case PropertyListTheme:
+                switch (_subType)//propListValue
+            {
+                case PFT_PctIndustrial_Mile:
+                case PFT_PctIndustrial_halfMile:
+                {
+                    val = 0;
+                    rtn = DO_NOT_DISPLAY_ITEM;
+                    for (ThemeClass *cls in _classes)
+                    {
+                        if ([self classValues:cls.values containInteger:dc.iValue])
+                        {
+                            if ([self incrementCount:val
+                                                  by:1
+                                                  dc:dc
+                                            testPass:test])
+                                rtn = DISPLAY_ITEM;
+                            break;
+                        }
+                        val++;
+                    }
+                    
+                }
+                    break;
+            }
+                break;
             case Part1Theme:
                 if (dc.UCR < 1 || dc.UCR > 10 || dc.UCR == 9)
                     break;

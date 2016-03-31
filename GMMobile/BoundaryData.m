@@ -121,7 +121,7 @@
 
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radiusInMeters
-                          asMask:(int)mask
+                          asMask:(CGFloat)mask
                        inContext:(CGContextRef)context
                        llCorners:(CORNERPOINTS *) latlonCornerPoints
                         LLBounds:(MNMXCORD *)platlonBounds
@@ -156,7 +156,7 @@
     }
     if (mask)
     {
-        UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.8];
+        UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
         
         CreateMask(&llpoints, &numPoints,pvbounds);
         [self fillUseCode:context
@@ -172,7 +172,7 @@
 
 -(void)displayBoundary:(int)refno
                 ofType:(NSString*)areaType
-                asMask:(int)mask
+                asMask:(CGFloat)mask
              inContext:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
              LLBounds:(MNMXCORD *)platlonBounds
@@ -250,7 +250,7 @@
             }
             if (mask)
             {
-                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.8];
+                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
                 
                 CreateMask(&llpoints, &numPoints,pvbounds);
                 [self fillUseCode:context
@@ -554,10 +554,13 @@
     return llpoints;
 }
 
--(void)displayLandUse:(CGContextRef)context
-            llCorners:(CORNERPOINTS *) latlonCornerPoints
+-(void) displayLandUse:(CGContextRef)context
+             llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
+displayCharacteristics:(DisplayCharacteristics *)dc
+                themes:(Themes*)themes
+           pointInArea:(PointInArea *)pia
 {
     NSString *query = @"";
     //NSString *querys;
@@ -595,6 +598,7 @@
         //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         useCode = sqlite3_column_int(statement,6);
+        dc.iValue = useCode;
         
         if (numPoints < 0)
         {
@@ -615,18 +619,22 @@
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
-        
-        [self drawUseCode:context
-                  nPoints:numPoints
-                   nLoops:numLoops
-                  partLen:polyPartLen
-                   points:llpoints
-                withColor:UIColor.redColor.CGColor];
-        if (useCode >=160 && useCode <161)
+        if ([themes setDisplayCharacteristics:dc
+                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+        {
+            
             [self fillUseCode:context
-                  nPoints:numPoints
-                   points:llpoints
-                withColor:UIColor.redColor.CGColor];
+                      nPoints:numPoints
+                       points:llpoints
+                    withColor:dc.fillColor.CGColor];
+            [self drawUseCode:context
+                      nPoints:numPoints
+                       nLoops:numLoops
+                      partLen:polyPartLen
+                       points:llpoints
+                    withColor:dc.penColor.CGColor
+                     andWidth:dc.width];
+        }
     }
     
     SQLOK(sqlite3_finalize(statement), self.database);
@@ -639,8 +647,9 @@
              partLen:(int *)pPartLen
               points:(LPDPOINT)pPoints
            withColor:(CGColorRef)color
+           andWidth:(CGFloat)width
 {
-    CGContextSetLineWidth(context, 3);
+    CGContextSetLineWidth(context, width);
     
     if (nLoops > 1)
     {
@@ -999,7 +1008,8 @@ NextPass:
                    nLoops:numLoops
                   partLen:polyPartLen
                    points:llpoints
-                withColor:UIColor.blackColor.CGColor];
+                withColor:UIColor.blackColor.CGColor
+                 andWidth:3];
         
         free (llpoints);
     }

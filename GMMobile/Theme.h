@@ -14,6 +14,7 @@
 
 @property int displayID;
 @property ThemeTypes type;
+@property int subType;
 @property NSMutableArray * titles;
 @property int currentTitleIndex;
 @property NSMutableArray * classes;

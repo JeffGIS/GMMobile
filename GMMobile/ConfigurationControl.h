@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 #import "CCodeLibrary/DisplayCharacteristics.h"
 #import "Theme.h"
+#import "PropertyList.h"
 
 #define MAX_LAYER_NAME 32
 #define NUMHardCodedConfigs 8
@@ -47,16 +48,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerMapleGroveFiber,
 };
 
-typedef NS_ENUM(NSInteger, PropSheetValues)
-{
-    PSValNone,
-    PSValPCTIndustrial,
-    PSValPCTCommercial,
-    PSValPCTResidential,
-    PSValOpenSpace,
-    PSValWater,
-};
-
 
 @interface ApplicationObject : NSObject
 
@@ -90,7 +81,7 @@ typedef NS_ENUM(NSInteger, PropSheetValues)
 @property BOOL GMTilesVisible, wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;
-@property PropSheetValues currentPropSheetValue;
+@property PropFieldType currentPropSheetFieldType;
 @property NSString * MapitPID;
 @property int MapitBoundaryOpt;
 @property int MapitBoundaryRefno;

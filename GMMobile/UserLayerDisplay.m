@@ -54,7 +54,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             fileName = @"swGravityMain.shp";
             dc.elementType = StormMain;
-            dc.color = UIColor.greenColor;
+            dc.penColor = UIColor.greenColor;
             shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
             sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
             if (sfd)
@@ -106,7 +106,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             
             fileName = @"ssGravityMain.shp";
             dc.elementType = SanitaryMain;
-            dc.color = UIColor.blueColor;
+            dc.penColor = UIColor.blueColor;
             shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
             sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
             if (sfd)
