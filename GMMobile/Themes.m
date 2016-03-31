@@ -17,9 +17,10 @@
     
     if (ConfigurationControl.sharedInstance.legendApp != ConfigurationControl.sharedInstance.currentApp)
         [self destroyCurrentThemes];
+    
     ConfigurationControl.sharedInstance.legendApp = ConfigurationControl.sharedInstance.currentApp;
     
-    self.themeList = [[NSMutableArray alloc]init];
+    _themeList = NSMutableArray.array;
     
     switch (ConfigurationControl.sharedInstance.currentApp)
     {
