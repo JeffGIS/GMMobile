@@ -8,7 +8,7 @@
 @interface SpreadsheetViewController ()
 
 @property (nonatomic) NVSpreadsheetView *ssv;
-@property NSUInteger selectedRow, selectedColumn;
+@property (nonatomic) NSUInteger selectedRow, selectedColumn, numRows, numColumns;
 
 @end
 
@@ -20,22 +20,13 @@
     
     self.view.backgroundColor = UIColor.blackColor;
     _selectedRow = _selectedColumn = 0;
+    _numRows = 36, _numColumns = 18;
     
-    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:40
-                                              columns:26
+    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
+                                              columns:_numColumns
                                                  view:self.view
+                                              flipped:NO
                                              delegate:self];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    if (CRAPI.sharedInstance.clearSpreadsheet)
-    {
-        [_ssv clearContents];
-        CRAPI.sharedInstance.clearSpreadsheet = NO;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -57,6 +48,11 @@
        replaceViewControllerWithID:@"ApplicationsVC"
                 withViewController:dvc];
     
+    [self populateSpreadsheetCells];
+}
+
+- (void)populateSpreadsheetCells
+{
     PropertyList *proplist = PropertyList.new;
     proplist.delegate = self;
     NSArray *props = [proplist getPropertyNumbers];
@@ -132,6 +128,19 @@
                                                buttonTextArray:@[@"Map It", @"Cancel"]
                                               destructiveIndex:0];
 #pragma unused(alert)
+}
+
+- (void)ssvDidSetFlipped:(BOOL)flipped
+{
+    [_ssv removeFromSuperview];
+    
+    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
+                                              columns:_numColumns
+                                                 view:self.view
+                                              flipped:flipped
+                                             delegate:self];
+    
+    [self populateSpreadsheetCells];
 }
 
 - (void)alertView:(NVAlertView *)alertView
