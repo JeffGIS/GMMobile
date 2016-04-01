@@ -1176,7 +1176,7 @@
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
-        mapAdj = 40.0;
+        mapAdj = _tabBarHeight;
         
         if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
         {
