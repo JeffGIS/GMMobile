@@ -11,7 +11,7 @@
 
 @interface PropertyList ()
 
-@property NSString *documentsDirectory, *fileName, *path;
+@property NSString *fileName, *path;
 @property sqlite3 *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
@@ -40,15 +40,134 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
                   sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
 }
 
+NSString * GetPropListDirectory (void)
+{
+    NSString * documentsDirectory = CRAPI.sharedInstance.documentsDirectory;
+    NSString * propListDir = [NSString stringWithFormat:@"%@/PropertyLists",documentsDirectory];
+    [NSFileManager.defaultManager createDirectoryAtPath:propListDir
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                error:nil];
+    
+    return propListDir;
+}
+
++ (NSArray *) getPropertyLists
+{
+    NSString *dir = GetPropListDirectory();
+    NSMutableArray *array = [[NSMutableArray alloc]init];
+    for (NSString *fileName in [NSFileManager.defaultManager contentsOfDirectoryAtPath:dir
+                                                                error:nil])
+    {
+        NSString *leafName = textBefore (fileName.lastPathComponent,@".");
+        [array addObject:leafName];
+    }
+    return array;
+}
+
+BOOL nameInList (NSString* name,NSArray* list)
+{
+    for (NSString * curName in list)
+    {
+        if ([name isEqualToString:[curName lastPathComponent]])
+             return TRUE;
+    }
+    return FALSE;
+}
+
++ (void) createNewPropertyList
+{
+    int n = 1;
+    NSArray * lists = [PropertyList getPropertyLists];
+    n = (int)lists.count + 1;
+    NSString *newName = [NSString stringWithFormat:@"PropertyList%i",n];
+    while (nameInList (newName,lists))
+    {
+        n++;
+        newName = [NSString stringWithFormat:@"PropertyList%i",n];
+    }
+    [UserDefaults.defaults saveString:newName
+                               forKey:@"CurrentPropertyList"];
+}
+
++ (NSString*) getCurrentPropertyListName
+{
+    NSString *name;
+    
+    PropertyList *pl = [[PropertyList alloc]init];
+    name = pl.fileName;
+    return name;
+}
+
++ (BOOL) renameCurrentPropertyList:(NSString *)newName
+{
+    PropertyList *pl = [[PropertyList alloc]init];
+    NSString *currentFile = pl.path;
+    NSString *newFile = [NSString stringWithFormat:@"%@/%@.sqlite", pl.propListDir, newName];
+
+    [pl close:YES];
+    NSError * err = NULL;
+    BOOL result = [NSFileManager.defaultManager  moveItemAtPath:currentFile
+                                                         toPath:newFile
+                                                          error:&err];
+    if(!result)
+    {
+        NSLog(@"Error: %@", err);
+        return FALSE;
+    }
+    [UserDefaults.defaults saveString:newName
+                               forKey:@"CurrentPropertyList"];
+
+    return TRUE;
+}
+
++ (BOOL) deleteCurrentPropertyList
+{
+
+    PropertyList *pl = [[PropertyList alloc]init];
+    NSString *currentFile = pl.path;
+    NSError *error = nil;
+    [pl close:YES];
+    if (![NSFileManager.defaultManager removeItemAtPath:currentFile error:&error])
+    {
+        NSLog(@"%@ file removal error", currentFile);
+        return FALSE;
+    }
+    NSArray *lists = [PropertyList getPropertyLists];
+    if (lists.count)
+        [UserDefaults.defaults saveString:lists[0]
+                                   forKey:@"CurrentPropertyList"];
+    else
+        [UserDefaults.defaults saveString:nil
+                                   forKey:@"CurrentPropertyList"];
+    
+    return TRUE;
+}
+
++ (BOOL) setCurrentPropertyList:(NSString *)propList
+//returns false if proplist does not exist
+{
+    BOOL rtn = FALSE;
+    [UserDefaults.defaults saveString:propList
+                               forKey:@"CurrentPropertyList"];
+    
+    return  rtn;
+}
 - (id)init
 {
     self = [super init];
     
     if (self)
     {
-        _documentsDirectory = UserDefaults.defaults.sharedFilePath;
-        _fileName = @"DefaultPropList.sqlite";
-        _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+        _propListDir = GetPropListDirectory ();
+        _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
+        if (!_fileName)
+        {
+            _fileName = @"PropertyList1";
+            [UserDefaults.defaults saveString:_fileName
+                                       forKey:@"CurrentPropertyList"];
+        }
+        _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
         
         //int version = [self datasetVersion];
         
@@ -73,7 +192,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 
 - (void)dealloc
 {
-    sqlite3_close(_database);
+    [self close:YES];
     NSLog(@"PropertyList Database dealloc");
 }
 - (BOOL)open
@@ -94,7 +213,7 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 
 - (void)close:(BOOL)opened
 {
-    if (opened)
+    if (opened && _isOpen)
     {
         SQLOKpl(sqlite3_close(_database),_database);
         NSLog(@"PropertyList Database close");
@@ -113,14 +232,9 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
 {
     BOOL opened = [self open];
     
-    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,FieldValue BLOB(33554432));\
+    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
                         CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC);";
-   // NSString *cmd2 = @"CREATE TABLE IF NOT EXISTS DestinationList (id INTEGER PRIMARY KEY,FieldName CHAR(100),FieldValue BLOB(33554432))";
-    
     BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
-    
-    /*cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS PropertyList_VERSION (id INT,Version INT);INSERT INTO PropertyList_VERSION VALUES (1,%i);",CURRENT_VERSION];
-    SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);*/
     
     [self close:opened];
     return rtn;
@@ -415,6 +529,11 @@ int SQLOKpl(int sqlReturn, sqlite3 *database)
     SQLOK(sqlite3_finalize(statement), _database);
     [self close:opened];
     return propNums.copy;
+}
+
++ (void) deleteProperty:(NSInteger)propNum
+{
+    
 }
 
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
@@ -768,81 +887,82 @@ LLPOINT LLPOINTFromString (NSString* string)
     BOOL opened = [self open];
     int dbid = [self next_id];
     int PropNum = [self nextPropNum];
+    int propVersion = [propData propertyDatasetVersion];
 
     //add PID to Proplist
     NSString *PIDBlob = [self stringToBlob:PID];
     NSString *pointBlob = [self llpointsToBlob:&pidPoint
                                     numPoints:1];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PIN,PIDBlob];
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PIN,propVersion,PIDBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_UserID,PIDBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_UserID,propVersion,PIDBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
     //add LatLon to Proplist
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_LatLon,pointBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_LatLon,propVersion,pointBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
     NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
     NSString *addressBlob = [self stringToBlob:address];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,addressBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,propVersion,addressBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
     //add values from tables to Proplist
     NSString *dataBlob = [self intToBlob:values_block.rankTotEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.pctHomestead];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.homeOwnPct];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.medianBuiltYear];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.medianAgePop];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.pctChildren];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.pctSenior];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
 
     dataBlob = [self intToBlob:values_block.stability5yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.stability15yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_block,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     
     dataBlob = [self intToBlob:values_blockgroup.rankTotEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.pctHomestead];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.homeOwnPct];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.medianBuiltYear];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.medianAgePop];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.pctChildren];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.pctSenior];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.stability5yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_blockgroup.stability15yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,dataBlob];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
     [self close:opened];

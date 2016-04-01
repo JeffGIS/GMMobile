@@ -69,6 +69,14 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 @interface PropertyList : NSObject
 @property (nonatomic, weak) id <PropertyListDelegate> delegate;
+@property NSString* propListDir;
+
++ (NSArray *) getPropertyLists;
++ (NSString*) getCurrentPropertyListName;
++ (BOOL) renameCurrentPropertyList:(NSString *)newName;
++ (BOOL) deleteCurrentPropertyList;
++ (BOOL) setCurrentPropertyList:(NSString *)propList;
++ (void) createNewPropertyList;
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID;
 
@@ -88,5 +96,6 @@ typedef NS_ENUM(NSInteger, PropBaseType)
                         type:(PropFieldType)fieldType;
 - (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row;
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field;
++ (void) deleteProperty:(NSInteger)propNum;
 
 @end

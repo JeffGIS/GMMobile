@@ -49,7 +49,7 @@ typedef struct {int nMatchingProperties;
 - (BOOL)executeCmd:(char *)cmd;
 - (void)startTransaction;
 - (void)commitTransaction;
-
+- (int)propertyDatasetVersion;
 - (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar;
 
 - (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar

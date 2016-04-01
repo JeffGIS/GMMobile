@@ -9,6 +9,7 @@
 
 @property (nonatomic) NVSpreadsheetView *ssv;
 @property (nonatomic) NSUInteger selectedRow, selectedColumn, numRows, numColumns;
+@property BOOL isFlipped;
 
 @end
 
@@ -107,6 +108,62 @@
            column:propNum];
 }
 
+- (NSString *)ssvGetTitleText
+{
+    return [PropertyList getCurrentPropertyListName];
+}
+
+- (BOOL) ssvDidEditTitleText:(NSString *)text
+{
+    return [PropertyList renameCurrentPropertyList:text];
+}
+
+- (NSArray*) ssvGetFileList
+{
+    return [PropertyList getPropertyLists];
+}
+
+- (void) ssvSetCurrentFile:(NSString *)file
+{
+    [PropertyList setCurrentPropertyList:file];
+    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
+                                              columns:_numColumns
+                                                 view:self.view
+                                              flipped:_isFlipped
+                                             delegate:self];
+    
+    [self populateSpreadsheetCells];
+}
+
+ - (BOOL) ssvDeleteCurrentFile
+{
+    if ([PropertyList deleteCurrentPropertyList])
+    {
+        _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
+                                                  columns:_numColumns
+                                                     view:self.view
+                                                  flipped:_isFlipped
+                                                 delegate:self];
+        return TRUE;
+    }
+    return FALSE;
+}
+
+- (void) ssvCreateWasTapped
+{
+    [PropertyList createNewPropertyList];
+    [_ssv removeFromSuperview];
+    
+    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
+                                              columns:_numColumns
+                                                 view:self.view
+                                              flipped:_isFlipped
+                                             delegate:self];
+    
+    [self populateSpreadsheetCells];
+
+}
+
 - (void)ssvDidEditColumnHeaderText:(NSString *)text
                            atIndex:(NSUInteger)index
 {
@@ -134,6 +191,7 @@
 {
     [_ssv removeFromSuperview];
     
+    _isFlipped = flipped;
     _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
                                               columns:_numColumns
                                                  view:self.view
