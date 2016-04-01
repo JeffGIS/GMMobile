@@ -120,7 +120,7 @@
 - (void)ssvCellWasTappedAtRowIndex:(NSUInteger)rowIndex
                        columnIndex:(NSUInteger)columnIndex
 {
-    _selectedRow = rowIndex+1;
+    _selectedRow = rowIndex;
     _selectedColumn = columnIndex;
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
@@ -150,8 +150,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (buttonIndex == 0)
     {
         PropertyList *proplist = [[PropertyList alloc] init];
+        
         LLPOINT llpoint = [proplist getPropertyLatLon:_selectedColumn];
-        [proplist setZoomValues:_selectedColumn forRow:_selectedRow-1];
+        
+        [proplist setZoomValues:_selectedColumn
+                         forRow:_selectedRow];
+        
         CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
         NSUInteger index = 0;
         
