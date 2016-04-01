@@ -20,7 +20,8 @@
     
     self.view.backgroundColor = UIColor.blackColor;
     _selectedRow = _selectedColumn = 0;
-    _numRows = 36, _numColumns = 18;
+    _numRows = (PropertyList.new.availablePropertyFields.count - 1);
+    _numColumns = 16;
     
     _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
                                               columns:_numColumns
