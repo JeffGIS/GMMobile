@@ -1172,20 +1172,25 @@
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
     NSString *boundaryType = @"BOUNDARY";
+    CGFloat mapAdj = 0.0;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
+        mapAdj = 40.0;
+        
         if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
         {
-            bounds = BoundsFromLLPointAndDist (ConfigurationControl.sharedInstance.MapitTargetCenterPoint,ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE);
+            bounds = BoundsFromLLPointAndDist(ConfigurationControl.sharedInstance.MapitTargetCenterPoint,
+                                              ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles * METERS_PER_MILE);
         }
+        
         else
         {
             boundaryRefno = ConfigurationControl.sharedInstance.MapitBoundaryRefno;
             boundaryType = ConfigurationControl.sharedInstance.MapitBoundaryType;
         }
-
     }
+    
     else
         boundaryRefno = CRAPI.sharedInstance.currentOverallBoundaryRefno;
     
@@ -1196,12 +1201,14 @@
         if (CRAPI.sharedInstance.selectBoundaryFromMapType)
         {
             bounds = [boundData selectBoundaryFromMapInit:
-                            CRAPI.sharedInstance.selectBoundaryFromMapType];
+                      CRAPI.sharedInstance.selectBoundaryFromMapType];
         }
+        
         else
             bounds = [boundData getBoundaryAreaBounds:boundaryRefno
                                                ofType:boundaryType];
     }
+    
     if (BoundsWidth(&bounds) > 0)
     {
         CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
@@ -1228,10 +1235,12 @@
         
         free(frames);
         
-        /*[[self.view viewWithTag:999] removeFromSuperview];
+        [[self.view viewWithTag:999] removeFromSuperview];
         
-        UIView *testView = [[UIView alloc] initWithFrame:targetFrame];
+        /*UIView *testView = [[UIView alloc] initWithFrame:targetFrame];
         testView.backgroundColor = UIColor.greenColor;
+        testView.layer.borderColor = UIColor.redColor.CGColor;
+        testView.layer.borderWidth = 4.0;
         testView.tag = 999;
         testView.alpha = 0.5;
         [self.view addSubview:testView];*/
@@ -1239,10 +1248,10 @@
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
         
-        UIEdgeInsets inset = UIEdgeInsetsMake(CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 10.0,
-                                              CGRectGetMinX(targetFrame) - CGRectGetMinX(_mapView.frame) + 10.0,
-                                              CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame) + 10.0,
-                                              CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 10.0);
+        UIEdgeInsets inset = UIEdgeInsetsMake((CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 5.0),
+                                              (CGRectGetMinX(targetFrame) - CGRectGetMinX(_mapView.frame) + 5.0),
+                                              (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
+                                              (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
         camera = [_mapView cameraForBounds:coordBounds
                                     insets:inset];
