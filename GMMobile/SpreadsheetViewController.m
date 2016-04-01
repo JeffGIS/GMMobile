@@ -21,7 +21,8 @@
     
     self.view.backgroundColor = UIColor.blackColor;
     _selectedRow = _selectedColumn = 0;
-    _numRows = 36, _numColumns = 18;
+    _numRows = (PropertyList.new.availablePropertyFields.count - 1);
+    _numColumns = 16;
     
     _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
                                               columns:_numColumns
@@ -176,7 +177,7 @@
 - (void)ssvCellWasTappedAtRowIndex:(NSUInteger)rowIndex
                        columnIndex:(NSUInteger)columnIndex
 {
-    _selectedRow = rowIndex+1;
+    _selectedRow = rowIndex;
     _selectedColumn = columnIndex;
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
@@ -207,8 +208,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (buttonIndex == 0)
     {
         PropertyList *proplist = [[PropertyList alloc] init];
+        
         LLPOINT llpoint = [proplist getPropertyLatLon:_selectedColumn];
-        [proplist setZoomValues:_selectedColumn forRow:_selectedRow-1];
+        
+        [proplist setZoomValues:_selectedColumn
+                         forRow:_selectedRow];
+        
         CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
         NSUInteger index = 0;
         
