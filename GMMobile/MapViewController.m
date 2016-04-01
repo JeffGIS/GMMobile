@@ -1223,6 +1223,13 @@
                 if (!subviews.hidden)
                     [subviewsArray addObject:subviews];
             }
+            
+            else if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                     [subviews isKindOfClass:MapToolbar.class])
+            {
+                if (!subviews.hidden)
+                    [subviewsArray addObject:subviews];
+            }
         }
         
         CGRect *frames = (CGRect *)malloc((sizeof(CGRect) * subviewsArray.count) + 4);
