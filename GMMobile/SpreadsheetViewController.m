@@ -9,7 +9,6 @@
 
 @property (nonatomic) NVSpreadsheetView *ssv;
 @property (nonatomic) NSUInteger selectedRow, selectedColumn, numRows, numColumns;
-@property BOOL isFlipped;
 
 @end
 
@@ -114,55 +113,37 @@
     return [PropertyList getCurrentPropertyListName];
 }
 
-- (BOOL) ssvDidEditTitleText:(NSString *)text
+- (BOOL)ssvDidEditTitleText:(NSString *)text
 {
     return [PropertyList renameCurrentPropertyList:text];
 }
 
-- (NSArray*) ssvGetFileList
+- (NSArray *)ssvGetFileList
 {
     return [PropertyList getPropertyLists];
 }
 
-- (void) ssvSetCurrentFile:(NSString *)file
+- (void)ssvSetCurrentFile:(NSString *)file
 {
     [PropertyList setCurrentPropertyList:file];
-    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
-                                              columns:_numColumns
-                                                 view:self.view
-                                              flipped:_isFlipped
-                                             delegate:self];
-    
-    [self populateSpreadsheetCells];
+    [self resetSSV];
 }
 
- - (BOOL) ssvDeleteCurrentFile
+- (BOOL)ssvDeleteCurrentFile
 {
     if ([PropertyList deleteCurrentPropertyList])
     {
-        _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
-                                                  columns:_numColumns
-                                                     view:self.view
-                                                  flipped:_isFlipped
-                                                 delegate:self];
-        return TRUE;
+        [self resetSSV];
+        return YES;
     }
-    return FALSE;
+    
+    return NO;
 }
 
-- (void) ssvCreateWasTapped
+- (void)ssvCreateWasTapped
 {
     [PropertyList createNewPropertyList];
-    [_ssv removeFromSuperview];
-    
-    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
-                                              columns:_numColumns
-                                                 view:self.view
-                                              flipped:_isFlipped
-                                             delegate:self];
-    
-    [self populateSpreadsheetCells];
-
+    [self resetSSV];
 }
 
 - (void)ssvDidEditColumnHeaderText:(NSString *)text
@@ -191,15 +172,18 @@
 - (void)ssvDidSetFlipped:(BOOL)flipped
 {
     [_ssv removeFromSuperview];
+    _numRows = (PropertyList.new.availablePropertyFields.count - 1);
     
-    _isFlipped = flipped;
-    _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
-                                              columns:_numColumns
-                                                 view:self.view
-                                              flipped:flipped
-                                             delegate:self];
-    
-    [self populateSpreadsheetCells];
+    if (![self.view.subviews containsObject:_ssv])
+    {
+        _ssv = [NVSpreadsheetView showSpreadsheetWithRows:_numRows
+                                                  columns:_numColumns
+                                                     view:self.view
+                                                  flipped:flipped
+                                                 delegate:self];
+        
+        [self populateSpreadsheetCells];
+    }
 }
 
 - (void)alertView:(NVAlertView *)alertView
@@ -231,6 +215,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [alertView hideLargeAlertView:YES];
+}
+
+- (void)resetSSV
+{
+    [_ssv clearContents];
+    [self populateSpreadsheetCells];
 }
 
 @end
