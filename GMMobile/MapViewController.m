@@ -936,6 +936,31 @@
                     nvmibs.type == NVMarkerInfoButtonTypePropList)
                     [nvmibs removeFromSuperview];
             }
+            
+            for (MarkerButton *markers in _markerArray)
+                markers.hidden = NO;
+            
+            _infoWindow.hidden = NO;
+            
+            for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+            {
+                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
+                    nvmibs.hidden = NO;
+            }
+        }
+        
+        else
+        {
+            for (MarkerButton *markers in _markerArray)
+                markers.hidden = YES;
+            
+            _infoWindow.hidden = YES;
+            
+            for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+            {
+                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
+                    nvmibs.hidden = YES;
+            }
         }
     }
     
@@ -2543,14 +2568,14 @@ haveVV:
                            if (!_myLocationMarker.hidden)
                                [self.view bringSubviewToFront:_myLocationMarker];
                            
-                           for (MarkerButton *markers in _markerArray)
-                               [self.view bringSubviewToFront:markers];
-                           
                            for (NVMarkerInfoButton *nvmibs in self.view.subviews)
                            {
                                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
                                    [self.view bringSubviewToFront:nvmibs];
                            }
+                           
+                           for (MarkerButton *markers in _markerArray)
+                               [self.view bringSubviewToFront:markers];
                            
                            if (_infoWindow)
                                [self.view bringSubviewToFront:_infoWindow];
