@@ -2546,6 +2546,12 @@ haveVV:
                            for (MarkerButton *markers in _markerArray)
                                [self.view bringSubviewToFront:markers];
                            
+                           for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+                           {
+                               if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
+                                   [self.view bringSubviewToFront:nvmibs];
+                           }
+                           
                            if (_infoWindow)
                                [self.view bringSubviewToFront:_infoWindow];
                            
