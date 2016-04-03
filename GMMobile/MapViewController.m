@@ -19,6 +19,7 @@
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/UIDevice+Storage.h"
+#import "CcodeLibrary/NVMarkerInfoButton.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -67,7 +68,7 @@
 @property (nonatomic) NVLegendView *legendView;
 @property (nonatomic) NSInteger locationCount;
 @property (nonatomic) GMSPolyline *polyline;
-@property (nonatomic) NSMutableSet *polylines, *indDests, *groupDests, *props;
+@property (nonatomic) NSMutableSet *polylines;
 @property (nonatomic) UIScrollView *legendScrollView;
 @property (nonatomic) UIImageView *myLocationMarker;
 @property NSUInteger currentLegendTag, pdfCount;
@@ -142,9 +143,6 @@
     [_legendScrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
                          
     _polylines = NSMutableSet.set;
-    _indDests = NSMutableSet.set;
-    _groupDests = NSMutableSet.set;
-    _props = NSMutableSet.set;
     
     for (int i = 0; i < MAX_VECTORVIEWS; i++)
         vectorViews[i] = nil;
@@ -825,84 +823,118 @@
         
         if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
         {
+            CLLocationCoordinate2D coord = {0};
+            LLPOINT ll = {0};
+            NSInteger tag = 0;
+            
             if (CRAPI.sharedInstance.mapIndividualDest)
             {
-                Destinations *dest = Destinations.new;
-                NSArray *dests = [dest getIndividualDestinations];
-                CLLocationCoordinate2D coord = {0};
+                NSArray *dests = Destinations.new.getIndividualDestinations;
                 
                 for (Destination *dts in dests)
                 {
-                    LLPOINT ll = dts.latlon;
-                    coord.latitude = ll.lat;
-                    coord.longitude = ll.lon;
-                    
-                    GMSMarker *marker = [GMSMarker markerWithPosition:coord];
-                    marker.title = dts.destinationName;
-                    marker.icon = [GMSMarker markerImageWithColor:UserDefaults.defaults.appleBlue];
-                    marker.map = _mapView;
-                    [_indDests addObject:marker];
+                    if ([dts isKindOfClass:Destination.class])
+                    {
+                        tag = ((dts.destinationID * 100) + 1);
+                        
+                        if (![[self.view viewWithTag:tag] isKindOfClass:NVMarkerInfoButton.class])
+                        {
+                            ll = dts.latlon;
+                            coord.latitude = ll.lat;
+                            coord.longitude = ll.lon;
+                            
+                            NVMarkerInfoButton *nvmib =
+                            [NVMarkerInfoButton markerWithPosition:coord
+                                                             title:dts.destinationName
+                                                              type:NVMarkerInfoButtonTypeDestinationsIndividual
+                                                              view:self.view
+                                                          delegate:self];
+                            
+                            nvmib.tag = tag;
+                        }
+                    }
                 }
             }
             
-            else for (GMSMarker *markers in _indDests)
+            else for (NVMarkerInfoButton *nvmibs in self.view.subviews)
             {
-                if ([markers isKindOfClass:GMSMarker.class])
-                    markers.map = nil;
+                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class] &&
+                    nvmibs.type == NVMarkerInfoButtonTypeDestinationsIndividual)
+                    [nvmibs removeFromSuperview];
             }
             
             if (CRAPI.sharedInstance.mapGroupDest)
             {
-                Destinations *dest = Destinations.new;
-                NSArray *dests = [dest getGroupDestinations];
-                CLLocationCoordinate2D coord = {0};
+                NSArray *dests = Destinations.new.getGroupDestinations;
                 
                 for (Destination *dts in dests)
                 {
-                    LLPOINT ll = dts.latlon;
-                    coord.latitude = ll.lat;
-                    coord.longitude = ll.lon;
-                    
-                    GMSMarker *marker = [GMSMarker markerWithPosition:coord];
-                    marker.title = dts.destinationName;
-                    marker.icon = [GMSMarker markerImageWithColor:UIColor.brownColor];
-                    marker.map = _mapView;
-                    [_groupDests addObject:marker];
+                    if ([dts isKindOfClass:Destination.class])
+                    {
+                        tag = ((dts.destinationID * 100) + 2);
+                        
+                        if (![[self.view viewWithTag:tag] isKindOfClass:NVMarkerInfoButton.class])
+                        {
+                            ll = dts.latlon;
+                            coord.latitude = ll.lat;
+                            coord.longitude = ll.lon;
+                            
+                            NVMarkerInfoButton *nvmib =
+                            [NVMarkerInfoButton markerWithPosition:coord
+                                                             title:dts.destinationName
+                                                              type:NVMarkerInfoButtonTypeDestinationsGroup
+                                                              view:self.view
+                                                          delegate:self];
+                            
+                            nvmib.tag = tag;
+                        }
+                    }
                 }
             }
             
-            else for (GMSMarker *markers in _groupDests)
+            else for (NVMarkerInfoButton *nvmibs in self.view.subviews)
             {
-                if ([markers isKindOfClass:GMSMarker.class])
-                    markers.map = nil;
+                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class] &&
+                    nvmibs.type == NVMarkerInfoButtonTypeDestinationsGroup)
+                    [nvmibs removeFromSuperview];
             }
             
             if (CRAPI.sharedInstance.mapPropList)
             {
                 PropertyList *pl = PropertyList.new;
-                NSArray *props = [pl getPropertyNumbers];
-                CLLocationCoordinate2D coord = {0};
+                NSArray *props = pl.getPropertyNumbers;
                 
                 for (NSNumber *numbers in props)
                 {
-                    NSInteger num = numbers.integerValue;
-                    LLPOINT ll = [pl getPropertyLatLon:num];
-                    coord.latitude = ll.lat;
-                    coord.longitude = ll.lon;
-                    
-                    GMSMarker *marker = [GMSMarker markerWithPosition:coord];
-                    
-                    marker.title = [pl getFieldValue:num type:PFT_Address];
-                    marker.icon = [GMSMarker markerImageWithColor:UserDefaults.defaults.green];
-                    marker.map = _mapView;
-                    [_props addObject:marker];
+                    if ([numbers isKindOfClass:NSNumber.class])
+                    {
+                        NSInteger num = numbers.integerValue;
+                        tag = ((num * 100) + 3);
+                        
+                        if (![[self.view viewWithTag:tag] isKindOfClass:NVMarkerInfoButton.class])
+                        {
+                            ll = [pl getPropertyLatLon:num];
+                            coord.latitude = ll.lat;
+                            coord.longitude = ll.lon;
+                            
+                            NVMarkerInfoButton *nvmib =
+                            [NVMarkerInfoButton markerWithPosition:coord
+                                                             title:[pl getFieldValue:num type:PFT_Address]
+                                                              type:NVMarkerInfoButtonTypePropList
+                                                              view:self.view
+                                                          delegate:self];
+                            
+                            nvmib.tag = tag;
+                        }
+                    }
                 }
             }
             
-            else for (GMSMarker *markers in _props)
+            else for (NVMarkerInfoButton *nvmibs in self.view.subviews)
             {
-                if ([markers isKindOfClass:GMSMarker.class])
-                    markers.map = nil;
+                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class] &&
+                    nvmibs.type == NVMarkerInfoButtonTypePropList)
+                    [nvmibs removeFromSuperview];
             }
         }
     }
@@ -985,7 +1017,6 @@
         ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
-    
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
         
@@ -1990,13 +2021,12 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 
 - (void)updateMarkerPosition
 {
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    
     for (MarkerButton *markers in _markerArray)
     {
-        CGPoint target = [_mapView.projection pointForCoordinate:markers.position];
-        
-        markers.center = CGPointMake(target.x,
-                                     ((target.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]) -
-                                      (markers.frame.size.height / 2.0)));
+        CGPoint target = [self pointForCoordinate:markers.position];
+        markers.center = CGPointMake(target.x, ((target.y + statusBarHeight) - (markers.frame.size.height / 2.0)));
     }
     
     MarkerButton *marker = _markerArray.lastObject;
@@ -2004,10 +2034,17 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     
     if (!_myLocationMarker.hidden)
     {
-        CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
-        
-        _myLocationMarker.center =
-        CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+        CGPoint target = [self pointForCoordinate:_currentLocation];
+        _myLocationMarker.center = CGPointMake(target.x, (target.y + statusBarHeight));
+    }
+    
+    for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+    {
+        if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
+        {
+            CGPoint target = [self pointForCoordinate:nvmibs.position];
+            nvmibs.center = CGPointMake(target.x, ((target.y + statusBarHeight) - (nvmibs.frame.size.height / 2.0)));
+        }
     }
 }
 
