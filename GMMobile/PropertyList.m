@@ -312,6 +312,9 @@ BOOL nameInList (NSString* name,NSArray* list)
         case PFT_Address:
             name = @"Address";
             break;
+        case PFT_Links:
+            name = @"Links";
+            break;
         case PFT_RankEMV_block:
             name = @"EMV Rank (Block)";
             break;

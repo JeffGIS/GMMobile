@@ -10,6 +10,7 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_UserID,
     PFT_PIN,
     PFT_Address,
+    PFT_Links,
     PFT_Stability5yr_block,
     PFT_Stability5yr_blockgroup,
     PFT_Stability15yr_block,
