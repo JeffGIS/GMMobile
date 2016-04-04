@@ -54,7 +54,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.currentGeoid = 2743000;
     CRAPI.sharedInstance.resetPropList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
-    CRAPI.sharedInstance.zwsID = @"X1-ZWz1f7t0n1d7nv_3wguv";
     
     NSInteger fromDate = 0, toDate = 0;
     
