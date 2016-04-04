@@ -785,6 +785,8 @@
 				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
 				EBD6B8A91BC1CE1200BACC89 /* Destinations.h */,
 				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
+				EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */,
+				EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */,
 				EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */,
 				A99661391AB0BCFF006C0106 /* MarkerButton.h */,
 				A996613A1AB0BCFF006C0106 /* MarkerButton.m */,
@@ -812,8 +814,6 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
-				EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */,
-				EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";

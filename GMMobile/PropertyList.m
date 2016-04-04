@@ -983,11 +983,12 @@ LLPOINT LLPOINTFromString (NSString* string)
     rtn = YES;
     [self close:opened];
     
-    dispatch_queue_t getSlowValueQue = dispatch_queue_create("valuesFromMapQueue",NULL);
+    dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
     
     dispatch_async(getSlowValueQue,
                    ^{
                        GetSlowValues *sv = [[GetSlowValues alloc]init];
+                       sv.delegate = self;
                        [sv computeSlowValues:PropNum
                                         dbid:dbid
                                      popover:_popover
@@ -1009,7 +1010,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
     NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-    
+    [self close:opened];
 }
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
