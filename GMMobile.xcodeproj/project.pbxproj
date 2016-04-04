@@ -23,6 +23,8 @@
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
 		69366E001C542A4B00E79AA7 /* NVPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366DFF1C542A4B00E79AA7 /* NVPageView.m */; };
 		69366E031C542A6700E79AA7 /* NVPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366E021C542A6700E79AA7 /* NVPageController.m */; };
+		6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6938F3981CB2CEBB00DD975D /* webIcon.png */; };
+		6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */ = {isa = PBXBuildFile; fileRef = 6938F39A1CB2DEE400DD975D /* whiteHouse.png */; };
 		69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */; };
 		6944EDFF1C515A8E00DD5A24 /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */; };
 		6944EE001C515A8E00DD5A24 /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */; };
@@ -250,6 +252,8 @@
 		69366DFF1C542A4B00E79AA7 /* NVPageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPageView.m; sourceTree = "<group>"; };
 		69366E011C542A6700E79AA7 /* NVPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVPageController.h; sourceTree = "<group>"; };
 		69366E021C542A6700E79AA7 /* NVPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPageController.m; sourceTree = "<group>"; };
+		6938F3981CB2CEBB00DD975D /* webIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = webIcon.png; sourceTree = "<group>"; };
+		6938F39A1CB2DEE400DD975D /* whiteHouse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteHouse.png; sourceTree = "<group>"; };
 		69394F961C4ECBA200F140DE /* SelectOrganizationVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectOrganizationVC.h; sourceTree = "<group>"; };
 		69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectOrganizationVC.m; sourceTree = "<group>"; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
@@ -653,6 +657,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6938F39A1CB2DEE400DD975D /* whiteHouse.png */,
+				6938F3981CB2CEBB00DD975D /* webIcon.png */,
 				697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */,
 				697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */,
 				697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */,
@@ -1097,6 +1103,7 @@
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
 				699822611C69734F003476DD /* hotspottest.bin in Resources */,
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,
+				6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				A9BB3E1B1B1FA7A3003E1BAF /* blackCrosshairs.png in Resources */,
@@ -1109,6 +1116,7 @@
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
 				69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
+				6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */,
 				69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */,
 				A90506491A75E24100288850 /* layers.png in Resources */,
 				694FB1DB1C588363005410F6 /* Reader-Button-N@3x.png in Resources */,
