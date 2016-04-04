@@ -3,6 +3,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "GetSlowValues.h"
 
 typedef NS_ENUM(NSInteger, PropFieldType)
 {
@@ -15,8 +16,12 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_Stability5yr_blockgroup,
     PFT_Stability15yr_block,
     PFT_Stability15yr_blockgroup,
-    PFT_Stability_halfMile,
-    PFT_Stability_Mile,
+    PFT_Stability5yr_qtrMile,
+    PFT_Stability5yr_halfMile,
+    PFT_Stability5yr_Mile,
+    PFT_Stability15yr_qtrMile,
+    PFT_Stability15yr_halfMile,
+    PFT_Stability15yr_Mile,
     PFT_DistanceToDestinations,
     PFT_TimeToDestinations,
     PFT_PctHomestead_block,
@@ -37,12 +42,16 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctSenior_blockgroup,
     PFT_RankEMV_block,
     PFT_RankEMV_blockgroup,
+    PFT_PctOpenSpace_qtrMile,
     PFT_PctOpenSpace_halfMile,
     PFT_PctOpenSpace_Mile,
+    PFT_PctIndustrial_qtrMile,
     PFT_PctIndustrial_halfMile,
     PFT_PctIndustrial_Mile,
+    PFT_PctResidential_qtrMile,
     PFT_PctResidential_halfMile,
     PFT_PctResidential_Mile,
+    PFT_PctCommercial_qtrMile,
     PFT_PctCommercial_halfMile,
     PFT_PctCommercial_Mile,
     PFT_END
@@ -68,9 +77,11 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 @end
 
-@interface PropertyList : NSObject
+@interface PropertyList : NSObject <GetSlowValuesDelegate,GSSiPopoverViewDelegate>
 @property (nonatomic, weak) id <PropertyListDelegate> delegate;
 @property NSString* propListDir;
+@property (nonatomic) GSSiPopoverView *popover;
+@property int propVersion;
 
 + (NSArray *) getPropertyLists;
 + (NSString*) getCurrentPropertyListName;
@@ -79,7 +90,8 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 + (BOOL) setCurrentPropertyList:(NSString *)propList;
 + (void) createNewPropertyList;
 
-- (BOOL)addParcelToPropertyList:(NSString *)PID;
+- (BOOL)addParcelToPropertyList:(NSString *)PID
+                        popover:(GSSiPopoverView*)popover;
 
 - (NSArray *)getPropertyNumbers;
 - (NSArray *)availablePropertyFields;

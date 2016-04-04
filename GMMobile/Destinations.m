@@ -610,7 +610,9 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
     
     for (Destination *dest in individDests)
     {
-        [self getRoute:routeNum++
+        int n = 0;
+        while (n++ < 100 &&
+               [self getRoute:routeNum++
               fromProp:propNum
              fromPoint:propPt
                 toDest:dest.destinationID
@@ -618,9 +620,15 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                 atTime:dest.timeDepart
          withFrequency:dest.frequency
            inDirection:1
-          tranportType:MKDirectionsTransportTypeAny];
-        
-        [self getRoute:routeNum++
+          tranportType:MKDirectionsTransportTypeAny] == -1)
+        {
+            [NSThread sleepForTimeInterval:0.02];
+        }
+        if (n == 100)
+            n = -1;
+        n = 0;
+        while (n++ < 100 &&
+            [self getRoute:routeNum++
               fromProp:propNum
              fromPoint:dest.latlon
                 toDest:dest.destinationID
@@ -628,7 +636,12 @@ int SQLOKdst(int sqlReturn, sqlite3 *database)
                 atTime:dest.timeReturn
          withFrequency:dest.frequency
            inDirection:2
-          tranportType:MKDirectionsTransportTypeAny];
+          tranportType:MKDirectionsTransportTypeAny] == -1)
+        {
+            [NSThread sleepForTimeInterval:0.02];
+        }
+        if (n == 100)
+            n = -1;
     }
 }
 

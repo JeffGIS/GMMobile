@@ -200,6 +200,7 @@
 		EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226F1A7523E6008CE2D1 /* Foundation.framework */; };
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
+		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
 		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
@@ -483,6 +484,8 @@
 		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PropertyData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetSlowValues.h; sourceTree = "<group>"; };
+		EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetSlowValues.m; sourceTree = "<group>"; };
 		EB983D381C1CF94B00A994C7 /* ThemeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeTypes.h; sourceTree = "<group>"; };
 		EBAB31CA1AE8200000C5CCEF /* colormap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = colormap.png; sourceTree = "<group>"; };
 		EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerOverridesViewController.h; sourceTree = "<group>"; };
@@ -800,6 +803,8 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
+				EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */,
+				EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1216,6 +1221,7 @@
 				A97860EE1A7FDAD60019FE37 /* VectorView.m in Sources */,
 				EB5521D81A61B6A8008CE2D1 /* LayersViewController.m in Sources */,
 				A97860F11A7FF8180019FE37 /* FindPropertyOwnerViewController.m in Sources */,
+				EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */,
 				69C441A51BB466EA00D026A7 /* SpreadsheetViewController.m in Sources */,
 				692B4A071BF669D80016CE5D /* ThemeLegendMapOverlay.m in Sources */,
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,

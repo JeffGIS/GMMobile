@@ -3717,7 +3717,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self dismissTableView];
     
     PropertyList *pl = [[PropertyList alloc] init];
-    [pl addParcelToPropertyList:_selectedPID];
+    [pl addParcelToPropertyList:_selectedPID
+                        popover:_popover];
 }
 
 - (void)addToDestinations

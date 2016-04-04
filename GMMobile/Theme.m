@@ -839,8 +839,10 @@ int getThemeOpt(ThemeTypes type)
                 case PFT_PctCommercial_halfMile:
                 case PFT_PctOpenSpace_Mile:
                 case PFT_PctOpenSpace_halfMile:
-                case PFT_Stability_halfMile:
-                case PFT_Stability_Mile:
+                case PFT_Stability5yr_halfMile:
+                case PFT_Stability5yr_Mile:
+                case PFT_Stability15yr_halfMile:
+                case PFT_Stability15yr_Mile:
                 {
                     val = 0;
                     rtn = DO_NOT_DISPLAY_ITEM;

@@ -3,11 +3,12 @@
 
 #import "PropertyList.h"
 #import "PropertyData.h"
-#import "Destinations.h"
 #import "BoundaryData.h"
+#import "Destinations.h"
 #import "ConfigurationControl.h"
 
 //#define CURRENT_VERSION 28
+
 
 @interface PropertyList ()
 
@@ -345,11 +346,17 @@ BOOL nameInList (NSString* name,NSArray* list)
         case PFT_Stability15yr_blockgroup:
             name = @"Stability (15 year Block Group)";
             break;
-        case PFT_Stability_Mile:
+        case PFT_Stability5yr_Mile:
             name = @"Stability (5 year Mile)";
             break;
-        case PFT_Stability_halfMile:
+        case PFT_Stability5yr_halfMile:
             name = @"Stability (5 year Half Mile)";
+            break;
+        case PFT_Stability15yr_Mile:
+            name = @"Stability (15 year Mile)";
+            break;
+        case PFT_Stability15yr_halfMile:
+            name = @"Stability (15 year Half Mile)";
             break;
         case PFT_DistanceToDestinations:
             name = @"Distance to Destinations (Miles per Month)";
@@ -465,14 +472,16 @@ BOOL nameInList (NSString* name,NSArray* list)
     
     switch (field)
     {
-        case PFT_Stability_Mile:
+        case PFT_Stability5yr_Mile:
+        case PFT_Stability15yr_Mile:
         case PFT_PctOpenSpace_Mile:
         case PFT_PctIndustrial_Mile:
         case PFT_PctCommercial_Mile:
         case PFT_PctResidential_Mile:
             radius = 1.0;
             break;
-        case PFT_Stability_halfMile:
+        case PFT_Stability5yr_halfMile:
+        case PFT_Stability15yr_halfMile:
         case PFT_PctOpenSpace_halfMile:
         case PFT_PctIndustrial_halfMile:
         case PFT_PctCommercial_halfMile:
@@ -488,8 +497,10 @@ BOOL nameInList (NSString* name,NSArray* list)
     
     switch (field)
     {
-        case PFT_Stability_Mile:
-        case PFT_Stability_halfMile:
+        case PFT_Stability5yr_Mile:
+        case PFT_Stability5yr_halfMile:
+        case PFT_Stability15yr_Mile:
+        case PFT_Stability15yr_halfMile:
             bt = PBT_Stability;
             break;
         case PFT_PctOpenSpace_Mile:
@@ -851,9 +862,11 @@ LLPOINT LLPOINTFromString (NSString* string)
 }
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
+                        popover:(GSSiPopoverView *)popover
 {
     BOOL rtn = NO;
     
+    _popover = popover;
     PropertyData *propData = [[PropertyData alloc] init];
     LLPOINT pidPoint = [propData getPointForPID:PID];
     
@@ -969,12 +982,37 @@ LLPOINT LLPOINTFromString (NSString* string)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
     [self close:opened];
-    //add routes from property to destinations
-    Destinations *dests = [[Destinations alloc]init];
-    [dests addRoutesForProperty:PropNum];
     
+    dispatch_queue_t getSlowValueQue = dispatch_queue_create("valuesFromMapQueue",NULL);
+    
+    dispatch_async(getSlowValueQue,
+                   ^{
+                       GetSlowValues *sv = [[GetSlowValues alloc]init];
+                       [sv computeSlowValues:PropNum
+                                        dbid:dbid
+                                     popover:_popover
+                                aroundLatLon:pidPoint
+                                      totEMV:totEMV
+                                     useDesc:(LPSTR)usedesc.UTF8String];
+                   });
+   
     
     return rtn;
+}
+
+- (void)getSlowValuesDidComplete:(int)propNum
+                          values:(SlowValues *)vals
+{
+    BOOL opened = [self open];
+    int dbid = [self next_id];
+    int PropNum = [self nextPropNum];
+    NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    
+}
+- (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
 }
 
 @end
