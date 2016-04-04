@@ -19,7 +19,7 @@
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/UIDevice+Storage.h"
-#import "CcodeLibrary/NVMarkerInfoButton.h"
+#import "CCodeLibrary/NVMarkerInfoButton.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -914,13 +914,17 @@
     
     else
     {
-        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"SpreadsheetVC"];
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"SpreadsheetVC"];
         
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:lvc
                                atIndex:1];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+            removeViewControllerWithID:@"NVWebKitVC"];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)

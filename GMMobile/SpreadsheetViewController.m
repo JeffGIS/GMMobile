@@ -28,6 +28,11 @@
                                                  view:self.view
                                               flipped:NO
                                              delegate:self];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(pasteboardChanged:)
+                                               name:UIPasteboardChangedNotification
+                                             object:UIPasteboard.generalPasteboard];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -50,6 +55,11 @@
                 withViewController:dvc];
     
     [self populateSpreadsheetCells];
+}
+
+- (void)pasteboardChanged:(id)selector
+{
+    NSLog(@"Pasteboard Item:%@", UIPasteboard.generalPasteboard.strings.lastObject);
 }
 
 - (void)populateSpreadsheetCells
