@@ -556,6 +556,8 @@
         [self extentZoom];
         [self setMapType];
         _compass.hidden = YES;
+        
+        [self hideMarkersAndInfoWindows];
     }
     
     else
@@ -570,6 +572,8 @@
         
         _mapView.userInteractionEnabled = YES;
         _compass.hidden = NO;
+        
+        [self showMarkersAndInfoWindows];
     }
 }
 
@@ -936,31 +940,6 @@
                     nvmibs.type == NVMarkerInfoButtonTypePropList)
                     [nvmibs removeFromSuperview];
             }
-            
-            for (MarkerButton *markers in _markerArray)
-                markers.hidden = NO;
-            
-            _infoWindow.hidden = NO;
-            
-            for (NVMarkerInfoButton *nvmibs in self.view.subviews)
-            {
-                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
-                    nvmibs.hidden = NO;
-            }
-        }
-        
-        else
-        {
-            for (MarkerButton *markers in _markerArray)
-                markers.hidden = YES;
-            
-            _infoWindow.hidden = YES;
-            
-            for (NVMarkerInfoButton *nvmibs in self.view.subviews)
-            {
-                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
-                    nvmibs.hidden = YES;
-            }
         }
     }
     
@@ -1261,8 +1240,11 @@
         }
         
         else
+        {
             bounds = [boundData getBoundaryAreaBounds:boundaryRefno
                                                ofType:boundaryType];
+
+        }
     }
     
     if (BoundsWidth(&bounds) > 0)
@@ -2568,17 +2550,20 @@ haveVV:
                            if (!_myLocationMarker.hidden)
                                [self.view bringSubviewToFront:_myLocationMarker];
                            
-                           for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+                           if (!CRAPI.sharedInstance.selectBoundaryFromMapType)
                            {
-                               if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
-                                   [self.view bringSubviewToFront:nvmibs];
+                               for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+                               {
+                                   if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
+                                       [self.view bringSubviewToFront:nvmibs];
+                               }
+                               
+                               for (MarkerButton *markers in _markerArray)
+                                   [self.view bringSubviewToFront:markers];
+                               
+                               if (_infoWindow)
+                                   [self.view bringSubviewToFront:_infoWindow];
                            }
-                           
-                           for (MarkerButton *markers in _markerArray)
-                               [self.view bringSubviewToFront:markers];
-                           
-                           if (_infoWindow)
-                               [self.view bringSubviewToFront:_infoWindow];
                            
                            if (!_compass.hidden)
                                [self.view bringSubviewToFront:_compass];
