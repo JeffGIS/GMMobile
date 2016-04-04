@@ -575,6 +575,12 @@
         
         [self showMarkersAndInfoWindows];
     }
+    
+    for (NVMarkerInfoButton *nvmibs in self.view.subviews)
+    {
+        if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
+            [nvmibs removeFromSuperview];
+    }
 }
 
 - (void)updateCompassPosition
@@ -829,7 +835,6 @@
         {
             CLLocationCoordinate2D coord = {0};
             LLPOINT ll = {0};
-            NSInteger tag = 0;
             
             if (CRAPI.sharedInstance.mapIndividualDest)
             {
@@ -839,32 +844,20 @@
                 {
                     if ([dts isKindOfClass:Destination.class])
                     {
-                        tag = ((dts.destinationID * 100) + 1);
+                        ll = dts.latlon;
+                        coord.latitude = ll.lat;
+                        coord.longitude = ll.lon;
                         
-                        if (![[self.view viewWithTag:tag] isKindOfClass:NVMarkerInfoButton.class])
-                        {
-                            ll = dts.latlon;
-                            coord.latitude = ll.lat;
-                            coord.longitude = ll.lon;
-                            
-                            NVMarkerInfoButton *nvmib =
-                            [NVMarkerInfoButton markerWithPosition:coord
-                                                             title:dts.destinationName
-                                                              type:NVMarkerInfoButtonTypeDestinationsIndividual
-                                                              view:self.view
-                                                          delegate:self];
-                            
-                            nvmib.tag = tag;
-                        }
+                        NVMarkerInfoButton *nvmib =
+                        [NVMarkerInfoButton markerWithPosition:coord
+                                                         title:dts.destinationName
+                                                          type:NVMarkerInfoButtonTypeDestinationsIndividual
+                                                          view:self.view
+                                                      delegate:self];
+                        
+                        nvmib.tag = ((dts.destinationID * 100) + 1);
                     }
                 }
-            }
-            
-            else for (NVMarkerInfoButton *nvmibs in self.view.subviews)
-            {
-                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class] &&
-                    nvmibs.type == NVMarkerInfoButtonTypeDestinationsIndividual)
-                    [nvmibs removeFromSuperview];
             }
             
             if (CRAPI.sharedInstance.mapGroupDest)
@@ -875,32 +868,20 @@
                 {
                     if ([dts isKindOfClass:Destination.class])
                     {
-                        tag = ((dts.destinationID * 100) + 2);
+                        ll = dts.latlon;
+                        coord.latitude = ll.lat;
+                        coord.longitude = ll.lon;
                         
-                        if (![[self.view viewWithTag:tag] isKindOfClass:NVMarkerInfoButton.class])
-                        {
-                            ll = dts.latlon;
-                            coord.latitude = ll.lat;
-                            coord.longitude = ll.lon;
-                            
-                            NVMarkerInfoButton *nvmib =
-                            [NVMarkerInfoButton markerWithPosition:coord
-                                                             title:dts.destinationName
-                                                              type:NVMarkerInfoButtonTypeDestinationsGroup
-                                                              view:self.view
-                                                          delegate:self];
-                            
-                            nvmib.tag = tag;
-                        }
+                        NVMarkerInfoButton *nvmib =
+                        [NVMarkerInfoButton markerWithPosition:coord
+                                                         title:dts.destinationName
+                                                          type:NVMarkerInfoButtonTypeDestinationsGroup
+                                                          view:self.view
+                                                      delegate:self];
+                        
+                        nvmib.tag = ((dts.destinationID * 100) + 2);
                     }
                 }
-            }
-            
-            else for (NVMarkerInfoButton *nvmibs in self.view.subviews)
-            {
-                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class] &&
-                    nvmibs.type == NVMarkerInfoButtonTypeDestinationsGroup)
-                    [nvmibs removeFromSuperview];
             }
             
             if (CRAPI.sharedInstance.mapPropList)
@@ -913,32 +894,20 @@
                     if ([numbers isKindOfClass:NSNumber.class])
                     {
                         NSInteger num = numbers.integerValue;
-                        tag = ((num * 100) + 3);
+                        ll = [pl getPropertyLatLon:num];
+                        coord.latitude = ll.lat;
+                        coord.longitude = ll.lon;
                         
-                        if (![[self.view viewWithTag:tag] isKindOfClass:NVMarkerInfoButton.class])
-                        {
-                            ll = [pl getPropertyLatLon:num];
-                            coord.latitude = ll.lat;
-                            coord.longitude = ll.lon;
-                            
-                            NVMarkerInfoButton *nvmib =
-                            [NVMarkerInfoButton markerWithPosition:coord
-                                                             title:[pl getFieldValue:num type:PFT_Address]
-                                                              type:NVMarkerInfoButtonTypePropList
-                                                              view:self.view
-                                                          delegate:self];
-                            
-                            nvmib.tag = tag;
-                        }
+                        NVMarkerInfoButton *nvmib =
+                        [NVMarkerInfoButton markerWithPosition:coord
+                                                         title:[pl getFieldValue:num type:PFT_UserID]
+                                                          type:NVMarkerInfoButtonTypePropList
+                                                          view:self.view
+                                                      delegate:self];
+                        
+                        nvmib.tag = ((num * 100) + 3);
                     }
                 }
-            }
-            
-            else for (NVMarkerInfoButton *nvmibs in self.view.subviews)
-            {
-                if ([nvmibs isKindOfClass:NVMarkerInfoButton.class] &&
-                    nvmibs.type == NVMarkerInfoButtonTypePropList)
-                    [nvmibs removeFromSuperview];
             }
         }
     }
