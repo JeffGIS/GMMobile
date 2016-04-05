@@ -10,6 +10,7 @@
 #import "Destinations.h"
 #import "PropertyData.h"
 #import "BoundaryData.h"
+#import "CCodeLibrary/PercentInArea.h"
 
 
 @implementation SlowValues

@@ -4,6 +4,7 @@
 #import "SpreadsheetViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "MapViewController.h"
+#import "CCodeLibrary/NVWebKitVC.h"
 
 @interface SpreadsheetViewController ()
 
@@ -194,6 +195,16 @@
         
         [self populateSpreadsheetCells];
     }
+}
+
+- (void)ssvDidRequestWebViewAtURL:(NSString *)URL
+{
+    NVWebKitVC *nvwkvc = NVWebKitVC.new;
+    nvwkvc.urlString = URL;
+    
+    [self presentViewController:nvwkvc
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)alertView:(NVAlertView *)alertView
