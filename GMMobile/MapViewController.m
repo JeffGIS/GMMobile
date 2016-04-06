@@ -3975,7 +3975,7 @@ didCompleteWithError:(NSError *)error
 
 - (void)editIntersectionAttributes
 {
-    NSString *CRISDetailURL = @"PedRampDetail://";
+    NSString *CRISDetailURL = @"PedRampDetail:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
@@ -5665,7 +5665,7 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchAlleyWallApp
 {
-    NSString *AlleyWallURL = @"AlleyWallInventory://";
+    NSString *AlleyWallURL = @"AlleyWallInventory:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];
