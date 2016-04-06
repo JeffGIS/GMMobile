@@ -610,44 +610,36 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)dragButtonEnd:(UIButton *)button
 {
-    CGFloat originXTrans = fabs(self.frame.origin.x - _previousFrame.origin.x);
-    CGFloat originYTrans = fabs(self.frame.origin.y - _previousFrame.origin.y);
-    
-    BOOL significantMove = ((originXTrans > self.frame.size.width) ||
-                            (originYTrans > self.frame.size.height));
-    
-    if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width && _delegate)
-        self.legend.drawOnMap = NO;
-    
-    else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width && _delegate)
-        [_delegate themeLegendWasDraggedOffRightSide];
-    
-    else if (self.frame.origin.x < 0.0 && _delegate)
-        [_delegate themeLegendWasDraggedOffLeftSide];
-    
-    else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-             UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-    {
-        if (significantMove || _legend.isDraggedLandscape)
-        {
-            _legend.landscapeMapOrigin = self.frame.origin;
-            _legend.isDraggedLandscape = YES;
-        }
-    }
-        
-    else
-    {
-        if (significantMove || _legend.isDraggedPortrait)
-        {
-            _legend.portraitMapOrigin = self.frame.origin;
-            _legend.isDraggedPortrait = YES;
-        }
-    }
-    
-    self.superview.clipsToBounds = YES;
-    
     if (_delegate)
+    {
+        if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
+            self.legend.drawOnMap = NO;
+        
+        else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
+            [_delegate themeLegendWasDraggedOffRightSide];
+        
+        else if (self.frame.origin.x < 0.0)
+            [_delegate themeLegendWasDraggedOffLeftSide];
+        
+        else if (!_delegate.themeLegendIsOffMap)
+        {
+            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+            {
+                _legend.landscapeMapOrigin = self.frame.origin;
+                _legend.isDraggedLandscape = YES;
+            }
+            
+            else
+            {
+                _legend.portraitMapOrigin = self.frame.origin;
+                _legend.isDraggedPortrait = YES;
+            }
+        }
+        
+        self.superview.clipsToBounds = YES;
         [_delegate themeLegendDidChangeStatus:NO];
+    }
 }
 
 - (void)legendWasDragged:(UIButton *)button

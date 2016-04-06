@@ -13,6 +13,7 @@
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
 - (void)themeLegendWasDraggedOffRightSide;
 - (void)themeLegendWasDraggedOffLeftSide;
+- (BOOL)themeLegendIsOffMap;
 
 @optional
 - (void)clearVectorView;

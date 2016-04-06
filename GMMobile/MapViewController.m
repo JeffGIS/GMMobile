@@ -2850,10 +2850,7 @@ haveVV:
                                                                          tabBar:self.tabBarController.tabBar
                                                                     hideButtons:NO];
                 
-                if (!tl.isDraggedPortrait || _legendsAreOffMap)
                     yOriginPortrait += (tlmo.frame.size.height + yFactor);
-                
-                if (!tl.isDraggedLandscape || _legendsAreOffMap)
                     yOriginLandscape += (tlmo.frame.size.height + yFactor);
             }
         }
@@ -2908,6 +2905,11 @@ haveVV:
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }
+}
+
+- (BOOL)themeLegendIsOffMap
+{
+    return _legendsAreOffMap;
 }
 
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
