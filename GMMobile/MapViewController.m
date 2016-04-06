@@ -811,6 +811,12 @@
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
+        if (_legendsAreOffMap)
+        {
+            [self themeLegendWasDraggedOffLeftSide];
+            _legendsAreOffMap = YES;
+        }
+        
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
         
         UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
@@ -991,8 +997,7 @@
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;

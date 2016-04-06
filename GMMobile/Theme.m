@@ -88,76 +88,76 @@
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Multi Family Residential"];
+            class = [ThemeClass createWithTitle:@"Multi Family Residential "];
             class.values = @[@"114",@"115"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0.5 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Mixed Use Residential"];
+            class = [ThemeClass createWithTitle:@"Mixed Use Residential    "];
             class.values = @[@"141"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0.75 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Retail/Commercial"];
+            class = [ThemeClass createWithTitle:@"Retail/Commercial        "];
             class.values = @[@"120",@"143"];
             class.color = [UIColor colorWithRed:0.6 green:0.4 blue:0.2 alpha:PropListAlpha];;
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Commercial)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Office"];
+            class = [ThemeClass createWithTitle:@"Office                   "];
             class.values = @[@"130"];
             class.color = [UIColor colorWithRed:1 green:0.5 blue:1 alpha:PropListAlpha];
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Industrial"];
+            class = [ThemeClass createWithTitle:@"Industrial"               ];
             class.values = @[@"142",@"151",@"153"];
             class.color = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Industrial)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Institutional"];
+            class = [ThemeClass createWithTitle:@"Institutional"            ];
             class.values = @[@"160"];
             class.color = [UIColor colorWithRed:1 green:0 blue:1 alpha:PropListAlpha];
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Highway/Railway"];
+            class = [ThemeClass createWithTitle:@"Highway/Railway"          ];
             class.values = @[@"201",@"202"];
             class.color = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:PropListAlpha];
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Airport"];
+            class = [ThemeClass createWithTitle:@"Airport"                  ];
             class.values = @[@"203"];
             class.color = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Park/Rec/Preserve"];
+            class = [ThemeClass createWithTitle:@"Park/Rec/Preserve"        ];
             class.values = @[@"170",@"173"];
             class.color = [UIColor colorWithRed:0.5 green:1 blue:0.5 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Agriculture"];
+            class = [ThemeClass createWithTitle:@"Agriculture"              ];
             class.values = @[@"100"];
             class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Undeveloped"];
+            class = [ThemeClass createWithTitle:@"Undeveloped"              ];
             class.values = @[@"210"];
             class.color = [UIColor colorWithRed:0.75 green:1 blue:0.75 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
-            class = [ThemeClass createWithTitle:@"Water"];
+            class = [ThemeClass createWithTitle:@"Water"                    ];
             class.values = @[@"220"];
             class.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:PropListAlpha];
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)

@@ -239,98 +239,127 @@ heightForHeaderInSection:(NSInteger)section
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, _headerHeight)];
+    UIView *headerView = UIView.new;
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
-    CGSize size = headerView.frame.size;
+    UIEdgeInsets insets = UIEdgeInsetsMake(4.0, 4.0, 4.0, 4.0);
     
-    if (![headerView.subviews containsObject:_expandButton] && !_hideButtons)
+    if (![headerView.subviews containsObject:_expandButton])
     {
-        _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _expandButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        _expandButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        if (!_expandButton)
+        {
+            _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            _expandButton.translatesAutoresizingMaskIntoConstraints = NO;
+            _expandButton.imageView.contentMode = UIViewContentModeScaleToFill;
+            _expandButton.imageEdgeInsets = insets;
+            
+            [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeOut"
+                                                                                                   ofType:@"png"]]
+                           forState:UIControlStateNormal];
+            
+            [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeIn"
+                                                                                                   ofType:@"png"]]
+                           forState:UIControlStateSelected];
+            
+            [_expandButton addTarget:self
+                              action:@selector(expandLegend:)
+                    forControlEvents:UIControlEventTouchUpInside];
+        }
+
         _expandButton.selected = _isExpanded;
         
-        _expandButton.frame = CGRectMake((size.width - (size.height * _buttonMargin)), 0.0,
-                                         (size.height * _buttonMargin), size.height);
-        
-        [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeOut"
-                                                                                               ofType:@"png"]]
-                       forState:UIControlStateNormal];
-        
-        [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeIn"
-                                                                                               ofType:@"png"]]
-                       forState:UIControlStateSelected];
-        
-        [_expandButton addTarget:self
-                          action:@selector(expandLegend:)
-                forControlEvents:UIControlEventTouchUpInside];
+        if (_hideButtons)
+            _expandButton.hidden = YES;
         
         [headerView addSubview:_expandButton];
+        
+        [_expandButton removeAllConstraints];
+        [_expandButton.leadingAnchor constraintEqualToAnchor:headerView.trailingAnchor constant:(-_headerHeight * 1.5)].active = YES;
+        [_expandButton.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
+        [_expandButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+        [_expandButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
     }
     
-    if (![headerView.subviews containsObject:_dragButton] && !_isExpanded && !_hideButtons)
+    if (![headerView.subviews containsObject:_dragButton])
     {
-        _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
-        _dragButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-        _dragButton.frame = CGRectMake(0.0, 0.0, (size.height * _buttonMargin), size.height);
+        if (!_dragButton)
+        {
+            _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            _dragButton.translatesAutoresizingMaskIntoConstraints = NO;
+            _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
+            _dragButton.imageEdgeInsets = insets;
+            
+            [_dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
+                                                                                                 ofType:@"png"]]
+                         forState:UIControlStateNormal];
+            
+            [_dragButton addTarget:self
+                            action:@selector(legendWasDragged:withEvent:)
+                  forControlEvents:UIControlEventTouchDragInside];
+            
+            [_dragButton addTarget:self
+                            action:@selector(dragButtonBegin:)
+                  forControlEvents:UIControlEventTouchDown];
+            
+            [_dragButton addTarget:self
+                            action:@selector(dragButtonEnd:)
+                  forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
+        }
         
-        [_dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
-                                                                                             ofType:@"png"]]
-                     forState:UIControlStateNormal];
-        
-        [_dragButton addTarget:self
-                        action:@selector(legendWasDragged:withEvent:)
-              forControlEvents:UIControlEventTouchDragInside];
-        
-        [_dragButton addTarget:self
-                        action:@selector(dragButtonBegin:)
-                forControlEvents:UIControlEventTouchDown];
-        
-        [_dragButton addTarget:self
-                        action:@selector(dragButtonEnd:)
-              forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
+        if (_isExpanded || _hideButtons)
+            _dragButton.hidden = YES;
         
         [headerView addSubview:_dragButton];
+        
+        [_dragButton removeAllConstraints];
+        [_dragButton.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
+        [_dragButton.trailingAnchor constraintEqualToAnchor:headerView.leadingAnchor constant:(_headerHeight * 1.5)].active = YES;
+        [_dragButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+        [_dragButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
     }
     
     if (![headerView.subviews containsObject:_titleButton])
     {
-        _titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        
-        _titleButton.frame = CGRectMake((size.height * _buttonMargin), 0.0,
-                                        ((size.width - (size.height * _buttonMargin)) - (size.height * _buttonMargin)),
-                                        size.height);
-        
-        _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleButton.titleLabel.font = _headerFont;
-        _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        
-        [_titleButton setTitleColor:UIColor.whiteColor
-                           forState:UIControlStateNormal];
-        
-        if (_legend.titles.count > 1 || _legend.hasColors)
+        if (!_titleButton)
         {
-            [_titleButton setTitleColor:UIColor.greenColor
-                               forState:UIControlStateHighlighted];
+            _titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            _titleButton.translatesAutoresizingMaskIntoConstraints = NO;
+            _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+            _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
             
-            [_titleButton addTarget:self
-                             action:@selector(showLegendOptions:)
-                   forControlEvents:UIControlEventTouchUpInside];
+            [_titleButton setTitleColor:UIColor.whiteColor
+                               forState:UIControlStateNormal];
+            
+            if (_legend.titles.count > 1 || _legend.hasColors)
+            {
+                [_titleButton setTitleColor:UIColor.greenColor
+                                   forState:UIControlStateHighlighted];
+                
+                [_titleButton addTarget:self
+                                 action:@selector(showLegendOptions:)
+                       forControlEvents:UIControlEventTouchUpInside];
+            }
+            
+            else
+            {
+                [_titleButton setTitleColor:UIColor.redColor
+                                   forState:UIControlStateHighlighted];
+            }
+            
+            [_titleButton setTitle:_legend.title
+                          forState:UIControlStateNormal];
         }
         
-        else
-        {
-            [_titleButton setTitleColor:UIColor.redColor
-                               forState:UIControlStateHighlighted];
-        }
-        
-        [_titleButton setTitle:_legend.title
-                      forState:UIControlStateNormal];
+        _titleButton.titleLabel.font = _headerFont;
         
         [headerView addSubview:_titleButton];
+        
+        [_titleButton removeAllConstraints];
+        [_titleButton.leadingAnchor constraintEqualToAnchor:_dragButton.trailingAnchor].active = YES;
+        [_titleButton.trailingAnchor constraintEqualToAnchor:_expandButton.leadingAnchor].active = YES;
+        [_titleButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
+        [_titleButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
     }
     
     return headerView;
@@ -817,6 +846,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (_delegate)
             [_delegate themeLegendDidChangeStatus:NO];
     }
+    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -840,6 +870,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
     
     NSMutableString *text = tlc.label.mutableCopy;
+    CGFloat margin = 4.0;
     
     if (_legend.appendClassCount)
     {
@@ -875,7 +906,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
     }
     
-    UILabel *textLabel = [[UILabel alloc] init];
+    UILabel *textLabel = UILabel.new;
+    textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     textLabel.textColor = UIColor.blackColor;
     textLabel.font = _font;
     textLabel.text = text.copy;
@@ -886,25 +918,31 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
-    cell.contentView.backgroundColor = UIColor.clearColor;
     cell.textLabel.backgroundColor = UIColor.clearColor;
+    cell.contentView.backgroundColor = UIColor.clearColor;
+    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [cell.contentView constrainToView:cell leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
     NSDictionary *attributes = @{NSFontAttributeName:_font};
     
-    CGRect textSize = [text boundingRectWithSize:cell.contentView.frame.size
+    CGRect textSize = [text boundingRectWithSize:cell.frame.size
                                          options:NSStringDrawingUsesLineFragmentOrigin
                                       attributes:attributes
                                          context:nil];
     
     CGFloat textWidth = ceil(textSize.size.width);
-    CGFloat textOriginX = MAX((tableView.frame.size.width - textWidth), 4.0);
+    CGFloat textOriginX = MAX((tableView.frame.size.width - textWidth), margin);
     
     if (_legend.usePointSymbols)
     {
         CGFloat imageSize = (_rowHeight * 0.7);
+        textOriginX = (imageSize + (margin * 2.0));
+        textWidth = (self.frame.size.width - textOriginX);
         
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, (_rowHeight * 0.15),
-                                                                               imageSize, imageSize)];
+        UIImageView *imageView = UIImageView.new;
+        imageView.translatesAutoresizingMaskIntoConstraints = NO;
+        imageView.tag = 777;
         
         if (_legend.useClassColors)
             imageView.image = imageFromSymbol(tlc.symbol, imageSize, tlc.symbolColor);
@@ -912,23 +950,28 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             imageView.image = imageFromSymbol(tlc.symbol, imageSize, _legend.symbolDefaultColor);
         
-        imageView.tag = 777;
         [cell.contentView addSubview:imageView];
         
-        textOriginX = (MIN(imageView.frame.size.height, (imageView.frame.origin.x + imageView.frame.size.width)) + 4.0);
-        textWidth = (self.frame.size.width - textOriginX);
+        [imageView constrainToView:cell.contentView leading:margin trailing:(-textWidth - margin)
+                               top:(_rowHeight * 0.15) bottom:(-_rowHeight * 0.15)];
     }
     
-    textLabel.frame = CGRectMake(textOriginX, 0.0, textWidth, _rowHeight);
-    [cell.contentView addSubview:textLabel];
-    
-    if (!_legend.usePointSymbols)
+    else
     {
-        CGFloat barMargin = 4.0;
-        CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 2.0)) * tlc.symbolWidth);
+        textWidth = MIN(textWidth, (tableView.frame.size.width * 0.85));
+        textOriginX = (tableView.frame.size.width - textWidth);
         
-        UIImageView *barView = [[UIImageView alloc] initWithFrame:
-                                CGRectMake(barMargin, (_rowHeight * 0.15), barWidth, (_rowHeight * 0.7))];
+        //this is temporary - just to show that bars are being drawn with colors!
+        if ([_legend.title isEqualToString:@"Land Use"])
+            tlc.symbolWidth = 1.0;
+        
+        CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
+        
+        UIImageView *barView = UIImageView.new;
+        barView.translatesAutoresizingMaskIntoConstraints = NO;
+        barView.layer.borderColor = UIColor.blackColor.CGColor;
+        barView.layer.borderWidth = 1.0;
+        barView.tag = 666;
         
         if (_legend.useClassColors)
             barView.image = [UIImage imageFromColor:tlc.symbolColor];
@@ -936,11 +979,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             barView.image = [UIImage imageFromColor:_legend.symbolDefaultColor];
         
-        barView.layer.borderColor = UIColor.blackColor.CGColor;
-        barView.layer.borderWidth = 1.0;
-        barView.tag = 666;
         [cell.contentView addSubview:barView];
+        
+        [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+                             top:(_rowHeight * 0.15) bottom:(-_rowHeight * 0.15)];
     }
+    
+    [cell.contentView addSubview:textLabel];
+    
+    [textLabel constrainToView:cell.contentView leading:textOriginX trailing:0.0 top:0.0 bottom:0.0];
     
     return cell;
 }
