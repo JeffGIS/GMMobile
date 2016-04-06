@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1FB2CC6E1CB5729A001360CF /* PropListField_4.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 1FB2CC6C1CB5729A001360CF /* PropListField_4.rtf */; };
+		1FB2CC6F1CB5729A001360CF /* PropListField_default.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 1FB2CC6D1CB5729A001360CF /* PropListField_default.rtf */; };
 		69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
@@ -233,6 +235,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1FB2CC6C1CB5729A001360CF /* PropListField_4.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = PropListField_4.rtf; sourceTree = "<group>"; };
+		1FB2CC6D1CB5729A001360CF /* PropListField_default.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = PropListField_default.rtf; sourceTree = "<group>"; };
 		69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = GMMobileIconAppStore.jpg; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
@@ -575,6 +579,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1FB2CC6B1CB56D9E001360CF /* PropListDescriptions */ = {
+			isa = PBXGroup;
+			children = (
+				1FB2CC6C1CB5729A001360CF /* PropListField_4.rtf */,
+				1FB2CC6D1CB5729A001360CF /* PropListField_default.rtf */,
+			);
+			name = PropListDescriptions;
+			sourceTree = "<group>";
+		};
 		694FB1801C5882D7005410F6 /* PDFReaderCore */ = {
 			isa = PBXGroup;
 			children = (
@@ -922,6 +935,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				1FB2CC6B1CB56D9E001360CF /* PropListDescriptions */,
 				694FB1801C5882D7005410F6 /* PDFReaderCore */,
 				699822601C69734F003476DD /* hotspottest.bin */,
 				A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */,
@@ -1079,6 +1093,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				690E829D1C11044700AB410E /* Assets.bundle in Resources */,
+				1FB2CC6E1CB5729A001360CF /* PropListField_4.rtf in Resources */,
 				A90506461A75E12B00288850 /* settings.png in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
@@ -1148,6 +1163,7 @@
 				697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */,
 				A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */,
 				694FB1D61C588363005410F6 /* Reader-Button-H.png in Resources */,
+				1FB2CC6F1CB5729A001360CF /* PropListField_default.rtf in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
 				692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
