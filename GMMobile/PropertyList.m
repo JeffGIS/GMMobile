@@ -424,11 +424,42 @@ BOOL nameInList (NSString* name,NSArray* list)
         case PFT_PctCommercial_Mile:
             name = @"PCT Commercial (Mile)";
             break;
+        case PFT_PctOpenSpace_qtrMile:
+            name = @"PCT Open Space (Qtr Mile)";
+            break;
+        case PFT_Stability5yr_qtrMile:
+            name = @"Stability (5 year Qtr Mile)";
+            break;
+        case PFT_PctCommercial_qtrMile:
+            name = @"PCT Commercial (Qtr Mile)";
+            break;
+        case PFT_PctIndustrial_qtrMile:
+            name = @"PCT Industrial (Qtr Mile)";
+            break;
+        case PFT_Stability15yr_qtrMile:
+            name = @"Stability (15 year Qtr Mile)";
+            break;
+        case PFT_PctResidential_qtrMile:
+            name = @"PCT Residential (Qtr Mile)";
+            break;
+            
         
             
     }
     
     return name;
+}
+
+NSString* propertyListFieldDescription (NSInteger fieldNumber)
+{
+    NSString *file;
+    
+    NSString *name = [NSString stringWithFormat:@"PropListField_%li",(long)fieldNumber];
+    file = [NSBundle.mainBundle pathForResource:name ofType:@"rtf"];
+    
+    if (![NSFileManager.defaultManager fileExistsAtPath:file])
+        file = [NSBundle.mainBundle pathForResource:@"PropListField_default" ofType:@"rtf"];
+    return file;
 }
 
 - (int)getBoundaryTypeForField:(PropFieldType) field
