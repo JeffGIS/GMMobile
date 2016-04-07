@@ -13,6 +13,7 @@
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView;
 - (void)themeLegendWasDraggedOffRightSide;
 - (void)themeLegendWasDraggedOffLeftSide;
+- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation;
 - (BOOL)themeLegendIsOffMap;
 
 @optional
@@ -23,9 +24,8 @@
 
 @end
 
-@interface ThemeLegendMapOverlay : UIView <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
+@interface ThemeLegendMapOverlay : UIView
 
-@property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) ThemeLegend *legend;
 @property BOOL isExpanded;
 @property (nonatomic) UITableView *tableView;
@@ -43,7 +43,6 @@
                              delegate:(id)delegate
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
-                               tabBar:(UITabBar *)tabBar
                           hideButtons:(BOOL)hideButtons;
 
 - (void)displayRandomColorAlertInView:(UIView *)view;

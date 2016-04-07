@@ -6,8 +6,9 @@
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 #import "CCodeLibrary/UserDefaults.h"
 
-@interface ThemeLegendMapOverlay ()
+@interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
+@property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
@@ -60,9 +61,24 @@
                              delegate:(id)delegate
                                inView:(UIView *)view
                              atOrigin:(CGPoint)origin
-                               tabBar:(UITabBar *)tabBar
                           hideButtons:(BOOL)hideButtons
 {
+    if (!view || !delegate)
+    {
+        NSLog(@"ThemeLegendMapOverlay ERROR:Cannot set delegate or view to nil");
+        return nil;
+    }
+    
+    if (![delegate respondsToSelector:@selector(themeLegendDidChangeStatus:)] ||
+        ![delegate respondsToSelector:@selector(themeLegendWasDraggedOffLeftSide)] ||
+        ![delegate respondsToSelector:@selector(themeLegendWasDraggedOffRightSide)] ||
+        ![delegate respondsToSelector:@selector(themeLegendIsOffMap)] ||
+        ![delegate respondsToSelector:@selector(statusBarHeight:)])
+    {
+        NSLog(@"ThemeLegendMapOverlay ERROR:Delegate must respond to all non-optional selectors in protocol");
+        return nil;
+    }
+    
     ThemeLegendMapOverlay *tlmo = [[ThemeLegendMapOverlay alloc] init];
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;
@@ -71,7 +87,7 @@
     tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
     tlmo.hideButtons = hideButtons;
     tlmo.delegate = delegate;
-    tlmo.tabBar = tabBar;
+    tlmo.tabBar = view.parentViewController.tabBarController.tabBar;
     tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
     tlmo.currentRow = tlmo.currentColorPalette = 0;
     tlmo.previousContentOffset = CGPointZero;
@@ -158,9 +174,7 @@
             }
             
             _preventRefresh = NO;
-            
-            if (_delegate)
-                [_delegate themeLegendDidChangeStatus:YES];
+            [_delegate themeLegendDidChangeStatus:YES];
         }
             break;
         
@@ -397,7 +411,7 @@ viewForHeaderInSection:(NSInteger)section
     
     alert.identifier = @"TopLevelAlert";
     
-    if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+    if ([_delegate respondsToSelector:@selector(clearVectorView)])
         [_delegate clearVectorView];
 }
 
@@ -416,7 +430,7 @@ viewForHeaderInSection:(NSInteger)section
     alert.buttonBorderColor = UIColor.grayColor;
     alert.identifier = @"RandomColorConfirmation";
     
-    if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+    if ([_delegate respondsToSelector:@selector(clearVectorView)])
         [_delegate clearVectorView];
 }
 
@@ -558,11 +572,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             [_tableView reloadData];
             
-            if (_delegate)
-            {
-                [_delegate randomColorsSelectedWithOption:_currentColorPalette
-                                           forThemeLegend:self];
-            }
+            [_delegate randomColorsSelectedWithOption:_currentColorPalette
+                                       forThemeLegend:self];
             
             if (!_isExpanded)
             {
@@ -585,8 +596,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!_isExpanded)
     {
-        if (_delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        [_delegate themeLegendDidChangeStatus:YES];
         
         [UIView animateWithDuration:0.25
                          animations:^{
@@ -610,36 +620,33 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)dragButtonEnd:(UIButton *)button
 {
-    if (_delegate)
+    if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
+        self.legend.drawOnMap = NO;
+    
+    else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
+        [_delegate themeLegendWasDraggedOffRightSide];
+    
+    else if (self.frame.origin.x < 0.0)
+        [_delegate themeLegendWasDraggedOffLeftSide];
+    
+    else if (!_delegate.themeLegendIsOffMap)
     {
-        if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
-            self.legend.drawOnMap = NO;
-        
-        else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
-            [_delegate themeLegendWasDraggedOffRightSide];
-        
-        else if (self.frame.origin.x < 0.0)
-            [_delegate themeLegendWasDraggedOffLeftSide];
-        
-        else if (!_delegate.themeLegendIsOffMap)
+        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
         {
-            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-            {
-                _legend.landscapeMapOrigin = self.frame.origin;
-                _legend.isDraggedLandscape = YES;
-            }
-            
-            else
-            {
-                _legend.portraitMapOrigin = self.frame.origin;
-                _legend.isDraggedPortrait = YES;
-            }
+            _legend.landscapeMapOrigin = self.frame.origin;
+            _legend.isDraggedLandscape = YES;
         }
         
-        self.superview.clipsToBounds = YES;
-        [_delegate themeLegendDidChangeStatus:NO];
+        else
+        {
+            _legend.portraitMapOrigin = self.frame.origin;
+            _legend.isDraggedPortrait = YES;
+        }
     }
+    
+    self.superview.clipsToBounds = YES;
+    [_delegate themeLegendDidChangeStatus:NO];
 }
 
 - (void)legendWasDragged:(UIButton *)button
@@ -648,10 +655,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     UITouch *touch = [[event touchesForView:button] anyObject];
     CGPoint previousLocation = [touch previousLocationInView:button];
     CGPoint location = [touch locationInView:button];
-    CGFloat deltaX = (location.x - previousLocation.x);
-    CGFloat deltaY = (location.y - previousLocation.y);
     
-    self.center = CGPointMake(self.center.x + deltaX, self.center.y + deltaY);
+    CGFloat newCenterX = (self.center.x + (location.x - previousLocation.x));
+    CGFloat newCenterY = (self.center.y + (location.y - previousLocation.y));
+    CGFloat statusBarHeight = [_delegate statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    
+    newCenterY = MAX(newCenterY, ((self.frame.size.height / 2.0) + statusBarHeight));
+    newCenterY = MIN(newCenterY, (self.superview.frame.size.height - (self.frame.size.height / 2.0)));
+    
+    if (!_delegate.themeLegendIsOffMap)
+        newCenterX = MAX(newCenterX, (self.frame.size.width / 2.0));
+    
+    self.center = CGPointMake(newCenterX, newCenterY);
 }
 
 - (void)expandLegend:(UIButton *)button
@@ -660,7 +675,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!_isExpanded)
     {
-        if (_delegate && [_delegate respondsToSelector:@selector(clearVectorView)])
+        if ([_delegate respondsToSelector:@selector(clearVectorView)])
             [_delegate clearVectorView];
         
         CGRect bounds = UIScreen.mainScreen.bounds;
@@ -835,10 +850,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             legendScroll.scrollEnabled = YES;
         }
         
-        if (_delegate)
-            [_delegate themeLegendDidChangeStatus:NO];
+        [_delegate themeLegendDidChangeStatus:NO];
     }
-    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView

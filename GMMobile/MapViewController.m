@@ -682,7 +682,6 @@
                                                                delegate:nil
                                                                  inView:legendsView
                                                                atOrigin:CGPointMake(xPos, yPos)
-                                                                 tabBar:nil
                                                             hideButtons:YES];
         
         tallestLegend = MAX(tallestLegend, tlmo.frame.size.height);
@@ -2847,7 +2846,6 @@ haveVV:
                                                                        delegate:self
                                                                          inView:inView
                                                                        atOrigin:mapOrigin
-                                                                         tabBar:self.tabBarController.tabBar
                                                                     hideButtons:NO];
                 
                     yOriginPortrait += (tlmo.frame.size.height + yFactor);
