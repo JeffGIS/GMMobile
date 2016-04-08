@@ -4,8 +4,12 @@
 #import "SpreadsheetViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "MapViewController.h"
+#import "PropertyList.h"
+#import "CCodeLibrary/NVSpreadsheetView.h"
+#import "CCodeLibrary/NVAlertView.h"
+#import "CCodeLibrary/NVWebView.h"
 
-@interface SpreadsheetViewController ()
+@interface SpreadsheetViewController () <PropertyListDelegate,NVSpreadsheetViewDelegate,NVAlertViewDelegate>
 
 @property (nonatomic) NVSpreadsheetView *ssv;
 @property (nonatomic) NSUInteger selectedRow, selectedColumn, numRows, numColumns;
@@ -177,6 +181,15 @@
                                                buttonTextArray:@[@"Map It", @"Cancel"]
                                               destructiveIndex:0];
 #pragma unused(alert)
+}
+
+- (void)ssvRowHeaderWasTappedAtIndex:(NSUInteger)rowHeaderIndex
+{
+    NSString *filePath = propertyListFieldDescription(rowHeaderIndex);
+    
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                    showFileAtPath:filePath];
+#pragma unused(nvwv)
 }
 
 - (void)ssvDidSetFlipped:(BOOL)flipped
