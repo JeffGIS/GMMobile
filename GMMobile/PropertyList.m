@@ -455,10 +455,10 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     NSString *file;
     
     NSString *name = [NSString stringWithFormat:@"PropListField_%li",(long)fieldNumber];
-    file = [NSBundle.mainBundle pathForResource:name ofType:@"rtf"];
+    file = [NSBundle.mainBundle pathForResource:name ofType:@"pdf"];
     
     if (![NSFileManager.defaultManager fileExistsAtPath:file])
-        file = [NSBundle.mainBundle pathForResource:@"PropListField_default" ofType:@"rtf"];
+        file = [NSBundle.mainBundle pathForResource:@"PropListField_default" ofType:@"pdf"];
     return file;
 }
 
