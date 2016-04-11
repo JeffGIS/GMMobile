@@ -31,7 +31,7 @@
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanarama;
+@property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
@@ -126,7 +126,7 @@
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanarama = NO;
+    _showsPanorama = NO;
     
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
@@ -1947,7 +1947,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (_secondView.frame.size.height != 0.0)
         [self.view bringSubviewToFront:_secondView];
     
-    if (![self legendIsExpanded] && ![self alertVisible] && !_showsPanarama)
+    if (![self legendIsExpanded] && ![self alertVisible] && !_showsPanorama)
     {
         [self.view bringSubviewToFront:_mapToolbar];
         [self.view bringSubviewToFront:_compass];
@@ -1956,7 +1956,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self.view bringSubviewToFront:_legendScrollView];
     }
     
-    if (!_tableView.hidden && ![self alertVisible] && !_showsPanarama)
+    if (!_tableView.hidden && ![self alertVisible] && !_showsPanorama)
         [self.view bringSubviewToFront:_tableView];
     
     for (GSSiDatePicker *datePicker in self.view.subviews)
@@ -2401,7 +2401,7 @@ haveVV:
 
 - (void)clearVectorView
 {
-    if (!_showsPanarama)
+    if (!_showsPanorama)
     {
         [_vectorViewTimer invalidate];
         CRAPI.sharedInstance.keepProcessing++;
@@ -2422,7 +2422,7 @@ haveVV:
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom
 {
-    if (!_showsPanarama)
+    if (!_showsPanorama)
     {
         [self clearVectorView];
         _vectorViewZoom = zoom;
@@ -3631,7 +3631,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showStreetView
 {
-    _showsPanarama = YES;
+    _showsPanorama = YES;
     GMSPanoramaView *panView = [[GMSPanoramaView alloc] init];
     [panView moveNearCoordinate:_selectedPIDCoords];
     panView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -3696,6 +3696,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                    FOV:90.0];
 }
 
+- (void)panoramaView:(GMSPanoramaView *)view
+               error:(NSError *)error
+onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    NSLog(@"GMSPanoramaView ERROR onMoveNearCoordinate:%@", error.localizedDescription);
+}
+
 - (void)dismissPanTapped:(UIButton *)button
 {
     [UIView animateWithDuration:0.25 animations:^{
@@ -3704,7 +3711,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     } completion:^(BOOL finished) {
         [button.superview removeFromSuperview];
         [self deselectTableViewRow];
-        _showsPanarama = NO;
+        _showsPanorama = NO;
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
