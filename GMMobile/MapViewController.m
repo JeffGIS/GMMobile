@@ -4810,6 +4810,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
+    [_mapView removeAllConstraints];
+    _mapView.translatesAutoresizingMaskIntoConstraints = YES;
     
     //frame with no height for hidden views
     CGRect frame0 = CGRectMake(0.0,
@@ -4890,7 +4892,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
-                                 _mapView.frame = _vectorView.frame = frame6;
+                                 _mapView.translatesAutoresizingMaskIntoConstraints = NO;
+                                 [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
                                  [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
@@ -4913,11 +4916,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
                                  
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 2.0));
+                                 _mapView.frame = CGRectMake(0.0, statusBarHeight,
+                                            self.view.frame.size.width, ((tabBarTop - statusBarHeight) / 2.0));
                                  
                                  [self updateMarkerPosition];
                              }
@@ -4946,11 +4946,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
                                  
-                                 _mapView.frame = _vectorView.frame =
-                                 CGRectMake(0.0,
-                                            statusBarHeight,
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 3.0));
+                                 _mapView.frame = CGRectMake(0.0, statusBarHeight,
+                                            self.view.frame.size.width, ((tabBarTop - statusBarHeight) / 3.0));
                                  
                                  [self updateMarkerPosition];
                              }
@@ -4967,10 +4964,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [UIView animateWithDuration:0.25
                              animations:^{
                                  _secondView.frame =
-                                 CGRectMake(0.0,
-                                            (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
-                                            self.view.frame.size.width,
-                                            ((tabBarTop - statusBarHeight) / 3.0));
+                                 CGRectMake(0.0, (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
+                                            self.view.frame.size.width, ((tabBarTop - statusBarHeight) / 3.0));
                              }];
             
             _screenSetting = MapViewScreenSettingTriScreen;
@@ -4981,10 +4976,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             [UIView animateWithDuration:0.25
                              animations:^{
-                                 _firstView.frame =
-                                 CGRectMake(0.0, statusBarHeight,
-                                            self.view.frame.size.width,
-                                            (tabBarTop - statusBarHeight));
+                                 _firstView.frame = CGRectMake(0.0, statusBarHeight,
+                                            self.view.frame.size.width, (tabBarTop - statusBarHeight));
                              }];
             
             [UIView animateWithDuration:0.25
