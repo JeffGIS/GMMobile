@@ -343,6 +343,7 @@
 		6998225A1C6850C9003476DD /* brick_texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = brick_texture.png; sourceTree = "<group>"; };
 		699822601C69734F003476DD /* hotspottest.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = hotspottest.bin; sourceTree = "<group>"; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
+		699BBE2F1CC1A57200B55120 /* GMMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = GMMobile.entitlements; sourceTree = "<group>"; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
 		69B46EFD1BC215F100BB7724 /* destinations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = destinations.png; sourceTree = "<group>"; };
@@ -391,7 +392,6 @@
 		A9128A5A1AC0C95600F4242F /* redTarget.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redTarget.png; sourceTree = "<group>"; };
 		A91565611A81E76400119C21 /* FindBoundariesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindBoundariesViewController.h; sourceTree = "<group>"; };
 		A91565621A81E76400119C21 /* FindBoundariesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindBoundariesViewController.m; sourceTree = "<group>"; };
-		A91B735C1AC1BA8400B1FEFA /* GMMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = GMMobile.entitlements; sourceTree = "<group>"; };
 		A91F36951AE97A2D00602BCE /* metalSliderLeft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeft.png; sourceTree = "<group>"; };
 		A91F36961AE97A2D00602BCE /* metalSliderRight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRight.png; sourceTree = "<group>"; };
 		A91F36991AE97B0500602BCE /* redSliderThumb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumb.png; sourceTree = "<group>"; };
@@ -925,6 +925,7 @@
 		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
 			isa = PBXGroup;
 			children = (
+				699BBE2F1CC1A57200B55120 /* GMMobile.entitlements */,
 				A9C8372A1A65B2DE005EC4FA /* Model */,
 				A9C8372B1A65B2E4005EC4FA /* View */,
 				A9C8372C1A65B2E8005EC4FA /* Controller */,
@@ -943,7 +944,6 @@
 				A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */,
 				EB398F0D1AC04B530043875E /* censusdatadef.txt */,
 				EB398F061ABC61C40043875E /* landusecodes.txt */,
-				A91B735C1AC1BA8400B1FEFA /* GMMobile.entitlements */,
 				A90506341A75DCE300288850 /* Images */,
 				EB5521CD1A61B6A8008CE2D1 /* Info.plist */,
 				EB5521CE1A61B6A8008CE2D1 /* main.m */,
@@ -1040,7 +1040,7 @@
 				TargetAttributes = {
 					EB5521C81A61B6A8008CE2D1 = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = AJKEHK4Z77;
+						DevelopmentTeam = J86LL8KXJL;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -1429,7 +1429,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.gmmobile;
+				PRODUCT_BUNDLE_IDENTIFIER = com.geographicsoftwarespecialists.geomastermobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1457,7 +1457,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.gmmobile;
+				PRODUCT_BUNDLE_IDENTIFIER = com.geographicsoftwarespecialists.geomastermobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
