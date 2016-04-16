@@ -475,7 +475,7 @@
 		EB4F25841A757F2000761FD5 /* FindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindViewController.m; sourceTree = "<group>"; };
 		EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPIDViewController.h; sourceTree = "<group>"; };
 		EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindPIDViewController.m; sourceTree = "<group>"; };
-		EB5521C91A61B6A8008CE2D1 /* GMMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GMMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB5521C91A61B6A8008CE2D1 /* NVMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NVMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB5521CD1A61B6A8008CE2D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB5521CE1A61B6A8008CE2D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EB5521D01A61B6A8008CE2D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -916,7 +916,7 @@
 		EB5521CA1A61B6A8008CE2D1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EB5521C91A61B6A8008CE2D1 /* GMMobile.app */,
+				EB5521C91A61B6A8008CE2D1 /* NVMobile.app */,
 				EB5521E51A61B6A8008CE2D1 /* GMMobileTests.xctest */,
 			);
 			name = Products;
@@ -994,9 +994,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EB5521C81A61B6A8008CE2D1 /* GMMobile */ = {
+		EB5521C81A61B6A8008CE2D1 /* NVMobile */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "GMMobile" */;
+			buildConfigurationList = EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "NVMobile" */;
 			buildPhases = (
 				EB5521C51A61B6A8008CE2D1 /* Sources */,
 				EB5521C61A61B6A8008CE2D1 /* Frameworks */,
@@ -1006,9 +1006,9 @@
 			);
 			dependencies = (
 			);
-			name = GMMobile;
+			name = NVMobile;
 			productName = GMMobile;
-			productReference = EB5521C91A61B6A8008CE2D1 /* GMMobile.app */;
+			productReference = EB5521C91A61B6A8008CE2D1 /* NVMobile.app */;
 			productType = "com.apple.product-type.application";
 		};
 		EB5521E41A61B6A8008CE2D1 /* GMMobileTests */ = {
@@ -1068,7 +1068,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "GMMobile" */;
+			buildConfigurationList = EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "NVMobile" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -1081,7 +1081,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EB5521C81A61B6A8008CE2D1 /* GMMobile */,
+				EB5521C81A61B6A8008CE2D1 /* NVMobile */,
 				EB5521E41A61B6A8008CE2D1 /* GMMobileTests */,
 			);
 		};
@@ -1308,7 +1308,7 @@
 /* Begin PBXTargetDependency section */
 		EB5521E71A61B6A8008CE2D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = EB5521C81A61B6A8008CE2D1 /* GMMobile */;
+			target = EB5521C81A61B6A8008CE2D1 /* NVMobile */;
 			targetProxy = EB5521E61A61B6A8008CE2D1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1429,8 +1429,8 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.geographicsoftwarespecialists.geomastermobile;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionmobile;
+				PRODUCT_NAME = NVMobile;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1457,8 +1457,8 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/system",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.geographicsoftwarespecialists.geomastermobile;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.gssi.newvisionmobile;
+				PRODUCT_NAME = NVMobile;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1503,7 +1503,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "GMMobile" */ = {
+		EB5521C41A61B6A8008CE2D1 /* Build configuration list for PBXProject "NVMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EB5521ED1A61B6A8008CE2D1 /* Debug */,
@@ -1512,7 +1512,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "GMMobile" */ = {
+		EB5521EF1A61B6A8008CE2D1 /* Build configuration list for PBXNativeTarget "NVMobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EB5521F01A61B6A8008CE2D1 /* Debug */,
