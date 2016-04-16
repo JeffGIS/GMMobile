@@ -114,7 +114,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)FTPdidComplete:(FTPDataType)dataType
-            withStatus:(int)status
+            withStatus:(FTPStatus)status
        andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
@@ -153,7 +153,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    cdc.popover = _popover;
                                    dispatch_async(dispatch_get_main_queue(),
                                                   ^{
-                                                      _popover.title = @"Installing Database";
+                                                      _popover.title = @"Decompressing Database";
                                                   });
                                    if ([cdc DecompressGMZipFile:(LPSTR)path.UTF8String
                                                     toDirectory:(LPSTR)toDirectory.UTF8String])
