@@ -37,9 +37,9 @@
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>NVMapKitFlyover</string>
+		<string>NVFlyover</string>
 		<string>AlleyWallInventory</string>
-		<string>PedRampDetail</string>
+		<string>CRISDetail</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
