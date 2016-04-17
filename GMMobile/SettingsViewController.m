@@ -110,6 +110,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
            andStatusString:(NSString *)statusString
                   filePath:(NSString *)path
 {
+    _popover.title = @"Upload Complete";
     NSLog(@"FTP push completed:%@", statusString);
 }
 
@@ -148,7 +149,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                ^{
                                    NSString *toDirectory = path.stringByDeletingLastPathComponent;
                                    NSString *file;
-                                   
+                                   NSString *newTitle = @"Load Data";
                                    CompressDecompress *cdc = [[CompressDecompress alloc]init];
                                    cdc.popover = _popover;
                                    dispatch_async(dispatch_get_main_queue(),
@@ -233,7 +234,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            case GetDatabaseSettingSewer:
                                            {
                                                file = [NSString stringWithFormat:@"%@/sewer.sqltran",toDirectory];
-                                               _popover.title = @"Load Sewer Tables";
+                                               newTitle = @"Load Sewer Tables";
                                            }
                                                break;
                                                
@@ -265,6 +266,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            else
                                            {
                                                _keepGoing = YES;
+                                               dispatch_async(dispatch_get_main_queue(),
+                                                              ^{
+                                                                  _popover.title = newTitle;
+                                                              });
                                                PropertyData *pd;
                                                SewerData *sd;
                                                AlleyWallData *awd;
