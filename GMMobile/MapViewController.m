@@ -3901,9 +3901,9 @@ didCompleteWithError:(NSError *)error
 
 - (void)perform3DFlyAround
 {
-    NSString *flyOverURL = @"NVMapKitFlyover:";
+    NSString *flyOverURL = @"NVFlyover:";
     
-    [SharedDefaults.defaults saveString:@"GMMobile:"
+    [SharedDefaults.defaults saveString:@"NVMobile:"
                                  forKey:@"FlyoverSourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
@@ -4062,9 +4062,9 @@ didCompleteWithError:(NSError *)error
 
 - (void)editIntersectionAttributes
 {
-    NSString *CRISDetailURL = @"PedRampDetail:";
+    NSString *CRISDetailURL = @"CRISDetail:";
     
-    [SharedDefaults.defaults saveString:@"GMMobile"
+    [SharedDefaults.defaults saveString:@"NVMobile"
                                  forKey:@"SourceApplication"];
     
     [SharedDefaults.defaults saveInteger:_selectedCRIntPt.intValue
@@ -4077,7 +4077,7 @@ didCompleteWithError:(NSError *)error
     {
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:@"GMMobile cannot launch CRIS Detail"
+                                                             title:@"NVMobile cannot launch CRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         

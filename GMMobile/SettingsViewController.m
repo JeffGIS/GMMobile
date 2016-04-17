@@ -908,9 +908,9 @@ Exit:
 
 - (IBAction)launchMaintenanceModule:(id)sender
 {
-    NSString *CRISDetailURL = @"PedRampDetail://";
+    NSString *CRISDetailURL = @"CRISDetail://";
     
-    [SharedDefaults.defaults saveString:@"GMMobile"
+    [SharedDefaults.defaults saveString:@"NVMobile"
                                  forKey:@"SourceApplication"];
     
     [SharedDefaults.defaults saveInteger:85
@@ -923,7 +923,7 @@ Exit:
     {
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:@"GMMobile cannot launch CRIS Detail"
+                                                             title:@"NVMobile cannot launch CRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
 #pragma unused(alert)
