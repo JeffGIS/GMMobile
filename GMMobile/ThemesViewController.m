@@ -176,11 +176,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [_nvdl loadNVData:_selectedApp
                   popover:_popover];
         
-        CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-        
-        [self performSelector:@selector(selectMapVC)
-                   withObject:nil
-                   afterDelay:0.25];
     }
 }
 
@@ -202,6 +197,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _nvdl.popover = nil;
     _nvdl.delegate = nil;
     _nvdl = nil;
+    CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+    
+    [self performSelector:@selector(selectMapVC)
+               withObject:nil
+               afterDelay:0.25];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
