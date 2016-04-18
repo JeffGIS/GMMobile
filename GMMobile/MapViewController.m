@@ -5724,7 +5724,7 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchAlleyWallApp
 {
-    NSString *AlleyWallURL = @"AlleyWallInventory:";
+    NSString *AlleyWallURL = @"NVAlleyWalls:";
     
     [SharedDefaults.defaults saveString:@"GMMobile"
                                  forKey:@"SourceApplication"];

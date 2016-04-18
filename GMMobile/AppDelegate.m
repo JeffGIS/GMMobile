@@ -276,7 +276,7 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     if ([sourceApp isEqualToString:@""])
         sourceApp = @"User";
     
-    else if ([sourceApp isEqualToString:@"AlleyWallInventory"])
+    else if ([sourceApp isEqualToString:@"NVAlleyWalls"])
         CRAPI.sharedInstance.setToAlleyWalls = YES;
     
     CRAPI.sharedInstance.sourceApp = sourceApp;

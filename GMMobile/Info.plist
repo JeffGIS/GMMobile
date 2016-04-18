@@ -38,7 +38,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>NVFlyover</string>
-		<string>AlleyWallInventory</string>
+		<string>NVAlleyWalls</string>
 		<string>CRISDetail</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
