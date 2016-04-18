@@ -5726,7 +5726,7 @@ didFindMatchBetweenNote:(NSString *)note
 {
     NSString *AlleyWallURL = @"NVAlleyWalls:";
     
-    [SharedDefaults.defaults saveString:@"GMMobile"
+    [SharedDefaults.defaults saveString:@"NVMobile"
                                  forKey:@"SourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:AlleyWallURL]])
@@ -5736,7 +5736,7 @@ didFindMatchBetweenNote:(NSString *)note
     {
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:@"GMMobile cannot launch Alley Wall Inventory"
+                                                             title:@"NVMobile cannot launch Alley Wall Inventory"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
 #pragma unused(alert)
