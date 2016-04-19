@@ -113,6 +113,9 @@
             
             CGFloat multiplier = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             
+            if (isnan(multiplier))
+                return;
+            
             [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
                                                                     constant:_outerMargin].active = YES;
             
@@ -144,6 +147,9 @@
             
             CGFloat multiplier1 = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             CGFloat multiplier2 = ((numCells2 + (1.5 / numCells2)) / (numCells3 + (1.5 / numCells3)));
+            
+            if (isnan(multiplier1) || isnan(multiplier2))
+                return;
             
             [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
                                                                     constant:_outerMargin].active = YES;
@@ -187,6 +193,9 @@
             CGFloat multiplier1 = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             CGFloat multiplier3 = ((numCells4 + (1.5 / numCells4)) / (numCells5 + (1.5 / numCells5)));
             
+            if (isnan(multiplier1) || isnan(multiplier3))
+                return;
+            
             CGFloat leftPacked = (numCells1 + numCells2 + numCells3);
             CGFloat rightPacked = (numCells3 + numCells4 + numCells5);
             
@@ -227,6 +236,9 @@
             {
                 CGFloat multiplier2 = ((numCells2 + (1.5 / numCells2)) / (numCells3 + (1.5 / numCells3)));
                 
+                if (isnan(multiplier2))
+                    return;
+                
                 [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
                                                                      multiplier:multiplier2].active = YES;
                 
@@ -247,6 +259,9 @@
             else //2+3 arrangement
             {
                 CGFloat multiplier2 = ((numCells3 + (1.5 / numCells3)) / (numCells4 + (1.5 / numCells4)));
+                
+                if (isnan(multiplier2))
+                    return;
                 
                 [[self.view viewWithTag:3].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:4].heightAnchor
                                                                      multiplier:multiplier2].active = YES;
