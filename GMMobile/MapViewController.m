@@ -2504,7 +2504,7 @@ haveVV:
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom
 {
-    if (!_showsPanorama)// && hasNetwork())
+    if (!_showsPanorama)
     {
         [self clearVectorView];
         _vectorViewZoom = zoom;
