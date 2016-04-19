@@ -148,6 +148,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 dispatch_async(overallQueue,
                                ^{
                                    NSString *toDirectory = path.stringByDeletingLastPathComponent;
+                                   toDirectory = CRAPI.sharedInstance.sharedFilePath;
                                    NSString *file;
                                    NSString *newTitle = @"Load Data";
                                    CompressDecompress *cdc = [[CompressDecompress alloc]init];

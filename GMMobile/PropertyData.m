@@ -72,7 +72,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     if (self)
     {
-        _documentsDirectory = UserDefaults.defaults.localFilePath;
+        _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"Property.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         
