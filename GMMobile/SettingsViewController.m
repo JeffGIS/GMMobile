@@ -8,6 +8,7 @@
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32
+#define USE_TEST_SERVER YES
 
 @interface SettingsViewController ()
 
@@ -149,7 +150,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                ^{
                                    NSString *toDirectory = path.stringByDeletingLastPathComponent;
                                    toDirectory = CRAPI.sharedInstance.sharedFilePath;
-                                   NSString *file;
+                                   if (dataType == GetDatabaseSettingMapleGrove)
+                                       toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
+                                   NSString *file=nil;
                                    NSString *newTitle = @"Load Data";
                                    CompressDecompress *cdc = [[CompressDecompress alloc]init];
                                    cdc.popover = _popover;
@@ -200,8 +203,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                break;
                                            case GetDatabaseSettingMapleGrove:
                                            {
-                                               [_popover hide];
-                                               return;
+                                               dispatch_async(dispatch_get_main_queue(),
+                                                              ^{
+                                                                  [_popover hide];
+                                                                  
+                                                                  NSFileManager *fileManager = NSFileManager.defaultManager;
+                                                                  NSError *error;
+                                                                  
+                                                                  if (![fileManager removeItemAtPath:path
+                                                                                               error:&error])
+                                                                  {
+                                                                      NSLog(@"Could not delete %@:%@", path, error.localizedDescription);
+                                                                  }
+                                                              });
+                                               
+                                               _keepGoing = YES;
                                            }
                                                break;
                                            case GetDatabaseSettingAreas:
@@ -251,6 +267,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        }
                                        
                                        int status = 0;
+                                       if (dataType != GetDatabaseSettingMapleGrove)
+                                       {
                                        FILE *fid = fopen(file.UTF8String, "rb");
                                        if (fid)
                                        {
@@ -424,7 +442,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                
                                                fclose(fid);
                                                free(str);
-                                               
+                                           }
                                                dispatch_async(dispatch_get_main_queue(),
                                                               ^{
                                                                   [_popover hide];
@@ -444,10 +462,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                        NSLog(@"Could not delete %@:%@", file, error.localizedDescription);
                                                                   }
                                                               });
-                                           }
+                                           
                                        }
                                        else
                                            _popover.title = @"Invalid file";
+                                   }
                                        if (_fromDataLoader)
                                        {
                                            if (!_keepGoing)
@@ -527,6 +546,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingTiles;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Tilelist File"];
@@ -552,6 +572,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingProperty;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Property File"];
@@ -577,6 +598,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingParcels;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Parcel File"];
@@ -599,6 +621,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingCensus;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Census File"];
@@ -620,6 +643,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingNVMetro;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Data File"];
@@ -643,6 +667,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingAreas;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
@@ -664,6 +689,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingCrimes;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Crime File"];
@@ -690,6 +716,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingMapleGrove;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Shape Files"];
@@ -725,6 +752,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingPlan;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Planimetric File"];
@@ -747,6 +775,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingAlleyWall;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -768,6 +797,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingCurbRamp;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Curb Ramp File"];
@@ -789,6 +819,7 @@ Exit:
     pull.popover = _popover;
     pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingSewer;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Sewer File"];
