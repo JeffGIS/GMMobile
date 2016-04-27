@@ -229,24 +229,21 @@
     [_mapView addGestureRecognizer:longPressGesture];
     
     GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.jp2",
+        NSString *url = [NSString stringWithFormat:@"http://gssiserver3.com/MPLSADA/%lu/%lu/%lu.jp2",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
     
     GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"http://gssidata.com/MPLSADA/%lu/%lu/%lu.png",
+        NSString *url = [NSString stringWithFormat:@"http://gssiserver3.com/MPLSADA/%lu/%lu/%lu.png",
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
     
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
-    //[_layer_jpeg clearTileCache];
-    
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
-    //[_layer_png clearTileCache];
     
     _markerArray = [[NSMutableArray alloc] init];
     
