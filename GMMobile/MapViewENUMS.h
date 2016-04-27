@@ -38,6 +38,21 @@ typedef NS_ENUM(NSInteger, ParcelTextSetting)
     ParcelTextSettingEMVLandPerAcre,
 };
 
+typedef NS_ENUM(NSInteger, ParcelColorSetting)
+{
+    ParcelColorSettingCancel,
+    ParcelColorSettingTotEMV,
+    ParcelColorSettingBuildingEMV,
+    ParcelColorSettingLandEMV,
+    ParcelColorSettingLandEMVPerAcre,
+    ParcelColorSettingHomestead,
+    ParcelColorSettingResCom,
+    ParcelColorSettingSpecialAssessment,
+    ParcelColorSettingTaxExempt,
+    ParcelColorSettingTaxForfeit,
+
+};
+
 typedef NS_ENUM(NSInteger, SewerPipeSetting)
 {
     SewerPipeSettingDefault,

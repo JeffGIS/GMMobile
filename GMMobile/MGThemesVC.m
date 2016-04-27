@@ -230,12 +230,16 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if (!_legends.count)
+        return 0;
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
+    if (!_legends.count)
+        return 0;
     ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
     tableView.rowHeight = (CGFloat)((tableView.frame.size.height - _headerHeight) / tl.numCells);
     return (NSInteger)tl.numCells;

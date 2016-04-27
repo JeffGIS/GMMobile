@@ -884,6 +884,51 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     return npicked;
 }
 
+- (double) getTargetPidValue
+{
+    double value = -1;
+    sqlite3_stmt *statement = NULL;
+    
+    if (CRAPI.sharedInstance.parcelColorOption)
+    {
+        NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,EMV_LAND,EMV_BLDG,EMV_TOTAL,TOTAL_TAX,CENBLOCK FROM PROPINFO WHERE PROPINFO.PIN='%s'", CRAPI.sharedInstance.selectedPID.UTF8String];
+        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 42);
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            double acres = sqlite3_column_double(statement,0);
+            LPSTR useDesc = (LPSTR)sqlite3_column_text(statement, 1);
+            double landEMV = sqlite3_column_double(statement,2);
+            double bldgEMV = sqlite3_column_double(statement,3);
+            double totEMV = sqlite3_column_double(statement,4);
+            double totTax = sqlite3_column_double(statement,5);
+            LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement, 6);
+            int opt = CRAPI.sharedInstance.parcelShadingOption;
+            
+            switch (CRAPI.sharedInstance.parcelColorOption)
+            {
+                case ParcelColorSettingTotEMV:
+                    value = totEMV;
+                    break;
+                    
+                case ParcelColorSettingLandEMV:
+                    value = landEMV;
+                    break;
+                    
+                case ParcelColorSettingLandEMVPerAcre:
+                    if (acres > 0)
+                        value = landEMV / acres;
+                    break;
+                    
+                case ParcelColorSettingBuildingEMV:
+                    value = bldgEMV;
+                    break;
+            }
+            SQLOKpd(sqlite3_finalize(statement), _database, 43);
+        }
+    }
+
+    return value;
+}
 - (void)displayParcels:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
@@ -902,13 +947,16 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     DPOINT BasePt;
     int numPoints, numLoops;
     //int refno;
-    //CGFloat emvTotal;
+    CGFloat emvTotal, emvLand, emvBldg, acres;
+    CGFloat valuePerAcre;
     CGFloat specAssmt;
     LPSTR homeStead, useCode, taxExempt, owner;
     //LPSTR useDesc;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
     BOOL opened = [self open];
+    
+    double targetPidValue = [self getTargetPidValue];
     
     if (ConfigurationControl.sharedInstance.GMTilesVisible)
         parcelLineColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:1];
@@ -922,7 +970,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,EMV_BLDG,ACRES_POLY,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
@@ -936,9 +984,12 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         useCode = (LPSTR)sqlite3_column_text(statement, 9);
         //useDesc = (LPSTR)sqlite3_column_text(statement, 10);
         taxExempt = (LPSTR)sqlite3_column_text(statement, 11);
-        //emvTotal = (CGFloat)sqlite3_column_double(statement, 12);
-        specAssmt = (CGFloat)sqlite3_column_double(statement, 13);
-        owner = (LPSTR)sqlite3_column_text(statement, 14);
+        emvTotal = (CGFloat)sqlite3_column_double(statement, 12);
+        emvLand = (CGFloat)sqlite3_column_double(statement, 13);
+        emvBldg = (CGFloat)sqlite3_column_double(statement, 14);
+        acres = (CGFloat)sqlite3_column_double(statement, 15);
+        specAssmt = (CGFloat)sqlite3_column_double(statement, 16);
+        owner = (LPSTR)sqlite3_column_text(statement, 16);
         //pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
@@ -992,7 +1043,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     color = [self resComColor:useCode];
                     break;
                     
-                case 4://Special Assessment
+                case 3://Special Assessment
                     if (specAssmt > 0)
                         alpha = 0.6;
                     
@@ -1002,7 +1053,84 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                                   alpha:alpha];
                     break;
                     
-                case 5://tax_exempt
+                case 4://tax_exempt
+                    if (*taxExempt == taxExemptCode)
+                        alpha = 0.6;
+                    
+                    /*color = [[UIColor alloc]initWithRed:0.0
+                     green:1.0
+                     blue:0.0
+                     alpha:alpha];*/
+                case 5://tax_forfeit
+                    if (!strcasecmp (owner,"HENNEPIN FORFEITED LAND"))
+                        alpha = 0.8;
+                    
+                    color = [[UIColor alloc]initWithRed:0.0
+                                                  green:1.0
+                                                   blue:1.0
+                                                  alpha:alpha];
+                    break;
+            }
+            
+            [self fillParcel:context
+                     nPoints:numPoints
+                      points:llpoints
+                   withColor:color.CGColor];
+        }
+        else if (CRAPI.sharedInstance.parcelColorOption)
+        {
+            CGFloat alpha = 0;
+            UIColor *color;
+            int opt = CRAPI.sharedInstance.parcelColorOption;
+            
+            switch (opt)
+            {
+                case ParcelColorSettingTotEMV:
+                    if (*homeStead == homeSteadCode)
+                        alpha = 0.6;
+                    
+                    color = [[UIColor alloc]initWithRed:1.0
+                                                  green:1.0
+                                                   blue:0.0
+                                                  alpha:alpha];
+                    break;
+                    
+                case ParcelColorSettingLandEMV:
+                    color = [self resComColor:useCode];
+                    break;
+                    
+                case ParcelColorSettingLandEMVPerAcre:
+                {
+                    float r,g,b;
+                    r = g = b = alpha = 0;
+                    if (acres > 0)
+                    {
+                        valuePerAcre = emvLand / acres;
+                        if (valuePerAcre > targetPidValue * 1.01)
+                        {
+                            alpha = 0.6;
+                            r = 1;
+                            g = 0;
+                            b = 0;
+                        }
+                        else if (valuePerAcre < targetPidValue * 0.99)
+                        {
+                            alpha = 0.6;
+                            r =0;
+                            g = 0;
+                            b = 1;
+                        }
+
+                    }
+                    
+                    color = [[UIColor alloc]initWithRed:r
+                                                  green:g
+                                                   blue:b
+                                                  alpha:alpha];
+                }
+                    break;
+                    
+                case ParcelColorSettingBuildingEMV:
                     if (*taxExempt == taxExemptCode)
                         alpha = 0.6;
                     

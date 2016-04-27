@@ -947,7 +947,8 @@
             removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     }
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         UIViewController *mgtvc = [storyboard instantiateViewControllerWithIdentifier:@"MGThemesVC"];
         
@@ -1454,6 +1455,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     
                 case PTPid:
                     _selectedPID = pi.identifier;
+                    CRAPI.sharedInstance.selectedPID = _selectedPID;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
                     _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
@@ -3280,7 +3282,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Color Parcels"])
     {
-        [self showCensusArea];
+        [self selectParcelColor];
         
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
                                       forKey:@"PIDOption"];
@@ -3826,6 +3828,19 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     alert.identifier = @"ParcelTextAlert";
 }
 
+- (void)selectParcelColor
+{
+    NSString *title = [NSString stringWithFormat:@"Parcel Color Options %@", _selectedPID];
+    
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:title
+                                               buttonTextArray:@[@"Cancel", @"Total EMV", @"Building EMV",@"Land EMV", @"Land EMV per Acre", @"Homestead", @"Residential/Commercial", @"Special Assessment", @"Tax Exempt", @"Tax Forfeit"]
+                                              destructiveIndex:0];
+    
+    alert.identifier = @"ParcelColorAlert";
+}
+
 - (void)addToPropList
 {
     [self dismissTableView];
@@ -4308,7 +4323,46 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
         }
     }
-
+    
+    else if ([alertView.identifier isEqualToString:@"ParcelColorAlert"])
+    {
+        switch (buttonIndex)
+        {
+            case ParcelColorSettingCancel:
+                CRAPI.sharedInstance.parcelColorOption = 0;
+                CRAPI.sharedInstance.parcelShadingOption = 0;
+                break;
+                
+            case ParcelColorSettingTotEMV:
+            case ParcelColorSettingLandEMV:
+            case ParcelColorSettingLandEMVPerAcre:
+            case ParcelColorSettingBuildingEMV:
+                CRAPI.sharedInstance.parcelShadingOption = 0;
+                [self dismissTableView];
+                CRAPI.sharedInstance.parcelColorOption = (int)buttonIndex;
+                
+                [self refreshVectorView:_mapView.projection.visibleRegion
+                                 atZoom:_mapView.camera.zoom];
+                break;
+            case ParcelColorSettingHomestead:
+                CRAPI.sharedInstance.parcelShadingOption = 1;
+                break;
+            case ParcelColorSettingResCom:
+                CRAPI.sharedInstance.parcelShadingOption = 2;
+                break;
+            case ParcelColorSettingSpecialAssessment:
+                CRAPI.sharedInstance.parcelShadingOption = 3;
+                break;
+            case ParcelColorSettingTaxExempt:
+                CRAPI.sharedInstance.parcelShadingOption = 4;
+                break;
+            case ParcelColorSettingTaxForfeit:
+                CRAPI.sharedInstance.parcelShadingOption = 5;
+                break;
+                
+        }
+    }
+    
     else if ([alertView.identifier isEqualToString:@"EditIntersectionStatus"])
     {
         if (buttonIndex > 0)
