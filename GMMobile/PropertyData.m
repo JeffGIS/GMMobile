@@ -947,10 +947,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     DPOINT BasePt;
     int numPoints, numLoops;
     //int refno;
-    CGFloat emvTotal, emvLand, emvBldg, acres;
+    CGFloat emvTotal, emvLand, emvBldg, acres, saleval;
     CGFloat valuePerAcre;
     CGFloat specAssmt;
-    LPSTR homeStead, useCode, taxExempt, owner;
+    LPSTR homeStead, useCode, taxExempt, owner, saledate;
     //LPSTR useDesc;
     char homeSteadCode = 'H';
     char taxExemptCode = 'E';
@@ -970,7 +970,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         case PROJECT_METROGIS:
             homeSteadCode = 'Y';
             taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,EMV_BLDG,ACRES_POLY,SPEC_ASSES,OWNER_NAME  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,EMV_BLDG,ACRES_POLY,SPEC_ASSES,OWNER_NAME,SALE_DATE,SALE_VALUE  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
@@ -990,6 +990,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         acres = (CGFloat)sqlite3_column_double(statement, 15);
         specAssmt = (CGFloat)sqlite3_column_double(statement, 16);
         owner = (LPSTR)sqlite3_column_text(statement, 16);
+        saledate = (LPSTR)sqlite3_column_text(statement, 17);
+        saleval = (CGFloat)sqlite3_column_double(statement, 18);
         //pid = (LPSTR)sqlite3_column_text(statement, 0);
         BasePt.x = sqlite3_column_double(statement,1);
         BasePt.y = sqlite3_column_double(statement,2);
@@ -1063,6 +1065,15 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                      alpha:alpha];*/
                 case 5://tax_forfeit
                     if (!strcasecmp (owner,"HENNEPIN FORFEITED LAND"))
+                        alpha = 0.8;
+                    
+                    color = [[UIColor alloc]initWithRed:0.0
+                                                  green:1.0
+                                                   blue:1.0
+                                                  alpha:alpha];
+                    break;
+                case 6://last_sale
+                    if (saleval > 0)
                         alpha = 0.8;
                     
                     color = [[UIColor alloc]initWithRed:0.0
@@ -1511,6 +1522,8 @@ Exit:
     DPOINT p1, p2;
     MNMXCORD bnds, bndsScreen;
     CGFloat boundsWidthInMeters, boundsHeightInMeters;
+    LPSTR saleDate;
+    double saleVal;
     p1.x = platlonBounds->xmn;
     p1.y = platlonBounds->ymn;
     p2.x = platlonBounds->xmn;
@@ -1553,7 +1566,7 @@ Exit:
         case PROJECT_METROGIS:
             //homeSteadCode = 'Y';
             //taxExemptCode = 'Y';
-            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES,OWNER_NAME,TAX_NAME,BLDG_NUM, \
+            query = [NSString stringWithFormat:@"SELECT PIN,LATITUDE,LONGITUDE,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES,OWNER_NAME,TAX_NAME,BLDG_NUM,SALE_DATE,SALE_VALUE, \
                      PARCELPOLY_index.minX,PARCELPOLY_index.maxX,PARCELPOLY_index.minY,PARCELPOLY_index.maxY\
                      FROM PROPINFO,PROPINFO_index,PARCELPOLY,PARCELPOLY_index WHERE PROPINFO.id=PROPINFO_index.id AND PARCELPOLY_index.maxX>=%f AND PARCELPOLY_index.minX<=%f AND PARCELPOLY_index.maxY>=%f AND PARCELPOLY_index.minY<=%f AND PARCELPOLY.PID = PROPINFO.PIN AND PARCELPOLY_index.id = PARCELPOLY.id",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
@@ -1582,10 +1595,13 @@ Exit:
         owner = (LPSTR)sqlite3_column_text(statement, 11);
         taxName = (LPSTR)sqlite3_column_text(statement, 12);
         bldgNum = (LPSTR)sqlite3_column_text(statement, 13);
-        bnds.xmn = (CGFloat)sqlite3_column_double(statement, 14);
-        bnds.xmx = (CGFloat)sqlite3_column_double(statement, 15);
-        bnds.ymn = (CGFloat)sqlite3_column_double(statement, 16);
-        bnds.ymx = (CGFloat)sqlite3_column_double(statement, 17);
+        saleDate = (LPSTR)sqlite3_column_text(statement, 14);
+        saleVal = (CGFloat)sqlite3_column_double(statement, 15);
+
+        bnds.xmn = (CGFloat)sqlite3_column_double(statement, 16);
+        bnds.xmx = (CGFloat)sqlite3_column_double(statement, 17);
+        bnds.ymn = (CGFloat)sqlite3_column_double(statement, 18);
+        bnds.ymx = (CGFloat)sqlite3_column_double(statement, 19);
         
         //CGFloat alpha = 0.0;
         //UIColor *color;
@@ -1618,6 +1634,10 @@ Exit:
             case ParcelTextSettingEMVLandPerAcre:
                 if (acres > 0)
                     text = [NSString stringWithFormat:@"%.0f",emvLand/acres];
+                break;
+            case 5:
+                if (saleVal > 0)
+                    text = [NSString stringWithFormat:@"%.0f\n%s",saleVal,saleDate];
                 break;
                 
             default:

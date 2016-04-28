@@ -3819,7 +3819,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:title
-                                               buttonTextArray:@[@"Cancel", @"Owner/Total Tax", @"Building Number",@"Land EMV", @"Land EMV per Acre"]
+                                               buttonTextArray:@[@"Cancel|0", @"Owner/Total Tax|1", @"Building Number|2",@"Land EMV|3", @"Land EMV per Acre|4",@"Last Sale|5"]
                                               destructiveIndex:0];
     
     alert.identifier = @"ParcelTextAlert";
@@ -3832,7 +3832,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:title
-                                               buttonTextArray:@[@"Cancel", @"Total EMV", @"Building EMV",@"Land EMV", @"Land EMV per Acre", @"Homestead", @"Residential/Commercial", @"Special Assessment", @"Tax Exempt", @"Tax Forfeit"]
+                                               buttonTextArray:@[@"Cancel|0", @"Total EMV|1", @"Building EMV|2",@"Land EMV|3", @"Land EMV per Acre|4", @"Homestead|5", @"Residential/Commercial|6", @"Special Assessment|7", @"Tax Exempt|8", @"Tax Forfeit|9",@"Last Sale|10"]
                                               destructiveIndex:0];
     
     alert.identifier = @"ParcelColorAlert";
@@ -4311,6 +4311,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelTextSettingBuildingNum:
             case ParcelTextSettingEMVLand:
             case ParcelTextSettingEMVLandPerAcre:
+            case 5:
                 [self dismissTableView];
                 CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
                 
@@ -4355,6 +4356,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 break;
             case ParcelColorSettingTaxForfeit:
                 CRAPI.sharedInstance.parcelShadingOption = 5;
+                break;
+            case 10:
+                CRAPI.sharedInstance.parcelShadingOption = 6;
                 break;
                 
         }
