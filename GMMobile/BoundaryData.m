@@ -1073,17 +1073,37 @@ NextPass:
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
+        int *polyPartLen;
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
         numLoops = sqlite3_column_int(statement,3);
-        int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
-        //int nBlobBytes = sqlite3_column_bytes(statement,4);
+        int nBlobBytes = sqlite3_column_bytes(statement,4);
+        if (nBlobBytes > 0)
+            polyPartLen = (int *)sqlite3_column_blob(statement,4);
+        else
+            polyPartLen = &numPoints;
+
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
         keyval = [NSString stringWithUTF8String:pkeyval];
+        int numNewPoints = 0;
+        int iloop = 0;
+        int nextLoopi = polyPartLen[0] - 1;
+        int lastLoopn = 0;
+        if (numLoops > 1)
+        {
+            int ii = polyPartLen[0];
+            for (int i = 1;i<numLoops;i++)
+            {
+                ii = polyPartLen[i];
+                ii = polyPartLen[i-1];
+                ii = 0;
+            }
+            
+        }
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -1093,7 +1113,15 @@ NextPass:
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                if (i && !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
+                    numNewPoints++;
+                if (i == nextLoopi)
+                {
+                    nextLoopi += polyPartLen[iloop];
+                    polyPartLen[iloop++] = numNewPoints - lastLoopn;
+                    lastLoopn = numNewPoints;
+                }
             }
         }
         
@@ -1101,8 +1129,17 @@ NextPass:
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            if (i && !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
+                numNewPoints++;
+            if (i == nextLoopi)
+            {
+                nextLoopi += polyPartLen[iloop];
+                polyPartLen[iloop++] = numNewPoints - lastLoopn;
+                lastLoopn = numNewPoints;
+            }
         }
+        numPoints = numNewPoints;
         NSString * text;
         double count;
         if (pias)

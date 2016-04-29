@@ -1354,7 +1354,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     //BOOL dbug = NO;
     CGFloat scale = [UIScreen mainScreen].scale;
     scale = [UIScreen mainScreen].nativeScale;
-    CGFloat fontSize = 28.0 * scale;
+    CGFloat fontSize = 18.0 * scale;
     CGFloat minFontSize = 4.0 * scale;
     int numPoints = 0, numLoops = 0;
     int *polyPartLen = 0;
@@ -1637,7 +1637,15 @@ Exit:
                 break;
             case 5:
                 if (saleVal > 0)
-                    text = [NSString stringWithFormat:@"%.0f\n%s",saleVal,saleDate];
+                {
+                    char year[5], month[3];
+                    strncpy (year,saleDate,4);
+                    year[4] = 0;
+                    strncpy (month,&saleDate[4],2);
+                    month[2] = 0;
+                    num = [[NSNumber alloc] initWithDouble:saleVal];
+                    text = [NSString stringWithFormat:@"%@\n%s-%s", [dollarFmt stringFromNumber:num],year,month];
+                }
                 break;
                 
             default:
