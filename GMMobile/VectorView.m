@@ -499,7 +499,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        
                                                        [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
                                                                     ofType:@"BOUNDARY"
-                                                                    asMask:0.5
+                                                                    asMask:CRAPI.sharedInstance.maskBoundsForBounds
                                                                  inContext:_context
                                                                  llCorners:&_latlonCornerPoints
                                                                   LLBounds:&_latlonBounds
