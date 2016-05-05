@@ -8,7 +8,7 @@
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32
-#define USE_TEST_SERVER YES
+#define USE_TEST_SERVER NO
 
 @interface SettingsViewController ()
 
@@ -578,7 +578,7 @@ Exit:
               withTitle:@"Get Property File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -604,7 +604,7 @@ Exit:
               withTitle:@"Get Parcel File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -627,7 +627,7 @@ Exit:
               withTitle:@"Get Census File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -649,7 +649,7 @@ Exit:
               withTitle:@"Get Data File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -673,7 +673,7 @@ Exit:
               withTitle:@"Get Area File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -722,7 +722,7 @@ Exit:
               withTitle:@"Get Shape Files"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:outputDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -758,7 +758,7 @@ Exit:
               withTitle:@"Get Planimetric File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -781,7 +781,7 @@ Exit:
               withTitle:@"Get AlleyWall File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -803,7 +803,7 @@ Exit:
               withTitle:@"Get Curb Ramp File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -825,7 +825,7 @@ Exit:
               withTitle:@"Get Sewer File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
