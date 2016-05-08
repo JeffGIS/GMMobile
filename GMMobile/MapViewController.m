@@ -18,7 +18,6 @@
 #import "ReaderViewController.h"
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
-#import "CCodeLibrary/UIDevice+Storage.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
 
 #define MAX_VECTORVIEWS 8
