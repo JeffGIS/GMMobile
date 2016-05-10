@@ -3085,7 +3085,7 @@ viewForHeaderInSection:(NSInteger)section
             
         case PropertyTableViewSettingPropertyReport:
             headerLabel.numberOfLines = 2;
-            headerLabel.text = @"Property Report for\nTaxes Payable 2014";
+            headerLabel.text = @"Property Report for\nFirst Quarter 2016";
             break;
             
         default:

@@ -2010,7 +2010,7 @@ Exit:
             
         case PROJECT_METROGIS:
         {
-            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD FROM PROPINFO WHERE PROPINFO.PIN='%s'",
+            NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD,OWN_ADD_L1,OWN_ADD_L2,OWN_ADD_L3,TAX_ADD_L1,TAX_ADD_L2,TAX_ADD_L3 FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 56);
@@ -2038,7 +2038,7 @@ Exit:
                 LPSTR multiUses = (LPSTR)sqlite3_column_text(statement,16);
                 LPSTR landMark = (LPSTR)sqlite3_column_text(statement, 17);
                 LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, 18);
-                //LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, 19);
+                LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, 19);
                 CGFloat landEMV = sqlite3_column_double(statement, 20);
                 CGFloat bldgEMV = sqlite3_column_double(statement, 21);
                 CGFloat totalEMV = sqlite3_column_double(statement, 22);
@@ -2050,6 +2050,12 @@ Exit:
                 LPSTR cenBlock = (LPSTR)sqlite3_column_text(statement,28);
                 LPSTR taxName = (LPSTR)sqlite3_column_text(statement, 29);
                 LPSTR homestead = (LPSTR)sqlite3_column_text(statement, 30);
+                LPSTR ownerAdd1 = (LPSTR)sqlite3_column_text(statement, 31);
+                LPSTR ownerAdd2 = (LPSTR)sqlite3_column_text(statement, 32);
+                LPSTR ownerAdd3 = (LPSTR)sqlite3_column_text(statement, 33);
+                LPSTR taxAdd1 = (LPSTR)sqlite3_column_text(statement, 34);
+                LPSTR taxAdd2 = (LPSTR)sqlite3_column_text(statement, 35);
+                LPSTR taxAdd3 = (LPSTR)sqlite3_column_text(statement, 36);
                 strcpy (censusBlock,cenBlock);
                 NSNumberFormatter *dollarFmt = [[NSNumberFormatter alloc] init];
                 dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
@@ -2079,8 +2085,20 @@ Exit:
                 
                 line = [NSString stringWithFormat:@"Owner:%s", ownerName];
                 [report addObject:line];
+                line = [NSString stringWithFormat:@":%s", ownerAdd1];
+                if (*ownerAdd1)   [report addObject:line];
+                line = [NSString stringWithFormat:@":%s", ownerAdd2];
+                if (*ownerAdd2)   [report addObject:line];
+                line = [NSString stringWithFormat:@":%s", ownerAdd3];
+                if (*ownerAdd3)   [report addObject:line];
                 
-                line = [NSString stringWithFormat:@"Tax Payer:%s", taxName];
+                line = [NSString stringWithFormat:@"Taxpayer:%s", taxName];
+                [report addObject:line];
+                line = [NSString stringWithFormat:@":%s", taxAdd1];
+                [report addObject:line];
+                line = [NSString stringWithFormat:@":%s", taxAdd2];
+                [report addObject:line];
+                line = [NSString stringWithFormat:@":%s", taxAdd3];
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Land EMV:%@", [dollarFmt stringFromNumber:[NSNumber numberWithInt:(int)landEMV]]];
@@ -2141,13 +2159,13 @@ Exit:
                 [report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Use Desc2:%s", UseDesc2];
-                [report addObject:line];
+                if (*UseDesc2)[report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Use Desc3:%s", UseDesc3];
-                [report addObject:line];
+                if (*UseDesc3)[report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Use Desc4:%s", UseDesc4];
-                [report addObject:line];
+                if (*UseDesc4)[report addObject:line];
                 
                 line = [NSString stringWithFormat:@"Multi Uses:%s", multiUses];
                 [report addObject:line];
