@@ -265,7 +265,7 @@ didReceiveMessage:(NSString *)message
         titleMessage = @"Network Error";
     
     else
-        titleMessage = @"GMServer Error";
+        titleMessage = @"NVServer Error";
     
     UIAlertView *serverError = [[UIAlertView alloc] initWithTitle:titleMessage
                                                           message:error
