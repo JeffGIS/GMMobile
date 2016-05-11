@@ -434,7 +434,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    
                                                    [awd createNewTable:sendToServer];
                                                    [awd transferExistingTableIntoNewTable:sendToServer];
-                                                   [awd close];
+                                                   [awd close:YES];
                                                }
                                                else
                                                    [pd close:opened];

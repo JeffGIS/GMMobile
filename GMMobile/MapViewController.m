@@ -1605,9 +1605,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
             case DigitizationModeAlleyWallMove:
             {
-                AlleyWallData *awd = [[AlleyWallData alloc] init];
                 
-                [awd moveAlleyWallPoint:_selectedAlleyWallRefno
+                [AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno
                                     to:position];
                 
                 MarkerButton *marker = _markerArray.lastObject;

@@ -439,7 +439,7 @@
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL opened = [pd open];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -500,7 +500,7 @@
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
+    [pd close:opened];
 }
 
 - (int)pickAlleyLine:(LLPOINT)pt
@@ -524,7 +524,7 @@
     p1.y = pt.lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:&pt];
-    [pd open];
+    BOOL opened = [pd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEY_LINE.id, ALLEY_LINE.ALLEYSEG, BasePointX, BasePointY,NumPoints,NumLoops,PolyPartLen,Points  FROM ALLEY_LINE,ALLEY_LINE_index WHERE  ALLEY_LINE.id=ALLEY_LINE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
@@ -576,7 +576,7 @@
     }
     
     SQLOK(sqlite3_finalize(statement), pd.database);
-    [pd close];
+    [pd close:opened];
     pt.lon = minpt.x;
     pt.lat = minpt.y;
     
@@ -616,7 +616,7 @@
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
     AlleyWallData *pd = [[AlleyWallData alloc] init];
-    [pd open];
+    BOOL opened = [pd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS_NEW.id,[Wall ID],LATITUDE,LONGITUDE FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.Current=1 AND ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
@@ -646,7 +646,7 @@
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
+    [pd close:opened];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
     
@@ -694,7 +694,7 @@
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
-    [pd open];
+    BOOL opened = [pd open];
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
@@ -718,7 +718,7 @@
     }
     
     SQLOK(sqlite3_finalize(statement),pd.database);
-    [pd close];
+    [pd close:opened];
     
 }
 
