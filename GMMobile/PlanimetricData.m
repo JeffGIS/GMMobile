@@ -6,10 +6,7 @@
 
 #import "PlanimetricData.h"
 #import "PropertyData.h"
-#import "AlleyWallData.h"
 #import "ConfigurationControl.h"
-#import "CCodeLibrary/NVTextDrawing.h"
-#import "CCodeLibrary/mathutil.h"
 
 @interface PlanimetricData ()
 

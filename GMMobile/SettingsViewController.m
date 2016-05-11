@@ -4,7 +4,6 @@
 #import "SettingsViewController.h"
 #import "PropertyData.h"
 #import "BoundaryData.h"
-#import "AlleyWallData.h"
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32

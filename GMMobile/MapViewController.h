@@ -6,7 +6,6 @@
 #import "PropertyData.h"
 #import "BoundaryData.h"
 #import "PlanimetricData.h"
-#import "AlleyWallData.h" 
 #import "PipeTrace.h"
 #import "VectorView.h"
 #import "PlatImageView.h"
