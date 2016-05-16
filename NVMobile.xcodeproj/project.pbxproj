@@ -210,7 +210,6 @@
 		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
 		EBADB96C1BFB70E7006FB31B /* Themes.m in Sources */ = {isa = PBXBuildFile; fileRef = EBADB96B1BFB70E7006FB31B /* Themes.m */; };
-		EBBC203F1AFB1345004BE242 /* UploadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBC203E1AFB1345004BE242 /* UploadViewController.m */; };
 		EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C231A926C41003F7FB8 /* PlatView.m */; };
 		EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C261A934D15003F7FB8 /* BoundaryData.m */; };
 		EBCA6C2F1A96AEC7003F7FB8 /* PlanimetricData.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCA6C2E1A96AEC7003F7FB8 /* PlanimetricData.m */; };
@@ -503,8 +502,6 @@
 		EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayerOverridesViewController.m; sourceTree = "<group>"; };
 		EBADB96A1BFB70E7006FB31B /* Themes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Themes.h; sourceTree = "<group>"; };
 		EBADB96B1BFB70E7006FB31B /* Themes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = Themes.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		EBBC203D1AFB1345004BE242 /* UploadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadViewController.h; sourceTree = "<group>"; };
-		EBBC203E1AFB1345004BE242 /* UploadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadViewController.m; sourceTree = "<group>"; };
 		EBCA6C221A926C41003F7FB8 /* PlatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatView.h; sourceTree = "<group>"; };
 		EBCA6C231A926C41003F7FB8 /* PlatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatView.m; sourceTree = "<group>"; };
 		EBCA6C251A934D15003F7FB8 /* BoundaryData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoundaryData.h; sourceTree = "<group>"; };
@@ -890,8 +887,6 @@
 				A9F56EBF1A847CA8003522AE /* WebKitViewController.m */,
 				EBAB31CC1AE9155700C5CCEF /* LayerOverridesViewController.h */,
 				EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */,
-				EBBC203D1AFB1345004BE242 /* UploadViewController.h */,
-				EBBC203E1AFB1345004BE242 /* UploadViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -1234,7 +1229,6 @@
 				694FB1B71C58830E005410F6 /* ReaderThumbsView.m in Sources */,
 				694FB1B01C58830E005410F6 /* ReaderMainPagebar.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
-				EBBC203F1AFB1345004BE242 /* UploadViewController.m in Sources */,
 				694FB1AC1C58830E005410F6 /* ReaderContentTile.m in Sources */,
 				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,
 				694FB1BA1C58830E005410F6 /* ThumbsMainToolbar.m in Sources */,

@@ -12,10 +12,11 @@
 @import MediaPlayer;
 @import GLKit;
 #import "CCodeLibrary/NVCalendarVC.h"
+#import "CCodeLibrary/NVSynchronizeVC.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate>
 
 @property (nonatomic) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -340,7 +341,7 @@ EAGLContext *CreateBestEAGLContext()
 {
     [super viewWillAppear:animated];
     
-    _contents = @[@"Auto Update", @"Upload Now", @"Load Data", @"Update Data", @"Calibrate Device",
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"Access Contacts", @"Track User Location", @"Select Organization",
                   @"Test Calendar Interface", @"Draw hotspottest.bin"];
     
@@ -451,9 +452,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                              animated:YES];
     
     if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-         isEqualToString:@"Upload Now"])
+         isEqualToString:@"Synchronize"])
     {
-        [self uploadNow];
+        NVSynchronizeVC *syncVC = NVSynchronizeVC.new;
+        syncVC.delegate = self;
+        
+        [self presentViewController:syncVC
+                           animated:YES
+                         completion:nil];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -574,19 +580,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _nvcp = nil;
 }
 
-- (void)uploadNow
-{
-    [self performSegueWithIdentifier:@"UploadData"
-                              sender:@"Auto"];
-}
-
-- (void)uploadViewController:(UploadViewController *)controller
-                      return:(BOOL)code
-{
-    [controller dismissViewControllerAnimated:YES
-                                   completion:nil];
-}
-
 - (void)loadData
 {
     NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
@@ -679,14 +672,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue
-                 sender:(id)sender
+- (void)synchronizeControllerDidReturn:(NVSynchronizeVC *)controller
 {
-    if ([segue.identifier isEqualToString:@"UploadData"])
-    {
-        UploadViewController *uploadViewController = segue.destinationViewController;
-        uploadViewController.delegate = self;
-    }
+    [controller dismissViewControllerAnimated:YES
+                                   completion:nil];
 }
 
 @end

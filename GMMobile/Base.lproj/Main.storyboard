@@ -1561,7 +1561,6 @@
                         <outlet property="tableView" destination="sM4-PQ-nv3" id="zsf-xt-vpl"/>
                         <outlet property="versionLabel" destination="NnP-KV-z88" id="MhH-yV-6bJ"/>
                         <segue destination="nWl-XI-pP2" kind="presentation" identifier="ShowSettings" id="ZMD-na-yMX"/>
-                        <segue destination="CTI-Ml-aYM" kind="presentation" identifier="UploadData" id="MIt-Bv-aQg"/>
                         <segue destination="CDj-9L-LkE" kind="presentation" identifier="SelectOrganization" id="7ay-JJ-Ctb"/>
                     </connections>
                 </viewController>
@@ -5497,96 +5496,6 @@
             </objects>
             <point key="canvasLocation" x="1668" y="534.75"/>
         </scene>
-        <!--Upload View Controller-->
-        <scene sceneID="eVa-fd-skc">
-            <objects>
-                <viewController id="CTI-Ml-aYM" customClass="UploadViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="taY-HV-Ag0"/>
-                        <viewControllerLayoutGuide type="bottom" id="lS9-3y-IZt"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="fnm-u4-CQS">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="phe-CV-OjV">
-                                <rect key="frame" x="582" y="20" width="166" height="37"/>
-                                <state key="normal" title="List files">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="listDirectory:" destination="CTI-Ml-aYM" eventType="touchUpInside" id="d69-yZ-VhX"/>
-                                </connections>
-                            </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b0a-dU-tQA">
-                                <rect key="frame" x="20" y="20" width="155" height="37"/>
-                                <state key="normal" title="Create Code File">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="createCode:" destination="CTI-Ml-aYM" eventType="touchUpInside" id="9bY-EE-pH5"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="y4x-Zv-oUe">
-                                <rect key="frame" x="20" y="356" width="728" height="309"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="1ND-tJ-Dko">
-                                <rect key="frame" x="20" y="108" width="728" height="49"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="uy6-T7-tW9">
-                                <rect key="frame" x="25" y="294" width="719" height="54"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="38"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yrR-e1-QLa">
-                                <rect key="frame" x="344" y="20" width="80" height="80"/>
-                                <state key="normal" image="greenHelpButton.png"/>
-                            </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bQ9-lf-xmD">
-                                <rect key="frame" x="314" y="213" width="140" height="60"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
-                                <state key="normal" title="Cancel">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="cancelAction:" destination="CTI-Ml-aYM" eventType="touchUpInside" id="tbs-hF-ziH"/>
-                                </connections>
-                            </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="09L-Q7-jni">
-                                <rect key="frame" x="150" y="697" width="469" height="117"/>
-                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="112"/>
-                                <state key="normal" title="Return">
-                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="goBack:" destination="CTI-Ml-aYM" eventType="touchUpInside" id="EJA-FE-5Yf"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <connections>
-                        <outlet property="cancelButton" destination="bQ9-lf-xmD" id="uGd-nX-Iqc"/>
-                        <outlet property="fileListRef" destination="y4x-Zv-oUe" id="yLD-bq-mpi"/>
-                        <outlet property="helpButton" destination="yrR-e1-QLa" id="TnR-rd-Iaj"/>
-                        <outlet property="numberToUploadRef" destination="uy6-T7-tW9" id="mHa-fT-cK0"/>
-                        <outlet property="returnButton" destination="09L-Q7-jni" id="nug-fy-56j"/>
-                        <outlet property="statusLabel" destination="1ND-tJ-Dko" id="vUX-vo-551"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="POd-5l-AKf" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="891.75" y="1265.25"/>
-        </scene>
     </scenes>
     <resources>
         <image name="applications.png" width="36" height="36"/>
@@ -5594,7 +5503,6 @@
         <image name="destinations.png" width="32" height="32"/>
         <image name="fieldOptions.png" width="32" height="32"/>
         <image name="find.png" width="48" height="48"/>
-        <image name="greenHelpButton.png" width="256" height="256"/>
         <image name="layers.png" width="40" height="40"/>
         <image name="map.png" width="40" height="40"/>
         <image name="settings.png" width="32" height="32"/>
