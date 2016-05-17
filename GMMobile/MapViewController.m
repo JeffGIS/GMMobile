@@ -60,7 +60,7 @@
 @property (nonatomic) CGPoint digitizingTargetOffset;
 @property (nonatomic) UIImage *blackCrosshairs, *orangeCrosshairs;
 @property (nonatomic) UIView *digitizationToolbar;
-@property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton, *undoDigitizerButton;
+@property (nonatomic) UIButton *cancelDigitizerButton, *saveDigitizerButton;
 @property DigitizationMode digitizationMode;
 @property AlleyStatusSetting alleyStatusSetting;
 @property (nonatomic) NVDataLoader *nvdl;
@@ -188,10 +188,12 @@
     [self.view addSubview:_digitizerTargetView];
     
     _digitizationToolbar = UIView.new;
+    _digitizationToolbar.translatesAutoresizingMaskIntoConstraints = NO;
     _digitizationToolbar.backgroundColor = UserDefaults.defaults.appleBlue;
     _digitizationToolbar.layer.borderColor = UIColor.darkGrayColor.CGColor;
     _digitizationToolbar.layer.borderWidth = 1.0;
     _digitizationToolbar.alpha = 0.0;
+    
     [self.view addSubview:_digitizationToolbar];
     
     _cancelDigitizerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -559,16 +561,13 @@
             [nvmibs removeFromSuperview];
     }
     
-    _digitizationToolbar.frame = CGRectMake(_mapView.frame.origin.x, _mapView.frame.origin.y,
-                                            _mapView.frame.size.width, 80.0);
+    [_digitizationToolbar.leadingAnchor constraintEqualToAnchor:_mapView.leadingAnchor].active = YES;
+    [_digitizationToolbar.trailingAnchor constraintEqualToAnchor:_mapView.trailingAnchor].active = YES;
+    [_digitizationToolbar.topAnchor constraintEqualToAnchor:_mapView.topAnchor].active = YES;
+    [_digitizationToolbar.heightAnchor constraintEqualToConstant:80.0].active = YES;
     
-    _cancelDigitizerButton.frame = CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
-                                              (_digitizationToolbar.frame.size.width * 0.8),
-                                              _digitizationToolbar.frame.size.height);
-    
-    _saveDigitizerButton.frame = CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
-                                            (_digitizationToolbar.frame.size.width * 0.8),
-                                            _digitizationToolbar.frame.size.height);
+    [_cancelDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    [_saveDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
     CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
     
@@ -1127,6 +1126,7 @@
                            selector:(SEL)selector
                               title:(NSString *)title
 {
+    button.translatesAutoresizingMaskIntoConstraints = NO;
     button.backgroundColor = UIColor.clearColor;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:48.0];
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -2076,6 +2076,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     CGRect frame3 = CGRectMake(0.0, statusBarHeight, size.width, (size.height - statusBarHeight));
     
+    CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    _digitizerTargetView.center = CGPointMake(targetPoint.x, (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+    _digitizerTargetView.hidden = NO;
+    
     switch (_screenSetting)
     {
         case MapViewScreenSettingFullscreen:
@@ -2209,6 +2213,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
+    _digitizerTargetView.hidden = YES;
     [self clearVectorView];
     [self hideMarkersAndInfoWindows];
     
@@ -4143,21 +4148,6 @@ didCompleteWithError:(NSError *)error
         [pd userSavedAlleyWallPointMove:YES];
     
     [self hideDigitizationMode];
-}
-
-- (void)undoDigitizationMode:(UIButton *)button
-{
-    PlanimetricData *pd = [[PlanimetricData alloc] init];
-    [pd userSavedAlleyWallPointMove:NO];
-    
-    [_vectorView setNeedsDisplay];
-    
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _saveDigitizerButton.alpha = 0.0;
-                         //_undoDigitizerButton.alpha = 0.0;
-                         _cancelDigitizerButton.alpha = 1.0;
-                     }];
 }
 
 - (void)hideDigitizationMode
