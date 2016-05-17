@@ -369,8 +369,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    else if (dataType == GetDatabaseSettingAlleyWall)
                                                    {
                                                        [awd executeCmd:str
-                                                          sendToServer:NO
-                                                         useUniqueFile:NO];
+                                                          sendToServer:NO];
                                                    }
                                                    
                                                    else
