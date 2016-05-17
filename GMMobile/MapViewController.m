@@ -4044,8 +4044,11 @@ didCompleteWithError:(NSError *)error
     [SharedDefaults.defaults saveString:_selectedAlleyWall
                                  forKey:@"AlleyWallEditAttributes"];
     
-    [self launchAlleyWallApp];
     [self dismissTableView];
+    
+    [self performSelector:@selector(launchAlleyWallApp)
+               withObject:nil
+               afterDelay:0.3];
 }
 
 - (void)viewWallPhotos
