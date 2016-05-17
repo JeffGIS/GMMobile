@@ -184,36 +184,23 @@
     
     _digitizerTargetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 120.0, 120.0)];
     
-    CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
-    
-    _digitizerTargetView.center = CGPointMake(targetPoint.x,
-                                              (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
-    
     _digitizerTargetView.image = _blackCrosshairs;
     [self.view addSubview:_digitizerTargetView];
     
-    _digitizationToolbar = [[UIView alloc] initWithFrame:CGRectMake(_mapView.frame.origin.x,
-                                                                    _mapView.frame.origin.y,
-                                                                    _mapView.frame.size.width, 80.0)];
-    
+    _digitizationToolbar = UIView.new;
     _digitizationToolbar.backgroundColor = UserDefaults.defaults.appleBlue;
     _digitizationToolbar.layer.borderColor = UIColor.darkGrayColor.CGColor;
     _digitizationToolbar.layer.borderWidth = 1.0;
     _digitizationToolbar.alpha = 0.0;
-    _digitizationToolbar.hidden = YES;
     [self.view addSubview:_digitizationToolbar];
     
-    _cancelDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
-                                                                        (_digitizationToolbar.frame.size.width * 0.8),
-                                                                        _digitizationToolbar.frame.size.height)];
+    _cancelDigitizerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
     [self setupDigitizerToolbarButton:_cancelDigitizerButton
                              selector:@selector(cancelDigitizationMode:)
                                 title:@"Cancel Move/Add Mode"];
     
-    _saveDigitizerButton = [[UIButton alloc] initWithFrame:CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
-                                                                      (_digitizationToolbar.frame.size.width * 0.8),
-                                                                      _digitizationToolbar.frame.size.height)];
+    _saveDigitizerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
     [self setupDigitizerToolbarButton:_saveDigitizerButton
                              selector:@selector(saveDigitizationMode:)
@@ -408,16 +395,10 @@
     }
     
     if (_inDigitizationMode)
-    {
-        _digitizerTargetView.hidden = NO;
         _digitizerTargetView.alpha = 1.0;
-    }
     
     else
-    {
-        _digitizerTargetView.hidden = YES;
         _digitizerTargetView.alpha = 0.0;
-    }
     
     [self initTableView];
     _mapView.mapType = kGMSTypeNormal;
@@ -577,6 +558,22 @@
         if ([nvmibs isKindOfClass:NVMarkerInfoButton.class])
             [nvmibs removeFromSuperview];
     }
+    
+    _digitizationToolbar.frame = CGRectMake(_mapView.frame.origin.x, _mapView.frame.origin.y,
+                                            _mapView.frame.size.width, 80.0);
+    
+    _cancelDigitizerButton.frame = CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
+                                              (_digitizationToolbar.frame.size.width * 0.8),
+                                              _digitizationToolbar.frame.size.height);
+    
+    _saveDigitizerButton.frame = CGRectMake((_digitizationToolbar.frame.size.width * 0.1), 0.0,
+                                            (_digitizationToolbar.frame.size.width * 0.8),
+                                            _digitizationToolbar.frame.size.height);
+    
+    CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
+    
+    _digitizerTargetView.center = CGPointMake(targetPoint.x,
+                                              (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
 }
 
 - (void)updateCompassPosition
@@ -1622,7 +1619,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                  animations:^{
                                      _cancelDigitizerButton.alpha = 0.0;
                                      _saveDigitizerButton.alpha = 1.0;
-                                     //_undoDigitizerButton.alpha = 1.0;
                                  }];
                 
                 [_vectorView setNeedsDisplay];
@@ -4230,9 +4226,6 @@ didCompleteWithError:(NSError *)error
                                                   (markerPosition.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
     
-    _digitizerTargetView.hidden = NO;
-    _digitizationToolbar.hidden = NO;
-    
     [UIView animateWithDuration:0.25
                      animations:^{
                          _digitizerTargetView.alpha = 1.0;
@@ -4247,8 +4240,6 @@ didCompleteWithError:(NSError *)error
                          _digitizerTargetView.alpha = 0.0;
                          _digitizationToolbar.alpha = 0.0;
                      } completion:^(BOOL finished) {
-                         _digitizerTargetView.hidden = YES;
-                         _digitizationToolbar.hidden = YES;
                          _saveDigitizerButton.alpha = 0.0;
                          _cancelDigitizerButton.alpha = 1.0;
                      }];
