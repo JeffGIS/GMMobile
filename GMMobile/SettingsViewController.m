@@ -111,6 +111,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                   filePath:(NSString *)path
 {
     _popover.title = @"Upload Complete";
+    [_popover setCancelButtonTitle:@"OK"];
     NSLog(@"FTP push completed:%@", statusString);
 }
 
@@ -359,7 +360,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                        [bd executeCmd:str];
                                                    
                                                    else if (dataType == GetDatabaseSettingCrimes)
+                                                   {
+                                                       [crimed getIdForUpdate:str
+                                                                       remove:YES];
                                                        [crimed executeCmd:str];
+                                                   }
                                                    
                                                    else if (dataType == GetDatabaseSettingCurbRamp)
                                                        [crd executeCmd:str
@@ -693,7 +698,7 @@ Exit:
               withTitle:@"Get Crime File"];
     
     [pull getFile:fileName
-    fromDirectory:@"GMMobile"
+    fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
@@ -1190,11 +1195,12 @@ didReturnTimeInterval:(NSString *)timeInterval
     _push.delegate = self;
     _push.popover = _popover;
     
-    //NSString *file = @"Crimes.sqlite";
-    //NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
-    NSString *file = @"Property.sqlite";
-    NSString *fromDir = UserDefaults.defaults.localFilePath;
+    NSString *file = @"Crimes.sqlite";
+    NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
     NSString *toDir = @"NVMobile/UploadedDatabases";
+    //NSString *file = @"Property.sqlite";
+    //NSString *fromDir = UserDefaults.defaults.localFilePath;
+    //NSString *toDir = @"NVMobile/UploadedDatabases";
     
     [_popover showAfter:0.5
               withTitle:@"Upload Database"];
