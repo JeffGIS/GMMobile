@@ -494,10 +494,15 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_RankEMV_blockgroup:
             type = MAPIT_AREA_BLOCKGRP;
             break;
+            
+        default:
+            break;
     }
+    
     return type;
 }
-+ (CGFloat)getRadiusForField:(PropFieldType) field
+
++ (CGFloat)getRadiusForField:(PropFieldType)field
 {
     CGFloat radius = 0.0;
     
@@ -519,9 +524,15 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctResidential_halfMile:
             radius = 0.5;
             break;
+            
+            
+        default:
+            break;
     }
+    
     return radius;
 }
+
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field
 {
     PropBaseType bt=0;
@@ -550,7 +561,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctCommercial_halfMile:
             bt = PBT_Commercial;
             break;
+            
+            
+        default:
+            break;
     }
+    
     return bt;
 }
 
