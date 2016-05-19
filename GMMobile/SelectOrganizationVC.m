@@ -5,9 +5,10 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/GeoMasterServer.h"
+#import "CCodeLibrary/NVAlertView.h"
 @import CoreLocation;
 
-@interface SelectOrganizationVC () <UIPickerViewDataSource,UIPickerViewDelegate,GeoMasterServerDelegate,GSSiPopoverViewDelegate,CLLocationManagerDelegate>
+@interface SelectOrganizationVC () <UIPickerViewDataSource,UIPickerViewDelegate,GeoMasterServerDelegate,GSSiPopoverViewDelegate,CLLocationManagerDelegate,NVAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *returnButton;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -267,13 +268,18 @@ didReceiveMessage:(NSString *)message
     else
         titleMessage = @"NVServer Error";
     
-    UIAlertView *serverError = [[UIAlertView alloc] initWithTitle:titleMessage
-                                                          message:error
-                                                         delegate:nil
-                                                cancelButtonTitle:@"OK"
-                                                otherButtonTitles:nil];
-    
-    [serverError show];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:titleMessage
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+#pragma unused(alert)
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    [alertView hideLargeAlertView:YES];
 }
 
 - (IBAction)returnBack:(id)sender

@@ -1069,6 +1069,9 @@ int getThemeOpt(ThemeTypes type)
                     val++;
                 }
                 break;
+                
+            default:
+                break;
         }
     }
     return rtn;
