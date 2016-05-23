@@ -21,9 +21,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    
-    _checkmark = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"checkmark"
-                                                                                ofType:@"png"]];
+    _checkmark = UserDefaults.defaults.checkmark;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
