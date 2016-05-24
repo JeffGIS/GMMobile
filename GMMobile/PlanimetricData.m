@@ -8,6 +8,8 @@
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
 
+static float wallPtSize=0;
+
 @interface PlanimetricData ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
@@ -654,7 +656,7 @@
     {
         PickedItem *pi = [[PickedItem alloc]init];
         pi.itemType = PTAlleyWallPt;
-        pi.distance = mind;
+        pi.distance = max (0,mind - wallPtSize/2);
         pi.pickedPoint = minpt;
         pi.identifier = minID;
         pi.symbolName = @"ALLEYWALLPT";
@@ -686,7 +688,10 @@
     
     else if (_zoom < 18)
         */sizeFactor /= (2.0 * (22.0 - _zoom));
-    CGFloat size = 150 * sizeFactor;;
+    CGFloat size = 150 * sizeFactor;
+    CGFloat metersPerPixel = GroundResolution(platlonBounds->ymn, _zoom);
+
+    wallPtSize = size * metersPerPixel;
     
     AlleyWallData *pd = [[AlleyWallData alloc] init];
     CloseTRANS2(&_pTranLLtoView);
@@ -710,7 +715,6 @@
         BasePt.y = sqlite3_column_double(statement,1);
 
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
-        
         [self drawWallPoint:context
                     atPoint:&llpoint
                   withColor:wallPointColor
