@@ -189,7 +189,8 @@
     
     NVWebView *nvwv = [NVWebView showWebViewInView:self.view
                                     showFileAtPath:filePath];
-#pragma unused(nvwv)
+
+    [nvwv showRealtorButton];
 }
 
 - (void)ssvDidSetFlipped:(BOOL)flipped
