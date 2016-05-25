@@ -43,6 +43,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     [lagFreeField resignFirstResponder];
     [lagFreeField removeFromSuperview];
     
+    CRAPI.sharedInstance.currentModule = GMMOBILE_MODULE;
     CRAPI.sharedInstance.project = PROJECT_METROGIS;
     CRAPI.sharedInstance.showParcelBoundary = YES;
     CRAPI.sharedInstance.parcelShadingOption = 0;
