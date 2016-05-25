@@ -112,6 +112,8 @@
 		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
 		69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */; };
 		69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */; };
+		69E1CFDB1CF608DD002A4611 /* SampleCurbRamp2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69E1CFD91CF608DD002A4611 /* SampleCurbRamp2.jpg */; };
+		69E1CFDC1CF608DD002A4611 /* SampleCurbRamp1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69E1CFDA1CF608DD002A4611 /* SampleCurbRamp1.jpg */; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
@@ -368,6 +370,8 @@
 		69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVShapefileLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bfmlqbezrzptsdflvcijajdyhbld/Build/Products/Debug-iphoneos/libNVShapefileLibrary.a"; sourceTree = "<group>"; };
 		69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		69E1CFD91CF608DD002A4611 /* SampleCurbRamp2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SampleCurbRamp2.jpg; sourceTree = "<group>"; };
+		69E1CFDA1CF608DD002A4611 /* SampleCurbRamp1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SampleCurbRamp1.jpg; sourceTree = "<group>"; };
 		69E62D4A1BBF073F0018390B /* diagonalArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = diagonalArrow.png; sourceTree = "<group>"; };
 		69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldOptionsViewController.h; sourceTree = "<group>"; };
 		69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldOptionsViewController.m; sourceTree = "<group>"; };
@@ -664,6 +668,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69E1CFD91CF608DD002A4611 /* SampleCurbRamp2.jpg */,
+				69E1CFDA1CF608DD002A4611 /* SampleCurbRamp1.jpg */,
 				6938F39A1CB2DEE400DD975D /* whiteHouse.png */,
 				6938F3981CB2CEBB00DD975D /* webIcon.png */,
 				697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */,
@@ -1135,6 +1141,7 @@
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
 				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
+				69E1CFDC1CF608DD002A4611 /* SampleCurbRamp1.jpg in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				694FB1E51C588363005410F6 /* Reader-Mark-Y.png in Resources */,
 				694FB1E11C588363005410F6 /* Reader-Export@3x.png in Resources */,
@@ -1187,6 +1194,7 @@
 				694FB1DC1C588363005410F6 /* Reader-Email.png in Resources */,
 				697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */,
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
+				69E1CFDB1CF608DD002A4611 /* SampleCurbRamp2.jpg in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
 				A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */,
 				694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */,

@@ -19,10 +19,11 @@
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
+#import "CCodeLibrary/NVPhotoController.h"
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -4054,12 +4055,41 @@ didCompleteWithError:(NSError *)error
 
 - (void)viewWallPhotos
 {
-    NVPhotoViewController *photoViewer = [NVPhotoViewController viewerWithPhotosFromDirectory:CRAPI.sharedInstance.sharedOutputDirectory
-                                                                               withIdentifier:_selectedAlleyWall];
+    NSString *title = [NSString stringWithFormat:@"Photos for AlleyWall %@", _selectedAlleyWall];
     
-    [self presentViewController:photoViewer
+    NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1"
+                                               key:@"Key1"];
+    
+    NVPhoto *photo2 = [NVPhoto photoWithIdentifier:@"Sample Photo 2"
+                                               key:@"Key2"];
+    
+    NVPhotoController *nvpc = [NVPhotoController photoControllerWithNVPhotosArray:@[(photo1), (photo2)]
+                                                                         delegate:self
+                                                                            title:title];
+    
+    [self presentViewController:nvpc
                        animated:YES
                      completion:nil];
+}
+
+- (NSString *)getImagePath:(NVPhotoController *)controller
+                    forKey:(NSString *)key
+{
+    NSString *rtn = @"";
+    
+    if ([key isEqualToString:@"Key1"])
+    {
+        rtn = [NSBundle.mainBundle pathForResource:@"SampleCurbRamp1"
+                                            ofType:@"jpg"];
+    }
+    
+    else if ([key isEqualToString:@"Key2"])
+    {
+        rtn = [NSBundle.mainBundle pathForResource:@"SampleCurbRamp2"
+                                            ofType:@"jpg"];
+    }
+    
+    return rtn;
 }
 
 - (void)toggleCompletionStatus
