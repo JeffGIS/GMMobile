@@ -1134,7 +1134,8 @@ didReturnTimeInterval:(NSString *)timeInterval
         composer.mailComposeDelegate = self;
         composer.subject = @"File list from GMMobile";
         
-        [composer setMessageBody:[NSString stringWithFormat:@"%li files (%li bytes) included in list from %@",nFiles,totSize,UIDevice.currentDevice.name]
+        [composer setMessageBody:[NSString stringWithFormat:@"%li files (%li bytes) included in list from %@",
+                                  (long)nFiles, totSize, UIDevice.currentDevice.name]
                           isHTML:NO];
         
         [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
