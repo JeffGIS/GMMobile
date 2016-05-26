@@ -23,7 +23,7 @@
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -4090,8 +4090,7 @@ didCompleteWithError:(NSError *)error
                      completion:nil];
 }
 
-- (NSString *)getImagePath:(NVPhotoController *)controller
-                    forKey:(NSString *)key
+- (NSString *)imageForKey:(NSString *)key
 {
     NSString *rtn = @"";
     
@@ -4110,6 +4109,12 @@ didCompleteWithError:(NSError *)error
     return rtn;
 }
 
+- (NSString *)getImagePath:(NVPhotoController *)controller
+                    forKey:(NSString *)key
+{
+    return [self imageForKey:key];
+}
+
 - (void)viewInsetWallPhotos
 {
     NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1"
@@ -4125,6 +4130,12 @@ didCompleteWithError:(NSError *)error
     
     [_insetPixArray addObject:nvpv];
     _infoWindow.marker.photoView = nvpv;
+}
+
+- (NSString *)getInsetImagePath:(NVPhotoView *)photoView
+                         forKey:(NSString *)key
+{
+    return [self imageForKey:key];
 }
 
 - (CGPoint)getPointForCoordinate:(CLLocationCoordinate2D)coordinate
