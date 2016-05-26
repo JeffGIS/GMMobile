@@ -91,14 +91,11 @@
     return self;
 }
 
-- (void)setTitle:(NSString *)title
+- (void)setMarker:(MarkerButton *)marker
 {
-    _titleLabel.text = title;
-}
-
-- (void)setSnippet:(NSString *)snippet
-{
-    _snippetLabel.text = snippet;
+    _marker = marker;
+    _titleLabel.text = marker.title;
+    _snippetLabel.text = marker.snippet;
 }
 
 - (void)optionsSelected:(UIButton *)button
@@ -106,8 +103,8 @@
     if (_delegate)
     {
         [_delegate markerInfoWindowDidSelectOptions:_titleLabel.text
-                                              refno:_refno
-                                             coords:_position
+                                              refno:_marker.refno
+                                             coords:_marker.position
                                                type:_type];
     }
 }
@@ -117,7 +114,7 @@
     if (_delegate)
     {
         [_delegate markerInfoWindowDidSelectPropReport:_titleLabel.text
-                                                coords:_position
+                                                coords:_marker.position
                                                   type:_type];
     }
 }

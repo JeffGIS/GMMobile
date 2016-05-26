@@ -483,7 +483,7 @@
                                                        delegate:self];
         
         [self removePreviousInfoWindow];
-        _infoWindow = [[MarkerInfoWindow alloc] init];
+        _infoWindow = MarkerInfoWindow.new;
         
         switch (CRAPI.sharedInstance.GMMSetting)
         {
@@ -501,17 +501,16 @@
         }
         
         marker.title = _selectedPID;
+        
         [_markerArray addObject:marker];
         
         _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
+        _infoWindow.marker = marker;
         _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
         _infoWindow.delegate = self;
-        _infoWindow.title = marker.title;
-        _infoWindow.snippet = marker.snippet;
-        _infoWindow.position = marker.position;
+        _noneSelected = NO;
         
         [self.view addSubview:_infoWindow];
-        _noneSelected = NO;
         
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
@@ -1403,7 +1402,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                     statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
                                                            delegate:self];
             [self removePreviousInfoWindow];
-            _infoWindow = [[MarkerInfoWindow alloc] init];
+            _infoWindow = MarkerInfoWindow.new;
             
             switch (pi.itemType)
             {
@@ -1464,13 +1463,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
-            _infoWindow.title = marker.title;
-            _infoWindow.snippet = marker.snippet;
-            _infoWindow.symbol = marker.symbol;
-            _infoWindow.position = marker.position;
-            _infoWindow.refno = marker.refno;
-            [self.view addSubview:_infoWindow];
+            _infoWindow.marker = marker;
             _noneSelected = NO;
+            
+            [self.view addSubview:_infoWindow];
         }
     }
 }
@@ -1488,53 +1484,52 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     else
     {
         [_markerArray removeObject:marker];
-        _infoWindow = [[MarkerInfoWindow alloc] init];
+        _infoWindow = MarkerInfoWindow.new;
         _selectedPIDCoords = marker.position;
         
         switch (marker.type)
         {
             case MarkerInfoWindowTypeStormSewer:
-                _selectedSewerPipe = _infoWindow.title = marker.title;
+                _selectedSewerPipe = marker.title;
                 break;
                 
             case MarkerInfoWindowTypePID:
-                _selectedPID = _infoWindow.title = marker.title;
+                _selectedPID = marker.title;
                 break;
                 
             case MarkerInfoWindowTypeAlleyWall:
-                _selectedAlleyWall = _infoWindow.title = marker.title;
+                _selectedAlleyWall = marker.title;
                 break;
                 
             case MarkerInfoWindowTypeCRInt:
-                _selectedCRIntPt = _infoWindow.title = marker.title;
+                _selectedCRIntPt = marker.title;
                 break;
                 
             case MarkerInfoWindowTypeAlleyLine:
-                _selectedAlleySeg = _infoWindow.title = marker.title;
+                _selectedAlleySeg = marker.title;
                 break;
                 
             case MarkerInfoWindowTypeCrime:
-                _selectedCrime = _infoWindow.refno = marker.refno;
-                _infoWindow.title = marker.title;
+                _selectedCrime = marker.refno;
                 break;
                 
             default:
                 break;
         }
         
-        _infoWindow.type = marker.type;
-        _infoWindow.symbol = marker.symbol;
-        
         [_markerArray addObject:marker];
+        
         CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
         
         _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
         _infoWindow.delegate = self;
-        _selectedPID = _infoWindow.title = marker.title;
-        _infoWindow.snippet = marker.snippet;
-        _infoWindow.position = marker.position;
-        [self.view addSubview:_infoWindow];
+        _infoWindow.marker = marker;
         _noneSelected = NO;
+        
+        [self.view addSubview:_infoWindow];
+        
+        [marker.photoView updateVerticalOffset:-MarkerInfoWindow.markerInfoWindowHeight
+                                      animated:YES];
     }
 }
 
@@ -1582,23 +1577,23 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                                delegate:self];
                 
                 [self removePreviousInfoWindow];
-                _infoWindow = [[MarkerInfoWindow alloc] init];
+                _infoWindow = MarkerInfoWindow.new;
                 
                 [marker setImage:_orangeCrosshairs
                         forState:UIControlStateNormal];
                 
                 marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
                 marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+                
                 [_markerArray addObject:marker];
                 
                 _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 _infoWindow.delegate = self;
-                _infoWindow.title = marker.title;
-                _infoWindow.snippet = marker.snippet;
-                _infoWindow.position = marker.position;
+                _infoWindow.marker = marker;
                 _infoWindow.type = MarkerInfoWindowTypeCustom;
-                [self.view addSubview:_infoWindow];
                 _noneSelected = NO;
+                
+                [self.view addSubview:_infoWindow];
             }
                 break;
                 
@@ -1609,7 +1604,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                to:position];
                 
                 MarkerButton *marker = _markerArray.lastObject;
-                marker.position = _infoWindow.position = position;
+                marker.position = position;
                 
                 marker.center = CGPointMake(_digitizerTargetView.center.x,
                                             (_digitizerTargetView.center.y -
@@ -1893,7 +1888,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     for (UIView *views in self.view.subviews)
     {
         if ([views isKindOfClass:MarkerInfoWindow.class])
-            [views removeFromSuperview];
+        {
+            MarkerInfoWindow *infoWindow = (MarkerInfoWindow *)views;
+            [infoWindow removeFromSuperview];
+            
+            [infoWindow.marker.photoView updateVerticalOffset:MarkerInfoWindow.markerInfoWindowHeight
+                                                     animated:YES];
+        }
     }
 }
 
@@ -1907,14 +1908,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
             
-            _infoWindow = [[MarkerInfoWindow alloc] init];
+            _infoWindow = MarkerInfoWindow.new;
             _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
             _infoWindow.delegate = self;
-            _infoWindow.title = marker.title;
-            _infoWindow.snippet = marker.snippet;
-            _infoWindow.position = marker.position;
+            _infoWindow.marker = marker;
+             _noneSelected = NO;
+            
             [self.view addSubview:_infoWindow];
-            _noneSelected = NO;
         }
     }
 }
@@ -3388,7 +3388,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                             forKey:@"FlyOverType"];
             
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
-            int symbol = _infoWindow.symbol;
+            int symbol = _infoWindow.marker.symbol;
             
             FILE *pidPolyFile = fopen(filePath, "wb");
             
@@ -3678,8 +3678,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Remove Intersection Marker"] ||
              [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Remove Crime Point Marker"])
-        
-        
     {
         [self dismissTableView];
         
@@ -4126,6 +4124,7 @@ didCompleteWithError:(NSError *)error
                                                          coordinate:_selectedPIDCoords];
     
     [_insetPixArray addObject:nvpv];
+    _infoWindow.marker.photoView = nvpv;
 }
 
 - (CGPoint)getPointForCoordinate:(CLLocationCoordinate2D)coordinate
@@ -4251,6 +4250,8 @@ didCompleteWithError:(NSError *)error
                          [self removePreviousInfoWindow];
                          _infoWindow.alpha = alpha;
                      }];
+    
+    [marker.photoView hidePhotoView:YES];
 }
 
 - (void)hideMarkersAndInfoWindows

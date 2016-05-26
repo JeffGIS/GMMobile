@@ -1,10 +1,11 @@
 //  MarkerButton.h
 //  GMMobile
 
-#import <UIKit/UIKit.h>
-#import <CoreLocation/CoreLocation.h>
+@import UIKit;
+@import CoreLocation;
 #import <GoogleMaps/GoogleMaps.h>
-#import "MarkerInfoWindow.h"
+#import "CCodeLibrary/NVPhotoController.h"
+#import "CCodeLibrary/GSSiEnums.h"
 
 @class MarkerButton;
 
@@ -23,6 +24,7 @@
 @property (nonatomic) NSString *title;
 @property (nonatomic) NSString *snippet;
 @property int symbol;
+@property (nonatomic) NVPhotoView *photoView;
 
 + (CGFloat)markerButtonSize;
 
