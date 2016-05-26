@@ -27,7 +27,7 @@
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
-@property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray;
+@property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
@@ -234,7 +234,8 @@
     _layer_jpeg = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_jpeg];
     _layer_png = [GMSURLTileLayer tileLayerWithURLConstructor:constructor_png];
     
-    _markerArray = [[NSMutableArray alloc] init];
+    _markerArray = NSMutableArray.array;
+    _insetPixArray = NSMutableArray.array;
     
     _locationManager = [[CLLocationManager alloc] init];
     _locationManager.delegate = self;
@@ -1605,7 +1606,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 
                 [AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno
-                                    to:position];
+                                               to:position];
                 
                 MarkerButton *marker = _markerArray.lastObject;
                 marker.position = _infoWindow.position = position;
@@ -1995,6 +1996,9 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     }
     
     [self updateMarkerPosition];
+    
+    for (NVPhotoView *nvpvs in _insetPixArray)
+        [nvpvs updatePosition];
 }
 
 - (void)updateMarkerPosition
@@ -2621,6 +2625,9 @@ haveVV:
                                
                                if (_infoWindow)
                                    [self.view bringSubviewToFront:_infoWindow];
+                               
+                               for (NVPhotoView *nvpvs in _insetPixArray)
+                                   [self.view bringSubviewToFront:nvpvs];
                            }
                            
                            if (!_compass.hidden)
@@ -3589,6 +3596,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"View Inset Wall Photos"])
+    {
+        [self dismissTableView];
+        
+        [self performSelector:@selector(viewInsetWallPhotos)
+                   withObject:nil
+                   afterDelay:0.3];
+        
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewInsetWallPhotos
+                                      forKey:@"AlleyWallOption"];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
         [self dismissTableView];
@@ -4090,6 +4110,33 @@ didCompleteWithError:(NSError *)error
     }
     
     return rtn;
+}
+
+- (void)viewInsetWallPhotos
+{
+    NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1"
+                                               key:@"Key1"];
+    
+    NVPhoto *photo2 = [NVPhoto photoWithIdentifier:@"Sample Photo 2"
+                                               key:@"Key2"];
+    
+    NVPhotoView *nvpv = [NVPhotoView showPhotoViewWithNVPhotosArray:@[(photo1), (photo2)]
+                                                             inView:self.view
+                                                           delegate:self
+                                                         coordinate:_selectedPIDCoords];
+    
+    [_insetPixArray addObject:nvpv];
+}
+
+- (CGPoint)getPointForCoordinate:(CLLocationCoordinate2D)coordinate
+{
+    return [_mapView.projection pointForCoordinate:coordinate];
+}
+
+- (CGFloat)getVerticalOffset
+{
+    return ((MarkerButton.markerButtonSize + MarkerInfoWindow.markerInfoWindowHeight) -
+            [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
 }
 
 - (void)toggleCompletionStatus
@@ -5457,7 +5504,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWallRefno = refno;
             
             _options = @[@"Remove Alley Wall Marker", @"Move Wall Point", @"Delete Wall Point",
-                         @"Edit Wall Attributes", @"View Wall Photos"];
+                         @"Edit Wall Attributes", @"View Wall Photos", @"View Inset Wall Photos"];
             break;
             
         case MarkerInfoWindowTypeAlleyLine:

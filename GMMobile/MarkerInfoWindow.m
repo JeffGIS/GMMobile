@@ -14,13 +14,18 @@
 
 @implementation MarkerInfoWindow
 
++ (CGFloat)markerInfoWindowHeight
+{
+    return 48.0;
+}
+
 - (id)init
 {
     self = [super init];
     
     if (self)
     {
-        CGFloat height = 48.0, width = 264.0, margin = 4.0;
+        CGFloat height = MarkerInfoWindow.markerInfoWindowHeight, width = 264.0, margin = 4.0;
         
         self.alpha = 0.9;
         self.backgroundColor = UIColor.whiteColor;

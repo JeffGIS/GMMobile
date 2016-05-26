@@ -18,11 +18,13 @@
 
 @property (nonatomic, weak) id <MarkerButtonDelegate> delegate;
 @property (nonatomic) CLLocationCoordinate2D position;
-@property (nonatomic) MarkerInfoWindowType type;
+@property MarkerInfoWindowType type;
 @property (nonatomic) NSInteger refno;
 @property (nonatomic) NSString *title;
 @property (nonatomic) NSString *snippet;
-@property (nonatomic) int symbol;
+@property int symbol;
+
++ (CGFloat)markerButtonSize;
 
 + (MarkerButton *)markerWithPosition:(CLLocationCoordinate2D)position
                                 view:(UIView *)view

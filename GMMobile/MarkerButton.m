@@ -11,9 +11,8 @@
                      statusBarHeight:(CGFloat)statusBarHeight
                             delegate:(id)delegate
 {
-    MarkerButton *marker = [[MarkerButton alloc] init];
-    
-    CGFloat size = 38.0;
+    MarkerButton *marker = MarkerButton.new;
+    CGFloat size = MarkerButton.markerButtonSize;
     
     marker.frame = CGRectMake(0.0, 0.0, size, size);
     marker.position = position;
@@ -33,6 +32,11 @@
      forControlEvents:UIControlEventTouchUpInside];
     
     return marker;
+}
+
++ (CGFloat)markerButtonSize
+{
+    return 38.0;
 }
 
 - (void)markerButtonTapped:(MarkerButton *)marker

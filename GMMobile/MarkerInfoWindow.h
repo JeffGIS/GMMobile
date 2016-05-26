@@ -31,4 +31,6 @@
 @property (nonatomic) MarkerInfoWindowType type;
 @property (nonatomic) int symbol;
 
++ (CGFloat)markerInfoWindowHeight;
+
 @end

@@ -78,6 +78,7 @@ typedef NS_ENUM(NSInteger, AlleyWallSetting)
     AlleyWallSettingDeleteWallPoint,
     AlleyWallSettingEditWallAttributes,
     AlleyWallSettingViewWallPhotos,
+    AlleyWallSettingViewInsetWallPhotos,
 };
 
 typedef NS_ENUM(NSInteger, CrimePointSetting)
