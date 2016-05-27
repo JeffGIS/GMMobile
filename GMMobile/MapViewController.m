@@ -4848,13 +4848,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     for (MarkerButton *markers in _markerArray)
         [markers removeFromSuperview];
     
-    [_markerArray removeAllObjects];
     [self removePreviousInfoWindow];
     
     for (GMSPolyline *polylines in _polylines)
         polylines.map = nil;
     
+    for (NVPhotoView *nvpvs in _insetPixArray)
+        [nvpvs hidePhotoView:NO];
+    
+    [_markerArray removeAllObjects];
     [_polylines removeAllObjects];
+    [_insetPixArray removeAllObjects];
 }
 
 - (void)mapToolbarDidSelectGrayscale
