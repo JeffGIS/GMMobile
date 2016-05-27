@@ -629,6 +629,18 @@
         }
     }
     
+    for (NVPhotoView *nvpvs in self.view.subviews)
+    {
+        if ([nvpvs isKindOfClass:NVPhotoView.class])
+        {
+            [viewsArray addObject:nvpvs.overlay];
+            
+            nvpvs.transform = CGAffineTransformTranslate(nvpvs.transform, 0.0, -20.0);
+            nvpvs.deleteButton.hidden = YES;
+            [tlov addSubview:nvpvs];
+        }
+    }
+    
     if (tlov.subviews.count)
         [viewsArray addObject:tlov];
     
@@ -683,9 +695,9 @@
     {
         MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
         composer.mailComposeDelegate = self;
-        composer.subject = @"PDF from GMMobile";
+        composer.subject = @"PDF from NVMobile";
         
-        [composer setMessageBody:@"The PDF attached to this email was rendered by GMMobile."
+        [composer setMessageBody:@"The PDF attached to this email was rendered by NVMobile."
                           isHTML:NO];
         
         [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
@@ -716,6 +728,16 @@
             tlmos.expandButton.alpha = 1.0;
             tlmos.dragButton.alpha = 1.0;
             [self.view addSubview:tlmos];
+        }
+    }
+    
+    for (NVPhotoView *nvpvs in tlov.subviews)
+    {
+        if ([nvpvs isKindOfClass:NVPhotoView.class])
+        {
+            nvpvs.transform = CGAffineTransformTranslate(nvpvs.transform, 0.0, 20.0);
+            nvpvs.deleteButton.hidden = NO;
+            [self.view addSubview:nvpvs];
         }
     }
 }
@@ -4062,6 +4084,7 @@ didCompleteWithError:(NSError *)error
     
     NVPhotoView *nvpv = [NVPhotoView showPhotoViewWithNVPhotosArray:@[(photo1), (photo2)]
                                                              inView:self.view
+                                                    constrainToView:_mapView
                                                            delegate:self
                                                          coordinate:_selectedPIDCoords];
     
@@ -4087,15 +4110,17 @@ didCompleteWithError:(NSError *)error
 
 - (CGPoint)getPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    CGPoint coordPoint = [_mapView.projection pointForCoordinate:coordinate];
-    coordPoint.y += [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    
-    return coordPoint;
+    return [_mapView.projection pointForCoordinate:coordinate];
 }
 
 - (CGFloat)getVerticalOffset
 {
     return (MarkerButton.markerButtonSize + MarkerInfoWindow.markerInfoWindowHeight);
+}
+
+- (CGFloat)getStatusBarHeight
+{
+    return [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
 }
 
 - (void)toggleCompletionStatus
