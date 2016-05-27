@@ -4084,13 +4084,15 @@ didCompleteWithError:(NSError *)error
 
 - (CGPoint)getPointForCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    return [_mapView.projection pointForCoordinate:coordinate];
+    CGPoint coordPoint = [_mapView.projection pointForCoordinate:coordinate];
+    coordPoint.y += [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    
+    return coordPoint;
 }
 
 - (CGFloat)getVerticalOffset
 {
-    return ((MarkerButton.markerButtonSize + MarkerInfoWindow.markerInfoWindowHeight) -
-            [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
+    return (MarkerButton.markerButtonSize + MarkerInfoWindow.markerInfoWindowHeight);
 }
 
 - (void)toggleCompletionStatus
