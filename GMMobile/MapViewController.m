@@ -2620,14 +2620,18 @@ haveVV:
                                        [self.view bringSubviewToFront:nvmibs];
                                }
                                
+                               for (NVPhotoView *nvpvs in _insetPixArray)
+                               {
+                                   [self.view bringSubviewToFront:nvpvs.overlay];
+                                   [self.view bringSubviewToFront:nvpvs];
+
+                               }
+                            
                                for (MarkerButton *markers in _markerArray)
                                    [self.view bringSubviewToFront:markers];
                                
                                if (_infoWindow)
                                    [self.view bringSubviewToFront:_infoWindow];
-                               
-                               for (NVPhotoView *nvpvs in _insetPixArray)
-                                   [self.view bringSubviewToFront:nvpvs];
                            }
                            
                            if (!_compass.hidden)
@@ -4130,6 +4134,11 @@ didCompleteWithError:(NSError *)error
     
     [_insetPixArray addObject:nvpv];
     _infoWindow.marker.photoView = nvpv;
+}
+
+- (void)didAddPhotoView
+{
+    [self.view bringSubviewToFront:_infoWindow];
 }
 
 - (NSString *)getInsetImagePath:(NVPhotoView *)photoView
