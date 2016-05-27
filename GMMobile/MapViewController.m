@@ -1493,9 +1493,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _noneSelected = NO;
         
         [self.view addSubview:_infoWindow];
-        
-        [marker.photoView updateVerticalOffset:-MarkerInfoWindow.markerInfoWindowHeight
-                                      animated:YES];
     }
 }
 
@@ -1857,9 +1854,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             MarkerInfoWindow *infoWindow = (MarkerInfoWindow *)views;
             [infoWindow removeFromSuperview];
-            
-            [infoWindow.marker.photoView updateVerticalOffset:MarkerInfoWindow.markerInfoWindowHeight
-                                                     animated:YES];
         }
     }
 }
@@ -2599,14 +2593,9 @@ haveVV:
                                {
                                    [self.view bringSubviewToFront:nvpvs.overlay];
                                    [self.view bringSubviewToFront:nvpvs];
-
                                }
                             
-                               for (MarkerButton *markers in _markerArray)
-                                   [self.view bringSubviewToFront:markers];
-                               
-                               if (_infoWindow)
-                                   [self.view bringSubviewToFront:_infoWindow];
+                               [self bringMarkersAndInfoWindowsToFront];
                            }
                            
                            if (!_compass.hidden)
@@ -2704,6 +2693,15 @@ haveVV:
                            CRAPI.sharedInstance.becameActive = NO;
                        }
                    });
+}
+
+- (void)bringMarkersAndInfoWindowsToFront
+{
+    for (MarkerButton *markers in _markerArray)
+        [self.view bringSubviewToFront:markers];
+    
+    if ([self.view.subviews containsObject:_infoWindow])
+        [self.view bringSubviewToFront:_infoWindow];
 }
 
 - (void)updateLegendPositions
@@ -4073,7 +4071,12 @@ didCompleteWithError:(NSError *)error
 
 - (void)didAddPhotoView
 {
-    [self.view bringSubviewToFront:_infoWindow];
+    [self bringMarkersAndInfoWindowsToFront];
+}
+
+- (void)didDeletePhotoView:(NVPhotoView *)photoView
+{
+    [_insetPixArray removeObject:photoView];
 }
 
 - (NSString *)getInsetImagePath:(NVPhotoView *)photoView
@@ -4207,8 +4210,6 @@ didCompleteWithError:(NSError *)error
                          [self removePreviousInfoWindow];
                          _infoWindow.alpha = alpha;
                      }];
-    
-    [marker.photoView hidePhotoView:YES];
 }
 
 - (void)hideMarkersAndInfoWindows:(BOOL)animated
@@ -4855,12 +4856,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     for (GMSPolyline *polylines in _polylines)
         polylines.map = nil;
     
-    for (NVPhotoView *nvpvs in _insetPixArray)
-        [nvpvs hidePhotoView:NO];
-    
     [_markerArray removeAllObjects];
     [_polylines removeAllObjects];
-    [_insetPixArray removeAllObjects];
 }
 
 - (void)mapToolbarDidSelectGrayscale
@@ -4899,11 +4896,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [self.view bringSubviewToFront:tlmos];
         }
         
-        for (MarkerButton *markers in _markerArray)
-            [self.view bringSubviewToFront:markers];
-        
-        if ([self.view.subviews containsObject:_infoWindow])
-            [self.view bringSubviewToFront:_infoWindow];
+        [self bringMarkersAndInfoWindowsToFront];
     }
 }
 
@@ -5465,7 +5458,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _options = @[@"Remove Alley Wall Marker", @"Move Wall Point", @"Delete Wall Point",
                          @"Edit Wall Attributes", @"View Wall Photos"];
             
-            if (![self.view.subviews containsObject:_infoWindow.marker.photoView])
+            BOOL hasInsetWallPhoto = NO;
+            
+            for (NVPhotoView *nvpvs in _insetPixArray)
+            {
+                if (CLLocationCoordinateEqual(_infoWindow.marker.position, nvpvs.coordinate))
+                    hasInsetWallPhoto = YES;
+            }
+            
+            if (!hasInsetWallPhoto)
             {
                 NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
                 [newArray addObject:@"View Inset Wall Photos"];
