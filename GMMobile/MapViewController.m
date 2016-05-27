@@ -537,7 +537,7 @@
         [self setMapType];
         _compass.hidden = YES;
         
-        [self hideMarkersAndInfoWindows];
+        [self hideMarkersAndInfoWindows:NO];
     }
     
     else
@@ -553,7 +553,7 @@
         _mapView.userInteractionEnabled = YES;
         _compass.hidden = NO;
         
-        [self showMarkersAndInfoWindows];
+        [self showMarkersAndInfoWindows:NO];
     }
     
     for (NVMarkerInfoButton *nvmibs in self.view.subviews)
@@ -2067,7 +2067,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [self updateMarkerPosition];
-    [self showMarkersAndInfoWindows];
+    [self showMarkersAndInfoWindows:NO];
+    
+    for (NVPhotoView *nvpvs in _insetPixArray)
+    {
+        [nvpvs updatePosition];
+        nvpvs.hidden = NO;
+    }
     
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     NSTimeInterval duration = 0.25;
@@ -2220,7 +2226,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 {
     _digitizerTargetView.hidden = YES;
     [self clearVectorView];
-    [self hideMarkersAndInfoWindows];
+    [self hideMarkersAndInfoWindows:NO];
+    
+    for (NVPhotoView *nvpvs in _insetPixArray)
+        nvpvs.hidden = YES;
     
     if ([self.view.subviews containsObject:_nvdv])
     {
@@ -4037,7 +4046,7 @@ didCompleteWithError:(NSError *)error
 {
     _inDigitizationMode = YES;
     _digitizationMode = DigitizationModeAlleyWallMove;
-    [self hideMarkersAndInfoWindows];
+    [self hideMarkersAndInfoWindows:YES];
     [_mapToolbar hide];
     
     MarkerButton *marker = _markerArray.lastObject;
@@ -4251,7 +4260,7 @@ didCompleteWithError:(NSError *)error
     _inDigitizationMode = NO;
     
     [self hideDigitizer];
-    [self showMarkersAndInfoWindows];
+    [self showMarkersAndInfoWindows:YES];
     [_mapToolbar show];
 }
 
@@ -4274,32 +4283,48 @@ didCompleteWithError:(NSError *)error
     [marker.photoView hidePhotoView:YES];
 }
 
-- (void)hideMarkersAndInfoWindows
+- (void)hideMarkersAndInfoWindows:(BOOL)animated
 {
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         for (MarkerButton *markers in self.view.subviews)
-                         {
-                             if ([markers isKindOfClass:MarkerButton.class])
+    if (animated)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             for (MarkerButton *markers in _markerArray)
                                  markers.alpha = 0.0;
-                         }
-                         
-                         _infoWindow.alpha = 0.0;
-                     }];
+                             
+                             _infoWindow.alpha = 0.0;
+                         }];
+    }
+    
+    else
+    {
+        for (MarkerButton *markers in _markerArray)
+            markers.alpha = 0.0;
+        
+        _infoWindow.alpha = 0.0;
+    }
 }
 
-- (void)showMarkersAndInfoWindows
+- (void)showMarkersAndInfoWindows:(BOOL)animated
 {
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         for (MarkerButton *markers in self.view.subviews)
-                         {
-                             if ([markers isKindOfClass:MarkerButton.class])
+    if (animated)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             for (MarkerButton *markers in _markerArray)
                                  markers.alpha = 1.0;
-                         }
-                         
-                         _infoWindow.alpha = 1.0;
-                     }];
+                             
+                             _infoWindow.alpha = 1.0;
+                         }];
+    }
+    
+    else
+    {
+        for (MarkerButton *markers in _markerArray)
+            markers.alpha = 1.0;
+        
+        _infoWindow.alpha = 1.0;
+    }
 }
 
 - (void)showDigitizer:(BOOL)moveMarker;
@@ -4967,7 +4992,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigMetroProp:
         {
             _digitizationMode = DigitizationModeProperty;
-            [self hideMarkersAndInfoWindows];
+            [self hideMarkersAndInfoWindows:YES];
             [_mapToolbar hide];
             
             _nvdv = [NVDigitizerView showDigitizerInView:self.view
@@ -4989,7 +5014,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     _inDigitizationMode = YES;
-    [self hideMarkersAndInfoWindows];
+    [self hideMarkersAndInfoWindows:YES];
     [_mapToolbar hide];
     [self showDigitizer:NO];
 }
@@ -5955,7 +5980,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     [digitizerView removeFromSuperview];
     
-    [self showMarkersAndInfoWindows];
+    [self showMarkersAndInfoWindows:YES];
     [_mapToolbar show];
 }
 
