@@ -89,26 +89,14 @@
 {
     [super viewDidLoad];
     
-    NSLog(@"available storage space:%llu bytes",
-          (unsigned long long)UIDevice.availableStorageSpace);
+    NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
     
-    [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"FieldOptionsVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"DestinationsVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"SpreadsheetVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CurbRampDataOptionsVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"MGThemesVC"];
-    
-    [NVTabBarEdit tabBarController:self.tabBarController
-        removeViewControllerWithID:@"CrimeDataOptionsVC"];
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"SpreadsheetVC"];
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"MGThemesVC"];
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -247,10 +235,7 @@
     
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     
-    _tableViewBackgroundColor = [UIColor colorWithRed:0.0
-                                                green:0.0
-                                                 blue:0.3
-                                                alpha:1.0];
+    _tableViewBackgroundColor = [UIColor colorWithRed:0.0 green:0.0  blue:0.3 alpha:1.0];
     
     _clearWhenDeselected = YES;
     _cityInnerBounds.origin.x = 64631097;
@@ -268,19 +253,9 @@
 
     _splitScreenBorderWidth = 2.0;
     
-    _firstView.layer.borderColor = _secondView.layer.borderColor =
-    _mapView.layer.borderColor = UIColor.darkGrayColor.CGColor;
-    
-    _firstView.backgroundColor = [UIColor colorWithRed:0.8
-                                                 green:0.9
-                                                  blue:1.0
-                                                 alpha:1.0];
-    
-    _secondView.backgroundColor = [UIColor colorWithRed:0.9
-                                                  green:1.0
-                                                   blue:0.8
-                                                  alpha:1.0];
-    
+    _firstView.layer.borderColor = _secondView.layer.borderColor = _mapView.layer.borderColor = UIColor.darkGrayColor.CGColor;
+    _firstView.backgroundColor = [UIColor colorWithRed:0.8 green:0.9 blue:1.0 alpha:1.0];
+    _secondView.backgroundColor = [UIColor colorWithRed:0.9 green:1.0 blue:0.8 alpha:1.0];
     _firstView.layer.borderWidth = _secondView.layer.borderWidth = _splitScreenBorderWidth;
     
     [self.view addSubview:_firstView];
@@ -419,8 +394,7 @@
             _mapView.mapType = kGMSTypeHybrid;
     }
 
-    if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID ||
-        CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
+    if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID || CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
     {
         GMSCameraPosition *camera;
@@ -1254,14 +1228,6 @@
         
         [[self.view viewWithTag:999] removeFromSuperview];
         
-        /*UIView *testView = [[UIView alloc] initWithFrame:targetFrame];
-        testView.backgroundColor = UIColor.greenColor;
-        testView.layer.borderColor = UIColor.redColor.CGColor;
-        testView.layer.borderWidth = 4.0;
-        testView.tag = 999;
-        testView.alpha = 0.5;
-        [self.view addSubview:testView];*/
-        
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
         
@@ -1319,21 +1285,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                              _clearWhenDeselected = NO;
                          }];
     }
+    
     else if (CRAPI.sharedInstance.selectBoundaryFromMapType)
     {
-        LLPOINT llpickPt;
+        LLPOINT llpickPt = {0};
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         BoundaryData *bd = [[BoundaryData alloc]init];
         
         if ([bd pickBoundaryArea:llpickPt] == 1)
             [self extentZoom];
-        
     }
+    
     else
     {
-        LLPOINT llpickPt, llSewerPt, llPropPt, llCrimePt;
-        //CGFloat dist;
+        LLPOINT llpickPt = {0}, llSewerPt = {0}, llPropPt = {0}, llCrimePt = {0};
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         llPropPt = llpickPt;
@@ -1351,7 +1317,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         planData.zoom = _mapView.camera.zoom;
         
         [propData pickParcel:&llPropPt
-            highlightList:highlightList];
+               highlightList:highlightList];
         
         if ([ConfigurationControl.sharedInstance layer:HCLayerCrimes
                                          visibleAtZoom:_vectorViewZoom
@@ -3247,8 +3213,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-         isEqualToString:@"Property Report"])
+    NSString *text = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
+    
+    if ([text isEqualToString:@"Property Report"])
     {
         [self showPropReport];
         
@@ -3256,8 +3223,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                     forKey:@"PIDOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Hennepin County Website"])
+    else if ([text isEqualToString:@"Hennepin County Website"])
     {
         [self showHCWebsite];
         
@@ -3265,8 +3231,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"PIDOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Display Street View"])
+    else if ([text isEqualToString:@"Display Street View"])
     {
         [self showStreetView];
         
@@ -3287,8 +3252,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Zoom to Census Area"])
+    else if ([text isEqualToString:@"Zoom to Census Area"])
     {
         [self showCensusArea];
         
@@ -3296,24 +3260,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"PIDOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Color Parcels"])
+    else if ([text isEqualToString:@"Color Parcels"])
     {
         [self selectParcelColor];
         
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
                                       forKey:@"PIDOption"];
     }
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Parcel Text"])
+    else if ([text isEqualToString:@"Parcel Text"])
     {
         [self selectParcelText];
         
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
                                       forKey:@"PIDOption"];
     }
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Add to Property List"])
+    else if ([text isEqualToString:@"Add to Property List"])
     {
         [self addToPropList];
         
@@ -3321,8 +3282,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"PIDOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Add to Destinations"])
+    else if ([text isEqualToString:@"Add to Destinations"])
     {
         [self addToDestinations];
         
@@ -3330,8 +3290,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"PIDOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Route From Current Location"])
+    else if ([text isEqualToString:@"Route From Current Location"])
     {
         [self dismissTableView];
         
@@ -3340,8 +3299,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    afterDelay:0.3];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Perform 3D Route Flyover"])
+    else if ([text isEqualToString:@"Perform 3D Route Flyover"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
                                         forKey:@"FlyOverType"];
@@ -3389,8 +3347,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         free (llpoints);
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Perform 3D Fly Around"])
+    else if ([text isEqualToString:@"Perform 3D Fly Around"])
     {
         const char *filePath = [NSString stringWithFormat:@"%@/flyaround_polydata.bin",
                                 UserDefaults.defaults.sharedFilePath].UTF8String;
@@ -3431,13 +3388,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
                                             forKey:@"FlyOverType"];
             
-            int numPoints = 0, numLoops = 0;
-            int *polyPartLen = 0;
+            int numPoints = 0, numLoops = 0, *polyPartLen = 0;
             
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
-            
             PropertyData *propData = [[PropertyData alloc] init];
-            
             MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
             
             LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
@@ -3474,8 +3428,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Display Pipe Attributes"])
+    else if ([text isEqualToString:@"Display Pipe Attributes"])
     {
         [self showPipeAttributes];
         
@@ -3483,8 +3436,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"SewerOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Trace Pipe Upstream"])
+    else if ([text isEqualToString:@"Trace Pipe Upstream"])
     {
         [self dismissTableView];
         
@@ -3496,8 +3448,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"SewerOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Trace Pipe Downstream"])
+    else if ([text isEqualToString:@"Trace Pipe Downstream"])
     {
         [self dismissTableView];
         
@@ -3509,8 +3460,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"SewerOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Perform Downstream\n3D Fly Over"])
+    else if ([text isEqualToString:@"Perform Downstream\n3D Fly Over"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
                                         forKey:@"FlyOverType"];
@@ -3522,8 +3472,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    afterDelay:0.3];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Pipe Trace"])
+    else if ([text isEqualToString:@"Remove Pipe Trace"])
     {
         [self dismissTableView];
         
@@ -3532,8 +3481,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    afterDelay:0.3];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Update Cleaning Date"])
+    else if ([text isEqualToString:@"Update Cleaning Date"])
     {
         [self updateCleaningDate];
         
@@ -3541,8 +3489,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"SewerOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Update Inspection Notes"])
+    else if ([text isEqualToString:@"Update Inspection Notes"])
     {
         [self updateInspectionNotes];
         
@@ -3550,8 +3497,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"SewerOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Snap to Node"])
+    else if ([text isEqualToString:@"Snap to Node"])
     {
         [self snapToNode];
         
@@ -3559,8 +3505,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"CustomOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Snap to Line"])
+    else if ([text isEqualToString:@"Snap to Line"])
     {
         [self snapToLine];
         
@@ -3568,8 +3513,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"CustomOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Move Wall Point"])
+    else if ([text isEqualToString:@"Move Wall Point"])
     {
         [self dismissTableView];
         
@@ -3581,8 +3525,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"AlleyWallOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Delete Wall Point"])
+    else if ([text isEqualToString:@"Delete Wall Point"])
     {
         [self deleteWallPoint];
         
@@ -3590,8 +3533,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"AlleyWallOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Edit Wall Attributes"])
+    else if ([text isEqualToString:@"Edit Wall Attributes"])
     {
         [self editWallAttributes];
         
@@ -3599,8 +3541,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"AlleyWallOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"View Wall Photos"])
+    else if ([text isEqualToString:@"View Wall Photos"])
     {
         [self viewWallPhotos];
         
@@ -3608,8 +3549,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"AlleyWallOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"View Inset Wall Photos"])
+    else if ([text isEqualToString:@"View Inset Wall Photos"])
     {
         [self dismissTableView];
         
@@ -3621,8 +3561,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"AlleyWallOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Toggle Alley Line\nCompletion Status"])
+    else if ([text isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
         [self dismissTableView];
         
@@ -3634,8 +3573,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"AlleyLineOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Alley Centerline Status"])
+    else if ([text isEqualToString:@"Alley Centerline Status"])
     {
         [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingCenterline;
@@ -3645,8 +3583,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    afterDelay:0.3];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Alley Wall Status"])
+    else if ([text isEqualToString:@"Alley Wall Status"])
     {
         [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingWall;
@@ -3656,20 +3593,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    afterDelay:0.3];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Edit Intersection Attributes"])
+    else if ([text isEqualToString:@"Edit Intersection Attributes"])
     {
         [self editIntersectionAttributes];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Edit Intersection Status"])
+    else if ([text isEqualToString:@"Edit Intersection Status"])
     {
         [self editIntersectionStatus];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Display Report"])
+    else if ([text isEqualToString:@"Display Report"])
     {
         [self displayCrimeReport];
         
@@ -3677,20 +3611,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"CrimePointOption"];
     }
     
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Property Marker"] ||
-             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Pipe Marker"] ||
-             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Alley Wall Marker"] ||
-             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Custom Marker"] ||
-             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Alley Line Marker"] ||
-             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Intersection Marker"] ||
-             [[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Remove Crime Point Marker"])
+    else if ([text isEqualToString:@"Remove Property Marker"] || [text isEqualToString:@"Remove Pipe Marker"] ||
+             [text isEqualToString:@"Remove Alley Wall Marker"] || [text isEqualToString:@"Remove Custom Marker"] ||
+             [text isEqualToString:@"Remove Alley Line Marker"] || [text isEqualToString:@"Remove Intersection Marker"] ||
+             [text isEqualToString:@"Remove Crime Point Marker"])
     {
         [self dismissTableView];
         
@@ -3733,8 +3657,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showHCWebsite
 {
-    WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:
-                                  removePIDPrefix(_selectedPID)];
+    WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:removePIDPrefix(_selectedPID)];
     
     [self presentViewController:wkvc
                        animated:YES
@@ -3850,7 +3773,8 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:title
-                                               buttonTextArray:@[@"Cancel|0", @"Owner/Total Tax|1", @"Building Number|2",@"Land EMV|3", @"Land EMV per Acre|4",@"Last Sale|5"]
+                                               buttonTextArray:@[@"Cancel|0", @"Owner/Total Tax|1", @"Building Number|2",
+                                                                 @"Land EMV|3", @"Land EMV per Acre|4", @"Last Sale|5"]
                                               destructiveIndex:0];
     
     alert.identifier = @"ParcelTextAlert";
@@ -3863,7 +3787,9 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:title
-                                               buttonTextArray:@[@"Cancel|0", @"Total EMV|1", @"Building EMV|2",@"Land EMV|3", @"Land EMV per Acre|4", @"Homestead|5", @"Residential/Commercial|6", @"Special Assessment|7", @"Tax Exempt|8", @"Tax Forfeit|9",@"Last Sale|10"]
+                                               buttonTextArray:@[@"Cancel|0", @"Total EMV|1", @"Building EMV|2",@"Land EMV|3",
+                                                                 @"Land EMV per Acre|4", @"Homestead|5", @"Residential/Commercial|6",
+                                                                 @"Special Assessment|7", @"Tax Exempt|8", @"Tax Forfeit|9",@"Last Sale|10"]
                                               destructiveIndex:0];
     
     alert.identifier = @"ParcelColorAlert";
@@ -4013,7 +3939,6 @@ didCompleteWithError:(NSError *)error
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
-
 }
 
 - (void)updateCleaningDate
@@ -4053,6 +3978,7 @@ didCompleteWithError:(NSError *)error
     
     if (CLLocationCoordinateEqual(_mapView.camera.target, marker.position))
         [self showDigitizer:YES];
+    
     else
     {
         _moveDigitizer = YES;
@@ -4371,7 +4297,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             
             [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
-            
             [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];
@@ -4423,7 +4348,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 break;
-                
         }
     }
     
@@ -4447,25 +4371,32 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [self refreshVectorView:_mapView.projection.visibleRegion
                                  atZoom:_mapView.camera.zoom];
                 break;
+                
             case ParcelColorSettingHomestead:
                 CRAPI.sharedInstance.parcelShadingOption = 1;
                 break;
+                
             case ParcelColorSettingResCom:
                 CRAPI.sharedInstance.parcelShadingOption = 2;
                 break;
+                
             case ParcelColorSettingSpecialAssessment:
                 CRAPI.sharedInstance.parcelShadingOption = 3;
                 break;
+                
             case ParcelColorSettingTaxExempt:
                 CRAPI.sharedInstance.parcelShadingOption = 4;
                 break;
             case ParcelColorSettingTaxForfeit:
                 CRAPI.sharedInstance.parcelShadingOption = 5;
                 break;
+                
             case 10:
                 CRAPI.sharedInstance.parcelShadingOption = 6;
                 break;
                 
+            default:
+                break;
         }
     }
     
@@ -4475,8 +4406,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             IntersectionsDatabase *intDb = [IntersectionsDatabase databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
             [intDb startTransaction];
+            
             [intDb setIntersectionStatusTo:(int)buttonIndex
                            forIntersection:_selectedCRIntPt.intValue];
+            
             [intDb commitTransaction];
             [self dismissTableView];
             [self removePreviousInfoWindow];
