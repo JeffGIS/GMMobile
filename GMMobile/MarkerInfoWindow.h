@@ -25,7 +25,6 @@
 @interface MarkerInfoWindow : UIView
 
 @property (nonatomic, weak) id <MarkerInfoWindowDelegate> delegate;
-@property (nonatomic) MarkerInfoWindowType type;
 @property (nonatomic) MarkerButton *marker;
 
 + (CGFloat)markerInfoWindowHeight;

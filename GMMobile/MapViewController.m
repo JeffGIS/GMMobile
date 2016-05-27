@@ -501,10 +501,10 @@
         }
         
         marker.title = _selectedPID;
+        marker.type = MarkerInfoWindowTypePID;
         
         [_markerArray addObject:marker];
         
-        _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
         _infoWindow.marker = marker;
         _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
         _infoWindow.delegate = self;
@@ -1415,7 +1415,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     dateFormatter.dateStyle = NSDateFormatterShortStyle;
                     NSString *dateString = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:pi.time]];
                     marker.title = dateString;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeCrime;
+                    marker.type = MarkerInfoWindowTypeCrime;
                 }
                     break;
                     
@@ -1423,28 +1423,28 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _selectedAlleySeg = pi.identifier;
                     marker.title = _selectedAlleySeg;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyLine;
+                    marker.type = MarkerInfoWindowTypeAlleyLine;
                     break;
                     
                 case PTAlleyWallPt:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeAlleyWall;
+                    marker.type = MarkerInfoWindowTypeAlleyWall;
                     break;
                     
                 case PTCRIntersectionPt:
                     _selectedCRIntPt = pi.identifier;
                     marker.title = _selectedCRIntPt;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeCRInt;
+                    marker.type = MarkerInfoWindowTypeCRInt;
                     break;
                     
                 case PTStormSewerLine:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
                     marker.snippet = pi.symbolName;
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypeStormSewer;
+                    marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
                 case PTPid:
@@ -1452,7 +1452,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     CRAPI.sharedInstance.selectedPID = _selectedPID;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
-                    _infoWindow.type = marker.type = MarkerInfoWindowTypePID;
+                    marker.type = MarkerInfoWindowTypePID;
                     break;
             }
             
@@ -1584,13 +1584,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
                 marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
+                marker.type = MarkerInfoWindowTypeCustom;
                 
                 [_markerArray addObject:marker];
                 
                 _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 _infoWindow.delegate = self;
                 _infoWindow.marker = marker;
-                _infoWindow.type = MarkerInfoWindowTypeCustom;
                 _noneSelected = NO;
                 
                 [self.view addSubview:_infoWindow];
@@ -3261,7 +3261,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self showStreetView];
         
-        switch (_infoWindow.type)
+        switch (_infoWindow.marker.type)
         {
             case MarkerInfoWindowTypePID:
                 [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetView
@@ -3386,7 +3386,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         const char *filePath = [NSString stringWithFormat:@"%@/flyaround_polydata.bin",
                                 UserDefaults.defaults.sharedFilePath].UTF8String;
         
-        if (_infoWindow.type == MarkerInfoWindowTypeCrime)
+        if (_infoWindow.marker.type == MarkerInfoWindowTypeCrime)
         {
             [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeCrime
                                             forKey:@"FlyOverType"];
@@ -5447,54 +5447,29 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     switch (type)
     {
         case MarkerInfoWindowTypePID:
+        {
             _selectedPID = title;
             
+            _options = @[@"Remove Property Marker", @"Property Report", @"Display Street View", @"Zoom to Census Area",
+                         @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around", @"Add to Property List",
+                         @"Add to Destinations", @"Route From Current Location"];
+            
+            NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
+            
+            if (_routeTraceExists)
+            {
+                [newArray insertObject:@"Perform 3D Route Flyover"
+                               atIndex:7];
+            }
+
             if ([self isHennepinCountyPID:_selectedPID])
             {
-                _options = @[@"Remove Property Marker", @"Property Report", @"Hennepin County Website",
-                             @"Display Street View", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
+                [newArray insertObject:@"Hennepin County Website"
+                               atIndex:2];
                 
-                if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
-                {
-                    NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:_options];
-                    
-                    [newArray insertObject:@"Perform 3D Fly Around"
-                                   atIndex:7];
-                    
-                    if (_routeTraceExists)
-                    {
-                        [newArray insertObject:@"Perform 3D Route Flyover"
-                                       atIndex:7];
-                    }
-                    
-                    _options = newArray;
-                }
+                _options = newArray;
             }
-            
-            else
-            {
-                _options = @[@"Remove Property Marker", @"Property Report", @"Display Street View",
-                             @"Zoom to Census Area", @"Parcel Text", @"Color Parcels",
-                             @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
-
-                if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
-                {
-                    NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:_options];
-                    
-                    [newArray insertObject:@"Perform 3D Fly Around"
-                                   atIndex:6];
-                    
-                    if (_routeTraceExists)
-                    {
-                        [newArray insertObject:@"Perform 3D Route Flyover"
-                                       atIndex:6];
-                    }
-                    
-                    _options = newArray;
-                }
-            }
-            
+        }
             break;
             
         case MarkerInfoWindowTypeStormSewer:
@@ -5505,12 +5480,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                          @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
                          @"Update Inspection Notes"];
            
-            PipeTrace *pipeTrace = [[PipeTrace alloc] init];
+            PipeTrace *pipeTrace = PipeTrace.new;
             
-            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99 && [pipeTrace havePipeTrace])
+            if (pipeTrace.havePipeTrace)
             {
-                NSMutableArray *newArray = [[NSMutableArray alloc] init];
-                [newArray addObjectsFromArray:_options];
+                NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
                 
                 [newArray insertObject:@"Perform Downstream\n3D Fly Over"
                                atIndex:3];
@@ -5525,7 +5499,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWallRefno = refno;
             
             _options = @[@"Remove Alley Wall Marker", @"Move Wall Point", @"Delete Wall Point",
-                         @"Edit Wall Attributes", @"View Wall Photos", @"View Inset Wall Photos"];
+                         @"Edit Wall Attributes", @"View Wall Photos"];
+            
+            if (![self.view.subviews containsObject:_infoWindow.marker.photoView])
+            {
+                NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
+                [newArray addObject:@"View Inset Wall Photos"];
+                _options = newArray;
+            }
+            
             break;
             
         case MarkerInfoWindowTypeAlleyLine:
@@ -5546,19 +5528,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             break;
             
         case MarkerInfoWindowTypeCrime:
+        {
             _selectedCrime = refno;
             _options = @[@"Remove Crime Point Marker", @"Display Report", @"Display Street View"];
             
-            if (UIDevice.currentDevice.systemVersion.floatValue > 8.99)
-            {
-                NSMutableArray *newArray = [[NSMutableArray alloc] initWithArray:_options];
-                
-                [newArray insertObject:@"Perform 3D Fly Around"
-                               atIndex:2];
-                
-                _options = newArray;
-            }
+            NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
+            [newArray insertObject:@"Perform 3D Fly Around"
+                           atIndex:2];
+            
+            _options = newArray;
+        }
+            break;
+            
+        default:
             break;
     }
     

@@ -105,7 +105,7 @@
         [_delegate markerInfoWindowDidSelectOptions:_titleLabel.text
                                               refno:_marker.refno
                                              coords:_marker.position
-                                               type:_type];
+                                               type:_marker.type];
     }
 }
 
@@ -115,7 +115,7 @@
     {
         [_delegate markerInfoWindowDidSelectPropReport:_titleLabel.text
                                                 coords:_marker.position
-                                                  type:_type];
+                                                  type:_marker.type];
     }
 }
 
