@@ -1,10 +1,5 @@
-//
 //  MapViewENUMS.h
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 8/14/15.
-//  Copyright (c) 2015 GSSi. All rights reserved.
-//
 
 #ifndef GMMobile_MapViewENUMS_h
 #define GMMobile_MapViewENUMS_h
@@ -14,7 +9,7 @@ typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
     PropertyTableViewSettingDefault,
     PropertyTableViewSettingOptions,
     PropertyTableViewSettingPropertyReport,
-    PropertyTableViewSettingHCWebsite,
+    PropertyTableViewSettingZillow,
     PropertyTableViewSettingStreetView,
     PropertyTableViewSettingCensusArea,
     PropertyTableViewSettingPropList,

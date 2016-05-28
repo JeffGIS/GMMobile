@@ -3243,11 +3243,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                     forKey:@"PIDOption"];
     }
     
-    else if ([text isEqualToString:@"Hennepin County Website"])
+    else if ([text isEqualToString:@"Zillow Property Records"])
     {
-        [self showHCWebsite];
+        [self showZillow];
         
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingHCWebsite
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingZillow
                                       forKey:@"PIDOption"];
     }
     
@@ -3675,16 +3675,30 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                            animated:NO];
 }
 
-- (void)showHCWebsite
+- (void)showZillow
 {
-    NSString *query = [NSString stringWithFormat:@"www16.co.hennepin.mn.us/pins/pidresult.jsp?pid=%@",
-                       removePIDPrefix(_selectedPID)];
+    NSString *houseAndUnit, *streetName, *city, *cenblock, *usedesc;
+    CGFloat totEMV;
     
-    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
-                                         urlString:query];
+    PropertyData *pd = PropertyData.new;
     
-    nvwv.delegate = self;
-    [nvwv adjustForStatusBar];
+    if ([pd getAddressForPID:_selectedPID
+             houseNumAndUnit:&houseAndUnit
+                  streetName:&streetName
+                        city:&city
+                 censusBlock:&cenblock
+                     useDesc:&usedesc
+                      totEMV:&totEMV])
+    {
+        houseAndUnit = [houseAndUnit stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+        streetName = [streetName stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+        city = [city stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+        
+        NSString *query = [NSString stringWithFormat:@"www.zillow.com/homes/%@-%@-%@-MN_rb/", houseAndUnit, streetName, city];
+        NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
+        nvwv.delegate = self;
+        [nvwv adjustForStatusBar];
+    }
 }
 
 - (void)webViewDidReturn:(NVWebView *)webView
@@ -5441,22 +5455,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedPID = title;
             
-            _options = @[@"Remove Property Marker", @"Property Report", @"Display Street View", @"Zoom to Census Area",
-                         @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around", @"Add to Property List",
-                         @"Add to Destinations", @"Route From Current Location"];
+            _options = @[@"Remove Property Marker", @"Property Report", @"Zillow Property Records", @"Display Street View",
+                         @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
+                         @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
             if (_routeTraceExists)
             {
                 [newArray insertObject:@"Perform 3D Route Flyover"
-                               atIndex:7];
-            }
-
-            if ([self isHennepinCountyPID:_selectedPID])
-            {
-                [newArray insertObject:@"Hennepin County Website"
-                               atIndex:2];
+                               atIndex:8];
                 
                 _options = newArray;
             }
@@ -5579,8 +5587,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     [self showPropReport];
                     break;
                     
-                case PropertyTableViewSettingHCWebsite:
-                    [self showHCWebsite];
+                case PropertyTableViewSettingZillow:
+                    [self showZillow];
                     break;
                     
                 case PropertyTableViewSettingStreetView:
