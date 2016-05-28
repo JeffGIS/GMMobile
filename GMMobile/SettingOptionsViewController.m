@@ -563,9 +563,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)FTPPushDidComplete:(FTPDataType)dataType
-                withStatus:(int)status
+                withStatus:(FTPStatus)status
            andStatusString:(NSString *)statusString
-                  filePath:(NSString *)path
+                  filePath:(NSString *)pathint
 {
     [_push.popover hide];
     NSLog(@"Upload complete!");

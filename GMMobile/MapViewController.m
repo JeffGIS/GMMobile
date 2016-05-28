@@ -1793,13 +1793,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     }
 }
 - (void)FTPdidComplete:(FTPDataType)dataType
-            withStatus:(int)status
+            withStatus:(FTPStatus)status
        andStatusString:(NSString *)statusString
               filePath:(NSString *)path
 {
     [_popover hide];
     
-    NSLog(@"%i:%@", status, statusString);
+    NSLog(@"%li:%@", (long)status, statusString);
     
     if (status == FTPStatusOK || status == FTPStatusFileExists)
     {
