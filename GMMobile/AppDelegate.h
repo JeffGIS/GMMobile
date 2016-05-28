@@ -11,7 +11,6 @@
 - (void)didStopNetworking;
 
 @property (strong, nonatomic) UIWindow *window;
-@property NSInteger networkingCount;
 @property (nonatomic) CLLocationManager *locationManager;
 
 - (void)scheduleLocationTracking;

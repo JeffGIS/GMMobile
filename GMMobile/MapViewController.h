@@ -18,7 +18,7 @@
 #import "PropertyList.h"
 #import "Destinations.h"
 #import "NVDataLoader.h"
-#import <MessageUI/MessageUI.h>
+@import MessageUI;
 #import "CCodeLibrary/NVAlertView.h"
 #import "ThemeLegendMapOverlay.h"
 

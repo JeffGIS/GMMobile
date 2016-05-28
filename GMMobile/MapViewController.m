@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "MapViewController.h"
-#import "WebKitViewController.h"
 #import "AppDelegate.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
@@ -20,10 +19,11 @@
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
 #import "CCodeLibrary/NVPhotoController.h"
+#import "CCodeLibrary/NVWebView.h"
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic) NSArray *options;
@@ -3677,11 +3677,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)showHCWebsite
 {
-    WebKitViewController *wkvc = [[WebKitViewController alloc] initWithPID:removePIDPrefix(_selectedPID)];
+    NSString *query = [NSString stringWithFormat:@"www16.co.hennepin.mn.us/pins/pidresult.jsp?pid=%@",
+                       removePIDPrefix(_selectedPID)];
     
-    [self presentViewController:wkvc
-                       animated:YES
-                     completion:nil];
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                         urlString:query];
+    
+    nvwv.delegate = self;
+    [nvwv adjustForStatusBar];
+}
+
+- (void)webViewDidReturn:(NVWebView *)webView
+{
+    [webView hide:YES];
+    [self deselectTableViewRow];
 }
 
 - (void)showStreetView
@@ -4120,7 +4129,7 @@ didCompleteWithError:(NSError *)error
 
 - (CGFloat)getStatusBarHeight
 {
-    return [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    return (MarkerButton.markerButtonSize + MarkerInfoWindow.markerInfoWindowHeight);
 }
 
 - (void)toggleCompletionStatus

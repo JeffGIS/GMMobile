@@ -256,18 +256,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     
 }
 
-- (void)didStartNetworking
-{
-    self.networkingCount += 1;
-    UIApplication.sharedApplication.networkActivityIndicatorVisible = YES;
-}
-
-- (void)didStopNetworking
-{
-    self.networkingCount -= 1;
-    UIApplication.sharedApplication.networkActivityIndicatorVisible = (self.networkingCount != 0);
-}
-
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     NSString *sourceApp = [SharedDefaults.defaults stringForKey:@"SourceApplication"];
