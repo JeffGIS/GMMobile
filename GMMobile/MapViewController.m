@@ -3243,11 +3243,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                     forKey:@"PIDOption"];
     }
     
-    else if ([text isEqualToString:@"Zillow Property Records"])
+    else if ([text isEqualToString:@"Zillow Property Record"])
     {
         [self showZillow];
         
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingZillow
+                                      forKey:@"PIDOption"];
+    }
+    
+    else if ([text isEqualToString:@"County Property Record"])
+    {
+        [self showCountyRecord];
+        
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCountyRecord
                                       forKey:@"PIDOption"];
     }
     
@@ -3695,6 +3703,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         city = [city stringByReplacingOccurrencesOfString:@" " withString:@"-"];
         
         NSString *query = [NSString stringWithFormat:@"www.zillow.com/homes/%@-%@-%@-MN_rb/", houseAndUnit, streetName, city];
+        NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
+        nvwv.delegate = self;
+        [nvwv adjustForStatusBar];
+    }
+}
+
+- (void)showCountyRecord
+{
+    NSString *query = urlSearchStringForPID(_selectedPID);
+    
+    if (![query isEqualToString:@"NONE"])
+    {
         NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
         nvwv.delegate = self;
         [nvwv adjustForStatusBar];
@@ -5455,7 +5475,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedPID = title;
             
-            _options = @[@"Remove Property Marker", @"Property Report", @"Zillow Property Records", @"Display Street View",
+            _options = @[@"Remove Property Marker", @"Property Report", @"Zillow Property Record", @"Display Street View",
                          @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
@@ -5465,6 +5485,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 [newArray insertObject:@"Perform 3D Route Flyover"
                                atIndex:8];
+                
+                _options = newArray;
+            }
+            
+            if (countySupportsLookupForPID(_selectedPID))
+            {
+                [newArray insertObject:@"County Property Record"
+                               atIndex:3];
                 
                 _options = newArray;
             }
@@ -5589,6 +5617,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                 case PropertyTableViewSettingZillow:
                     [self showZillow];
+                    break;
+                    
+                case PropertyTableViewSettingCountyRecord:
+                    [self showCountyRecord];
                     break;
                     
                 case PropertyTableViewSettingStreetView:
