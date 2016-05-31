@@ -3713,7 +3713,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *query = urlSearchStringForPID(_selectedPID);
     
-    if (![query isEqualToString:@"NONE"])
+    if ((query) && ![query isEqualToString:@"NONE"])
     {
         NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
         nvwv.delegate = self;
