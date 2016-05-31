@@ -19,7 +19,6 @@
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
 #import "CCodeLibrary/NVPhotoController.h"
-#import "CCodeLibrary/NVWebView.h"
 
 #define MAX_VECTORVIEWS 8
 
