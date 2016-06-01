@@ -4162,7 +4162,7 @@ didCompleteWithError:(NSError *)error
 
 - (CGFloat)getStatusBarHeight
 {
-    return (MarkerButton.markerButtonSize + MarkerInfoWindow.markerInfoWindowHeight);
+    return [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
 }
 
 - (void)toggleCompletionStatus
