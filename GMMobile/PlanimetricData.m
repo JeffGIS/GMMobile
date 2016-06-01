@@ -676,6 +676,10 @@ static float wallPtSize=0;
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     CGColorRef wallPointColor = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.8].CGColor;
+    CGColorRef red = [UIColor colorWithRed:1 green:0 blue:0 alpha:0.8].CGColor;
+    CGColorRef color;
+    int today = NSDate.timeIntervalSinceReferenceDate;
+    int oneYear = 365*24*60*60;
 
     //LPSTR symName;
     
@@ -703,7 +707,7 @@ static float wallPtSize=0;
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.Current=1 AND ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,[Wall ID], LastUpdate FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.Current=1 AND ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
@@ -713,11 +717,16 @@ static float wallPtSize=0;
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
-
+        LPSTR wallID = (LPSTR)sqlite3_column_text(statement,2);
+        int lastUpdate = sqlite3_column_int(statement,3);
+        if (today - lastUpdate < oneYear)
+            color = red;
+        else
+            color = wallPointColor;
         DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
         [self drawWallPoint:context
                     atPoint:&llpoint
-                  withColor:wallPointColor
+                  withColor:color
                     andSize:size];
     }
     
