@@ -310,6 +310,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                else if (dataType == GetDatabaseSettingAlleyWall)
                                                {
                                                    awd = [[AlleyWallData alloc] init];
+                                                   [awd clear];
                                                    [awd open];
                                                }
                                                else if (dataType == GetDatabaseSettingCrimes)
