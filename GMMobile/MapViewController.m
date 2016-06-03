@@ -3704,7 +3704,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSString *query = [NSString stringWithFormat:@"www.zillow.com/homes/%@-%@-%@-MN_rb/", houseAndUnit, streetName, city];
         NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
         nvwv.delegate = self;
-        [nvwv adjustForStatusBar];
     }
 }
 
@@ -3716,7 +3715,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
         nvwv.delegate = self;
-        [nvwv adjustForStatusBar];
     }
 }
 
