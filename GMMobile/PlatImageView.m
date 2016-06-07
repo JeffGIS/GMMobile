@@ -11,7 +11,7 @@
 @property (nonatomic) LPTRANDATA pTranFrameToImage, pTranImageToFrame;
 @property (nonatomic, copy) NSString *platType, *platName;
 @property (nonatomic) int numProfileAreas;
-@property (nonatomic) NSString *imagePath, *currentTransName;
+@property (nonatomic, copy) NSString *imagePath, *currentTransName;
 @property (nonatomic) BOOL currentTransStatus;
 
 @end

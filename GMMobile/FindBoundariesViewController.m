@@ -20,7 +20,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *selectFromMapButton;
 
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
-@property (nonatomic) NSString *selectedType;
+@property (nonatomic, copy) NSString *selectedType;
 @property (nonatomic) NSMutableDictionary *sections;
 @property (nonatomic) NSMutableArray *sectionBegins, *sectionCounts, *sectionKeys;
 @property BOOL useOtherAreas;

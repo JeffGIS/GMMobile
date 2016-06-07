@@ -18,7 +18,7 @@
 
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
-@property (nonatomic) NSArray *legends;
+@property (nonatomic, copy) NSArray *legends;
 @property (nonatomic) MapViewController *mapVC;
 @property (nonatomic) NSMutableArray *dragSelectedCells, *countLengths;
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag;

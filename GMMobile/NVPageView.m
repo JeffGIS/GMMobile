@@ -13,7 +13,7 @@
 @interface NVPageView () <UITableViewDataSource, UITableViewDelegate,UIGestureRecognizerDelegate>
 
 @property NSUInteger numLegends, startingIndex, currentRow, currentColorPalette;
-@property (nonatomic) NSArray *legends;
+@property (nonatomic, copy) NSArray *legends;
 @property (nonatomic) CGFloat headerHeight, cornerRadius, innerMargin, outerMargin, pageControlMargin;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *countLengths, *dragSelectedCells;

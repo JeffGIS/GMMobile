@@ -8,8 +8,8 @@
 
 @property (nonatomic) NSMutableArray *pages;
 @property (nonatomic) UIPageControl *pageControl;
-@property (nonatomic) NSArray *legends;
-@property (nonatomic) NSArray *pageViewArrangementArray;
+@property (nonatomic, copy) NSArray *legends;
+@property (nonatomic, copy) NSArray *pageViewArrangementArray;
 
 @end
 

@@ -18,11 +18,11 @@
 
 @interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate>
 
-@property (nonatomic) NSArray *contents, *images;
+@property (nonatomic, copy) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
 @property (nonatomic) FTPDataPush *push;
-@property (nonatomic) NSArray *products;
-@property (nonatomic) NSString *iapFilePath;
+@property (nonatomic, copy) NSArray *products;
+@property (nonatomic, copy) NSString *iapFilePath;
 @property (nonatomic) MPMoviePlayerController *mpController;
 @property (nonatomic) GLKView *glView;
 @property (nonatomic) CADisplayLink *displayLink;

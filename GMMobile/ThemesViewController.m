@@ -6,7 +6,7 @@
 
 @interface ThemesViewController ()
 
-@property (nonatomic) NSArray *appList;
+@property (nonatomic, copy) NSArray *appList;
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) NSInteger selectedRow;
 @property (nonatomic) UIImageView *checkmarkView;
