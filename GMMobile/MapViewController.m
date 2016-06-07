@@ -3942,7 +3942,7 @@ didCompleteWithError:(NSError *)error
     {
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:@"GMMobile cannot launch Flyover App"
+                                                             title:@"NVMobile cannot launch Flyover App"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         
