@@ -14,7 +14,7 @@
 
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIFont *font, *subFont;
-@property (nonatomic) NSArray *individualDestinations, *groupDestinations;
+@property (nonatomic, copy) NSArray *individualDestinations, *groupDestinations;
 @property (nonatomic) UIButton *topPlusButton, *bottomPlusButton, *topMapItButton, *bottomMapItButton;
 @property (nonatomic) UIImage *editNameImage, *editOptionsImage, *googleImage;
 

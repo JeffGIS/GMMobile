@@ -18,11 +18,11 @@
 
 @interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate>
 
-@property (nonatomic) NSArray *contents, *images;
+@property (nonatomic, copy) NSArray *contents, *images;
 @property (nonatomic) NVContactPicker *nvcp;
 @property (nonatomic) FTPDataPush *push;
-@property (nonatomic) NSArray *products;
-@property (nonatomic) NSString *iapFilePath;
+@property (nonatomic, copy) NSArray *products;
+@property (nonatomic, copy) NSString *iapFilePath;
 @property (nonatomic) MPMoviePlayerController *mpController;
 @property (nonatomic) GLKView *glView;
 @property (nonatomic) CADisplayLink *displayLink;
@@ -334,7 +334,7 @@ EAGLContext *CreateBestEAGLContext()
     _tableView.bounces = NO;
     _tableView.delaysContentTouches = NO;
     
-    _versionLabel.text = [NSString stringWithFormat:@"GMMobile Version %@", UIApplication.appVersionBuild];
+    _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
 }
 
 - (void)viewWillAppear:(BOOL)animated

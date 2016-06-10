@@ -21,8 +21,8 @@
 @property (nonatomic) CLLocationCoordinate2D position;
 @property MarkerInfoWindowType type;
 @property (nonatomic) NSInteger refno;
-@property (nonatomic) NSString *title;
-@property (nonatomic) NSString *snippet;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *snippet;
 @property int symbol;
 @property (nonatomic) NVPhotoView *photoView;
 

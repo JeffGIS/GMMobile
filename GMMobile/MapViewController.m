@@ -25,7 +25,7 @@
 @interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate>
 
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
-@property (nonatomic) NSArray *options;
+@property (nonatomic, copy) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
@@ -3942,7 +3942,7 @@ didCompleteWithError:(NSError *)error
     {
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:@"GMMobile cannot launch Flyover App"
+                                                             title:@"NVMobile cannot launch Flyover App"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         

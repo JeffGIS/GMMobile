@@ -8,7 +8,7 @@
 
 @interface LayersViewController ()
 
-@property (nonatomic) NSArray *layerList;
+@property (nonatomic, copy) NSArray *layerList;
 @property (nonatomic) CGFloat rowHeight, headerHeight, segControlWidth, stepperHeight, cellLabelWidth;
 @property (nonatomic) UIFont *font, *headerFont, *headerZoomFont;
 @property (nonatomic) NSInteger indentationLevel;

@@ -21,8 +21,8 @@
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
-@property (nonatomic) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
-@property (nonatomic) NSArray *multipleOffenseOptions, *adjustmentOptions, *currentArray;
+@property (nonatomic, copy) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
+@property (nonatomic, copy) NSArray *multipleOffenseOptions, *adjustmentOptions, *currentArray;
 @property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode;
 @property (nonatomic, copy) NSString *selectedMultipleOffenseOption, *selectedAdjustmentOption;
 @property NVMapModeType selectedModeType;
