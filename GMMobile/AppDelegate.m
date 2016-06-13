@@ -159,10 +159,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 - (void)GMServerDidOpen:(GeoMasterServer *)server
 {
     NSString *msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\GetUserLocations.txt,%@,%@,%i,%i,%i,%i,%i,%i)\r\n",
-                     UIDevice.currentDevice.identifierForVendor.UUIDString, UIDevice.currentDevice.name,
-                     (int)round(_currentLocation.coordinate.latitude * 100000), (int)round(_currentLocation.coordinate.longitude * 100000),
-                     (int)round(_currentLocation.timestamp.timeIntervalSince1970), (int)round(_currentLocation.horizontalAccuracy),
-                     (int)round(_currentLocation.course), (int)round(_currentLocation.speed)];
+                     vendorUUIDString(), UIDevice.currentDevice.name, (int)round(_currentLocation.coordinate.latitude * 100000),
+                     (int)round(_currentLocation.coordinate.longitude * 100000), (int)round(_currentLocation.timestamp.timeIntervalSince1970),
+                     (int)round(_currentLocation.horizontalAccuracy), (int)round(_currentLocation.course), (int)round(_currentLocation.speed)];
     
     if (msg)
         [_GMServer sendMessage:msg];

@@ -16,7 +16,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *connectManagerButton;
 @property (nonatomic) GeoMasterServer *GMServer;
 @property (nonatomic) GSSiPopoverView *popoverView;
-@property (nonatomic, copy) NSString *iPad_id, *iPad_name;
+@property (nonatomic, copy) NSString *iPad_name;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) CLLocation *currentLocation;
 @property (nonatomic) NSTimer *timer;
@@ -42,8 +42,6 @@
     
     _popoverView = [[GSSiPopoverView alloc] initWithView:self.view];
     _popoverView.delegate = self;
-    
-    _iPad_id = UIDevice.currentDevice.identifierForVendor.UUIDString;
     _iPad_name = UIDevice.currentDevice.name;
     
     _locationManager = [[CLLocationManager alloc] init];
@@ -140,22 +138,22 @@ numberOfRowsInComponent:(NSInteger)component
     {
         case GMSMessageOpenConnect:
             msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\GetCitiesForiPad.txt,%@,%@)\r\n",
-                   _iPad_id, _iPad_name];
+                   vendorUUIDString(), _iPad_name];
             break;
             
         case GMSMessageSetNearby:
             msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\SetNearbyiPad.txt,%@,%@,%f %f)\r\n",
-                   _iPad_id, _iPad_name, _currentLocation.coordinate.latitude, _currentLocation.coordinate.longitude];
+                   vendorUUIDString(), _iPad_name, _currentLocation.coordinate.latitude, _currentLocation.coordinate.longitude];
             break;
             
         case GMSMessageCheckNearby:
             msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\CheckNearbyiPad.txt,%@)\r\n",
-                   _iPad_id];
+                   vendorUUIDString()];
             break;
             
         case GMSMessageCancelConnect:
             msg = [NSString stringWithFormat:@"$MACRO([%%DL]macros\\RemoveNearbyiPad.txt,%@)\r\n",
-                   _iPad_id];
+                   vendorUUIDString()];
             break;
     }
     
