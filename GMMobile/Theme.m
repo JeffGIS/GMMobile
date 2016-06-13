@@ -702,7 +702,7 @@
     
     thm.numClasses = (int)thm.classes.count;
     thm.legend.type = thm.type;
-    thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles.copy];
+    thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles];
     thm.legend.currentTitleIndex = thm.currentTitleIndex;
     thm.legend.numCells = thm.numClasses;
     thm.legend.useClassColors = thm.setColor;
