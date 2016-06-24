@@ -1196,8 +1196,13 @@ didReturnTimeInterval:(NSString *)timeInterval
     _push.delegate = self;
     _push.popover = _popover;
     
-    NSString *file = @"Crimes.sqlite";
-    NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
+    AlleyWallData *awd = [AlleyWallData new];
+    NSString * sendToServerFile = [awd getSendToServerFile:0];
+
+    NSString *file = [sendToServerFile lastPathComponent];
+    NSString *fromDir = [sendToServerFile stringByDeletingLastPathComponent];
+    //NSString *file = @"Crimes.sqlite";
+    //NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
     NSString *toDir = @"NVMobile/UploadedDatabases";
     //NSString *file = @"Property.sqlite";
     //NSString *fromDir = UserDefaults.defaults.localFilePath;
