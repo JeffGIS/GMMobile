@@ -547,7 +547,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingTiles;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -573,7 +572,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingProperty;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -599,7 +597,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingParcels;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -622,7 +619,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingCensus;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -644,7 +640,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingNVMetro;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -668,7 +663,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingAreas;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -690,7 +684,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingCrimes;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -717,7 +710,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingMapleGrove;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -753,7 +745,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingPlan;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -776,7 +767,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingAlleyWall;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -798,7 +788,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingCurbRamp;
     pull.useTestServer = USE_TEST_SERVER;
     
@@ -820,7 +809,6 @@ Exit:
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
-    pull.useOnlyPrimaryFTP = NO;
     pull.dataType = GetDatabaseSettingSewer;
     pull.useTestServer = USE_TEST_SERVER;
     
