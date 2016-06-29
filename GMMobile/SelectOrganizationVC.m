@@ -168,7 +168,7 @@ didReceiveMessage:(NSString *)message
       withStatus:(long)status
 {
     [self closeGMServer];
-    NSLog(@"GMServer Message(ADASetupViewController): %@", message);
+    NSLog(@"GMServer Message(SelectOrganizationVC): %@", message);
     
     if (status == GMServerStatusOK)
     {
