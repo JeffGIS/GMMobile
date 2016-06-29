@@ -1,7 +1,7 @@
 //  PlanimetricData.h
 //  GMMobile
 
-#import <sqlite3.h>
+#import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "Themes.h"
 

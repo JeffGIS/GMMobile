@@ -1,7 +1,7 @@
 //  PropertyData.h
 //  GMMobile
 
-#import <sqlite3.h>
+#import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/CCodeLibrary.h"
 @import CoreGraphics;
 #import <CoreText/CoreText.h>

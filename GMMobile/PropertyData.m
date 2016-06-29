@@ -48,17 +48,6 @@ MNMXCORD curbounds;
 @implementation PropertyData
 
 
-int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
-{
-    if (sqlReturn != SQLITE_OK && database)
-    {
-        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error %i in %i = %i:%s",
-                      sqlReturn, method, sqlite3_errcode(database), sqlite3_errmsg(database)]);
-    }
-    
-    return sqlReturn;
-}
-
 - (BOOL)continue
 {
     if (self.processingID == CRAPI.sharedInstance.keepProcessing)

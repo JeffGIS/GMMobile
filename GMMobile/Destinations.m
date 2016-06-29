@@ -62,19 +62,6 @@
 
 @implementation Destinations
 
-int SQLOKdst(int sqlReturn, sqlite3 *database)
-{
-    if (sqlReturn != SQLITE_OK)
-    {
-        //[self logError:sqlReturn
-        //             method:database];
-        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error in Destinations %i = %i:%s",
-                      sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
-    }
-    
-    return sqlReturn;
-}
-
 - (void)logError:(int)sqlReturn
           method:(sqlite3*)database
 {

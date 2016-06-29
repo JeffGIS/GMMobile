@@ -6,6 +6,7 @@
 #import "BoundaryData.h"
 #import "Destinations.h"
 #import "ConfigurationControl.h"
+#import "SQLiteLib.h"
 
 //#define CURRENT_VERSION 28
 
@@ -20,19 +21,6 @@
 @end
 
 @implementation PropertyList
-
-int SQLOKpl(int sqlReturn, sqlite3 *database)
-{
-    if (sqlReturn != SQLITE_OK)
-    {
-        //[self logError:sqlReturn
-        //             method:database];
-        NSLog(@"%@", [NSString stringWithFormat:@"SQLite Error in PropertyList %i = %i:%s",
-                      sqlReturn, sqlite3_errcode(database), sqlite3_errmsg(database)]);
-    }
-    
-    return sqlReturn;
-}
 
 - (void)logError:(int)sqlReturn
           method:(sqlite3*)database
