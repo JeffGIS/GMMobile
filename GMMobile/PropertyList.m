@@ -6,7 +6,7 @@
 #import "BoundaryData.h"
 #import "Destinations.h"
 #import "ConfigurationControl.h"
-#import "SQLiteLib.h"
+#import "CCodeLibrary/SQLiteLib.h"
 
 //#define CURRENT_VERSION 28
 
@@ -190,7 +190,7 @@ BOOL nameInList (NSString* name,NSArray* list)
     if (!_isOpen)
     {
         _isOpen = YES;
-        _isOpen = !SQLOKpl(sqlite3_open(_path.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(sqlite3_open(_path.UTF8String, &_database), _database);
         NSLog(@"PropertyList Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
@@ -204,7 +204,7 @@ BOOL nameInList (NSString* name,NSArray* list)
 {
     if (opened && _isOpen)
     {
-        SQLOKpl(sqlite3_close(_database),_database);
+        SQLOK(sqlite3_close(_database),_database);
         NSLog(@"PropertyList Database close");
         _isOpen = NO;
     }
@@ -223,7 +223,7 @@ BOOL nameInList (NSString* name,NSArray* list)
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
                         CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC);";
-    BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -241,14 +241,14 @@ BOOL nameInList (NSString* name,NSArray* list)
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOKpl(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        SQLOK(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
         
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             rtn = sqlite3_column_int(statement, 0);
         }
         
-        SQLOKpl(sqlite3_finalize(statement), _database);
+        SQLOK(sqlite3_finalize(statement), _database);
     }
     
     [self close:opened];
@@ -258,18 +258,18 @@ BOOL nameInList (NSString* name,NSArray* list)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOKpl(sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(sqlite3_exec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
-    SQLOKpl(sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOKpl(sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
+    SQLOK(sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
 - (NSArray*)availablePropertyFields
