@@ -16,7 +16,7 @@ MNMXCORD curbounds;
 
 int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
-    return SQLOK (sqlReturn,database);
+    return SQLOK (1000,sqlReturn,database);
 }
 @implementation NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale

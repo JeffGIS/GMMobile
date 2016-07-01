@@ -70,7 +70,7 @@
     NSString *query = [NSString stringWithFormat:@"SELECT UCR FROM CNUMCHECK WHERE ControlNbr = %i",controlNbr];
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+    SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -79,7 +79,7 @@
             outOfOrder = TRUE;
         rtn = TRUE;
     }
-    SQLOK(sqlite3_finalize(statement), _cd.database);
+    SQLOK(0,sqlite3_finalize(statement), _cd.database);
     if (!rtn)
     {
         query = [NSString stringWithFormat:@"INSERT INTO CNUMCHECK VALUES(%i,%i);",controlNbr,UCR];
@@ -194,7 +194,7 @@ NextPass:
                      platlonBounds->ymn,
                      platlonBounds->ymx];
             tot = toTime - fromTime;
-            SQLOK(sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+            SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -259,7 +259,7 @@ NextPass:
                 }
             }
             iRange++;
-            SQLOK(sqlite3_finalize(statement), _cd.database);
+            SQLOK(0,sqlite3_finalize(statement), _cd.database);
         }
     }
     if (_mode == HOTSPOT && iPass++ < _numPass)
@@ -271,7 +271,7 @@ NextPass:
     else if (_mode == PINMAP)
     {
         query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,DispersedX,DispersedY,Sequence,Symbol,Size,Color FROM DISPERSE"];
-        SQLOK(sqlite3_prepare_v2(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
+        SQLOK(0,sqlite3_prepare_v2(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -300,7 +300,7 @@ NextPass:
         }
         if ([self continue])
             [dp commitTransaction];
-        SQLOK(sqlite3_finalize(statement), dp.database);
+        SQLOK(0,sqlite3_finalize(statement), dp.database);
     }
     else if (_mode == CHOROPLETH)
     {

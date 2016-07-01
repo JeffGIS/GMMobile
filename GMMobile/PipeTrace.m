@@ -65,7 +65,7 @@ typedef struct {
     sqlite3_stmt *statement = NULL;
     NSString * query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = '%s'",atFid];
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -74,7 +74,7 @@ typedef struct {
         rtn = TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     return rtn;
 }
 
@@ -86,7 +86,7 @@ typedef struct {
     
     query = @"SELECT SEQUENCE,NXTFID,UPPIPE,DN_NODE FROM NEXTPIPE WHERE SEQUENCE >= 0 LIMIT 1";
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -97,7 +97,7 @@ typedef struct {
         rtn = TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     return rtn;
 }
 -(BOOL) $FETCH_NEXTPIPEup:(NEXTPIPEup *)np
@@ -108,7 +108,7 @@ typedef struct {
     
     query = @"SELECT SEQUENCE,NXTFID,DOWNPIPE,UP_NODE FROM NEXTPIPE WHERE SEQUENCE >= 0 LIMIT 1";
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -119,7 +119,7 @@ typedef struct {
         rtn = TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     return rtn;
 }
 -(BOOL) $FETCH_PIPEDB_BYFID:(LPSTR)fid returns:(PIPEDB *)pdb
@@ -131,7 +131,7 @@ typedef struct {
     
     query = [NSString stringWithFormat:@"SELECT UP_NODE,DOWN_NODE FROM STORM_MAIN WHERE FACILITY_ID = %s",fid];
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -141,7 +141,7 @@ typedef struct {
         rtn = TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     return rtn;
 }
 -(BOOL) $FETCH_PIPEDB_BYUPN:(LPSTR)UPNODE returns:(PIPEDB *)pdb
@@ -153,7 +153,7 @@ typedef struct {
     {
         query = [NSString stringWithFormat:@"SELECT FACILITY_ID,DOWN_NODE,UP_NODE FROM STORM_MAIN WHERE UP_NODE = %s",UPNODE];
         
-        SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+        SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
     }
     
     if (sqlite3_step(statement) == SQLITE_ROW)
@@ -164,7 +164,7 @@ typedef struct {
         return TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     return FALSE;
 }
 -(BOOL) $FETCH_PIPEDB_BYDNN:(LPSTR)DNNODE returns:(PIPEDB *)pdb
@@ -176,7 +176,7 @@ typedef struct {
     {
         query = [NSString stringWithFormat:@"SELECT FACILITY_ID,DOWN_NODE,UP_NODE FROM STORM_MAIN WHERE DOWN_NODE = %s",DNNODE];
         
-        SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
+        SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
     }
     
     if (sqlite3_step(statement) == SQLITE_ROW)
@@ -187,7 +187,7 @@ typedef struct {
         return TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement),_sd.database);
+    SQLOK(0,sqlite3_finalize(statement),_sd.database);
     return FALSE;
 }
 -(BOOL)$FETCH_FOUND:(LPSTR)fid returns:(PIPETRACEDB*)ptdb
@@ -198,7 +198,7 @@ typedef struct {
     
     query = [NSString stringWithFormat:@"SELECT UPPIPE,SQ FROM PIPETRACEDB WHERE FEATURE_ID = %s",fid];
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0), _sd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -208,7 +208,7 @@ typedef struct {
         rtn = TRUE;
     }
     
-    SQLOK(sqlite3_finalize(statement),_sd.database);
+    SQLOK(0,sqlite3_finalize(statement),_sd.database);
   
     return rtn;
 }
@@ -596,7 +596,7 @@ $RETURN(1);
 
     _sd = [[SewerData alloc]init];
     [_sd open];
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
 
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -626,7 +626,7 @@ $RETURN(1);
         }
     }
     
-    SQLOK(sqlite3_finalize(statement),_sd.database);
+    SQLOK(0,sqlite3_finalize(statement),_sd.database);
     *pbounds = bounds;
     [_sd close];
 }
@@ -639,13 +639,13 @@ $RETURN(1);
     
     SewerData *sd = [[SewerData alloc]init];
     [sd open];
-    SQLOK(sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), sd.database);
+    SQLOK(0,sqlite3_prepare_v2(sd.database, query.UTF8String, -1, &statement, 0), sd.database);
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         nrec = sqlite3_column_int(statement,0);
     }
     
-    SQLOK(sqlite3_finalize(statement),sd.database);
+    SQLOK(0,sqlite3_finalize(statement),sd.database);
     [sd close];
     return nrec;
 }
@@ -675,7 +675,7 @@ $RETURN(1);
     [_sd setTrans:latlonCornerPoints
        viewBounds:pvbounds];
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -717,7 +717,7 @@ $RETURN(1);
         free(llpoints);
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     [_sd close];
 }
 
@@ -735,7 +735,7 @@ $RETURN(1);
     _sd = [[SewerData alloc] init];
     [_sd open];
     
-    SQLOK(sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
+    SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -789,7 +789,7 @@ $RETURN(1);
         free (llpoints);
     }
     
-    SQLOK(sqlite3_finalize(statement), _sd.database);
+    SQLOK(0,sqlite3_finalize(statement), _sd.database);
     [_sd close];
     
     if (numOutputPoints)
