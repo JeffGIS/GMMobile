@@ -20,13 +20,13 @@
 @end
 
 
-@interface SettingsViewController : UIViewController <FTPDataPullDelegate,FTPDataPushDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate,MFMailComposeViewControllerDelegate>
+@interface SettingsViewController : UIViewController <FTPDataPullDelegate,FTPDataPushDelegate,FTPDirectoryCreateDelegate,GSSiPopoverViewDelegate,NVAlertViewDelegate,GSSiBumpDetectorDelegate,NVHeadingViewControllerDelegate,NVVideoHeadingViewControllerDelegate,MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, weak) id <SettingsViewControllerDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
 @property id saveDelegate;
 @property BOOL fromDataLoader;
-
+@property FTPDirectoryCreate * ftpdc;
 - (void) initFromDataLoader:(GSSiPopoverView*)popover;
 
 @property int nComplete, nFailed;

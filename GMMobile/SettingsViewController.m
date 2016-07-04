@@ -1180,23 +1180,60 @@ didReturnTimeInterval:(NSString *)timeInterval
 
 - (IBAction)uploadDatabases:(id)sender
 {
+    NSString * dir1 = [NSString stringWithFormat:@"%i",CRAPI.sharedInstance.currentManageriPad];
+    NSString * dir2 =[NSString stringWithFormat:@"%i/%i",CRAPI.sharedInstance.currentManageriPad,CRAPI.sharedInstance.currentiPadWithinManager];
+    NSArray *directories = @[dir1,dir2];
+    _ftpdc = [FTPDirectoryCreate createDirectories:directories
+                                                           inFTPDomain:@"gssiserver3.com"
+                                                             directory:@"NVMobile/UploadedDatabases"
+                                                              username:@"GSSiProfessionalServer"                                 password: @"GSSi"
+                                                                  port:@"21"
+                                                              delegate:self];
+}
+
+- (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
+                                   statusString:(NSString *)statusString
+                                      directory:(NSString *)directory
+{
+    if (status == FTPStatusStop)
+    {
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                      target:self
+                                                    selector:@selector(uploadDatabases2:)
+                                                    userInfo:nil
+                                                     repeats:NO];
+
+    }
+    else
+    {
+        _popover.title = [NSString stringWithFormat:@"Unable to create directories\n%@",statusString];
+        [_popover setCancelButtonTitle:@"OK"];
+        [_popover show];
+    }
+}
+
+- (void)uploadDatabases2:(NSTimer *)timer
+{
+    [timer invalidate];
     _push = [FTPDataPush push];
     _push.delegate = self;
     _push.popover = _popover;
     
     AlleyWallData *awd = [AlleyWallData new];
-    NSString * sendToServerFile = [awd getSendToServerFile:0];
-
+   // NSString * sendToServerFile = [awd getSendToServerFile:0];
+    
+    NSString *toDir = [NSString stringWithFormat:@"NVMobile/UploadedDatabases/%i/%i",CRAPI.sharedInstance.currentManageriPad,CRAPI.sharedInstance.currentiPadWithinManager];
+    NSString * sendToServerFile = [awd databasePath];
     NSString *file = [sendToServerFile lastPathComponent];
     NSString *fromDir = [sendToServerFile stringByDeletingLastPathComponent];
     //NSString *file = @"Crimes.sqlite";
     //NSString *fromDir = CRAPI.sharedInstance.sharedFilePath;
-    NSString *toDir = @"NVMobile/UploadedDatabases";
+    //NSString *toDir = @"";
     //NSString *file = @"Property.sqlite";
     //NSString *fromDir = UserDefaults.defaults.localFilePath;
     //NSString *toDir = @"NVMobile/UploadedDatabases";
     
-    [_popover showAfter:0.5
+    [_popover showAfter:0.1
               withTitle:@"Upload Database"];
     
     [_push sendFile:file

@@ -389,7 +389,19 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             CRAPI.sharedInstance.parcelTextOption = 0;
             break;
     }
-    
+    if (_currentApp == HCConfigAlleyWalls || _currentApp == HCConfigCurbRamps)
+    {
+        NSString *places = [CRAPI.sharedInstance getPlacesStringFromFile];
+        
+        [CRAPI.sharedInstance savePlacesString:places];
+        [CRAPI.sharedInstance processPlaces];
+        BOOL rtn = [CRAPI.sharedInstance processPlacesArray:-1];
+        if (!rtn)
+        {
+            [CRAPI.sharedInstance logToErrorFile:@"NVMobile-Alleywalls does not set place and manager"];
+        }
+        
+    }
     return rtn;
 }
 
