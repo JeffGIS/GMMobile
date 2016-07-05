@@ -1123,8 +1123,8 @@ didReturnTimeInterval:(NSString *)timeInterval
         composer.mailComposeDelegate = self;
         composer.subject = @"File list from GMMobile";
         
-        [composer setMessageBody:[NSString stringWithFormat:@"%li files (%li bytes) included in list from %@",
-                                  (long)nFiles, totSize, UIDevice.currentDevice.name]
+        [composer setMessageBody:[NSString stringWithFormat:@"%li files (%li bytes) included in list from %@(%i)",
+                                  (long)nFiles, (long)totSize, UIDevice.currentDevice.name,CRAPI.sharedInstance.GSSiPadNumber]
                           isHTML:NO];
         
         [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
@@ -1139,7 +1139,14 @@ didReturnTimeInterval:(NSString *)timeInterval
     }
     
     else
-        NSLog(@"ERROR:No mail account setup on device.");
+    {
+        _popover.title = @"ERROR:No mail account setup on device.";
+        [_popover setCancelButtonTitle:@"OK"];
+        _popover.progressView.hidden = YES;
+        _popover.progressLabel.hidden = YES;
+        
+        [_popover show];
+    }
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
