@@ -1190,12 +1190,14 @@ didReturnTimeInterval:(NSString *)timeInterval
     NSString * dir1 = [NSString stringWithFormat:@"%i",CRAPI.sharedInstance.currentManageriPad];
     NSString * dir2 =[NSString stringWithFormat:@"%i/%i",CRAPI.sharedInstance.currentManageriPad,CRAPI.sharedInstance.currentiPadWithinManager];
     NSArray *directories = @[dir1,dir2];
+    
     _ftpdc = [FTPDirectoryCreate createDirectories:directories
-                                                           inFTPDomain:@"gssiserver3.com"
-                                                             directory:@"NVMobile/UploadedDatabases"
-                                                              username:@"GSSiProfessionalServer"                                 password: @"GSSi"
-                                                                  port:@"21"
-                                                              delegate:self];
+                                       inFTPDomain:@"gssiserver3.com"
+                                         directory:@"NVMobile/UploadedDatabases"
+                                          username:@"GSSiProfessionalServer"
+                                          password:@"GSSi"
+                                              port:@"21"
+                                          delegate:self];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
