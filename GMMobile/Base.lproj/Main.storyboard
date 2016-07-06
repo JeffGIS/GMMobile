@@ -5157,7 +5157,7 @@
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 </variation>
                                 <connections>
-                                    <action selector="uploadDirectory:" destination="nWl-XI-pP2" eventType="touchUpInside" id="624-9U-hVu"/>
+                                    <segue destination="U1q-YB-BWU" kind="presentation" identifier="UploadDirectorySegue" id="xcW-gO-c52"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PGW-fh-r5j">
@@ -5495,6 +5495,51 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cxv-gc-Bie" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1668" y="534.75"/>
+        </scene>
+        <!--Upload Directory-->
+        <scene sceneID="DOn-DN-KeG">
+            <objects>
+                <viewController id="U1q-YB-BWU" customClass="UploadDirectory" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wVi-qK-t5j"/>
+                        <viewControllerLayoutGuide type="bottom" id="BzX-z7-I4E"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="te7-HF-qTf">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCk-7P-pOj">
+                                <rect key="frame" x="481" y="28" width="109" height="63"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Start"/>
+                                <connections>
+                                    <action selector="startTransfer:" destination="U1q-YB-BWU" eventType="touchUpInside" id="v8L-X7-wh8"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="70E-Bk-w5S">
+                                <rect key="frame" x="46" y="99" width="516" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rGG-Ua-vKx">
+                                <rect key="frame" x="9" y="20" width="121" height="71"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Return"/>
+                                <connections>
+                                    <action selector="return:" destination="U1q-YB-BWU" eventType="touchUpInside" id="tCa-bQ-4Wp"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="messageLabel" destination="70E-Bk-w5S" id="YwS-QR-5u5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kyj-Nn-vDh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1343" y="1220"/>
         </scene>
     </scenes>
     <resources>
