@@ -5147,7 +5147,7 @@
                                 <rect key="frame" x="8" y="500" width="288" height="40"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                <state key="normal" title="Output File">
+                                <state key="normal" title="Upload Directory">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <variation key="heightClass=compact">
@@ -5157,7 +5157,7 @@
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 </variation>
                                 <connections>
-                                    <action selector="outputFile:" destination="nWl-XI-pP2" eventType="touchUpInside" id="pnI-5w-qui"/>
+                                    <action selector="uploadDirectory:" destination="nWl-XI-pP2" eventType="touchUpInside" id="624-9U-hVu"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PGW-fh-r5j">

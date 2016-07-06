@@ -1262,4 +1262,21 @@ didReturnTimeInterval:(NSString *)timeInterval
                                                  deleteWhenDone:NO];
 }
 
+- (NSArray*) getSubdirFromFileList:(NSString*)file
+{
+    NSMutableArray * array = [NSMutableArray new];
+    
+    return array;
+}
+- (IBAction)uploadDirectory:(id)sender {
+    NSInteger totSize;
+    NSString *fromDir = [CRAPI.sharedInstance sharedOutputDirectory:@"AlleyWalls"];
+    NSString *txtFile = [NSString stringWithFormat:@"%@/filelist.txt",NSTemporaryDirectory()];
+    
+    NSInteger nFiles = [FileLister listFilesInDirectory:fromDir outputTo:txtFile totalSize:&totSize];
+    NSArray * subDir = [self getSubdirFromFileList:txtFile];
+    
+    
+}
+
 @end
