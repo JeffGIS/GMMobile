@@ -14,7 +14,10 @@
 
 @interface UploadDirectory : UIViewController<GSSiPopoverViewDelegate,FTPDirectoryCreateDelegate,FTPDataPushDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (weak, nonatomic) IBOutlet UIButton *returnButton;
 @property FTPDirectoryCreate * ftpcd;
+@property NSString * dirToUpload;
 @property NSString *fromDir;
 @property NSString * fileListFile;
 @property NSInteger nFiles;

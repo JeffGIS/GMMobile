@@ -5535,6 +5535,8 @@
                     </view>
                     <connections>
                         <outlet property="messageLabel" destination="70E-Bk-w5S" id="YwS-QR-5u5"/>
+                        <outlet property="returnButton" destination="rGG-Ua-vKx" id="Lfz-Bp-L8M"/>
+                        <outlet property="startButton" destination="eCk-7P-pOj" id="cEj-HA-PL5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kyj-Nn-vDh" userLabel="First Responder" sceneMemberID="firstResponder"/>

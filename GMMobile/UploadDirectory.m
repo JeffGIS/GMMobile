@@ -101,10 +101,12 @@
     return array;
 }
 - (IBAction)startTransfer:(id)sender {
-    NSString * dirToUpload = @"AlleyWalls";
-    NSString * dir2 =[NSString stringWithFormat:@"%i/%@",CRAPI.sharedInstance.GSSiPadNumber,dirToUpload];
+    _dirToUpload = @"AlleyWalls";
+    _startButton.enabled = NO;
+    _returnButton.enabled = NO;
+    NSString * dir2 =[NSString stringWithFormat:@"%i/%@",CRAPI.sharedInstance.GSSiPadNumber,_dirToUpload];
     
-    _fromDir = [CRAPI.sharedInstance sharedOutputDirectory:dirToUpload];
+    _fromDir = [CRAPI.sharedInstance sharedOutputDirectory:_dirToUpload];
     _fromDir = textUpTo (_fromDir,@"AlleyWalls");
     
     _fileListFile = [NSString stringWithFormat:@"%@/filelist.txt",NSTemporaryDirectory()];
@@ -128,7 +130,7 @@
                                       directory:(NSString *)directory
 {
     _currentFile = 0;
-    if (status == FTPStatusStop)
+    if (status == FTPStatusOK)
     {
         [self uploadNextFile];
     }
@@ -142,8 +144,9 @@
     }
 }
 
-- (void) uploadNextFile
+- (void) doUploadNextFile:(NSTimer*)timer
 {
+    [timer invalidate];
     LPSTR str = malloc(4096);
     FILE *fid = fopen(_fileListFile.UTF8String, "rb");
     fseek (fid,_currentFile,SEEK_SET);
@@ -163,7 +166,7 @@
         _push.delegate = self;
         _push.popover = _popover;
         
-        NSString *toDir = [NSString stringWithFormat:@"NVMobile/UploadedDirectories/%i/%@",CRAPI.sharedInstance.GSSiPadNumber,path];
+        NSString *toDir = [NSString stringWithFormat:@"NVMobile/UploadedDirectories/%i/%@/%@",CRAPI.sharedInstance.GSSiPadNumber,_dirToUpload,path];
         toDir = [toDir stringByDeletingLastPathComponent];
         NSString * sendToServerFile = [NSString stringWithFormat:@"%@/%@",_fromDir,path];
         NSString *file = [sendToServerFile lastPathComponent];
@@ -179,14 +182,21 @@
          deleteWhenDone:NO];
     }
     else
-        [NSFileManager.defaultManager removeItemAtPath:_fileListFile
-                                                 error:nil];
+    {
+        _popover.cancelButtonTitle = @"OK";
+        [_popover showAfter:0.1
+                  withTitle:[NSString stringWithFormat:@"Upload Complete"]];
+    }
 
 
 }
-- (void) uploadFiles:(NSTimer*)timer
+- (void) uploadNextFile
 {
-    [timer invalidate];
+    _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                              target:self
+                                            selector:@selector(doUploadNextFile:)
+                                            userInfo:nil
+                                             repeats:NO];
 }
 
 - (void)FTPPushDidComplete:(FTPDataType)dataType
@@ -204,6 +214,10 @@
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     _keepGoing = NO;
+    [NSFileManager.defaultManager removeItemAtPath:_fileListFile
+                                             error:nil];
+    _startButton.enabled = YES;
+    _returnButton.enabled = YES;
 }
 
 
