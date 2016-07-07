@@ -37,6 +37,17 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [UIApplication.sharedApplication setIdleTimerDisabled:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [UIApplication.sharedApplication setIdleTimerDisabled:NO];
+}
 
 /*
 #pragma mark - Navigation
