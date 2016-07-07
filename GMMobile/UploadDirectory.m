@@ -24,6 +24,13 @@
     [super viewDidLoad];
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    _fileListFile = [NSString stringWithFormat:@"%@/filelist.txt", documentsDirectory];
+    _lastFileFile = [NSString stringWithFormat:@"%@/lastfile.txt", documentsDirectory];
+    _dirToUpload = @"AlleyWalls";
+    _fromDir = [CRAPI.sharedInstance sharedOutputDirectory:_dirToUpload];
+    _fromDir = textUpTo (_fromDir,@"AlleyWalls");
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -84,10 +91,8 @@
 {
     NSMutableArray * array = [NSMutableArray new];
     FILE *fid = fopen(file.UTF8String, "rb");
-    NSInteger totLen = FileLength(fid);
     LPSTR str = malloc(4096);
-    _keepGoing = TRUE;
-    while (_keepGoing && fgetstring(str, (4090 - 2), fid))
+    while (fgetstring(str, (4090 - 2), fid))
     {
         NSString * path = textBeforeTab ([NSString stringWithUTF8String:str]);
         NSString * path2 = [NSString stringWithFormat:@"/%@",path];
@@ -101,15 +106,9 @@
     return array;
 }
 - (IBAction)startTransfer:(id)sender {
-    _dirToUpload = @"AlleyWalls";
     _startButton.enabled = NO;
     _returnButton.enabled = NO;
     NSString * dir2 =[NSString stringWithFormat:@"%i/%@",CRAPI.sharedInstance.GSSiPadNumber,_dirToUpload];
-    
-    _fromDir = [CRAPI.sharedInstance sharedOutputDirectory:_dirToUpload];
-    _fromDir = textUpTo (_fromDir,@"AlleyWalls");
-    
-    _fileListFile = [NSString stringWithFormat:@"%@/filelist.txt",NSTemporaryDirectory()];
     
     _nFiles = [FileLister listFilesInDirectory:_fromDir
                                       outputTo:_fileListFile
@@ -130,6 +129,7 @@
                                       directory:(NSString *)directory
 {
     _currentFile = 0;
+    [self saveCurrentFile];
     if (status == FTPStatusOK)
     {
         [self uploadNextFile];
@@ -149,12 +149,20 @@
     [timer invalidate];
     LPSTR str = malloc(4096);
     FILE *fid = fopen(_fileListFile.UTF8String, "rb");
+    if (!fid)
+        return;
+    NSInteger totLen = FileLength(fid);
     fseek (fid,_currentFile,SEEK_SET);
+    if (totLen > 0)
+    {
+        int pctDone = (int)(100 * _currentFile)/totLen;
+        _messageLabel.text = [NSString stringWithFormat:@"%i percent complete",pctDone];
+    }
     BOOL haveFile = NO;
     NSString * path = @"";
-    if (_keepGoing && fgetstring(str, (4090 - 2), fid))
+    if (fgetstring(str, (4090 - 2), fid))
     {
-        _currentFile = ftell (fid);
+        _nextFile = ftell (fid);
         haveFile = YES;
         path = textBeforeTab ([NSString stringWithUTF8String:str]);
     }
@@ -183,6 +191,8 @@
     }
     else
     {
+        [NSFileManager.defaultManager removeItemAtPath:_fileListFile
+                                                 error:nil];
         _popover.cancelButtonTitle = @"OK";
         [_popover showAfter:0.1
                   withTitle:[NSString stringWithFormat:@"Upload Complete"]];
@@ -205,7 +215,11 @@
                   filePath:(NSString *)pathint
 {
     if (status == FTPStatusOK)
+    {
+        _currentFile = _nextFile;
+        [self saveCurrentFile];
         [self uploadNextFile];
+    }
     else
         [_popover showAfter:0.1
                   withTitle:[NSString stringWithFormat:@"Upload Error\n%@",statusString]];
@@ -213,9 +227,6 @@
 }
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    _keepGoing = NO;
-    [NSFileManager.defaultManager removeItemAtPath:_fileListFile
-                                             error:nil];
     _startButton.enabled = YES;
     _returnButton.enabled = YES;
 }
@@ -225,5 +236,55 @@
     [self dismissViewControllerAnimated:YES
                              completion:nil];
 
+}
+
+- (void) saveCurrentFile
+{
+    NSString *str = [NSString stringWithFormat:@"%li",(long)_currentFile];
+    [str writeToFile:_lastFileFile atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+- (IBAction)restart:(id)sender {
+    FILE *fid = fopen(_lastFileFile.UTF8String, "rb");
+    LPSTR str = malloc(4096);
+    _currentFile = -1;
+    if (fgetstring(str, (4090 - 2), fid))
+    {
+        _currentFile = atol (str);
+    }
+    fclose(fid);
+    free(str);
+    if (_currentFile > -1)
+        [self uploadNextFile];
+}
+
+- (IBAction)skipAndRestart:(id)sender {
+    BOOL haveFile = NO;
+    FILE *fid = fopen(_lastFileFile.UTF8String, "rb");
+    LPSTR str = malloc(4096);
+    _currentFile = -1;
+    _nextFile = -1;
+    if (fgetstring(str, (4090 - 2), fid))
+    {
+        _currentFile = atol (str);
+    }
+    fclose(fid);
+    if (_currentFile > -1)
+    {
+        fid = fopen(_fileListFile.UTF8String, "rb");
+        fseek (fid,_currentFile,SEEK_SET);
+        if (fgetstring(str, (4090 - 2), fid))
+        {
+            _nextFile = ftell (fid);
+            haveFile = YES;
+        }
+        fclose(fid);
+    }
+    free(str);
+    if (_nextFile > -1)
+    {
+        _currentFile = _nextFile;
+        [self uploadNextFile];
+    }
+    
 }
 @end
