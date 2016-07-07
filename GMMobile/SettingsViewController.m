@@ -1204,7 +1204,7 @@ didReturnTimeInterval:(NSString *)timeInterval
                                    statusString:(NSString *)statusString
                                       directory:(NSString *)directory
 {
-    if (status == FTPStatusStop)
+    if (status == FTPStatusOK)
     {
         self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                       target:self
