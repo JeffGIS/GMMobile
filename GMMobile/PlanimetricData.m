@@ -877,7 +877,7 @@ static float wallPtSize=0;
     SQLOK(0,sqlite3_finalize(statement),crd.database);
     if (tot)
     {
-        query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE,AssignedTo,Status,Intersections.intID, Intersections.lastUpdateTime FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+        query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE, AssignedToDetail, Status, Intersections.intID, Intersections.lastUpdateTime FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
         
         SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
@@ -885,13 +885,13 @@ static float wallPtSize=0;
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
             [CRAPI.sharedInstance updateProgress:tot current:++current range:0 numRanges:1];
-
-            BasePt.x = sqlite3_column_double(statement,0);
-            BasePt.y = sqlite3_column_double(statement,1);
-            assignedTo = sqlite3_column_int(statement,2);
-            status = sqlite3_column_int(statement,3);
-            intID = sqlite3_column_int(statement,4);
-            int date = sqlite3_column_int(statement,5);
+            int i = 0;
+            BasePt.x = sqlite3_column_double(statement,i++);
+            BasePt.y = sqlite3_column_double(statement,i++);
+            assignedTo = sqlite3_column_int(statement,i++);
+            status = sqlite3_column_int(statement,i++);
+            intID = sqlite3_column_int(statement,i++);
+            int date = sqlite3_column_int(statement,i++);
             dc.elementType = StreetIntersection;
             dc.string1 = [NSString stringWithFormat:@"%i",intID];
             dc.string2 = [NSString stringWithFormat:@"%i",status];

@@ -395,7 +395,10 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         
         [CRAPI.sharedInstance savePlacesString:places];
         [CRAPI.sharedInstance processPlaces];
-        BOOL rtn = [CRAPI.sharedInstance processPlacesArray:-1];
+        NSInteger selectedRow = [UserDefaults.defaults integerForKey:@"SelectedRow"];
+        if (_currentApp == HCConfigAlleyWalls)
+            selectedRow = -1;
+        BOOL rtn = [CRAPI.sharedInstance processPlacesArray:selectedRow];
         if (!rtn)
         {
             [CRAPI.sharedInstance logToErrorFile:@"NVMobile-Alleywalls does not set place and manager"];
