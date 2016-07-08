@@ -74,6 +74,11 @@
     //error:nil];
 }
 
+- (void) createVersionTable
+{
+    NSString * cmd = @"CREATE TABLE IF NOT EXISTS BOUNDARY_VERSION (id INTEGER PRIMARY KEY,Version REAL); INSERT INTO BOUNDARY_VERSION VALUES(1,1.0);";
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+}
 - (int) datasetVersion
 {
     int rtn = -1;
@@ -84,17 +89,22 @@
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
-        
-        if (sqlite3_step(statement) == SQLITE_ROW)
+        BOOL st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0);
+        if (st)
+            [self createVersionTable];
+        else
         {
-            LPSTR version = (LPSTR)sqlite3_column_text(statement, 0);
             
-            if (version)
-                rtn = atoi(version);
+            if (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                LPSTR version = (LPSTR)sqlite3_column_text(statement, 0);
+                
+                if (version)
+                    rtn = atoi(version);
+            }
+            
+            SQLOK(0,sqlite3_finalize(statement), _database);
         }
-        
-        SQLOK(0,sqlite3_finalize(statement), _database);
     }
     [self close:opened];
     if ( _fileSize > 100)
