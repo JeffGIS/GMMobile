@@ -1657,6 +1657,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 [intDB addNewIntersectionAt:intPoint
                                    withName:@"Added in NVMobile"];
+                
+                [self refreshVectorView:_mapView.projection.visibleRegion
+                                 atZoom:_mapView.camera.zoom];
+                
+                _noneSelected = NO;
+                
+                [UIView animateWithDuration:0.25
+                                 animations:^{
+                                     _cancelDigitizerButton.alpha = 0.0;
+                                     _saveDigitizerButton.alpha = 1.0;
+                                 }];
             }
                 break;
                 
