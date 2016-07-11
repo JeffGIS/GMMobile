@@ -58,6 +58,4 @@
                        withColor:(CGColorRef)color
                          andSize:(CGFloat)size;
 
-- (void)userSavedAlleyWallPointMove:(BOOL)saved;
-
 @end

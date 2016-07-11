@@ -187,13 +187,13 @@
     _cancelDigitizerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
     [self setupDigitizerToolbarButton:_cancelDigitizerButton
-                             selector:@selector(cancelDigitizationMode:)
+                             selector:@selector(hideDigitizationMode:)
                                 title:@"Cancel Move/Add Mode"];
     
     _saveDigitizerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
     [self setupDigitizerToolbarButton:_saveDigitizerButton
-                             selector:@selector(saveDigitizationMode:)
+                             selector:@selector(hideDigitizationMode:)
                                 title:@"Exit Move/Add Mode"];
     
     _saveDigitizerButton.alpha = 0.0;
@@ -1542,8 +1542,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _mapView.settings.scrollGestures = YES;
         _digitizerTargetView.image = _blackCrosshairs;
         
-        CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
-                                              (_digitizerTargetView.center.y -
+        CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x, (_digitizerTargetView.center.y -
                                                [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
         
         CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
@@ -1609,11 +1608,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case DigitizationModeAlleyWallNew:
             {
                 _digitizerCount++;
-                CGPoint digitizerCenter = CGPointMake(_digitizerTargetView.center.x,
-                                                      (_digitizerTargetView.center.y -
-                                                       [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
-                
-                CLLocationCoordinate2D position = [_mapView.projection coordinateForPoint:digitizerCenter];
                 CLLocationCoordinate2D positioncl = position;
                 CLLocationCoordinate2D positionpid = position;
                 AlleyWallData *awd = [[AlleyWallData alloc] init];
@@ -1651,6 +1645,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                      _saveDigitizerButton.alpha = 1.0;
                                  }];
             }
+                break;
+                
+            case DigitizationModeCurbRamps:
+            {
+                LLPOINT intPoint = {0};
+                intPoint.lat = position.latitude;
+                intPoint.lon = position.longitude;
+                
+                IntersectionsDatabase *intDB = [IntersectionsDatabase databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
+                
+                [intDB addNewIntersectionAt:intPoint
+                                   withName:@"Added in NVMobile"];
+            }
+                break;
                 
             case DigitizationModeProperty:
                 break;
@@ -4236,22 +4244,7 @@ didCompleteWithError:(NSError *)error
     }
 }
 
-- (void)cancelDigitizationMode:(UIButton *)button
-{
-    [self hideDigitizationMode];
-}
-
-- (void)saveDigitizationMode:(UIButton *)button
-{
-    PlanimetricData *pd = [[PlanimetricData alloc] init];
-    
-    if (_digitizationMode == DigitizationModeAlleyWallMove)
-        [pd userSavedAlleyWallPointMove:YES];
-    
-    [self hideDigitizationMode];
-}
-
-- (void)hideDigitizationMode
+- (void)hideDigitizationMode:(UIButton *)button
 {
     _inDigitizationMode = NO;
     

@@ -1041,11 +1041,6 @@ static float wallPtSize=0;
     return symList;
 }
 
-- (void)userSavedAlleyWallPointMove:(BOOL)saved
-{
-    
-}
-
 - (void)drawCurbRampIntersection:(CGContextRef)context
                          atPoint:(DPOINT *)pPoint
                        withColor:(CGColorRef)color

@@ -177,7 +177,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigAlleyWallStatus][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantPlat] = NO;
-        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantDigitize] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantExtents] = YES;
