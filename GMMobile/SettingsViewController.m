@@ -368,10 +368,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    }
                                                    
                                                    else if (dataType == GetDatabaseSettingCurbRamp)
-                                                       [crd executeCmd:str
+                                                   {
+                                                       NSString * cmd = [NSString stringWithUTF8String:str];
+                                                       cmd = [cmd stringByReplacingOccurrencesOfString:@"AssignedTo=" withString:@"AssignedToDetail="];
+                                                       [crd executeCmd:(LPSTR)cmd.UTF8String
                                                           sendToServer:NO
                                                                   from:1675];
-                                                   
+                                                   }
                                                    else if (dataType == GetDatabaseSettingAlleyWall)
                                                    {
                                                        [awd executeCmd:str
