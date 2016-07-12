@@ -399,9 +399,13 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         if (_currentApp == HCConfigAlleyWalls)
             selectedRow = -1;
         BOOL rtn = [CRAPI.sharedInstance processPlacesArray:selectedRow];
-        if (!rtn)
+        if (!rtn && selectedRow < 0)
         {
             [CRAPI.sharedInstance logToErrorFile:@"NVMobile-Alleywalls does not set place and manager"];
+        }
+        else if (!rtn)
+        {
+            [CRAPI.sharedInstance logToErrorFile:@"NVMobile-CurbRamps does not set place and manager"];
         }
         
     }
