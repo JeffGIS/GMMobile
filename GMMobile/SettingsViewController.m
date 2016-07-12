@@ -369,7 +369,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    
                                                    else if (dataType == GetDatabaseSettingCurbRamp)
                                                        [crd executeCmd:str
-                                                          sendToServer:NO];
+                                                          sendToServer:NO
+                                                                  from:1675];
                                                    
                                                    else if (dataType == GetDatabaseSettingAlleyWall)
                                                    {
