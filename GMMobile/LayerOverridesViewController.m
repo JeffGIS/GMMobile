@@ -245,7 +245,7 @@
 }
 
 - (void)sliderView:(NVSliderView *)sliderView
-        didReturnValue:(CGFloat)value
+        didReturnValue:(double)value
         forViewWithTag:(NSInteger)tag
 {
     if ([self buttonAtIndex:tag] == _AOnTrans)
