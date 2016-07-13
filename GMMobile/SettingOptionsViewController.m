@@ -341,9 +341,10 @@ EAGLContext *CreateBestEAGLContext()
 {
     [super viewWillAppear:animated];
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Access Contacts", @"Track User Location", @"Select Organization",
-                  @"Test Calendar Interface", @"Draw hotspottest.bin"];
+    //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin"
+    
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data",
+                  @"Calibrate Device", @"Track User Location"];
     
     [_tableView reloadData];
 }
@@ -488,36 +489,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Access Contacts"])
     {
         _nvcp = [NVContactPicker presentContactPickerInDelegate:self];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Select Organization"])
-    {
-        [self performSegueWithIdentifier:@"SelectOrganization"
-                                  sender:self];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test PDF Reader Core"])
-    {
-        NSString *filePath = [NSBundle.mainBundle pathForResource:@"ENA_20_12-08_E0"
-                                                           ofType:@"pdf"];
-        
-        ReaderDocument *document = [ReaderDocument withDocumentFilePath:filePath
-                                                               password:nil];
-        
-        if (document)
-        {
-            ReaderViewController *readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
-            
-            readerVC.delegate = self;
-            readerVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-            readerVC.modalPresentationStyle = UIModalPresentationFullScreen;
-            
-            [self presentViewController:readerVC
-                               animated:YES
-                             completion:nil];
-        }
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
