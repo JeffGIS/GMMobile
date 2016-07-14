@@ -12,6 +12,7 @@
 		69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
+		6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = 6924B4351D37BDC8007C6C76 /* trackLocation.png */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
 		692B4A071BF669D80016CE5D /* ThemeLegendMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */; };
@@ -29,7 +30,6 @@
 		69366E031C542A6700E79AA7 /* NVPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366E021C542A6700E79AA7 /* NVPageController.m */; };
 		6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6938F3981CB2CEBB00DD975D /* webIcon.png */; };
 		6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */ = {isa = PBXBuildFile; fileRef = 6938F39A1CB2DEE400DD975D /* whiteHouse.png */; };
-		69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */; };
 		6944EDFF1C515A8E00DD5A24 /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */; };
 		6944EE001C515A8E00DD5A24 /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -241,6 +241,7 @@
 		1F5ADD571CB95EDA002D7BED /* PropListField_4.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = PropListField_4.pdf; sourceTree = "<group>"; };
 		69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = GMMobileIconAppStore.jpg; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
+		6924B4351D37BDC8007C6C76 /* trackLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackLocation.png; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
 		692B4A031BF6392E0016CE5D /* redMinusSign.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redMinusSign.png; sourceTree = "<group>"; };
@@ -262,8 +263,6 @@
 		69366E021C542A6700E79AA7 /* NVPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPageController.m; sourceTree = "<group>"; };
 		6938F3981CB2CEBB00DD975D /* webIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = webIcon.png; sourceTree = "<group>"; };
 		6938F39A1CB2DEE400DD975D /* whiteHouse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteHouse.png; sourceTree = "<group>"; };
-		69394F961C4ECBA200F140DE /* SelectOrganizationVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectOrganizationVC.h; sourceTree = "<group>"; };
-		69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectOrganizationVC.m; sourceTree = "<group>"; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
 		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
@@ -672,6 +671,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6924B4351D37BDC8007C6C76 /* trackLocation.png */,
 				692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */,
 				692EFA541D36B0F5007B0D18 /* question-256x256.png */,
 				695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */,
@@ -886,8 +886,6 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
-				69394F961C4ECBA200F140DE /* SelectOrganizationVC.h */,
-				69394F971C4ECBA200F140DE /* SelectOrganizationVC.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
 				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
@@ -1137,6 +1135,7 @@
 				694FB1DB1C588363005410F6 /* Reader-Button-N@3x.png in Resources */,
 				1F5ADD581CB95EDA002D7BED /* PropListField_4.pdf in Resources */,
 				694FB1D81C588363005410F6 /* Reader-Button-H@3x.png in Resources */,
+				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
 				694FB1E81C588363005410F6 /* Reader-Print.png in Resources */,
 				694FB1E41C588363005410F6 /* Reader-Mark-N@3x.png in Resources */,
 				692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */,
@@ -1267,7 +1266,6 @@
 				EB5521D21A61B6A8008CE2D1 /* AppDelegate.m in Sources */,
 				A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */,
 				EBCA6C241A926C41003F7FB8 /* PlatView.m in Sources */,
-				69394F981C4ECBA200F140DE /* SelectOrganizationVC.m in Sources */,
 				EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */,
 				EBFC2A341BE9186900E0C1B3 /* CrimeDataDisplay.m in Sources */,
 				694FB1B51C58830E005410F6 /* ReaderThumbRender.m in Sources */,

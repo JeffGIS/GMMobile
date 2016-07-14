@@ -23,7 +23,6 @@
 @property (nonatomic) FTPDataPush *push;
 @property (nonatomic, copy) NSArray *products;
 @property (nonatomic, copy) NSString *iapFilePath;
-@property (nonatomic) MPMoviePlayerController *mpController;
 @property (nonatomic) GLKView *glView;
 @property (nonatomic) CADisplayLink *displayLink;
 @property (nonatomic) GLKBaseEffect *effect;
@@ -34,6 +33,7 @@
 @property (nonatomic) vec3 *vecGrid;
 @property (nonatomic) int len;
 @property (nonatomic) CrimeData *cd;
+@property (nonatomic) NVTextAlert *textAlert;
 
 @end
 
@@ -325,7 +325,10 @@ EAGLContext *CreateBestEAGLContext()
     UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
                                                                                         ofType:@"png"]];
     
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, nil];
+    UIImage *trackLocation = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"trackLocation"
+                                                                                            ofType:@"png"]];
+    
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, trackLocation, nil];
     
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = 72.0;
@@ -522,15 +525,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    UIWindow *backgroundWindow = UIApplication.sharedApplication.keyWindow;
-    
-    if ([backgroundWindow.subviews containsObject:_mpController.view])
-    {
-        [UIView animateWithDuration:duration animations:^{
-            _mpController.view.frame = CGRectMake(0.0, 0.0, backgroundWindow.frame.size.height,
-                                                  backgroundWindow.frame.size.width);
-        }];
-    }
+    [_textAlert willRotateWithDuration:duration];
 }
 
 - (void)FTPPushDidComplete:(FTPDataType)dataType
@@ -553,12 +548,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)loadData
 {
-    NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
-                                                     delegate:self
-                                                        title:@"Password Required for Access to Load Data"];
+    _textAlert = [NVTextAlert showTextAlertinView:self.view
+                                         delegate:self
+                                            title:@"Password Required for Access to Load Data"];
     
-    textAlert.keyboardType = UIKeyboardTypeNumberPad;
-    textAlert.minimumCharacters = 0;
+    _textAlert.keyboardType = UIKeyboardTypeNumberPad;
+    _textAlert.minimumCharacters = 0;
 }
 
 - (void)calibrateDevice
@@ -575,10 +570,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [textAlert hideTextAlert:YES];
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSDateFormatter *dateFormatter = NSDateFormatter.new;
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    [dateFormatter setDateFormat:@"MMdd"];
+    [dateFormatter setDateFormat:@"MMedd"];
     
     NSString *dateString = [dateFormatter stringFromDate:NSDate.date];
     dateString = reverseString(dateString);
@@ -605,12 +600,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 1)
     {
-        NVTextAlert *textAlert = [NVTextAlert showTextAlertinView:self.view
-                                                         delegate:self
-                                                            title:@"Password Required for Access to Load Data"];
+        _textAlert = [NVTextAlert showTextAlertinView:self.view
+                                             delegate:self
+                                                title:@"Password Required for Access to Load Data"];
         
-        textAlert.keyboardType = UIKeyboardTypeNumberPad;
-        textAlert.minimumCharacters = 0;
+        _textAlert.keyboardType = UIKeyboardTypeNumberPad;
+        _textAlert.minimumCharacters = 0;
     }
     
     [alertView hideLargeAlertView:YES];
