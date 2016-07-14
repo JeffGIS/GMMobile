@@ -372,6 +372,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         
         case HCConfigSewers:
         case HCConfigAlleyWalls:
+        case HCConfigAlleyWallStatus:
         case HCConfigCrimes:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
             CRAPI.sharedInstance.parcelTextOption = 2;
@@ -389,14 +390,14 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             CRAPI.sharedInstance.parcelTextOption = 0;
             break;
     }
-    if (_currentApp == HCConfigAlleyWalls || _currentApp == HCConfigCurbRamps)
+    if (_currentApp == HCConfigAlleyWalls || _currentApp == HCConfigAlleyWallStatus || _currentApp == HCConfigCurbRamps)
     {
         NSString *places = [CRAPI.sharedInstance getPlacesStringFromFile];
         
         [CRAPI.sharedInstance savePlacesString:places];
         [CRAPI.sharedInstance processPlaces];
         NSInteger selectedRow = [UserDefaults.defaults integerForKey:@"SelectedRow"];
-        if (_currentApp == HCConfigAlleyWalls)
+        if (_currentApp == HCConfigAlleyWalls || _currentApp == HCConfigAlleyWallStatus)
             selectedRow = -1;
         BOOL rtn = [CRAPI.sharedInstance processPlacesArray:selectedRow];
         if (!rtn && selectedRow < 0)
