@@ -20,6 +20,8 @@
 		692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF21CA2FB6C00AFCA9A /* whiteTrashCan.png */; };
 		692D9CF71CA2FCAA00AFCA9A /* whiteList.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF51CA2FCAA00AFCA9A /* whiteList.png */; };
 		692D9CF81CA2FCAA00AFCA9A /* whitePlus.png in Resources */ = {isa = PBXBuildFile; fileRef = 692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */; };
+		692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */ = {isa = PBXBuildFile; fileRef = 692EFA541D36B0F5007B0D18 /* question-256x256.png */; };
+		692EFA571D36B11D007B0D18 /* questionMarkHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */; };
 		69307FE91BD0B6910036D936 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE71BD0B6910036D936 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69307FEA1BD0B6910036D936 /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69307FE81BD0B6910036D936 /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69352E511C1A7D57009A486B /* grayscale.png in Resources */ = {isa = PBXBuildFile; fileRef = 69352E501C1A7D57009A486B /* grayscale.png */; };
@@ -152,7 +154,6 @@
 		A97B72811ADB5D4B001ACFAE /* beep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A97B727F1ADB5D4B001ACFAE /* beep.mp3 */; };
 		A97B72821ADB5D4B001ACFAE /* finalBeep.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */; };
 		A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */ = {isa = PBXBuildFile; fileRef = A97C62161AE0AD7900DA7738 /* greenHelpButton.png */; };
-		A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */ = {isa = PBXBuildFile; fileRef = A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */; };
 		A97DFB741AAE5E6E00F225DD /* compass.png in Resources */ = {isa = PBXBuildFile; fileRef = A97DFB731AAE5E6E00F225DD /* compass.png */; };
 		A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */ = {isa = PBXBuildFile; fileRef = A98A57AD1B20AFBE00906FBC /* calibrate.png */; };
 		A996613B1AB0BCFF006C0106 /* MarkerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A996613A1AB0BCFF006C0106 /* MarkerButton.m */; };
@@ -250,6 +251,8 @@
 		692D9CF21CA2FB6C00AFCA9A /* whiteTrashCan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteTrashCan.png; sourceTree = "<group>"; };
 		692D9CF51CA2FCAA00AFCA9A /* whiteList.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteList.png; sourceTree = "<group>"; };
 		692D9CF61CA2FCAA00AFCA9A /* whitePlus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whitePlus.png; sourceTree = "<group>"; };
+		692EFA541D36B0F5007B0D18 /* question-256x256.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "question-256x256.png"; sourceTree = "<group>"; };
+		692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMarkHighlighted.png; sourceTree = "<group>"; };
 		69307FE71BD0B6910036D936 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		69307FE81BD0B6910036D936 /* ContactsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ContactsUI.framework; path = System/Library/Frameworks/ContactsUI.framework; sourceTree = SDKROOT; };
 		69352E501C1A7D57009A486B /* grayscale.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayscale.png; sourceTree = "<group>"; };
@@ -420,7 +423,6 @@
 		A97B727F1ADB5D4B001ACFAE /* beep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = beep.mp3; sourceTree = "<group>"; };
 		A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = finalBeep.mp3; sourceTree = "<group>"; };
 		A97C62161AE0AD7900DA7738 /* greenHelpButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenHelpButton.png; sourceTree = "<group>"; };
-		A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ManageMyLocationMap.pdf; sourceTree = "<group>"; };
 		A97DFB731AAE5E6E00F225DD /* compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = compass.png; sourceTree = "<group>"; };
 		A98A57AD1B20AFBE00906FBC /* calibrate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calibrate.png; sourceTree = "<group>"; };
 		A99661391AB0BCFF006C0106 /* MarkerButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerButton.h; sourceTree = "<group>"; };
@@ -670,6 +672,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */,
+				692EFA541D36B0F5007B0D18 /* question-256x256.png */,
 				695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */,
 				69E1CFD91CF608DD002A4611 /* SampleCurbRamp2.jpg */,
 				69E1CFDA1CF608DD002A4611 /* SampleCurbRamp1.jpg */,
@@ -937,7 +941,6 @@
 				1FB2CC6B1CB56D9E001360CF /* PropListDescriptions */,
 				694FB1801C5882D7005410F6 /* PDFReaderCore */,
 				699822601C69734F003476DD /* hotspottest.bin */,
-				A97C621B1AE0C33700DA7738 /* ManageMyLocationMap.pdf */,
 				A97B727F1ADB5D4B001ACFAE /* beep.mp3 */,
 				A97B72801ADB5D4B001ACFAE /* finalBeep.mp3 */,
 				EB398F0D1AC04B530043875E /* censusdatadef.txt */,
@@ -1136,6 +1139,7 @@
 				694FB1D81C588363005410F6 /* Reader-Button-H@3x.png in Resources */,
 				694FB1E81C588363005410F6 /* Reader-Print.png in Resources */,
 				694FB1E41C588363005410F6 /* Reader-Mark-N@3x.png in Resources */,
+				692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */,
 				A95EC7E01B21FC280031B903 /* greenPlusSign.png in Resources */,
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
@@ -1143,7 +1147,6 @@
 				69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */,
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
-				A97C621C1AE0C33700DA7738 /* ManageMyLocationMap.pdf in Resources */,
 				69E1CFDC1CF608DD002A4611 /* SampleCurbRamp1.jpg in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				694FB1E51C588363005410F6 /* Reader-Mark-Y.png in Resources */,
@@ -1200,6 +1203,7 @@
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
 				69E1CFDB1CF608DD002A4611 /* SampleCurbRamp2.jpg in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
+				692EFA571D36B11D007B0D18 /* questionMarkHighlighted.png in Resources */,
 				A97C62171AE0AD7900DA7738 /* greenHelpButton.png in Resources */,
 				694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */,
 				1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */,
