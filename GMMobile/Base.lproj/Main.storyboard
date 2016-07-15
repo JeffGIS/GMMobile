@@ -3,6 +3,8 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -5359,48 +5361,107 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rGG-Ua-vKx">
-                                <rect key="frame" x="9" y="20" width="121" height="71"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rGG-Ua-vKx">
+                                <rect key="frame" x="20" y="20" width="173" height="71"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="173" id="3k7-GX-wFh"/>
+                                    <constraint firstAttribute="height" constant="71" id="P3T-er-fbc"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <action selector="return:" destination="U1q-YB-BWU" eventType="touchUpInside" id="tCa-bQ-4Wp"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCk-7P-pOj">
-                                <rect key="frame" x="481" y="28" width="109" height="63"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eCk-7P-pOj">
+                                <rect key="frame" x="201" y="20" width="166" height="71"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="166" id="X07-Md-YFT"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                 <state key="normal" title="Start"/>
                                 <connections>
                                     <action selector="startTransfer:" destination="U1q-YB-BWU" eventType="touchUpInside" id="v8L-X7-wh8"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="70E-Bk-w5S">
-                                <rect key="frame" x="46" y="99" width="516" height="84"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="70E-Bk-w5S">
+                                <rect key="frame" x="20" y="99" width="560" height="108"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="108" id="Ea9-fk-Inm"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jtL-O9-pKQ">
-                                <rect key="frame" x="143" y="389" width="315" height="63"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
-                                <state key="normal" title="Skip and Restart"/>
-                                <connections>
-                                    <action selector="skipAndRestart:" destination="U1q-YB-BWU" eventType="touchUpInside" id="ywS-em-oxy"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FU8-da-WNY">
-                                <rect key="frame" x="143" y="226" width="315" height="63"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FU8-da-WNY">
+                                <rect key="frame" x="201" y="215" width="166" height="63"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="63" id="10S-65-1ye"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                 <state key="normal" title="Restart"/>
                                 <connections>
                                     <action selector="restart:" destination="U1q-YB-BWU" eventType="touchUpInside" id="WCD-4R-mQN"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tgo-R9-fBI">
+                                <rect key="frame" x="375" y="20" width="205" height="71"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Pick Directory"/>
+                                <connections>
+                                    <action selector="pickDirectory:" destination="U1q-YB-BWU" eventType="touchUpInside" id="5oi-6q-k7I"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KRS-K6-si2">
+                                <rect key="frame" x="20" y="286" width="560" height="108"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="108" id="0uS-Hu-0sU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jtL-O9-pKQ">
+                                <rect key="frame" x="20" y="402" width="560" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="Fe8-4X-7KW"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                <state key="normal" title="Skip and Restart"/>
+                                <connections>
+                                    <action selector="skipAndRestart:" destination="U1q-YB-BWU" eventType="touchUpInside" id="ywS-em-oxy"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="rGG-Ua-vKx" firstAttribute="leading" secondItem="70E-Bk-w5S" secondAttribute="leading" id="1Hf-89-DGZ"/>
+                            <constraint firstItem="rGG-Ua-vKx" firstAttribute="leading" secondItem="te7-HF-qTf" secondAttribute="leadingMargin" id="3W2-V4-rFG"/>
+                            <constraint firstItem="70E-Bk-w5S" firstAttribute="top" secondItem="rGG-Ua-vKx" secondAttribute="bottom" constant="8" symbolic="YES" id="8YH-hI-MXV"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="baseline" secondItem="rGG-Ua-vKx" secondAttribute="firstBaseline" id="Bgl-cY-Kmx"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="jtL-O9-pKQ" secondAttribute="leading" id="E42-YV-Pwm"/>
+                            <constraint firstItem="tgo-R9-fBI" firstAttribute="trailing" secondItem="70E-Bk-w5S" secondAttribute="trailing" id="Ee4-uY-VrF"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="KRS-K6-si2" secondAttribute="trailing" id="Lsm-y3-n4g"/>
+                            <constraint firstItem="KRS-K6-si2" firstAttribute="top" secondItem="FU8-da-WNY" secondAttribute="bottom" constant="8" id="MtO-7T-l4n"/>
+                            <constraint firstItem="FU8-da-WNY" firstAttribute="top" secondItem="70E-Bk-w5S" secondAttribute="bottom" constant="8" symbolic="YES" id="NGh-Ni-Aeh"/>
+                            <constraint firstItem="jtL-O9-pKQ" firstAttribute="top" secondItem="KRS-K6-si2" secondAttribute="bottom" constant="8" id="Nh3-h4-7oK"/>
+                            <constraint firstItem="tgo-R9-fBI" firstAttribute="trailing" secondItem="te7-HF-qTf" secondAttribute="trailingMargin" id="Rz4-h0-7Tj"/>
+                            <constraint firstAttribute="leadingMargin" secondItem="KRS-K6-si2" secondAttribute="leading" id="c44-Dv-5JN"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="trailing" secondItem="FU8-da-WNY" secondAttribute="trailing" id="cYr-PE-cR0"/>
+                            <constraint firstItem="rGG-Ua-vKx" firstAttribute="top" secondItem="eCk-7P-pOj" secondAttribute="top" id="inY-im-JSQ"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="top" secondItem="tgo-R9-fBI" secondAttribute="top" id="ip5-dp-pI8"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="leading" secondItem="FU8-da-WNY" secondAttribute="leading" id="j4e-7H-UgN"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="baseline" secondItem="tgo-R9-fBI" secondAttribute="baseline" id="lG4-iW-Xjo"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="leading" secondItem="rGG-Ua-vKx" secondAttribute="trailing" constant="8" symbolic="YES" id="lMc-EY-07S"/>
+                            <constraint firstItem="eCk-7P-pOj" firstAttribute="baseline" secondItem="tgo-R9-fBI" secondAttribute="firstBaseline" id="o9j-2W-9LJ"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="jtL-O9-pKQ" secondAttribute="trailing" id="qiw-dP-Fom"/>
+                            <constraint firstItem="rGG-Ua-vKx" firstAttribute="baseline" secondItem="eCk-7P-pOj" secondAttribute="firstBaseline" id="ry9-H0-CdE"/>
+                            <constraint firstItem="rGG-Ua-vKx" firstAttribute="top" secondItem="wVi-qK-t5j" secondAttribute="bottom" id="tpE-qv-VtN"/>
+                            <constraint firstItem="tgo-R9-fBI" firstAttribute="leading" secondItem="eCk-7P-pOj" secondAttribute="trailing" constant="8" symbolic="YES" id="ygX-q8-AHG"/>
+                        </constraints>
                     </view>
                     <connections>
+                        <outlet property="currentDirectoryLabel" destination="KRS-K6-si2" id="SLd-z8-NRu"/>
                         <outlet property="messageLabel" destination="70E-Bk-w5S" id="YwS-QR-5u5"/>
                         <outlet property="restartButton" destination="FU8-da-WNY" id="zyO-hw-86I"/>
                         <outlet property="returnButton" destination="rGG-Ua-vKx" id="Lfz-Bp-L8M"/>
@@ -5410,7 +5471,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kyj-Nn-vDh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1343" y="1220"/>
+            <point key="canvasLocation" x="1342" y="1219"/>
         </scene>
     </scenes>
     <resources>
