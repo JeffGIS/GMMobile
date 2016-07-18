@@ -1,13 +1,7 @@
-//
 //  UploadDirectory.h
 //  NVMobile
-//
-//  Created by Jeff Smith on 7/6/16.
-//  Copyright © 2016 GSSi. All rights reserved.
-//
 
 #import <UIKit/UIKit.h>
-//#import "CCodeLibrary/CCodeLibrary.h"
 #import "CCodeLibrary/FTPDirectoryCreate.h"
 #import "CCodeLibrary/FTPDataPush.h"
 #import "CCodeLibrary/GSSiPopoverView.h"

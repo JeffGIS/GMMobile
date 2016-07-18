@@ -1,19 +1,16 @@
-//
 //  UploadDirectory.m
 //  NVMobile
-//
-//  Created by Jeff Smith on 7/6/16.
-//  Copyright © 2016 GSSi. All rights reserved.
-//
 
 #import "UploadDirectory.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/FileLister.h"
 #import "CCodeLibrary/MathUtil.h"
-#import "CCodeLibrary/StringFunctions.h"
-#import <Foundation/Foundation.h>
+#import "CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/NVPopoverTableView.h"
 
-@interface UploadDirectory ()
+@interface UploadDirectory () <NVPopoverTableViewDelegate>
+
+@property (weak, nonatomic) IBOutlet UILabel *currentDirectoryLabel;
 
 @end
 
@@ -22,6 +19,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
@@ -30,13 +28,14 @@
     _dirToUpload = @"AlleyWalls";
     _fromDir = [CRAPI.sharedInstance sharedOutputDirectory:_dirToUpload];
     _fromDir = textUpTo (_fromDir,@"AlleyWalls");
-    
+    _currentDirectoryLabel.text = _fromDir;
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -48,16 +47,6 @@
     [super viewWillDisappear:animated];
     [UIApplication.sharedApplication setIdleTimerDisabled:NO];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 - (void) addDir:(NSString*)path
         toArray:(NSMutableArray*)array
@@ -130,7 +119,8 @@
     _ftpcd = [FTPDirectoryCreate createDirectories:directories
                                        inFTPDomain:@"gssiserver3.com"
                                          directory:@"NVMobile/UploadedDirectories"
-                                          username:@"GSSiProfessionalServer"                                 password: @"GSSi"
+                                          username:@"GSSiProfessionalServer"
+                                          password: @"GSSi"
                                               port:@"21"
                                           delegate:self];
 }
@@ -298,4 +288,34 @@
     }
     
 }
+
+- (IBAction)pickDirectory:(id)sender
+{
+    NSArray *directories = [CRAPI.sharedInstance.docManager directoriesInDirectory:CRAPI.sharedInstance.sharedOutputDirectory].copy;
+    
+    NVPopoverTableView *tableView = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                          delegate:self
+                                                                             title:@"Directory List"
+                                                                         textArray:directories
+                                                                     includeCancel:YES];
+#pragma unused(tableView)
+}
+
+- (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    [popoverTableView hide:YES];
+    
+    _dirToUpload = text;
+    _fromDir = [CRAPI.sharedInstance sharedOutputDirectory:_dirToUpload];
+    _fromDir = textUpTo(_fromDir, text);
+    _currentDirectoryLabel.text = _fromDir;
+}
+
 @end
