@@ -1183,7 +1183,8 @@ didReturnTimeInterval:(NSString *)timeInterval
       fromDirectory:fromDir
              toFile:file
         toDirectory:toDir
-     deleteWhenDone:NO];
+     deleteWhenDone:NO
+     appendFileName:NO];
 }
 
 - (IBAction)outputFile:(id)sender
