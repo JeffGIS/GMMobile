@@ -349,7 +349,8 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         return FALSE;
 
     MapToolbar *tb = CRAPI.sharedInstance.mapToolbar;
-   _currentApp = appID;
+    _currentApp = appID;
+    CRAPI.sharedInstance.currentApp = _currentApp;
     
     for (int prop = 0; prop < NUMMapToolbarProperty; prop++)
     {
@@ -396,19 +397,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         
         [CRAPI.sharedInstance savePlacesString:places];
         [CRAPI.sharedInstance processPlaces];
-        NSInteger selectedRow = [UserDefaults.defaults integerForKey:@"SelectedRow"];
-        if (_currentApp == HCConfigAlleyWalls || _currentApp == HCConfigAlleyWallStatus)
-            selectedRow = -1;
-        BOOL rtn = [CRAPI.sharedInstance processPlacesArray:selectedRow];
-        if (!rtn && selectedRow < 0)
-        {
-            [CRAPI.sharedInstance logToErrorFile:@"NVMobile-Alleywalls does not set place and manager"];
-        }
-        else if (!rtn)
-        {
-            [CRAPI.sharedInstance logToErrorFile:@"NVMobile-CurbRamps does not set place and manager"];
-        }
-        
+        [CRAPI.sharedInstance setGeoIDForCurrentApp];
     }
     return rtn;
 }

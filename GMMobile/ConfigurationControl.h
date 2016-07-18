@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import <UIKit/UIKit.h>
+#import "CCodeLibrary/GSSiEnums.h"
 #import "CCodeLibrary/DisplayCharacteristics.h"
 #import "Theme.h"
 #import "PropertyList.h"
@@ -19,18 +20,6 @@ typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
     None,
     Population,
     HousingUnits,
-};
-
-typedef NS_ENUM(NSInteger, HardCodedConfigs)
-{
-    HCConfigAlleyWalls,
-    HCConfigAlleyWallStatus,
-    HCConfigCurbRamps,
-    HCConfigSewers,
-    HCConfigMetroProp,
-    HCConfigCrimes,
-    HCConfigMapleGrove,
-    HCConfigFromSpreadsheet,
 };
 
 #define NUMHardCodedLayers 9
@@ -93,6 +82,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
+
 - (NSArray *)getLayers;
 - (NSMutableArray *)getDatasetsForApp:(HardCodedConfigs)appID;
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID;
