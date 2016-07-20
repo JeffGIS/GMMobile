@@ -188,7 +188,8 @@
           fromDirectory:fromDir
                  toFile:file
             toDirectory:toDir
-         deleteWhenDone:NO];
+         deleteWhenDone:NO
+         appendFileName:NO];
     }
     else
     {
