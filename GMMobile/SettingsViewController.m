@@ -1162,7 +1162,8 @@ didReturnTimeInterval:(NSString *)timeInterval
     _push.delegate = self;
     _push.popover = _popover;
     
-    AlleyWallData *awd = [AlleyWallData new];
+    //AlleyWallData *awd = [AlleyWallData new];
+    CurbRampData *awd = [CurbRampData new];
    // NSString * sendToServerFile = [awd getSendToServerFile:0];
     
     NSString *toDir = [NSString stringWithFormat:@"NVMobile/UploadedDatabases/%i/%i",CRAPI.sharedInstance.currentManageriPad,CRAPI.sharedInstance.currentiPadWithinManager];
