@@ -132,6 +132,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                              repeats:NO];
                 break;
                 
+            case GetDatabaseSettingAlleyWallNew:
+                break;
             case GetDatabaseSettingParcels:
             case GetDatabaseSettingProperty:
             case GetDatabaseSettingAreas:
@@ -763,6 +765,28 @@ Exit:
 }
 
 - (IBAction)loadAlleyWall:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    NSString *fileName = @"AlleyWalls.slt";
+    AlleyWallData *awd = AlleyWallData.new;
+    NSString * toFile = [awd databasePath];
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.dataType = GetDatabaseSettingAlleyWallNew;
+    pull.useTestServer = USE_TEST_SERVER;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get AlleyWall File"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"NVMobile"
+           toFile:[toFile lastPathComponent]
+      toDirectory:[toFile stringByDeletingLastPathComponent]
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (IBAction)loadAlleyWall_save:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_AlleyWall.gcf";
