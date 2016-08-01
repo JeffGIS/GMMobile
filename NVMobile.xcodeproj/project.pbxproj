@@ -90,6 +90,7 @@
 		697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */; };
 		697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */; };
 		697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */; };
+		6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */; };
 		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
@@ -339,6 +340,7 @@
 		697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueInfoMarker.png; sourceTree = "<group>"; };
 		697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenInfoMarker.png; sourceTree = "<group>"; };
 		697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeInfoMarker.png; sourceTree = "<group>"; };
+		6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_Calibration.pdf; sourceTree = "<group>"; };
 		698664EE1CC2A0AD001E848F /* NVMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NVMobile.entitlements; path = ../NVMobile.entitlements; sourceTree = "<group>"; };
 		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
@@ -668,6 +670,14 @@
 			name = Graphics;
 			sourceTree = "<group>";
 		};
+		6976D00A1D4FD291006098FA /* HelpFiles */ = {
+			isa = PBXGroup;
+			children = (
+				6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */,
+			);
+			name = HelpFiles;
+			sourceTree = "<group>";
+		};
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -936,6 +946,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				6976D00A1D4FD291006098FA /* HelpFiles */,
 				1FB2CC6B1CB56D9E001360CF /* PropListDescriptions */,
 				694FB1801C5882D7005410F6 /* PDFReaderCore */,
 				699822601C69734F003476DD /* hotspottest.bin */,
@@ -1137,6 +1148,7 @@
 				694FB1D81C588363005410F6 /* Reader-Button-H@3x.png in Resources */,
 				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
 				694FB1E81C588363005410F6 /* Reader-Print.png in Resources */,
+				6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */,
 				694FB1E41C588363005410F6 /* Reader-Mark-N@3x.png in Resources */,
 				692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */,
 				A95EC7E01B21FC280031B903 /* greenPlusSign.png in Resources */,
