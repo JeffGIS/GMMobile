@@ -380,7 +380,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    else if (dataType == GetDatabaseSettingAlleyWall)
                                                    {
                                                        [awd executeCmd:str
-                                                          sendToServer:NO];
+                                                          sendToServer:_sendAlleyToServer];
                                                    }
                                                    
                                                    else
@@ -437,13 +437,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                else if (dataType == GetDatabaseSettingAlleyWall)
                                                {
                                                    NSString *deviceName = UIDevice.currentDevice.name;
-                                                   BOOL sendToServer = NO;
                                                    
-                                                   if ([deviceName isEqualToString:@"GSSi-001"])
-                                                       sendToServer = YES;
-                                                   
-                                                   [awd createNewTable:sendToServer];
-                                                   [awd transferExistingTableIntoNewTable:sendToServer];
+                                                   [awd createNewTable:_sendAlleyToServer];
+                                                   [awd transferExistingTableIntoNewTable:_sendAlleyToServer];
                                                    [awd close:YES];
                                                }
                                                else
@@ -786,12 +782,14 @@ Exit:
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
 }
 
-- (IBAction)loadAlleyWall_save:(id)sender
+- (IBAction)loadAlleyWall_old:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_AlleyWall.gcf";
     
-    
+    [CRAPI.sharedInstance clearErrorFile];
+
+    _sendAlleyToServer = YES;
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;

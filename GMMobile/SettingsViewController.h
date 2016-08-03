@@ -33,5 +33,6 @@
 @property NSCondition *condition;
 @property BOOL keepGoing;
 @property (nonatomic) NSTimer *timer;
+@property BOOL sendAlleyToServer;
 
 @end
