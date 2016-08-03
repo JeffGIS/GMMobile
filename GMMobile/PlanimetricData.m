@@ -996,8 +996,11 @@ static float wallPtSize=0;
                                     displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
         {
             LatLongToPixelXYd(pIntPt->y, pIntPt->x, 21, &rampPt.x, &rampPt.y);
-            rampPt.x += offX;
-            rampPt.y += offY;
+            if (rampPt.x < 520 && rampPt.y < 520)
+            {
+                rampPt.x += offX;
+                rampPt.y += offY;
+            }
             PixelXYToLatLongd(rampPt.x, rampPt.y, 21, &rampPt.y, &rampPt.x);
             DPOINT llpoint = TranDPOINT(&rampPt, _pTranLLtoView);
             NSString *text = [NSString stringWithFormat:@"%i\n%i",rampNum,rampType];
