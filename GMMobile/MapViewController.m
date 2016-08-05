@@ -1846,8 +1846,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 ReaderDocument *document = [ReaderDocument withDocumentFilePath:path
                                                                        password:nil];
                 
+                document.pageNumber = [NSNumber numberWithInteger:2];
+                
                 if (document && ![self.childViewControllers containsObject:_readerVC])
                 {
+                    [self clearVectorView];
+                    
                     _readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
                     
                     _readerVC.delegate = self;
