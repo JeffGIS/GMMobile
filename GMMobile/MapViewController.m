@@ -76,6 +76,7 @@
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NSMutableString *dataString;
+@property BOOL needToZoomToExtents;
 
 @end
 
@@ -113,7 +114,7 @@
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanorama = NO;
+    _showsPanorama = _needToZoomToExtents = NO;
     
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
@@ -784,7 +785,9 @@
         
         else
             self.tabBarController.selectedIndex = 3;
+        
         [self extentZoom];
+        _needToZoomToExtents = YES;
     }
     
     [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1240,10 +1243,27 @@
         
         [[self.view viewWithTag:999] removeFromSuperview];
         
+        CGRect *frames = (CGRect *)malloc((sizeof(CGRect) * subviewsArray.count) + 4);
+        
+        for (int i = 0; i < subviewsArray.count; i++)
+            frames[i] = [(UIView *)subviewsArray[i] frame];
+        
+        CGFloat aspectRatio = [self getAspectRatioForBounds:bounds];
+        CGRect targetFrame = largestRect(aspectRatio, 5, _mapView.frame, (int)subviewsArray.count, frames);
+        
+        free(frames);
+        
+        [[self.view viewWithTag:999] removeFromSuperview];
+        
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
         
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withPadding:5.0]];
+        UIEdgeInsets inset = UIEdgeInsetsMake((CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 5.0),
+                                              (CGRectGetMinX(targetFrame) - CGRectGetMinX(_mapView.frame) + 5.0),
+                                              (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
+                                              (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
+        
+        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
     }
     
     else
@@ -2946,6 +2966,12 @@ haveVV:
                     yOriginLandscape += (tlmo.frame.size.height + yFactor);
             }
         }
+    }
+    
+    if (_needToZoomToExtents)
+    {
+        _needToZoomToExtents = NO;
+        [self extentZoom];
     }
 }
 
