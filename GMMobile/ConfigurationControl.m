@@ -364,9 +364,11 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
                                     forKey:@"CurrentConfig"];
     }
     
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     switch (_currentApp)
     {
         case HCConfigMetroProp:
+            CRAPI.sharedInstance.selectBoundaryFromMapType = @"Cities And Townships";
         case HCConfigFromSpreadsheet:
             CRAPI.sharedInstance.parcelTextOption = 1;
             break;
