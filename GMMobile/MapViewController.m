@@ -1171,7 +1171,7 @@
 - (void)extentZoom
 {
     [self stopTrackingUserLocation:NO];
-    GMSCameraPosition *camera;
+    GMSCameraUpdate *update;
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
     NSString *boundaryType = @"BOUNDARY";
@@ -1238,37 +1238,21 @@
             }
         }
         
-        CGRect *frames = (CGRect *)malloc((sizeof(CGRect) * subviewsArray.count) + 4);
-        
-        for (int i = 0; i < subviewsArray.count; i++)
-            frames[i] = [(UIView *)subviewsArray[i] frame];
-        
-        CGFloat aspectRatio = [self getAspectRatioForBounds:bounds];
-        CGRect targetFrame = largestRect(aspectRatio, 5, _mapView.frame, (int)subviewsArray.count, frames);
-        
-        free(frames);
-        
         [[self.view viewWithTag:999] removeFromSuperview];
         
         GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
                                                                                 coordinate:southwest];
         
-        UIEdgeInsets inset = UIEdgeInsetsMake((CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 5.0),
-                                              (CGRectGetMinX(targetFrame) - CGRectGetMinX(_mapView.frame) + 5.0),
-                                              (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
-                                              (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
-        
-        camera = [_mapView cameraForBounds:coordBounds
-                                    insets:inset];
+        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withPadding:5.0]];
     }
     
     else
     {
-        camera = [GMSCameraPosition cameraWithTarget:_target
-                                                zoom:12.0];
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
+                                                                   zoom:12.0];
+        
+        [_mapView animateToCameraPosition:camera];
     }
-    _mapView.camera = camera;
-    [_mapView animateToCameraPosition:camera];
 }
 
 - (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
