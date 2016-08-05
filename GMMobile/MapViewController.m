@@ -784,6 +784,7 @@
         
         else
             self.tabBarController.selectedIndex = 3;
+        [self extentZoom];
     }
     
     [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1266,7 +1267,7 @@
         camera = [GMSCameraPosition cameraWithTarget:_target
                                                 zoom:12.0];
     }
-    
+    _mapView.camera = camera;
     [_mapView animateToCameraPosition:camera];
 }
 
