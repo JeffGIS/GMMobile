@@ -98,6 +98,7 @@
 		6998225B1C6850C9003476DD /* brick_texture.png in Resources */ = {isa = PBXBuildFile; fileRef = 6998225A1C6850C9003476DD /* brick_texture.png */; };
 		699822611C69734F003476DD /* hotspottest.bin in Resources */ = {isa = PBXBuildFile; fileRef = 699822601C69734F003476DD /* hotspottest.bin */; };
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
+		699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699F33BB1D6232AE0074BDFD /* WebKit.framework */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
 		69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */; };
@@ -188,7 +189,6 @@
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
-		A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9F56EBC1A847B47003522AE /* WebKit.framework */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -351,6 +351,7 @@
 		6998225A1C6850C9003476DD /* brick_texture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = brick_texture.png; sourceTree = "<group>"; };
 		699822601C69734F003476DD /* hotspottest.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = hotspottest.bin; sourceTree = "<group>"; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
+		699F33BB1D6232AE0074BDFD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
 		69B46EFD1BC215F100BB7724 /* destinations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = destinations.png; sourceTree = "<group>"; };
@@ -462,7 +463,6 @@
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
 		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A9F3933B1AEA961400DF9574 /* coolArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coolArrow.png; sourceTree = "<group>"; };
-		A9F56EBC1A847B47003522AE /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
@@ -540,6 +540,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */,
 				6944EDFF1C515A8E00DD5A24 /* libNVCoordinateLibrary.a in Frameworks */,
 				6944EE001C515A8E00DD5A24 /* libNVShapefileLibrary.a in Frameworks */,
 				69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */,
@@ -563,7 +564,6 @@
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
 				A99CD8CC1A9DBA940049F271 /* AVFoundation.framework in Frameworks */,
 				A9476B471A9C358A0082476B /* CoreText.framework in Frameworks */,
-				A9F56EBD1A847B47003522AE /* WebKit.framework in Frameworks */,
 				EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */,
 				EB55226E1A7523D5008CE2D1 /* UIKit.framework in Frameworks */,
 				EB55226C1A7523BC008CE2D1 /* QuartzCore.framework in Frameworks */,
@@ -771,6 +771,7 @@
 		A9C837291A65B27C005EC4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				699F33BB1D6232AE0074BDFD /* WebKit.framework */,
 				690E829B1C11042A00AB410E /* Assets.bundle */,
 				69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */,
 				69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */,
@@ -798,7 +799,6 @@
 				A99CD8CD1A9DBA9A0049F271 /* CoreData.framework */,
 				A99CD8CB1A9DBA940049F271 /* AVFoundation.framework */,
 				A9476B461A9C358A0082476B /* CoreText.framework */,
-				A9F56EBC1A847B47003522AE /* WebKit.framework */,
 				EB55226F1A7523E6008CE2D1 /* Foundation.framework */,
 				EB55226D1A7523D5008CE2D1 /* UIKit.framework */,
 				EB55226B1A7523BC008CE2D1 /* QuartzCore.framework */,

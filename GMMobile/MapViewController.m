@@ -30,7 +30,7 @@
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
-@property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama;
+@property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
 @property (nonatomic, copy) NSString *selectedPlat;
@@ -112,7 +112,7 @@
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
-    _animateToLocation = YES;
+    _animateToLocation = _usePlatView = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _needToZoomToExtents = NO;
     
@@ -1838,6 +1838,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 if (_screenSetting == MapViewScreenSettingFullscreen && _selectedPlatRefno > 0)
                 {
+                    _usePlatView = YES;
                     [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
                     [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
                 }
@@ -1845,28 +1846,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case FTPDataPDF:
             {
-                CRAPI.sharedInstance.currentPlatImagePath = path;
-                CRAPI.sharedInstance.currentPlatType = @"pdf";
+                _usePlatView = NO;
+                [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
+                [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
                 
-                ReaderDocument *document = [ReaderDocument withDocumentFilePath:path
-                                                                       password:nil];
-                
-                document.pageNumber = [NSNumber numberWithInteger:2];
-                
-                if (document && ![self.childViewControllers containsObject:_readerVC])
-                {
-                    [self clearVectorView];
-                    
-                    _readerVC = [[ReaderViewController alloc] initWithReaderDocument:document];
-                    
-                    _readerVC.delegate = self;
-                    _readerVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-                    _readerVC.modalPresentationStyle = UIModalPresentationFullScreen;
-                    
-                    [self presentViewController:_readerVC
-                                       animated:YES
-                                     completion:nil];
-                }
+                NVWebView *nvwv = [NVWebView showWebViewInView:_firstView showFileAtPath:path];
+                nvwv.delegate = self;
+                [nvwv hideReturnButton];
+                [self clearVectorView];
             }
                 break;
                 
@@ -3738,6 +3725,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSString *query = [NSString stringWithFormat:@"www.zillow.com/homes/%@-%@-%@-MN_rb/", houseAndUnit, streetName, city];
         NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
         nvwv.delegate = self;
+        [self clearVectorView];
     }
 }
 
@@ -3749,6 +3737,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         NVWebView *nvwv = [NVWebView showWebViewInView:self.view urlString:query];
         nvwv.delegate = self;
+        [self clearVectorView];
     }
 }
 
@@ -3756,6 +3745,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [webView hide:YES];
     [self deselectTableViewRow];
+    
+    [self refreshVectorView:_mapView.projection.visibleRegion
+                     atZoom:_mapView.camera.zoom];
 }
 
 - (void)showStreetView
@@ -5226,7 +5218,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
     
-    if (setting != MapViewScreenSettingFullscreen)
+    if (setting != MapViewScreenSettingFullscreen && _usePlatView)
     {
         CGRect frame = CGRectZero;
         
