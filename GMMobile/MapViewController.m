@@ -76,7 +76,6 @@
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NSMutableString *dataString;
-@property BOOL needToZoomToExtents;
 
 @end
 
@@ -114,7 +113,7 @@
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = _usePlatView = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanorama = _needToZoomToExtents = NO;
+    _showsPanorama = NO;
     
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
@@ -786,8 +785,11 @@
         else
             self.tabBarController.selectedIndex = 3;
         
-        [self extentZoom];
-        _needToZoomToExtents = YES;
+        if (_firstTimeAppear)
+        {
+            [self extentZoom];
+            _firstTimeAppear = NO;
+        }
     }
     
     [self refreshVectorView:_mapView.projection.visibleRegion
@@ -1076,6 +1078,14 @@
         _compassMargin = 6.0;
     
     [self updateCompassPosition];
+    
+    MarkerButton *marker = [MarkerButton markerWithPosition:CLLocationCoordinate2DMake(45.09934, -93.4582)
+                                                       view:self.view
+                                                        map:_mapView
+                                            statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
+                                                   delegate:self];
+    
+    [_markerArray addObject:marker];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -1174,7 +1184,6 @@
 - (void)extentZoom
 {
     [self stopTrackingUserLocation:NO];
-    GMSCameraUpdate *update;
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
     NSString *boundaryType = @"BOUNDARY";
@@ -1850,10 +1859,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
                 [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
                 
+                for (NVWebView *nvwvs in self.view.subviews)
+                {
+                    if ([nvwvs isKindOfClass:NVWebView.class])
+                        [nvwvs removeFromSuperview];
+                }
+                
                 NVWebView *nvwv = [NVWebView showWebViewInView:_firstView showFileAtPath:path];
+                [nvwv setContentOffset:CGPointMake(155.0, 1409.0) zoomScale:1.525];
                 nvwv.delegate = self;
                 [nvwv hideReturnButton];
-                [self clearVectorView];
+                
+                CLLocationCoordinate2D target = CLLocationCoordinate2DMake(45.09934, -93.4582);
+                GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target zoom:17.863 bearing:330.0 viewingAngle:0.0];
+                [_mapView moveCamera:[GMSCameraUpdate setCamera:position]];
             }
                 break;
                 
@@ -2953,12 +2972,6 @@ haveVV:
                     yOriginLandscape += (tlmo.frame.size.height + yFactor);
             }
         }
-    }
-    
-    if (_needToZoomToExtents)
-    {
-        _needToZoomToExtents = NO;
-        [self extentZoom];
     }
 }
 
