@@ -1865,13 +1865,22 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                         [nvwvs removeFromSuperview];
                 }
                 
-                NVWebView *nvwv = [NVWebView showWebViewInView:_firstView showFileAtPath:path];
-                [nvwv zoomToPoint:CGPointMake(355.0, 1075.0) withScale:1.525 rotation:330.0];
+                NVWebView *nvwv = [NVWebView showWebViewInView:_firstView
+                                                showFileAtPath:path];
+                
+                [nvwv zoomToPoint:CGPointMake(0.42, 0.34)
+                       withinPage:3
+                        withScale:1.525
+                         rotation:330.0];
+                
                 nvwv.delegate = self;
                 [nvwv hideReturnButton];
                 
                 CLLocationCoordinate2D target = CLLocationCoordinate2DMake(45.09934, -93.458);
-                GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target zoom:17.863];
+                
+                GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target
+                                                                             zoom:17.863];
+                
                 [_mapView moveCamera:[GMSCameraUpdate setCamera:position]];
             }
                 break;
