@@ -1079,7 +1079,7 @@
     
     [self updateCompassPosition];
     
-    MarkerButton *marker = [MarkerButton markerWithPosition:CLLocationCoordinate2DMake(45.09934, -93.4582)
+    MarkerButton *marker = [MarkerButton markerWithPosition:CLLocationCoordinate2DMake(45.09934, -93.458)
                                                        view:self.view
                                                         map:_mapView
                                             statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
@@ -1866,12 +1866,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
                 
                 NVWebView *nvwv = [NVWebView showWebViewInView:_firstView showFileAtPath:path];
-                [nvwv setContentOffset:CGPointMake(155.0, 1409.0) zoomScale:1.525];
+                [nvwv zoomToPoint:CGPointMake(355.0, 1075.0) withScale:1.525 rotation:330.0];
                 nvwv.delegate = self;
                 [nvwv hideReturnButton];
                 
-                CLLocationCoordinate2D target = CLLocationCoordinate2DMake(45.09934, -93.4582);
-                GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target zoom:17.863 bearing:330.0 viewingAngle:0.0];
+                CLLocationCoordinate2D target = CLLocationCoordinate2DMake(45.09934, -93.458);
+                GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target zoom:17.863];
                 [_mapView moveCamera:[GMSCameraUpdate setCamera:position]];
             }
                 break;
