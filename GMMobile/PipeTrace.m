@@ -590,6 +590,7 @@ $RETURN(1);
     sqlite3_stmt *statement = NULL;
     dbounds bounds;
     
+    [CRAPI.sharedInstance logToErrorFileIgnore:YES];
     InitDBounds(&bounds);
     
     NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
@@ -629,6 +630,8 @@ $RETURN(1);
     SQLOK(0,sqlite3_finalize(statement),_sd.database);
     *pbounds = bounds;
     [_sd close];
+    [CRAPI.sharedInstance logToErrorFileIgnore:NO];
+
 }
 
 -(int) getPipeTraceCount
@@ -636,6 +639,7 @@ $RETURN(1);
     int nrec = 0;
     sqlite3_stmt *statement = NULL;
     NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM TRACE_HIGHLIGHT;"];
+    [CRAPI.sharedInstance logToErrorFileIgnore:YES];
     
     SewerData *sd = [[SewerData alloc]init];
     [sd open];
@@ -647,6 +651,7 @@ $RETURN(1);
     
     SQLOK(0,sqlite3_finalize(statement),sd.database);
     [sd close];
+    [CRAPI.sharedInstance logToErrorFileIgnore:NO];
     return nrec;
 }
 
@@ -665,6 +670,7 @@ $RETURN(1);
     DPOINT BasePt;
     int numPoints;
     CGColorRef color = UIColor.redColor.CGColor;
+    [CRAPI.sharedInstance logToErrorFileIgnore:YES];
 
     sqlite3_stmt *statement = NULL;
     NSString * query = @"SELECT BasePointX,BasePointY,NumPoints,Points FROM TRACE_HIGHLIGHT,STORM_LINE WHERE STORM_LINE.FACILITY_ID = TRACE_HIGHLIGHT.FACILITY_ID";
@@ -719,6 +725,7 @@ $RETURN(1);
     
     SQLOK(0,sqlite3_finalize(statement), _sd.database);
     [_sd close];
+    [CRAPI.sharedInstance logToErrorFileIgnore:NO];
 }
 
 - (BOOL)outputPipeTrace:(NSString *)toPath
