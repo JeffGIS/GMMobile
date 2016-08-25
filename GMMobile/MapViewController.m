@@ -1080,14 +1080,6 @@
         _compassMargin = 6.0;
     
     [self updateCompassPosition];
-    
-    MarkerButton *marker = [MarkerButton markerWithPosition:CLLocationCoordinate2DMake(45.09934, -93.458)
-                                                       view:self.view
-                                                        map:_mapView
-                                            statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
-                                                   delegate:self];
-    
-    [_markerArray addObject:marker];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -1488,6 +1480,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.type = MarkerInfoWindowTypeMGVSanPoint;
                     break;
                     
+                default:
+                    break;
             }
             
             marker.refno = pi.refno;
@@ -1892,9 +1886,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case FTPDataPDF:
             {
-                _usePlatView = NO;
+                /*_usePlatView = NO;
                 [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
-                [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
+                [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];*/
                 
                 for (NVWebView *nvwvs in self.view.subviews)
                 {
@@ -1902,23 +1896,24 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                         [nvwvs removeFromSuperview];
                 }
                 
-                NVWebView *nvwv = [NVWebView showWebViewInView:_firstView
+                NVWebView *nvwv = [NVWebView showWebViewInView:self.view
                                                 showFileAtPath:path];
                 
-                [nvwv zoomToPoint:CGPointMake(0.42, 0.34)
-                       withinPage:3
-                        withScale:1.525
-                         rotation:330.0];
-                
                 nvwv.delegate = self;
-                [nvwv hideReturnButton];
+                
+                [nvwv zoomToPoint:CGPointMake(0.5, 0.5)
+                       withinPage:3
+                        withScale:3.0
+                         rotation:45.0];
+                
+                /*[nvwv hideReturnButton];
                 
                 CLLocationCoordinate2D target = CLLocationCoordinate2DMake(45.09934, -93.458);
                 
                 GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target
                                                                              zoom:17.863];
                 
-                [_mapView moveCamera:[GMSCameraUpdate setCamera:position]];
+                [_mapView moveCamera:[GMSCameraUpdate setCamera:position]];*/
             }
                 break;
                 
@@ -3537,14 +3532,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([[text substringToIndex:19] isEqualToString:@"Display profile to "])
     {
-        NSString * platName = @"ENA_19_87-26_A0";
-        int page = 3;
-        DPOINT point = {3958.9024337598, 8090.7602356188};
-        [self showMGVPlat:platName
-                     page:page
-                  atPoint:point
-                    scale:1
-                 rotation:0];
+        NSString *platName = @"ENA_19_87-26_A0.pdf";
+        
+        SewerData *sd = [[SewerData alloc] init];
+        
+        [sd loadPlat:platName
+              ofType:@"pdf"
+        usingPopover:_popover
+         andDelegate:self];
     }
     
     else if ([text isEqualToString:@"Display Pipe Attributes"])
@@ -4050,15 +4045,6 @@ didCompleteWithError:(NSError *)error
 - (void)showPipeAttributes
 {
     //implement pipe attributes here (then reload tableView)
-}
-
-- (void)showMGVPlat:(NSString *)PDFName
-               page:(int)page
-            atPoint:(DPOINT)pt
-              scale:(double)scale
-           rotation:(double)rotate
-{
-    
 }
 
 - (void)showPipeTraceUpstream
