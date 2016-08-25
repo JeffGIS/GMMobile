@@ -151,7 +151,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     double mind = DBL_MAX;
     DPOINT midpt, minpt;
-    NSInteger minRef = 0;
+    int minRef = 0;
     NSString * minPlatID = @"";
     
     midpt = DBoundsMid(platlonBounds);
@@ -175,9 +175,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 case SHPT_POINTZ:
                 case SHPT_POINTM:
                 {
-                    DPOINT pt;
+                    DPOINT pt, llpt;
                     pt.x = psCShape->padfX[0];
                     pt.y = psCShape->padfY[0];
+                    llpt = pt;
                     pt = TranDPOINT(&pt, _pTranLLtoView);
                     int iField, fieldWidth, nDecimals;
                     char fieldName[32];
@@ -221,6 +222,25 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         }
                             break;
                             
+                        case SanitaryManhole:
+                            if (hlist)
+                            {
+                                if (findClosestPoint (&llpt,&minpt,&mind,&midpt))
+                                {
+                                    minRef = _dc.refno;
+                                    minPlatID = _dc.string2;
+                                    PickedItem *pi = [PickedItem new];
+                                    pi.refno = _dc.refno;
+                                    pi.identifier = [NSString stringWithFormat:@"SanMH:%i",minRef];
+                                    pi.itemType = _dc.elementType;
+                                    pi.pickedPoint = llpt;
+                                    pi.distance = mind;
+                                    [hlist addObject:pi];
+                                }
+                                
+                            }
+                            break;
+
                         default:
                             break;
                     }
@@ -592,6 +612,34 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     return highlightList;
 }
 
+- (int)pickSHPPoint:(LLPOINT *)pt
+                         ofType:(GraphicElementTypes)type
+                  highlightList:(NSMutableArray*)highlightList
+{
+    int minRef = 0;
+    dbounds bnds;
+    //CGFloat d;
+    CGFloat pickap = 0.005;
+    DPOINT p1, minpt;
+    //DPOINT p2;
+    
+    p1.x = pt->lon;
+    p1.y = pt->lat;
+    minpt = p1;
+    bnds.xmn = (p1.x - pickap);
+    bnds.xmx = (p1.x + pickap);
+    bnds.ymn = (p1.y - pickap);
+    bnds.ymx = (p1.y + pickap);
+    _dc = [DisplayCharacteristics new];
+    _dc.elementType = type;
+    
+    [self processShape:nil highlightList:highlightList LLBounds:&bnds themes:nil];
+    
+    pt->lon = minpt.x;
+    pt->lat = minpt.y;
+    
+    return minRef;
+}
 
 
 @end

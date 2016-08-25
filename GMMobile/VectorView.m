@@ -530,7 +530,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                        {
                                            switch (_pickedItem.itemType)
                                            {
-                                               case PTStormSewerLine:
+                                               case StormMain:
                                                {
                                                    SewerData *sd = [[SewerData alloc] init];
                                                    sd.processingID = CRAPI.sharedInstance.keepProcessing;

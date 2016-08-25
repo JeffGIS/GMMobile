@@ -510,7 +510,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (npicked)
     {
         PickedItem *pi = [[PickedItem alloc]init];
-        pi.itemType = PTPid;
+        pi.itemType = ParcelBoundary;
         pi.distance = mind;
         pi.pickedPoint = minpt;
         pi.identifier = minPID;
@@ -866,7 +866,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (npicked)
     {
         PickedItem *pi = [[PickedItem alloc]init];
-        pi.itemType = PTPid;
+        pi.itemType = ParcelBoundary;
         pi.distance = mind;
         pi.pickedPoint = minpt;
         pi.identifier = minPID;

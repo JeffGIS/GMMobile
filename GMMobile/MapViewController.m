@@ -33,6 +33,7 @@
 @property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID;
+@property (nonatomic, copy) NSString *selectedSanPoint;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
 @property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset;
@@ -50,6 +51,7 @@
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property NSInteger selectedCrime;
+@property NSInteger selectedMGVSanMH;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
@@ -1370,6 +1372,30 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                           atZoom:_mapView.camera.zoom
                    highlightList:highlightList];
         }
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+        {
+            UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+            ud.processingID = CRAPI.sharedInstance.keepProcessing;
+            ud.zoom = _mapView.camera.zoom;
+            ud.passID = PickPass;
+            [ud pickLayers:&llpickPt
+             highlightList:highlightList];
+        }
+        
+        /*UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+        ud.processingID = CRAPI.sharedInstance.keepProcessing;
+        ud.zoom = _zoom;
+        ud.passID = passID;
+        if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+        {
+            [ud displayLayers:_context
+       displayCharacteristics:dc
+                    llCorners:&_latlonCornerPoints
+                     LLBounds:&_latlonBounds
+                   viewBounds:&_viewBounds
+                       themes:themes
+                  pointInArea:_pia];
+        }*/
         
         [planData pickAlleyWallPoint:llpickPt
                        highlightList:highlightList];
@@ -1407,7 +1433,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             switch (pi.itemType)
             {
-                case PTCrime:
+                case CrimePoint:
                 {
                     _selectedCrime = pi.refno;
                     marker.snippet = pi.identifier;
@@ -1420,41 +1446,48 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
                     break;
                     
-                case PTAlleyLine:
+                case AlleyLine:
                     _selectedAlleySeg = pi.identifier;
                     marker.title = _selectedAlleySeg;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeAlleyLine;
                     break;
                     
-                case PTAlleyWallPt:
+                case AlleyWallPoint:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeAlleyWall;
                     break;
                     
-                case PTCRIntersectionPt:
+                case StreetIntersection:
                     _selectedCRIntPt = pi.identifier;
                     marker.title = _selectedCRIntPt;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeCRInt;
                     break;
                     
-                case PTStormSewerLine:
+                case StormMain:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                     
-                case PTPid:
+                case ParcelBoundary:
                     _selectedPID = pi.identifier;
                     CRAPI.sharedInstance.selectedPID = _selectedPID;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
                     marker.type = MarkerInfoWindowTypePID;
                     break;
+                case SanitaryManhole:
+                    _selectedSanPoint = pi.identifier;
+                    marker.title = _selectedSanPoint;
+                    marker.snippet = pi.symbolName;
+                    marker.type = MarkerInfoWindowTypeMGVSanPoint;
+                    break;
+                    
             }
             
             marker.refno = pi.refno;
@@ -1512,6 +1545,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
             case MarkerInfoWindowTypeCrime:
                 _selectedCrime = marker.refno;
+                break;
+                
+            case MarkerInfoWindowTypeMGVSanPoint:
+                _selectedMGVSanMH = marker.refno;
                 break;
                 
             default:
@@ -3498,6 +3535,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
+    else if ([[text substringToIndex:19] isEqualToString:@"Display profile to "])
+    {
+        NSString * platName = @"ENA_19_87-26_A0";
+        int page = 3;
+        DPOINT point = {3958.9024337598, 8090.7602356188};
+        [self showMGVPlat:platName
+                     page:page
+                  atPoint:point
+                    scale:1
+                 rotation:0];
+    }
+    
     else if ([text isEqualToString:@"Display Pipe Attributes"])
     {
         [self showPipeAttributes];
@@ -4001,6 +4050,15 @@ didCompleteWithError:(NSError *)error
 - (void)showPipeAttributes
 {
     //implement pipe attributes here (then reload tableView)
+}
+
+- (void)showMGVPlat:(NSString *)PDFName
+               page:(int)page
+            atPoint:(DPOINT)pt
+              scale:(double)scale
+           rotation:(double)rotate
+{
+    
 }
 
 - (void)showPipeTraceUpstream
@@ -5602,6 +5660,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [newArray insertObject:@"Perform 3D Fly Around"
                            atIndex:2];
             
+            _options = newArray;
+        }
+            break;
+            
+        case MarkerInfoWindowTypeMGVSanPoint:
+        {
+            _options = @[@"Remove Custom Marker"];
+            NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
+            [newArray insertObject:@"Display profile to 3"
+                           atIndex:1];
             _options = newArray;
         }
             break;

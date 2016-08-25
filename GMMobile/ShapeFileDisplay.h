@@ -36,5 +36,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
           themes:(Themes*)themes
      pointInArea:(PointInArea *)pia;
 - (NSMutableArray*)pickPDFPlat:(LLPOINT *)pt;
+- (int)pickSHPPoint:(LLPOINT *)pt
+                         ofType:(GraphicElementTypes)type
+                  highlightList:(NSMutableArray*)hlist;
 
 @end

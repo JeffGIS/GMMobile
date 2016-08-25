@@ -247,6 +247,26 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
     }
 }
+- (int)pickLayers:(LLPOINT*)pt highlightList:(NSMutableArray*)hlist
+{
+    int nPicked = 0;
+    NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
+    ShapeFileDisplay *sfd;
+    NSString *fileName;
+    NSString *shapeFile;
+    
+    fileName = @"ssManhole.shp";
+    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+    if (sfd)
+    {
+        sfd.processingID = _processingID;
+        [sfd pickSHPPoint:pt ofType:SanitaryManhole highlightList:hlist];
+    }
+    return nPicked;
+}
+
 - (NSString *)pickPDFPlat:(LLPOINT *)pt
                 platRefno:(int *)platRef
 {

@@ -189,6 +189,8 @@
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
+		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
+		BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13931D6F78B10072957F /* SANPTID.txt */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -463,6 +465,8 @@
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
 		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A9F3933B1AEA961400DF9574 /* coolArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coolArrow.png; sourceTree = "<group>"; };
+		BB2B13921D6F78B10072957F /* upperlower.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperlower.txt; sourceTree = "<group>"; };
+		BB2B13931D6F78B10072957F /* SANPTID.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SANPTID.txt; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
@@ -949,6 +953,8 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BB2B13921D6F78B10072957F /* upperlower.txt */,
+				BB2B13931D6F78B10072957F /* SANPTID.txt */,
 				6976D00A1D4FD291006098FA /* HelpFiles */,
 				1FB2CC6B1CB56D9E001360CF /* PropListDescriptions */,
 				694FB1801C5882D7005410F6 /* PDFReaderCore */,
@@ -1107,6 +1113,7 @@
 			files = (
 				690E829D1C11044700AB410E /* Assets.bundle in Resources */,
 				A90506461A75E12B00288850 /* settings.png in Resources */,
+				BB2B13941D6F78B10072957F /* upperlower.txt in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
 				694FB1DD1C588363005410F6 /* Reader-Email@2x.png in Resources */,
@@ -1182,6 +1189,7 @@
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
 				692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
+				BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,

@@ -15,7 +15,7 @@
 @interface UserLayerDisplay : NSObject
 @property int processingID;
 @property int zoom;
-@property int passID;
+@property ItemProcessingPassTypes passID;
 
 -(void)displayLayers:(CGContextRef)context
    displayCharacteristics:(DisplayCharacteristics *)dc
@@ -26,5 +26,6 @@
               pointInArea:(PointInArea *)pia;
 - (NSString *)pickPDFPlat:(LLPOINT *)pt
                 platRefno:(int *)platRef;
+- (int)pickLayers:(LLPOINT*)point highlightList:(NSMutableArray*)hlist;
 
 @end

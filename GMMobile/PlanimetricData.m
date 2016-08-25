@@ -586,7 +586,7 @@ static float wallPtSize=0;
     {
         PickedItem *pi = [[PickedItem alloc] init];
         pi.refno = minref;
-        pi.itemType = PTAlleyLine;
+        pi.itemType = AlleyLine;
         pi.distance = mind;
         pi.pickedPoint = minpt;
         pi.identifier = minFid;
@@ -655,7 +655,7 @@ static float wallPtSize=0;
     if (npicked)
     {
         PickedItem *pi = [[PickedItem alloc]init];
-        pi.itemType = PTAlleyWallPt;
+        pi.itemType = AlleyWallPoint;
         pi.distance = max (0,mind - wallPtSize/2);
         pi.pickedPoint = minpt;
         pi.identifier = minID;
@@ -818,7 +818,7 @@ static float wallPtSize=0;
     if (npicked)
     {
         PickedItem *pi = [[PickedItem alloc]init];
-        pi.itemType = PTCRIntersectionPt;
+        pi.itemType = StreetIntersection;
         pi.distance = mind;
         pi.pickedPoint = minpt;
         pi.identifier = minID;
