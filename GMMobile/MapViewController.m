@@ -78,6 +78,7 @@
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NSMutableString *dataString;
+@property BOOL splitPlatView;
 
 @end
 
@@ -115,7 +116,7 @@
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = _usePlatView = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanorama = NO;
+    _showsPanorama = _splitPlatView = NO;
     
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
@@ -1886,34 +1887,43 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case FTPDataPDF:
             {
-                /*_usePlatView = NO;
-                [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
-                [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];*/
+                [self removeAllPlatPDFs];
+                _usePlatView = NO;
+                [self hideMarkersAndInfoWindows:NO];
                 
-                for (NVWebView *nvwvs in self.view.subviews)
+                if (_splitPlatView)
                 {
-                    if ([nvwvs isKindOfClass:NVWebView.class])
-                        [nvwvs removeFromSuperview];
+                    [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitPlatView];
+                    [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
                 }
                 
-                NVWebView *nvwv = [NVWebView showWebViewInView:self.view
-                                                showFileAtPath:path];
+                else
+                {
+                    [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingPlatView];
+                    [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingPlatView];
+                }
                 
-                nvwv.delegate = self;
+                NVWebView *nvwv1 = [NVWebView showWebViewInView:_firstView
+                                                 showFileAtPath:path];
                 
-                [nvwv zoomToPoint:CGPointMake(0.5, 0.5)
-                       withinPage:3
-                        withScale:3.0
-                         rotation:45.0];
+                nvwv1.delegate = self;
+                [nvwv1 hideReturnButton];
                 
-                /*[nvwv hideReturnButton];
+                [nvwv1 zoomToPoint:CGPointMake(0.5, 0.5)
+                        withinPage:3
+                         withScale:3.0
+                          rotation:45.0];
                 
-                CLLocationCoordinate2D target = CLLocationCoordinate2DMake(45.09934, -93.458);
+                NVWebView *nvwv2 = [NVWebView showWebViewInView:_secondView
+                                                 showFileAtPath:path];
                 
-                GMSCameraPosition *position = [GMSCameraPosition cameraWithTarget:target
-                                                                             zoom:17.863];
+                nvwv2.delegate = self;
+                [nvwv2 hideReturnButton];
                 
-                [_mapView moveCamera:[GMSCameraUpdate setCamera:position]];*/
+                [nvwv2 zoomToPoint:CGPointMake(0.5, 0.5)
+                        withinPage:3
+                         withScale:3.0
+                          rotation:45.0];
             }
                 break;
                 
@@ -2174,6 +2184,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
             break;
             
+        case MapViewScreenSettingSplitPlatView:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _firstView.frame =
+                                 CGRectMake(0.0, statusBarHeight, size.width,
+                                            ((size.height - statusBarHeight) / 2.0));
+                             }];
+            
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _secondView.frame = frame1;
+                             }];
+        }
+            break;
+            
         case MapViewScreenSettingTriScreen:
         {
             [UIView animateWithDuration:duration
@@ -2389,6 +2415,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              animations:^{
                                  _platView.center = CGPointMake((_firstView.frame.size.width / 2.0),
                                                                 (_firstView.frame.size.height / 2.0));
+                             }];
+        }
+            break;
+            
+        case MapViewScreenSettingSplitPlatView:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _firstView.frame =
+                                 CGRectMake(0.0, statusBarHeight, (size.height + _tabBarHeight),
+                                            ((size.width - _tabBarHeight - statusBarHeight) / 2.0));
+                             }];
+            
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _secondView.frame = frame1;
                              }];
         }
             break;
@@ -3530,16 +3572,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
-    else if ([[text substringToIndex:19] isEqualToString:@"Display profile to "])
+    else if ([[text substringToIndex:19] isEqualToString:@"Display Profile to "])
     {
-        NSString *platName = @"ENA_19_87-26_A0.pdf";
+        [self dismissTableView];
+        _splitPlatView = NO;
         
-        SewerData *sd = [[SewerData alloc] init];
+        [self performSelector:@selector(loadPlat)
+                   withObject:nil
+                   afterDelay:0.3];
+    }
+    
+    else if ([[text substringToIndex:32] isEqualToString:@"Display Split Screen Profile to "])
+    {
+        [self dismissTableView];
+        _splitPlatView = YES;
         
-        [sd loadPlat:platName
-              ofType:@"pdf"
-        usingPopover:_popover
-         andDelegate:self];
+        [self performSelector:@selector(loadPlat)
+                   withObject:nil
+                   afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Display Pipe Attributes"])
@@ -3736,6 +3786,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    withObject:nil
                    afterDelay:0.3];
     }
+}
+
+- (void)loadPlat
+{
+    NSString *platName = @"ENA_19_87-26_A0.pdf";
+    
+    SewerData *sd = [[SewerData alloc] init];
+    
+    [sd loadPlat:platName
+          ofType:@"pdf"
+    usingPopover:_popover
+     andDelegate:self];
 }
 
 - (void)displayCrimeReport
@@ -5124,6 +5186,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
 {
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+    {
+        if (setting == MapViewScreenSettingSplitScreen)
+            setting = MapViewScreenSettingSplitPlatView;
+        
+        else if (setting == MapViewScreenSettingTriScreen)
+            return;
+    }
+    
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     [_mapView removeAllConstraints];
@@ -5180,11 +5251,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [_mapToolbar normalMode:setting];
     }
     
+    NSTimeInterval duration = 0.25;
+    
+    if (!_usePlatView)
+        duration = 0.0;
+    
     switch (setting)
     {
         case MapViewScreenSettingFullscreen:
         {
-            [UIView animateWithDuration:0.25
+            [self removeAllPlatPDFs];
+            [self showMarkersAndInfoWindows:NO];
+            
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = 0.0;
                                  _mapView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -5196,7 +5275,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                   atZoom:_mapView.camera.zoom];
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = _secondView.frame = frame0;
                              }];
@@ -5207,7 +5286,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
         case MapViewScreenSettingSplitScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
                                  
@@ -5221,12 +5300,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                   atZoom:_mapView.camera.zoom];
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame1;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondView.frame = frame0;
                              }];
@@ -5235,9 +5314,33 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
             break;
             
+        case MapViewScreenSettingSplitPlatView:
+        {
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _mapView.layer.borderWidth = _splitScreenBorderWidth;
+                                 _mapView.frame = frame0;
+                             }];
+            
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _firstView.frame = CGRectMake(0.0, statusBarHeight,
+                                                               width, ((tabBarTop - statusBarHeight) / 2.0));
+                             }];
+            
+            [UIView animateWithDuration:duration
+                             animations:^{
+                                 _secondView.frame = frame1;
+                             }];
+            
+            _screenSetting = MapViewScreenSettingSplitPlatView;CGRectMake(0.0, statusBarHeight,
+                                                                          width, ((tabBarTop - statusBarHeight) / 2.0));
+        }
+            break;
+            
         case MapViewScreenSettingTriScreen:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _mapView.layer.borderWidth = _splitScreenBorderWidth;
                                  
@@ -5251,12 +5354,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                   atZoom:_mapView.camera.zoom];
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = frame2;
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondView.frame =
                                  CGRectMake(0.0, (statusBarHeight + ((tabBarTop - statusBarHeight) / 1.5)),
@@ -5269,13 +5372,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
         case MapViewScreenSettingPlatView:
         {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _firstView.frame = CGRectMake(0.0, statusBarHeight,
                                             width, (tabBarTop - statusBarHeight));
                              }];
             
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                              animations:^{
                                  _secondView.frame = frame0;
                              }];
@@ -5322,6 +5425,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _profileView.frame = CGRectMake(0.0, 0.0, frame4.size.width, frame4.size.height);
             [self addProfileView];
         }
+    }
+}
+
+- (void)removeAllPlatPDFs
+{
+    for (NVWebView *nvwvs in _firstView.subviews)
+    {
+        if ([nvwvs isKindOfClass:NVWebView.class])
+            [nvwvs removeFromSuperview];
+    }
+    
+    for (NVWebView *nvwvs in _secondView.subviews)
+    {
+        if ([nvwvs isKindOfClass:NVWebView.class])
+            [nvwvs removeFromSuperview];
     }
 }
 
@@ -5654,8 +5772,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _options = @[@"Remove Custom Marker"];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
-            [newArray insertObject:@"Display profile to 3"
-                           atIndex:1];
+            
+            [newArray addObject:@"Display Profile to 3"];
+            [newArray addObject:@"Display Split Screen Profile to 3"];
+            
             _options = newArray;
         }
             break;
