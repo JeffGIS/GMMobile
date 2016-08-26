@@ -22,8 +22,19 @@
 
 #define MAX_VECTORVIEWS 8
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate>
+@interface MGVPlatData : NSObject
+@property NSString * pdfFile;
+@property int page;
+@property DPOINT ptUpper, ptLower;
+@property CGFloat scaleUpper, scaleLower;
+@property CGFloat rotUpper, rotLower;
+@property CGFloat imageWidth, imageHeight;
+@end
+@implementation MGVPlatData
+@end
 
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate>
+@property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic, copy) NSArray *options;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
@@ -79,6 +90,7 @@
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NSMutableString *dataString;
 @property BOOL splitPlatView;
+@property int splitPlatDirection;
 
 @end
 
@@ -1543,10 +1555,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _selectedCrime = marker.refno;
                 break;
                 
-            case MarkerInfoWindowTypeMGVSanPoint:
-                _selectedMGVSanMH = marker.refno;
-                break;
-                
             default:
                 break;
         }
@@ -1890,6 +1898,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 [self removeAllPlatPDFs];
                 _usePlatView = NO;
+                if (!_mgvData)
+                    break;
                 [self hideMarkersAndInfoWindows:NO];
                 
                 if (_splitPlatView)
@@ -1911,22 +1921,25 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 nvwv1.tag = 111;
                 [nvwv1 hideReturnButton];
                 
-                [nvwv1 zoomToPoint:CGPointMake(0.5, 0.5)
-                        withinPage:3
-                         withScale:3.0
-                          rotation:45.0];
+                [nvwv1 zoomToPoint:_mgvData.ptUpper
+                        withinPage:_mgvData.page
+                         withScale:_mgvData.scaleUpper
+                          rotation:_mgvData.rotUpper];
                 
-                NVWebView *nvwv2 = [NVWebView showWebViewInView:_secondView
-                                                 showFileAtPath:path];
-                
-                nvwv2.delegate = self;
-                nvwv2.tag = 222;
-                [nvwv2 hideReturnButton];
-                
-                [nvwv2 zoomToPoint:CGPointMake(0.5, 0.7)
-                        withinPage:3
-                         withScale:1.0
-                          rotation:0];
+                if (_splitPlatView)
+                {
+                    NVWebView *nvwv2 = [NVWebView showWebViewInView:_secondView
+                                                     showFileAtPath:path];
+                    
+                    nvwv2.delegate = self;
+                    nvwv2.tag = 222;
+                    [nvwv2 hideReturnButton];
+                    
+                    [nvwv2 zoomToPoint:_mgvData.ptLower
+                            withinPage:_mgvData.page
+                             withScale:_mgvData.scaleLower
+                              rotation:_mgvData.rotLower];
+                }
             }
                 break;
                 
@@ -3575,7 +3588,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
-    else if ([[text substringToIndex:19] isEqualToString:@"Display Profile to "])
+    else if ([[text substringToIndex:min(text.length,19)] isEqualToString:@"Display Plat"])
     {
         [self dismissTableView];
         _splitPlatView = NO;
@@ -3585,10 +3598,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                    afterDelay:0.3];
     }
     
-    else if ([[text substringToIndex:32] isEqualToString:@"Display Split Screen Profile to "])
+    else if ([[text substringToIndex:min(text.length,33)] isEqualToString:@"Display Split Screen Profile to 1"])
     {
         [self dismissTableView];
         _splitPlatView = YES;
+        _splitPlatDirection = 0;
+        [self performSelector:@selector(loadPlat)
+                   withObject:nil
+                   afterDelay:0.3];
+    }
+    
+    else if ([[text substringToIndex:min(text.length,33)] isEqualToString:@"Display Split Screen Profile to 2"])
+    {
+        [self dismissTableView];
+        _splitPlatView = YES;
+        _splitPlatDirection = 1;
         
         [self performSelector:@selector(loadPlat)
                    withObject:nil
@@ -3791,36 +3815,139 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
-- (NSString *) getMGVPlatData:(int)refno
+- (MGVPlatData *) loadMGVData:(NSString*)line
 {
-    NSString * file;
+    char imageFileName[64];
+    
+    NSArray * values = [line componentsSeparatedByString:@"\t"];
+    if (values.count < 8)
+        return 0;
+    MGVPlatData *rtn = MGVPlatData.new;
+    rtn.imageWidth = [values[6] floatValue];
+    rtn.imageHeight = [values[7] floatValue];
+    strcpy (imageFileName,[values[1] UTF8String]);
+    LPSTR cDash = strrchr (imageFileName,'-');
+    *cDash++ = 0;
+    NSString * imageFile = [NSString stringWithUTF8String:imageFileName];
+    rtn.pdfFile =[imageFile stringByAppendingPathExtension:@"pdf"];
+    rtn.page = atoi (cDash);
+    DPOINT pt;
+    pt.x = [values[2] floatValue]*rtn.imageWidth;
+    pt.y = (1.0 - [values[3] floatValue])*rtn.imageHeight;
+    rtn.ptUpper = pt;
+    pt.x = [values[4] floatValue]*rtn.imageWidth;
+    pt.y = (1.0 - [values[5] floatValue])*rtn.imageHeight;
+    rtn.ptLower = pt;
+    rtn.scaleLower = 2;
+    rtn.scaleUpper = 3;
+    return rtn;
+}
+
+DPOINT PercentPoint (DPOINT p,double w,double h)
+{
+    DPOINT rtn = p;
+    rtn.x /= w;
+    rtn.y /= h;
+    return rtn;
+}
+- (NSArray *) getMGVPlatData:(int)refno
+{
+    NSMutableArray * array = NSMutableArray.new;
+    NSString * imageFile;
+    NSString * manholeID;
     NSString * dataFile = [NSBundle.mainBundle pathForResource:@"SANPTID"
                                         ofType:@"txt"];
-    NSString * sanptidData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
-    NSArray * sanptidLines = [sanptidData componentsSeparatedByString:@"\r\n"];
-    for (NSString * line in sanptidLines)
+    NSString * fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    NSArray * Lines = [fileData componentsSeparatedByString:@"\r\n"];
+    for (NSString * line in Lines)
     {
         if (refno && refno == [line integerValue])
         {
             NSArray * values = [line componentsSeparatedByString:@"\t"];
-            file = values[2];
+            manholeID = values[1];
+            imageFile = values[2];
+            break;
         }
     }
-    return [file stringByAppendingPathExtension:@"pdf"];
+    dataFile = [NSBundle.mainBundle pathForResource:@"upperlower"
+                                                        ofType:@"txt"];
+    fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    int index = 0;
+    Lines = [fileData componentsSeparatedByString:@"\r\n"];
+    for (NSString * line in Lines)
+    {
+        NSArray * values = [line componentsSeparatedByString:@"\t"];
+        if (values.count == 8)
+        {
+             if ([values[0] isEqualToString:manholeID] &&
+                [values[1] characterAtIndex:imageFile.length] == '-' &&
+                [[values[1] substringToIndex:imageFile.length] isEqualToString:imageFile])
+            {
+                MGVPlatData *curData = [self loadMGVData:Lines[index]];
+                if (_splitPlatView)
+                {
+                    if (index)
+                    {
+                        MGVPlatData * prevData = [self loadMGVData:Lines[index-1]];
+                        double dist = ldistp(prevData.ptUpper,curData.ptUpper);
+                        prevData.scaleUpper = curData.imageWidth /(1.5*dist);
+                        prevData.scaleLower = prevData.scaleUpper;
+                        if (prevData.ptLower.x > curData.ptLower.x)
+                            prevData.rotUpper = 90 - LTWOPI (getaz (prevData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
+                        else
+                            prevData.rotUpper = 90 - LTWOPI (getaz (curData.ptUpper,prevData.ptUpper)-HALFPI) * RADtoDEG;
+                        prevData.ptUpper = PercentPoint (MidPointD (prevData.ptUpper,curData.ptUpper),curData.imageWidth,curData.imageHeight);
+                        prevData.ptLower = PercentPoint (MidPointD (prevData.ptLower,curData.ptLower),curData.imageWidth,curData.imageHeight);
+                        [array addObject:prevData];
+                    }
+                    MGVPlatData * nextData = nil;
+                    if (index+1 < Lines.count)
+                    {
+                        nextData = [self loadMGVData:Lines[index+1]];
+                        if (nextData)
+                        {
+                            double dist = ldistp(nextData.ptUpper,curData.ptUpper);
+                            nextData.scaleUpper = curData.imageWidth /(1.5*dist);
+                            nextData.scaleLower = nextData.scaleUpper;
+                            if (nextData.ptLower.x > curData.ptLower.x)
+                                nextData.rotUpper = 90 - LTWOPI (getaz (nextData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
+                            else
+                                nextData.rotUpper = 90 - LTWOPI (getaz (curData.ptUpper,nextData.ptUpper)-HALFPI) * RADtoDEG;
+                            nextData.ptUpper = PercentPoint (MidPointD (nextData.ptUpper,curData.ptUpper),curData.imageWidth,curData.imageHeight);
+                            nextData.ptLower = PercentPoint (MidPointD (nextData.ptLower,curData.ptLower),curData.imageWidth,curData.imageHeight);
+                            [array addObject:nextData];
+                        }
+                    }
+                }
+                else
+                {
+                    curData.ptUpper = PercentPoint (curData.ptUpper,curData.imageWidth,curData.imageHeight);
+                    curData.ptLower = PercentPoint (curData.ptLower,curData.imageWidth,curData.imageHeight);
+                    [array addObject:curData];
+                }
+            }
+        }
+        index++;
+    }
+    return array;
     
 }
 - (void)loadPlat
 {
     
-    NSString *platName = [self getMGVPlatData:_selectedMGVSanMH];
+    NSArray * array = [self getMGVPlatData:_selectedMGVSanMH];
 //@"ENA_19_87-26_A0.pdf";
-    
     SewerData *sd = [[SewerData alloc] init];
     
-    [sd loadPlat:platName
-          ofType:@"pdf"
-    usingPopover:_popover
-     andDelegate:self];
+    _mgvData = array[_splitPlatDirection];
+    if (_mgvData)
+    {
+        
+        [sd loadPlat:_mgvData.pdfFile
+              ofType:@"pdf"
+        usingPopover:_popover
+         andDelegate:self];
+    }
 }
 
 - (void)displayCrimeReport
@@ -5811,9 +5938,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _options = @[@"Remove Custom Marker"];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
-            
-            [newArray addObject:@"Display Profile to 3"];
-            [newArray addObject:@"Display Split Screen Profile to 3"];
+            BOOL splitPlatViewSave = _splitPlatView;
+            _splitPlatView = TRUE;
+            NSArray * array = [self getMGVPlatData:_selectedMGVSanMH];
+            _splitPlatView = splitPlatViewSave;
+            if (array.count)
+            {
+                
+            }
+            [newArray addObject:@"Display Plat"];
+            [newArray addObject:@"Display Split Screen Profile to 1"];
+            if (array.count > 1)
+                [newArray addObject:@"Display Split Screen Profile to 2"];
             
             _options = newArray;
         }
