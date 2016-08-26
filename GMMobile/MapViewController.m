@@ -51,7 +51,7 @@
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property NSInteger selectedCrime;
-@property NSInteger selectedMGVSanMH;
+@property int selectedMGVSanMH;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
@@ -1476,6 +1476,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     break;
                 case SanitaryManhole:
                     _selectedSanPoint = pi.identifier;
+                    _selectedMGVSanMH = pi.refno;
                     marker.title = _selectedSanPoint;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeMGVSanPoint;
@@ -1920,10 +1921,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 nvwv2.delegate = self;
                 [nvwv2 hideReturnButton];
                 
-                [nvwv2 zoomToPoint:CGPointMake(0.5, 0.5)
+                [nvwv2 zoomToPoint:CGPointMake(0.5, 0.7)
                         withinPage:3
-                         withScale:3.0
-                          rotation:45.0];
+                         withScale:1.0
+                          rotation:0];
             }
                 break;
                 
@@ -3788,9 +3789,29 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
+- (NSString *) getMGVPlatData:(int)refno
+{
+    NSString * file;
+    NSString * dataFile = [NSBundle.mainBundle pathForResource:@"SANPTID"
+                                        ofType:@"txt"];
+    NSString * sanptidData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    NSArray * sanptidLines = [sanptidData componentsSeparatedByString:@"\r\n"];
+    for (NSString * line in sanptidLines)
+    {
+        if (refno && refno == [line integerValue])
+        {
+            NSArray * values = [line componentsSeparatedByString:@"\t"];
+            file = values[2];
+        }
+    }
+    return [file stringByAppendingPathExtension:@"pdf"];
+    
+}
 - (void)loadPlat
 {
-    NSString *platName = @"ENA_19_87-26_A0.pdf";
+    
+    NSString *platName = [self getMGVPlatData:_selectedMGVSanMH];
+//@"ENA_19_87-26_A0.pdf";
     
     SewerData *sd = [[SewerData alloc] init];
     
