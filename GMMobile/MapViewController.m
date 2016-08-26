@@ -1907,6 +1907,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                  showFileAtPath:path];
                 
                 nvwv1.delegate = self;
+                nvwv1.tag = 111;
                 [nvwv1 hideReturnButton];
                 
                 [nvwv1 zoomToPoint:CGPointMake(0.5, 0.5)
@@ -1918,6 +1919,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                  showFileAtPath:path];
                 
                 nvwv2.delegate = self;
+                nvwv2.tag = 222;
                 [nvwv2 hideReturnButton];
                 
                 [nvwv2 zoomToPoint:CGPointMake(0.5, 0.5)
@@ -3876,6 +3878,22 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
+}
+
+- (void)webView:(NVWebView *)webView
+wasTappedAtPoint:(CGPoint)point
+     withinPage:(int)page
+{
+    switch (webView.tag)
+    {
+        case 111://top PDF
+            NSLog(@"Top PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
+            break;
+            
+        case 222://bottom PDF
+            NSLog(@"Bottom PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
+            break;
+    }
 }
 
 - (void)showStreetView
