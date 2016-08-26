@@ -6232,4 +6232,13 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     [_mapView animateWithCameraUpdate:update];
 }
 
+- (NVWebView *)webViewWithTag:(NSInteger)tag
+{
+    if ([[self.view viewWithTag:tag] isKindOfClass:NVWebView.class])
+        return [self.view viewWithTag:tag];
+    
+    else
+        return nil;
+}
+
 @end
