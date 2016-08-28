@@ -13,12 +13,13 @@
 @import GLKit;
 #import "CCodeLibrary/NVCalendarVC.h"
 #import "CCodeLibrary/NVSynchronizeVC.h"
+#import "CCodeLibrary/FTPDirectoryList.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate>
 
-@property (nonatomic, copy) NSArray *contents, *images;
+@property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
 @property (nonatomic) FTPDataPush *push;
 @property (nonatomic, copy) NSArray *products;
@@ -31,7 +32,7 @@
 @property (nonatomic) CGFloat rotation;
 @property (nonatomic) UIImageView *hotspotView;
 @property (nonatomic) vec3 *vecGrid;
-@property (nonatomic) int len;
+@property (nonatomic) int len, totalPages, numElements, currentElement;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NVTextAlert *textAlert;
 
@@ -336,6 +337,7 @@ EAGLContext *CreateBestEAGLContext()
     _tableView.dataSource = self;
     _tableView.bounces = NO;
     _tableView.delaysContentTouches = NO;
+    _totalPages = _numElements = _currentElement = 0;
     
     _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
 }
@@ -347,7 +349,7 @@ EAGLContext *CreateBestEAGLContext()
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin"
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data",
-                  @"Calibrate Device", @"Track User Location"];
+                  @"Calibrate Device", @"Track User Location", @"Compute PDF Pages"];
     
     [_tableView reloadData];
 }
@@ -505,6 +507,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self testCalendar];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Compute PDF Pages"])
+    {
+        [self computePDFPages];
+    }
 }
 
 - (void)testCalendar
@@ -514,6 +522,83 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self presentViewController:calendarVC
                        animated:YES
                      completion:nil];
+}
+
+- (void)computePDFPages
+{
+    FTPDirectoryList *list = [FTPDirectoryList getListingFromFTPDomain:@"gssiserver3.com"
+                                                             directory:@"MapleGrove/As-built/PDF"
+                                                              username:@"GSSiProfessionalServer"
+                                                              password:@"GSSi"
+                                                                  port:@"21"
+                                                              delegate:self];
+#pragma unused(list)
+}
+
+- (void)FTPDirectoryListDidCompleteWithStatus:(FTPStatus)status
+                                 statusString:(NSString *)statusString
+                                directoryList:(NSData *)directoryList
+{
+    NSString *results = [[NSString alloc] initWithData:directoryList
+                                              encoding:NSUTF8StringEncoding];
+    
+    if (results && ![results isEqualToString:@""])
+    {
+        _elements = [results componentsSeparatedByString:@"\n"];
+        _numElements = (int)_elements.count;
+        [self pullNextFile];
+    }
+}
+
+- (void)pullNextFile
+{
+    NSString *element = _elements[_currentElement];
+    NSString *fileName = removeEndingReturn(textAfterLastSpace(element));
+    
+    FTPDataPull *pull = FTPDataPull.new;
+    pull.delegate = self;
+    
+    [pull getFile:fileName
+     fromDirectory:@"MapleGrove/As-built/PDF"
+            toFile:fileName
+       toDirectory:UserDefaults.defaults.localFilePath
+     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (void)FTPdidComplete:(FTPDataType)dataType
+            withStatus:(FTPStatus)status
+       andStatusString:(NSString *)statusString
+              filePath:(NSString *)path
+{
+    if (status == FTPStatusConnectionFailed)
+        _currentElement--;
+    
+    NSURL *url = [NSURL fileURLWithPath:path];
+    
+    if ([path.pathExtension isEqualToString:@"pdf"] || [path.pathExtension isEqualToString:@"PDF"])
+    {
+        CFURLRef urlRef = (__bridge CFURLRef)url;
+        CGPDFDocumentRef pdfRef = CGPDFDocumentCreateWithURL(urlRef);
+        _totalPages += (int)CGPDFDocumentGetNumberOfPages(pdfRef);
+        _currentElement++;
+        CGPDFDocumentRelease(pdfRef);
+    }
+    
+    NSLog(@"File %i of %i, total pages = %i", _currentElement, _numElements, _totalPages);
+    
+    NSError *error = nil;
+    
+    [NSFileManager.defaultManager removeItemAtPath:path
+                                             error:&error];
+    
+    if (!error)
+    {
+        if (_currentElement < _numElements)
+            [self pullNextFile];
+    }
+    
+    else
+        NSLog(@"File Delete ERROR:%@", path);
 }
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
