@@ -1488,7 +1488,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     break;
                 case SanitaryManhole:
                     _selectedSanPoint = pi.identifier;
-                    _selectedMGVSanMH = pi.refno;
+                    _selectedMGVSanMH = (int)pi.refno;
                     marker.title = _selectedSanPoint;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeMGVSanPoint;
@@ -3219,7 +3219,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         case PropertyTableViewSettingOptions:
             headerLabel.numberOfLines = 1;
-            headerLabel.text = @"Options";
+            headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.marker.title];
             break;
             
         case PropertyTableViewSettingPropertyReport:
@@ -3359,7 +3359,51 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             break;
     }
     
+    if ([cell.textLabel.text isEqualToString:@""])
+    {
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        if (indexPath.row == 0)
+        {
+            TableViewCellButton *clearMarker = [TableViewCellButton buttonWithType:UIButtonTypeCustom];
+            CGFloat size = min(80.0, (cell.contentView.frame.size.height - 8.0));
+            clearMarker.frame = CGRectMake(0.0, 0.0, size, size);
+            clearMarker.center = CGPointMake((cell.contentView.frame.size.width / 4.0), (cell.contentView.frame.size.height / 2.0));
+            clearMarker.backgroundColor = UIColor.whiteColor;
+            clearMarker.imageEdgeInsets = UIEdgeInsetsMake(4.0, 4.0, 4.0, 4.0);
+            clearMarker.layer.cornerRadius = 8.0;
+            
+            [clearMarker setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"clearMarkers"
+                                                                                                 ofType:@"png"]]
+                         forState:UIControlStateNormal];
+            
+            [clearMarker addTarget:self action:@selector(prepareToRemoveMarker) forControlEvents:UIControlEventTouchUpInside];
+            [cell.contentView addSubview:clearMarker];
+        }
+    }
+    
+    else
+        cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    
     return cell;
+}
+
+- (void)prepareToRemoveMarker
+{
+    [self dismissTableView];
+    
+    [self performSelector:@selector(removeMarker)
+               withObject:nil
+               afterDelay:0.3];
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView
+  willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if([tableView cellForRowAtIndexPath:indexPath].selectionStyle == UITableViewCellSelectionStyleNone)
+        return nil;
+    
+    return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView
@@ -3800,18 +3844,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayReport
                                       forKey:@"CrimePointOption"];
-    }
-    
-    else if ([text isEqualToString:@"Remove Property Marker"] || [text isEqualToString:@"Remove Pipe Marker"] ||
-             [text isEqualToString:@"Remove Alley Wall Marker"] || [text isEqualToString:@"Remove Custom Marker"] ||
-             [text isEqualToString:@"Remove Alley Line Marker"] || [text isEqualToString:@"Remove Intersection Marker"] ||
-             [text isEqualToString:@"Remove Crime Point Marker"])
-    {
-        [self dismissTableView];
-        
-        [self performSelector:@selector(removeMarker)
-                   withObject:nil
-                   afterDelay:0.3];
     }
 }
 
@@ -5833,7 +5865,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedPID = title;
             
-            _options = @[@"Remove Property Marker", @"Property Report", @"Zillow Property Record", @"Display Street View",
+            _options = @[@"", @"Property Report", @"Zillow Property Record", @"Display Street View",
                          @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
@@ -5861,7 +5893,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedSewerPipe = title;
             
-            _options = @[@"Remove Pipe Marker", @"Display Pipe Attributes", @"Trace Pipe Upstream",
+            _options = @[@"", @"Display Pipe Attributes", @"Trace Pipe Upstream",
                          @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
                          @"Update Inspection Notes"];
            
@@ -5883,7 +5915,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWall = title;
             _selectedAlleyWallRefno = refno;
             
-            _options = @[@"Remove Alley Wall Marker", @"Move Wall Point", @"Delete Wall Point",
+            _options = @[@"", @"Move Wall Point", @"Delete Wall Point",
                          @"Edit Wall Attributes", @"View Wall Photos"];
             
             BOOL hasInsetWallPhoto = NO;
@@ -5906,24 +5938,24 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
             _selectedAlleyLineRefno = refno;
-            _options = @[@"Remove Alley Line Marker", @"Toggle Alley Line\nCompletion Status"];
+            _options = @[@"", @"Toggle Alley Line\nCompletion Status"];
             break;
             
         case MarkerInfoWindowTypeCRInt:
             _selectedCRIntPt = title;
             
-            _options = @[@"Remove Intersection Marker", @"Edit Intersection Attributes",
+            _options = @[@"", @"Edit Intersection Attributes",
                          @"Edit Intersection Status"];
             break;
             
         case MarkerInfoWindowTypeCustom:
-            _options = @[@"Remove Custom Marker", @"Snap to Node", @"Snap to Line"];
+            _options = @[@"", @"Snap to Node", @"Snap to Line"];
             break;
             
         case MarkerInfoWindowTypeCrime:
         {
             _selectedCrime = refno;
-            _options = @[@"Remove Crime Point Marker", @"Display Report", @"Display Street View"];
+            _options = @[@"", @"Display Report", @"Display Street View"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
@@ -5936,7 +5968,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeMGVSanPoint:
         {
-            _options = @[@"Remove Custom Marker"];
+            _options = @[@""];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
             _splitPlatView = TRUE;

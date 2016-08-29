@@ -527,7 +527,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)computePDFPages
 {
     FTPDirectoryList *list = [FTPDirectoryList getListingFromFTPDomain:@"gssiserver3.com"
-                                                             directory:@"MapleGrove/As-built/PDF"
+                                                             directory:@"mgv/linked"
                                                               username:@"GSSiProfessionalServer"
                                                               password:@"GSSi"
                                                                   port:@"21"
@@ -545,7 +545,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (results && ![results isEqualToString:@""])
     {
         _elements = [results componentsSeparatedByString:@"\n"];
-        _numElements = (int)_elements.count;
+        _numElements = ((int)_elements.count - 1);
         [self pullNextFile];
     }
 }
@@ -559,7 +559,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     pull.delegate = self;
     
     [pull getFile:fileName
-     fromDirectory:@"MapleGrove/As-built/PDF"
+     fromDirectory:@"mgv/linked"
             toFile:fileName
        toDirectory:UserDefaults.defaults.localFilePath
      refreshOption:FTPDataPullRefreshOptionCheckFileSize];
