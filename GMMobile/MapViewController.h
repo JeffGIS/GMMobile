@@ -24,6 +24,13 @@
 
 @interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate>
 
+typedef NS_ENUM(NSInteger, NVMarkerStyle)
+{
+    NVMarkerStyleMarkerOnly,
+    NVMarkerStyleMarkerPlusOptions,
+    NVMarkerStyleOptionsOnly,
+};
+
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic) MKMapRect cityInnerBounds;
 @property BOOL fromSpreadsheet, fromLegends;
