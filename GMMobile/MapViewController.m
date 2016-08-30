@@ -1498,6 +1498,20 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             _noneSelected = NO;
             
             [self.view addSubview:_infoWindow];
+            
+            if (_markerStyle != NVMarkerStyleMarkerOnly)
+            {
+                [self markerInfoWindowDidSelectOptions:marker.title
+                                                 refno:marker.refno
+                                                coords:marker.position
+                                                  type:marker.type];
+                
+                if (_markerStyle == NVMarkerStyleOptionsOnly)
+                {
+                    [self removePreviousInfoWindow];
+                    [marker removeFromSuperview];
+                }
+            }
         }
     }
 }
@@ -1959,14 +1973,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)removePreviousInfoWindow
 {
-    for (UIView *views in self.view.subviews)
-    {
-        if ([views isKindOfClass:MarkerInfoWindow.class])
-        {
-            MarkerInfoWindow *infoWindow = (MarkerInfoWindow *)views;
-            [infoWindow removeFromSuperview];
-        }
-    }
+    if ([self.view.subviews containsObject:_infoWindow])
+        [_infoWindow removeFromSuperview];
 }
 
 - (void)restorePreviousInfoWindow
@@ -3351,12 +3359,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     if ([cell.textLabel.text isEqualToString:@""])
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        CGFloat size = min(64.0, (cell.contentView.frame.size.height - 8.0));
+        CGFloat margin = (size / 3.0);
+        CGFloat xOrigin = margin;
         
         if (indexPath.row == 0)
         {
             TableViewCellButton *clearMarker = [TableViewCellButton buttonWithType:UIButtonTypeCustom];
-            CGFloat size = min(80.0, (cell.contentView.frame.size.height - 8.0));
-            clearMarker.frame = CGRectMake((size / 4.0), 0.0, size, size);
+            clearMarker.frame = CGRectMake(xOrigin, 0.0, size, size);
             clearMarker.center = CGPointMake(clearMarker.center.x, (cell.contentView.frame.size.height / 2.0));
             clearMarker.backgroundColor = UIColor.whiteColor;
             clearMarker.imageEdgeInsets = UIEdgeInsetsMake(4.0, 4.0, 4.0, 4.0);
@@ -3369,8 +3379,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             
             [cell.contentView addSubview:clearMarker];
             
+            xOrigin += (margin * 4.0);
+            
             UISegmentedControl *markerOptions = [[UISegmentedControl alloc] initWithItems:@[@"Marker Only", @"Marker+Options", @"Options Only"]];
-            markerOptions.frame = CGRectMake((CGRectGetMaxX(clearMarker.frame) + (size / 4.0)), 0.0, (cell.contentView.frame.size.width - (size * (7.0/4.0))), size);
+            markerOptions.frame = CGRectMake(xOrigin, 0.0, (cell.contentView.frame.size.width - xOrigin - margin), size);
             markerOptions.center = CGPointMake(markerOptions.center.x, (cell.contentView.frame.size.height / 2.0));
             markerOptions.tintColor = UIColor.whiteColor;
             markerOptions.selectedSegmentIndex = _markerStyle;
@@ -3378,7 +3390,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             UIFont *font = [UIFont boldSystemFontOfSize:14.0];
             NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
             [markerOptions setTitleTextAttributes:attributes forState:UIControlStateNormal];
-            
             [markerOptions addTarget:self action:@selector(markerOptionsTapped:) forControlEvents:UIControlEventValueChanged];
             
             [cell.contentView addSubview:markerOptions];
