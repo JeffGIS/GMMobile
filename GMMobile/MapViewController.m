@@ -1844,9 +1844,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         if (_selectedPlatRefno)
         {
             SewerData *sd = [[SewerData alloc] init];
-            
+            _mgvData = nil;
+            _splitPlatView = NO;
             if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
             {
+                
                 [sd loadPlat:CRAPI.sharedInstance.selectedPDFID
                       ofType:@"pdf"
                 usingPopover:_popover
@@ -1901,8 +1903,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 [self removeAllPlatPDFs];
                 _usePlatView = NO;
-                if (!_mgvData)
-                    break;
                 [self hideMarkersAndInfoWindows:NO];
                 
                 if (_splitPlatView)
@@ -1924,10 +1924,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 nvwv1.tag = 111;
                 [nvwv1 hideReturnButton];
                 
-                [nvwv1 zoomToPoint:_mgvData.ptUpper
-                        withinPage:_mgvData.page
-                         withScale:_mgvData.scaleUpper
-                          rotation:_mgvData.rotUpper];
+                if (_mgvData)
+                {
+                    [nvwv1 zoomToPoint:_mgvData.ptUpper
+                            withinPage:_mgvData.page
+                             withScale:_mgvData.scaleUpper
+                              rotation:_mgvData.rotUpper];
+                }
+                else
+                {
+                    DPOINT pt = {0,0};
+                    [nvwv1 zoomToPoint:pt
+                            withinPage:1
+                             withScale:1
+                              rotation:0];
+                }
                 
                 if (_splitPlatView)
                 {
@@ -1962,6 +1973,48 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 #pragma unused(alert)
     }
 }
+- (void)webView:(NVWebView *)webView
+wasTappedAtPoint:(DPOINT)point
+     withinPage:(int)page
+{
+    return;
+    switch (webView.tag)
+    {
+        case 111://top PDF
+        {
+            NSLog(@"Top PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
+            _mgvData = [self getMGVPlatDataByViewport:111
+                                           coordinate:point
+                                                 file:_mgvData.pdfFile
+                                              andPage:_mgvData.page];
+            [webView zoomToPoint:_mgvData.ptUpper
+                    withinPage:_mgvData.page
+                     withScale:_mgvData.scaleUpper
+                      rotation:_mgvData.rotUpper];
+            
+            if (_splitPlatView)
+            {
+                NVWebView *nvwv2 = [NVWebView showWebViewInView:_secondView
+                                                 showFileAtPath:_mgvData.pdfFile];
+                
+                nvwv2.delegate = self;
+                nvwv2.tag = 222;
+                [nvwv2 hideReturnButton];
+                
+                [nvwv2 zoomToPoint:_mgvData.ptLower
+                        withinPage:_mgvData.page
+                         withScale:_mgvData.scaleLower
+                          rotation:_mgvData.rotLower];
+            }
+        }
+           break;
+            
+        case 222://bottom PDF
+            NSLog(@"Bottom PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
+            break;
+    }
+}
+
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
 {
@@ -3902,7 +3955,18 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     rtn.y /= h;
     return rtn;
 }
-- (NSArray *) getMGVPlatData:(int)refno
+
+-(MGVPlatData*) getMGVPlatDataByViewport:(int)upperOrLower
+                              coordinate:(DPOINT)point
+                                    file:(NSString*)file
+                                 andPage:(int)page
+{
+    MGVPlatData *mgvdat = MGVPlatData.new;
+    
+    return mgvdat;
+}
+
+- (NSArray *) getMGVPlatDataByRefno:(int)refno
 {
     NSMutableArray * array = NSMutableArray.new;
     NSString * imageFile;
@@ -3987,7 +4051,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)loadPlat
 {
     
-    NSArray * array = [self getMGVPlatData:_selectedMGVSanMH];
+    NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanMH];
 //@"ENA_19_87-26_A0.pdf";
     SewerData *sd = [[SewerData alloc] init];
     
@@ -4078,22 +4142,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
-}
-
-- (void)webView:(NVWebView *)webView
-wasTappedAtPoint:(CGPoint)point
-     withinPage:(int)page
-{
-    switch (webView.tag)
-    {
-        case 111://top PDF
-            NSLog(@"Top PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
-            break;
-            
-        case 222://bottom PDF
-            NSLog(@"Bottom PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
-            break;
-    }
 }
 
 - (void)showStreetView
@@ -5994,7 +6042,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
             _splitPlatView = TRUE;
-            NSArray * array = [self getMGVPlatData:_selectedMGVSanMH];
+            NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanMH];
             _splitPlatView = splitPlatViewSave;
             if (array.count)
             {
