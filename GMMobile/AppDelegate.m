@@ -50,7 +50,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.currentPlatType = @"storm";
     [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
     
-    [UserDefaults.defaults disableWebKitDiskImageCache];
     CRAPI.sharedInstance.defaultColors = UserDefaults.defaults.defaultColors;
     CRAPI.sharedInstance.currentGeoid = 2743000;
     CRAPI.sharedInstance.resetPropList = NO;
