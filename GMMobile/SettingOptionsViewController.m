@@ -17,7 +17,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -644,6 +644,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)calibrateDevice
 {
     NVCalibrationController *calibrationController = [[NVCalibrationController alloc] init];
+    calibrationController.delegate = self;
     
     [self presentViewController:calibrationController
                        animated:YES
@@ -727,6 +728,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [controller dismissViewControllerAnimated:YES
                                    completion:nil];
+}
+
+- (void)calibrationControllerNeedsRefresh:(NVCalibrationController *)controller
+{
+    [self dismissViewControllerAnimated:NO
+                             completion:nil];
+    
+    NVCalibrationController *calibrationController = [[NVCalibrationController alloc] init];
+    calibrationController.delegate = self;
+    
+    [self presentViewController:calibrationController
+                       animated:YES
+                     completion:nil];
 }
 
 @end
