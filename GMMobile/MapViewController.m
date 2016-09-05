@@ -2188,6 +2188,8 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if ([self.view.subviews containsObject:_nvdv])
         [_nvdv setNeedsDisplay];
+    
+    [self updateMarkerPosition];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
