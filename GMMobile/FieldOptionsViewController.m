@@ -4,13 +4,15 @@
 #import "FieldOptionsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "PropertyList.h"
+#import "CCodeLibrary/TableViewCellButton.h"
+#import "CCodeLibrary/NVSliderView.h"
 
-@interface FieldOptionsViewController ()
+@interface FieldOptionsViewController () <NVSliderViewDelegate>
 
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIImage *checkmark;
-@property (nonatomic) UIFont *font;
-@property (nonatomic) NSMutableArray *fieldNames;
+@property (nonatomic) UIFont *font, *headerFont;
+@property (nonatomic) NSMutableArray *fieldNames, *fieldWeights;
 
 @end
 
@@ -26,25 +28,29 @@
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         _rowHeight = 48.0;
-        _font = [UIFont boldSystemFontOfSize:20.0];
+        _font = [UIFont boldSystemFontOfSize:16.0];
+        _headerFont = [UIFont boldSystemFontOfSize:24.0];
     }
     
     else
     {
         _rowHeight = 64.0;
-        _font = [UIFont boldSystemFontOfSize:32.0];
+        _font = [UIFont boldSystemFontOfSize:26.0];
+        _headerFont = [UIFont boldSystemFontOfSize:40.0];
     }
     
     PropertyList *proplist = [[PropertyList alloc] init];
     NSArray *fields = [proplist availablePropertyFields];
     
     _fieldNames = NSMutableArray.array;
+    _fieldWeights = NSMutableArray.array;
     
     for (NSNumber *field in fields)
     {
         NSInteger ifield = field.integerValue;
         NSString *fieldName = [proplist propertyFieldName:ifield];
         [_fieldNames addObject:fieldName];
+        [_fieldWeights addObject:[NSNumber numberWithInt:0]];
     }
     
     [self setupTableView];
@@ -63,6 +69,8 @@
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = _rowHeight;
     _tableView.sectionHeaderHeight = _rowHeight;
+    _tableView.allowsMultipleSelection = YES;
+    _tableView.delaysContentTouches = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -76,10 +84,10 @@ viewForHeaderInSection:(NSInteger)section
 {
     UILabel *headerLabel = UILabel.new;
     headerLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    headerLabel.font = _font;
+    headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = @"Select Data Fields";
+    headerLabel.text = @"Data Fields";
     
     UIView *headerView = [[UIView alloc] initWithFrame:
                           CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
@@ -200,22 +208,169 @@ viewForHeaderInSection:(NSInteger)section
     cell.textLabel.text = _fieldNames[indexPath.row];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.textColor = UIColor.blackColor;
-    cell.userInteractionEnabled = YES;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = _font;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.textLabel.font = _font;
     
-    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:_checkmark];
+    for (TableViewCellButton *buttons in cell.subviews)
+    {
+        if ([buttons isKindOfClass:TableViewCellButton.class])
+            [buttons removeFromSuperview];
+    }
     
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        checkmarkView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+    if (!cell.selected)
+    {
+        UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:_checkmark];
+        CGFloat size = (_rowHeight * 0.85);
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            checkmarkView.frame = CGRectMake(0.0, 0.0, size , size);
+        
+        else
+            checkmarkView.frame = CGRectMake(0.0, 0.0, size, size);
+        
+        cell.accessoryView = checkmarkView;
+        
+        TableViewCellButton *weight = TableViewCellButton.new;
+        weight.translatesAutoresizingMaskIntoConstraints = NO;
+        weight.backgroundColor = UserDefaults.defaults.appleGray;
+        weight.layer.cornerRadius = 4.0;
+        weight.layer.borderColor = UIColor.blackColor.CGColor;
+        weight.layer.borderWidth = 1.0;
+        weight.tag = indexPath.row;
+        weight.titleLabel.textAlignment = NSTextAlignmentCenter;
+        weight.titleLabel.font = _font;
+        
+        NSNumber *value = (NSNumber *)_fieldWeights[indexPath.row];
+        
+        [weight setTitle:[NSString stringWithFormat:@"%i", value.intValue]
+                forState:UIControlStateNormal];
+        
+        [weight setTitleColor:UIColor.blackColor
+                     forState:UIControlStateNormal];
+        
+        [weight setTitleColor:UIColor.lightGrayColor
+                     forState:UIControlStateHighlighted];
+        
+        [cell addSubview:weight];
+        
+        [weight addTarget:self
+                   action:@selector(weightTapped:)
+         forControlEvents:UIControlEventTouchUpInside];
+        
+        [weight.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-(_rowHeight * 1.15)].active = YES;
+        [weight.centerYAnchor constraintEqualToAnchor:cell.centerYAnchor].active = YES;
+        [weight.heightAnchor constraintEqualToConstant:(_rowHeight * 0.75)].active = YES;
+        [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 1.25)].active = YES;
+    }
     
     else
-        checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
-    
-    cell.accessoryView = checkmarkView;
+        cell.accessoryView = nil;
     
     return cell;
+}
+
+- (void)weightTapped:(UIButton *)button
+{
+    NVSliderView *slider = [NVSliderView showSliderWithView:self.view
+                                                 startValue:button.titleLabel.text.intValue
+                                                   minValue:-100.0
+                                                   maxValue:100.0
+                                                   delegate:self
+                                                     tabBar:self.tabBarController.tabBar
+                                                        tag:button.tag];
+#pragma unused(slider)
+}
+
+- (void)sliderViewDidCancel:(NVSliderView *)sliderView
+{
+    [sliderView hideSliderView:YES];
+}
+
+- (void)sliderView:(NVSliderView *)sliderView
+    didReturnValue:(double)value
+    forViewWithTag:(NSInteger)tag
+{
+    [sliderView hideSliderView:YES];
+    
+    [_fieldWeights replaceObjectAtIndex:tag
+                             withObject:[NSNumber numberWithInt:(int)round(value)]];
+    
+    [_tableView reloadData];
+}
+
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryView = nil;
+    
+    for (TableViewCellButton *buttons in cell.subviews)
+    {
+        if ([buttons isKindOfClass:TableViewCellButton.class])
+            [buttons removeFromSuperview];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView
+didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:_checkmark];
+    CGFloat size = (_rowHeight * 0.85);
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        checkmarkView.frame = CGRectMake(0.0, 0.0, size , size);
+    
+    else
+        checkmarkView.frame = CGRectMake(0.0, 0.0, size, size);
+    
+    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryView = checkmarkView;
+    
+    TableViewCellButton *weight = TableViewCellButton.new;
+    weight.translatesAutoresizingMaskIntoConstraints = NO;
+    weight.backgroundColor = UserDefaults.defaults.appleGray;
+    weight.layer.cornerRadius = 4.0;
+    weight.layer.borderColor = UIColor.blackColor.CGColor;
+    weight.layer.borderWidth = 1.0;
+    weight.tag = indexPath.row;
+    weight.titleLabel.textAlignment = NSTextAlignmentCenter;
+    weight.titleLabel.font = _font;
+    
+    NSNumber *value = (NSNumber *)_fieldWeights[indexPath.row];
+    
+    [weight setTitle:[NSString stringWithFormat:@"%i", value.intValue]
+            forState:UIControlStateNormal];
+    
+    [weight setTitleColor:UIColor.blackColor
+                 forState:UIControlStateNormal];
+    
+    [weight setTitleColor:UIColor.lightGrayColor
+                 forState:UIControlStateHighlighted];
+    
+    [cell addSubview:weight];
+    
+    [weight addTarget:self
+               action:@selector(weightTapped:)
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    [weight.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-(_rowHeight * 1.15)].active = YES;
+    [weight.centerYAnchor constraintEqualToAnchor:cell.centerYAnchor].active = YES;
+    [weight.heightAnchor constraintEqualToConstant:(_rowHeight * 0.75)].active = YES;
+    [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 1.25)].active = YES;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+                                duration:(NSTimeInterval)duration
+{
+    for (NVSliderView *slider in self.view.subviews)
+    {
+        if ([slider isKindOfClass:NVSliderView.class])
+        {
+            [slider willRotateWithDuration:duration
+                    toInterfaceOrientation:toInterfaceOrientation];
+        }
+    }
 }
 
 @end
