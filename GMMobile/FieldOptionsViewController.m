@@ -10,9 +10,9 @@
 @interface FieldOptionsViewController () <NVSliderViewDelegate>
 
 @property (nonatomic) CGFloat rowHeight;
-@property (nonatomic) UIImage *checkmark;
+@property (nonatomic) UIImage *plus, *minus;
 @property (nonatomic) UIFont *font, *headerFont;
-@property (nonatomic) NSMutableArray *fieldNames, *fieldWeights;
+@property (nonatomic) NSMutableArray *fieldNames, *fieldWeights, *fieldSelected;
 
 @end
 
@@ -23,7 +23,12 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _checkmark = UserDefaults.defaults.checkmark;
+    
+    _plus = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
+                                                                           ofType:@"png"]];
+    
+    _minus = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redMinusSign"
+                                                                            ofType:@"png"]];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -44,6 +49,7 @@
     
     _fieldNames = NSMutableArray.array;
     _fieldWeights = NSMutableArray.array;
+    _fieldSelected = NSMutableArray.array;
     
     for (NSNumber *field in fields)
     {
@@ -51,6 +57,7 @@
         NSString *fieldName = [proplist propertyFieldName:ifield];
         [_fieldNames addObject:fieldName];
         [_fieldWeights addObject:[NSNumber numberWithInt:0]];
+        [_fieldSelected addObject:[NSNumber numberWithBool:YES]];
     }
     
     [self setupTableView];
@@ -69,8 +76,6 @@
     _tableView.layer.cornerRadius = 10.0;
     _tableView.rowHeight = _rowHeight;
     _tableView.sectionHeaderHeight = _rowHeight;
-    _tableView.allowsMultipleSelection = YES;
-    _tableView.delaysContentTouches = NO;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -208,8 +213,8 @@ viewForHeaderInSection:(NSInteger)section
     cell.textLabel.text = _fieldNames[indexPath.row];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.textColor = UIColor.blackColor;
+    cell.textLabel.highlightedTextColor = UserDefaults.defaults.appleBlue;
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.textLabel.font = _font;
     
     for (TableViewCellButton *buttons in cell.subviews)
@@ -218,18 +223,20 @@ viewForHeaderInSection:(NSInteger)section
             [buttons removeFromSuperview];
     }
     
-    if (!cell.selected)
+    CGFloat size = (_rowHeight * 0.75);
+    BOOL selected = [(NSNumber *)_fieldSelected[indexPath.row] boolValue];
+    
+    if (selected)
     {
-        UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:_checkmark];
-        CGFloat size = (_rowHeight * 0.85);
+        UIImageView *minusView = [[UIImageView alloc] initWithImage:_minus];
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            checkmarkView.frame = CGRectMake(0.0, 0.0, size , size);
+            minusView.frame = CGRectMake(0.0, 0.0, size , size);
         
         else
-            checkmarkView.frame = CGRectMake(0.0, 0.0, size, size);
+            minusView.frame = CGRectMake(0.0, 0.0, size, size);
         
-        cell.accessoryView = checkmarkView;
+        cell.accessoryView = minusView;
         
         TableViewCellButton *weight = TableViewCellButton.new;
         weight.translatesAutoresizingMaskIntoConstraints = NO;
@@ -265,7 +272,24 @@ viewForHeaderInSection:(NSInteger)section
     }
     
     else
-        cell.accessoryView = nil;
+    {
+        UIImageView *plusView = [[UIImageView alloc] initWithImage:_plus];
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            plusView.frame = CGRectMake(0.0, 0.0, size , size);
+        
+        else
+            plusView.frame = CGRectMake(0.0, 0.0, size, size);
+        
+        cell.accessoryView = plusView;
+    }
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(accessoryTapped:)];
+    
+    [cell.accessoryView addGestureRecognizer:tap];
+    cell.accessoryView.tag = indexPath.row;
+    cell.accessoryView.userInteractionEnabled = YES;
     
     return cell;
 }
@@ -299,65 +323,21 @@ viewForHeaderInSection:(NSInteger)section
     [_tableView reloadData];
 }
 
-- (void)tableView:(UITableView *)tableView
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)accessoryTapped:(UITapGestureRecognizer *)gesture
 {
-    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryView = nil;
+    BOOL selected = [(NSNumber *)_fieldSelected[gesture.view.tag] boolValue];
     
-    for (TableViewCellButton *buttons in cell.subviews)
-    {
-        if ([buttons isKindOfClass:TableViewCellButton.class])
-            [buttons removeFromSuperview];
-    }
+    [_fieldSelected replaceObjectAtIndex:gesture.view.tag
+                              withObject:[NSNumber numberWithBool:!selected]];
+    
+    [_tableView reloadData];
 }
 
 - (void)tableView:(UITableView *)tableView
-didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:_checkmark];
-    CGFloat size = (_rowHeight * 0.85);
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        checkmarkView.frame = CGRectMake(0.0, 0.0, size , size);
-    
-    else
-        checkmarkView.frame = CGRectMake(0.0, 0.0, size, size);
-    
-    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryView = checkmarkView;
-    
-    TableViewCellButton *weight = TableViewCellButton.new;
-    weight.translatesAutoresizingMaskIntoConstraints = NO;
-    weight.backgroundColor = UserDefaults.defaults.appleGray;
-    weight.layer.cornerRadius = 4.0;
-    weight.layer.borderColor = UIColor.blackColor.CGColor;
-    weight.layer.borderWidth = 1.0;
-    weight.tag = indexPath.row;
-    weight.titleLabel.textAlignment = NSTextAlignmentCenter;
-    weight.titleLabel.font = _font;
-    
-    NSNumber *value = (NSNumber *)_fieldWeights[indexPath.row];
-    
-    [weight setTitle:[NSString stringWithFormat:@"%i", value.intValue]
-            forState:UIControlStateNormal];
-    
-    [weight setTitleColor:UIColor.blackColor
-                 forState:UIControlStateNormal];
-    
-    [weight setTitleColor:UIColor.lightGrayColor
-                 forState:UIControlStateHighlighted];
-    
-    [cell addSubview:weight];
-    
-    [weight addTarget:self
-               action:@selector(weightTapped:)
-     forControlEvents:UIControlEventTouchUpInside];
-    
-    [weight.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-(_rowHeight * 1.15)].active = YES;
-    [weight.centerYAnchor constraintEqualToAnchor:cell.centerYAnchor].active = YES;
-    [weight.heightAnchor constraintEqualToConstant:(_rowHeight * 0.75)].active = YES;
-    [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 1.25)].active = YES;
+    [tableView deselectRowAtIndexPath:indexPath
+                             animated:YES];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
