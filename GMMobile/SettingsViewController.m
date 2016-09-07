@@ -1189,7 +1189,9 @@ didReturnTimeInterval:(NSString *)timeInterval
    // NSString * sendToServerFile = [awd getSendToServerFile:0];
     
     NSString *toDir = [NSString stringWithFormat:@"NVMobile/UploadedDatabases/%i/%i",CRAPI.sharedInstance.currentManageriPad,CRAPI.sharedInstance.currentiPadWithinManager];
-    NSString * sendToServerFile = [awd databasePath];
+   // NSString * sendToServerFile = [awd databasePath];
+    NSString * sendToServerFile = [NSString stringWithFormat:@"%@/MASTER/rampdata.txt",UserDefaults.defaults.sharedFilePath];
+
     NSString *file = [sendToServerFile lastPathComponent];
     NSString *fromDir = [sendToServerFile stringByDeletingLastPathComponent];
     //NSString *file = @"Crimes.sqlite";
@@ -1202,12 +1204,13 @@ didReturnTimeInterval:(NSString *)timeInterval
     [_popover showAfter:0.1
               withTitle:@"Upload Database"];
     
-    [_push sendFile:file
+    if (![_push sendFile:file
       fromDirectory:fromDir
              toFile:file
         toDirectory:toDir
      deleteWhenDone:NO
-     appendFileName:NO];
+     appendFileName:NO])
+        _popover.title = @"File missing or empty";
 }
 
 - (IBAction)outputFile:(id)sender
