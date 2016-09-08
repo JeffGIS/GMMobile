@@ -5,9 +5,9 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "PropertyList.h"
 #import "CCodeLibrary/TableViewCellButton.h"
-#import "CCodeLibrary/NVSliderView.h"
+#import "CCodeLibrary/NVPopoverSlider.h"
 
-@interface FieldOptionsViewController () <NVSliderViewDelegate>
+@interface FieldOptionsViewController () <NVPopoverSliderDelegate>
 
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIImage *plus, *minus;
@@ -296,31 +296,25 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)weightTapped:(UIButton *)button
 {
-    NVSliderView *slider = [NVSliderView showSliderWithView:self.view
-                                                 startValue:button.titleLabel.text.intValue
-                                                   minValue:-100.0
-                                                   maxValue:100.0
-                                                   delegate:self
-                                                     tabBar:self.tabBarController.tabBar
-                                                        tag:button.tag];
-#pragma unused(slider)
+    NVPopoverSlider *nvps = [NVPopoverSlider showPopoverSliderInView:self.view
+                                                            minValue:-100.0
+                                                            maxValue:100.0
+                                                          startValue:button.titleLabel.text.intValue
+                                                            delegate:self
+                                                                 tag:button.tag];
+#pragma unused(nvps)
 }
 
-- (void)sliderViewDidCancel:(NVSliderView *)sliderView
+- (void)popoverSliderDidCancel:(NVPopoverSlider *)sliderView
 {
-    [sliderView hideSliderView:YES];
+    
 }
 
-- (void)sliderView:(NVSliderView *)sliderView
-    didReturnValue:(double)value
-    forViewWithTag:(NSInteger)tag
+- (void)popoverSlider:(NVPopoverSlider *)sliderView
+       didReturnValue:(double)value
+                  tag:(NSInteger)tag
 {
-    [sliderView hideSliderView:YES];
     
-    [_fieldWeights replaceObjectAtIndex:tag
-                             withObject:[NSNumber numberWithInt:(int)round(value)]];
-    
-    [_tableView reloadData];
 }
 
 - (void)accessoryTapped:(UITapGestureRecognizer *)gesture
@@ -338,19 +332,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-                                duration:(NSTimeInterval)duration
-{
-    for (NVSliderView *slider in self.view.subviews)
-    {
-        if ([slider isKindOfClass:NVSliderView.class])
-        {
-            [slider willRotateWithDuration:duration
-                    toInterfaceOrientation:toInterfaceOrientation];
-        }
-    }
 }
 
 @end
