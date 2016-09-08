@@ -296,25 +296,37 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)weightTapped:(UIButton *)button
 {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:button.tag
+                                                inSection:0];
+    
+    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+    NSString *title = [NSString stringWithFormat:@"Weight for %@", cell.textLabel.text];
+    
     NVPopoverSlider *nvps = [NVPopoverSlider showPopoverSliderInView:self.view
                                                             minValue:-100.0
                                                             maxValue:100.0
                                                           startValue:button.titleLabel.text.intValue
                                                             delegate:self
-                                                                 tag:button.tag];
+                                                                 tag:button.tag
+                                                               title:title];
 #pragma unused(nvps)
 }
 
-- (void)popoverSliderDidCancel:(NVPopoverSlider *)sliderView
+- (void)popoverSliderDidCancel:(NVPopoverSlider *)popoverSlider
 {
-    
+    [popoverSlider hidePopoverSliderView:YES];
 }
 
-- (void)popoverSlider:(NVPopoverSlider *)sliderView
+- (void)popoverSlider:(NVPopoverSlider *)popoverSlider
        didReturnValue:(double)value
                   tag:(NSInteger)tag
 {
+    [popoverSlider hidePopoverSliderView:YES];
     
+    [_fieldWeights replaceObjectAtIndex:tag
+                             withObject:[NSNumber numberWithInt:(int)round(value)]];
+    
+    [_tableView reloadData];
 }
 
 - (void)accessoryTapped:(UITapGestureRecognizer *)gesture

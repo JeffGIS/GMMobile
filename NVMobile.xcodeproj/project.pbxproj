@@ -123,6 +123,9 @@
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
+		69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */; };
+		69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */; };
+		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
 		69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177331D7A0B7400741C68 /* GoogleMaps.framework */; };
 		69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */; };
 		69F1773A1D7A0B7400741C68 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */; };
@@ -393,6 +396,9 @@
 		69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldOptionsViewController.h; sourceTree = "<group>"; };
 		69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldOptionsViewController.m; sourceTree = "<group>"; };
 		69E62D4F1BBF276B0018390B /* fieldOptions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fieldOptions.png; sourceTree = "<group>"; };
+		69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeftPhone.png; sourceTree = "<group>"; };
+		69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRightPhone.png; sourceTree = "<group>"; };
+		69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumbPhone.png; sourceTree = "<group>"; };
 		69F177331D7A0B7400741C68 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
 		69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsCore.framework; sourceTree = "<group>"; };
@@ -704,6 +710,9 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */,
+				69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */,
+				69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */,
 				6924B4351D37BDC8007C6C76 /* trackLocation.png */,
 				692EFA561D36B11D007B0D18 /* questionMarkHighlighted.png */,
 				692EFA541D36B0F5007B0D18 /* question-256x256.png */,
@@ -1135,6 +1144,7 @@
 			files = (
 				690E829D1C11044700AB410E /* Assets.bundle in Resources */,
 				A90506461A75E12B00288850 /* settings.png in Resources */,
+				69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */,
 				BB2B13941D6F78B10072957F /* upperlower.txt in Resources */,
 				A905063A1A75DF5A00288850 /* map.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
@@ -1192,6 +1202,7 @@
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
 				69E1CFDC1CF608DD002A4611 /* SampleCurbRamp1.jpg in Resources */,
+				69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				694FB1E51C588363005410F6 /* Reader-Mark-Y.png in Resources */,
 				694FB1E11C588363005410F6 /* Reader-Export@3x.png in Resources */,
@@ -1248,6 +1259,7 @@
 				694FB1DC1C588363005410F6 /* Reader-Email.png in Resources */,
 				697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */,
 				6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */,
+				69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */,
 				69E1CFDB1CF608DD002A4611 /* SampleCurbRamp2.jpg in Resources */,
 				EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */,
 				692EFA571D36B11D007B0D18 /* questionMarkHighlighted.png in Resources */,
