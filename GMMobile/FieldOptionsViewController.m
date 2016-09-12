@@ -10,7 +10,7 @@
 @interface FieldOptionsViewController () <NVPopoverSliderDelegate>
 
 @property (nonatomic) CGFloat rowHeight;
-@property (nonatomic) UIImage *plus, *minus;
+@property (nonatomic) UIImage *uncheckedBox, *checkedBox;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *fieldNames, *fieldWeights, *fieldSelected;
 
@@ -24,11 +24,11 @@
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
-    _plus = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"greenPlusSign"
-                                                                           ofType:@"png"]];
+    _uncheckedBox = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"uncheckedBox"
+                                                                                   ofType:@"png"]];
     
-    _minus = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redMinusSign"
-                                                                            ofType:@"png"]];
+    _checkedBox = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"checkedBox"
+                                                                                 ofType:@"png"]];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -228,7 +228,7 @@ viewForHeaderInSection:(NSInteger)section
     
     if (selected)
     {
-        UIImageView *minusView = [[UIImageView alloc] initWithImage:_minus];
+        UIImageView *minusView = [[UIImageView alloc] initWithImage:_checkedBox];
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
             minusView.frame = CGRectMake(0.0, 0.0, size , size);
@@ -273,7 +273,7 @@ viewForHeaderInSection:(NSInteger)section
     
     else
     {
-        UIImageView *plusView = [[UIImageView alloc] initWithImage:_plus];
+        UIImageView *plusView = [[UIImageView alloc] initWithImage:_uncheckedBox];
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
             plusView.frame = CGRectMake(0.0, 0.0, size , size);
