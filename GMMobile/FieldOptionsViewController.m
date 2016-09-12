@@ -92,7 +92,6 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.font = _headerFont;
     headerLabel.textColor = UIColor.whiteColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
-    headerLabel.text = @"Data Fields";
     
     UIView *headerView = [[UIView alloc] initWithFrame:
                           CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
@@ -161,7 +160,20 @@ viewForHeaderInSection:(NSInteger)section
     [list.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
     [list.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
     
-    UISegmentedControl *options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Selected"]];
+    UISegmentedControl *options = nil;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Sel"]];
+        headerLabel.text = @"Fields";
+    }
+    
+    else
+    {
+        options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Selected"]];
+        headerLabel.text = @"Data Fields";
+    }
+    
     options.translatesAutoresizingMaskIntoConstraints = NO;
     options.tintColor = UIColor.whiteColor;
     options.selectedSegmentIndex = 0;
@@ -210,33 +222,56 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:@"Cell"];
     }
     
-    cell.textLabel.text = _fieldNames[indexPath.row];
-    cell.textLabel.adjustsFontSizeToFitWidth = YES;
-    cell.textLabel.textColor = UIColor.blackColor;
-    cell.textLabel.highlightedTextColor = UserDefaults.defaults.appleBlue;
-    cell.textLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = _font;
-    
     for (TableViewCellButton *buttons in cell.subviews)
     {
         if ([buttons isKindOfClass:TableViewCellButton.class])
             [buttons removeFromSuperview];
     }
     
-    CGFloat size = (_rowHeight * 0.75);
+    for (TableViewCellLabel *labels in cell.subviews)
+    {
+        if ([labels isKindOfClass:TableViewCellLabel.class])
+            [labels removeFromSuperview];
+    }
+    
     BOOL selected = [(NSNumber *)_fieldSelected[indexPath.row] boolValue];
+    CGFloat inset = (_rowHeight * 0.1);
+    
+    TableViewCellButton *checkBox = TableViewCellButton.new;
+    checkBox.translatesAutoresizingMaskIntoConstraints = NO;
+    checkBox.imageEdgeInsets = UIEdgeInsetsMake(inset, inset, inset, inset);
+    checkBox.tag = indexPath.row;
+    
+    [checkBox addTarget:self
+                 action:@selector(checkboxTapped:)
+       forControlEvents:UIControlEventTouchUpInside];
+    
+    [cell addSubview:checkBox];
+    [checkBox.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor].active = YES;
+    [checkBox.heightAnchor constraintEqualToConstant:_rowHeight].active = YES;
+    [checkBox.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+    
+    TableViewCellLabel *label = TableViewCellLabel.new;
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.adjustsFontSizeToFitWidth = YES;
+    label.textColor = UIColor.blackColor;
+    label.text = _fieldNames[indexPath.row];
+    label.font = _font;
+    
+    [cell addSubview:label];
+    [label.topAnchor constraintEqualToAnchor:cell.topAnchor].active = YES;
+    [label.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor].active = YES;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        [label.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:inset].active = YES;
+    
+    else
+        [label.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:(inset * 2.0)].active = YES;
     
     if (selected)
     {
-        UIImageView *minusView = [[UIImageView alloc] initWithImage:_checkedBox];
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            minusView.frame = CGRectMake(0.0, 0.0, size , size);
-        
-        else
-            minusView.frame = CGRectMake(0.0, 0.0, size, size);
-        
-        cell.accessoryView = minusView;
+        [checkBox setImage:_checkedBox
+                  forState:UIControlStateNormal];
         
         TableViewCellButton *weight = TableViewCellButton.new;
         weight.translatesAutoresizingMaskIntoConstraints = NO;
@@ -265,42 +300,33 @@ viewForHeaderInSection:(NSInteger)section
                    action:@selector(weightTapped:)
          forControlEvents:UIControlEventTouchUpInside];
         
-        [weight.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-(_rowHeight * 1.15)].active = YES;
+        [weight.trailingAnchor constraintEqualToAnchor:checkBox.leadingAnchor].active = YES;
         [weight.centerYAnchor constraintEqualToAnchor:cell.centerYAnchor].active = YES;
         [weight.heightAnchor constraintEqualToConstant:(_rowHeight * 0.75)].active = YES;
-        [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 1.25)].active = YES;
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 0.85)].active = YES;
+        
+        else
+            [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 1.15)].active = YES;
+        
+        [label.trailingAnchor constraintEqualToAnchor:weight.leadingAnchor].active = YES;
     }
     
     else
     {
-        UIImageView *plusView = [[UIImageView alloc] initWithImage:_uncheckedBox];
+        [checkBox setImage:_uncheckedBox
+                  forState:UIControlStateNormal];
         
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            plusView.frame = CGRectMake(0.0, 0.0, size , size);
-        
-        else
-            plusView.frame = CGRectMake(0.0, 0.0, size, size);
-        
-        cell.accessoryView = plusView;
+        [label.trailingAnchor constraintEqualToAnchor:checkBox.leadingAnchor].active = YES;
     }
-    
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                          action:@selector(accessoryTapped:)];
-    
-    [cell.accessoryView addGestureRecognizer:tap];
-    cell.accessoryView.tag = indexPath.row;
-    cell.accessoryView.userInteractionEnabled = YES;
     
     return cell;
 }
 
 - (void)weightTapped:(UIButton *)button
 {
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:button.tag
-                                                inSection:0];
-    
-    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
-    NSString *title = [NSString stringWithFormat:@"Weight for %@", cell.textLabel.text];
+    NSString *title = [NSString stringWithFormat:@"Weight for %@", _fieldNames[button.tag]];
     
     NVPopoverSlider *nvps = [NVPopoverSlider showPopoverSliderInView:self.view
                                                             minValue:-100.0
@@ -329,11 +355,11 @@ viewForHeaderInSection:(NSInteger)section
     [_tableView reloadData];
 }
 
-- (void)accessoryTapped:(UITapGestureRecognizer *)gesture
+- (void)checkboxTapped:(UIButton *)button
 {
-    BOOL selected = [(NSNumber *)_fieldSelected[gesture.view.tag] boolValue];
+    BOOL selected = [(NSNumber *)_fieldSelected[button.tag] boolValue];
     
-    [_fieldSelected replaceObjectAtIndex:gesture.view.tag
+    [_fieldSelected replaceObjectAtIndex:button.tag
                               withObject:[NSNumber numberWithBool:!selected]];
     
     [_tableView reloadData];
