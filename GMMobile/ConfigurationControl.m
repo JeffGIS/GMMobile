@@ -190,11 +190,11 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantPlat] = NO;
-        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantMapType] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantUserLocation] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = YES;
+        configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantLegends] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantGrayscale] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantClearMarkers] = YES;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantEmailPDF] = YES;

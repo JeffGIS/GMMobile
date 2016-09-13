@@ -1977,35 +1977,34 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 wasTappedAtPoint:(DPOINT)point
      withinPage:(int)page
 {
-    return;
     switch (webView.tag)
     {
         case 111://top PDF
         {
             NSLog(@"Top PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
-            _mgvData = [self getMGVPlatDataByViewport:111
+            
+            /*_mgvData = [self getMGVPlatDataByViewport:111
                                            coordinate:point
                                                  file:_mgvData.pdfFile
                                               andPage:_mgvData.page];
+            
             [webView zoomToPoint:_mgvData.ptUpper
-                    withinPage:_mgvData.page
-                     withScale:_mgvData.scaleUpper
-                      rotation:_mgvData.rotUpper];
+                      withinPage:_mgvData.page
+                       withScale:_mgvData.scaleUpper
+                        rotation:_mgvData.rotUpper];
             
             if (_splitPlatView)
             {
-                NVWebView *nvwv2 = [NVWebView showWebViewInView:_secondView
-                                                 showFileAtPath:_mgvData.pdfFile];
+                NVWebView *nvwv2 = [self webViewWithTag:222];
                 
-                nvwv2.delegate = self;
-                nvwv2.tag = 222;
-                [nvwv2 hideReturnButton];
-                
-                [nvwv2 zoomToPoint:_mgvData.ptLower
-                        withinPage:_mgvData.page
-                         withScale:_mgvData.scaleLower
-                          rotation:_mgvData.rotLower];
-            }
+                if (nvwv2)
+                {
+                    [nvwv2 zoomToPoint:_mgvData.ptLower
+                            withinPage:_mgvData.page
+                             withScale:_mgvData.scaleLower
+                              rotation:_mgvData.rotLower];
+                }
+            }*/
         }
            break;
             
@@ -2014,7 +2013,6 @@ wasTappedAtPoint:(DPOINT)point
             break;
     }
 }
-
 
 - (void)dismissReaderViewController:(ReaderViewController *)viewController
 {
@@ -2212,6 +2210,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     NSTimeInterval duration = 0.25;
     CGSize size = self.view.frame.size;
+    
+    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight + ((size.height - statusBarHeight) / 2.0),
                                size.width, ((size.height - statusBarHeight) / 2.0));

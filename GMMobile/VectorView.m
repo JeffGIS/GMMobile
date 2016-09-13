@@ -526,6 +526,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                            }
                                        }
                                            break;
+                                           
                                        case DISPLAY_DATA_OPTION_HIGHLIGHT:
                                        {
                                            switch (_pickedItem.itemType)
@@ -548,13 +549,13 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                LLBounds:&_latlonBounds
                                                              viewBounds:&_viewBounds];*/
                                                }
-                                                   
                                                    break;
-                                                   
+                                              
+                                               default:
+                                                   break;
                                            }
                                       }
                                            break;
-                               
                                    }
                                }
                                if (CRAPI.sharedInstance.keepProcessing == self.displayID)
