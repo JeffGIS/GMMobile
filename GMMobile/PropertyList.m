@@ -663,7 +663,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_PIN:
             case PFT_Address:
                 val = (LPSTR)sqlite3_column_blob(statement, 0);
-                value = [NSString stringWithUTF8String:val];
+                value = [NSString stringWithFormat:@"%s",val];
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);

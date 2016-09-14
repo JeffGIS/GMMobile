@@ -293,12 +293,11 @@
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        Destination * dest = [[Destination alloc]init];
-        
+        Destination *dest = Destination.new;
         dest.destinationID = sqlite3_column_int(statement, 0);
         LPSTR name = (LPSTR)sqlite3_column_text(statement, 2);
-        dest.destinationName = [NSString stringWithUTF8String:name];
-        LLPOINT pt;
+        dest.destinationName = [NSString stringWithFormat:@"%s", name];
+        LLPOINT pt = {0};
         pt.lat = sqlite3_column_double(statement, 3);
         pt.lon = sqlite3_column_double(statement, 4);
         dest.latlon = pt;
@@ -307,6 +306,7 @@
         dest.timeReturn = sqlite3_column_int(statement, 7);
         [dests addObject:dest];
     }
+    
     SQLOK(0,sqlite3_finalize(statement), _database);
     [self close:opened];
     return dests.copy;

@@ -414,7 +414,7 @@
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID || CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
     {
-        GMSCameraPosition *camera;
+        GMSCameraPosition *camera = nil;
         
         _tableView.hidden = YES;
         
@@ -865,12 +865,11 @@
                         coord.latitude = ll.lat;
                         coord.longitude = ll.lon;
                         
-                        NVMarkerInfoButton *nvmib =
-                        [NVMarkerInfoButton markerWithPosition:coord
-                                                         title:dts.destinationName
-                                                          type:NVMarkerInfoButtonTypeDestinationsIndividual
-                                                          view:self.view
-                                                      delegate:self];
+                        NVMarkerInfoButton *nvmib = [NVMarkerInfoButton markerWithPosition:coord
+                                                                                     title:dts.destinationName
+                                                                                      type:NVMarkerInfoButtonTypeDestinationsIndividual
+                                                                                      view:self.view
+                                                                                  delegate:self];
                         
                         nvmib.tag = ((dts.destinationID * 100) + 1);
                     }
