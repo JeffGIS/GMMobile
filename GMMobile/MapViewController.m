@@ -47,9 +47,9 @@
 @property (nonatomic, copy) NSString *selectedSanPoint;
 @property (nonatomic, copy) NSString *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
-@property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset;
+@property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
-@property (nonatomic) CGFloat heading, pitch, fov, compassMargin;
+@property (nonatomic) CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *targetView, *digitizerTargetView;
@@ -303,23 +303,23 @@
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
                                                                                            ofType:@"png"]];
     
-    CGFloat compassSize = 48.0;
-    
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        compassSize = 36.0;
+        _compassSize = 44.0;
     
-    _compass = [[UIButton alloc] initWithFrame:CGRectMake(0.0, 0.0, compassSize, compassSize)];
+    else
+        _compassSize = 52.0;
+    
+    _compass = [UIButton buttonWithType:UIButtonTypeCustom];
+    _compass.frame = CGRectMake(0.0, 0.0, _compassSize, _compassSize);
+    _compass.backgroundColor = UIColor.whiteColor;
+    _compass.layer.cornerRadius = (_compassSize / 2.0);
+    _compass.layer.borderWidth = 1.0;
+    _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
+    _compass.alpha = 0.0;
+    _compass.hidden = YES;
     
     [_compass setImage:compassImage
               forState:UIControlStateNormal];
-    
-    _compass.backgroundColor = UIColor.whiteColor;
-    _compass.layer.cornerRadius = (compassSize / 2.0);
-    _compass.layer.borderWidth = 1.0;
-    _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
-    _compass.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-    _compass.alpha = 0.0;
-    _compass.hidden = YES;
     
     [_compass addTarget:self
                  action:@selector(compassTapped:)
@@ -567,24 +567,71 @@
                                               (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
 }
 
-- (void)updateCompassPosition
+- (void)updateCompassPosition:(BOOL)animated
 {
-    [UIView animateWithDuration:0.25 animations:^{
-        if (_mapToolbar.orientation == MapToolbarOrientationTop ||
-            _mapToolbar.orientation == MapToolbarOrientationBottom)
+    if (animated)
+    {
+        [UIView animateWithDuration:0.25 animations:^{
+            [self setCompassPosition];
+        }];
+    }
+    
+    else
+        [self setCompassPosition];
+}
+
+- (void)setCompassPosition
+{
+    CGFloat halfSize = ((_compassSize / 2.0) + 4.0);
+    
+    CGFloat xCenterLeft = (CGRectGetMinX(_mapToolbar.frame) - halfSize);
+    CGFloat xCenterRight = (CGRectGetMaxX(_mapToolbar.frame) + halfSize);
+    CGFloat yCenterTop = (CGRectGetMinY(_mapToolbar.frame) - halfSize);
+    CGFloat yCenterBottom = (CGRectGetMaxY(_mapToolbar.frame) + halfSize);
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        switch (_mapToolbar.orientation)
         {
-            _compass.center = CGPointMake(((_mapToolbar.frame.origin.x - _compassMargin) -
-                                           (_compass.frame.size.width / 2.0)),
-                                          _mapToolbar.center.y);
+            case MapToolbarOrientationTop:
+                _compass.center = CGPointMake(_mapToolbar.center.x, yCenterBottom);
+                break;
+                
+            case MapToolbarOrientationBottom:
+                _compass.center = CGPointMake(_mapToolbar.center.x, yCenterTop);
+                break;
+                
+            case MapToolbarOrientationLeft:
+                _compass.center = CGPointMake(xCenterRight, _mapToolbar.center.y);
+                break;
+                
+            case MapToolbarOrientationRight:
+                _compass.center = CGPointMake(xCenterLeft, _mapToolbar.center.y);
+                break;
+                
+            default:
+                break;
         }
-        
-        else
+    }
+    
+    else
+    {
+        switch (_mapToolbar.orientation)
         {
-            _compass.center = CGPointMake(_mapToolbar.center.x,
-                                          ((_mapToolbar.frame.origin.y - _compassMargin) -
-                                           (_compass.frame.size.height / 2.0)));
+            case MapToolbarOrientationTop:
+            case MapToolbarOrientationBottom:
+                _compass.center = CGPointMake(xCenterLeft, _mapToolbar.center.y);
+                break;
+                
+            case MapToolbarOrientationLeft:
+            case MapToolbarOrientationRight:
+                _compass.center = CGPointMake(_mapToolbar.center.x, yCenterTop);
+                break;
+                
+            default:
+                break;
         }
-    }];
+    }
 }
 
 - (void)setupTempButton:(UIButton *)button
@@ -1084,17 +1131,10 @@
     
     [_mapToolbar configure:_screenSetting];
     
-    [_mapToolbar didRotateWithDuration:0.0
-                          tabBarHeight:_tabBarHeight
-                       statusBarHeight:statusBarHeight];
+    [_mapToolbar didRotateWithTabBarHeight:_tabBarHeight
+                           statusBarHeight:statusBarHeight];
     
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        _compassMargin = 4.0;
-    
-    else
-        _compassMargin = 6.0;
-    
-    [self updateCompassPosition];
+    [self updateCompassPosition:NO];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -2118,9 +2158,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     
     if (position.bearing != 0.0)
     {
-        if (_compass.hidden)
-            [self showCompass];
-        
+        [self showCompass];
         _compass.transform = CGAffineTransformMakeRotation(-position.bearing * M_PI / 180);
     }
     
@@ -2180,7 +2218,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     else
         _firstTimeMap = NO;
     
-    if (position.bearing == 0.0 && !_compass.hidden)
+    if (position.bearing == 0.0)
         [self hideCompass];
     
     if ([self.view.subviews containsObject:_nvdv])
@@ -2320,9 +2358,13 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             break;
     }
     
-    [_mapToolbar didRotateWithDuration:duration
-                          tabBarHeight:_tabBarHeight
-                       statusBarHeight:statusBarHeight];
+    [_mapToolbar didRotateWithTabBarHeight:_tabBarHeight
+                           statusBarHeight:statusBarHeight];
+    
+    [self updateCompassPosition:NO];
+    
+    if (_mapView.camera.bearing != 0.0)
+        _compass.alpha = 1.0;
     
     if (![self legendIsExpanded] && ![self alertVisible])
         [self updateLegendPositions];
@@ -2376,6 +2418,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     _digitizerTargetView.hidden = YES;
     [self clearVectorView];
     [self hideMarkersAndInfoWindows:NO];
+    _compass.alpha = 0.0;
     
     for (NVPhotoView *nvpvs in _insetPixArray)
         nvpvs.hidden = YES;
@@ -2444,20 +2487,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                    tabBarHeight:_tabBarHeight];
         }
     }
-    
-    if (!_compass.hidden)
-        _compass.transform = CGAffineTransformMakeRotation(0.0);
-    
-    [UIView animateWithDuration:duration
-                     animations:^{
-                         [self updateCompassPosition];
-                         _compass.alpha = 0.0;
-                     } completion:^(BOOL finished) {
-                         _compass.transform = CGAffineTransformMakeRotation(_mapView.camera.bearing * M_PI / 180);
-                         
-                         if (!_compass.hidden)
-                             _compass.alpha = 1.0;
-                     }];
     
     switch (_screenSetting)
     {
@@ -3148,7 +3177,7 @@ haveVV:
         
         [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
         [_mapToolbar adjustFrameToScrollView];
-        [self updateCompassPosition];
+        [self updateCompassPosition:YES];
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                                               atZoom:_mapView.camera.zoom];
@@ -3168,7 +3197,7 @@ haveVV:
         
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
         [_mapToolbar adjustFrameToScrollView];
-        [self updateCompassPosition];
+        [self updateCompassPosition:YES];
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
@@ -5841,7 +5870,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [self.view bringSubviewToFront:_mapToolbar];
-    [self updateCompassPosition];
+    [self updateCompassPosition:YES];
     
     if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
         [self.view bringSubviewToFront:_legendScrollView];
@@ -6281,12 +6310,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)hideCompass
 {
-    [UIView animateWithDuration:0.25
-                     animations:^{
-                         _compass.alpha = 0.0;
-                     } completion:^(BOOL finished) {
-                         _compass.hidden = YES;
-                     }];
+    if (!_compass.hidden)
+    {
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _compass.alpha = 0.0;
+                         } completion:^(BOOL finished) {
+                             _compass.hidden = YES;
+                         }];
+    }
 }
 
 - (void)showCompass

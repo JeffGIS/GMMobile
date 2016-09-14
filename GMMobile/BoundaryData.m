@@ -1043,13 +1043,13 @@ NextPass:
     int nLoaded = 0;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
-    DPOINT BasePt;
-    int numPoints;
-    LPSTR pkeyval;
-    NSString * keyval;
-    int numLoops;
-    NSString * key = areaType;
-    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    DPOINT BasePt = {0};
+    int numPoints = 1;
+    LPSTR pkeyval = {0};
+    NSString *keyval = @"";
+    int numLoops = 0;
+    NSString *key = areaType;
+    NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 6.0;
     
@@ -1140,8 +1140,10 @@ NextPass:
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            
             if (i && !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
                 numNewPoints++;
+            
             if (i == nextLoopi)
             {
                 nextLoopi += polyPartLen[iloop];
