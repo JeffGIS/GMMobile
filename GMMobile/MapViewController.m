@@ -583,7 +583,6 @@
 - (void)setCompassPosition
 {
     CGFloat halfSize = ((_compassSize / 2.0) + 4.0);
-    
     CGFloat xCenterLeft = (CGRectGetMinX(_mapToolbar.frame) - halfSize);
     CGFloat xCenterRight = (CGRectGetMaxX(_mapToolbar.frame) + halfSize);
     CGFloat yCenterTop = (CGRectGetMinY(_mapToolbar.frame) - halfSize);
@@ -5788,19 +5787,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)mapToolbarDidFinishDrag
 {
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    CGFloat margin = 8.0, size = 48.0;
+    CGFloat margin = 8.0;
+    NSTimeInterval duration = 0.25;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 4.0, size = 40.0;
+        margin = 4.0;
     
     if (_mapToolbar.frame.origin.x < 0.0 &&
         _mapToolbar.frame.origin.y < 0.0)
     {
         _mapToolbar.previousOrientation = _mapToolbar.orientation;
+        _mapToolbar.orientation = MapToolbarOrientationMinimized;
         
-        [UIView animateWithDuration:0.25 animations:^{
-            _mapToolbar.frame = CGRectMake(margin, (statusBarHeight + margin), size, size);
+        [UIView animateWithDuration:duration animations:^{
+            _mapToolbar.frame = CGRectMake(margin, (statusBarHeight + margin), _compassSize, _compassSize);
             _mapToolbar.layer.cornerRadius = 10.0;
+            _compass.center = CGPointMake((_compassSize + (margin * 2.0) + (_compassSize / 2.0)), (statusBarHeight + margin) + (_compassSize / 2.0));
             
             for (UIView *subviews in _mapToolbar.subviews)
             {
@@ -5810,8 +5812,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         } completion:^(BOOL finished) {
             [_mapToolbar addExpandButton];
         }];
-        
-        _mapToolbar.orientation = MapToolbarOrientationMinimized;
     }
     
     else if (_mapToolbar.center.y < (self.view.frame.size.height * 0.25))
@@ -5870,7 +5870,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [self.view bringSubviewToFront:_mapToolbar];
-    [self updateCompassPosition:YES];
+    
+    if (_mapToolbar.orientation != MapToolbarOrientationMinimized)
+        [self updateCompassPosition:YES];
     
     if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
         [self.view bringSubviewToFront:_legendScrollView];
@@ -5889,6 +5891,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [self restoreMapToolbarPosition];
+    [self updateCompassPosition:YES];
 }
 
 - (void)restoreMapToolbarPosition

@@ -1044,7 +1044,7 @@ NextPass:
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt = {0};
-    int numPoints = 1;
+    int numPoints = 0;
     LPSTR pkeyval = {0};
     NSString *keyval = @"";
     int numLoops = 0;
