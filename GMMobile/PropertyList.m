@@ -906,12 +906,13 @@ LLPOINT LLPOINTFromString (NSString* string)
     LLPOINT pidPoint = [propData getPointForPID:PID];
     
     //add address to Proplist
-    NSString * houseAndUnit=@"";
-    NSString * streetName=@"";
-    NSString * city=@"";
-    NSString * cenblock=@"";
-    NSString * usedesc=@"";
-    CGFloat totEMV=0;
+    NSString *houseAndUnit = @"";
+    NSString *streetName = @"";
+    NSString *city = @"";
+    NSString *cenblock = @"";
+    NSString *usedesc = @"";
+    CGFloat totEMV = 0;
+    
     [propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
                     streetName:&streetName
@@ -929,7 +930,9 @@ LLPOINT LLPOINTFromString (NSString* string)
                          inCensusArea:(LPSTR)cenBlock
                                totEMV:(int)totEMV
                               useDesc:(LPSTR)usedesc.UTF8String];
+    
     DATA_FROM_TABLES values_block;
+    
     [propData computeValuesFromTables:&values_block
                          inCensusArea:(LPSTR)cenblock.UTF8String
                                totEMV:(int)totEMV
@@ -1038,17 +1041,19 @@ LLPOINT LLPOINTFromString (NSString* string)
 
 - (void)getSlowValuesDidComplete:(int)propNum
                           values:(SlowValues *)vals
+                         propNum:(int)propNum
 {
     BOOL opened = [self open];
     int dbid = [self next_id];
-    int PropNum = [self nextPropNum];
     NSString *dataBlob = [self intToBlob:vals.stability5yr_qtrMile];
-    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
+    NSString *cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,propNum,(int)PFT_Stability5yr_qtrMile,_propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
+
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
+    
 }
 
 @end

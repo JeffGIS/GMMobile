@@ -29,7 +29,8 @@
 @protocol GetSlowValuesDelegate <NSObject>
 
 - (void)getSlowValuesDidComplete:(int)propNum
-                          values:(SlowValues *)vals;
+                          values:(SlowValues *)vals
+                         propNum:(int)propNum;
 
 @end
 

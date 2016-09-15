@@ -1096,14 +1096,16 @@ NextPass:
 
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
-        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+        LPDPOINT llpoints = malloc(abs(numPoints + 1) * sizeof(DPOINT) + 4);
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
         keyval = [NSString stringWithUTF8String:pkeyval];
-        int numNewPoints = 0;
+        int numNewPoints = 1;
         int iloop = 0;
         int nextLoopi = polyPartLen[0] - 1;
         int lastLoopn = 0;
-        if (numLoops > 1)
+        
+        //Jeff - the value stored to 'ii' is never read (this code is trivial)
+        /*if (numLoops > 1)
         {
             int ii = polyPartLen[0];
             for (int i = 1;i<numLoops;i++)
@@ -1112,8 +1114,8 @@ NextPass:
                 ii = polyPartLen[i-1];
                 ii = 0;
             }
-            
-        }
+        }*/
+        
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -1124,8 +1126,10 @@ NextPass:
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
                 llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                
                 if (i && !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
                     numNewPoints++;
+                
                 if (i == nextLoopi)
                 {
                     nextLoopi += polyPartLen[iloop];
@@ -1151,6 +1155,7 @@ NextPass:
                 lastLoopn = numNewPoints;
             }
         }
+        
         numPoints = numNewPoints;
         NSString * text;
         double count;
