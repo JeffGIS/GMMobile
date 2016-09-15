@@ -24,6 +24,7 @@
     _popover.delegate = self;
     _appList = ConfigurationControl.sharedInstance.appList;
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    CGFloat margin = 0.0;
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
                                                          [NSBundle.mainBundle pathForResource:@"checkmark"
@@ -32,21 +33,27 @@
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
         _checkmarkView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
-        _rowHeight = 60.0;
-        _font = [UIFont boldSystemFontOfSize:22.0];
+        _rowHeight = 48.0;
+        _font = [UIFont boldSystemFontOfSize:18.0];
+        margin = 8.0;
     }
     
     else
     {
         _checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
-        _rowHeight = 76.0;
-        _font = [UIFont boldSystemFontOfSize:36.0];
+        _rowHeight = 72.0;
+        _font = [UIFont boldSystemFontOfSize:32.0];
+        margin = 20.0;
     }
     
     _checkmarkView.contentMode = UIViewContentModeScaleToFill;
     
     _selectedRow = -1;
     [self setupTableView];
+    
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-margin];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -175,7 +182,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         [_nvdl loadNVData:_selectedApp
                   popover:_popover];
-        
     }
 }
 
@@ -186,6 +192,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)NVDataLoaderFailed:(int)status
 {
+    
 }
 
 - (void)NVDataLoaderSuccess
@@ -216,6 +223,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 //    _nvdl.delegate = nil;
 //    _nvdl = nil;
     
+}
+
+- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        if (orientation == UIDeviceOrientationLandscapeLeft ||
+            orientation == UIDeviceOrientationLandscapeRight)
+        {
+            return 0.0;
+        }
+    }
+    
+    return 20.0;
 }
 
 @end

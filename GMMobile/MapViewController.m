@@ -8,7 +8,6 @@
 #import <MapKit/MapKit.h>
 #import "CCodeLibrary/PolylineCompression.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
-#import "CCodeLibrary/HelpWebView.h"
 #import "Destinations.h"
 #import "CCodeLibrary/IntersectionsDatabase.h"
 #import "NVPageController.h"
@@ -384,10 +383,10 @@
             [_legendView hideLegendView:NO];
     }
     
-    for (HelpWebView *helpWebView in self.view.subviews)
+    for (NVWebView *nvwv in self.view.subviews)
     {
-        if ([helpWebView isKindOfClass:HelpWebView.class])
-            [self.view bringSubviewToFront:helpWebView];
+        if ([nvwv isKindOfClass:NVWebView.class])
+            [self.view bringSubviewToFront:nvwv];
     }
     
     if (_inDigitizationMode)
@@ -1004,8 +1003,7 @@
             removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     }
     
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
         UIViewController *mgtvc = [storyboard instantiateViewControllerWithIdentifier:@"MGThemesVC"];
         
@@ -2140,10 +2138,10 @@ wasTappedAtPoint:(DPOINT)point
         }
     }
     
-    for (HelpWebView *helpWebView in self.view.subviews)
+    for (NVWebView *nvwv in self.view.subviews)
     {
-        if ([helpWebView isKindOfClass:HelpWebView.class])
-            [self.view bringSubviewToFront:helpWebView];
+        if ([nvwv isKindOfClass:NVWebView.class])
+            [self.view bringSubviewToFront:nvwv];
     }
     
     [self setMapType];
@@ -2474,16 +2472,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             [notesView willRotateWithDuration:duration
                        toInterfaceOrientation:toInterfaceOrientation
                                  tabBarHeight:_tabBarHeight];
-        }
-    }
-    
-    for (HelpWebView *helpWebView in self.view.subviews)
-    {
-        if ([helpWebView isKindOfClass:HelpWebView.class])
-        {
-            [helpWebView willRotateWithDuration:duration
-                         toInterfaceOrientation:toInterfaceOrientation
-                                   tabBarHeight:_tabBarHeight];
         }
     }
     
@@ -2839,10 +2827,10 @@ haveVV:
                            if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
                                [self.view bringSubviewToFront:_legendScrollView];
                            
-                           for (HelpWebView *helpWebView in self.view.subviews)
+                           for (NVWebView *nvwv in self.view.subviews)
                            {
-                               if ([helpWebView isKindOfClass:HelpWebView.class])
-                                   [self.view bringSubviewToFront:helpWebView];
+                               if ([nvwv isKindOfClass:NVWebView.class])
+                                   [self.view bringSubviewToFront:nvwv];
                            }
                            
                            [self updateLegendPositions];
@@ -5408,10 +5396,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectHelpButton
 {
-    HelpWebView *helpWebView = [HelpWebView showHelpWebView:self.view
-                                                presenterID:@"Map View"
-                                                     tabBar:self.tabBarController.tabBar];
-#pragma unused(helpWebView)
+    NSString *filePath = [NSBundle.mainBundle pathForResource:@"DOES_NOT_EXIST"
+                                                       ofType:@"pdf"];
+    
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                    showFileAtPath:filePath];
+#pragma unused(nvwv)
 }
 
 - (void)mapToolbarDidSelectDigitize
