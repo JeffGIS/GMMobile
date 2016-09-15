@@ -13,7 +13,6 @@
 
 @end
 
-
 @interface BoundaryData ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
