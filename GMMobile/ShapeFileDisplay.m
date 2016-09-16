@@ -227,7 +227,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 if (findClosestPoint (&llpt,&minpt,&mind,&midpt))
                                 {
-                                    minRef = _dc.refno;
+                                    minRef = (int)_dc.refno;
                                     minPlatID = _dc.string2;
                                     PickedItem *pi = [PickedItem new];
                                     pi.refno = _dc.refno;
@@ -410,7 +410,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     {
                                         if (findClosestPoint (&llpoints[i],&minpt,&mind,&midpt))
                                         {
-                                            minRef = _dc.refno;
+                                            minRef = (int)_dc.refno;
                                             minPlatID = _dc.string2;
                                             PickedItem *pi = [PickedItem new];
                                             pi.refno = _dc.refno;

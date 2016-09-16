@@ -104,6 +104,9 @@ Top:
     
     SEL sel = nil;
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    
     switch (dataSetID)
     {
         case GetDatabaseSettingParcels:
@@ -150,13 +153,13 @@ Top:
             break;
     }
     
+#pragma clang diagnostic pop
+    
     self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05
                                                   target:_svc
                                                 selector:sel
                                                 userInfo:nil
                                                  repeats:NO];
-    
-    
 }
 
 - (BOOL)haveDataset:(FTPDataType)dataSetID

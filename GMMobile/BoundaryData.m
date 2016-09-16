@@ -13,7 +13,6 @@
 
 @end
 
-
 @interface BoundaryData ()
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
@@ -1043,13 +1042,13 @@ NextPass:
     int nLoaded = 0;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
-    DPOINT BasePt;
-    int numPoints;
-    LPSTR pkeyval;
-    NSString * keyval;
-    int numLoops;
-    NSString * key = areaType;
-    NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
+    DPOINT BasePt = {0};
+    int numPoints = 0;
+    LPSTR pkeyval = {0};
+    NSString *keyval = @"";
+    int numLoops = 0;
+    NSString *key = areaType;
+    NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 6.0;
     
@@ -1103,17 +1102,7 @@ NextPass:
         int iloop = 0;
         int nextLoopi = polyPartLen[0] - 1;
         int lastLoopn = 0;
-        if (numLoops > 1)
-        {
-            int ii = polyPartLen[0];
-            for (int i = 1;i<numLoops;i++)
-            {
-                ii = polyPartLen[i];
-                ii = polyPartLen[i-1];
-                ii = 0;
-            }
-            
-        }
+        
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -1124,8 +1113,10 @@ NextPass:
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
                 llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-                if (i && !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
+                
+                if (!numNewPoints || !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
                     numNewPoints++;
+                
                 if (i == nextLoopi)
                 {
                     nextLoopi += polyPartLen[iloop];
@@ -1140,8 +1131,10 @@ NextPass:
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
-            if (i && !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
+            
+            if (!numNewPoints || !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
                 numNewPoints++;
+            
             if (i == nextLoopi)
             {
                 nextLoopi += polyPartLen[iloop];
@@ -1149,6 +1142,7 @@ NextPass:
                 lastLoopn = numNewPoints;
             }
         }
+        
         numPoints = numNewPoints;
         NSString * text;
         double count;

@@ -34,7 +34,7 @@
     [dests addRoutesForProperty:propNum];
     
     if (_delegate)
-        [_delegate getSlowValuesDidComplete:propNum values:slowVals];
+        [_delegate getSlowValuesDidComplete:propNum values:slowVals propNum:propNum];
 
 }
 - (void)computeValuesFromMap:(SlowValues *)values

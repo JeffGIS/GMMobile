@@ -17,7 +17,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -35,6 +35,9 @@
 @property (nonatomic) int len, totalPages, numElements, currentElement;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NVTextAlert *textAlert;
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UILabel *versionLabel;
 
 @end
 
@@ -330,26 +333,44 @@ EAGLContext *CreateBestEAGLContext()
                                                                                             ofType:@"png"]];
     
     _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, trackLocation, nil];
+    CGFloat margin = 0.0;
     
-    _tableView.layer.cornerRadius = 10.0;
-    _tableView.rowHeight = 72.0;
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        _tableView.rowHeight = 48.0;
+        margin = 8.0;
+    }
+    
+    else
+    {
+        _tableView.rowHeight = 72.0;
+        margin = 20.0;
+    }
+    
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.bounces = NO;
     _tableView.delaysContentTouches = NO;
+    _tableView.layer.cornerRadius = 10.0;
     _totalPages = _numElements = _currentElement = 0;
     
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
+    
     _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
+    _versionLabel.adjustsFontSizeToFitWidth = YES;
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin"
+    //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data",
-                  @"Calibrate Device", @"Track User Location", @"Compute PDF Pages"];
+                  @"Calibrate Device", @"Track Location"];
     
     [_tableView reloadData];
 }
@@ -382,9 +403,23 @@ EAGLContext *CreateBestEAGLContext()
                                       reuseIdentifier:@"Cell"];
     }
     
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    CGFloat margin = 0.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
+        margin = -6.0;
+    }
+    
+    else
+    {
+        cell.textLabel.font = [UIFont boldSystemFontOfSize:32.0];
+        margin = -20.0;
+    }
+    
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.textLabel.text = _contents[indexPath.row];
     cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
@@ -395,7 +430,6 @@ EAGLContext *CreateBestEAGLContext()
         cell.imageView.image = nil;
     
     cell.textLabel.highlightedTextColor = UserDefaults.defaults.appleBlue;
-    cell.indentationWidth = 10.0;
     
     for (UIView *views in cell.contentView.subviews)
     {
@@ -406,7 +440,7 @@ EAGLContext *CreateBestEAGLContext()
     BOOL containsSwitch = NO;
     
     if ([cell.textLabel.text isEqualToString:@"Auto Update"] ||
-        [cell.textLabel.text isEqualToString:@"Track User Location"])
+        [cell.textLabel.text isEqualToString:@"Track Location"])
     {
         for (UISwitch *switches in cell.contentView.subviews)
         {
@@ -416,7 +450,8 @@ EAGLContext *CreateBestEAGLContext()
         
         if (!containsSwitch)
         {
-            UISwitch *cellSwitch = [[UISwitch alloc] init];
+            UISwitch *cellSwitch = UISwitch.new;
+            cellSwitch.translatesAutoresizingMaskIntoConstraints = NO;
             cellSwitch.tintColor = UIColor.redColor;
             cellSwitch.onTintColor = UIColor.greenColor;
             
@@ -432,14 +467,13 @@ EAGLContext *CreateBestEAGLContext()
                 cellSwitch.on = [UserDefaults.defaults boolForKey:@"TrackLocation"];
             }
             
-            cellSwitch.center = CGPointMake((cell.frame.size.width - 100.0),
-                                            (cell.frame.size.height / 2.0));
-            
             [cellSwitch addTarget:self
                            action:@selector(cellSwitchValueChanged:)
                  forControlEvents:UIControlEventValueChanged];
             
             [cell.contentView addSubview:cellSwitch];
+            [cellSwitch.trailingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:margin].active = YES;
+            [cellSwitch.centerYAnchor constraintEqualToAnchor:cell.contentView.centerYAnchor].active = YES;
         }
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -741,6 +775,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [self presentViewController:calibrationController
                        animated:YES
                      completion:nil];
+}
+
+- (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        if (orientation == UIDeviceOrientationLandscapeLeft ||
+            orientation == UIDeviceOrientationLandscapeRight)
+        {
+            return 0.0;
+        }
+    }
+    
+    return 20.0;
 }
 
 @end
