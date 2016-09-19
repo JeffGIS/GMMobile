@@ -3281,6 +3281,7 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.textColor = UIColor.yellowColor;
     headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.adjustsFontSizeToFitWidth = YES;
     
     switch (_tableViewSetting)
     {
@@ -3429,8 +3430,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     if ([cell.textLabel.text isEqualToString:@""])
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        CGFloat size = min(64.0, (cell.contentView.frame.size.height - 8.0));
+        CGFloat size = min(64.0, cell.contentView.frame.size.height);
         CGFloat margin = (size / 3.0);
+        
         CGFloat xOrigin = margin;
         
         if (indexPath.row == 0)
@@ -3451,7 +3453,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             
             xOrigin += (margin * 4.0);
             
-            UISegmentedControl *markerOptions = [[UISegmentedControl alloc] initWithItems:@[@"Marker Only", @"Marker+Options", @"Options Only"]];
+            NSArray *items = nil;
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                items = @[@"Mark", @"Mark+Opt", @"Opt"];
+            
+            else
+                items = @[@"Marker Only", @"Marker+Options", @"Options Only"];
+            
+            UISegmentedControl *markerOptions = [[UISegmentedControl alloc] initWithItems:items];
             markerOptions.frame = CGRectMake(xOrigin, 0.0, (cell.contentView.frame.size.width - xOrigin - margin), size);
             markerOptions.center = CGPointMake(markerOptions.center.x, (cell.contentView.frame.size.height / 2.0));
             markerOptions.tintColor = UIColor.whiteColor;
