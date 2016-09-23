@@ -4,22 +4,42 @@
 #import "FindPropertyOwnerViewController.h"
 #import "PropertyData.h"
 
-@interface FindPropertyOwnerViewController ()
+@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
+@property (nonatomic) UIButton *returnButton, *limitButton;
+@property (nonatomic) UITextField *propOwnerTF;
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) UISwitch *multipleSwitch;
+@property (nonatomic) UILabel *multipleLabel;
+@property (nonatomic) CGFloat fontSize, cornerRadius;
 
 @end
 
 @implementation FindPropertyOwnerViewController
 
+- (void)loadView
+{
+    UIView *view = [[UIView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    self.view = view;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _fontSize = 24.0, _cornerRadius = 4.0;
+    
+    else
+        _fontSize = 36.0, _cornerRadius = 10.0;
+    
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     [self setupTableView];
-    [self setupBackButton];
+    [self setupButtons];
     [self setupTextField];
+    [self setupSwitch];
+    [self setupConstraints];
 }
 
 - (void)didReceiveMemoryWarning
@@ -27,54 +47,169 @@
     [super didReceiveMemoryWarning];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return YES;
+    
+    else
+        return NO;
+}
+
 - (void)setupTableView
 {
+    _tableView = UITableView.new;
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    _tableView.separatorInset = UIEdgeInsetsZero;
     _tableView.separatorColor = UIColor.blackColor;
     _tableView.backgroundColor = UserDefaults.defaults.green;
     _tableView.bounces = NO;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    _tableView.separatorInset = UIEdgeInsetsZero;
     
     CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
     _tableView.rowHeight = rowHeight;
     _tableView.layer.borderWidth = (rowHeight / 20.0);
-    _tableView.layer.cornerRadius = 10.0;
+    _tableView.layer.cornerRadius = _cornerRadius;
+    
+    [self.view addSubview:_tableView];
 }
 
-- (void)setupBackButton
+- (void)setupButtons
 {
-    _backButton.backgroundColor = UIColor.blackColor;
-    _backButton.layer.cornerRadius = 10.0;
-    _backButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _returnButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _returnButton.backgroundColor = UIColor.blackColor;
+    _returnButton.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
+    _returnButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    _returnButton.layer.cornerRadius = _cornerRadius;
+    _returnButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     
-    [_backButton setTitleColor:UIColor.whiteColor
-                      forState:UIControlStateNormal];
+    [_returnButton setTitleColor:UIColor.whiteColor
+                        forState:UIControlStateNormal];
+    
+    [_returnButton setTitleColor:UIColor.lightGrayColor
+                        forState:UIControlStateHighlighted];
+    
+    [_returnButton setTitle:@"< Return"
+                   forState:UIControlStateNormal];
+    
+    [_returnButton addTarget:self
+                      action:@selector(returnButtonTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:_returnButton];
+    
+    _limitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _limitButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _limitButton.backgroundColor = UIColor.blackColor;
+    _limitButton.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
+    _limitButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    _limitButton.layer.cornerRadius = _cornerRadius;
+    _limitButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+    
+    [_limitButton setTitleColor:UIColor.whiteColor
+                       forState:UIControlStateNormal];
+    
+    [_limitButton setTitleColor:UIColor.lightGrayColor
+                       forState:UIControlStateHighlighted];
+    
+    [_limitButton setTitle:@"Limit To: No Limit"
+                  forState:UIControlStateNormal];
+    
+    [_limitButton addTarget:self
+                    action:@selector(limitButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:_limitButton];
 }
 
 - (void)setupTextField
 {
+    _propOwnerTF = UITextField.new;
+    _propOwnerTF.translatesAutoresizingMaskIntoConstraints = NO;
     _propOwnerTF.delegate = self;
     _propOwnerTF.layer.borderColor = UIColor.blackColor.CGColor;
     _propOwnerTF.layer.borderWidth = (_tableView.rowHeight / 20.0);
-    _propOwnerTF.layer.cornerRadius = 10.0;
+    _propOwnerTF.layer.cornerRadius = _cornerRadius;
     _propOwnerTF.adjustsFontSizeToFitWidth = YES;
+    _propOwnerTF.textColor = UIColor.blackColor;
+    _propOwnerTF.font = [UIFont boldSystemFontOfSize:_fontSize];
+    _propOwnerTF.backgroundColor = UIColor.whiteColor;
+    _propOwnerTF.tintColor = UIColor.grayColor;
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     
     if ((propOwnerSearchText) || [propOwnerSearchText isEqualToString:@""])
     {
         _propOwnerTF.text = propOwnerSearchText;
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        _propOwnerList = [propData getOwnersMatchingString:propOwnerSearchText];
+        _propOwnerList = [PropertyData.new getOwnersMatchingString:propOwnerSearchText];
         [_tableView reloadData];
     }
     
     [_propOwnerTF addTarget:self
                      action:@selector(textFieldDidChange:)
            forControlEvents:UIControlEventEditingChanged];
+    
+    [self.view addSubview:_propOwnerTF];
+}
+
+- (void)setupSwitch
+{
+    _multipleSwitch = UISwitch.new;
+    _multipleSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+    _multipleSwitch.tintColor = UIColor.redColor;
+    _multipleSwitch.backgroundColor = UIColor.redColor;
+    _multipleSwitch.layer.cornerRadius = 16.0;
+    
+    [self.view addSubview:_multipleSwitch];
+    
+    _multipleLabel = UILabel.new;
+    _multipleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _multipleLabel.text = @"Select Multiple";
+    _multipleLabel.backgroundColor = UIColor.clearColor;
+    _multipleLabel.textColor = UIColor.whiteColor;
+    _multipleLabel.font = [UIFont systemFontOfSize:_fontSize];
+    _multipleLabel.adjustsFontSizeToFitWidth = YES;
+    _multipleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+    
+    [self.view addSubview:_multipleLabel];
+}
+
+- (void)setupConstraints
+{
+    CGFloat margin = 20.0, width = 160.0, height = 60.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 8.0, width = 100.0, height = 48.0;
+    
+    [_returnButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:margin].active = YES;
+    [_returnButton.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:margin].active = YES;
+    [_returnButton.widthAnchor constraintEqualToConstant:width].active = YES;
+    [_returnButton.heightAnchor constraintEqualToConstant:height].active = YES;
+    [_multipleLabel.leadingAnchor constraintEqualToAnchor:_returnButton.trailingAnchor constant:margin].active = YES;
+    [_multipleLabel.bottomAnchor constraintEqualToAnchor:_returnButton.bottomAnchor].active = YES;
+    [_multipleLabel.widthAnchor constraintEqualToConstant:(width * 0.8)].active = YES;
+    [_limitButton.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:margin].active = YES;
+    [_limitButton.leadingAnchor constraintEqualToAnchor:_multipleLabel.trailingAnchor constant:margin].active = YES;
+    [_limitButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-margin].active = YES;
+    [_limitButton.bottomAnchor constraintEqualToAnchor:_returnButton.bottomAnchor].active = YES;
+    [_multipleSwitch.centerXAnchor constraintEqualToAnchor:_multipleLabel.centerXAnchor].active = YES;
+    [_multipleSwitch.topAnchor constraintEqualToAnchor:_returnButton.topAnchor].active = YES;
+    [_multipleLabel.topAnchor constraintEqualToAnchor:_multipleSwitch.bottomAnchor].active = YES;
+    [_propOwnerTF.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:margin].active = YES;
+    [_propOwnerTF.topAnchor constraintEqualToAnchor:_returnButton.bottomAnchor constant:margin].active = YES;
+    [_propOwnerTF.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-margin].active = YES;
+    [_propOwnerTF.heightAnchor constraintEqualToConstant:height].active = YES;
+    [_tableView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:margin].active = YES;
+    [_tableView.topAnchor constraintEqualToAnchor:_propOwnerTF.bottomAnchor constant:margin].active = YES;
+    [_tableView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-margin].active = YES;
+    [_tableView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-margin].active = YES;
+    
+    UIView *leftMarginView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 10.0, height)];
+    _propOwnerTF.leftView = leftMarginView;
+    _propOwnerTF.leftViewMode = UITextFieldViewModeAlways;
 }
 
 - (void)textFieldDidChange:(UITextField *)textField
@@ -100,12 +235,17 @@
     return NO;
 }
 
-- (IBAction)goBack:(id)sender
+- (void)returnButtonTapped:(UIButton *)button
 {
     [self dismissTextField];
     
     [self dismissViewControllerAnimated:YES
                              completion:nil];
+}
+    
+- (void)limitButtonTapped:(UIButton *)button
+{
+        
 }
 
 - (void)touchesBegan:(NSSet *)touches
@@ -144,13 +284,14 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"
-                                                            forIndexPath:indexPath];
+    static NSString *cellIdentifier = @"CustomCell";
+    
+    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     if (!cell)
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:@"Cell"];
+                                      reuseIdentifier:cellIdentifier];
     }
     
     if (_propOwnerList.count != 0)
@@ -173,10 +314,11 @@
     
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     cell.detailTextLabel.textAlignment = NSTextAlignmentLeft;
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.2)];
+    cell.textLabel.font = [UIFont boldSystemFontOfSize:(tableView.rowHeight / 2.0)];
     cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.0)];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+    
     return cell;
 }
 

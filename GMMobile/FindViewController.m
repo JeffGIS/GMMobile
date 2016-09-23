@@ -51,12 +51,6 @@
         findAddress.delegate = self;
     }
     
-    else if ([segue.identifier isEqualToString:@"ShowFindPropertyOwner"])
-    {
-        FindAddressViewController *findPropOwner = segue.destinationViewController;
-        findPropOwner.delegate = self;
-    }
-    
     else if ([segue.identifier isEqualToString:@"ShowFindIntersection"])
     {
         FindAddressViewController *findInt = segue.destinationViewController;
@@ -68,6 +62,16 @@
         FindBoundariesViewController *findBounds = segue.destinationViewController;
         findBounds.delegate = self;
     }
+}
+
+- (IBAction)showPropertyOwner:(id)sender
+{
+    FindPropertyOwnerViewController *findPropOwner = FindPropertyOwnerViewController.new;
+    findPropOwner.delegate = self;
+    
+    [self presentViewController:findPropOwner
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)findPIDViewController:(FindPIDViewController *)findPID
