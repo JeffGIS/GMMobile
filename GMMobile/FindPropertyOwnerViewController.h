@@ -3,6 +3,14 @@
 
 #import "CCodeLibrary/CCodeLibrary.h"
 
+typedef NS_ENUM(NSInteger, LimitToOption)
+{
+    LimitToOptionNoLimit,
+    LimitToOptionMapBounds,
+    LimitToOptionCurrentCity,
+    LimitToOptionCurrentCounty,
+};
+
 @class FindPropertyOwnerViewController;
 
 @protocol FindPropOwnerViewControllerDelegate <NSObject>
@@ -16,5 +24,7 @@
 @interface FindPropertyOwnerViewController : UIViewController
 
 @property (weak, nonatomic) id <FindPropOwnerViewControllerDelegate> delegate;
+
++ (NSArray *)limitToOptions;
 
 @end

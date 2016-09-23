@@ -3,8 +3,9 @@
 
 #import "FindPropertyOwnerViewController.h"
 #import "PropertyData.h"
+#import "CCodeLibrary/NVPopoverTableView.h"
 
-@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate>
+@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
 @property (nonatomic) UIButton *returnButton, *limitButton;
@@ -13,10 +14,17 @@
 @property (nonatomic) UISwitch *multipleSwitch;
 @property (nonatomic) UILabel *multipleLabel;
 @property (nonatomic) CGFloat fontSize, cornerRadius;
+@property LimitToOption limitToOption;
+@property BOOL selectMultiple;
 
 @end
 
 @implementation FindPropertyOwnerViewController
+
++ (NSArray *)limitToOptions
+{
+    return @[@"No Limit", @"Map Bounds", @"Current City", @"Current County"];
+}
 
 - (void)loadView
 {
@@ -27,6 +35,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _limitToOption = [UserDefaults.defaults integerForKey:@"LimitToOption"];
+    _selectMultiple = [UserDefaults.defaults boolForKey:@"SelectMultiple"];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         _fontSize = 24.0, _cornerRadius = 4.0;
@@ -115,14 +126,19 @@
     [_limitButton setTitleColor:UIColor.lightGrayColor
                        forState:UIControlStateHighlighted];
     
-    [_limitButton setTitle:@"Limit To: No Limit"
-                  forState:UIControlStateNormal];
+    [self updateLimitButtonTitle];
     
     [_limitButton addTarget:self
                     action:@selector(limitButtonTapped:)
            forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:_limitButton];
+}
+
+- (void)updateLimitButtonTitle
+{
+    [_limitButton setTitle:[NSString stringWithFormat:@"Limit To: %@", FindPropertyOwnerViewController.limitToOptions[_limitToOption]]
+                  forState:UIControlStateNormal];
 }
 
 - (void)setupTextField
@@ -163,6 +179,7 @@
     _multipleSwitch.tintColor = UIColor.redColor;
     _multipleSwitch.backgroundColor = UIColor.redColor;
     _multipleSwitch.layer.cornerRadius = 16.0;
+    _multipleSwitch.on = _selectMultiple;
     
     [_multipleSwitch addTarget:self
                         action:@selector(multipleSwitchTapped:)
@@ -250,12 +267,34 @@
     
 - (void)limitButtonTapped:(UIButton *)button
 {
-        
+    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                      delegate:self
+                                                                         title:@"Limit To Options"
+                                                                     textArray:FindPropertyOwnerViewController.limitToOptions
+                                                                 includeCancel:YES];
+#pragma unused(nvptv)
+}
+
+- (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    [popoverTableView hide:YES];
+    
+    _limitToOption = (LimitToOption)index;
+    [UserDefaults.defaults saveNSInteger:index forKey:@"LimitToOption"];
+    [self updateLimitButtonTitle];
 }
 
 - (void)multipleSwitchTapped:(UISwitch *)theSwitch
 {
-    
+    _selectMultiple = theSwitch.on;
+    [UserDefaults.defaults saveBool:theSwitch.on forKey:@"SelectMultiple"];
 }
 
 - (void)touchesBegan:(NSSet *)touches
