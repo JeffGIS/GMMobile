@@ -138,6 +138,7 @@
     _propOwnerTF.font = [UIFont boldSystemFontOfSize:_fontSize];
     _propOwnerTF.backgroundColor = UIColor.whiteColor;
     _propOwnerTF.tintColor = UIColor.grayColor;
+    _propOwnerTF.clearButtonMode = UITextFieldViewModeWhileEditing;
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     
@@ -162,6 +163,10 @@
     _multipleSwitch.tintColor = UIColor.redColor;
     _multipleSwitch.backgroundColor = UIColor.redColor;
     _multipleSwitch.layer.cornerRadius = 16.0;
+    
+    [_multipleSwitch addTarget:self
+                        action:@selector(multipleSwitchTapped:)
+              forControlEvents:UIControlEventValueChanged];
     
     [self.view addSubview:_multipleSwitch];
     
@@ -246,6 +251,11 @@
 - (void)limitButtonTapped:(UIButton *)button
 {
         
+}
+
+- (void)multipleSwitchTapped:(UISwitch *)theSwitch
+{
+    
 }
 
 - (void)touchesBegan:(NSSet *)touches
