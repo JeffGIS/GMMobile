@@ -79,7 +79,7 @@
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.separatorInset = UIEdgeInsetsZero;
     
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 44.0);
     _tableView.rowHeight = rowHeight;
     _tableView.layer.borderWidth = (rowHeight / 20.0);
     _tableView.layer.cornerRadius = _cornerRadius;
@@ -210,20 +210,25 @@
     [_returnButton constrainTopToAnchor:self.view.topAnchor constant:margin];
     [_returnButton constrainWidthToConstant:width];
     [_returnButton constrainHeightToConstant:height];
+    
     [_multipleLabel constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
     [_multipleLabel constrainBottomToAnchor:_returnButton.bottomAnchor];
     [_multipleLabel constrainWidthToConstant:(width * 0.8)];
+    
     [_limitButton constrainTopToAnchor:self.view.topAnchor constant:margin];
     [_limitButton constrainLeadingToAnchor:_multipleLabel.trailingAnchor constant:margin];
     [_limitButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [_limitButton constrainBottomToAnchor:_returnButton.bottomAnchor];
+    
     [_multipleSwitch constrainCenterXToAnchor:_multipleLabel.centerXAnchor];
     [_multipleSwitch constrainTopToAnchor:_returnButton.topAnchor];
     [_multipleLabel constrainTopToAnchor:_multipleSwitch.bottomAnchor];
+    
     [_propOwnerTF constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [_propOwnerTF constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
     [_propOwnerTF constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [_propOwnerTF constrainHeightToConstant:height];
+    
     [_tableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [_tableView constrainTopToAnchor:_propOwnerTF.bottomAnchor constant:margin];
     [_tableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];

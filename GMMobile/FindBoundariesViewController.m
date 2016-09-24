@@ -7,33 +7,39 @@
 
 @interface FindBoundariesViewController ()
 
-@property (weak, nonatomic) IBOutlet UIButton *backButton;
-@property (weak, nonatomic) IBOutlet UITableView *topTableView;
-@property (weak, nonatomic) IBOutlet UITableView *bottomTableView;
-@property (weak, nonatomic) IBOutlet UIView *polylineView;
-@property (weak, nonatomic) IBOutlet UIView *maskBoundsView;
-@property (weak, nonatomic) IBOutlet UIButton *offsetButton;
-@property (weak, nonatomic) IBOutlet UISwitch *polylineSwitch;
-@property (weak, nonatomic) IBOutlet UISwitch *maskBoundsSwitch;
-@property (weak, nonatomic) IBOutlet UILabel *polylineLabel;
-@property (weak, nonatomic) IBOutlet UILabel *maskBoundsLabel;
-@property (weak, nonatomic) IBOutlet UIButton *selectFromMapButton;
-
+@property (nonatomic) UIButton *returnButton, *offsetButton, *selectFromMapButton;
+@property (nonatomic) UITableView *topTableView, *bottomTableView;
+@property (nonatomic) UIView *polylineView, *maskBoundsView;
+@property (nonatomic) UISwitch *polylineSwitch, *maskBoundsSwitch;
+@property (nonatomic) UILabel *polylineLabel, *maskBoundsLabel;
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
 @property (nonatomic, copy) NSString *selectedType;
 @property (nonatomic) NSMutableDictionary *sections;
 @property (nonatomic) NSMutableArray *sectionBegins, *sectionCounts, *sectionKeys;
+@property (nonatomic) CGFloat fontSize, cornerRadius;
 @property BOOL useOtherAreas;
 
 @end
 
 @implementation FindBoundariesViewController
 
+- (void)loadView
+{
+    UIView *view = [[UIView alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    self.view = view;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _fontSize = 24.0, _cornerRadius = 4.0;
+    
+    else
+        _fontSize = 36.0, _cornerRadius = 10.0;
     
     BoundaryData *boundData = [[BoundaryData alloc] init];
     _boundaryList = [boundData getBoundaryAreaTypes];
@@ -42,10 +48,18 @@
     if (_otherAreas.count)
         [_boundaryList addObject:@"Other Areas"];
     
+    _topTableView = UITableView.new;
+    _bottomTableView = UITableView.new;
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
     
-    [self setupButton:_backButton
+    _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _offsetButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _selectFromMapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _selectFromMapButton.enabled = NO;
+    _selectFromMapButton.alpha = 0.4;
+    
+    [self setupButton:_returnButton
                 title:@"< Return"];
     
     [self setupButton:_offsetButton
@@ -55,21 +69,28 @@
     [self setupButton:_selectFromMapButton
                 title:@"Select From Map"];
     
+    _polylineView = UIView.new;
+    _maskBoundsView = UIView.new;
     [self setupView:_polylineView];
     [self setupView:_maskBoundsView];
     
-    [self setupLabel:_polylineLabel
-                text:@"Show\nPolyline"];
+    _polylineLabel = UILabel.new;
+    _maskBoundsLabel = UILabel.new;
+    [self setupLabel:_polylineLabel text:@"Show\nPolyline"];
+    [self setupLabel:_maskBoundsLabel text:@"Mask\nBounds"];
+    [_polylineView addSubview:_polylineLabel];
+    [_maskBoundsView addSubview:_maskBoundsLabel];
     
-    [self setupLabel:_maskBoundsLabel
-                text:@"Mask\nBounds"];
-    
+    _polylineSwitch = UISwitch.new;
+    _maskBoundsSwitch = UISwitch.new;
+    _polylineSwitch.translatesAutoresizingMaskIntoConstraints = NO;
+    _maskBoundsSwitch.translatesAutoresizingMaskIntoConstraints = NO;
     _polylineSwitch.tintColor = UIColor.redColor;
     _maskBoundsSwitch.tintColor = UIColor.redColor;
     _polylineSwitch.on = CRAPI.sharedInstance.showPolylineForBounds;
     _maskBoundsSwitch.on = CRAPI.sharedInstance.maskBoundsForBounds;
-    _selectFromMapButton.enabled = NO;
-    _selectFromMapButton.alpha = 0.4;
+    [_polylineView addSubview:_polylineSwitch];
+    [_maskBoundsView addSubview:_maskBoundsSwitch];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -79,6 +100,20 @@
     
     else
         _selectFromMapButton.titleLabel.font = [UIFont boldSystemFontOfSize:36.0];
+    
+    [_returnButton addTarget:self
+                      action:@selector(returnButtonTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+    
+    [_offsetButton addTarget:self
+                      action:@selector(offsetButtonTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+    
+    [_selectFromMapButton addTarget:self
+                             action:@selector(selectFromMapButtonTapped:)
+                   forControlEvents:UIControlEventTouchUpInside];
+    
+    [self setupConstraints];
 }
 
 - (void)didReceiveMemoryWarning
@@ -86,20 +121,32 @@
     [super didReceiveMemoryWarning];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return YES;
+    
+    else
+        return NO;
+}
+
 - (void)setupView:(UIView *)view
 {
+    view.translatesAutoresizingMaskIntoConstraints = NO;
     view.backgroundColor = UserDefaults.defaults.appleGray;
     view.layer.borderColor = UIColor.blackColor.CGColor;
     view.layer.borderWidth = 2.0;
-    view.layer.cornerRadius = 10.0;
+    view.layer.cornerRadius = _cornerRadius;
+    [self.view addSubview:view];
 }
 
 - (void)setupLabel:(UILabel *)label
               text:(NSString *)text
 {
+    label.translatesAutoresizingMaskIntoConstraints = NO;
     label.text = text;
     label.numberOfLines = 2;
-    label.font = [UIFont boldSystemFontOfSize:32.0];
+    label.font = [UIFont boldSystemFontOfSize:_fontSize];
     label.adjustsFontSizeToFitWidth = YES;
     label.textAlignment = NSTextAlignmentCenter;
 }
@@ -107,24 +154,24 @@
 - (void)setupButton:(UIButton *)button
               title:(NSString *)title
 {
+    button.translatesAutoresizingMaskIntoConstraints = NO;
     button.backgroundColor = UIColor.blackColor;
-    button.layer.cornerRadius = 10.0;
-    button.titleLabel.font = [UIFont boldSystemFontOfSize:24.0];
+    button.layer.cornerRadius = _cornerRadius;
+    button.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
     button.titleLabel.numberOfLines = 2;
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    
-    [button setTitle:title
-            forState:UIControlStateNormal];
-    
-    [button setTitleColor:UIColor.whiteColor
-                 forState:UIControlStateNormal];
+    [button setTitle:title forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
+    [self.view addSubview:button];
 }
 
 - (void)setupTableView:(UITableView *)tableView
 {
+    tableView.translatesAutoresizingMaskIntoConstraints = NO;
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.separatorInset = UIEdgeInsetsZero;
@@ -137,25 +184,83 @@
     tableView.rowHeight = rowHeight;
     tableView.sectionHeaderHeight = 0.0;
     tableView.layer.borderWidth = (rowHeight / 20.0);
-    tableView.layer.cornerRadius = 10.0;
+    tableView.layer.cornerRadius = _cornerRadius;
     tableView.sectionIndexMinimumDisplayRowCount = 8;
     tableView.delaysContentTouches = YES;
+    tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.0 alpha:0.1];
+    [self.view addSubview:tableView];
+}
+
+- (void)setupConstraints
+{
+    CGFloat margin = 20.0;
     
-    tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.0
-                                                                      alpha:0.1];
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 8.0;
+    
+    [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+    [_returnButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+    
+    [_offsetButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
+    [_offsetButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+    [_offsetButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_offsetButton constrainWidthToAnchor:_returnButton.widthAnchor];
+    [_offsetButton constrainHeightToAnchor:_returnButton.heightAnchor];
+    
+    [_polylineView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+    [_polylineView constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
+    [_polylineView constrainHeightToAnchor:_returnButton.heightAnchor];
+    
+    [_polylineSwitch constrainCenterYToAnchor:_polylineView.centerYAnchor];
+    [_polylineSwitch constrainTrailingToAnchor:_polylineView.trailingAnchor constant:-margin];
+    [_polylineSwitch constrainWidthToConstant:_polylineSwitch.frame.size.width];
+    [_polylineLabel constrainLeadingToAnchor:_polylineView.leadingAnchor constant:margin];
+    [_polylineLabel constrainTopToAnchor:_polylineView.topAnchor];
+    [_polylineLabel constrainBottomToAnchor:_polylineView.bottomAnchor];
+    [_polylineLabel constrainTrailingToAnchor:_polylineSwitch.leadingAnchor constant:-margin];
+    
+    [_maskBoundsView constrainLeadingToAnchor:_polylineView.trailingAnchor constant:margin];
+    [_maskBoundsView constrainTopToAnchor:_offsetButton.bottomAnchor constant:margin];
+    [_maskBoundsView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_maskBoundsView constrainWidthToAnchor:_polylineView.widthAnchor];
+    [_maskBoundsView constrainHeightToAnchor:_offsetButton.heightAnchor];
+    
+    [_maskBoundsSwitch constrainCenterYToAnchor:_maskBoundsView.centerYAnchor];
+    [_maskBoundsSwitch constrainTrailingToAnchor:_maskBoundsView.trailingAnchor constant:-margin];
+    [_maskBoundsSwitch constrainWidthToConstant:_maskBoundsSwitch.frame.size.width];
+    [_maskBoundsLabel constrainLeadingToAnchor:_maskBoundsView.leadingAnchor constant:margin];
+    [_maskBoundsLabel constrainTopToAnchor:_maskBoundsView.topAnchor];
+    [_maskBoundsLabel constrainBottomToAnchor:_maskBoundsView.bottomAnchor];
+    [_maskBoundsLabel constrainTrailingToAnchor:_maskBoundsSwitch.leadingAnchor constant:-margin];
+    
+    [_topTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+    [_topTableView constrainTopToAnchor:_polylineView.bottomAnchor constant:margin];
+    [_topTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_topTableView constrainHeightToAnchor:_returnButton.heightAnchor multiplier:3.0];
+    
+    [_bottomTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+    [_bottomTableView constrainTopToAnchor:_topTableView.bottomAnchor constant:margin];
+    [_bottomTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_bottomTableView constrainHeightToAnchor:_topTableView.heightAnchor];
+    
+    [_selectFromMapButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+    [_selectFromMapButton constrainTopToAnchor:_bottomTableView.bottomAnchor constant:margin];
+    [_selectFromMapButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_selectFromMapButton constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
+    [_selectFromMapButton constrainHeightToAnchor:_returnButton.heightAnchor];
 }
 
-- (IBAction)polylineSwitchTapped:(UISwitch *)sender
+- (void)polylineSwitchTapped:(UISwitch *)theSwitch
 {
-    CRAPI.sharedInstance.showPolylineForBounds = sender.on;
+    CRAPI.sharedInstance.showPolylineForBounds = theSwitch.on;
 }
 
-- (IBAction)maskBoundsSwitchTapped:(UISwitch *)sender
+- (void)maskBoundsSwitchTapped:(UISwitch *)theSwitch
 {
-    CRAPI.sharedInstance.maskBoundsForBounds = sender.on;
+    CRAPI.sharedInstance.maskBoundsForBounds = theSwitch.on;
 }
 
-- (IBAction)offsetButtonTapped:(id)sender
+- (void)offsetButtonTapped:(UIButton *)button
 {
     NVUnitPickerTextAlert *nvupta = [NVUnitPickerTextAlert showUnitPickerTextAlertWithTitle:@"Edit Offset"
                                                                                 pickerArray:@[@"feet", @"meters", @"miles"]
@@ -197,7 +302,7 @@
                    forState:UIControlStateNormal];
 }
 
-- (IBAction)goBack:(id)sender
+- (void)returnButtonTapped:(UIButton *)sender
 {
     [self dismissViewControllerAnimated:YES
                              completion:nil];
@@ -260,13 +365,14 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"
-                                                            forIndexPath:indexPath];
+    static NSString *cellIdentifier = @"CustomCell";
+    
+    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     if (!cell)
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:@"Cell"];
+                                      reuseIdentifier:cellIdentifier];
     }
     
     if (_boundaryList.count)
@@ -469,7 +575,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
-- (IBAction)selectFromMap:(id)sender
+- (void)selectFromMapButtonTapped:(UIButton *)button
 {
     NSString *type = [_topTableView cellForRowAtIndexPath:_topTableView.indexPathForSelectedRow].textLabel.text;
     CRAPI.sharedInstance.selectBoundaryFromMapType = type;

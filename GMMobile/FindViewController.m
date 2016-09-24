@@ -56,12 +56,6 @@
         FindAddressViewController *findInt = segue.destinationViewController;
         findInt.delegate = self;
     }
-    
-    else if ([segue.identifier isEqualToString:@"ShowFindBoundaries"])
-    {
-        FindBoundariesViewController *findBounds = segue.destinationViewController;
-        findBounds.delegate = self;
-    }
 }
 
 - (IBAction)showPropertyOwner:(id)sender
@@ -70,6 +64,15 @@
     findPropOwner.delegate = self;
     
     [self presentViewController:findPropOwner
+                       animated:YES
+                     completion:nil];
+}
+- (IBAction)showBoundaries:(id)sender
+{
+    FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
+    findBounds.delegate = self;
+    
+    [self presentViewController:findBounds
                        animated:YES
                      completion:nil];
 }
