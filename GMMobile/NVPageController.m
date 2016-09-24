@@ -97,18 +97,15 @@
     _pageControl.userInteractionEnabled = NO;
     _pageControl.translatesAutoresizingMaskIntoConstraints = NO;
     _pageControl.hidesForSinglePage = YES;
-    [self.view addSubview:_pageControl];
     
-    [_pageControl.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
+    [self.view addSubview:_pageControl];
+    [_pageControl constrainCenterXToAnchor:self.view.centerXAnchor];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        [_pageControl.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                  constant:12.0].active = YES;
-    }
+        [_pageControl constrainBottomToAnchor:self.view.bottomAnchor constant:12.0];
     
     else
-        [_pageControl.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+        [_pageControl constrainBottomToAnchor:self.view.bottomAnchor];
 }
 
 - (void)didReceiveMemoryWarning
