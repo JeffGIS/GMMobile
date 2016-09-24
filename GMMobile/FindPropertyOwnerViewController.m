@@ -79,7 +79,7 @@
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
     _tableView.separatorInset = UIEdgeInsetsZero;
     
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 44.0);
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 40.0);
     _tableView.rowHeight = rowHeight;
     _tableView.layer.borderWidth = (rowHeight / 20.0);
     _tableView.layer.cornerRadius = _cornerRadius;

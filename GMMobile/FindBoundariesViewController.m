@@ -63,8 +63,7 @@
                 title:@"< Return"];
     
     [self setupButton:_offsetButton
-                title:[NSString stringWithFormat:@"Edit Offset:\n%@",
-                       CRAPI.sharedInstance.offsetForBounds]];
+                title:[NSString stringWithFormat:@"Offset:%@", CRAPI.sharedInstance.offsetForBounds]];
     
     [self setupButton:_selectFromMapButton
                 title:@"Select From Map"];
@@ -113,7 +112,9 @@
                              action:@selector(selectFromMapButtonTapped:)
                    forControlEvents:UIControlEventTouchUpInside];
     
-    [self setupConstraints];
+    [_polylineSwitch constrainWidthToConstant:_polylineSwitch.frame.size.width];
+    [_maskBoundsSwitch constrainWidthToConstant:_maskBoundsSwitch.frame.size.width];
+    [self setupConstraintsForOrientation:UIApplication.sharedApplication.statusBarOrientation];
 }
 
 - (void)didReceiveMemoryWarning
@@ -159,7 +160,6 @@
     button.layer.cornerRadius = _cornerRadius;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
-    button.titleLabel.numberOfLines = 2;
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -180,7 +180,7 @@
     tableView.bounces = YES;
     tableView.layer.borderColor = UIColor.blackColor.CGColor;
     
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 14.0), 44.0);
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 40.0);
     tableView.rowHeight = rowHeight;
     tableView.sectionHeaderHeight = 0.0;
     tableView.layer.borderWidth = (rowHeight / 20.0);
@@ -191,63 +191,139 @@
     [self.view addSubview:tableView];
 }
 
-- (void)setupConstraints
+- (void)setupConstraintsForOrientation:(UIInterfaceOrientation)orientation
 {
     CGFloat margin = 20.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         margin = 8.0;
     
-    [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_returnButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone && orientation == UIInterfaceOrientationPortrait)
+    {
+        [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_returnButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+        
+        [_offsetButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
+        [_offsetButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+        [_offsetButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_offsetButton constrainWidthToAnchor:_returnButton.widthAnchor];
+        [_offsetButton constrainHeightToAnchor:_returnButton.heightAnchor];
+        
+        [_polylineView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_polylineView constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
+        [_polylineView constrainHeightToAnchor:_returnButton.heightAnchor];
+        
+        [_maskBoundsView constrainLeadingToAnchor:_polylineView.trailingAnchor constant:margin];
+        [_maskBoundsView constrainTopToAnchor:_offsetButton.bottomAnchor constant:margin];
+        [_maskBoundsView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_maskBoundsView constrainWidthToAnchor:_polylineView.widthAnchor];
+        [_maskBoundsView constrainHeightToAnchor:_offsetButton.heightAnchor];
+        
+        [_topTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_topTableView constrainTopToAnchor:_polylineView.bottomAnchor constant:margin];
+        [_topTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_topTableView constrainHeightToAnchor:_returnButton.heightAnchor multiplier:3.5];
+        
+        [_bottomTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_bottomTableView constrainTopToAnchor:_topTableView.bottomAnchor constant:margin];
+        [_bottomTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_bottomTableView constrainHeightToAnchor:_topTableView.heightAnchor];
+        
+        [_selectFromMapButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_selectFromMapButton constrainTopToAnchor:_bottomTableView.bottomAnchor constant:margin];
+        [_selectFromMapButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_selectFromMapButton constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
+        [_selectFromMapButton constrainHeightToAnchor:_returnButton.heightAnchor];
+    }
     
-    [_offsetButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
-    [_offsetButton constrainTopToAnchor:self.view.topAnchor constant:margin];
-    [_offsetButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
-    [_offsetButton constrainWidthToAnchor:_returnButton.widthAnchor];
-    [_offsetButton constrainHeightToAnchor:_returnButton.heightAnchor];
+    else
+    {
+        [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_returnButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+        
+        [_offsetButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
+        [_offsetButton constrainTopToAnchor:self.view.topAnchor constant:margin];
+        [_offsetButton constrainWidthToAnchor:_returnButton.widthAnchor];
+        [_offsetButton constrainHeightToAnchor:_returnButton.heightAnchor];
+        
+        [_polylineView constrainLeadingToAnchor:_offsetButton.trailingAnchor constant:margin];
+        [_polylineView constrainTopToAnchor:self.view.topAnchor constant:margin];
+        [_polylineView constrainWidthToAnchor:_returnButton.widthAnchor];
+        [_polylineView constrainHeightToAnchor:_returnButton.heightAnchor];
+        
+        [_maskBoundsView constrainLeadingToAnchor:_polylineView.trailingAnchor constant:margin];
+        [_maskBoundsView constrainTopToAnchor:self.view.topAnchor constant:margin];
+        [_maskBoundsView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_maskBoundsView constrainWidthToAnchor:_returnButton.widthAnchor];
+        [_maskBoundsView constrainHeightToAnchor:_returnButton.heightAnchor];
+        
+        [_topTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_topTableView constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        {
+            [_topTableView constrainHeightToAnchor:_returnButton.heightAnchor multiplier:4.5];
+            
+            [_bottomTableView constrainLeadingToAnchor:_topTableView.trailingAnchor constant:margin];
+            [_bottomTableView constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
+            [_bottomTableView constrainHeightToAnchor:_topTableView.heightAnchor];
+            [_bottomTableView constrainWidthToAnchor:_topTableView.widthAnchor];
+        }
+
+        else
+        {
+            [_topTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+            
+            if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight)
+                [_topTableView constrainHeightToAnchor:_returnButton.heightAnchor multiplier:4.5];
+            
+            else
+                [_topTableView constrainHeightToAnchor:_returnButton.heightAnchor multiplier:6.0];
+            
+            [_bottomTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+            [_bottomTableView constrainTopToAnchor:_topTableView.bottomAnchor constant:margin];
+        }
+        
+        [_bottomTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_bottomTableView constrainHeightToAnchor:_topTableView.heightAnchor];
+        
+        [_selectFromMapButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+        [_selectFromMapButton constrainTopToAnchor:_bottomTableView.bottomAnchor constant:margin];
+        [_selectFromMapButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+        [_selectFromMapButton constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
+        [_selectFromMapButton constrainHeightToAnchor:_returnButton.heightAnchor];
+    }
     
-    [_polylineView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_polylineView constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
-    [_polylineView constrainHeightToAnchor:_returnButton.heightAnchor];
+    margin = 8.0;
     
     [_polylineSwitch constrainCenterYToAnchor:_polylineView.centerYAnchor];
-    [_polylineSwitch constrainTrailingToAnchor:_polylineView.trailingAnchor constant:-margin];
-    [_polylineSwitch constrainWidthToConstant:_polylineSwitch.frame.size.width];
+    [_polylineSwitch constrainTrailingToAnchor:_polylineView.trailingAnchor constant:-(margin / 2.0)];
+    
     [_polylineLabel constrainLeadingToAnchor:_polylineView.leadingAnchor constant:margin];
     [_polylineLabel constrainTopToAnchor:_polylineView.topAnchor];
     [_polylineLabel constrainBottomToAnchor:_polylineView.bottomAnchor];
-    [_polylineLabel constrainTrailingToAnchor:_polylineSwitch.leadingAnchor constant:-margin];
-    
-    [_maskBoundsView constrainLeadingToAnchor:_polylineView.trailingAnchor constant:margin];
-    [_maskBoundsView constrainTopToAnchor:_offsetButton.bottomAnchor constant:margin];
-    [_maskBoundsView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
-    [_maskBoundsView constrainWidthToAnchor:_polylineView.widthAnchor];
-    [_maskBoundsView constrainHeightToAnchor:_offsetButton.heightAnchor];
+    [_polylineLabel constrainTrailingToAnchor:_polylineSwitch.leadingAnchor constant:-(margin / 2.0)];
     
     [_maskBoundsSwitch constrainCenterYToAnchor:_maskBoundsView.centerYAnchor];
-    [_maskBoundsSwitch constrainTrailingToAnchor:_maskBoundsView.trailingAnchor constant:-margin];
-    [_maskBoundsSwitch constrainWidthToConstant:_maskBoundsSwitch.frame.size.width];
+    [_maskBoundsSwitch constrainTrailingToAnchor:_maskBoundsView.trailingAnchor constant:-(margin / 2.0)];
+    
     [_maskBoundsLabel constrainLeadingToAnchor:_maskBoundsView.leadingAnchor constant:margin];
     [_maskBoundsLabel constrainTopToAnchor:_maskBoundsView.topAnchor];
     [_maskBoundsLabel constrainBottomToAnchor:_maskBoundsView.bottomAnchor];
-    [_maskBoundsLabel constrainTrailingToAnchor:_maskBoundsSwitch.leadingAnchor constant:-margin];
-    
-    [_topTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_topTableView constrainTopToAnchor:_polylineView.bottomAnchor constant:margin];
-    [_topTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
-    [_topTableView constrainHeightToAnchor:_returnButton.heightAnchor multiplier:3.0];
-    
-    [_bottomTableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_bottomTableView constrainTopToAnchor:_topTableView.bottomAnchor constant:margin];
-    [_bottomTableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
-    [_bottomTableView constrainHeightToAnchor:_topTableView.heightAnchor];
-    
-    [_selectFromMapButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_selectFromMapButton constrainTopToAnchor:_bottomTableView.bottomAnchor constant:margin];
-    [_selectFromMapButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
-    [_selectFromMapButton constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
-    [_selectFromMapButton constrainHeightToAnchor:_returnButton.heightAnchor];
+    [_maskBoundsLabel constrainTrailingToAnchor:_maskBoundsSwitch.leadingAnchor constant:-(margin / 2.0)];
+}
+
+- (void)removeAllConstraints
+{
+    [_returnButton removeAllConstraints];
+    [_offsetButton removeAllConstraints];
+    [_polylineLabel removeAllConstraints];
+    [_polylineView removeAllConstraints];
+    [_maskBoundsLabel removeAllConstraints];
+    [_maskBoundsView removeAllConstraints];
+    [_topTableView removeAllConstraints];
+    [_bottomTableView removeAllConstraints];
+    [_selectFromMapButton removeAllConstraints];
 }
 
 - (void)polylineSwitchTapped:(UISwitch *)theSwitch
@@ -297,8 +373,7 @@
     
     [textAlert hideTextAlert:YES];
     
-    [_offsetButton setTitle:[NSString stringWithFormat:@"Edit Offset:\n%@",
-                             CRAPI.sharedInstance.offsetForBounds]
+    [_offsetButton setTitle:[NSString stringWithFormat:@"Offset:%@", CRAPI.sharedInstance.offsetForBounds]
                    forState:UIControlStateNormal];
 }
 
@@ -566,13 +641,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                 duration:(NSTimeInterval)duration
 {
-    
-    
     for (NVUnitPickerTextAlert *alert in UIApplication.sharedApplication.keyWindow.subviews)
     {
         if ([alert isKindOfClass:NVUnitPickerTextAlert.class])
             [alert willRotateWithDuration:duration];
     }
+    
+    [self removeAllConstraints];
+    [self setupConstraintsForOrientation:toInterfaceOrientation];
 }
 
 - (void)selectFromMapButtonTapped:(UIButton *)button
