@@ -338,9 +338,10 @@
 
 - (void)offsetButtonTapped:(UIButton *)button
 {
-    NVUnitPickerTextAlert *nvupta = [NVUnitPickerTextAlert showUnitPickerTextAlertWithTitle:@"Edit Offset"
-                                                                                pickerArray:@[@"feet", @"meters", @"miles"]
-                                                                                   delegate:self];
+    NVUnitPickerTextAlert *nvupta = [NVUnitPickerTextAlert showUnitPickerTextAlertInView:self.view
+                                                                               withTitle:@"Edit Offset"
+                                                                             pickerArray:@[@"feet", @"meters", @"miles"]
+                                                                                delegate:self];
     
     nvupta.text = CRAPI.sharedInstance.offsetForBounds;
 }
