@@ -203,20 +203,20 @@ viewForHeaderInSection:(NSInteger)section
             [headerView addSubview:_topMapItButton];
             [headerView addSubview:_topPlusButton];
             
-            [_topMapItButton.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
-            [_topMapItButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-            [_topMapItButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-            [_topMapItButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            [_topMapItButton constrainLeadingToAnchor:headerView.leadingAnchor];
+            [_topMapItButton constrainTopToAnchor:headerView.topAnchor];
+            [_topMapItButton constrainBottomToAnchor:headerView.bottomAnchor];
+            [_topMapItButton constrainWidthToConstant:_rowHeight];
             
-            [_topPlusButton.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
-            [_topPlusButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-            [_topPlusButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-            [_topPlusButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            [_topPlusButton constrainTrailingToAnchor:headerView.trailingAnchor];
+            [_topPlusButton constrainTopToAnchor:headerView.topAnchor];
+            [_topPlusButton constrainBottomToAnchor:headerView.bottomAnchor];
+            [_topPlusButton constrainWidthToConstant:_rowHeight];
             
-            [headerLabel.leadingAnchor constraintEqualToAnchor:_topMapItButton.trailingAnchor].active = YES;
-            [headerLabel.trailingAnchor constraintEqualToAnchor:_topPlusButton.leadingAnchor].active = YES;
-            [headerLabel.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-            [headerLabel.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+            [headerLabel constrainLeadingToAnchor:_topMapItButton.trailingAnchor];
+            [headerLabel constrainTrailingToAnchor:_topPlusButton.leadingAnchor];
+            [headerLabel constrainTopToAnchor:headerView.topAnchor];
+            [headerLabel constrainBottomToAnchor:headerView.bottomAnchor];
         }
     }
     
@@ -227,20 +227,20 @@ viewForHeaderInSection:(NSInteger)section
             [headerView addSubview:_bottomMapItButton];
             [headerView addSubview:_bottomPlusButton];
             
-            [_bottomMapItButton.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
-            [_bottomMapItButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-            [_bottomMapItButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-            [_bottomMapItButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            [_bottomMapItButton constrainLeadingToAnchor:headerView.leadingAnchor];
+            [_bottomMapItButton constrainTopToAnchor:headerView.topAnchor];
+            [_bottomMapItButton constrainBottomToAnchor:headerView.bottomAnchor];
+            [_bottomMapItButton constrainWidthToConstant:_rowHeight];
             
-            [_bottomPlusButton.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
-            [_bottomPlusButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-            [_bottomPlusButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-            [_bottomPlusButton.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+            [_bottomPlusButton constrainTrailingToAnchor:headerView.trailingAnchor];
+            [_bottomPlusButton constrainTopToAnchor:headerView.topAnchor];
+            [_bottomPlusButton constrainBottomToAnchor:headerView.bottomAnchor];
+            [_bottomPlusButton constrainWidthToConstant:_rowHeight];
             
-            [headerLabel.leadingAnchor constraintEqualToAnchor:_bottomMapItButton.trailingAnchor].active = YES;
-            [headerLabel.trailingAnchor constraintEqualToAnchor:_bottomPlusButton.leadingAnchor].active = YES;
-            [headerLabel.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-            [headerLabel.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+            [headerLabel constrainLeadingToAnchor:_bottomMapItButton.trailingAnchor];
+            [headerLabel constrainTrailingToAnchor:_bottomPlusButton.leadingAnchor];
+            [headerLabel constrainTopToAnchor:headerView.topAnchor];
+            [headerLabel constrainBottomToAnchor:headerView.bottomAnchor];
         }
     }
     
@@ -354,30 +354,30 @@ viewForHeaderInSection:(NSInteger)section
               action:@selector(mapItTapped:)
     forControlEvents:UIControlEventTouchUpInside];
     
-    [mapIt.leadingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:(-margin - size.height)].active = YES;
-    [mapIt.trailingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:-margin].active = YES;
-    [mapIt.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:margin].active = YES;
-    [mapIt.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-margin].active = YES;
+    [mapIt constrainLeadingToAnchor:cell.contentView.trailingAnchor constant:(-margin - size.height)];
+    [mapIt constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:-margin];
+    [mapIt constrainTopToAnchor:cell.contentView.topAnchor constant:margin];
+    [mapIt constrainBottomToAnchor:cell.contentView.bottomAnchor constant:-margin];
     
-    [editOptions.leadingAnchor constraintEqualToAnchor:mapIt.leadingAnchor constant:(-margin - size.height)].active = YES;
-    [editOptions.trailingAnchor constraintEqualToAnchor:mapIt.leadingAnchor constant:-margin].active = YES;
-    [editOptions.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:margin].active = YES;
-    [editOptions.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-margin].active = YES;
+    [editOptions constrainLeadingToAnchor:mapIt.leadingAnchor constant:(-margin - size.height)];
+    [editOptions constrainTrailingToAnchor:mapIt.leadingAnchor constant:-margin];
+    [editOptions constrainTopToAnchor:cell.contentView.topAnchor constant:margin];
+    [editOptions constrainBottomToAnchor:cell.contentView.bottomAnchor constant:-margin];
     
-    [editName.leadingAnchor constraintEqualToAnchor:editOptions.leadingAnchor constant:(-margin - size.height)].active = YES;
-    [editName.trailingAnchor constraintEqualToAnchor:editOptions.leadingAnchor constant:-margin].active = YES;
-    [editName.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor constant:margin].active = YES;
-    [editName.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:-margin].active = YES;
+    [editName constrainLeadingToAnchor:editOptions.leadingAnchor constant:(-margin - size.height)];
+    [editName constrainTrailingToAnchor:editOptions.leadingAnchor constant:-margin];
+    [editName constrainTopToAnchor:cell.contentView.topAnchor constant:margin];
+    [editName constrainBottomToAnchor:cell.contentView.bottomAnchor constant:-margin];
     
-    [cellTextLabel.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor constant:(margin * 2.0)].active = YES;
-    [cellTextLabel.trailingAnchor constraintEqualToAnchor:editName.leadingAnchor constant:-margin].active = YES;
-    [cellTextLabel.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor].active = YES;
-    [cellTextLabel.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor constant:(-size.height * 0.3)].active = YES;
+    [cellTextLabel constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin * 2.0)];
+    [cellTextLabel constrainTrailingToAnchor:editName.leadingAnchor constant:-margin];
+    [cellTextLabel constrainTopToAnchor:cell.contentView.topAnchor];
+    [cellTextLabel constrainBottomToAnchor:cell.contentView.bottomAnchor constant:(-size.height * 0.3)];
     
-    [cellSubTextLabel.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor constant:(margin * 2.0)].active = YES;
-    [cellSubTextLabel.trailingAnchor constraintEqualToAnchor:editName.leadingAnchor constant:-margin].active = YES;
-    [cellSubTextLabel.topAnchor constraintEqualToAnchor:cellTextLabel.bottomAnchor].active = YES;
-    [cellSubTextLabel.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor].active = YES;
+    [cellSubTextLabel constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin * 2.0)];
+    [cellSubTextLabel constrainTrailingToAnchor:editName.leadingAnchor constant:-margin];
+    [cellSubTextLabel constrainTopToAnchor:cellTextLabel.bottomAnchor];
+    [cellSubTextLabel constrainBottomToAnchor:cell.contentView.bottomAnchor];
     
     cell.userInteractionEnabled = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;

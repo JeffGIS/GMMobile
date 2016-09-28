@@ -51,23 +51,30 @@
         findAddress.delegate = self;
     }
     
-    else if ([segue.identifier isEqualToString:@"ShowFindPropertyOwner"])
-    {
-        FindAddressViewController *findPropOwner = segue.destinationViewController;
-        findPropOwner.delegate = self;
-    }
-    
     else if ([segue.identifier isEqualToString:@"ShowFindIntersection"])
     {
         FindAddressViewController *findInt = segue.destinationViewController;
         findInt.delegate = self;
     }
+}
+
+- (IBAction)showPropertyOwner:(id)sender
+{
+    FindPropertyOwnerViewController *findPropOwner = FindPropertyOwnerViewController.new;
+    findPropOwner.delegate = self;
     
-    else if ([segue.identifier isEqualToString:@"ShowFindBoundaries"])
-    {
-        FindBoundariesViewController *findBounds = segue.destinationViewController;
-        findBounds.delegate = self;
-    }
+    [self presentViewController:findPropOwner
+                       animated:YES
+                     completion:nil];
+}
+- (IBAction)showBoundaries:(id)sender
+{
+    FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
+    findBounds.delegate = self;
+    
+    [self presentViewController:findBounds
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)findPIDViewController:(FindPIDViewController *)findPID

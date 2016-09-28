@@ -112,13 +112,10 @@
         
         self.tabBarController.tabBar.hidden = YES;
         
-        [_hotspotView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
-        
-        [_hotspotView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                  constant:self.tabBarController.tabBar.frame.size.height].active = YES;
-        
-        [_hotspotView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
-        [_hotspotView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+        [_hotspotView constrainTopToAnchor:self.view.topAnchor];
+        [_hotspotView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
+        [_hotspotView constrainLeadingToAnchor:self.view.leadingAnchor];
+        [_hotspotView constrainTrailingToAnchor:self.view.trailingAnchor];
         
         CGImageRelease(gridImageRef);*/
     }
@@ -142,13 +139,10 @@
     
     self.tabBarController.tabBar.hidden = YES;
     
-    [_glView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
-    
-    [_glView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                         constant:self.tabBarController.tabBar.frame.size.height].active = YES;
-    
-    [_glView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
-    [_glView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+    [_glView constrainTopToAnchor:self.view.topAnchor];
+    [_glView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
+    [_glView constrainLeadingToAnchor:self.view.leadingAnchor];
+    [_glView constrainTrailingToAnchor:self.view.trailingAnchor];
     
     [self setUpGL];
     
@@ -472,8 +466,8 @@ EAGLContext *CreateBestEAGLContext()
                  forControlEvents:UIControlEventValueChanged];
             
             [cell.contentView addSubview:cellSwitch];
-            [cellSwitch.trailingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor constant:margin].active = YES;
-            [cellSwitch.centerYAnchor constraintEqualToAnchor:cell.contentView.centerYAnchor].active = YES;
+            [cellSwitch constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:margin];
+            [cellSwitch constrainCenterYToAnchor:cell.contentView.centerYAnchor];
         }
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;

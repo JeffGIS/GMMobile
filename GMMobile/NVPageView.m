@@ -93,17 +93,10 @@
     switch (_pageArrangement)
     {
         case NVPageViewArrangementFit1:
-            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-_pageControlMargin].active = YES;
+            [[self.view viewWithTag:1] constrainLeadingToAnchor:self.view.leadingAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_outerMargin];
+            [[self.view viewWithTag:1] constrainTopToAnchor:self.view.topAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
             break;
             
         case NVPageViewArrangementFit2:
@@ -116,26 +109,14 @@
             if (isnan(multiplier))
                 return;
             
-            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
-            [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
-            
-            [[self.view viewWithTag:1].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:2].heightAnchor
-                                                                 multiplier:multiplier].active = YES;
-            
-            [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
-                                                                   constant:-_innerMargin].active = YES;
-            
-            [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-_pageControlMargin].active = YES;
+            [[self.view viewWithTag:1] constrainLeadingToAnchor:self.view.leadingAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_outerMargin];
+            [[self.view viewWithTag:2] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
+            [[self.view viewWithTag:2] constrainTrailingToAnchor:[self.view viewWithTag:1].trailingAnchor];
+            [[self.view viewWithTag:1] constrainHeightToAnchor:[self.view viewWithTag:2].heightAnchor multiplier:multiplier];
+            [[self.view viewWithTag:1] constrainTopToAnchor:self.view.topAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainBottomToAnchor:[self.view viewWithTag:2].topAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:2] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
         }
             break;
             
@@ -151,34 +132,18 @@
             if (isnan(multiplier1) || isnan(multiplier2))
                 return;
             
-            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
-            [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
-            [[self.view viewWithTag:3].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
-            [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
-            
-            [[self.view viewWithTag:1].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:2].heightAnchor
-                                                                 multiplier:multiplier1].active = YES;
-            
-            [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
-                                                                   constant:-_innerMargin].active = YES;
-            
-            [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
-                                                                 multiplier:multiplier2].active = YES;
-            
-            [[self.view viewWithTag:3].topAnchor constraintEqualToAnchor:[self.view viewWithTag:2].bottomAnchor
-                                                                constant:_innerMargin].active = YES;
-            
-            [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-_pageControlMargin].active = YES;
+            [[self.view viewWithTag:1] constrainLeadingToAnchor:self.view.leadingAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_outerMargin];
+            [[self.view viewWithTag:2] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
+            [[self.view viewWithTag:2] constrainTrailingToAnchor:[self.view viewWithTag:1].trailingAnchor];
+            [[self.view viewWithTag:3] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
+            [[self.view viewWithTag:3] constrainTrailingToAnchor:[self.view viewWithTag:1].trailingAnchor];
+            [[self.view viewWithTag:1] constrainHeightToAnchor:[self.view viewWithTag:2].heightAnchor multiplier:multiplier1];
+            [[self.view viewWithTag:1] constrainTopToAnchor:self.view.topAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainBottomToAnchor:[self.view viewWithTag:2].topAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:2] constrainHeightToAnchor:[self.view viewWithTag:3].heightAnchor multiplier:multiplier2];
+            [[self.view viewWithTag:3] constrainTopToAnchor:[self.view viewWithTag:2].bottomAnchor constant:_innerMargin];
+            [[self.view viewWithTag:3] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
         }
             break;
             
@@ -199,38 +164,20 @@
             CGFloat leftPacked = (numCells1 + numCells2 + numCells3);
             CGFloat rightPacked = (numCells3 + numCells4 + numCells5);
             
-            [[self.view viewWithTag:1].topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                                                constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:1].leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                                    constant:_outerMargin].active = YES;
-            
-            [[self.view viewWithTag:2].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
-            
-            [[self.view viewWithTag:1].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:2].heightAnchor
-                                                                 multiplier:multiplier1].active = YES;
-            
-            [[self.view viewWithTag:1].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:2].topAnchor
-                                                                   constant:-_innerMargin].active = YES;
-            
-            [[self.view viewWithTag:4].trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                                                     constant:-_innerMargin].active = YES;
-            
-            [[self.view viewWithTag:5].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].trailingAnchor].active = YES;
-            
-            [[self.view viewWithTag:4].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:5].heightAnchor
-                                                                 multiplier:multiplier3].active = YES;
-            
-            [[self.view viewWithTag:4].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].topAnchor
-                                                                   constant:-_innerMargin].active = YES;
-            
-            [[self.view viewWithTag:5].bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                                                   constant:-_pageControlMargin].active = YES;
-            
-            [[self.view viewWithTag:1].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:2].widthAnchor].active = YES;
-            [[self.view viewWithTag:2].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:3].widthAnchor].active = YES;
-            [[self.view viewWithTag:3].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:4].widthAnchor].active = YES;
-            [[self.view viewWithTag:4].widthAnchor constraintEqualToAnchor:[self.view viewWithTag:5].widthAnchor].active = YES;
+            [[self.view viewWithTag:1] constrainTopToAnchor:self.view.topAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainLeadingToAnchor:self.view.leadingAnchor constant:_outerMargin];
+            [[self.view viewWithTag:2] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
+            [[self.view viewWithTag:1] constrainHeightToAnchor:[self.view viewWithTag:2].heightAnchor multiplier:multiplier1];
+            [[self.view viewWithTag:1] constrainBottomToAnchor:[self.view viewWithTag:2].topAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:4] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:5] constrainTrailingToAnchor:[self.view viewWithTag:4].trailingAnchor];
+            [[self.view viewWithTag:4] constrainHeightToAnchor:[self.view viewWithTag:5].heightAnchor multiplier:multiplier3];
+            [[self.view viewWithTag:4] constrainBottomToAnchor:[self.view viewWithTag:5].topAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:5] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
+            [[self.view viewWithTag:1] constrainWidthToAnchor:[self.view viewWithTag:2].widthAnchor];
+            [[self.view viewWithTag:2] constrainWidthToAnchor:[self.view viewWithTag:3].widthAnchor];
+            [[self.view viewWithTag:3] constrainWidthToAnchor:[self.view viewWithTag:4].widthAnchor];
+            [[self.view viewWithTag:4] constrainWidthToAnchor:[self.view viewWithTag:5].widthAnchor];
             
             if (leftPacked <= rightPacked) //3+2 arrangement
             {
@@ -239,21 +186,15 @@
                 if (isnan(multiplier2))
                     return;
                 
-                [[self.view viewWithTag:2].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:3].heightAnchor
-                                                                     multiplier:multiplier2].active = YES;
-                
-                [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:3].topAnchor
-                                                                       constant:-_innerMargin].active = YES;
-                
-                [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].leadingAnchor
-                                                                         constant:-_innerMargin].active = YES;
-                
-                [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
-                [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
-                [[self.view viewWithTag:3].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].leadingAnchor].active = YES;
-                [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].bottomAnchor].active = YES;
-                [[self.view viewWithTag:4].topAnchor constraintEqualToAnchor:[self.view viewWithTag:1].topAnchor].active = YES;
-                [[self.view viewWithTag:5].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].leadingAnchor].active = YES;
+                [[self.view viewWithTag:2] constrainHeightToAnchor:[self.view viewWithTag:3].heightAnchor multiplier:multiplier2];
+                [[self.view viewWithTag:2] constrainBottomToAnchor:[self.view viewWithTag:3].topAnchor constant:-_innerMargin];
+                [[self.view viewWithTag:1] constrainTrailingToAnchor:[self.view viewWithTag:4].leadingAnchor constant:-_innerMargin];
+                [[self.view viewWithTag:2] constrainTrailingToAnchor:[self.view viewWithTag:1].trailingAnchor];
+                [[self.view viewWithTag:3] constrainTrailingToAnchor:[self.view viewWithTag:1].trailingAnchor];
+                [[self.view viewWithTag:3] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
+                [[self.view viewWithTag:3] constrainBottomToAnchor:[self.view viewWithTag:5].bottomAnchor];
+                [[self.view viewWithTag:4] constrainTopToAnchor:[self.view viewWithTag:1].topAnchor];
+                [[self.view viewWithTag:5] constrainLeadingToAnchor:[self.view viewWithTag:4].leadingAnchor];
             }
             
             else //2+3 arrangement
@@ -263,21 +204,15 @@
                 if (isnan(multiplier2))
                     return;
                 
-                [[self.view viewWithTag:3].heightAnchor constraintEqualToAnchor:[self.view viewWithTag:4].heightAnchor
-                                                                     multiplier:multiplier2].active = YES;
-                
-                [[self.view viewWithTag:3].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:4].topAnchor
-                                                                       constant:-_innerMargin].active = YES;
-                
-                [[self.view viewWithTag:1].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor
-                                                                         constant:-_innerMargin].active = YES;
-                
-                [[self.view viewWithTag:2].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:1].trailingAnchor].active = YES;
-                [[self.view viewWithTag:3].trailingAnchor constraintEqualToAnchor:[self.view viewWithTag:4].trailingAnchor].active = YES;
-                [[self.view viewWithTag:2].bottomAnchor constraintEqualToAnchor:[self.view viewWithTag:5].bottomAnchor].active = YES;
-                [[self.view viewWithTag:3].topAnchor constraintEqualToAnchor:[self.view viewWithTag:1].topAnchor].active = YES;
-                [[self.view viewWithTag:4].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor].active = YES;
-                [[self.view viewWithTag:5].leadingAnchor constraintEqualToAnchor:[self.view viewWithTag:3].leadingAnchor].active = YES;
+                [[self.view viewWithTag:3] constrainHeightToAnchor:[self.view viewWithTag:4].heightAnchor multiplier:multiplier2];
+                [[self.view viewWithTag:3] constrainBottomToAnchor:[self.view viewWithTag:4].topAnchor constant:-_innerMargin];
+                [[self.view viewWithTag:1] constrainTrailingToAnchor:[self.view viewWithTag:3].leadingAnchor constant:-_innerMargin];
+                [[self.view viewWithTag:2] constrainTrailingToAnchor:[self.view viewWithTag:1].trailingAnchor];
+                [[self.view viewWithTag:3] constrainTrailingToAnchor:[self.view viewWithTag:4].trailingAnchor];
+                [[self.view viewWithTag:2] constrainBottomToAnchor:[self.view viewWithTag:5].bottomAnchor];
+                [[self.view viewWithTag:3] constrainTopToAnchor:[self.view viewWithTag:1].topAnchor];
+                [[self.view viewWithTag:4] constrainLeadingToAnchor:[self.view viewWithTag:3].leadingAnchor];
+                [[self.view viewWithTag:5] constrainLeadingToAnchor:[self.view viewWithTag:3].leadingAnchor];
             }
         }
             
@@ -505,10 +440,9 @@ viewForHeaderInSection:(NSInteger)section
                      forState:UIControlStateNormal];
         
         [headerView addSubview:titleButton];
-        
-        [titleButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-        [titleButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-        [titleButton.centerXAnchor constraintEqualToAnchor:headerView.centerXAnchor].active = YES;
+        [titleButton constrainTopToAnchor:headerView.topAnchor];
+        [titleButton constrainBottomToAnchor:headerView.bottomAnchor];
+        [titleButton constrainCenterXToAnchor:headerView.centerXAnchor];
     }
     
     if (![headerView.subviews containsObject:[headerView viewWithTag:(tableView.tag * 111)]])
@@ -533,15 +467,10 @@ viewForHeaderInSection:(NSInteger)section
            forControlEvents:UIControlEventTouchUpInside];
         
         [headerView addSubview:addToMap];
-        
-        [addToMap.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-        [addToMap.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-        
-        [addToMap.leadingAnchor constraintEqualToAnchor:headerView.trailingAnchor
-                                               constant:(-headerView.frame.size.height - _innerMargin)].active = YES;
-        
-        [addToMap.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor
-                                                constant:-_innerMargin].active = YES;
+        [addToMap constrainTopToAnchor:headerView.topAnchor];
+        [addToMap constrainBottomToAnchor:headerView.bottomAnchor];
+        [addToMap constrainLeadingToAnchor:headerView.trailingAnchor constant:(-headerView.frame.size.height - _innerMargin)];
+        [addToMap constrainTrailingToAnchor:headerView.trailingAnchor  constant:-_innerMargin];
     }
     
     return headerView;
@@ -815,10 +744,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     textLabel.adjustsFontSizeToFitWidth = YES;
     textLabel.backgroundColor = UIColor.clearColor;
     textLabel.tag = 888;
-    [cell.contentView addSubview:textLabel];
     
-    [textLabel.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor].active = YES;
-    [textLabel.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor].active = YES;
+    [cell.contentView addSubview:textLabel];
+    [textLabel constrainTopToAnchor:cell.contentView.topAnchor];
+    [textLabel constrainBottomToAnchor:cell.contentView.bottomAnchor];
     
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
@@ -847,25 +776,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         imageView.tag = 777;
         imageView.translatesAutoresizingMaskIntoConstraints = NO;
         imageView.contentMode = UIViewContentModeScaleAspectFit;
+        
         [cell.contentView addSubview:imageView];
-        
-        [imageView.topAnchor constraintEqualToAnchor:cell.contentView.topAnchor
-                                            constant:(tableView.rowHeight * 0.1)].active = YES;
-        
-        [imageView.bottomAnchor constraintEqualToAnchor:cell.contentView.bottomAnchor
-                                            constant:(-tableView.rowHeight * 0.1)].active = YES;
-        
-        [imageView.leadingAnchor constraintEqualToAnchor:cell.contentView.leadingAnchor
-                                               constant:10.0].active = YES;
-        
-        [textLabel.leadingAnchor constraintEqualToAnchor:imageView.trailingAnchor
-                                                constant:10.0].active = YES;
+        [imageView constrainTopToAnchor:cell.contentView.topAnchor constant:(tableView.rowHeight * 0.1)];
+        [imageView constrainBottomToAnchor:cell.contentView.bottomAnchor constant:(-tableView.rowHeight * 0.1)];
+        [imageView constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:10.0];
+        [textLabel constrainLeadingToAnchor:imageView.trailingAnchor constant:10.0];
     }
     
     else
     {
-        [textLabel.leadingAnchor constraintEqualToAnchor:cell.contentView.trailingAnchor
-                                                constant:(-textWidth - 10.0)].active = YES;
+        [textLabel constrainLeadingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - 10.0)];
         
         CGFloat barMargin = 10.0;
         CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 3.0)) * tlc.symbolWidth);

@@ -116,11 +116,10 @@ viewForHeaderInSection:(NSInteger)section
     forControlEvents:UIControlEventTouchUpInside];
     
     [headerView addSubview:trash];
-    
-    [trash.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
-    [trash.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-    [trash.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-    [trash.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+    [trash constrainLeadingToAnchor:headerView.leadingAnchor];
+    [trash constrainTopToAnchor:headerView.topAnchor];
+    [trash constrainBottomToAnchor:headerView.bottomAnchor];
+    [trash constrainWidthToConstant:_rowHeight];
     
     UIButton *plus = [UIButton buttonWithType:UIButtonTypeCustom];
     plus.translatesAutoresizingMaskIntoConstraints = NO;
@@ -135,11 +134,10 @@ viewForHeaderInSection:(NSInteger)section
    forControlEvents:UIControlEventTouchUpInside];
     
     [headerView addSubview:plus];
-    
-    [plus.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
-    [plus.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-    [plus.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-    [plus.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+    [plus constrainTrailingToAnchor:headerView.trailingAnchor];
+    [plus constrainTopToAnchor:headerView.topAnchor];
+    [plus constrainBottomToAnchor:headerView.bottomAnchor];
+    [plus constrainWidthToConstant:_rowHeight];
     
     UIButton *list = [UIButton buttonWithType:UIButtonTypeCustom];
     list.translatesAutoresizingMaskIntoConstraints = NO;
@@ -154,11 +152,10 @@ viewForHeaderInSection:(NSInteger)section
    forControlEvents:UIControlEventTouchUpInside];
     
     [headerView addSubview:list];
-    
-    [list.trailingAnchor constraintEqualToAnchor:plus.leadingAnchor].active = YES;
-    [list.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-    [list.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
-    [list.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+    [list constrainTrailingToAnchor:plus.leadingAnchor];
+    [list constrainTopToAnchor:headerView.topAnchor];
+    [list constrainBottomToAnchor:headerView.bottomAnchor];
+    [list constrainWidthToConstant:_rowHeight];
     
     UISegmentedControl *options = nil;
     
@@ -183,9 +180,8 @@ viewForHeaderInSection:(NSInteger)section
       forControlEvents:UIControlEventValueChanged];
     
     [headerView addSubview:options];
-    
-    [options.leadingAnchor constraintEqualToAnchor:trash.trailingAnchor].active = YES;
-    [options.centerYAnchor constraintEqualToAnchor:headerView.centerYAnchor].active = YES;
+    [options constrainLeadingToAnchor:trash.trailingAnchor];
+    [options constrainCenterYToAnchor:headerView.centerYAnchor];
     
     return headerView;
 }
@@ -247,9 +243,9 @@ viewForHeaderInSection:(NSInteger)section
        forControlEvents:UIControlEventTouchUpInside];
     
     [cell addSubview:checkBox];
-    [checkBox.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor].active = YES;
-    [checkBox.heightAnchor constraintEqualToConstant:_rowHeight].active = YES;
-    [checkBox.widthAnchor constraintEqualToConstant:_rowHeight].active = YES;
+    [checkBox constrainTrailingToAnchor:cell.trailingAnchor];
+    [checkBox constrainHeightToConstant:_rowHeight];
+    [checkBox constrainWidthToConstant:_rowHeight];
     
     TableViewCellLabel *label = TableViewCellLabel.new;
     label.translatesAutoresizingMaskIntoConstraints = NO;
@@ -259,14 +255,14 @@ viewForHeaderInSection:(NSInteger)section
     label.font = _font;
     
     [cell addSubview:label];
-    [label.topAnchor constraintEqualToAnchor:cell.topAnchor].active = YES;
-    [label.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor].active = YES;
+    [label constrainTopToAnchor:cell.topAnchor];
+    [label constrainBottomToAnchor:cell.bottomAnchor];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        [label.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:inset].active = YES;
+        [label constrainLeadingToAnchor:cell.leadingAnchor constant:inset];
     
     else
-        [label.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:(inset * 2.0)].active = YES;
+        [label constrainLeadingToAnchor:cell.leadingAnchor constant:(inset * 2.0)];
     
     if (selected)
     {
@@ -300,17 +296,17 @@ viewForHeaderInSection:(NSInteger)section
                    action:@selector(weightTapped:)
          forControlEvents:UIControlEventTouchUpInside];
         
-        [weight.trailingAnchor constraintEqualToAnchor:checkBox.leadingAnchor].active = YES;
-        [weight.centerYAnchor constraintEqualToAnchor:cell.centerYAnchor].active = YES;
-        [weight.heightAnchor constraintEqualToConstant:(_rowHeight * 0.75)].active = YES;
+        [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
+        [weight constrainCenterYToAnchor:cell.centerYAnchor];
+        [weight constrainHeightToConstant:(_rowHeight * 0.75)];
         
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 0.85)].active = YES;
+            [weight constrainWidthToConstant:(_rowHeight * 0.85)];
         
         else
-            [weight.widthAnchor constraintEqualToConstant:(_rowHeight * 1.15)].active = YES;
+            [weight constrainWidthToConstant:(_rowHeight * 1.15)];
         
-        [label.trailingAnchor constraintEqualToAnchor:weight.leadingAnchor].active = YES;
+        [label constrainTrailingToAnchor:weight.leadingAnchor];
     }
     
     else
@@ -318,7 +314,7 @@ viewForHeaderInSection:(NSInteger)section
         [checkBox setImage:_uncheckedBox
                   forState:UIControlStateNormal];
         
-        [label.trailingAnchor constraintEqualToAnchor:checkBox.leadingAnchor].active = YES;
+        [label constrainTrailingToAnchor:checkBox.leadingAnchor];
     }
     
     return cell;

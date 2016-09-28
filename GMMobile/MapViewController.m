@@ -139,10 +139,10 @@
     
     [self.view addSubview:_legendScrollView];
     
-    [_legendScrollView.leadingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-_mapViewLegendOffset].active = YES;
-    [_legendScrollView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
-    [_legendScrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:statusBarHeight].active = YES;
-    [_legendScrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+    [_legendScrollView constrainLeadingToAnchor:self.view.trailingAnchor constant:-_mapViewLegendOffset];
+    [_legendScrollView constrainTrailingToAnchor:self.view.trailingAnchor];
+    [_legendScrollView constrainTopToAnchor:self.view.topAnchor constant:statusBarHeight];
+    [_legendScrollView constrainBottomToAnchor:self.view.bottomAnchor];
                          
     _polylines = NSMutableSet.set;
     
@@ -552,10 +552,10 @@
             [nvmibs removeFromSuperview];
     }
     
-    [_digitizationToolbar.leadingAnchor constraintEqualToAnchor:_mapView.leadingAnchor].active = YES;
-    [_digitizationToolbar.trailingAnchor constraintEqualToAnchor:_mapView.trailingAnchor].active = YES;
-    [_digitizationToolbar.topAnchor constraintEqualToAnchor:_mapView.topAnchor].active = YES;
-    [_digitizationToolbar.heightAnchor constraintEqualToConstant:80.0].active = YES;
+    [_digitizationToolbar constrainLeadingToAnchor:_mapView.leadingAnchor];
+    [_digitizationToolbar constrainTrailingToAnchor:_mapView.trailingAnchor];
+    [_digitizationToolbar constrainTopToAnchor:_mapView.topAnchor];
+    [_digitizationToolbar constrainHeightToConstant:80.0];
     
     [_cancelDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [_saveDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
@@ -1110,11 +1110,11 @@
         {
             [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
             
-           for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
-           {
-               if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-                   [tlmos removeFromSuperview];
-           }
+            for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+            {
+                if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                    [tlmos removeFromSuperview];
+            }
             
             _legendsAreOffMap = _mapToolbar.isOffset = NO;
         }
@@ -3281,6 +3281,7 @@ viewForHeaderInSection:(NSInteger)section
     headerLabel.textColor = UIColor.yellowColor;
     headerLabel.backgroundColor = _tableViewBackgroundColor;
     headerLabel.textAlignment = NSTextAlignmentCenter;
+    headerLabel.adjustsFontSizeToFitWidth = YES;
     
     switch (_tableViewSetting)
     {
@@ -3429,8 +3430,9 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
     if ([cell.textLabel.text isEqualToString:@""])
     {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        CGFloat size = min(64.0, (cell.contentView.frame.size.height - 8.0));
+        CGFloat size = min(64.0, cell.contentView.frame.size.height);
         CGFloat margin = (size / 3.0);
+        
         CGFloat xOrigin = margin;
         
         if (indexPath.row == 0)
@@ -3451,7 +3453,15 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             
             xOrigin += (margin * 4.0);
             
-            UISegmentedControl *markerOptions = [[UISegmentedControl alloc] initWithItems:@[@"Marker Only", @"Marker+Options", @"Options Only"]];
+            NSArray *items = nil;
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                items = @[@"Mark", @"Mark+Opt", @"Opt"];
+            
+            else
+                items = @[@"Marker Only", @"Marker+Options", @"Options Only"];
+            
+            UISegmentedControl *markerOptions = [[UISegmentedControl alloc] initWithItems:items];
             markerOptions.frame = CGRectMake(xOrigin, 0.0, (cell.contentView.frame.size.width - xOrigin - margin), size);
             markerOptions.center = CGPointMake(markerOptions.center.x, (cell.contentView.frame.size.height / 2.0));
             markerOptions.tintColor = UIColor.whiteColor;
@@ -4171,13 +4181,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     panView.alpha = 0.0;
     
     [self.view addSubview:panView];
-    
-    [panView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
-    [panView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
-    [panView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
-    
-    [panView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
-                                         constant:self.tabBarController.tabBar.frame.size.height].active = YES;
+    [panView constrainLeadingToAnchor:self.view.leadingAnchor];
+    [panView constrainTrailingToAnchor:self.view.trailingAnchor];
+    [panView constrainTopToAnchor:self.view.topAnchor];
+    [panView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
     
     UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
@@ -4199,12 +4206,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                      forState:UIControlStateHighlighted];
     
     [panView addSubview:dismissPan];
-    
-    [dismissPan.leadingAnchor constraintEqualToAnchor:panView.leadingAnchor
-                                             constant:20.0].active = YES;
-    
-    [dismissPan.topAnchor constraintEqualToAnchor:panView.topAnchor
-                                         constant:20.0].active = YES;
+    [dismissPan constrainLeadingToAnchor:panView.leadingAnchor constant:20.0];
+    [dismissPan constrainTopToAnchor:panView.topAnchor constant:20.0];
     
     [dismissPan addTarget:self
                    action:@selector(dismissPanTapped:)

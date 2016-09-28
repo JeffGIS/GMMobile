@@ -1041,7 +1041,6 @@ LLPOINT LLPOINTFromString (NSString* string)
 
 - (void)getSlowValuesDidComplete:(int)propNum
                           values:(SlowValues *)vals
-                         propNum:(int)propNum
 {
     BOOL opened = [self open];
     int dbid = [self next_id];

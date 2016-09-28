@@ -288,10 +288,10 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:_expandButton];
         
         [_expandButton removeAllConstraints];
-        [_expandButton.leadingAnchor constraintEqualToAnchor:headerView.trailingAnchor constant:(-_headerHeight * 1.5)].active = YES;
-        [_expandButton.trailingAnchor constraintEqualToAnchor:headerView.trailingAnchor].active = YES;
-        [_expandButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-        [_expandButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+        [_expandButton constrainLeadingToAnchor:headerView.trailingAnchor constant:(-_headerHeight * 1.5)];
+        [_expandButton constrainTrailingToAnchor:headerView.trailingAnchor];
+        [_expandButton constrainTopToAnchor:headerView.topAnchor];
+        [_expandButton constrainBottomToAnchor:headerView.bottomAnchor];
     }
     
     if (![headerView.subviews containsObject:_dragButton])
@@ -326,10 +326,10 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:_dragButton];
         
         [_dragButton removeAllConstraints];
-        [_dragButton.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor].active = YES;
-        [_dragButton.trailingAnchor constraintEqualToAnchor:headerView.leadingAnchor constant:(_headerHeight * 1.5)].active = YES;
-        [_dragButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-        [_dragButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+        [_dragButton constrainLeadingToAnchor:headerView.leadingAnchor];
+        [_dragButton constrainTrailingToAnchor:headerView.leadingAnchor constant:(_headerHeight * 1.5)];
+        [_dragButton constrainTopToAnchor:headerView.topAnchor];
+        [_dragButton constrainBottomToAnchor:headerView.bottomAnchor];
     }
     
     if (![headerView.subviews containsObject:_titleButton])
@@ -370,10 +370,10 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:_titleButton];
         
         [_titleButton removeAllConstraints];
-        [_titleButton.leadingAnchor constraintEqualToAnchor:_dragButton.trailingAnchor].active = YES;
-        [_titleButton.trailingAnchor constraintEqualToAnchor:_expandButton.leadingAnchor].active = YES;
-        [_titleButton.topAnchor constraintEqualToAnchor:headerView.topAnchor].active = YES;
-        [_titleButton.bottomAnchor constraintEqualToAnchor:headerView.bottomAnchor].active = YES;
+        [_titleButton constrainLeadingToAnchor:_dragButton.trailingAnchor];
+        [_titleButton constrainTrailingToAnchor:_expandButton.leadingAnchor];
+        [_titleButton constrainTopToAnchor:headerView.topAnchor];
+        [_titleButton constrainBottomToAnchor:headerView.bottomAnchor];
     }
     
     return headerView;
@@ -748,17 +748,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _dragButton.alpha = 0.0;
         _tabBar.alpha = 0.0;
         
-        [self.leadingAnchor constraintEqualToAnchor:self.superview.centerXAnchor
-                                           constant:(-shortestSide * 0.45)].active = YES;
-        
-        [self.trailingAnchor constraintEqualToAnchor:self.superview.centerXAnchor
-                                            constant:(shortestSide * 0.45)].active = YES;
-        
-        [self.topAnchor constraintEqualToAnchor:self.superview.centerYAnchor
-                                       constant:((-legendHeight / 2.0) + contentOffset)].active = YES;
-        
-        [self.bottomAnchor constraintEqualToAnchor:self.superview.centerYAnchor
-                                          constant:((legendHeight / 2.0) + contentOffset)].active = YES;
+        [self constrainLeadingToAnchor:self.superview.centerXAnchor constant:(-shortestSide * 0.45)];
+        [self constrainTrailingToAnchor:self.superview.centerXAnchor constant:(shortestSide * 0.45)];
+        [self constrainTopToAnchor:self.superview.centerYAnchor constant:((-legendHeight / 2.0) + contentOffset)];
+        [self constrainBottomToAnchor:self.superview.centerYAnchor constant:((legendHeight / 2.0) + contentOffset)];
         
         for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
         {
@@ -799,19 +792,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             UIScrollView *legendScroll = (UIScrollView *)self.superview;
             [legendScroll removeAllConstraints];
-            
-            [legendScroll.leadingAnchor constraintEqualToAnchor:legendScroll.superview.trailingAnchor
-                                                       constant:-_previousScrollFrame.size.width].active = YES;
-            
-            [legendScroll.trailingAnchor constraintEqualToAnchor:legendScroll.superview.trailingAnchor].active = YES;
-            
-            [legendScroll.topAnchor constraintEqualToAnchor:legendScroll.superview.topAnchor
-                                                   constant:statusBarHeight].active = YES;
-            
-            [legendScroll.bottomAnchor constraintEqualToAnchor:legendScroll.superview.bottomAnchor].active = YES;
-            
-            [legendScroll setContentOffset:_previousContentOffset
-                                  animated:NO];
+            [legendScroll constrainLeadingToAnchor:legendScroll.superview.trailingAnchor constant:-_previousScrollFrame.size.width];
+            [legendScroll constrainTrailingToAnchor:legendScroll.superview.trailingAnchor];
+            [legendScroll constrainTopToAnchor:legendScroll.superview.topAnchor constant:statusBarHeight];
+            [legendScroll constrainBottomToAnchor:legendScroll.superview.bottomAnchor];
+            [legendScroll setContentOffset:_previousContentOffset animated:NO];
             
             self.frame = _previousFrame;
         }
@@ -819,18 +804,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                  UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
         {
-            self.frame = CGRectMake(_legend.landscapeMapOrigin.x,
-                                    _legend.landscapeMapOrigin.y,
-                                    _previousFrame.size.width,
-                                    _previousFrame.size.height);
+            self.frame = CGRectMake(_legend.landscapeMapOrigin.x, _legend.landscapeMapOrigin.y,
+                                    _previousFrame.size.width, _previousFrame.size.height);
         }
         
         else
         {
-            self.frame = CGRectMake(_legend.portraitMapOrigin.x,
-                                    _legend.portraitMapOrigin.y,
-                                    _previousFrame.size.width,
-                                    _previousFrame.size.height);
+            self.frame = CGRectMake(_legend.portraitMapOrigin.x, _legend.portraitMapOrigin.y,
+                                    _previousFrame.size.width, _previousFrame.size.height);
         }
         
         for (ThemeLegendMapOverlay *tlmos in self.superview.subviews)
@@ -926,7 +907,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.contentView.backgroundColor = UIColor.clearColor;
     cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    
     [cell.contentView constrainToView:cell leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
     NSDictionary *attributes = @{NSFontAttributeName:_font};
@@ -991,7 +971,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [cell.contentView addSubview:textLabel];
-    
     [textLabel constrainToView:cell.contentView leading:textOriginX trailing:0.0 top:0.0 bottom:0.0];
     
     return cell;
