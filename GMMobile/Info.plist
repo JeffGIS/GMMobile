@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>25</string>
+	<string>28</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -48,10 +48,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Take photos for field survey</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string></string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Get location for field survey</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Get photos from field survey</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.com.gssi.newvisionmobile</key>
