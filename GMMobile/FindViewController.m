@@ -136,6 +136,7 @@
     CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
     CRAPI.sharedInstance.currentOverallBoundaryType = type;
     CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     self.tabBarController.selectedIndex = 0;
 }
 
