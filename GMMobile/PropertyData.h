@@ -25,9 +25,19 @@ typedef struct {int nMatchingProperties;
                     pctSenior;
                 }DATA_FROM_TABLES;
 
+@class PropertyData;
+
+@protocol PropertyDataDelegate <NSObject>
+
+- (void)matchingOwners:(NSMutableArray *)ownerArray;
+
+@end
+
+
 
 @interface PropertyData : NSObject 
 
+@property (nonatomic, weak) id <PropertyDataDelegate> delegate;
 @property sqlite3 *database;
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
@@ -96,7 +106,7 @@ typedef struct {int nMatchingProperties;
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid;
 
-- (NSMutableArray *)getOwnersMatchingString:(NSString *)string;
+- (BOOL)getOwnersMatchingString:(NSString *)string;
 - (BOOL)getDistinctUseCodes:(NSString *)outFile;
 
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID

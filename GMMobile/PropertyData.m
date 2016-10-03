@@ -2291,10 +2291,14 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     return nHits;
 }
 
-- (NSMutableArray *)getOwnersMatchingString:(NSString *)INstring
+- (BOOL)getOwnersMatchingString:(NSString *)INstring
 {
     if (!INstring)
-        return nil;
+        return FALSE;
+    dispatch_queue_t ownerQueue;
+    ownerQueue = dispatch_queue_create(NULL, NULL);
+    dispatch_async(ownerQueue,
+                   ^{
     
     NSMutableArray *ownerArray = [[NSMutableArray alloc] init];
     int	nParts, ipart, iparttest;
@@ -2340,7 +2344,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 59);
             
-            while (sqlite3_step(statement) == SQLITE_ROW)
+            while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 //LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
                 int nOffsets = sqlite3_column_int(statement,1);
@@ -2368,7 +2372,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             nPartOffsets[ipart] = INT_MAX;
     }
     
-    if (GetNext && nParts > 1)
+    if ([self continue] && GetNext)
         nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
     
     for (ipart = 0; ipart < nParts; ipart++)
@@ -2393,7 +2397,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 61);
         
-        while (sqlite3_step(statement) == SQLITE_ROW)
+        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
             LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
             LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
@@ -2433,86 +2437,14 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         
         SQLOKpd(sqlite3_finalize(statement), _database, 62);
     }
-    /*
-     GSSiGlobFree (&hPartOffsets[ipart]);
-     GlobalUnlock (FilePtrNameIndex->FileHandle);
-     GlobalUnlock (SQLPtrNameIndex->OFHandle);
-     GlobalUnlock (hDBNameIndex);
-     CloseDataFile (TRUE,&hDBNameIndex);
-     GetGlobalCVal ("[%NAMEDB]",str,"[%DL]attribut\\name.gmd");
-     OpenDataFile (str, "",BT_READ, &hDBName);
-     SQLPtrName = (LPOPENSQLDATA) GlobalLock (hDBName);
-     FilePtrName = (LPOPENFILEDATA) GlobalLock (SQLPtrName->OFHandle);
-     lpGWDHeadName = (LPGWDHEADER)GlobalLock (FilePtrName->FileHandle);
-     nowner = 0;
-     while (GetNext && nHits--)
-     {
-     BOOL	ShowThisOwner = TRUE;
-     
-     if (Hits[nHits] <= sizeof (GWDHEADER16))
-     continue;
-     FillGWDData (lpGWDHeadName,Hits[nHits]);
-     SQLPtrName->st = 0;
-     SQLPtrName->Offset = Hits[nHits];
-     SQLPtrName->lastreadtime = ULONG_MAX;
-     if (ShowThisOwner)
-     {
-     if (nowner == 81)
-     idx = 0;
-     GetGlobalCVal ("[%NAMEDISPLAY]",str,"[NAMETAXPAYER]$CHR(1)[NAMEADDR1] [NAMEADDR2] [NAMECITY],[NAMESTATE]$CHR(1)[NAMEACCTOWNER]");
-     ExpandText (str);
-     OneSpace (str);
-     ReplaceChar (str,0x01,0x09);
-     strcpy (teststr,str);
-     if ((pTab = strchr (teststr,'\t')))
-     *pTab = 0;
-     nPartsTest = GetNameParts (teststr,PartLocTest,PartLenTest,MAXPARTS);
-     for (ipart = 0;ipart < nParts;ipart++)
-     {
-     for (iparttest=0;iparttest<nPartsTest;iparttest++)
-     {
-     if (!strnicmp (PartLoc[ipart],PartLocTest[iparttest],PartLen[ipart]))
-     {
-     *PartLocTest[iparttest] = 0;
-     goto FoundPart;
-     }
-     }
-     ShowThisOwner = FALSE;
-     break;
-     FoundPart:							;
-     }
-     if (ShowThisOwner)
-     {
-     nowner++;
-     strcpy (lastowner,str);
-     if ((idx=SendDlgItemMessage (hWndDlg,IDC_OWNERLIST,LB_ADDSTRING,0,(LPARAM)str)) ==
-     LB_ERRSPACE)
-     GetNext = FALSE;
-     }
-     }
-     if (GSSiPeekMessage(&msg,hwndCtl,WM_KEYDOWN,WM_KEYDOWN,PM_NOREMOVE))
-     GetNext = FALSE;
-     }
-     GlobalUnlock (FilePtrName->FileHandle);
-     GlobalUnlock (SQLPtrName->OFHandle);
-     GlobalUnlock (hDBName);
-     CloseDataFile (TRUE,&hDBName);
-     if (GetNext)
-     {
-     nOwners=SendDlgItemMessage(hWndDlg,IDC_OWNERLIST,LB_GETCOUNT,0,0);
-     sprintf (str,"%ld selected",nOwners);
-     }
-     else
-     strcpy (str,"Search cancelled");
-     SetDlgItemText (hWndDlg,IDC_NUMOWNERS,str);
-     }
-     if (First && SaveProperty >= 0)
-     PostMessage(GetDlgItem(hWndDlg,IDC_PROPERTYLIST), LB_SETSEL,TRUE,SaveProperty);
-     First = FALSE;
-     */
     free (Hits);
     [self close:25];
-    return ownerArray;
+    if ([self continue] && _delegate)
+    {
+        [_delegate matchingOwners:ownerArray];
+    }
+                   });
+    return TRUE;
 }
 
 int GetNameParts(LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)

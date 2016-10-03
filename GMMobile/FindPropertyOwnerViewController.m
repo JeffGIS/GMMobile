@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "FindPropertyOwnerViewController.h"
-#import "PropertyData.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
 
 @interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate>
@@ -160,9 +159,13 @@
     
     if ((propOwnerSearchText) || [propOwnerSearchText isEqualToString:@""])
     {
+        CRAPI.sharedInstance.keepProcessing++;
         _propOwnerTF.text = propOwnerSearchText;
-        _propOwnerList = [PropertyData.new getOwnersMatchingString:propOwnerSearchText];
-        [_tableView reloadData];
+        PropertyData *propData = [[PropertyData alloc] init];
+        propData.processingID = CRAPI.sharedInstance.keepProcessing;
+        propData.delegate = self;
+        [propData getOwnersMatchingString:propOwnerSearchText];
+
     }
     
     [_propOwnerTF addTarget:self
@@ -171,7 +174,18 @@
     
     [self.view addSubview:_propOwnerTF];
 }
+- (void)reloadTable
+{
+    [_tableView reloadData];
+}
+- (void)matchingOwners:(NSMutableArray *)ownerArray
+{
+    _propOwnerList = ownerArray.copy;
+    [self performSelectorOnMainThread:@selector(reloadTable)
+                           withObject:nil
+                        waitUntilDone:NO];
 
+}
 - (void)setupSwitch
 {
     _multipleSwitch = UISwitch.new;
@@ -243,15 +257,17 @@
 {
     if ([textField.text isEqualToString:@""])
     {
-        [_propOwnerList removeAllObjects];
+        _propOwnerList = nil;
         [_tableView reloadData];
     }
     
     else
     {
+        CRAPI.sharedInstance.keepProcessing++;
         PropertyData *propData = [[PropertyData alloc] init];
-        
-        _propOwnerList = [propData getOwnersMatchingString:textField.text];
+        propData.processingID = CRAPI.sharedInstance.keepProcessing;
+        propData.delegate = self;
+        [propData getOwnersMatchingString:textField.text];
         [_tableView reloadData];
     }
 }
