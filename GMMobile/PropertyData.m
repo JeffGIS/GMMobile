@@ -2308,7 +2308,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     LPINT partOffsets[MAXPARTS], partoff;
     int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
     LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-    int Trigger = 3, nHits = 0;
+    int Trigger = 2, nHits = 0;
     //int nowner;
     BOOL GetNext = TRUE;
     char Name[66];
