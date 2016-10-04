@@ -1230,8 +1230,10 @@ NextPass:
     DPOINT BasePt;
     int numPoints;
     int refno = 0;
+    int pickedRefno=0;
     LPSTR pkeyval;
     NSString * keyval;
+    NSString * pickedName;
     int numLoops;
     NSString * areaType = CRAPI.sharedInstance.selectBoundaryFromMapType;
     NSString * key = areaType;
@@ -1288,7 +1290,11 @@ NextPass:
         dp.x = point.lon;
         dp.y = point.lat;
         if (POINT_IN_AREAD(dp, numPoints, llpoints, 1, 0, 0, 0))
+        {
             nPicked++;
+            pickedRefno = refno;
+            pickedName = keyval;
+        }
         free (llpoints);
     }
     
@@ -1297,9 +1303,9 @@ NextPass:
     if (nPicked == 1)
     {
         CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-        CRAPI.sharedInstance.currentOverallBoundaryName = keyval;
+        CRAPI.sharedInstance.currentOverallBoundaryName = pickedName;
         CRAPI.sharedInstance.currentOverallBoundaryType = areaType;
-        CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+        CRAPI.sharedInstance.currentOverallBoundaryRefno = pickedRefno;
         CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     }
     return nPicked;
