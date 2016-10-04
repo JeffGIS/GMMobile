@@ -91,6 +91,7 @@
 @property BOOL splitPlatView;
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
+@property (nonatomic) GMSPanoramaView *panView;
 
 @end
 
@@ -4174,17 +4175,17 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)showStreetView
 {
     _showsPanorama = YES;
-    GMSPanoramaView *panView = [[GMSPanoramaView alloc] init];
-    [panView moveNearCoordinate:_selectedPIDCoords];
-    panView.translatesAutoresizingMaskIntoConstraints = NO;
-    panView.delegate = self;
-    panView.alpha = 0.0;
+    _panView = GMSPanoramaView.new;
+    [_panView moveNearCoordinate:_selectedPIDCoords];
+    _panView.translatesAutoresizingMaskIntoConstraints = NO;
+    _panView.delegate = self;
+    _panView.alpha = 0.0;
     
-    [self.view addSubview:panView];
-    [panView constrainLeadingToAnchor:self.view.leadingAnchor];
-    [panView constrainTrailingToAnchor:self.view.trailingAnchor];
-    [panView constrainTopToAnchor:self.view.topAnchor];
-    [panView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
+    [self.view addSubview:_panView];
+    [_panView constrainLeadingToAnchor:self.view.leadingAnchor];
+    [_panView constrainTrailingToAnchor:self.view.trailingAnchor];
+    [_panView constrainTopToAnchor:self.view.topAnchor];
+    [_panView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
     
     UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
@@ -4205,16 +4206,16 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     [dismissPan setTitleColor:UIColor.lightGrayColor
                      forState:UIControlStateHighlighted];
     
-    [panView addSubview:dismissPan];
-    [dismissPan constrainLeadingToAnchor:panView.leadingAnchor constant:20.0];
-    [dismissPan constrainTopToAnchor:panView.topAnchor constant:20.0];
+    [_panView addSubview:dismissPan];
+    [dismissPan constrainLeadingToAnchor:_panView.leadingAnchor constant:20.0];
+    [dismissPan constrainTopToAnchor:_panView.topAnchor constant:20.0];
     
     [dismissPan addTarget:self
                    action:@selector(dismissPanTapped:)
          forControlEvents:UIControlEventTouchUpInside];
     
     [UIView animateWithDuration:0.25 animations:^{
-        panView.alpha = 1.0;
+        _panView.alpha = 1.0;
         self.tabBarController.tabBar.alpha = 0.0;
     }];
 }
@@ -4235,16 +4236,22 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                error:(NSError *)error
 onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    NSLog(@"GMSPanoramaView ERROR onMoveNearCoordinate:%@", error.localizedDescription);
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Street View is not yet available for this address."
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+    
+    alert.identifier = @"NoStreetViewAvailable";
 }
 
 - (void)dismissPanTapped:(UIButton *)button
 {
     [UIView animateWithDuration:0.25 animations:^{
-        button.superview.alpha = 0.0;
+        _panView.alpha = 0.0;
         self.tabBarController.tabBar.alpha = 1.0;
     } completion:^(BOOL finished) {
-        [button.superview removeFromSuperview];
+        [_panView removeFromSuperview];
         [self deselectTableViewRow];
         _showsPanorama = NO;
         
@@ -4912,6 +4919,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              atZoom:_mapView.camera.zoom];
         }
     }
+    
+    else if ([alertView.identifier isEqualToString:@"NoStreetViewAvailable"])
+        [self dismissPanTapped:nil];
 }
 
 - (void)dismissTableView

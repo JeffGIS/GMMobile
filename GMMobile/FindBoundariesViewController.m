@@ -7,11 +7,11 @@
 
 @interface FindBoundariesViewController ()
 
-@property (nonatomic) UIButton *returnButton, *offsetButton, *selectFromMapButton;
-@property (nonatomic) UITableView *topTableView, *bottomTableView;
-@property (nonatomic) UIView *polylineView, *maskBoundsView;
-@property (nonatomic) UISwitch *polylineSwitch, *maskBoundsSwitch;
-@property (nonatomic) UILabel *polylineLabel, *maskBoundsLabel;
+@property (nonatomic) NVConstrainedButton *returnButton, *offsetButton, *selectFromMapButton;
+@property (nonatomic) NVConstrainedTableView *topTableView, *bottomTableView;
+@property (nonatomic) NVConstrainedView *polylineView, *maskBoundsView;
+@property (nonatomic) NVConstrainedSwitch *polylineSwitch, *maskBoundsSwitch;
+@property (nonatomic) NVConstrainedLabel *polylineLabel, *maskBoundsLabel;
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
 @property (nonatomic, copy) NSString *selectedType;
 @property (nonatomic) NSMutableDictionary *sections;
@@ -48,14 +48,14 @@
     if (_otherAreas.count)
         [_boundaryList addObject:@"Other Areas"];
     
-    _topTableView = UITableView.new;
-    _bottomTableView = UITableView.new;
+    _topTableView = NVConstrainedTableView.new;
+    _bottomTableView = NVConstrainedTableView.new;
     [self setupTableView:_topTableView];
     [self setupTableView:_bottomTableView];
     
-    _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _offsetButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _selectFromMapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _returnButton = NVConstrainedButton.new;
+    _offsetButton = NVConstrainedButton.new;
+    _selectFromMapButton = NVConstrainedButton.new;
     _selectFromMapButton.enabled = NO;
     _selectFromMapButton.alpha = 0.4;
     
@@ -68,24 +68,20 @@
     [self setupButton:_selectFromMapButton
                 title:@"Select From Map"];
     
-    _polylineView = UIView.new;
-    _maskBoundsView = UIView.new;
+    _polylineView = NVConstrainedView.new;
+    _maskBoundsView = NVConstrainedView.new;
     [self setupView:_polylineView];
     [self setupView:_maskBoundsView];
     
-    _polylineLabel = UILabel.new;
-    _maskBoundsLabel = UILabel.new;
+    _polylineLabel = NVConstrainedLabel.new;
+    _maskBoundsLabel = NVConstrainedLabel.new;
     [self setupLabel:_polylineLabel text:@"Show\nPolyline"];
     [self setupLabel:_maskBoundsLabel text:@"Mask\nBounds"];
     [_polylineView addSubview:_polylineLabel];
     [_maskBoundsView addSubview:_maskBoundsLabel];
     
-    _polylineSwitch = UISwitch.new;
-    _maskBoundsSwitch = UISwitch.new;
-    _polylineSwitch.translatesAutoresizingMaskIntoConstraints = NO;
-    _maskBoundsSwitch.translatesAutoresizingMaskIntoConstraints = NO;
-    _polylineSwitch.tintColor = UIColor.redColor;
-    _maskBoundsSwitch.tintColor = UIColor.redColor;
+    _polylineSwitch = NVConstrainedSwitch.new;
+    _maskBoundsSwitch = NVConstrainedSwitch.new;
     _polylineSwitch.on = CRAPI.sharedInstance.showPolylineForBounds;
     _maskBoundsSwitch.on = CRAPI.sharedInstance.maskBoundsForBounds;
     [_polylineView addSubview:_polylineSwitch];
@@ -133,9 +129,6 @@
 
 - (void)setupView:(UIView *)view
 {
-    view.translatesAutoresizingMaskIntoConstraints = NO;
-    view.backgroundColor = UserDefaults.defaults.appleGray;
-    view.layer.borderColor = UIColor.blackColor.CGColor;
     view.layer.borderWidth = 2.0;
     view.layer.cornerRadius = _cornerRadius;
     [self.view addSubview:view];
@@ -144,41 +137,24 @@
 - (void)setupLabel:(UILabel *)label
               text:(NSString *)text
 {
-    label.translatesAutoresizingMaskIntoConstraints = NO;
     label.text = text;
     label.numberOfLines = 2;
     label.font = [UIFont boldSystemFontOfSize:_fontSize];
-    label.adjustsFontSizeToFitWidth = YES;
-    label.textAlignment = NSTextAlignmentCenter;
 }
 
 - (void)setupButton:(UIButton *)button
               title:(NSString *)title
 {
-    button.translatesAutoresizingMaskIntoConstraints = NO;
-    button.backgroundColor = UIColor.blackColor;
     button.layer.cornerRadius = _cornerRadius;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
-    button.titleLabel.adjustsFontSizeToFitWidth = YES;
-    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
-    button.titleLabel.textAlignment = NSTextAlignmentCenter;
     [button setTitle:title forState:UIControlStateNormal];
-    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
-    [button setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
     [self.view addSubview:button];
 }
 
 - (void)setupTableView:(UITableView *)tableView
 {
-    tableView.translatesAutoresizingMaskIntoConstraints = NO;
     tableView.delegate = self;
     tableView.dataSource = self;
-    tableView.separatorInset = UIEdgeInsetsZero;
-    tableView.separatorColor = UIColor.blackColor;
-    tableView.backgroundColor = UserDefaults.defaults.green;
-    tableView.bounces = YES;
-    tableView.layer.borderColor = UIColor.blackColor.CGColor;
     
     CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 40.0);
     tableView.rowHeight = rowHeight;
@@ -186,7 +162,6 @@
     tableView.layer.borderWidth = (rowHeight / 20.0);
     tableView.layer.cornerRadius = _cornerRadius;
     tableView.sectionIndexMinimumDisplayRowCount = 8;
-    tableView.delaysContentTouches = YES;
     tableView.sectionIndexTrackingBackgroundColor = [UIColor colorWithWhite:0.0 alpha:0.1];
     [self.view addSubview:tableView];
 }

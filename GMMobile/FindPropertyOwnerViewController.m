@@ -7,11 +7,11 @@
 @interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
-@property (nonatomic) UIButton *returnButton, *limitButton;
-@property (nonatomic) UITextField *propOwnerTF;
-@property (nonatomic) UITableView *tableView;
-@property (nonatomic) UISwitch *multipleSwitch;
-@property (nonatomic) UILabel *multipleLabel;
+@property (nonatomic) NVConstrainedButton *returnButton, *limitButton;
+@property (nonatomic) NVConstrainedTextField *propOwnerTF;
+@property (nonatomic) NVConstrainedTableView *tableView;
+@property (nonatomic) NVConstrainedSwitch *multipleSwitch;
+@property (nonatomic) NVConstrainedLabel *multipleLabel;
 @property (nonatomic) CGFloat fontSize, cornerRadius;
 @property LimitToOption limitToOption;
 @property BOOL selectMultiple;
@@ -68,15 +68,9 @@
 
 - (void)setupTableView
 {
-    _tableView = UITableView.new;
-    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    _tableView = NVConstrainedTableView.new;
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    _tableView.separatorColor = UIColor.blackColor;
-    _tableView.backgroundColor = UserDefaults.defaults.green;
-    _tableView.bounces = NO;
-    _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    _tableView.separatorInset = UIEdgeInsetsZero;
     
     CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 40.0);
     _tableView.rowHeight = rowHeight;
@@ -88,19 +82,9 @@
 
 - (void)setupButtons
 {
-    _returnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _returnButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _returnButton.backgroundColor = UIColor.blackColor;
+    _returnButton = NVConstrainedButton.new;
     _returnButton.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
-    _returnButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _returnButton.layer.cornerRadius = _cornerRadius;
-    _returnButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
-    
-    [_returnButton setTitleColor:UIColor.whiteColor
-                        forState:UIControlStateNormal];
-    
-    [_returnButton setTitleColor:UIColor.lightGrayColor
-                        forState:UIControlStateHighlighted];
     
     [_returnButton setTitle:@"< Return"
                    forState:UIControlStateNormal];
@@ -111,19 +95,9 @@
     
     [self.view addSubview:_returnButton];
     
-    _limitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    _limitButton.translatesAutoresizingMaskIntoConstraints = NO;
-    _limitButton.backgroundColor = UIColor.blackColor;
+    _limitButton = NVConstrainedButton.new;
     _limitButton.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
-    _limitButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _limitButton.layer.cornerRadius = _cornerRadius;
-    _limitButton.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
-    
-    [_limitButton setTitleColor:UIColor.whiteColor
-                       forState:UIControlStateNormal];
-    
-    [_limitButton setTitleColor:UIColor.lightGrayColor
-                       forState:UIControlStateHighlighted];
     
     [self updateLimitButtonTitle];
     
@@ -142,18 +116,11 @@
 
 - (void)setupTextField
 {
-    _propOwnerTF = UITextField.new;
-    _propOwnerTF.translatesAutoresizingMaskIntoConstraints = NO;
+    _propOwnerTF = NVConstrainedTextField.new;
     _propOwnerTF.delegate = self;
-    _propOwnerTF.layer.borderColor = UIColor.blackColor.CGColor;
     _propOwnerTF.layer.borderWidth = (_tableView.rowHeight / 20.0);
     _propOwnerTF.layer.cornerRadius = _cornerRadius;
-    _propOwnerTF.adjustsFontSizeToFitWidth = YES;
-    _propOwnerTF.textColor = UIColor.blackColor;
     _propOwnerTF.font = [UIFont boldSystemFontOfSize:_fontSize];
-    _propOwnerTF.backgroundColor = UIColor.whiteColor;
-    _propOwnerTF.tintColor = UIColor.grayColor;
-    _propOwnerTF.clearButtonMode = UITextFieldViewModeWhileEditing;
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     
@@ -174,23 +141,24 @@
     
     [self.view addSubview:_propOwnerTF];
 }
+
 - (void)reloadTable
 {
     [_tableView reloadData];
 }
+
 - (void)matchingOwners:(NSMutableArray *)ownerArray
 {
     _propOwnerList = ownerArray.copy;
+    
     [self performSelectorOnMainThread:@selector(reloadTable)
                            withObject:nil
                         waitUntilDone:NO];
-
 }
+
 - (void)setupSwitch
 {
-    _multipleSwitch = UISwitch.new;
-    _multipleSwitch.translatesAutoresizingMaskIntoConstraints = NO;
-    _multipleSwitch.tintColor = UIColor.redColor;
+    _multipleSwitch = NVConstrainedSwitch.new;
     _multipleSwitch.backgroundColor = UIColor.redColor;
     _multipleSwitch.layer.cornerRadius = 16.0;
     _multipleSwitch.on = _selectMultiple;
@@ -201,14 +169,9 @@
     
     [self.view addSubview:_multipleSwitch];
     
-    _multipleLabel = UILabel.new;
-    _multipleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _multipleLabel = NVConstrainedLabel.new;
     _multipleLabel.text = @"Select Multiple";
-    _multipleLabel.backgroundColor = UIColor.clearColor;
-    _multipleLabel.textColor = UIColor.whiteColor;
     _multipleLabel.font = [UIFont systemFontOfSize:_fontSize];
-    _multipleLabel.adjustsFontSizeToFitWidth = YES;
-    _multipleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
     
     [self.view addSubview:_multipleLabel];
 }
