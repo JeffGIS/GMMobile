@@ -154,6 +154,9 @@
     _propOwnerTF.backgroundColor = UIColor.whiteColor;
     _propOwnerTF.tintColor = UIColor.grayColor;
     _propOwnerTF.clearButtonMode = UITextFieldViewModeWhileEditing;
+    _propOwnerTF.autocorrectionType = UITextAutocorrectionTypeNo;
+    _propOwnerTF.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    _propOwnerTF.spellCheckingType = UITextSpellCheckingTypeNo;
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     
