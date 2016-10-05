@@ -92,6 +92,7 @@
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) GMSPanoramaView *panView;
+@property (nonatomic) UIWebView *bingPanView;
 
 @end
 
@@ -3557,6 +3558,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         }
     }
     
+    else if ([text isEqualToString:@"Display Streetside"])
+    {
+        [self showStreetside];
+        [self deselectTableViewRow];
+    }
+    
     else if ([text isEqualToString:@"Zoom to Census Area"])
     {
         [self showCensusArea];
@@ -4182,37 +4189,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     _panView.alpha = 0.0;
     
     [self.view addSubview:_panView];
-    [_panView constrainLeadingToAnchor:self.view.leadingAnchor];
-    [_panView constrainTrailingToAnchor:self.view.trailingAnchor];
-    [_panView constrainTopToAnchor:self.view.topAnchor];
-    [_panView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
-    
-    UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
-    dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
-    dismissPan.backgroundColor = UIColor.clearColor;
-    dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
-    dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
-    dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
-    dismissPan.titleLabel.layer.shadowOpacity = 1.0;
-    dismissPan.titleLabel.layer.shadowRadius = 3.0;
-    dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
-    
-    [dismissPan setTitle:@"< Return"
-                    forState:UIControlStateNormal];
-    
-    [dismissPan setTitleColor:UIColor.whiteColor
-                     forState:UIControlStateNormal];
-    
-    [dismissPan setTitleColor:UIColor.lightGrayColor
-                     forState:UIControlStateHighlighted];
-    
-    [_panView addSubview:dismissPan];
-    [dismissPan constrainLeadingToAnchor:_panView.leadingAnchor constant:20.0];
-    [dismissPan constrainTopToAnchor:_panView.topAnchor constant:20.0];
-    
-    [dismissPan addTarget:self
-                   action:@selector(dismissPanTapped:)
-         forControlEvents:UIControlEventTouchUpInside];
+    [_panView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:self.tabBarController.tabBar.frame.size.height];
+    [self addDismissPanButtonToView:_panView selector:@selector(dismissPanTapped:)];
     
     [UIView animateWithDuration:0.25 animations:^{
         _panView.alpha = 1.0;
@@ -4258,6 +4236,96 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }];
+}
+
+- (void)dismissBingPanTapped:(UIButton *)button
+{
+    [UIView animateWithDuration:0.25 animations:^{
+        _bingPanView.alpha = 0.0;
+        self.tabBarController.tabBar.alpha = 1.0;
+    } completion:^(BOOL finished) {
+        [_bingPanView removeFromSuperview];
+        [self deselectTableViewRow];
+        _showsPanorama = NO;
+        
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }];
+}
+
+- (void)addDismissPanButtonToView:(UIView *)view selector:(SEL)selector
+{
+    UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
+    dismissPan.backgroundColor = UIColor.clearColor;
+    dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
+    dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+    dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
+    dismissPan.titleLabel.layer.shadowOpacity = 1.0;
+    dismissPan.titleLabel.layer.shadowRadius = 3.0;
+    dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
+    
+    [dismissPan setTitle:@"< Return" forState:UIControlStateNormal];
+    [dismissPan setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [dismissPan setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
+    
+    [view addSubview:dismissPan];
+    [dismissPan constrainLeadingToAnchor:view.leadingAnchor constant:20.0];
+    [dismissPan constrainTopToAnchor:view.topAnchor constant:20.0];
+    
+    [dismissPan addTarget:self
+                   action:selector
+         forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)showStreetside
+{
+    NSString *html = [NSString stringWithFormat:@"\
+<!DOCTYPE html>\
+<html>\
+<head>\
+<style>\
+body {width:100vw; height:100vh; border:0px; margin:0px; padding:0px}\
+</style>\
+</head>\
+<body>\
+<div id='myMap'\
+</div>\
+<script type='text/javascript'>\
+function loadMapScenario(){\
+var map = new Microsoft.Maps.Map(document.getElementById('myMap'),{\
+credentials:'%@',\
+zoom:18,\
+heading:0,\
+pitch:0,\
+streetsideOptions:{\
+overviewMapMode:Microsoft.Maps.OverviewMapMode.hidden,\
+showCurrentAddress:false,\
+showExitButton:false},\
+mapTypeId:Microsoft.Maps.MapTypeId.streetside,\
+center:new Microsoft.Maps.Location(%f, %f)});\
+window.setTimeout(changePanorama, 3000);}\
+</script>\
+<script type='text/javascript' \
+src='https://www.bing.com/api/maps/mapcontrol?branch=release&callback=loadMapScenario' \
+async defer>\
+</script>\
+</body>\
+</html>", BING_API_KEY, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+    
+    _showsPanorama = YES;
+    _bingPanView = UIWebView.new;
+    _bingPanView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_bingPanView];
+    [_bingPanView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:self.tabBarController.tabBar.frame.size.height];
+    [self addDismissPanButtonToView:_bingPanView selector:@selector(dismissBingPanTapped:)];
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        _bingPanView.alpha = 1.0;
+        self.tabBarController.tabBar.alpha = 0.0;
+    }];
+    
+    [_bingPanView loadHTMLString:html baseURL:nil];
 }
 
 - (void)showCensusArea
@@ -5971,7 +6039,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedPID = title;
             
-            _options = @[@"", @"Property Report", @"Zillow Property Record", @"Display Street View",
+            _options = @[@"", @"Property Report", @"Zillow Property Record", @"Display Street View", @"Display Streetside",
                          @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
