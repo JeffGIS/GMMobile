@@ -4285,7 +4285,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 <html>\
 <head>\
 <style>\
-body {width:100vw; height:100vh; border:0px; margin:0px; padding:0px}\
+body{width:100vw;height:100vh;border:0px;margin:0px;padding:0px}\
 </style>\
 </head>\
 <body>\
@@ -4293,25 +4293,26 @@ body {width:100vw; height:100vh; border:0px; margin:0px; padding:0px}\
 </div>\
 <script type='text/javascript'>\
 function loadMapScenario(){\
-var map = new Microsoft.Maps.Map(document.getElementById('myMap'),{\
+var pidCoords=new Microsoft.Maps.Location(%f, %f);\
+var map=new Microsoft.Maps.Map(document.getElementById('myMap'),{\
 credentials:'%@',\
+enableHighDpi:true,\
 zoom:18,\
-heading:0,\
 pitch:0,\
 streetsideOptions:{\
 overviewMapMode:Microsoft.Maps.OverviewMapMode.hidden,\
 showCurrentAddress:false,\
-showExitButton:false},\
+showExitButton:false,\
+locationToLookAt:pidCoords},\
 mapTypeId:Microsoft.Maps.MapTypeId.streetside,\
-center:new Microsoft.Maps.Location(%f, %f)});\
-window.setTimeout(changePanorama, 3000);}\
+center:pidCoords});}\
 </script>\
 <script type='text/javascript' \
 src='https://www.bing.com/api/maps/mapcontrol?branch=release&callback=loadMapScenario' \
 async defer>\
 </script>\
 </body>\
-</html>", BING_API_KEY, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+</html>", _selectedPIDCoords.latitude, _selectedPIDCoords.longitude, BING_API_KEY];
     
     _showsPanorama = YES;
     _bingPanView = UIWebView.new;
