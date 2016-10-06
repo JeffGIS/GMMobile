@@ -4286,7 +4286,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 body{width:100vw;height:100vh;border:0px;margin:0px;padding:0px}\
 </style></head>\
 <body>\
-<div id='myMap'</div>\
+<div id='myMap'></div>\
 <script type='text/javascript'>\
 window.amd = function(){};\
 window.amd.define = function(){};\
