@@ -4281,17 +4281,15 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)showStreetside
 {
     NSString *html = [NSString stringWithFormat:@"\
-<!DOCTYPE html>\
-<html>\
-<head>\
-<style>\
+<!DOCTYPE html><html>\
+<head><style>\
 body{width:100vw;height:100vh;border:0px;margin:0px;padding:0px}\
-</style>\
-</head>\
+</style></head>\
 <body>\
-<div id='myMap'\
-</div>\
+<div id='myMap'</div>\
 <script type='text/javascript'>\
+window.amd = function(){};\
+window.amd.define = function(){};\
 function loadMapScenario(){\
 var pidCoords=new Microsoft.Maps.Location(%f, %f);\
 var map=new Microsoft.Maps.Map(document.getElementById('myMap'),{\
@@ -4307,12 +4305,9 @@ locationToLookAt:pidCoords},\
 mapTypeId:Microsoft.Maps.MapTypeId.streetside,\
 center:pidCoords});}\
 </script>\
-<script type='text/javascript' \
-src='https://www.bing.com/api/maps/mapcontrol?branch=release&callback=loadMapScenario' \
-async defer>\
+<script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?branch=release&callback=loadMapScenario' async defer>\
 </script>\
-</body>\
-</html>", _selectedPIDCoords.latitude, _selectedPIDCoords.longitude, BING_API_KEY];
+</body></html>", _selectedPIDCoords.latitude, _selectedPIDCoords.longitude, BING_API_KEY];
     
     _showsPanorama = YES;
     _bingPanView = UIWebView.new;
