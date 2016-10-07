@@ -2312,13 +2312,14 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     //int nowner;
     BOOL GetNext = TRUE;
     char Name[66];
-    LPINT Hits = malloc(MAXHITS * sizeof(int));
     sqlite3_stmt *statement = NULL;
     
     NSString *string = INstring.uppercaseString;
     strncpy(Name, string.UTF8String, 64);
     nParts = GetNameParts(Name, PartLoc, PartLen, MAXPARTS);
     
+    if (nParts)
+    {
     for (ipart = 0; ipart < nParts; ipart++)
     {
         nPartOffsets[ipart] = 0;
@@ -2372,7 +2373,8 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             nPartOffsets[ipart] = INT_MAX;
     }
     
-    if ([self continue] && GetNext)
+   LPINT Hits = malloc(MAXHITS * sizeof(int));
+   if ([self continue] && GetNext)
         nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
     
     for (ipart = 0; ipart < nParts; ipart++)
@@ -2392,7 +2394,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             delim = ',';
         }
         
-        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
+        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 61);
@@ -2401,13 +2403,14 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         {
             LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
             LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
-            LPSTR house = (LPSTR)sqlite3_column_text(statement,2);
-            LPSTR street = (LPSTR)sqlite3_column_text(statement,3);
-            LPSTR city = (LPSTR)sqlite3_column_text(statement,4);
+            LPSTR taxpayer = (LPSTR)sqlite3_column_text(statement,2);
+            LPSTR house = (LPSTR)sqlite3_column_text(statement,3);
+            LPSTR street = (LPSTR)sqlite3_column_text(statement,4);
+            LPSTR city = (LPSTR)sqlite3_column_text(statement,5);
             char testName[256];
             strcpy(testName,owner);
             int nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
-            BOOL ShowThisOwner = YES;
+            int ShowThisOwner = 1;
             
             for (ipart = 0; ipart < nParts; ipart++)
             {
@@ -2420,16 +2423,46 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                     }
                 }
                 
-                ShowThisOwner = NO;
+                ShowThisOwner = 0;
                 break;
                 
             FoundPart:;
             }
-            
-            if (ShowThisOwner)
+            if (!ShowThisOwner)
+            {
+                strcpy(testName,taxpayer);
+                nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
+                ShowThisOwner = 2;
+                
+                for (ipart = 0; ipart < nParts; ipart++)
+                {
+                    for (iparttest = 0; iparttest <nPartsTest; iparttest++)
+                    {
+                        if (!strncasecmp (PartLoc[ipart], PartLocTest[iparttest], PartLen[ipart]))
+                        {
+                            *PartLocTest[iparttest] = 0;
+                            goto FoundPart2;
+                        }
+                    }
+                    
+                    ShowThisOwner = 0;
+                    break;
+                    
+                FoundPart2:;
+                }
+
+            }
+            if (ShowThisOwner == 1)
             {
                 NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %s",
                                     owner, pin, house, street, city];
+                
+                [ownerArray addObject:output];
+            }
+            if (ShowThisOwner == 2)
+            {
+                NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %s",
+                                   taxpayer, pin, house, street, city];
                 
                 [ownerArray addObject:output];
             }
@@ -2442,6 +2475,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     if ([self continue] && _delegate)
     {
         [_delegate matchingOwners:ownerArray];
+    }
     }
                    });
     return TRUE;
