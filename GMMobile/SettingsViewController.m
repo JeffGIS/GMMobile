@@ -135,7 +135,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingAlleyWallNew:
                 break;
             case GetDatabaseSettingProperty:
-                break;
             case GetDatabaseSettingParcels:
             case GetDatabaseSettingAreas:
             case GetDatabaseSettingSewer:
@@ -571,7 +570,6 @@ Exit:
     
     if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
         fileName = @"MetroGIS_propfiles.gcf";
-    fileName = @"PropertyData.slt";
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;

@@ -121,6 +121,9 @@
     _propOwnerTF.layer.borderWidth = (_tableView.rowHeight / 20.0);
     _propOwnerTF.layer.cornerRadius = _cornerRadius;
     _propOwnerTF.font = [UIFont boldSystemFontOfSize:_fontSize];
+    _propOwnerTF.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    _propOwnerTF.spellCheckingType = UITextSpellCheckingTypeNo;
+    _propOwnerTF.autocorrectionType = UITextAutocorrectionTypeNo;
     
     NSString *propOwnerSearchText = [UserDefaults.defaults stringForKey:@"CurrentPropOwnerSearchText"];
     

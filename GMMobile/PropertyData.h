@@ -42,6 +42,7 @@ typedef struct {int nMatchingProperties;
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, copy) NSString *multiValueFile;
 @property (nonatomic, copy) NSString *path;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
@@ -75,6 +76,7 @@ typedef struct {int nMatchingProperties;
   highlightList:(NSMutableArray *)hlist;
 - (int)pickParcel:(LLPOINT *)pt
     highlightList:(NSMutableArray*)hlist;
+-(NSMutableArray *) getParcelHistory:(NSString*)PID;
 
 - (BOOL)getAddressForPID:(NSString *)PID
          houseNumAndUnit:(NSString **)houseAndUnit
@@ -113,5 +115,6 @@ typedef struct {int nMatchingProperties;
                                numPoints:(int *)numPoints
                                 numLoops:(int *)numLoops
                              polyPartLen:(int **)polyPartLen;
+-(NSArray*)getLinkedParcels:(NSString*)pid;
 
 @end
