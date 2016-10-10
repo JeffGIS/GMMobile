@@ -469,8 +469,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               });
                                            
                                        }
+                                           
                                        else
-                                           _popover.title = @"Invalid file";
+                                       {
+                                           dispatch_async(dispatch_get_main_queue(),
+                                                          ^{
+                                                              _popover.title = @"Invalid file";
+                                                          });
+                                       }
                                    }
                                        if (_fromDataLoader)
                                        {
