@@ -35,7 +35,29 @@ typedef struct {int nMatchingProperties;
 
 
 
-@interface PropertyData : NSObject 
+@interface PropertyDataExtract : NSObject
+@property NSString* PIN;
+@property NSString* homeStead;
+@property NSString* taxExempt;
+@property NSString* useCode;
+@property NSString* useDesc;
+@property double emvTotal;
+@property double emvLand;
+@property double emvBuilding;
+@property double totalTax;
+@property double specAssmt;
+@property NSString* ownerName;
+@property NSString* taxName;
+@property NSString* saleDate;
+@property double saleVal;
+@property NSString* bldgNum;
+@property NSString* streetName;
+@property NSString* unit;
+@property NSString* city;
+
+@end
+
+@interface PropertyData : NSObject
 
 @property (nonatomic, weak) id <PropertyDataDelegate> delegate;
 @property sqlite3 *database;

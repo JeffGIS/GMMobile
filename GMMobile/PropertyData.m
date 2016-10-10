@@ -47,6 +47,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 @end
 #define COORDINATE_FACTOR 10000000.0
 
+@implementation PropertyDataExtract
+
+@end
 
 @interface PropertyData ()
 
@@ -1561,7 +1564,7 @@ Exit:
     int numLinked;
     double emvTotal;
     double emvLand;
-    LPSTR homeStead, useCode, useDesc, taxExempt, owner, taxName, bldgNum;
+    LPSTR homeStead, useCode, useDesc, taxExempt, owner, taxName, bldgNum, unit;
     LPSTR saleDate;
     double saleVal, specAssmt;
     
@@ -1571,7 +1574,10 @@ Exit:
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
+        PropertyDataExtract * pde = PropertyDataExtract.new;
+        
         LPSTR pid = (LPSTR)sqlite3_column_text(statement, 0);
+        pde.PIN = [NSString stringWithUTF8String:pid];
         //PID = [NSString stringWithUTF8String:pid];
         homeStead = (LPSTR)sqlite3_column_text(statement, 2);
         useCode = (LPSTR)sqlite3_column_text(statement, 3);
@@ -1582,10 +1588,11 @@ Exit:
         specAssmt = (CGFloat)sqlite3_column_double(statement, 8);
         owner = (LPSTR)sqlite3_column_text(statement, 9);
         taxName = (LPSTR)sqlite3_column_text(statement, 10);
-        bldgNum = (LPSTR)sqlite3_column_text(statement, 11);
-        saleDate = (LPSTR)sqlite3_column_text(statement, 12);
-        saleVal = (CGFloat)sqlite3_column_double(statement, 13);
-        numLinked = (CGFloat)sqlite3_column_int(statement, 14);
+        unit = (LPSTR)sqlite3_column_text(statement, 12);
+        pde.unit = [NSString stringWithUTF8String:unit];
+        saleDate = (LPSTR)sqlite3_column_text(statement, 13);
+        saleVal = (CGFloat)sqlite3_column_double(statement, 14);
+        [array addObject:pde];
     }
     SQLOKpd(sqlite3_finalize(statement), _database, 47);
     return array;
