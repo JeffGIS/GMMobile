@@ -1558,11 +1558,10 @@ Exit:
 }
 -(NSArray*)getLinkedParcels:(NSString*)pid
 {
-    NSMutableArray * array;
-    double tot = 0;
+    NSMutableArray * array=NSMutableArray.new;
+    BOOL opened = [self open];
     sqlite3_stmt *statement = NULL;
     
-    int numLinked;
     double emvTotal;
     double emvLand;
     LPSTR homeStead, useCode, useDesc, taxExempt, owner, taxName, bldgNum, unit;
@@ -1596,6 +1595,7 @@ Exit:
         [array addObject:pde];
     }
     SQLOKpd(sqlite3_finalize(statement), _database, 47);
+    [self close:opened];
     return array;
 }
 - (void)displayParcelText:(CGContextRef)context
