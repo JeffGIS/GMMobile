@@ -1530,6 +1530,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             marker.refno = pi.refno;
             marker.symbol = pi.symbol;
+            marker.nLinks = pi.nLinks;
             
             [_markerArray addObject:marker];
             
@@ -5978,6 +5979,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         case MarkerInfoWindowTypePID:
         {
+            if (_infoWindow.marker.nLinks)
+            {
+                PropertyData *pd = PropertyData.new;
+                NSArray *linkedList = [pd getLinkedParcels:title];
+                NSLog(@"%@", linkedList);
+                
+                return;
+            }
+            
             _selectedPID = title;
             
             _options = @[@"", @"Property Report", @"Zillow Property Record", @"Display Google Street View", @"Display Bing Streetside",
