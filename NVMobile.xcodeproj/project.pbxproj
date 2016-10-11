@@ -10,6 +10,8 @@
 		1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 1F5ADD551CB95D27002D7BED /* PropListField_default.pdf */; };
 		1F5ADD581CB95EDA002D7BED /* PropListField_4.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 1F5ADD571CB95EDA002D7BED /* PropListField_4.pdf */; };
 		69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */; };
+		690E2DA51DAD3D86005FAE3A /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 690E2DA01DAD3CF6005FAE3A /* Charts.framework */; };
+		690E2DA61DAD3D86005FAE3A /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 690E2DA01DAD3CF6005FAE3A /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = 6924B4351D37BDC8007C6C76 /* trackLocation.png */; };
@@ -85,8 +87,6 @@
 		695577D31D83714100A34C24 /* checkedBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 695577D21D83714100A34C24 /* checkedBox.png */; };
 		695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 695577D41D83714E00A34C24 /* uncheckedBox.png */; };
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
-		69574DFB1DAD2A9800B80799 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69574DF61DAD2A4E00B80799 /* Charts.framework */; };
-		69574DFC1DAD2A9800B80799 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 69574DF61DAD2A4E00B80799 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		695984181CACE6F900CA14C0 /* swapIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 695984171CACE6F900CA14C0 /* swapIcon.png */; };
 		695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */ = {isa = PBXBuildFile; fileRef = 695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
@@ -244,30 +244,30 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		69574DF51DAD2A4E00B80799 /* PBXContainerItemProxy */ = {
+		690E2D9F1DAD3CF6005FAE3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			containerPortal = 690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 06165F241D8110E600722320;
 			remoteInfo = Charts;
 		};
-		69574DF71DAD2A4E00B80799 /* PBXContainerItemProxy */ = {
+		690E2DA11DAD3CF6005FAE3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			containerPortal = 690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 06B120D51D811E6200D14B02;
 			remoteInfo = ChartsRealm;
 		};
-		69574DF91DAD2A4E00B80799 /* PBXContainerItemProxy */ = {
+		690E2DA31DAD3CF6005FAE3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			containerPortal = 690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 06165F2E1D8110E600722320;
 			remoteInfo = ChartsTests;
 		};
-		69574DFD1DAD2A9800B80799 /* PBXContainerItemProxy */ = {
+		690E2DA71DAD3D86005FAE3A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			containerPortal = 690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 06165F231D8110E600722320;
 			remoteInfo = Charts;
@@ -288,7 +288,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				69574DFC1DAD2A9800B80799 /* Charts.framework in Embed Frameworks */,
+				690E2DA61DAD3D86005FAE3A /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -299,6 +299,7 @@
 		1F5ADD551CB95D27002D7BED /* PropListField_default.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = PropListField_default.pdf; sourceTree = "<group>"; };
 		1F5ADD571CB95EDA002D7BED /* PropListField_4.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = PropListField_4.pdf; sourceTree = "<group>"; };
 		69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = GMMobileIconAppStore.jpg; sourceTree = "<group>"; };
+		690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6924B4351D37BDC8007C6C76 /* trackLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackLocation.png; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
@@ -393,7 +394,6 @@
 		695577D21D83714100A34C24 /* checkedBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkedBox.png; sourceTree = "<group>"; };
 		695577D41D83714E00A34C24 /* uncheckedBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = uncheckedBox.png; sourceTree = "<group>"; };
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
-		69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
 		695984171CACE6F900CA14C0 /* swapIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIcon.png; sourceTree = "<group>"; };
 		695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transWhiteX.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
@@ -632,7 +632,7 @@
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				69F1773C1D7A0B7400741C68 /* GooglePlaces.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
-				69574DFB1DAD2A9800B80799 /* Charts.framework in Frameworks */,
+				690E2DA51DAD3D86005FAE3A /* Charts.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
 				A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */,
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
@@ -667,6 +667,16 @@
 				1F5ADD551CB95D27002D7BED /* PropListField_default.pdf */,
 			);
 			name = PropListDescriptions;
+			sourceTree = "<group>";
+		};
+		690E2D9A1DAD3CF6005FAE3A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				690E2DA01DAD3CF6005FAE3A /* Charts.framework */,
+				690E2DA21DAD3CF6005FAE3A /* ChartsRealm.framework */,
+				690E2DA41DAD3CF6005FAE3A /* ChartsTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		694FB1801C5882D7005410F6 /* PDFReaderCore */ = {
@@ -746,16 +756,6 @@
 				694FB1D51C588363005410F6 /* Reader-Thumbs@3x.png */,
 			);
 			name = Graphics;
-			sourceTree = "<group>";
-		};
-		69574DF01DAD2A4E00B80799 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				69574DF61DAD2A4E00B80799 /* Charts.framework */,
-				69574DF81DAD2A4E00B80799 /* ChartsRealm.framework */,
-				69574DFA1DAD2A4E00B80799 /* ChartsTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		6976D00A1D4FD291006098FA /* HelpFiles */ = {
@@ -1017,7 +1017,7 @@
 			children = (
 				69C8DB4B1C515B440062AE84 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
-				69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */,
+				690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */,
 				A9C837291A65B27C005EC4FA /* Frameworks */,
 				EB5521E81A61B6A8008CE2D1 /* GMMobileTests */,
 				EB5521CA1A61B6A8008CE2D1 /* Products */,
@@ -1119,7 +1119,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				69574DFE1DAD2A9800B80799 /* PBXTargetDependency */,
+				690E2DA81DAD3D86005FAE3A /* PBXTargetDependency */,
 			);
 			name = NVMobile;
 			productName = GMMobile;
@@ -1196,8 +1196,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 69574DF01DAD2A4E00B80799 /* Products */;
-					ProjectRef = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+					ProductGroup = 690E2D9A1DAD3CF6005FAE3A /* Products */;
+					ProjectRef = 690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1209,25 +1209,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		69574DF61DAD2A4E00B80799 /* Charts.framework */ = {
+		690E2DA01DAD3CF6005FAE3A /* Charts.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Charts.framework;
-			remoteRef = 69574DF51DAD2A4E00B80799 /* PBXContainerItemProxy */;
+			remoteRef = 690E2D9F1DAD3CF6005FAE3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		69574DF81DAD2A4E00B80799 /* ChartsRealm.framework */ = {
+		690E2DA21DAD3CF6005FAE3A /* ChartsRealm.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = ChartsRealm.framework;
-			remoteRef = 69574DF71DAD2A4E00B80799 /* PBXContainerItemProxy */;
+			remoteRef = 690E2DA11DAD3CF6005FAE3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		69574DFA1DAD2A4E00B80799 /* ChartsTests.xctest */ = {
+		690E2DA41DAD3CF6005FAE3A /* ChartsTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
-			remoteRef = 69574DF91DAD2A4E00B80799 /* PBXContainerItemProxy */;
+			remoteRef = 690E2DA31DAD3CF6005FAE3A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1464,10 +1464,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		69574DFE1DAD2A9800B80799 /* PBXTargetDependency */ = {
+		690E2DA81DAD3D86005FAE3A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Charts;
-			targetProxy = 69574DFD1DAD2A9800B80799 /* PBXContainerItemProxy */;
+			targetProxy = 690E2DA71DAD3D86005FAE3A /* PBXContainerItemProxy */;
 		};
 		EB5521E71A61B6A8008CE2D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

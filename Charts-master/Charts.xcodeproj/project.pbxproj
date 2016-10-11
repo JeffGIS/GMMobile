@@ -182,6 +182,7 @@
 /* Begin PBXFileReference section */
 		06165F241D8110E600722320 /* Charts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Charts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		06165F2E1D8110E600722320 /* ChartsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChartsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		063FF0401D8CC9940094A042 /* Carthage.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Carthage.xcconfig; sourceTree = "<group>"; };
 		06761B5D1D98176000D5CE09 /* ChartUtilsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChartUtilsTests.swift; path = Tests/Charts/ChartUtilsTests.swift; sourceTree = SOURCE_ROOT; };
 		06B11FAC1D811B6600D14B02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "Source/Supporting Files/Info.plist"; sourceTree = "<group>"; };
 		06B11FAE1D811B7000D14B02 /* Charts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Charts.h; path = "Source/Supporting Files/Charts.h"; sourceTree = "<group>"; };
@@ -369,6 +370,7 @@
 		06165F1A1D8110E600722320 = {
 			isa = PBXGroup;
 			children = (
+				063FF0401D8CC9940094A042 /* Carthage.xcconfig */,
 				06500D381D81115900156E8A /* Charts */,
 				06B120CD1D811D9D00D14B02 /* ChartsRealm */,
 				06165F321D8110E700722320 /* ChartsTests */,
@@ -1279,6 +1281,7 @@
 		};
 		06165F3C1D8110E700722320 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 063FF0401D8CC9940094A042 /* Carthage.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1293,6 +1296,7 @@
 		};
 		06165F3D1D8110E700722320 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 063FF0401D8CC9940094A042 /* Carthage.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1306,6 +1310,7 @@
 		};
 		06B120DB1D811E6200D14B02 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 063FF0401D8CC9940094A042 /* Carthage.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
@@ -1325,6 +1330,7 @@
 		};
 		06B120DC1D811E6200D14B02 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 063FF0401D8CC9940094A042 /* Carthage.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
