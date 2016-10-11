@@ -85,6 +85,8 @@
 		695577D31D83714100A34C24 /* checkedBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 695577D21D83714100A34C24 /* checkedBox.png */; };
 		695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 695577D41D83714E00A34C24 /* uncheckedBox.png */; };
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
+		69574DFB1DAD2A9800B80799 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69574DF61DAD2A4E00B80799 /* Charts.framework */; };
+		69574DFC1DAD2A9800B80799 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 69574DF61DAD2A4E00B80799 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		695984181CACE6F900CA14C0 /* swapIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 695984171CACE6F900CA14C0 /* swapIcon.png */; };
 		695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */ = {isa = PBXBuildFile; fileRef = 695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
@@ -242,6 +244,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		69574DF51DAD2A4E00B80799 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 06165F241D8110E600722320;
+			remoteInfo = Charts;
+		};
+		69574DF71DAD2A4E00B80799 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 06B120D51D811E6200D14B02;
+			remoteInfo = ChartsRealm;
+		};
+		69574DF91DAD2A4E00B80799 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 06165F2E1D8110E600722320;
+			remoteInfo = ChartsTests;
+		};
+		69574DFD1DAD2A9800B80799 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 06165F231D8110E600722320;
+			remoteInfo = Charts;
+		};
 		EB5521E61A61B6A8008CE2D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EB5521C11A61B6A8008CE2D1 /* Project object */;
@@ -250,6 +280,20 @@
 			remoteInfo = GMMobile;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		69574DFF1DAD2A9800B80799 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				69574DFC1DAD2A9800B80799 /* Charts.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1F5ADD551CB95D27002D7BED /* PropListField_default.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = PropListField_default.pdf; sourceTree = "<group>"; };
@@ -349,6 +393,7 @@
 		695577D21D83714100A34C24 /* checkedBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkedBox.png; sourceTree = "<group>"; };
 		695577D41D83714E00A34C24 /* uncheckedBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = uncheckedBox.png; sourceTree = "<group>"; };
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
+		69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
 		695984171CACE6F900CA14C0 /* swapIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIcon.png; sourceTree = "<group>"; };
 		695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transWhiteX.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
@@ -587,6 +632,7 @@
 				A99CD8DC1A9DBAC60049F271 /* OpenGLES.framework in Frameworks */,
 				69F1773C1D7A0B7400741C68 /* GooglePlaces.framework in Frameworks */,
 				A99CD8D41A9DBAAB0049F271 /* ImageIO.framework in Frameworks */,
+				69574DFB1DAD2A9800B80799 /* Charts.framework in Frameworks */,
 				A99CD8D21A9DBAA50049F271 /* GLKit.framework in Frameworks */,
 				A99CD8D01A9DBAA00049F271 /* CoreLocation.framework in Frameworks */,
 				A99CD8CE1A9DBA9A0049F271 /* CoreData.framework in Frameworks */,
@@ -700,6 +746,16 @@
 				694FB1D51C588363005410F6 /* Reader-Thumbs@3x.png */,
 			);
 			name = Graphics;
+			sourceTree = "<group>";
+		};
+		69574DF01DAD2A4E00B80799 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69574DF61DAD2A4E00B80799 /* Charts.framework */,
+				69574DF81DAD2A4E00B80799 /* ChartsRealm.framework */,
+				69574DFA1DAD2A4E00B80799 /* ChartsTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		6976D00A1D4FD291006098FA /* HelpFiles */ = {
@@ -961,6 +1017,7 @@
 			children = (
 				69C8DB4B1C515B440062AE84 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
+				69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */,
 				A9C837291A65B27C005EC4FA /* Frameworks */,
 				EB5521E81A61B6A8008CE2D1 /* GMMobileTests */,
 				EB5521CA1A61B6A8008CE2D1 /* Products */,
@@ -1057,10 +1114,12 @@
 				EB5521C51A61B6A8008CE2D1 /* Sources */,
 				EB5521C61A61B6A8008CE2D1 /* Frameworks */,
 				EB5521C71A61B6A8008CE2D1 /* Resources */,
+				69574DFF1DAD2A9800B80799 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				69574DFE1DAD2A9800B80799 /* PBXTargetDependency */,
 			);
 			name = NVMobile;
 			productName = GMMobile;
@@ -1135,6 +1194,12 @@
 			mainGroup = EB5521C01A61B6A8008CE2D1;
 			productRefGroup = EB5521CA1A61B6A8008CE2D1 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 69574DF01DAD2A4E00B80799 /* Products */;
+					ProjectRef = 69574DEF1DAD2A4E00B80799 /* Charts.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				EB5521C81A61B6A8008CE2D1 /* NVMobile */,
@@ -1142,6 +1207,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		69574DF61DAD2A4E00B80799 /* Charts.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Charts.framework;
+			remoteRef = 69574DF51DAD2A4E00B80799 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69574DF81DAD2A4E00B80799 /* ChartsRealm.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ChartsRealm.framework;
+			remoteRef = 69574DF71DAD2A4E00B80799 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		69574DFA1DAD2A4E00B80799 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = 69574DF91DAD2A4E00B80799 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		EB5521C71A61B6A8008CE2D1 /* Resources */ = {
@@ -1375,6 +1464,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		69574DFE1DAD2A9800B80799 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Charts;
+			targetProxy = 69574DFD1DAD2A9800B80799 /* PBXContainerItemProxy */;
+		};
 		EB5521E71A61B6A8008CE2D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EB5521C81A61B6A8008CE2D1 /* NVMobile */;
@@ -1486,6 +1580,7 @@
 		EB5521F01A61B6A8008CE2D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NVMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1512,6 +1607,7 @@
 		EB5521F11A61B6A8008CE2D1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NVMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

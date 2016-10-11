@@ -20,6 +20,7 @@
 #import "CCodeLibrary/NVPhotoController.h"
 #import "CCodeLibrary/NVStreetSideController.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
+@import Charts;
 
 #define MAX_VECTORVIEWS 8
 
