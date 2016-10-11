@@ -19,6 +19,7 @@
 #import "CCodeLibrary/NVMarkerInfoButton.h"
 #import "CCodeLibrary/NVPhotoController.h"
 #import "CCodeLibrary/NVStreetSideController.h"
+#import "CCodeLibrary/NVPopoverTableView.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -33,19 +34,17 @@
 @implementation MGVPlatData
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate>
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
-@property (nonatomic, copy) NSArray *options;
+@property (nonatomic, copy) NSArray *options, *linkedList;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
-@property (nonatomic, copy) NSString *selectedPID;
-@property (nonatomic, copy) NSString *selectedSanPoint;
-@property (nonatomic, copy) NSString *selectedPlat;
+@property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
 @property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
@@ -476,6 +475,7 @@
         
         [self removePreviousInfoWindow];
         _infoWindow = MarkerInfoWindow.new;
+        _infoWindow.linkedPID = NO;
         
         switch (CRAPI.sharedInstance.GMMSetting)
         {
@@ -661,8 +661,6 @@
     
     NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"SpreadsheetVC"
                                               inTabBarController:self.tabBarController];
-    
-    [[self.view viewWithTag:654321] removeFromSuperview];
     
     if (index != -1)
     {
@@ -1537,6 +1535,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.marker = marker;
+            _infoWindow.optionsTitle = marker.title;
             _noneSelected = NO;
             
             [self.view addSubview:_infoWindow];
@@ -2856,6 +2855,15 @@ haveVV:
                                    [self.view bringSubviewToFront:notesView];
                            }
                            
+                           for (NVPopoverTableView *nvptv in self.view.subviews)
+                           {
+                               if ([nvptv isKindOfClass:NVPopoverTableView.class])
+                               {
+                                   [self.view bringSubviewToFront:nvptv.overlayView];
+                                   [self.view bringSubviewToFront:nvptv];
+                               }
+                           }
+                           
                            if ([self.view.subviews containsObject:_popover])
                                [self.view bringSubviewToFront:_popover];
                            
@@ -2867,12 +2875,6 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_legendView])
                                [self.view bringSubviewToFront:_legendView];
-                           
-                           if([self.view viewWithTag:123456])
-                               [self.view bringSubviewToFront:[self.view viewWithTag:123456]];
-                           
-                           if([self.view viewWithTag:654321])
-                               [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
                            
                            if ([self.view.subviews containsObject:_nvdv])
                                [self.view bringSubviewToFront:_nvdv];
@@ -3293,7 +3295,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         case PropertyTableViewSettingOptions:
             headerLabel.numberOfLines = 1;
-            headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.marker.title];
+            headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.optionsTitle];
             break;
             
         case PropertyTableViewSettingPropertyReport:
@@ -5967,6 +5969,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    [popoverTableView hide:YES];
+    
+    PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index];
+    _infoWindow.linkedPID = YES;
+    _infoWindow.optionsTitle = ped.PIN;
+    
+    [self markerInfoWindowDidSelectOptions:ped.PIN
+                                     refno:0
+                                    coords:_selectedPIDCoords
+                                      type:MarkerInfoWindowTypePID];
+}
+
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
                                    refno:(NSInteger)refno
                                   coords:(CLLocationCoordinate2D)coords
@@ -5979,12 +6002,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         case MarkerInfoWindowTypePID:
         {
-            if (_infoWindow.marker.nLinks)
+            if (_infoWindow.marker.nLinks && !_infoWindow.linkedPID)
             {
                 PropertyData *pd = PropertyData.new;
-                NSArray *linkedList = [pd getLinkedParcels:title];
-                NSLog(@"%@", linkedList);
+                _linkedList = [pd getLinkedParcels:title];
+                NSMutableArray *unitList = NSMutableArray.array;
                 
+                for (PropertyDataExtract *ped in _linkedList)
+                    [unitList addObject:ped.unit];
+                
+                NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                                  delegate:self
+                                                                                     title:@"Select from These Units at This Property"
+                                                                                 textArray:unitList
+                                                                             includeCancel:YES];
+#pragma unused(nvptv)
                 return;
             }
             

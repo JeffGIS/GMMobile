@@ -102,6 +102,8 @@
 {
     if (_delegate)
     {
+        _linkedPID = NO;
+        
         [_delegate markerInfoWindowDidSelectOptions:_titleLabel.text
                                               refno:_marker.refno
                                              coords:_marker.position
