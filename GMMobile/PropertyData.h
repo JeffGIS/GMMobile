@@ -66,6 +66,8 @@ typedef struct {int nMatchingProperties;
 @property int specAsses;
 @property int saledate;
 @property int saleVal;
+@property BOOL homestead;
+@property BOOL exempt;
 @end
 
 @interface PropertyData : NSObject

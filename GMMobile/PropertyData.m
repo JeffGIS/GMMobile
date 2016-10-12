@@ -334,9 +334,6 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     NSString *query = [[NSString alloc] init];
     
     BOOL opened = [self open];
-    [self startTransaction];
-    [self executeCmd:"CREATE INDEX IF NOT EXISTS PARCELPOLY_pinindex ON PARCELPOLY ('PID' ASC)"];
-    [self commitTransaction];
     
     switch (CRAPI.sharedInstance.project)
     {
@@ -2001,18 +1998,55 @@ Exit:
         int compressedSize;
         int decompressedSize;
         LPBYTE pCompressed;
+        LPINT pInts, pIntsInit;
     
         fread(&nYears, 4, 1, fid);
         fread(&firstYear, 4, 1, fid);
         fread(&lastYear, 4, 1, fid);
         pYearly = (LPYEARLYVALUES)malloc (nYears * sizeof(YEARLYVALUES));
+        pIntsInit = pInts = (LPINT)malloc (nYears*8*4);
         fseek(fid, offset, SEEK_SET);
         BigRead(fid, &compressedSize, 4);
         pCompressed = malloc (compressedSize);
         BigRead (fid,pCompressed,compressedSize);
-        decompressedSize = DecompressBinaryRecordUnsafe((LPBYTE)pYearly, pCompressed, compressedSize);
         fclose(fid);
+        decompressedSize = DecompressBinaryRecordUnsafe((LPBYTE)pInts, pCompressed, compressedSize);
+        for (int ival = 0;ival<8;ival++)
+        {
+            for (int iyear=0;iyear<nYears;iyear++)
+            {
+                LPINT pInt2 = (LPINT)&pYearly[iyear];
+                pInt2 += ival;
+                *pInt2++ = *pInts++;
+            }
+        }
+        for (int iyear=0;iyear<nYears;iyear++)
+        {
+            PropertyHistory *ph = PropertyHistory.new;
+            
+            ph.year = firstYear + iyear;
+            ph.emvLand = pYearly[iyear].EMV_LAND;
+            if (ph.emvLand < 0)
+            {
+                ph.emvLand = -(ph.emvLand + 1);
+                homestead = TRUE;
+            }
+            ph.emvBldg = pYearly[iyear].EMV_BLDG;
+            if (ph.emvBldg < 0)
+            {
+                ph.emvBldg = -(ph.emvBldg + 1);
+                taxexempt = TRUE;
+            }
+            ph.emvTotal = pYearly[iyear].EMV_TOTAL;
+            ph.taxCapacity = pYearly[iyear].TAX_CAPACITY;
+            ph.totalTax = pYearly[iyear].TOTAL_TAX;
+            ph.specAsses = pYearly[iyear].SPEC_ASSES;
+            ph.saledate = pYearly[iyear].SALE_YEAR;
+            ph.saleVal = pYearly[iyear].SALE_VALUE;
+            [values addObject:ph];
+        }
         free (pYearly);
+        free (pIntsInit);
         free (pCompressed);
     }
     [self close:opened];

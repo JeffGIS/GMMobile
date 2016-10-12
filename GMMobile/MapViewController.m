@@ -105,7 +105,7 @@
     [super viewDidLoad];
     
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
-    
+    _firstMove = TRUE;
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"SpreadsheetVC"];
@@ -457,7 +457,7 @@
                                         insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
         }
         
-        [_mapView animateToCameraPosition:camera];
+        [self animateToCamPos:camera];
         
         _selectedPIDCoords = pidCoord;
         
@@ -1321,7 +1321,7 @@
                                               (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
                                               (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
+        [self moveCam:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
     }
     
     else
@@ -1329,7 +1329,7 @@
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
                                                                    zoom:12.0];
         
-        [_mapView animateToCameraPosition:camera];
+        [self animateToCamPos:camera];
     }
 }
 
@@ -1344,7 +1344,7 @@
     GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCamPos:camera];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -2157,7 +2157,9 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 {
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
-    
+    if (_firstMove)
+        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    _firstMove = FALSE;
     if (position.bearing != 0.0)
     {
         [self showCompass];
@@ -2377,10 +2379,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self setMapType];
     
     if (_rotateZoom)
-        [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
+        [self moveCam:[GMSCameraUpdate zoomBy:0.000001]];
     
     else
-        [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
+        [self moveCam:[GMSCameraUpdate zoomBy:-0.000001]];
    
     _rotateZoom = !_rotateZoom;
     
@@ -5013,7 +5015,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCamPos:camera];
 }
 
 - (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xFrame
@@ -5204,7 +5206,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                       withPadding:40.0];
              
              [self setMapType];
-             [_mapView moveCamera:update];
+             [self moveCam:update];
              [self updateMarkerPosition];
              
              _routeTraceExists = YES;
@@ -5277,7 +5279,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                      withPadding:40.0];
             
             [self setMapType];
-            [_mapView moveCamera:update];
+            [self moveCam:update];
             [self updateMarkerPosition];
         }
     }
@@ -5311,7 +5313,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                                  withPadding:40.0];
         
-        [_mapView moveCamera:update];
+        [self moveCam:update];
         [self updateMarkerPosition];
         
         _routeTraceExists = YES;
@@ -5796,7 +5798,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCamPos:camera];
 }
 
 - (void)mapToolbarDidFinishDrag
@@ -6591,4 +6593,13 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
         return nil;
 }
 
+-(void) moveCam:(GMSCameraUpdate*)update
+{
+    [_mapView moveCamera:update];
+}
+-(void) animateToCamPos:(GMSCameraPosition *)camera
+{
+    [_mapView animateToCameraPosition:camera];
+
+}
 @end
