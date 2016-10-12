@@ -571,6 +571,8 @@ Exit:
 
 - (IBAction)loadDatabase:(id)sender
 {
+    [self loadNVMetro:sender];
+    return;
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_propfiles.gcf";
     

@@ -54,7 +54,18 @@ typedef struct {int nMatchingProperties;
 @property NSString* streetName;
 @property NSString* unit;
 @property NSString* city;
+@end
 
+@interface PropertyHistory : NSObject
+@property int year;
+@property int emvLand;
+@property int emvBldg;
+@property int emvTotal;
+@property int taxCapacity;
+@property int totalTax;
+@property int specAsses;
+@property int saledate;
+@property int saleVal;
 @end
 
 @interface PropertyData : NSObject

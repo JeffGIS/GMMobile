@@ -7,7 +7,7 @@
 #import "CCodeLibrary/MathUtil.h"
 MNMXCORD curbounds;
 
-typedef struct { int EMV_LAND, EMV_BLDG, EMV_TOTAL, TAX_CAPACITY, TOTAL_TAX, SPEC_ASSES;
+typedef struct { int EMV_LAND, EMV_BLDG, EMV_TOTAL, TAX_CAPACITY, TOTAL_TAX, SPEC_ASSES, SALE_YEAR, SALE_VALUE;
 }YEARLYVALUES;
 typedef YEARLYVALUES *LPYEARLYVALUES;
 LPYEARLYVALUES pYearly;
@@ -46,6 +46,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 }
 @end
 #define COORDINATE_FACTOR 10000000.0
+
+@implementation PropertyHistory
+
+@end
 
 @implementation PropertyDataExtract
 
