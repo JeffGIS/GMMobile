@@ -3529,6 +3529,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                     forKey:@"PIDOption"];
     }
     
+    else if ([text isEqualToString:@"Property History"])
+    {
+        [self showPropHistory];
+        [self deselectTableViewRow];
+    }
+    
     else if ([text isEqualToString:@"Zillow Property Record"])
     {
         [self showZillow];
@@ -4123,21 +4129,24 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showPropReport
 {
+    PropertyData *pd = PropertyData.new;
+    _propertyReport = [pd getReport:PDSettingDefault forPID:_selectedPID];
+    
     _tableViewSetting = PropertyTableViewSettingPropertyReport;
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-    
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.allowsSelection = NO;
     _tableView.delaysContentTouches = YES;
-    
     [_tableView reloadData];
+    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:NO];
+}
+
+- (void)showPropHistory
+{
+    PropertyData *pd = PropertyData.new;
+    NSArray *phArray = [pd getParcelHistory:_selectedPID];
     
-    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                           animated:NO];
+    for (PropertyHistory *phs in phArray)
+        NSLog(@"%i:%d", phs.year, phs.emvTotal);
 }
 
 - (void)showZillow
@@ -6056,8 +6065,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             _selectedPID = title;
             
-            _options = @[@"", @"Property Report", @"Zillow Property Record", @"Display Google Street View", @"Display Bing Streetside",
-                         @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
+            _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record", @"Display Google Street View",
+                         @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
