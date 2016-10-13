@@ -5982,14 +5982,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [popoverTableView hide:YES];
     
-    PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index];
-    _infoWindow.linkedPID = YES;
-    _infoWindow.optionsTitle = ped.PIN;
+    if ([text isEqualToString:@"View Overall Property Report"])
+    {
+        
+    }
     
-    [self markerInfoWindowDidSelectOptions:ped.PIN
-                                     refno:0
-                                    coords:_selectedPIDCoords
-                                      type:MarkerInfoWindowTypePID];
+    else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
+    {
+        
+    }
+    
+    else
+    {
+        PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index - 2];
+        _infoWindow.linkedPID = YES;
+        _infoWindow.optionsTitle = ped.PIN;
+        
+        [self markerInfoWindowDidSelectOptions:ped.PIN
+                                         refno:0
+                                        coords:_selectedPIDCoords
+                                          type:MarkerInfoWindowTypePID];
+    }
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
@@ -6012,6 +6025,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 if (_linkedList.count)
                 {
                     NSMutableArray *unitList = NSMutableArray.array;
+                    [unitList addObject:@"View Overall Property Report"];
+                    [unitList addObject:@"Add All Units to Spreadsheet"];
                     
                     for (PropertyDataExtract *ped in _linkedList)
                     {
@@ -6020,18 +6035,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         if ([unitName isEqualToString:@""] || [unitName isEqualToString:@" "])
                         {
                             NSUInteger index = ([_linkedList indexOfObject:ped] + 1);
-                            unitName = [NSString stringWithFormat:@"Unit %lu", (unsigned long)index];
+                            unitName = [NSString stringWithFormat:@"Select Unit %lu", (unsigned long)index];
                         }
                         
                         else
-                            unitName = [NSString stringWithFormat:@"Unit %@", unitName];
+                            unitName = [NSString stringWithFormat:@"Select Unit %@", unitName];
                         
                         [unitList addObject:unitName];
                     }
                     
                     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
                                                                                       delegate:self
-                                                                                         title:@"Select from These Units at This Property"
+                                                                                         title:@"Multi-Unit Property Options"
                                                                                      textArray:unitList
                                                                                  includeCancel:YES];
 #pragma unused(nvptv)
