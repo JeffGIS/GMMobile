@@ -6008,18 +6008,35 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 PropertyData *pd = PropertyData.new;
                 _linkedList = [pd getLinkedParcels:title];
-                NSMutableArray *unitList = NSMutableArray.array;
                 
-                for (PropertyDataExtract *ped in _linkedList)
-                    [unitList addObject:ped.unit];
-                
-                NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
-                                                                                  delegate:self
-                                                                                     title:@"Select from These Units at This Property"
-                                                                                 textArray:unitList
-                                                                             includeCancel:YES];
+                if (_linkedList.count)
+                {
+                    NSMutableArray *unitList = NSMutableArray.array;
+                    
+                    for (PropertyDataExtract *ped in _linkedList)
+                    {
+                        NSString *unitName = ped.unit;
+                        
+                        if ([unitName isEqualToString:@""] || [unitName isEqualToString:@" "])
+                        {
+                            NSUInteger index = ([_linkedList indexOfObject:ped] + 1);
+                            unitName = [NSString stringWithFormat:@"Unit %lu", (unsigned long)index];
+                        }
+                        
+                        else
+                            unitName = [NSString stringWithFormat:@"Unit %@", unitName];
+                        
+                        [unitList addObject:unitName];
+                    }
+                    
+                    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                                      delegate:self
+                                                                                         title:@"Select from These Units at This Property"
+                                                                                     textArray:unitList
+                                                                                 includeCancel:YES];
 #pragma unused(nvptv)
-                return;
+                    return;
+                }
             }
             
             _selectedPID = title;
