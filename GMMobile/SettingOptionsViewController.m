@@ -14,7 +14,6 @@
 #import "CCodeLibrary/FTPDirectoryList.h"
 @import MediaPlayer;
 @import GLKit;
-@import Charts;
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -364,8 +363,7 @@ EAGLContext *CreateBestEAGLContext()
     
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data",
-                  @"Calibrate Device", @"Track Location", @"Test Charts"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location"];
     
     [_tableView reloadData];
 }
@@ -542,12 +540,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self computePDFPages];
     }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test Charts"])
-    {
-        [self testCharts];
-    }
 }
 
 - (void)testCalendar
@@ -568,15 +560,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                   port:@"21"
                                                               delegate:self];
 #pragma unused(list)
-}
-
-- (void)testCharts
-{
-    LineChartView *lcv = LineChartView.new;
-    lcv.backgroundColor = UIColor.blackColor;
-    lcv.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:lcv];
-    [lcv constrainToView:self.view leading:40.0 trailing:-40.0 top:40.0 bottom:-40.0];
 }
 
 - (void)FTPDirectoryListDidCompleteWithStatus:(FTPStatus)status

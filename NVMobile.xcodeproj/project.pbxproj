@@ -32,6 +32,7 @@
 		69366E031C542A6700E79AA7 /* NVPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69366E021C542A6700E79AA7 /* NVPageController.m */; };
 		6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6938F3981CB2CEBB00DD975D /* webIcon.png */; };
 		6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */ = {isa = PBXBuildFile; fileRef = 6938F39A1CB2DEE400DD975D /* whiteHouse.png */; };
+		693BF80C1DAF56370044C602 /* ChartsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 693BF80B1DAF56370044C602 /* ChartsViewController.m */; };
 		6944EDFF1C515A8E00DD5A24 /* libNVCoordinateLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE11BE3D8DE009372AC /* libNVCoordinateLibrary.a */; };
 		6944EE001C515A8E00DD5A24 /* libNVShapefileLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */; };
 		69450DAF1BD603E50079F7EC /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -323,6 +324,8 @@
 		69366E021C542A6700E79AA7 /* NVPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPageController.m; sourceTree = "<group>"; };
 		6938F3981CB2CEBB00DD975D /* webIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = webIcon.png; sourceTree = "<group>"; };
 		6938F39A1CB2DEE400DD975D /* whiteHouse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteHouse.png; sourceTree = "<group>"; };
+		693BF80A1DAF56370044C602 /* ChartsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartsViewController.h; sourceTree = "<group>"; };
+		693BF80B1DAF56370044C602 /* ChartsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChartsViewController.m; sourceTree = "<group>"; };
 		694F00731C1B229C0074AF72 /* clearMarkers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clearMarkers.png; sourceTree = "<group>"; };
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
 		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
@@ -996,6 +999,8 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
+				693BF80A1DAF56370044C602 /* ChartsViewController.h */,
+				693BF80B1DAF56370044C602 /* ChartsViewController.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
 				A9237F811AFA84E400D10E96 /* SettingOptionsViewController.m */,
 				EB5522731A752A7F008CE2D1 /* SettingsViewController.h */,
@@ -1428,6 +1433,7 @@
 				694FB1B51C58830E005410F6 /* ReaderThumbRender.m in Sources */,
 				A97860F41A7FF8610019FE37 /* FindIntersectionViewController.m in Sources */,
 				694FB1B61C58830E005410F6 /* ReaderThumbRequest.m in Sources */,
+				693BF80C1DAF56370044C602 /* ChartsViewController.m in Sources */,
 				694FB1B31C58830E005410F6 /* ReaderThumbFetch.m in Sources */,
 				EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */,
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,

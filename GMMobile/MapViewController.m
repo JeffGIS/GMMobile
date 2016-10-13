@@ -20,6 +20,7 @@
 #import "CCodeLibrary/NVPhotoController.h"
 #import "CCodeLibrary/NVStreetSideController.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
+#import "ChartsViewController.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -4142,11 +4143,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showPropHistory
 {
-    PropertyData *pd = PropertyData.new;
-    NSArray *phArray = [pd getParcelHistory:_selectedPID];
-    
-    for (PropertyHistory *phs in phArray)
-        NSLog(@"%i:%d", phs.year, phs.emvTotal);
+    ChartsViewController *chartsVC = ChartsViewController.new;
+    chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:_selectedPID];
+    [self presentViewController:chartsVC animated:YES completion:nil];
 }
 
 - (void)showZillow
@@ -6634,13 +6634,14 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
         return nil;
 }
 
--(void) moveCam:(GMSCameraUpdate*)update
+- (void)moveCam:(GMSCameraUpdate *)update
 {
     [_mapView moveCamera:update];
 }
--(void) animateToCamPos:(GMSCameraPosition *)camera
+
+- (void)animateToCamPos:(GMSCameraPosition *)camera
 {
     [_mapView animateToCameraPosition:camera];
-
 }
+
 @end
