@@ -108,6 +108,14 @@
                              action:@selector(selectFromMapButtonTapped:)
                    forControlEvents:UIControlEventTouchUpInside];
     
+    [_polylineSwitch addTarget:self
+                        action:@selector(polylineSwitchTapped:)
+              forControlEvents:UIControlEventValueChanged];
+    
+    [_maskBoundsSwitch addTarget:self
+                          action:@selector(maskBoundsSwitchTapped:)
+                forControlEvents:UIControlEventValueChanged];
+    
     [_polylineSwitch constrainWidthToConstant:_polylineSwitch.frame.size.width];
     [_maskBoundsSwitch constrainWidthToConstant:_maskBoundsSwitch.frame.size.width];
     [self setupConstraintsForOrientation:UIApplication.sharedApplication.statusBarOrientation];
