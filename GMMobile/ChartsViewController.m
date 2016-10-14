@@ -8,7 +8,7 @@
 
 @interface ChartsViewController ()
 
-@property (nonatomic) BarChartView *barChart;
+@property (nonatomic) LineChartView *chart;
 @property (nonatomic) UIButton *returnButton;
 
 @end
@@ -45,31 +45,64 @@
     [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
     [_returnButton constrainTopToAnchor:self.view.topAnchor constant:8.0];
     
-    _barChart = BarChartView.new;
-    _barChart.translatesAutoresizingMaskIntoConstraints = NO;
-    _barChart.xAxis.labelPosition = XAxisLabelPositionBottom;
-    _barChart.backgroundColor = UIColor.whiteColor;
-    _barChart.descriptionText = @"";
-    [self.view addSubview:_barChart];
-    [_barChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [_barChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
-    [_barChart constrainTopToAnchor:_returnButton.bottomAnchor];
-    [_barChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    _chart = LineChartView.new;
+    _chart.translatesAutoresizingMaskIntoConstraints = NO;
+    _chart.xAxis.labelPosition = XAxisLabelPositionBottom;
+    _chart.backgroundColor = UIColor.whiteColor;
+    _chart.descriptionText = @"";
+    [self.view addSubview:_chart];
+    [_chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [_chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [_chart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [_chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
-    NSMutableArray *dataEntries = NSMutableArray.array;
+    NSMutableArray *emvTotal = NSMutableArray.array;
+    NSMutableArray *emvLand = NSMutableArray.array;
+    NSMutableArray *emvBldg = NSMutableArray.array;
+    NSMutableArray *saleVal = NSMutableArray.array;
     
     for (int i = 0; i < _propHistoryArray.count; i++)
     {
         PropertyHistory *ph = (PropertyHistory *)_propHistoryArray[i];
-        BarChartDataEntry *dataEntry = [[BarChartDataEntry alloc] initWithX:ph.year y:ph.emvTotal];
-        [dataEntries addObject:dataEntry];
+        ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.emvTotal, 0.0)];
+        ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.emvLand, 0.0)];
+        ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.emvBldg, 0.0)];
+        ChartDataEntry *saleValEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.saleVal, 0.0)];
+        [emvTotal addObject:emvTotalEntry];
+        [emvLand addObject:emvLandEntry];
+        [emvBldg addObject:emvBldgEntry];
+        [saleVal addObject:saleValEntry];
     }
     
-    BarChartDataSet *dataSet = [[BarChartDataSet alloc] initWithValues:dataEntries label:@"Estimated Market Value"];
-    dataSet.colors = ChartColorTemplates.colorful;
+    NSNumberFormatter *numFormatter = NSNumberFormatter.new;
+    numFormatter.numberStyle = kCFNumberFormatterCurrencyStyle;
+    numFormatter.maximumFractionDigits = 0;
+    ChartDefaultValueFormatter *chartFormatter = ChartDefaultValueFormatter.new;
+    chartFormatter.formatter = numFormatter;
     
-    BarChartData *data = [[BarChartData alloc] initWithDataSet:dataSet];
-    _barChart.data = data;
+    LineChartDataSet *emvTotalData = [[LineChartDataSet alloc] initWithValues:emvTotal label:@"Total EMV"];
+    emvTotalData.color = UIColor.blueColor;
+    emvTotalData.circleColor = UIColor.blackColor;
+    emvTotalData.lineWidth = 6.0;
+    emvTotalData.valueFormatter = chartFormatter;
+    LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithValues:emvLand label:@"Land EMV"];
+    emvLandData.color = UIColor.greenColor;
+    emvLandData.circleColor = UIColor.blackColor;
+    emvLandData.lineWidth = 6.0;
+    emvLandData.valueFormatter = chartFormatter;
+    LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithValues:emvBldg label:@"Building EMV"];
+    emvBldgData.color = UIColor.redColor;
+    emvBldgData.circleColor = UIColor.blackColor;
+    emvBldgData.lineWidth = 6.0;
+    emvBldgData.valueFormatter = chartFormatter;
+    LineChartDataSet *saleValData = [[LineChartDataSet alloc] initWithValues:saleVal label:@"Sale Value"];
+    saleValData.color = UIColor.orangeColor;
+    saleValData.circleColor = UIColor.blackColor;
+    saleValData.lineWidth = 6.0;
+    saleValData.valueFormatter = chartFormatter;
+    
+    LineChartData *data = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvLandData), (emvBldgData), (saleValData)]];
+    _chart.data = data;
 }
 
 - (void)didReceiveMemoryWarning
