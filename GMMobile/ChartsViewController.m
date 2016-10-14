@@ -64,10 +64,10 @@
     for (int i = 0; i < _propHistoryArray.count; i++)
     {
         PropertyHistory *ph = (PropertyHistory *)_propHistoryArray[i];
-        ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.emvTotal, 0.0)];
-        ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.emvLand, 0.0)];
-        ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.emvBldg, 0.0)];
-        ChartDataEntry *saleValEntry = [[ChartDataEntry alloc] initWithX:ph.year y:MAX(ph.saleVal, 0.0)];
+        ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvTotal];
+        ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvLand];
+        ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvBldg];
+        ChartDataEntry *saleValEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.saleVal];
         [emvTotal addObject:emvTotalEntry];
         [emvLand addObject:emvLandEntry];
         [emvBldg addObject:emvBldgEntry];
