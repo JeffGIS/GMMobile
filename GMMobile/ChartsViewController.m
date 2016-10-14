@@ -59,7 +59,7 @@
     NSMutableArray *emvTotal = NSMutableArray.array;
     NSMutableArray *emvLand = NSMutableArray.array;
     NSMutableArray *emvBldg = NSMutableArray.array;
-    NSMutableArray *saleVal = NSMutableArray.array;
+    //NSMutableArray *saleVal = NSMutableArray.array;
     
     for (int i = 0; i < _propHistoryArray.count; i++)
     {
@@ -67,11 +67,9 @@
         ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvTotal];
         ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvLand];
         ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvBldg];
-        ChartDataEntry *saleValEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.saleVal];
         [emvTotal addObject:emvTotalEntry];
         [emvLand addObject:emvLandEntry];
         [emvBldg addObject:emvBldgEntry];
-        [saleVal addObject:saleValEntry];
     }
     
     NSNumberFormatter *numFormatter = NSNumberFormatter.new;
@@ -95,13 +93,8 @@
     emvBldgData.circleColor = UIColor.blackColor;
     emvBldgData.lineWidth = 6.0;
     emvBldgData.valueFormatter = chartFormatter;
-    LineChartDataSet *saleValData = [[LineChartDataSet alloc] initWithValues:saleVal label:@"Sale Value"];
-    saleValData.color = UIColor.orangeColor;
-    saleValData.circleColor = UIColor.blackColor;
-    saleValData.lineWidth = 6.0;
-    saleValData.valueFormatter = chartFormatter;
     
-    LineChartData *data = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvLandData), (emvBldgData), (saleValData)]];
+    LineChartData *data = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvLandData), (emvBldgData)]];
     _chart.data = data;
 }
 
