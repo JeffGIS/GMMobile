@@ -52,6 +52,8 @@
     _chart.xAxis.labelPosition = XAxisLabelPositionBottom;
     _chart.backgroundColor = UIColor.whiteColor;
     _chart.descriptionText = @"";
+    _chart.legend.font = [UIFont systemFontOfSize:16.0];
+    
     [self.view addSubview:_chart];
     [_chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
     [_chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
@@ -62,28 +64,32 @@
     NSMutableArray *emvLands = NSMutableArray.array;
     NSMutableArray *emvBldgs = NSMutableArray.array;
     NSMutableArray *saleVals = NSMutableArray.array;
+    NSMutableArray *totalTaxs = NSMutableArray.array;
     
     for (int i = 0; i < _propHistoryArray.count; i++)
     {
         PropertyHistory *ph = (PropertyHistory *)_propHistoryArray[i];
-        ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvTotal];
-        ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvLand];
-        ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:ph.year y:ph.emvBldg];
+        double year = (ph.year + 0.5);
+        ChartDataEntry *emvTotalEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvTotal];
+        ChartDataEntry *emvLandEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvLand];
+        ChartDataEntry *emvBldgEntry = [[ChartDataEntry alloc] initWithX:year y:ph.emvBldg];
+        ChartDataEntry *totalTax = [[ChartDataEntry alloc] initWithX:year y:ph.totalTax];
+        
         [emvTotals addObject:emvTotalEntry];
         [emvLands addObject:emvLandEntry];
         [emvBldgs addObject:emvBldgEntry];
+        [totalTaxs addObject:totalTax];
         
         if ((ph.saleVal > 0) && (ph.saleVal != _currentSaleVal))
         {
             _currentSaleVal = ph.saleVal;
             NSString *saleDateString = [NSString stringWithFormat:@"%i", ph.saledate];
             int year = [saleDateString substringToIndex:4].intValue;
+            int month = [saleDateString substringWithRange:NSMakeRange(4, 2)].intValue;
+            double saledate = year + (month / 12.0);
             
-            if (year > 2003)
+            if (saledate >= 2004.5)
             {
-                int month = [saleDateString substringWithRange:NSMakeRange(4, 2)].intValue;
-                double saledate = year + (month / 12.0);
-                
                 BarChartDataEntry *saleValEntry = [[BarChartDataEntry alloc] initWithX:saledate y:_currentSaleVal];
                 [saleVals addObject:saleValEntry];
             }
@@ -103,6 +109,7 @@
     emvTotalData.lineWidth = 6.0;
     emvTotalData.drawCubicEnabled = YES;
     emvTotalData.valueFormatter = chartFormatter;
+    
     LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithValues:emvLands label:@"Land EMV"];
     emvLandData.color = UIColor.greenColor;
     emvLandData.circleColor = UIColor.blackColor;
@@ -110,6 +117,7 @@
     emvLandData.lineWidth = 6.0;
     emvLandData.drawCubicEnabled = YES;
     emvLandData.valueFormatter = chartFormatter;
+    
     LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithValues:emvBldgs label:@"Building EMV"];
     emvBldgData.color = UIColor.redColor;
     emvBldgData.circleColor = UIColor.blackColor;
@@ -117,12 +125,21 @@
     emvBldgData.lineWidth = 6.0;
     emvBldgData.drawCubicEnabled = YES;
     emvBldgData.valueFormatter = chartFormatter;
+    
     BarChartDataSet *saleValData = [[BarChartDataSet alloc] initWithValues:saleVals label:@"Sale Values"];
     saleValData.color = [UIColor colorWithWhite:0.0 alpha:0.3];
     saleValData.valueFormatter = chartFormatter;
     
+    LineChartDataSet *totalTaxData = [[LineChartDataSet alloc] initWithValues:totalTaxs label:@"Total Tax"];
+    totalTaxData.color = UIColor.orangeColor;
+    totalTaxData.circleColor = UIColor.blackColor;
+    totalTaxData.circleHoleColor = UserDefaults.defaults.appleGray;
+    totalTaxData.lineWidth = 6.0;
+    totalTaxData.drawCubicEnabled = YES;
+    totalTaxData.valueFormatter = chartFormatter;
+    
     CombinedChartData *data = CombinedChartData.new;
-    data.lineData = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvLandData), (emvBldgData)]];
+    data.lineData = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvBldgData), (emvLandData), (totalTaxData)]];
     data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
     _chart.data = data;
 }
