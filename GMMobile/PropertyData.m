@@ -2024,7 +2024,7 @@ Exit:
         {
             PropertyHistory *ph = PropertyHistory.new;
             
-            ph.year = firstYear + iyear;
+            ph.year = lastYear - iyear;
             ph.emvLand = pYearly[iyear].EMV_LAND;
             if (ph.emvLand < 0)
             {
