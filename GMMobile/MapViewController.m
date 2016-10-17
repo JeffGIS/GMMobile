@@ -499,6 +499,7 @@
         [_markerArray addObject:marker];
         
         _infoWindow.marker = marker;
+        _infoWindow.optionsTitle = marker.title;
         _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
         _infoWindow.delegate = self;
         _noneSelected = NO;
@@ -1611,6 +1612,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
         _infoWindow.delegate = self;
         _infoWindow.marker = marker;
+        _infoWindow.optionsTitle = marker.title;
         _noneSelected = NO;
         
         [self.view addSubview:_infoWindow];
@@ -1674,6 +1676,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 _infoWindow.delegate = self;
                 _infoWindow.marker = marker;
+                _infoWindow.optionsTitle = marker.title;
                 _noneSelected = NO;
                 
                 [self.view addSubview:_infoWindow];
@@ -2084,6 +2087,7 @@ wasTappedAtPoint:(DPOINT)point
             _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.marker = marker;
+            _infoWindow.optionsTitle = marker.title;
              _noneSelected = NO;
             
             [self.view addSubview:_infoWindow];

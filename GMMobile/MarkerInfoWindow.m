@@ -41,6 +41,7 @@
         _titleLabel.textColor = UIColor.blackColor;
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.font = [UIFont systemFontOfSize:16.0];
+        _titleLabel.adjustsFontSizeToFitWidth = YES;
         [self addSubview:_titleLabel];
         
         _snippetLabel = [[UILabel alloc] initWithFrame:CGRectMake
@@ -50,6 +51,7 @@
         _snippetLabel.textColor = UIColor.blackColor;
         _snippetLabel.textAlignment = NSTextAlignmentCenter;
         _snippetLabel.font = [UIFont systemFontOfSize:10.0];
+        _snippetLabel.adjustsFontSizeToFitWidth = YES;
         [self addSubview:_snippetLabel];
         
         _optionsButton = [[UIButton alloc] initWithFrame:CGRectMake
