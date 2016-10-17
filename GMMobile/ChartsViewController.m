@@ -66,7 +66,7 @@
     NSMutableArray *saleVals = NSMutableArray.array;
     NSMutableArray *totalTaxs = NSMutableArray.array;
     
-    for (int i = 0; i < _propHistoryArray.count; i++)
+    for (int i = (int)(_propHistoryArray.count - 1); i > -1; i--)
     {
         PropertyHistory *ph = (PropertyHistory *)_propHistoryArray[i];
         double year = (ph.year + 0.5);
@@ -107,7 +107,6 @@
     emvTotalData.circleColor = UIColor.blackColor;
     emvTotalData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvTotalData.lineWidth = 6.0;
-    emvTotalData.drawCubicEnabled = YES;
     emvTotalData.valueFormatter = chartFormatter;
     
     LineChartDataSet *emvLandData = [[LineChartDataSet alloc] initWithValues:emvLands label:@"Land EMV"];
@@ -115,7 +114,6 @@
     emvLandData.circleColor = UIColor.blackColor;
     emvLandData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvLandData.lineWidth = 6.0;
-    emvLandData.drawCubicEnabled = YES;
     emvLandData.valueFormatter = chartFormatter;
     
     LineChartDataSet *emvBldgData = [[LineChartDataSet alloc] initWithValues:emvBldgs label:@"Building EMV"];
@@ -123,7 +121,6 @@
     emvBldgData.circleColor = UIColor.blackColor;
     emvBldgData.circleHoleColor = UserDefaults.defaults.appleGray;
     emvBldgData.lineWidth = 6.0;
-    emvBldgData.drawCubicEnabled = YES;
     emvBldgData.valueFormatter = chartFormatter;
     
     BarChartDataSet *saleValData = [[BarChartDataSet alloc] initWithValues:saleVals label:@"Sale Values"];
@@ -135,13 +132,14 @@
     totalTaxData.circleColor = UIColor.blackColor;
     totalTaxData.circleHoleColor = UserDefaults.defaults.appleGray;
     totalTaxData.lineWidth = 6.0;
-    totalTaxData.drawCubicEnabled = YES;
     totalTaxData.valueFormatter = chartFormatter;
     
     CombinedChartData *data = CombinedChartData.new;
     data.lineData = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvBldgData), (emvLandData), (totalTaxData)]];
     data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
     _chart.data = data;
+    _chart.xAxis.axisMinimum = (_chart.chartXMin - 0.5);
+    _chart.xAxis.axisMaximum = (_chart.chartXMax + 0.5);
 }
 
 - (void)didReceiveMemoryWarning
