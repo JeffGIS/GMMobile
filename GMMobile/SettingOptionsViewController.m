@@ -12,6 +12,7 @@
 #import "CCodeLibrary/NVCalendarVC.h"
 #import "CCodeLibrary/NVSynchronizeVC.h"
 #import "CCodeLibrary/FTPDirectoryList.h"
+#import "CCodeLibrary/NVSpreadsheetVC.h"
 @import MediaPlayer;
 @import GLKit;
 
@@ -363,7 +364,7 @@ EAGLContext *CreateBestEAGLContext()
     
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location", @"Test Spreadsheet"];
     
     [_tableView reloadData];
 }
@@ -540,6 +541,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self computePDFPages];
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test Spreadsheet"])
+    {
+        [self testSpreadsheet];
+    }
+}
+
+- (void)testSpreadsheet
+{
+    NVSpreadsheetVC *spreadsheet = NVSpreadsheetVC.new;
+    
+    [self presentViewController:spreadsheet
+                       animated:YES
+                     completion:nil];
 }
 
 - (void)testCalendar
