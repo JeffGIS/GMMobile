@@ -18,7 +18,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVSpreadsheetVCDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -551,11 +551,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)testSpreadsheet
 {
-    NVSpreadsheetVC *spreadsheet = NVSpreadsheetVC.new;
-    
-    [self presentViewController:spreadsheet
-                       animated:YES
-                     completion:nil];
+    NVSpreadsheetVC *nvsvc = [NVSpreadsheetVC presentSpreadsheetInViewController:self
+                                                                         numRows:40
+                                                                      numColumns:40
+                                                                        delegate:self];
+#pragma unused(nvsvc)
 }
 
 - (void)testCalendar
