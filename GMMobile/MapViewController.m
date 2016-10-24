@@ -21,6 +21,7 @@
 #import "CCodeLibrary/NVStreetSideController.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
 #import "ChartsViewController.h"
+#import "NVSpreadsheetDelegate.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -93,6 +94,8 @@
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) GMSPanoramaView *panView;
+@property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
+@property (nonatomic) NVSpreadsheetVC *nvssvc;
 
 @end
 
@@ -132,6 +135,15 @@
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _splitPlatView = NO;
     
+    _nvssvc = NVSpreadsheetVC.new;
+    _ssDelegate = NVSpreadsheetDelegate.new;
+    _nvssvc.delegate = _ssDelegate;
+    _nvssvc.restorationIdentifier = @"NVSpreadsheet";
+    _nvssvc.tabBarItem.title = @"Spreadsheet";
+    
+    _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
+                                                                                              ofType:@"png"]];
+
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
     _legendScrollView = UIScrollView.new;
@@ -900,6 +912,10 @@
         
         if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
         {
+            [NVTabBarEdit tabBarController:self.tabBarController
+                      insertViewController:_nvssvc
+                                   atIndex:1];
+            
             CLLocationCoordinate2D coord = {0};
             LLPOINT ll = {0};
             

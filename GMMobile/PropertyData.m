@@ -92,7 +92,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     CloseTRANS2 (&_pTranLLtoView);
     CloseTRANS2 (&_pTranViewtoLL);
     sqlite3_close(_database);
-    NSLog(@"Property Database dealloc");
+    //NSLog(@"Property Database dealloc");
 }
 - (BOOL)open
 {
@@ -101,7 +101,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         self.isOpen = YES;
         self.isOpen = !SQLOKpd(sqlite3_open(self.path.UTF8String, &_database), _database, 1);
         
-        NSLog(@"Property Database open");
+        //NSLog(@"Property Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -116,7 +116,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (opened)
     {
         SQLOKpd(sqlite3_close(_database), _database, 0);
-        NSLog(@"Property Database close");
+        //NSLog(@"Property Database close");
         _isOpen = NO;
     }
 }

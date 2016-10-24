@@ -123,6 +123,7 @@
 		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
 		69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */; };
 		69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */; };
+		69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */; };
 		69E1CFDB1CF608DD002A4611 /* SampleCurbRamp2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69E1CFD91CF608DD002A4611 /* SampleCurbRamp2.jpg */; };
 		69E1CFDC1CF608DD002A4611 /* SampleCurbRamp1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 69E1CFDA1CF608DD002A4611 /* SampleCurbRamp1.jpg */; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
@@ -442,6 +443,8 @@
 		69DB8AE21BE3D8DE009372AC /* libNVShapefileLibrary.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNVShapefileLibrary.a; path = "../../Library/Developer/Xcode/DerivedData/GeoMasterMobile-bfmlqbezrzptsdflvcijajdyhbld/Build/Products/Debug-iphoneos/libNVShapefileLibrary.a"; sourceTree = "<group>"; };
 		69DFE39E1BD0AE090006D4C9 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		69E0BB811DBE522A003555DD /* NVSpreadsheetDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVSpreadsheetDelegate.h; sourceTree = "<group>"; };
+		69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVSpreadsheetDelegate.m; sourceTree = "<group>"; };
 		69E1CFD91CF608DD002A4611 /* SampleCurbRamp2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SampleCurbRamp2.jpg; sourceTree = "<group>"; };
 		69E1CFDA1CF608DD002A4611 /* SampleCurbRamp1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SampleCurbRamp1.jpg; sourceTree = "<group>"; };
 		69E62D4A1BBF073F0018390B /* diagonalArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = diagonalArrow.png; sourceTree = "<group>"; };
@@ -999,6 +1002,8 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
+				69E0BB811DBE522A003555DD /* NVSpreadsheetDelegate.h */,
+				69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */,
 				693BF80A1DAF56370044C602 /* ChartsViewController.h */,
 				693BF80B1DAF56370044C602 /* ChartsViewController.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
@@ -1398,6 +1403,7 @@
 				694FB1AE1C58830E005410F6 /* ReaderDocument.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
 				694FB1B81C58830E005410F6 /* ReaderThumbView.m in Sources */,
+				69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */,
 				EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				694FB1AB1C58830E005410F6 /* ReaderContentPage.m in Sources */,

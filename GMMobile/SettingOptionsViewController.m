@@ -12,13 +12,12 @@
 #import "CCodeLibrary/NVCalendarVC.h"
 #import "CCodeLibrary/NVSynchronizeVC.h"
 #import "CCodeLibrary/FTPDirectoryList.h"
-#import "CCodeLibrary/NVSpreadsheetVC.h"
 @import MediaPlayer;
 @import GLKit;
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVSpreadsheetVCDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -364,7 +363,7 @@ EAGLContext *CreateBestEAGLContext()
     
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location", @"Test Spreadsheet"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location"];
     
     [_tableView reloadData];
 }
@@ -541,78 +540,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self computePDFPages];
     }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Test Spreadsheet"])
-    {
-        [self testSpreadsheet];
-    }
-}
-
-- (void)testSpreadsheet
-{
-    PropertyList *proplist = PropertyList.new;
-    NSUInteger numRows = MAX((proplist.availablePropertyFields.count - 1), 16);
-    NSUInteger numColumns = MAX(proplist.getPropertyNumbers.count, 8);
-    
-    NVSpreadsheetVC *nvsvc = [NVSpreadsheetVC presentSpreadsheetInViewController:self
-                                                                         numRows:numRows
-                                                                      numColumns:numColumns
-                                                                        delegate:self];
-#pragma unused(nvsvc)
-}
-
-- (NSString *)headerTextForRow:(NSUInteger)row
-{
-    PropertyList *proplist = PropertyList.new;
-    NSArray *list = proplist.availablePropertyFields;
-    
-    if (row < list.count)
-    {
-        PropFieldType ifield = [list[row] integerValue];
-        NSString *fieldName = [proplist propertyFieldName:ifield];
-        
-        return [fieldName stringByReplacingOccurrencesOfString:@" ("
-                                                    withString:@"\n("];
-    }
-    
-    else
-        return [NSString stringWithFormat:@"Row %lu", (unsigned long)row];
-}
-
-- (NSString *)headerTextForColumn:(NSUInteger)column
-{
-    PropertyList *proplist = PropertyList.new;
-    NSArray *list = proplist.getPropertyNumbers;
-    
-    if (column <= list.count)
-    {
-        NSInteger propNum = [list[column - 1] integerValue];
-        
-        return [proplist getFieldValue:propNum
-                                  type:PFT_UserID];
-    }
-    
-    else
-        return [NSString stringWithFormat:@"Column %lu", (unsigned long)column];
-}
-
-- (NSString *)textForColumn:(NSUInteger)column
-                        row:(NSUInteger)row
-{
-    PropertyList *proplist = PropertyList.new;
-    NSArray *list = proplist.getPropertyNumbers;
-    
-    if (column <= list.count && row < proplist.availablePropertyFields.count)
-    {
-        NSInteger propNum = [list[column - 1] integerValue];
-        
-        return [proplist getFieldValue:propNum
-                                  type:(PFT_PIN + row - 1)];
-    }
-    
-    else
-        return [NSString stringWithFormat:@"R%lu:C%lu", (unsigned long)row, (unsigned long)column];
 }
 
 - (void)testCalendar
