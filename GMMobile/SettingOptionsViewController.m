@@ -551,11 +551,68 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)testSpreadsheet
 {
+    PropertyList *proplist = PropertyList.new;
+    NSUInteger numRows = MAX((proplist.availablePropertyFields.count - 1), 16);
+    NSUInteger numColumns = MAX(proplist.getPropertyNumbers.count, 8);
+    
     NVSpreadsheetVC *nvsvc = [NVSpreadsheetVC presentSpreadsheetInViewController:self
-                                                                         numRows:40
-                                                                      numColumns:40
+                                                                         numRows:numRows
+                                                                      numColumns:numColumns
                                                                         delegate:self];
 #pragma unused(nvsvc)
+}
+
+- (NSString *)headerTextForRow:(NSUInteger)row
+{
+    PropertyList *proplist = PropertyList.new;
+    NSArray *list = proplist.availablePropertyFields;
+    
+    if (row < list.count)
+    {
+        PropFieldType ifield = [list[row] integerValue];
+        NSString *fieldName = [proplist propertyFieldName:ifield];
+        
+        return [fieldName stringByReplacingOccurrencesOfString:@" ("
+                                                    withString:@"\n("];
+    }
+    
+    else
+        return [NSString stringWithFormat:@"Row %lu", (unsigned long)row];
+}
+
+- (NSString *)headerTextForColumn:(NSUInteger)column
+{
+    PropertyList *proplist = PropertyList.new;
+    NSArray *list = proplist.getPropertyNumbers;
+    
+    if (column <= list.count)
+    {
+        NSInteger propNum = [list[column - 1] integerValue];
+        
+        return [proplist getFieldValue:propNum
+                                  type:PFT_UserID];
+    }
+    
+    else
+        return [NSString stringWithFormat:@"Column %lu", (unsigned long)column];
+}
+
+- (NSString *)textForColumn:(NSUInteger)column
+                        row:(NSUInteger)row
+{
+    PropertyList *proplist = PropertyList.new;
+    NSArray *list = proplist.getPropertyNumbers;
+    
+    if (column <= list.count && row < proplist.availablePropertyFields.count)
+    {
+        NSInteger propNum = [list[column - 1] integerValue];
+        
+        return [proplist getFieldValue:propNum
+                                  type:(PFT_PIN + row - 1)];
+    }
+    
+    else
+        return [NSString stringWithFormat:@"R%lu:C%lu", (unsigned long)row, (unsigned long)column];
 }
 
 - (void)testCalendar
