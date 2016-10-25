@@ -122,7 +122,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HJO-MC-Xk3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-326" y="-1677"/>
+            <point key="canvasLocation" x="-242" y="-992"/>
         </scene>
         <!--Crime Options-->
         <scene sceneID="ucn-6J-f4B">
@@ -1462,7 +1462,7 @@
                                         <rect key="frame" x="0.0" y="28" width="560" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="i84-8w-TGi" id="XcU-rM-wRS">
-                                            <frame key="frameInset" width="560" height="43.5"/>
+                                            <frame key="frameInset" width="560" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -1721,27 +1721,6 @@
             </objects>
             <point key="canvasLocation" x="-1050" y="-714"/>
         </scene>
-        <!--Spreadsheet-->
-        <scene sceneID="eFF-7w-ZfT">
-            <objects>
-                <viewController storyboardIdentifier="SpreadsheetVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="LGd-oQ-f5l" customClass="SpreadsheetViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Ecw-Em-qjm"/>
-                        <viewControllerLayoutGuide type="bottom" id="Gsn-Zu-CG8"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="onc-Ce-Wkh">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="618"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
-                    <tabBarItem key="tabBarItem" title="Spreadsheet" image="spreadsheetIcon.png" id="T4d-I3-N5l"/>
-                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="khb-IH-yrW" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-344" y="-969"/>
-        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
@@ -1758,7 +1737,6 @@
                         <segue destination="8rJ-Kc-sve" kind="relationship" relationship="viewControllers" id="lzU-1b-eKA"/>
                         <segue destination="12j-A1-RmV" kind="relationship" relationship="viewControllers" id="Dx2-lm-06C"/>
                         <segue destination="do3-kC-FQs" kind="relationship" relationship="viewControllers" id="Nqh-nM-kkl"/>
-                        <segue destination="LGd-oQ-f5l" kind="relationship" relationship="viewControllers" id="3Gd-gJ-BE4"/>
                         <segue destination="T0p-0H-jNa" kind="relationship" relationship="viewControllers" id="OOM-UQ-2JV"/>
                         <segue destination="l7a-Ov-wFN" kind="relationship" relationship="viewControllers" id="nFV-5s-4Cz"/>
                         <segue destination="SQ4-SM-lZV" kind="relationship" relationship="viewControllers" id="32o-yd-KNL"/>
@@ -1827,22 +1805,22 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="QUv-di-OoF">
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" misplaced="YES" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="JK7-uS-3lX" detailTextLabel="Yc3-bn-0lM" style="IBUITableViewCellStyleSubtitle" id="A9H-u8-Jkh">
-                                        <rect key="frame" x="0.0" y="22" width="1000" height="44"/>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="JK7-uS-3lX" detailTextLabel="Yc3-bn-0lM" style="IBUITableViewCellStyleSubtitle" id="A9H-u8-Jkh">
+                                        <rect key="frame" x="0.0" y="22" width="343" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="A9H-u8-Jkh" id="Sgh-UG-wMF">
-                                            <frame key="frameInset" width="1000" height="43.5"/>
+                                            <frame key="frameInset" width="343" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JK7-uS-3lX">
-                                                    <frame key="frameInset" minX="164" minY="6" width="31.5" height="19.5"/>
+                                                    <frame key="frameInset" minX="15" minY="6" width="31.5" height="19.5"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Yc3-bn-0lM">
-                                                    <frame key="frameInset" minX="164" minY="25.5" width="40.5" height="13.5"/>
+                                                    <frame key="frameInset" minX="15" minY="25.5" width="40.5" height="13.5"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -4353,6 +4331,5 @@
         <image name="layers.png" width="40" height="40"/>
         <image name="map.png" width="40" height="40"/>
         <image name="settings.png" width="32" height="32"/>
-        <image name="spreadsheetIcon.png" width="32" height="32"/>
     </resources>
 </document>

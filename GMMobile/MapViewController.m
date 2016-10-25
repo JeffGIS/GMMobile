@@ -112,7 +112,6 @@
     _firstMove = TRUE;
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
-    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"SpreadsheetVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"MGThemesVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
@@ -673,7 +672,7 @@
     [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
     _fromSpreadsheet = NO;
     
-    NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"SpreadsheetVC"
+    NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVSpreadsheet"
                                               inTabBarController:self.tabBarController];
     
     if (index != -1)
@@ -892,12 +891,6 @@
         
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
         
-        UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:cdvc
-                               atIndex:1];
-        
         UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
@@ -997,7 +990,7 @@
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"SpreadsheetVC"];
+            removeViewControllerWithID:@"NVSpreadsheet"];
         
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         

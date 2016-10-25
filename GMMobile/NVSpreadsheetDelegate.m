@@ -4,6 +4,8 @@
 #import "NVSpreadsheetDelegate.h"
 #import "PropertyList.h"
 #import "Destinations.h"
+#import "MapViewController.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 @implementation NVSpreadsheetDelegate
 
@@ -126,6 +128,33 @@
 - (void)spreadsheetDidCreateList
 {
     [PropertyList createNewPropertyList];
+}
+
+- (void)spreadsheetDidMapItForRow:(NSInteger)row
+                           column:(NSInteger)column
+                 tabBarController:(UITabBarController *)tabBarController
+{
+    PropertyList *proplist = [[PropertyList alloc] init];
+    
+    LLPOINT llpoint = [proplist getPropertyLatLon:column];
+    
+    [proplist setZoomValues:column
+                     forRow:row];
+    
+    CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
+    NSUInteger index = 0;
+    
+    MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
+                                                                    inTabBarController:tabBarController
+                                                                                 index:&index];
+    
+    if (mapVC)
+    {
+        mapVC.fromSpreadsheet = YES;
+        mapVC.spreadsheetCoords = ssCoords;
+    }
+    
+    tabBarController.selectedIndex = index;
 }
 
 @end
