@@ -66,15 +66,22 @@ BOOL nameInList (NSString* name,NSArray* list)
 
 + (void) createNewPropertyList
 {
+    NSString *baseName = @"PropertyList";
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        baseName = @"PropList";
+    
     int n = 1;
     NSArray * lists = [PropertyList getPropertyLists];
     n = (int)lists.count + 1;
-    NSString *newName = [NSString stringWithFormat:@"PropertyList%i",n];
+    NSString *newName = [NSString stringWithFormat:@"%@%i", baseName, n];
+    
     while (nameInList (newName,lists))
     {
         n++;
-        newName = [NSString stringWithFormat:@"PropertyList%i",n];
+        newName = [NSString stringWithFormat:@"%@%i", baseName, n];
     }
+    
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentPropertyList"];
 }
@@ -150,12 +157,19 @@ BOOL nameInList (NSString* name,NSArray* list)
     {
         _propListDir = GetPropListDirectory ();
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
+        
         if (!_fileName)
         {
-            _fileName = @"PropertyList1";
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                _fileName = @"PropList1";
+            
+            else
+                _fileName = @"PropertyList1";
+            
             [UserDefaults.defaults saveString:_fileName
                                        forKey:@"CurrentPropertyList"];
         }
+        
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
         
         //int version = [self datasetVersion];

@@ -100,7 +100,8 @@
 
 - (void)spreadsheetDidEditTitleText:(NSString *)titleText
 {
-    [PropertyList renameCurrentPropertyList:titleText];
+    if (![titleText isEqualToString:PropertyList.getCurrentPropertyListName])
+        [PropertyList renameCurrentPropertyList:titleText];
 }
 
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
