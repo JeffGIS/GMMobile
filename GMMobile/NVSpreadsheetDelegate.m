@@ -9,12 +9,12 @@
 
 - (NSInteger)numRowsInSpreadsheet
 {
-    return MAX((PropertyList.new.availablePropertyFields.count - 1), 16);
+    return (PropertyList.new.availablePropertyFields.count - 1);
 }
 
 - (NSInteger)numColumnsInSpreadsheet
 {
-    return MAX(PropertyList.new.getPropertyNumbers.count, 16);
+    return PropertyList.new.getPropertyNumbers.count;
 }
 
 - (NSString *)headerTextForRow:(NSUInteger)row
@@ -89,6 +89,43 @@
     
     else
         return @"";
+}
+
+- (NSString *)titleTextForSpreadsheet
+{
+    return PropertyList.getCurrentPropertyListName;
+}
+
+- (void)spreadsheetDidEditTitleText:(NSString *)titleText
+{
+    [PropertyList renameCurrentPropertyList:titleText];
+}
+
+- (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
+                                   atIndex:(NSInteger)index
+{
+    [PropertyList.new updatePropertyUserID:(index + 1)
+                                    userID:text];
+}
+
+- (NSArray *)spreadsheetDidGetLists
+{
+    return [PropertyList getPropertyLists];
+}
+
+- (void)spreadsheetDidSetCurrentList:(NSString *)file
+{
+    [PropertyList setCurrentPropertyList:file];
+}
+
+- (void)spreadsheetDidDeleteCurrentList
+{
+    [PropertyList deleteCurrentPropertyList];
+}
+
+- (void)spreadsheetDidCreateList
+{
+    [PropertyList createNewPropertyList];
 }
 
 @end
