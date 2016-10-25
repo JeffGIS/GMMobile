@@ -157,4 +157,9 @@
     tabBarController.selectedIndex = index;
 }
 
+- (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
+{
+    return propertyListFieldDescription(row);
+}
+
 @end
