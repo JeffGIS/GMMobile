@@ -20,7 +20,7 @@
 @property (nonatomic, weak) id <MarkerButtonDelegate> delegate;
 @property (nonatomic) CLLocationCoordinate2D position;
 @property MarkerInfoWindowType type;
-@property (nonatomic) NSInteger refno;
+@property (nonatomic) NSInteger refno, nLinks;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *snippet;
 @property int symbol;

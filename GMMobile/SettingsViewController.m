@@ -134,8 +134,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
             case GetDatabaseSettingAlleyWallNew:
                 break;
-            case GetDatabaseSettingParcels:
             case GetDatabaseSettingProperty:
+            case GetDatabaseSettingParcels:
             case GetDatabaseSettingAreas:
             case GetDatabaseSettingSewer:
             case GetDatabaseSettingPlan:
@@ -469,8 +469,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               });
                                            
                                        }
+                                           
                                        else
-                                           _popover.title = @"Invalid file";
+                                       {
+                                           dispatch_async(dispatch_get_main_queue(),
+                                                          ^{
+                                                              _popover.title = @"Invalid file";
+                                                          });
+                                       }
                                    }
                                        if (_fromDataLoader)
                                        {
@@ -565,6 +571,8 @@ Exit:
 
 - (IBAction)loadDatabase:(id)sender
 {
+    [self loadNVMetro:sender];
+    return;
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_propfiles.gcf";
     

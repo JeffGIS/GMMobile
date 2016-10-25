@@ -9,11 +9,11 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
 #import "ReaderViewController.h"
-@import MediaPlayer;
-@import GLKit;
 #import "CCodeLibrary/NVCalendarVC.h"
 #import "CCodeLibrary/NVSynchronizeVC.h"
 #import "CCodeLibrary/FTPDirectoryList.h"
+@import MediaPlayer;
+@import GLKit;
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -363,8 +363,7 @@ EAGLContext *CreateBestEAGLContext()
     
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data",
-                  @"Calibrate Device", @"Track Location"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location"];
     
     [_tableView reloadData];
 }

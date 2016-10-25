@@ -66,15 +66,22 @@ BOOL nameInList (NSString* name,NSArray* list)
 
 + (void) createNewPropertyList
 {
+    NSString *baseName = @"PropertyList";
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        baseName = @"PropList";
+    
     int n = 1;
     NSArray * lists = [PropertyList getPropertyLists];
     n = (int)lists.count + 1;
-    NSString *newName = [NSString stringWithFormat:@"PropertyList%i",n];
+    NSString *newName = [NSString stringWithFormat:@"%@%i", baseName, n];
+    
     while (nameInList (newName,lists))
     {
         n++;
-        newName = [NSString stringWithFormat:@"PropertyList%i",n];
+        newName = [NSString stringWithFormat:@"%@%i", baseName, n];
     }
+    
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentPropertyList"];
 }
@@ -150,12 +157,19 @@ BOOL nameInList (NSString* name,NSArray* list)
     {
         _propListDir = GetPropListDirectory ();
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
+        
         if (!_fileName)
         {
-            _fileName = @"PropertyList1";
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                _fileName = @"PropList1";
+            
+            else
+                _fileName = @"PropertyList1";
+            
             [UserDefaults.defaults saveString:_fileName
                                        forKey:@"CurrentPropertyList"];
         }
+        
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
         
         //int version = [self datasetVersion];
@@ -182,7 +196,7 @@ BOOL nameInList (NSString* name,NSArray* list)
 - (void)dealloc
 {
     [self close:YES];
-    NSLog(@"PropertyList Database dealloc");
+    //NSLog(@"PropertyList Database dealloc");
 }
 - (BOOL)open
 {
@@ -191,7 +205,7 @@ BOOL nameInList (NSString* name,NSArray* list)
     {
         _isOpen = YES;
         _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
-        NSLog(@"PropertyList Database open");
+        //NSLog(@"PropertyList Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -205,7 +219,7 @@ BOOL nameInList (NSString* name,NSArray* list)
     if (opened && _isOpen)
     {
         SQLOK(0,sqlite3_close(_database),_database);
-        NSLog(@"PropertyList Database close");
+        //NSLog(@"PropertyList Database close");
         _isOpen = NO;
     }
 }
@@ -819,8 +833,6 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (void)updatePropertyUserID:(NSInteger)propNum
                       userID:(NSString*)userID
 {
-    NSLog(@"%li, %@", (long)propNum, userID);
-    
     BOOL opened = [self open];
     
     NSString *PIDBlob = [self stringToBlob:userID];

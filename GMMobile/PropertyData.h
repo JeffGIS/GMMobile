@@ -25,13 +25,59 @@ typedef struct {int nMatchingProperties;
                     pctSenior;
                 }DATA_FROM_TABLES;
 
+@class PropertyData;
 
-@interface PropertyData : NSObject 
+@protocol PropertyDataDelegate <NSObject>
 
+- (void)matchingOwners:(NSMutableArray *)ownerArray;
+
+@end
+
+
+
+@interface PropertyDataExtract : NSObject
+@property NSString* PIN;
+@property NSString* homeStead;
+@property NSString* taxExempt;
+@property NSString* useCode;
+@property NSString* useDesc;
+@property double emvTotal;
+@property double emvLand;
+@property double emvBuilding;
+@property double totalTax;
+@property double specAssmt;
+@property NSString* ownerName;
+@property NSString* taxName;
+@property NSString* saleDate;
+@property double saleVal;
+@property NSString* bldgNum;
+@property NSString* streetName;
+@property NSString* unit;
+@property NSString* city;
+@end
+
+@interface PropertyHistory : NSObject
+@property int year;
+@property int emvLand;
+@property int emvBldg;
+@property int emvTotal;
+@property int taxCapacity;
+@property int totalTax;
+@property int specAsses;
+@property int saledate;
+@property int saleVal;
+@property BOOL homestead;
+@property BOOL exempt;
+@end
+
+@interface PropertyData : NSObject
+
+@property (nonatomic, weak) id <PropertyDataDelegate> delegate;
 @property sqlite3 *database;
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, copy) NSString *multiValueFile;
 @property (nonatomic, copy) NSString *path;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
@@ -65,6 +111,7 @@ typedef struct {int nMatchingProperties;
   highlightList:(NSMutableArray *)hlist;
 - (int)pickParcel:(LLPOINT *)pt
     highlightList:(NSMutableArray*)hlist;
+-(NSMutableArray *) getParcelHistory:(NSString*)PID;
 
 - (BOOL)getAddressForPID:(NSString *)PID
          houseNumAndUnit:(NSString **)houseAndUnit
@@ -96,12 +143,13 @@ typedef struct {int nMatchingProperties;
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid;
 
-- (NSMutableArray *)getOwnersMatchingString:(NSString *)string;
+- (BOOL)getOwnersMatchingString:(NSString *)string;
 - (BOOL)getDistinctUseCodes:(NSString *)outFile;
 
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
                                numPoints:(int *)numPoints
                                 numLoops:(int *)numLoops
                              polyPartLen:(int **)polyPartLen;
+-(NSArray*)getLinkedParcels:(NSString*)pid;
 
 @end

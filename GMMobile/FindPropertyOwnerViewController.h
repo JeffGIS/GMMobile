@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "PropertyData.h"
 
 typedef NS_ENUM(NSInteger, LimitToOption)
 {
@@ -21,7 +22,7 @@ typedef NS_ENUM(NSInteger, LimitToOption)
 
 @end
 
-@interface FindPropertyOwnerViewController : UIViewController
+@interface FindPropertyOwnerViewController : UIViewController <PropertyDataDelegate>
 
 @property (weak, nonatomic) id <FindPropOwnerViewControllerDelegate> delegate;
 

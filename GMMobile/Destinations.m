@@ -104,7 +104,7 @@
 - (void)dealloc
 {
     sqlite3_close(_database);
-    NSLog(@"Destinations Database dealloc");
+    //NSLog(@"Destinations Database dealloc");
 }
 - (BOOL)open
 {
@@ -113,7 +113,7 @@
     {
         _isOpen = YES;
         _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
-        NSLog(@"Destinations Database open");
+        //NSLog(@"Destinations Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -127,7 +127,7 @@
     if (opened)
     {
         SQLOK(0,sqlite3_close(_database),_database);
-        NSLog(@"Destinations Database close");
+        //NSLog(@"Destinations Database close");
         _isOpen = NO;
     }
 }

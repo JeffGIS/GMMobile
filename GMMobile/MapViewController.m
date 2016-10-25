@@ -18,6 +18,10 @@
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
 #import "CCodeLibrary/NVPhotoController.h"
+#import "CCodeLibrary/NVStreetSideController.h"
+#import "CCodeLibrary/NVPopoverTableView.h"
+#import "ChartsViewController.h"
+#import "NVSpreadsheetDelegate.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -32,19 +36,17 @@
 @implementation MGVPlatData
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate>
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
-@property (nonatomic, copy) NSArray *options;
+@property (nonatomic, copy) NSArray *options, *linkedList;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
-@property (nonatomic, copy) NSString *selectedPID;
-@property (nonatomic, copy) NSString *selectedSanPoint;
-@property (nonatomic, copy) NSString *selectedPlat;
+@property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
 @property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
@@ -91,6 +93,9 @@
 @property BOOL splitPlatView;
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
+@property (nonatomic) GMSPanoramaView *panView;
+@property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
+@property (nonatomic) NVSpreadsheetVC *nvssvc;
 
 @end
 
@@ -104,10 +109,9 @@
     [super viewDidLoad];
     
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
-    
+    _firstMove = TRUE;
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
-    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"SpreadsheetVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"MGThemesVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
@@ -130,6 +134,15 @@
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _splitPlatView = NO;
     
+    _nvssvc = NVSpreadsheetVC.new;
+    _ssDelegate = NVSpreadsheetDelegate.new;
+    _nvssvc.delegate = _ssDelegate;
+    _nvssvc.restorationIdentifier = @"NVSpreadsheet";
+    _nvssvc.tabBarItem.title = @"Spreadsheet";
+    
+    _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
+                                                                                              ofType:@"png"]];
+
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
     _legendScrollView = UIScrollView.new;
@@ -456,7 +469,7 @@
                                         insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
         }
         
-        [_mapView animateToCameraPosition:camera];
+        [self animateToCamPos:camera];
         
         _selectedPIDCoords = pidCoord;
         
@@ -474,6 +487,7 @@
         
         [self removePreviousInfoWindow];
         _infoWindow = MarkerInfoWindow.new;
+        _infoWindow.linkedPID = NO;
         
         switch (CRAPI.sharedInstance.GMMSetting)
         {
@@ -496,6 +510,7 @@
         [_markerArray addObject:marker];
         
         _infoWindow.marker = marker;
+        _infoWindow.optionsTitle = marker.title;
         _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
         _infoWindow.delegate = self;
         _noneSelected = NO;
@@ -564,6 +579,9 @@
     
     _digitizerTargetView.center = CGPointMake(targetPoint.x,
                                               (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+    
+    if (!_tableView.hidden)
+        [_tableView reloadData];
 }
 
 - (void)updateCompassPosition:(BOOL)animated
@@ -654,10 +672,8 @@
     [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
     _fromSpreadsheet = NO;
     
-    NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"SpreadsheetVC"
+    NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVSpreadsheet"
                                               inTabBarController:self.tabBarController];
-    
-    [[self.view viewWithTag:654321] removeFromSuperview];
     
     if (index != -1)
     {
@@ -875,12 +891,6 @@
         
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
         
-        UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"SpreadsheetVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:cdvc
-                               atIndex:1];
-        
         UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
@@ -895,6 +905,10 @@
         
         if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
         {
+            [NVTabBarEdit tabBarController:self.tabBarController
+                      insertViewController:_nvssvc
+                                   atIndex:1];
+            
             CLLocationCoordinate2D coord = {0};
             LLPOINT ll = {0};
             
@@ -976,7 +990,7 @@
     else
     {
         [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"SpreadsheetVC"];
+            removeViewControllerWithID:@"NVSpreadsheet"];
         
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         
@@ -1318,7 +1332,7 @@
                                               (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
                                               (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
+        [self moveCam:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
     }
     
     else
@@ -1326,7 +1340,7 @@
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
                                                                    zoom:12.0];
         
-        [_mapView animateToCameraPosition:camera];
+        [self animateToCamPos:camera];
     }
 }
 
@@ -1341,7 +1355,7 @@
     GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCamPos:camera];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -1525,12 +1539,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             marker.refno = pi.refno;
             marker.symbol = pi.symbol;
+            marker.nLinks = pi.nLinks;
             
             [_markerArray addObject:marker];
             
             _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.marker = marker;
+            _infoWindow.optionsTitle = marker.title;
             _noneSelected = NO;
             
             [self.view addSubview:_infoWindow];
@@ -1605,6 +1621,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
         _infoWindow.delegate = self;
         _infoWindow.marker = marker;
+        _infoWindow.optionsTitle = marker.title;
         _noneSelected = NO;
         
         [self.view addSubview:_infoWindow];
@@ -1668,6 +1685,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 _infoWindow.delegate = self;
                 _infoWindow.marker = marker;
+                _infoWindow.optionsTitle = marker.title;
                 _noneSelected = NO;
                 
                 [self.view addSubview:_infoWindow];
@@ -2078,6 +2096,7 @@ wasTappedAtPoint:(DPOINT)point
             _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.marker = marker;
+            _infoWindow.optionsTitle = marker.title;
              _noneSelected = NO;
             
             [self.view addSubview:_infoWindow];
@@ -2152,7 +2171,9 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 {
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
-    
+    if (_firstMove)
+        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    _firstMove = FALSE;
     if (position.bearing != 0.0)
     {
         [self showCompass];
@@ -2372,10 +2393,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self setMapType];
     
     if (_rotateZoom)
-        [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
+        [self moveCam:[GMSCameraUpdate zoomBy:0.000001]];
     
     else
-        [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
+        [self moveCam:[GMSCameraUpdate zoomBy:-0.000001]];
    
     _rotateZoom = !_rotateZoom;
     
@@ -2850,6 +2871,15 @@ haveVV:
                                    [self.view bringSubviewToFront:notesView];
                            }
                            
+                           for (NVPopoverTableView *nvptv in self.view.subviews)
+                           {
+                               if ([nvptv isKindOfClass:NVPopoverTableView.class])
+                               {
+                                   [self.view bringSubviewToFront:nvptv.overlayView];
+                                   [self.view bringSubviewToFront:nvptv];
+                               }
+                           }
+                           
                            if ([self.view.subviews containsObject:_popover])
                                [self.view bringSubviewToFront:_popover];
                            
@@ -2861,12 +2891,6 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:_legendView])
                                [self.view bringSubviewToFront:_legendView];
-                           
-                           if([self.view viewWithTag:123456])
-                               [self.view bringSubviewToFront:[self.view viewWithTag:123456]];
-                           
-                           if([self.view viewWithTag:654321])
-                               [self.view bringSubviewToFront:[self.view viewWithTag:654321]];
                            
                            if ([self.view.subviews containsObject:_nvdv])
                                [self.view bringSubviewToFront:_nvdv];
@@ -3287,7 +3311,7 @@ viewForHeaderInSection:(NSInteger)section
     {
         case PropertyTableViewSettingOptions:
             headerLabel.numberOfLines = 1;
-            headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.marker.title];
+            headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.optionsTitle];
             break;
             
         case PropertyTableViewSettingPropertyReport:
@@ -3519,6 +3543,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                     forKey:@"PIDOption"];
     }
     
+    else if ([text isEqualToString:@"Property History"])
+    {
+        [self showPropHistory];
+        [self deselectTableViewRow];
+    }
+    
     else if ([text isEqualToString:@"Zillow Property Record"])
     {
         [self showZillow];
@@ -3535,7 +3565,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                       forKey:@"PIDOption"];
     }
     
-    else if ([text isEqualToString:@"Display Street View"])
+    else if ([text isEqualToString:@"Display Google Street View"])
     {
         [self showStreetView];
         
@@ -3554,6 +3584,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             default:
                 break;
         }
+    }
+    
+    else if ([text isEqualToString:@"Display Bing Streetside"])
+    {
+        [self showStreetside];
+        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Zoom to Census Area"])
@@ -4107,21 +4143,23 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showPropReport
 {
+    PropertyData *pd = PropertyData.new;
+    _propertyReport = [pd getReport:PDSettingDefault forPID:_selectedPID];
+    
     _tableViewSetting = PropertyTableViewSettingPropertyReport;
-    
-    PropertyData *propData = [[PropertyData alloc] init];
-    
-    _propertyReport = [propData getReport:PDSettingDefault
-                                   forPID:_selectedPID];
-    
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.allowsSelection = NO;
     _tableView.delaysContentTouches = YES;
-    
     [_tableView reloadData];
-    
-    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0)
-                           animated:NO];
+    [_tableView scrollRectToVisible:CGRectMake(0.0, 0.0, 1.0, 1.0) animated:NO];
+}
+
+- (void)showPropHistory
+{
+    ChartsViewController *chartsVC = ChartsViewController.new;
+    chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:_selectedPID];
+    [self presentViewController:chartsVC animated:YES completion:nil];
 }
 
 - (void)showZillow
@@ -4174,17 +4212,14 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)showStreetView
 {
     _showsPanorama = YES;
-    GMSPanoramaView *panView = [[GMSPanoramaView alloc] init];
-    [panView moveNearCoordinate:_selectedPIDCoords];
-    panView.translatesAutoresizingMaskIntoConstraints = NO;
-    panView.delegate = self;
-    panView.alpha = 0.0;
+    _panView = GMSPanoramaView.new;
+    [_panView moveNearCoordinate:_selectedPIDCoords];
+    _panView.translatesAutoresizingMaskIntoConstraints = NO;
+    _panView.delegate = self;
+    _panView.alpha = 0.0;
     
-    [self.view addSubview:panView];
-    [panView constrainLeadingToAnchor:self.view.leadingAnchor];
-    [panView constrainTrailingToAnchor:self.view.trailingAnchor];
-    [panView constrainTopToAnchor:self.view.topAnchor];
-    [panView constrainBottomToAnchor:self.view.bottomAnchor constant:self.tabBarController.tabBar.frame.size.height];
+    [self.view addSubview:_panView];
+    [_panView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:self.tabBarController.tabBar.frame.size.height];
     
     UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
     dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
@@ -4196,25 +4231,20 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     dismissPan.titleLabel.layer.shadowRadius = 3.0;
     dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
     
-    [dismissPan setTitle:@"< Return"
-                    forState:UIControlStateNormal];
+    [dismissPan setTitle:@"< Return" forState:UIControlStateNormal];
+    [dismissPan setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [dismissPan setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
     
-    [dismissPan setTitleColor:UIColor.whiteColor
-                     forState:UIControlStateNormal];
-    
-    [dismissPan setTitleColor:UIColor.lightGrayColor
-                     forState:UIControlStateHighlighted];
-    
-    [panView addSubview:dismissPan];
-    [dismissPan constrainLeadingToAnchor:panView.leadingAnchor constant:20.0];
-    [dismissPan constrainTopToAnchor:panView.topAnchor constant:20.0];
+    [_panView addSubview:dismissPan];
+    [dismissPan constrainLeadingToAnchor:_panView.leadingAnchor constant:20.0];
+    [dismissPan constrainTopToAnchor:_panView.topAnchor constant:20.0];
     
     [dismissPan addTarget:self
                    action:@selector(dismissPanTapped:)
          forControlEvents:UIControlEventTouchUpInside];
     
     [UIView animateWithDuration:0.25 animations:^{
-        panView.alpha = 1.0;
+        _panView.alpha = 1.0;
         self.tabBarController.tabBar.alpha = 0.0;
     }];
 }
@@ -4235,22 +4265,35 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                error:(NSError *)error
 onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 {
-    NSLog(@"GMSPanoramaView ERROR onMoveNearCoordinate:%@", error.localizedDescription);
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Street View is not yet available for this address."
+                                               buttonTextArray:@[@"OK"]
+                                              destructiveIndex:0];
+    
+    alert.identifier = @"NoStreetViewAvailable";
 }
 
 - (void)dismissPanTapped:(UIButton *)button
 {
     [UIView animateWithDuration:0.25 animations:^{
-        button.superview.alpha = 0.0;
+        _panView.alpha = 0.0;
         self.tabBarController.tabBar.alpha = 1.0;
     } completion:^(BOOL finished) {
-        [button.superview removeFromSuperview];
+        [_panView removeFromSuperview];
         [self deselectTableViewRow];
         _showsPanorama = NO;
         
         [self refreshVectorView:_mapView.projection.visibleRegion
                          atZoom:_mapView.camera.zoom];
     }];
+}
+
+- (void)showStreetside
+{
+    NVStreetSideController *nvssc = [NVStreetSideController presentStreetSideInController:self
+                                                                      lookingAtCoordinate:_selectedPIDCoords];
+#pragma unused(nvssc)
 }
 
 - (void)showCensusArea
@@ -4912,6 +4955,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              atZoom:_mapView.camera.zoom];
         }
     }
+    
+    else if ([alertView.identifier isEqualToString:@"NoStreetViewAvailable"])
+        [self dismissPanTapped:nil];
 }
 
 - (void)dismissTableView
@@ -4991,7 +5037,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCamPos:camera];
 }
 
 - (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xFrame
@@ -5182,7 +5228,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                       withPadding:40.0];
              
              [self setMapType];
-             [_mapView moveCamera:update];
+             [self moveCam:update];
              [self updateMarkerPosition];
              
              _routeTraceExists = YES;
@@ -5255,7 +5301,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                      withPadding:40.0];
             
             [self setMapType];
-            [_mapView moveCamera:update];
+            [self moveCam:update];
             [self updateMarkerPosition];
         }
     }
@@ -5289,7 +5335,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
                                                  withPadding:40.0];
         
-        [_mapView moveCamera:update];
+        [self moveCam:update];
         [self updateMarkerPosition];
         
         _routeTraceExists = YES;
@@ -5774,7 +5820,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self animateToCamPos:camera];
 }
 
 - (void)mapToolbarDidFinishDrag
@@ -5947,6 +5993,40 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
 }
 
+- (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    [popoverTableView hide:YES];
+    
+    if ([text isEqualToString:@"View Overall Property Report"])
+    {
+        
+    }
+    
+    else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
+    {
+        
+    }
+    
+    else
+    {
+        PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index - 2];
+        _infoWindow.linkedPID = YES;
+        _infoWindow.optionsTitle = ped.PIN;
+        
+        [self markerInfoWindowDidSelectOptions:ped.PIN
+                                         refno:0
+                                        coords:_selectedPIDCoords
+                                          type:MarkerInfoWindowTypePID];
+    }
+}
+
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
                                    refno:(NSInteger)refno
                                   coords:(CLLocationCoordinate2D)coords
@@ -5959,10 +6039,47 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         case MarkerInfoWindowTypePID:
         {
+            if (_infoWindow.marker.nLinks && !_infoWindow.linkedPID)
+            {
+                PropertyData *pd = PropertyData.new;
+                _linkedList = [pd getLinkedParcels:title];
+                
+                if (_linkedList.count)
+                {
+                    NSMutableArray *unitList = NSMutableArray.array;
+                    [unitList addObject:@"View Overall Property Report"];
+                    [unitList addObject:@"Add All Units to Spreadsheet"];
+                    
+                    for (PropertyDataExtract *ped in _linkedList)
+                    {
+                        NSString *unitName = ped.unit;
+                        
+                        if ([unitName isEqualToString:@""] || [unitName isEqualToString:@" "])
+                        {
+                            NSUInteger index = ([_linkedList indexOfObject:ped] + 1);
+                            unitName = [NSString stringWithFormat:@"Select Unit %lu", (unsigned long)index];
+                        }
+                        
+                        else
+                            unitName = [NSString stringWithFormat:@"Select Unit %@", unitName];
+                        
+                        [unitList addObject:unitName];
+                    }
+                    
+                    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                                      delegate:self
+                                                                                         title:@"Multi-Unit Property Options"
+                                                                                     textArray:unitList
+                                                                                 includeCancel:YES];
+#pragma unused(nvptv)
+                    return;
+                }
+            }
+            
             _selectedPID = title;
             
-            _options = @[@"", @"Property Report", @"Zillow Property Record", @"Display Street View",
-                         @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
+            _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record", @"Display Google Street View",
+                         @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
@@ -6051,7 +6168,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCrime:
         {
             _selectedCrime = refno;
-            _options = @[@"", @"Display Report", @"Display Street View"];
+            _options = @[@"", @"Display Report", @"Display Google Street View"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
@@ -6528,6 +6645,16 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     
     else
         return nil;
+}
+
+- (void)moveCam:(GMSCameraUpdate *)update
+{
+    [_mapView moveCamera:update];
+}
+
+- (void)animateToCamPos:(GMSCameraPosition *)camera
+{
+    [_mapView animateToCameraPosition:camera];
 }
 
 @end

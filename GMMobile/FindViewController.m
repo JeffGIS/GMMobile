@@ -85,6 +85,7 @@
     
     PropertyData *propData = [[PropertyData alloc] init];
     
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingPID;
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentPropOwner = [propData getOwnerNameForPID:PID];
@@ -98,6 +99,7 @@
     [findAddress dismissViewControllerAnimated:YES
                                     completion:nil];
     
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingAddress;
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentAddress = address;
@@ -117,7 +119,7 @@
 {
     [findPropOwner dismissViewControllerAnimated:YES
                                       completion:nil];
-    
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingPropOwner;
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentPropOwner = propOwner;
