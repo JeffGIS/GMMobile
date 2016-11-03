@@ -97,6 +97,7 @@
 		697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */; };
 		6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */; };
 		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
+		698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -408,6 +409,7 @@
 		698664EE1CC2A0AD001E848F /* NVMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NVMobile.entitlements; path = ../NVMobile.entitlements; sourceTree = "<group>"; };
 		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
+		698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dismissKeyboard.png; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
@@ -773,6 +775,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */,
 				695577D41D83714E00A34C24 /* uncheckedBox.png */,
 				695577D21D83714100A34C24 /* checkedBox.png */,
 				69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */,
@@ -1330,6 +1333,7 @@
 				A9BC27F11A927D2B00FA89D8 /* help.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				694FB1E71C588363005410F6 /* Reader-Mark-Y@3x.png in Resources */,
+				698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */,
 				69F1774A1D7A0C9400741C68 /* GooglePlacePicker.bundle in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,

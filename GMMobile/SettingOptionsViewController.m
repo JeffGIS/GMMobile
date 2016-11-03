@@ -14,6 +14,7 @@
 #import "CCodeLibrary/FTPDirectoryList.h"
 @import MediaPlayer;
 @import GLKit;
+#import "CCodeLibrary/NVKeyboard.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -363,7 +364,7 @@ EAGLContext *CreateBestEAGLContext()
     
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location", @"Test Keyboard"];
     
     [_tableView reloadData];
 }
@@ -539,6 +540,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Compute PDF Pages"])
     {
         [self computePDFPages];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Test Keyboard"])
+    {
+        NVKeyboard *keyboard = [NVKeyboard showKeyboardInView:self.view
+                                                     delegate:self];
+#pragma unused(keyboard)
     }
 }
 
