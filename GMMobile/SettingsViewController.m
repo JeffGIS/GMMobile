@@ -1156,7 +1156,7 @@ didReturnTimeInterval:(NSString *)timeInterval
     NSArray *directories = @[dir1,dir2];
     
     _ftpdc = [FTPDirectoryCreate createDirectories:directories
-                                       inFTPDomain:@"gssiserver3.com"
+                                       inFTPDomain:[CRAPI.sharedInstance getNVCRISServer]
                                          directory:@"NVMobile/UploadedDatabases"
                                           username:@"GSSiProfessionalServer"
                                           password:@"GSSi"

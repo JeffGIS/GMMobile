@@ -29,7 +29,6 @@
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSString *defaultFTP = @"gssiserver3.com";
     
     [UserDefaults.defaults saveString:defaultFTP
                                forKey:@"CurrentFtp"];

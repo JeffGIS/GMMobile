@@ -117,7 +117,7 @@
                                           addUnder:dir2];
     
     _ftpcd = [FTPDirectoryCreate createDirectories:directories
-                                       inFTPDomain:@"gssiserver3.com"
+                                       inFTPDomain:[CRAPI.sharedInstance getNVCRISServer]
                                          directory:@"NVMobile/UploadedDirectories"
                                           username:@"GSSiProfessionalServer"
                                           password: @"GSSi"

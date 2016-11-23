@@ -233,14 +233,14 @@
     [_mapView addGestureRecognizer:longPressGesture];
     
     GMSTileURLConstructor constructor_jpeg = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"http://gssiserver3.com/MPLSADA/%lu/%lu/%lu.jp2",
+        NSString *url = [NSString stringWithFormat:@"http://%@/MPLSADA/%lu/%lu/%lu.jp2",[CRAPI.sharedInstance getNVCRISServer],
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
     };
     
     GMSTileURLConstructor constructor_png = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
-        NSString *url = [NSString stringWithFormat:@"http://gssiserver3.com/MPLSADA/%lu/%lu/%lu.png",
+        NSString *url = [NSString stringWithFormat:@"http://%@/MPLSADA/%lu/%lu/%lu.png",[CRAPI.sharedInstance getNVCRISServer],
                          (unsigned long)zoom, (unsigned long)y, (unsigned long)x];
         
         return [NSURL URLWithString:url];
