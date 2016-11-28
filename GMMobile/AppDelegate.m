@@ -29,13 +29,6 @@
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    
-    [UserDefaults.defaults saveString:defaultFTP
-                               forKey:@"CurrentFtp"];
-    
-    [UserDefaults.defaults saveString:defaultFTP
-                               forKey:@"DefaultFtp"];
-    
     UITextField *lagFreeField = [[UITextField alloc] init];
     [self.window addSubview:lagFreeField];
     [lagFreeField becomeFirstResponder];

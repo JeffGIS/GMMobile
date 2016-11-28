@@ -134,7 +134,7 @@ BOOL nameInList (NSString* name,NSArray* list)
         [UserDefaults.defaults saveString:lists[0]
                                    forKey:@"CurrentPropertyList"];
     else
-        [UserDefaults.defaults saveString:nil
+        [UserDefaults.defaults saveString:@""
                                    forKey:@"CurrentPropertyList"];
     
     return TRUE;
@@ -143,7 +143,8 @@ BOOL nameInList (NSString* name,NSArray* list)
 + (BOOL) setCurrentPropertyList:(NSString *)propList
 //returns false if proplist does not exist
 {
-    BOOL rtn = FALSE;
+    BOOL rtn = NO;
+    
     [UserDefaults.defaults saveString:propList
                                forKey:@"CurrentPropertyList"];
     

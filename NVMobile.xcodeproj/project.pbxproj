@@ -276,20 +276,6 @@
 			remoteGlobalIDString = 06165F231D8110E600722320;
 			remoteInfo = Charts;
 		};
-		BB725FC21DD6162B00925A49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BB725FBB1DD6162A00925A49 /* PedRampInv_Detail.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EBEAA4841962E74B00F3CDD5;
-			remoteInfo = PedRampInv_Detail;
-		};
-		BB725FC41DD6162B00925A49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BB725FBB1DD6162A00925A49 /* PedRampInv_Detail.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EBEAA4A51962E74B00F3CDD5;
-			remoteInfo = PedRampInv_DetailTests;
-		};
 		EB5521E61A61B6A8008CE2D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EB5521C11A61B6A8008CE2D1 /* Project object */;
@@ -557,7 +543,6 @@
 		A9F3933B1AEA961400DF9574 /* coolArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coolArrow.png; sourceTree = "<group>"; };
 		BB2B13921D6F78B10072957F /* upperlower.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperlower.txt; sourceTree = "<group>"; };
 		BB2B13931D6F78B10072957F /* SANPTID.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SANPTID.txt; sourceTree = "<group>"; };
-		BB725FBB1DD6162A00925A49 /* PedRampInv_Detail.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PedRampInv_Detail.xcodeproj; path = ../pedrampinventory_detail/PedRampInv_Detail.xcodeproj; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
@@ -1041,19 +1026,9 @@
 			name = Controller;
 			sourceTree = "<group>";
 		};
-		BB725FBC1DD6162A00925A49 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BB725FC31DD6162B00925A49 /* PedRampInv_Detail.app */,
-				BB725FC51DD6162B00925A49 /* PedRampInv_DetailTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		EB5521C01A61B6A8008CE2D1 = {
 			isa = PBXGroup;
 			children = (
-				BB725FBB1DD6162A00925A49 /* PedRampInv_Detail.xcodeproj */,
 				69C8DB4B1C515B440062AE84 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
 				690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */,
@@ -1238,10 +1213,6 @@
 					ProductGroup = 690E2D9A1DAD3CF6005FAE3A /* Products */;
 					ProjectRef = 690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */;
 				},
-				{
-					ProductGroup = BB725FBC1DD6162A00925A49 /* Products */;
-					ProjectRef = BB725FBB1DD6162A00925A49 /* PedRampInv_Detail.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1271,20 +1242,6 @@
 			fileType = wrapper.cfbundle;
 			path = ChartsTests.xctest;
 			remoteRef = 690E2DA31DAD3CF6005FAE3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BB725FC31DD6162B00925A49 /* PedRampInv_Detail.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = PedRampInv_Detail.app;
-			remoteRef = BB725FC21DD6162B00925A49 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BB725FC51DD6162B00925A49 /* PedRampInv_DetailTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = PedRampInv_DetailTests.xctest;
-			remoteRef = BB725FC41DD6162B00925A49 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
