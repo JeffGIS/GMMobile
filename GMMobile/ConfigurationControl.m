@@ -627,12 +627,7 @@ visibleAtZoom:(CGFloat)zoom
             break;
         case HCLayerSewers:
         {
-            LayerObject * lo = [[LayerObject alloc]initWithName:@"SEWER"
-                                                          andID:-1];
-            
-            [array addObject:lo];
-            
-            lo = [[LayerObject alloc]initWithName:@"STORM"
+            LayerObject * lo = [[LayerObject alloc]initWithName:@"STORM"
                                             andID:-1];
             [array addObject:lo];
             
