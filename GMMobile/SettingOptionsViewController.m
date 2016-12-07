@@ -364,7 +364,8 @@ EAGLContext *CreateBestEAGLContext()
     
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location", @"Test Keyboard"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location",
+                  @"Test Keyboard", @"View PDF in WKWebView"];
     
     [_tableView reloadData];
 }
@@ -548,6 +549,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NVKeyboard *keyboard = [NVKeyboard showKeyboardInView:self.view
                                                      delegate:self];
 #pragma unused(keyboard)
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"View PDF in WKWebView"])
+    {
+        NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                        showFileAtPath:[NSBundle.mainBundle pathForResource:@"ENA_19_87-26_A0"
+                                                                                     ofType:@"PDF"]];
+#pragma unused(nvwv)
     }
 }
 

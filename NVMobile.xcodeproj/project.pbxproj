@@ -139,6 +139,7 @@
 		69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */; };
 		69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */; };
 		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
+		69F05CCF1DF862BD000CB276 /* ENA_19_87-26_A0.PDF in Resources */ = {isa = PBXBuildFile; fileRef = 69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */; };
 		69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177331D7A0B7400741C68 /* GoogleMaps.framework */; };
 		69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */; };
 		69F1773A1D7A0B7400741C68 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */; };
@@ -467,6 +468,7 @@
 		69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeftPhone.png; sourceTree = "<group>"; };
 		69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRightPhone.png; sourceTree = "<group>"; };
 		69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumbPhone.png; sourceTree = "<group>"; };
+		69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "ENA_19_87-26_A0.PDF"; sourceTree = "<group>"; };
 		69F177331D7A0B7400741C68 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
 		69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsCore.framework; sourceTree = "<group>"; };
@@ -1076,6 +1078,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
 				BB2B13931D6F78B10072957F /* SANPTID.txt */,
 				6976D00A1D4FD291006098FA /* HelpFiles */,
@@ -1383,6 +1386,7 @@
 				695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */,
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */,
+				69F05CCF1DF862BD000CB276 /* ENA_19_87-26_A0.PDF in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
 				695577D31D83714100A34C24 /* checkedBox.png in Resources */,
 				692D9CF31CA2FB6C00AFCA9A /* whiteUpload.png in Resources */,
