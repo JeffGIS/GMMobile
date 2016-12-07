@@ -231,6 +231,7 @@
 		EB5522701A7523E6008CE2D1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB55226F1A7523E6008CE2D1 /* Foundation.framework */; };
 		EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522741A752A7F008CE2D1 /* SettingsViewController.m */; };
 		EB55227A1A75576E008CE2D1 /* PropertyData.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5522791A75576E008CE2D1 /* PropertyData.m */; };
+		EB5C94741DF8A42D00683176 /* NVMetroSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5C94731DF8A42C00683176 /* NVMetroSettings.m */; };
 		EB95A1AB1CB1D1F700158B40 /* GetSlowValues.m in Sources */ = {isa = PBXBuildFile; fileRef = EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */; };
 		EBAB31CB1AE8200000C5CCEF /* colormap.png in Resources */ = {isa = PBXBuildFile; fileRef = EBAB31CA1AE8200000C5CCEF /* colormap.png */; };
 		EBAB31CE1AE9155700C5CCEF /* LayerOverridesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */; };
@@ -585,6 +586,8 @@
 		EB5522741A752A7F008CE2D1 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		EB5522781A75576E008CE2D1 /* PropertyData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyData.h; sourceTree = "<group>"; };
 		EB5522791A75576E008CE2D1 /* PropertyData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PropertyData.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB5C94721DF8A42C00683176 /* NVMetroSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettings.h; sourceTree = "<group>"; };
+		EB5C94731DF8A42C00683176 /* NVMetroSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettings.m; sourceTree = "<group>"; };
 		EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetSlowValues.h; sourceTree = "<group>"; };
 		EB95A1AA1CB1D1F700158B40 /* GetSlowValues.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetSlowValues.m; sourceTree = "<group>"; };
 		EB983D381C1CF94B00A994C7 /* ThemeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeTypes.h; sourceTree = "<group>"; };
@@ -1022,6 +1025,8 @@
 				EBAB31CD1AE9155700C5CCEF /* LayerOverridesViewController.m */,
 				BBEC48131D2D466100DD74A0 /* UploadDirectory.h */,
 				BBEC48141D2D466100DD74A0 /* UploadDirectory.m */,
+				EB5C94721DF8A42C00683176 /* NVMetroSettings.h */,
+				EB5C94731DF8A42C00683176 /* NVMetroSettings.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -1417,6 +1422,7 @@
 				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,
 				694FB1A91C58830E005410F6 /* CGPDFDocument.m in Sources */,
 				694FB1B71C58830E005410F6 /* ReaderThumbsView.m in Sources */,
+				EB5C94741DF8A42D00683176 /* NVMetroSettings.m in Sources */,
 				694FB1B01C58830E005410F6 /* ReaderMainPagebar.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
 				694FB1AC1C58830E005410F6 /* ReaderContentTile.m in Sources */,
