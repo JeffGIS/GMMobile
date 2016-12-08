@@ -101,6 +101,10 @@
     overUnderSwitch.onTintColor = UIColor.greenColor;
     overUnderSwitch.on = YES;
     
+    [overUnderSwitch addTarget:self
+                        action:@selector(overUnderSwitchTapped:)
+              forControlEvents:UIControlEventValueChanged];
+    
     UISegmentedControl *segControl =
     [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
     
@@ -109,6 +113,10 @@
     segControl.selectedSegmentIndex = 0;
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
     [segControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [segControl addTarget:self
+                   action:@selector(segControlTapped:)
+         forControlEvents:UIControlEventValueChanged];
     
     for (int i = 1; i < 9; i++)
     {
@@ -303,12 +311,40 @@
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
+    switch (popoverTableView.tag)
+    {
+        case 2://feature
+            break;
+            
+        case 3://value
+            break;
+            
+        case 5://color scheme
+            break;
+            
+        case 6://text
+            break;
+            
+        default:
+            break;
+    }
+    
     [popoverTableView hide:YES];
 }
 
 - (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
 {
     [popoverTableView hide:YES];
+}
+
+- (void)overUnderSwitchTapped:(UISwitch *)theSwitch
+{
+    
+}
+
+- (void)segControlTapped:(UISegmentedControl *)segControl
+{
+    
 }
 
 @end
