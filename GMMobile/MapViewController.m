@@ -22,6 +22,7 @@
 #import "CCodeLibrary/NVPopoverTableView.h"
 #import "ChartsViewController.h"
 #import "NVSpreadsheetDelegate.h"
+#import "NVMetroSettingsVC.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -903,6 +904,17 @@
            replaceViewControllerWithID:@"DestinationsVC"
                     withViewController:avc];
         
+        NVMetroSettingsVC *nvmsvc = NVMetroSettingsVC.new;
+        nvmsvc.restorationIdentifier = @"NVMetroSettingsVC";
+        nvmsvc.tabBarItem.title = @"Settings";
+        
+        nvmsvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"settings"
+                                                                                                 ofType:@"png"]];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+           replaceViewControllerWithID:@"SettingsVC"
+                    withViewController:nvmsvc];
+        
         if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
         {
             [NVTabBarEdit tabBarController:self.tabBarController
@@ -1000,6 +1012,12 @@
         
         [NVTabBarEdit tabBarController:self.tabBarController
             removeViewControllerWithID:@"NVWebKitVC"];
+        
+        UIViewController *svc = [storyboard instantiateViewControllerWithIdentifier:@"SettingsVC"];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+           replaceViewControllerWithID:@"NVMetroSettingsVC"
+                    withViewController:svc];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)

@@ -54,6 +54,7 @@
 		6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */; };
 		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
 		698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */; };
+		698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -355,6 +356,8 @@
 		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
 		698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dismissKeyboard.png; sourceTree = "<group>"; };
+		698ED6371DF8E8C00032FEA5 /* NVMetroSettingsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettingsVC.h; sourceTree = "<group>"; };
+		698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettingsVC.m; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
@@ -1004,6 +1007,8 @@
 				69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */,
 				69C8DB551C515DC90062AE84 /* MGThemesVC.h */,
 				69C8DB561C515DC90062AE84 /* MGThemesVC.m */,
+				698ED6371DF8E8C00032FEA5 /* NVMetroSettingsVC.h */,
+				698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */,
 				69366E011C542A6700E79AA7 /* NVPageController.h */,
 				69366E021C542A6700E79AA7 /* NVPageController.m */,
 				69366DFF1C542A4B00E79AA7 /* NVPageView.m */,
@@ -1441,10 +1446,7 @@
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				69BCD5DA1DF63C7E002E0384 /* ReaderThumbQueue.m in Sources */,
 				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,
-				694FB1A91C58830E005410F6 /* CGPDFDocument.m in Sources */,
-				694FB1B71C58830E005410F6 /* ReaderThumbsView.m in Sources */,
 				EB5C94741DF8A42D00683176 /* NVMetroSettings.m in Sources */,
-				694FB1B01C58830E005410F6 /* ReaderMainPagebar.m in Sources */,
 				A91076BC1AC46D3A0096EFFD /* PropertyList.m in Sources */,
 				69BCD5D41DF63C7E002E0384 /* ReaderDocument.m in Sources */,
 				EBF135701AE282A30046990F /* ConfigurationControl.m in Sources */,
@@ -1489,6 +1491,7 @@
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,
 				69BCD5DD1DF63C7E002E0384 /* ReaderThumbsView.m in Sources */,
 				69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */,
+				698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */,
 				EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */,
