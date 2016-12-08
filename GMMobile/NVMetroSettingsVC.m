@@ -44,6 +44,63 @@
     [bottomView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [bottomView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
     [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.5];
+    
+    for (int i = 1; i < 9; i++)
+    {
+        UIView *view = UIView.new;
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        view.layer.borderColor = UIColor.darkGrayColor.CGColor;
+        view.layer.borderWidth = 1.0;
+        view.tag = i;
+        
+        if (i < 7)
+        {
+            [topView addSubview:view];
+            [view constrainLeadingToAnchor:topView.leadingAnchor];
+            [view constrainTrailingToAnchor:topView.trailingAnchor];
+        }
+        
+        else
+        {
+            [bottomView addSubview:view];
+            [view constrainLeadingToAnchor:bottomView.leadingAnchor];
+            [view constrainTrailingToAnchor:bottomView.trailingAnchor];
+        }
+        
+        switch (i)
+        {
+            case 1:
+                [view constrainTopToAnchor:topView.topAnchor];
+                break;
+                
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                break;
+                
+            case 6:
+                [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainBottomToAnchor:topView.bottomAnchor];
+                break;
+                
+            case 7:
+                [view constrainTopToAnchor:bottomView.topAnchor];
+                break;
+                
+            case 8:
+                [view constrainTopToAnchor:[bottomView viewWithTag:i-1].bottomAnchor];
+                [view constrainHeightToAnchor:[bottomView viewWithTag:i-1].heightAnchor];
+                [view constrainBottomToAnchor:bottomView.bottomAnchor];
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 
 - (void)didReceiveMemoryWarning
