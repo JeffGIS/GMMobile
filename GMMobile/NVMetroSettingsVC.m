@@ -26,7 +26,11 @@
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _cornerRadius = 10.0;
     
-    CGFloat margin = 20.0, bigFont = 36.0, littleFont = 28.0;
+    CGFloat margin = 16.0, bigFont = 36.0, littleFont = 28.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 6.0, bigFont = 18.0, littleFont = 12.0, _cornerRadius = 4.0;
+    
     UIView *topView = UIView.new;
     topView.translatesAutoresizingMaskIntoConstraints = NO;
     topView.backgroundColor = UserDefaults.defaults.appleGray;
@@ -47,7 +51,7 @@
     [bottomView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [bottomView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [bottomView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
-    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.5];
+    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.4];
     
     UILabel *topLabel = UILabel.new;
     topLabel.text = @"Choropleth Parameters";
@@ -220,8 +224,8 @@
                 [view constrainBottomToAnchor:bottomView.bottomAnchor];
                 [view addSubview:segControl];
                 [segControl constrainCenterXToAnchor:view.centerXAnchor];
-                [segControl constrainTopToAnchor:view.centerYAnchor constant:-margin];
-                [segControl constrainBottomToAnchor:view.centerYAnchor constant:margin];
+                [segControl constrainTopToAnchor:view.centerYAnchor constant:(-margin * 1.8)];
+                [segControl constrainBottomToAnchor:view.centerYAnchor constant:(margin * 1.8)];
                 break;
                 
             default:
@@ -235,12 +239,18 @@
     [super didReceiveMemoryWarning];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return YES;
+    
+    else
+        return NO;
+}
+
 - (void)setupLabel:(UILabel *)label
           fontSize:(CGFloat)fontSize
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        fontSize /= 1.8;
-    
     label.translatesAutoresizingMaskIntoConstraints = NO;
     label.backgroundColor = UIColor.clearColor;
     label.font = [UIFont boldSystemFontOfSize:fontSize];
@@ -251,9 +261,6 @@
 - (void)setupButton:(UIButton *)button
            fontSize:(CGFloat)fontSize
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        fontSize /= 1.8;
-    
     button.translatesAutoresizingMaskIntoConstraints = NO;
     button.backgroundColor = UIColor.blackColor;
     button.layer.cornerRadius = _cornerRadius;
