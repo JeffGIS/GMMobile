@@ -91,6 +91,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if ([UserDefaults.defaults boolForKey:@"TrackLocation"])
         [self scheduleLocationTracking];
     
+    [NSURLCache.sharedURLCache removeAllCachedResponses];
+    
     return YES;
 }
 
@@ -236,16 +238,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
                                                     userInfo:nil];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    
-}
-
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     NSString *sourceApp = [SharedDefaults.defaults stringForKey:@"SourceApplication"];
@@ -270,9 +262,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     CRAPI.sharedInstance.becameActive = YES;
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
-    
+    [UIDevice reportMemoryWarning];
 }
 
 @end
