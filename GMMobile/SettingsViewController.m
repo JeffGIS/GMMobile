@@ -573,7 +573,8 @@ Exit:
 {
     [self loadNVMetro:sender];
     return;
-    NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
+    
+    /*NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
     NSString *fileName = @"MPLS_propfiles.gcf";
     
     if (CRAPI.sharedInstance.project == PROJECT_METROGIS)
@@ -592,8 +593,7 @@ Exit:
     fromDirectory:@"NVMobile"
            toFile:fileName
       toDirectory:documentsDirectory
-    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
-    
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];*/
 }
 
 - (IBAction)loadParcels:(id)sender

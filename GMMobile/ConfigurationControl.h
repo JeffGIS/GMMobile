@@ -22,7 +22,6 @@ typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
     HousingUnits,
 };
 
-#define NUMHardCodedLayers 9
 
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
@@ -35,7 +34,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerCrimes,
     HCLayerMapleGroveWater,
     HCLayerMapleGroveFiber,
-};
+NUMHardCodedLayers};
 
 
 @interface ApplicationObject : NSObject
