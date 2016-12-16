@@ -52,106 +52,117 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                          visibleAtZoom:_zoom
                                                andPass:_passID])
         {
-            fileName = @"swGravityMain.shp";
-            dc.elementType = StormMain;
-            dc.penColor = UIColor.greenColor;
-            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
+            if ([ConfigurationControl.sharedInstance symbol:STORM_SYMBOLS
+                                                    inLayer:HCLayerSewers
+                                              visibleAtZoom:_zoom])
             {
-                sfd.zoom = _zoom;
-                sfd.processingID = _processingID;
-                [sfd display:context
-      displayCharacteristics:dc
-                   llCorners:latlonCornerPoints
-                    LLBounds:platlonBounds
-                  viewBounds:pvbounds
-                      themes:themes
-                 pointInArea:pia];
+                fileName = @"swGravityMain.shp";
+                dc.elementType = StormMain;
+                dc.penColor = NVColor.darkGreenColor;
+                dc.fillColor = NVColor.darkGreenColor;
+                shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+                sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+                if (sfd)
+                {
+                    sfd.zoom = _zoom;
+                    sfd.processingID = _processingID;
+                    [sfd display:context
+          displayCharacteristics:dc
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds
+                          themes:themes
+                     pointInArea:pia];
+                }
+                
+                fileName = @"swPressurePipe.shp";
+                dc.elementType = StormPressurePipe;
+                shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+                sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+                if (sfd)
+                {
+                    sfd.zoom = _zoom;
+                    sfd.processingID = _processingID;
+                    [sfd display:context
+          displayCharacteristics:dc
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds
+                          themes:themes
+                     pointInArea:pia];
+                }
+                
+                fileName = @"swManhole.shp";
+                dc.elementType = StormManhole;
+                shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+                sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+                if (sfd)
+                {
+                    sfd.zoom = _zoom;
+                    sfd.processingID = _processingID;
+                    [sfd display:context
+          displayCharacteristics:dc
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds
+                          themes:themes
+                     pointInArea:pia];
+                }
             }
-            
-            fileName = @"swPressurePipe.shp";
-            dc.elementType = StormPressurePipe;
-            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
+            if ([ConfigurationControl.sharedInstance symbol:SANITARY_SYMBOLS
+                                                    inLayer:HCLayerSewers
+                                              visibleAtZoom:_zoom])
             {
-                sfd.zoom = _zoom;
-                sfd.processingID = _processingID;
-                [sfd display:context
-      displayCharacteristics:dc
-                   llCorners:latlonCornerPoints
-                    LLBounds:platlonBounds
-                  viewBounds:pvbounds
-                      themes:themes
-                 pointInArea:pia];
-            }
-            
-            fileName = @"swManhole.shp";
-            dc.elementType = StormManhole;
-            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
-            {
-                sfd.zoom = _zoom;
-                sfd.processingID = _processingID;
-                [sfd display:context
-      displayCharacteristics:dc
-                   llCorners:latlonCornerPoints
-                    LLBounds:platlonBounds
-                  viewBounds:pvbounds
-                      themes:themes
-                 pointInArea:pia];
-            }
-            
-            fileName = @"ssGravityMain.shp";
-            dc.elementType = SanitaryMain;
-            dc.penColor = UIColor.blueColor;
-            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
-            {
-                sfd.zoom = _zoom;
-                sfd.processingID = _processingID;
-                [sfd display:context
-      displayCharacteristics:dc
-                   llCorners:latlonCornerPoints
-                    LLBounds:platlonBounds
-                  viewBounds:pvbounds
-                      themes:themes
-                 pointInArea:pia];
-            }
-            fileName = @"ssPressurizedMain.shp";
-            dc.elementType = SanitaryPressurizedMain;
-            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
-            {
-                sfd.zoom = _zoom;
-                sfd.processingID = _processingID;
-                [sfd display:context
-      displayCharacteristics:dc
-                   llCorners:latlonCornerPoints
-                    LLBounds:platlonBounds
-                  viewBounds:pvbounds
-                      themes:themes
-                 pointInArea:pia];
-            }
-            fileName = @"ssManhole.shp";
-            dc.elementType = SanitaryManhole;
-            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-            if (sfd)
-            {
-                sfd.zoom = _zoom;
-                sfd.processingID = _processingID;
-                [sfd display:context
-      displayCharacteristics:dc
-                   llCorners:latlonCornerPoints
-                    LLBounds:platlonBounds
-                  viewBounds:pvbounds
-                      themes:themes
-                 pointInArea:pia];
+                fileName = @"ssGravityMain.shp";
+                dc.elementType = SanitaryMain;
+                dc.penColor = NVColor.brownColor;
+                dc.fillColor = NVColor.brownColor;
+                shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+                sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+                if (sfd)
+                {
+                    sfd.zoom = _zoom;
+                    sfd.processingID = _processingID;
+                    [sfd display:context
+          displayCharacteristics:dc
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds
+                          themes:themes
+                     pointInArea:pia];
+                }
+                fileName = @"ssPressurizedMain.shp";
+                dc.elementType = SanitaryPressurizedMain;
+                shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+                sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+                if (sfd)
+                {
+                    sfd.zoom = _zoom;
+                    sfd.processingID = _processingID;
+                    [sfd display:context
+          displayCharacteristics:dc
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds
+                          themes:themes
+                     pointInArea:pia];
+                }
+                fileName = @"ssManhole.shp";
+                dc.elementType = SanitaryManhole;
+                shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+                sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+                if (sfd)
+                {
+                    sfd.zoom = _zoom;
+                    sfd.processingID = _processingID;
+                    [sfd display:context
+          displayCharacteristics:dc
+                       llCorners:latlonCornerPoints
+                        LLBounds:platlonBounds
+                      viewBounds:pvbounds
+                          themes:themes
+                     pointInArea:pia];
+                }
             }
         }
         if ([ConfigurationControl.sharedInstance layer:HCLayerMapleGroveWater
@@ -160,6 +171,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             fileName = @"wMain.shp";
             dc.elementType = WaterMain;
+            dc.penColor = UIColor.blueColor;
+            dc.fillColor = UIColor.blueColor;
             shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
             sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
             if (sfd)
@@ -256,14 +269,38 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *fileName;
     NSString *shapeFile;
     
-    fileName = @"ssManhole.shp";
-    shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
-    sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
-    if (sfd)
+    if ([ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                     visibleAtZoom:_zoom
+                                           andPass:_passID])
     {
-        sfd.processingID = _processingID;
-        [sfd pickSHPPoint:pt ofType:SanitaryManhole highlightList:hlist];
+        if ([ConfigurationControl.sharedInstance symbol:SANITARY_SYMBOLS
+                                                inLayer:HCLayerSewers
+                                          visibleAtZoom:_zoom])
+        {
+            fileName = @"ssManhole.shp";
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.processingID = _processingID;
+                [sfd pickSHPPoint:pt ofType:SanitaryManhole highlightList:hlist];
+            }
+        }
+        if ([ConfigurationControl.sharedInstance symbol:STORM_SYMBOLS
+                                                inLayer:HCLayerSewers
+                                          visibleAtZoom:_zoom])
+        {
+            fileName = @"swManhole.shp";
+            shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+            {
+                sfd.processingID = _processingID;
+                [sfd pickSHPPoint:pt ofType:SanitaryManhole highlightList:hlist];
+            }
+        }
     }
+    
     return nPicked;
 }
 

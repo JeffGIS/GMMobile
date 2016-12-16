@@ -6,7 +6,7 @@
 #import "AppDelegate.h"
 #import "PlanimetricData.h"
 #import "CCodeLibrary/FTPDataPull.h"
-
+#define MAX_SYMBOLS_IN_LAYER    16
 static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
 //static BOOL layerVisible[NUMHardCodedLayers]={0};
 //static BOOL layerPickable[NUMHardCodedLayers]={0};
@@ -15,7 +15,7 @@ static BOOL layerHasSymbols[NUMHardCodedLayers]={0};
 static BOOL userAerials[NUMHardCodedConfigs]={0};
 static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};
 static int  configLayers[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
-static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
+static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMBOLS_IN_LAYER]={0};
 
 @implementation ApplicationObject
 
@@ -46,6 +46,23 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
     {
         _layerName = name;
         _layerID = identifier;
+        _symbol = 0;
+    }
+    
+    return self;
+}
+
+- (id)initWithName:(NSString *)name
+             ID:(int)identifier
+         andSymbol:(int)symbol
+{
+    self = [super init];
+    
+    if (self)
+    {
+        _layerName = name;
+        _layerID = identifier;
+        _symbol = symbol;
     }
     
     return self;
@@ -305,24 +322,24 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
             for (int layer = 0; layer < NUMHardCodedLayers; layer++)
-                configLayerZoom[config][layer] = layerDefaultZoom[layer];
+                configLayerZoom[config][layer][0] = layerDefaultZoom[layer];
         }
         
-        configLayerZoom[HCConfigAlleyWalls][HCLayerAerials] = 18;
-        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
-        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
-        configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
-        configLayerZoom[HCConfigCrimes][HCLayerAerials] = 17;
-        configLayerZoom[HCConfigMapleGrove][HCLayerAerials] = 17;
+        configLayerZoom[HCConfigAlleyWalls][HCLayerAerials][0] = 18;
+        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels][0] = 22;
+        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys][0] = 10;
+        configLayerZoom[HCConfigCurbRamps][HCLayerAerials][0] = 18;
+        configLayerZoom[HCConfigCrimes][HCLayerAerials][0] = 17;
+        configLayerZoom[HCConfigMapleGrove][HCLayerAerials][0] = 17;
         
         userAerials[HCConfigSewers] = YES;
         userAerials[HCConfigAlleyWalls] = YES;
         userAerials[HCConfigCrimes] = YES;
-        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels] = 22;
-        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys] = 10;
-        configLayerZoom[HCConfigCurbRamps][HCLayerAerials] = 18;
-        configLayerZoom[HCConfigCrimes][HCLayerAerials] = 22;
-        configLayerZoom[HCConfigCrimes][HCLayerParcels] = 22;
+        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels][0] = 22;
+        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys][0] = 10;
+        configLayerZoom[HCConfigCurbRamps][HCLayerAerials][0] = 18;
+        configLayerZoom[HCConfigCrimes][HCLayerAerials][0] = 22;
+        configLayerZoom[HCConfigCrimes][HCLayerParcels][0] = 22;
     }
     
     return self;
@@ -386,7 +403,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
         case HCConfigMapleGrove:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
             CRAPI.sharedInstance.parcelTextOption = 1;
-            configLayerZoom[HCConfigMapleGrove][HCLayerSewers] = 12;
+            configLayerZoom[HCConfigMapleGrove][HCLayerSewers][0] = 12;
             break;
             
         default:
@@ -476,7 +493,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
             lo.layerID = layer;
             lo.layerName = [NSString stringWithUTF8String:layerName[layer]];
             lo.hasSymbols = layerHasSymbols[layer];
-            lo.zoomLevel = configLayerZoom[_currentApp][layer];
+            lo.zoomLevel = configLayerZoom[_currentApp][layer][0];
             [layers addObject:lo];
         }
     }
@@ -485,9 +502,10 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
 }
 
 - (void)setLayer:(HardCodedLayers)layerID
+          andSymbol:(int)symbol
   visibileAtZoom:(NSInteger)zoom
 {
-    configLayerZoom[_currentApp][layerID] = zoom;
+    configLayerZoom[_currentApp][layerID][symbol] = zoom;
 }
 
 - (BOOL)layer:(HardCodedLayers)layerID
@@ -495,7 +513,7 @@ visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID
 {
     if (configLayers[_currentApp][layerID] &&
-        zoom >= configLayerZoom[_currentApp][layerID])
+        zoom >= configLayerZoom[_currentApp][layerID][0])
     {
         return YES;
     }
@@ -512,12 +530,12 @@ visibleAtZoom:(CGFloat)zoom
     return NO;
 }
 
-- (BOOL)symbol:(NSString *)sym
+- (BOOL)symbol:(int)symbol
        inLayer:(HardCodedLayers)layerID
  visibleAtZoom:(CGFloat)zoom
 {
     if (configLayers[_currentApp][layerID] &&
-        zoom >= configLayerZoom[_currentApp][layerID])
+        zoom >= configLayerZoom[_currentApp][layerID][symbol])
     {
         return YES;
     }
@@ -628,11 +646,15 @@ visibleAtZoom:(CGFloat)zoom
         case HCLayerSewers:
         {
             LayerObject * lo = [[LayerObject alloc]initWithName:@"STORM"
-                                            andID:-1];
+                                                             ID:layerID
+                                                      andSymbol:STORM_SYMBOLS];
+            lo.zoomLevel = configLayerZoom[_currentApp][layerID][STORM_SYMBOLS];
             [array addObject:lo];
             
             lo = [[LayerObject alloc]initWithName:@"SANITARY"
-                                            andID:-1];
+                                               ID:layerID
+                                        andSymbol:SANITARY_SYMBOLS];
+            lo.zoomLevel = configLayerZoom[_currentApp][layerID][SANITARY_SYMBOLS];
             [array addObject:lo];
             
         }

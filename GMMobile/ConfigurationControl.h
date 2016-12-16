@@ -15,6 +15,9 @@
 #define MAPIT_AREA_BLOCKGRP 3
 #define MAPIT_AREA_TRACT    4
 
+#define SANITARY_SYMBOLS    1
+#define STORM_SYMBOLS       2
+
 typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
 {
     None,
@@ -44,6 +47,9 @@ NUMHardCodedLayers};
 
 - (id)initWithNameAndID:(NSString *)name
              identifier:(int)identifier;
+- (id)initWithName:(NSString *)name
+                ID:(int)identifier
+         andSymbol:(int)symbol;
 
 @end
 
@@ -51,12 +57,16 @@ NUMHardCodedLayers};
 
 @property NSString *layerName;
 @property int layerID;
+@property int symbol;
 @property BOOL hasSymbols, stepperEnabled;
 @property NSInteger segControlIndex, zoomLevel;
 @property UIColor *cellButtonColor;
 
 - (id)initWithName:(NSString *)name
              andID:(int)identifier;
+- (id)initWithName:(NSString *)name
+                ID:(int)identifier
+         andSymbol:(int)symbol;
 
 @end
 
@@ -93,10 +103,14 @@ NUMHardCodedLayers};
 - (BOOL)useMapTypeControl;
 
 - (void)setLayer:(HardCodedLayers)layerID
+       andSymbol:(int)symbol
   visibileAtZoom:(NSInteger)zoom;
 
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID;
+- (BOOL)symbol:(int)symbol
+       inLayer:(HardCodedLayers)layerID
+ visibleAtZoom:(CGFloat)zoom;
 
 @end

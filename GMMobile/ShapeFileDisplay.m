@@ -118,7 +118,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     _dc = dc.copy;
     _dc.size = 1;
     _dc.width = 1;
-    _sizeFactor = 100;
+    _sizeFactor = 25;
 
     if (_zoom > 18)
         _sizeFactor *= (2.0 *(_zoom - 18.0));
@@ -265,7 +265,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 {
                     int fieldWidth, nDecimals, iField;
                     char fieldName[32];
-                    
+                    double lineWidthFactor = 8*_widthFactor;
                     switch (_dc.elementType)
                     {
                         case StormMain:
@@ -276,7 +276,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
-                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/4,2);
+                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/lineWidthFactor,2);
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Material");
                             if (iField >= 0)
@@ -296,7 +296,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
-                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/4,2);
+                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/lineWidthFactor,2);
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Material");
                             if (iField >= 0)
@@ -316,7 +316,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
-                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/4,2);
+                                _dc.width = max (DBFReadDoubleAttribute( _hDBF,irec,iField )/lineWidthFactor,2);
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Material");
                             if (iField >= 0)
@@ -335,7 +335,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 DBFGetFieldInfo(_hDBF,iField,
                                                 fieldName, &fieldWidth, &nDecimals );
-                                _dc.width = DBFReadDoubleAttribute( _hDBF,irec,iField )/2;
+                                _dc.width = DBFReadDoubleAttribute( _hDBF,irec,iField )/lineWidthFactor;
                             }
                             iField = DBFGetFieldIndex(_hDBF, "Material");
                             if (iField >= 0)
@@ -357,7 +357,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 double segments = DBFReadDoubleAttribute( _hDBF,irec,iField );
                                 int iSegments = segments;
                                 _dc.UCR = iSegments;
-                                _dc.width = iSegments/8;
+                                _dc.width = iSegments/lineWidthFactor;
                             }
                             
                         }

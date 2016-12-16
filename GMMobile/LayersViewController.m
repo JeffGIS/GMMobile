@@ -83,7 +83,12 @@
     for (int i = 0; i < _layerList.count; i++)
     {
         LayerObject *layer = (LayerObject *)_layerList[i];
-        if (layer.zoomLevel < 22)
+        if (layer.zoomLevel <= 0)
+        {
+            layer.stepperEnabled = NO;
+            layer.segControlIndex = GMLayerSettingOn;
+        }
+        else if (layer.zoomLevel < 22)
         {
             layer.stepperEnabled = YES;
             layer.segControlIndex = GMLayerSettingAuto;
@@ -663,7 +668,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     layer.segControlIndex = GMLayerSettingOn;
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
-                                   visibileAtZoom:0];
+                                        andSymbol:layer.symbol                                   visibileAtZoom:0];
 }
 
 - (void)layerWasTurnedOffAtIndex:(NSInteger)index
@@ -673,6 +678,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     layer.segControlIndex = GMLayerSettingOff;
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
+                                        andSymbol:layer.symbol
                                    visibileAtZoom:22];
 }
 
@@ -685,6 +691,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     layer.segControlIndex = GMLayerSettingAuto;
     
     [ConfigurationControl.sharedInstance setLayer:layer.layerID
+                                        andSymbol:0
                                    visibileAtZoom:zoomLevel];
 }
 
