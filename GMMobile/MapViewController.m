@@ -5707,8 +5707,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  _secondView.frame = frame1;
                              }];
             
-            _screenSetting = MapViewScreenSettingSplitPlatView;CGRectMake(0.0, statusBarHeight,
-                                                                          width, ((tabBarTop - statusBarHeight) / 2.0));
+            _screenSetting = MapViewScreenSettingSplitPlatView;
+            CGRectMake(0.0, statusBarHeight, width, ((tabBarTop - statusBarHeight) / 2.0));
         }
             break;
             
