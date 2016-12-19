@@ -47,7 +47,7 @@
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
-@property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedPlat;
+@property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedSanMain, *selectedPlat;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
 @property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
@@ -64,7 +64,7 @@
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
 @property NSInteger selectedCrime;
-@property int selectedMGVSanMH;
+@property int selectedMGVSanMH, selectedMGVSanPipe;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
 @property (nonatomic) GMSTileLayer *layer_jpeg;
@@ -1549,6 +1549,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.title = _selectedSanPoint;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeMGVSanPoint;
+                    break;
+                case SanitaryMain:
+                    _selectedSanMain = pi.identifier;
+                    _selectedMGVSanPipe = (int)pi.refno;
+                    marker.title = _selectedSanMain;
+                    marker.snippet = pi.symbolName;
+                    marker.type = MarkerInfoWindowTypeMGVSanMain;
                     break;
                     
                 default:
@@ -6213,6 +6220,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [newArray addObject:@"Display Split Screen Profile to 1"];
             if (array.count > 1)
                 [newArray addObject:@"Display Split Screen Profile to 2"];
+            
+            _options = newArray;
+        }
+            break;
+            
+        case MarkerInfoWindowTypeMGVSanMain:
+        {
+            _options = @[@""];
+            NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
+            BOOL splitPlatViewSave = _splitPlatView;
+            _splitPlatView = TRUE;
+            NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanPipe];
+            _splitPlatView = splitPlatViewSave;
+            if (array.count)
+            {
+                
+            }
+            [newArray addObject:@"Display Plat"];
+            [newArray addObject:@"Display Split Screen Profile Along Pipe"];
             
             _options = newArray;
         }

@@ -150,11 +150,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
               themes:(Themes*)themes
 {
     double mind = DBL_MAX;
-    DPOINT midpt, minpt;
+    DPOINT minpt, pickPoint, pickedPoint;
+    LLPOINT midpt, pickPointLL;
     int minRef = 0;
+    int nPicked = 0;
+    NSString * minFid = @"";
     NSString * minPlatID = @"";
     
-    midpt = DBoundsMid(platlonBounds);
+    pickPoint = DBoundsMid(platlonBounds);
+    midpt.lon = pickPoint.x;
+    midpt.lat = pickPoint.y;
+    pickPointLL = midpt;
+    dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:&midpt];
     for (int irec = 0; irec < _hSHP->nRecords; irec++)
     {
         if (![self continue])
@@ -225,7 +232,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         case SanitaryManhole:
                             if (hlist)
                             {
-                                if (findClosestPoint (&llpt,&minpt,&mind,&midpt))
+                                if (findClosestPoint (&llpt,&minpt,&mind,&pickPoint))
                                 {
                                     minRef = (int)_dc.refno;
                                     minPlatID = _dc.string2;
@@ -404,11 +411,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             }
                             if (hlist)
                             {
-                                if (POINT_IN_AREAD(midpt, psCShape->nVertices, llpoints, 1, 0, 0, 0))
+                                if (POINT_IN_AREAD(pickPoint, psCShape->nVertices, llpoints, 1, 0, 0, 0))
                                 {
                                     for (int i = 0; i < psCShape->nVertices; i++)
                                     {
-                                        if (findClosestPoint (&llpoints[i],&minpt,&mind,&midpt))
+                                        if (findClosestPoint (&llpoints[i],&minpt,&mind,&pickPoint))
                                         {
                                             minRef = (int)_dc.refno;
                                             minPlatID = _dc.string2;
@@ -434,7 +441,32 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         {
                             if (hlist)
                             {
+                                LPDPOINT llpoints = malloc(psCShape->nVertices * sizeof(DPOINT) + 4);
                                 
+                                for (int i = 0; i < psCShape->nVertices; i++)
+                                {
+                                    llpoints[i].x = psCShape->padfX[i];
+                                    llpoints[i].y = psCShape->padfY[i];
+                                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                                }
+                                if (PICK_POINT_ON_LINE(pickPoint, bnds, &pickedPoint, psCShape->nVertices, llpoints))
+                                {
+                                    if (findClosestPoint (&pickedPoint, &minpt, &mind, &pickPoint))
+                                    {
+                                        nPicked++;
+                                        minRef = (int)_dc.refno;
+                                        minFid = _dc.string2;
+                                        PickedItem *pi = [PickedItem new];
+                                        pi.refno = _dc.refno;
+                                        pi.identifier = [NSString stringWithFormat:@"SanMain:%i",minRef];
+                                        pi.itemType = _dc.elementType;
+                                        pi.pickedPoint = minpt;
+                                        pi.distance = mind;
+                                        [hlist addObject:pi];
+                                    }
+                                }
+                                free (llpoints);
+                               
                             }
                             else
                             {
