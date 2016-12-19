@@ -4059,12 +4059,14 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (NSArray *) getMGVPlatDataByRefno:(int)refno
 {
+    NSLog(@"REFNO:%i", refno);
     NSMutableArray * array = NSMutableArray.new;
     NSString * imageFile;
     NSString * manholeID;
     NSString * dataFile = [NSBundle.mainBundle pathForResource:@"SANPTID"
                                         ofType:@"txt"];
     NSString * fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    
     NSArray * Lines = [fileData componentsSeparatedByString:@"\r\n"];
     for (NSString * line in Lines)
     {
@@ -4091,7 +4093,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                 [[values[1] substringToIndex:imageFile.length] isEqualToString:imageFile])
             {
                 MGVPlatData *curData = [self loadMGVData:Lines[index]];
-                if (_splitPlatView)
+                //if (_splitPlatView)
                 {
                     if (index)
                     {
@@ -4126,16 +4128,17 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                         }
                     }
                 }
-                else
+                /*else
                 {
                     curData.ptUpper = PercentPoint (curData.ptUpper,curData.imageWidth,curData.imageHeight);
                     curData.ptLower = PercentPoint (curData.ptLower,curData.imageWidth,curData.imageHeight);
                     [array addObject:curData];
-                }
+                }*/
             }
         }
         index++;
     }
+    
     return array;
     
 }
