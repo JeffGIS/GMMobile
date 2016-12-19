@@ -4146,15 +4146,20 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 //@"ENA_19_87-26_A0.pdf";
     SewerData *sd = [[SewerData alloc] init];
     
-    _mgvData = array[_splitPlatDirection];
-    if (_mgvData)
+    if (array.count > _splitPlatDirection)
     {
-        
-        [sd loadPlat:_mgvData.pdfFile
-              ofType:@"pdf"
-        usingPopover:_popover
-         andDelegate:self];
+        _mgvData = array[_splitPlatDirection];
+        if (_mgvData)
+        {
+            
+            [sd loadPlat:_mgvData.pdfFile
+                  ofType:@"pdf"
+            usingPopover:_popover
+             andDelegate:self];
+        }
     }
+    else
+       NSLog (@"Error in load plat"); 
 }
 
 - (void)displayCrimeReport
