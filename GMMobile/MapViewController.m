@@ -2189,9 +2189,12 @@ didChangeCameraPosition:(GMSCameraPosition *)position
 {
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
+    
     if (_firstMove)
         CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
-    _firstMove = FALSE;
+    
+    _firstMove = NO;
+    
     if (position.bearing != 0.0)
     {
         [self showCompass];
@@ -5599,7 +5602,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        [self showCompass];
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+            [self hideCompass];
+        
+        else
+            [self showCompass];
         
         if (_screenSetting == MapViewScreenSettingPlatView)
             [_mapToolbar normalMode:setting];
@@ -5627,6 +5634,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              completion:^(BOOL finished) {
                                  [self refreshVectorView:_mapView.projection.visibleRegion
                                                   atZoom:_mapView.camera.zoom];
+                                 
+                                 if (_mapView.camera.bearing != 0.0)
+                                 {
+                                     [self showCompass];
+                                     _compass.transform = CGAffineTransformMakeRotation(-_mapView.camera.bearing * M_PI / 180);
+                                 }
                              }];
             
             [UIView animateWithDuration:duration
