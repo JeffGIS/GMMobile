@@ -297,6 +297,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             break;
                         case SanitaryMain:
                         {
+                            NSString * fromMH=@"";
                             _dc.width = 3;
                             iField = DBFGetFieldIndex(_hDBF, "DIAMETER");
                             if (iField >= 0)
@@ -312,6 +313,22 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                                 fieldName, &fieldWidth, &nDecimals );
                                 const char * cMaterial = DBFReadStringAttribute( _hDBF,irec,iField );
                                 _dc.string2 = [NSString stringWithUTF8String:cMaterial];
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "FROMMH");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * from = DBFReadStringAttribute( _hDBF,irec,iField );
+                                fromMH = [NSString stringWithUTF8String:from];
+                            }
+                            iField = DBFGetFieldIndex(_hDBF, "TOMH");
+                            if (iField >= 0)
+                            {
+                                DBFGetFieldInfo(_hDBF,iField,
+                                                fieldName, &fieldWidth, &nDecimals );
+                                const char * to = DBFReadStringAttribute( _hDBF,irec,iField );
+                                _dc.string2 = [NSString stringWithFormat:@"%@-%s",fromMH,to];
                             }
                         }
                             break;
@@ -459,6 +476,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                         PickedItem *pi = [PickedItem new];
                                         pi.refno = _dc.refno;
                                         pi.identifier = [NSString stringWithFormat:@"SanMain:%i",minRef];
+                                        pi.data = _dc.string2;
                                         pi.itemType = _dc.elementType;
                                         pi.pickedPoint = minpt;
                                         pi.distance = mind;
@@ -521,6 +539,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
        withColor:(CGColorRef)color
         andWidth:(CGFloat)width
 {
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    width *= screenScale;
     CGContextSetLineWidth(context, width);
     CGContextSetLineJoin(context,kCGLineJoinRound);
     CGContextSetLineCap(context,kCGLineCapRound);
@@ -620,7 +640,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     DPOINT p1, minpt;
     //DPOINT p2;
     NSString *minPlatID = [[NSString alloc] init];
-    
     p1.x = pt->lon;
     p1.y = pt->lat;
     minpt = p1;
