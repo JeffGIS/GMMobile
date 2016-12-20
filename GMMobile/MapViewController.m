@@ -37,7 +37,7 @@
 @implementation MGVPlatData
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate>
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic, copy) NSArray *options, *linkedList;
@@ -134,6 +134,7 @@
     _animateToLocation = _usePlatView = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _splitPlatView = NO;
+    self.tabBarController.delegate = self;
     
     _nvssvc = NVSpreadsheetVC.new;
     _ssDelegate = NVSpreadsheetDelegate.new;
@@ -1194,8 +1195,7 @@
     [super viewWillDisappear:animated];
     
     _currentScreenHeight = self.view.frame.size.height;
-    
-    [self stopTrackingUserLocation:YES];
+    [self stopTrackingUserLocation];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1261,7 +1261,7 @@
 
 - (void)extentZoom
 {
-    [self stopTrackingUserLocation:NO];
+    [self stopTrackingUserLocation];
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
     NSString *boundaryType = @"BOUNDARY";
@@ -1983,6 +1983,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [self removeAllPlatPDFs];
                 _usePlatView = NO;
                 [self hideMarkersAndInfoWindows:NO];
+                [ConfigurationControl.sharedInstance setApp:HCConfigMapleGrovePDF];
+                [_mapToolbar configure:_screenSetting];
                 
                 if (_splitPlatView)
                 {
@@ -4059,7 +4061,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (NSArray *) getMGVPlatDataByRefno:(int)refno
 {
-    NSLog(@"REFNO:%i", refno);
     NSMutableArray * array = NSMutableArray.new;
     NSString * imageFile;
     NSString * manholeID;
@@ -4737,8 +4738,7 @@ didCompleteWithError:(NSError *)error
     [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWallStatus + 1)
                                   forKey:@"CurrentConfig"];
     
-    ConfigurationControl.sharedInstance.currentApp = HCConfigAlleyWallStatus;
-    
+    [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWallStatus];
     CGPoint origin = CGPointMake(6.0, ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation] + 6.0));
     
     if ([self.view.subviews containsObject:_legendView])
@@ -5142,37 +5142,44 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectZoomExtent
 {
-    BOOL hasPDF = NO;
-    
-    for (NVWebView *nvwvs in _firstView.subviews)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
     {
-        if ([nvwvs isKindOfClass:NVWebView.class])
+        for (NVWebView *nvwvs in _firstView.subviews)
         {
-            [nvwvs gotoOriginalPosition];
-            hasPDF = YES;
+            if ([nvwvs isKindOfClass:NVWebView.class])
+            {
+                [nvwvs gotoOriginalPosition];
+                break;
+            }
+        }
+        
+        for (NVWebView *nvwvs in _secondView.subviews)
+        {
+            if ([nvwvs isKindOfClass:NVWebView.class])
+            {
+                [nvwvs gotoOriginalPosition];
+                break;
+            }
         }
     }
-    
-    for (NVWebView *nvwvs in _secondView.subviews)
-    {
-        if ([nvwvs isKindOfClass:NVWebView.class])
-        {
-            [nvwvs gotoOriginalPosition];
-            hasPDF = YES;
-        }
-    }
-    
-    if (!hasPDF)
+
+    else
         [self extentZoom];
 }
 
 - (void)mapToolbarDidSelectUserLocation:(BOOL)enabled
 {
-    if (enabled)
-        [self startTrackingUserLocation];
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
+        [self stopTrackingUserLocation];
     
     else
-        [self stopTrackingUserLocation:YES];
+    {
+        if (enabled)
+            [self startTrackingUserLocation];
+        
+        else
+            [self stopTrackingUserLocation];
+    }
 }
 
 - (void)startTrackingUserLocation
@@ -5183,7 +5190,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [self.view bringSubviewToFront:_myLocationMarker];
 }
 
-- (void)stopTrackingUserLocation:(BOOL)refresh
+- (void)stopTrackingUserLocation
 {
     [_locationManager stopUpdatingLocation];
     [_mapToolbar deselectMyLocationButton];
@@ -5579,7 +5586,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectSplitScreenSetting:(NSInteger)setting
 {
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
     {
         if (setting == MapViewScreenSettingSplitScreen)
             setting = MapViewScreenSettingSplitPlatView;
@@ -5630,7 +5637,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _profileView = nil;
     }
     
-    if (setting == MapViewScreenSettingPlatView)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
+        [self hideCompass];
+    
+    else if (setting == MapViewScreenSettingPlatView)
     {
         [self hideCompass];
         [_mapToolbar platViewMode:setting];
@@ -5638,11 +5648,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
-            [self hideCompass];
-        
-        else
-            [self showCompass];
+        [self showCompass];
         
         if (_screenSetting == MapViewScreenSettingPlatView)
             [_mapToolbar normalMode:setting];
@@ -5659,6 +5665,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             [self removeAllPlatPDFs];
             [self showMarkersAndInfoWindows:NO];
+            
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
+            {
+                [ConfigurationControl.sharedInstance setApp:HCConfigMapleGrove];
+                [_mapToolbar configure:setting];
+            }
             
             [UIView animateWithDuration:duration
                              animations:^{
@@ -6741,6 +6753,13 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 - (void)animateToCamPos:(GMSCameraPosition *)camera
 {
     [_mapView animateToCameraPosition:camera];
+}
+
+- (void)tabBarController:(UITabBarController *)tabBarController
+ didSelectViewController:(UIViewController *)viewController
+{
+    if (viewController == self && ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
+        [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingFullscreen];
 }
 
 @end

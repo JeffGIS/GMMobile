@@ -8,7 +8,6 @@
 #import "PropertyList.h"
 
 #define MAX_LAYER_NAME 32
-#define NUMHardCodedConfigs 8
 
 #define MAPIT_CIRCULAR      1
 #define MAPIT_AREA_BLOCK    2
@@ -25,7 +24,6 @@ typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
     HousingUnits,
 };
 
-
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
     HCLayerAerials,
@@ -39,7 +37,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerMapleGroveFiber,
 NUMHardCodedLayers};
 
-
 @interface ApplicationObject : NSObject
 
 @property NSString *appName;
@@ -47,9 +44,6 @@ NUMHardCodedLayers};
 
 - (id)initWithNameAndID:(NSString *)name
              identifier:(int)identifier;
-- (id)initWithName:(NSString *)name
-                ID:(int)identifier
-         andSymbol:(int)symbol;
 
 @end
 
@@ -64,6 +58,7 @@ NUMHardCodedLayers};
 
 - (id)initWithName:(NSString *)name
              andID:(int)identifier;
+
 - (id)initWithName:(NSString *)name
                 ID:(int)identifier
          andSymbol:(int)symbol;
@@ -91,7 +86,6 @@ NUMHardCodedLayers};
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
 
 - (BOOL)setApp:(HardCodedConfigs)appID;
-
 - (NSArray *)getLayers;
 - (NSMutableArray *)getDatasetsForApp:(HardCodedConfigs)appID;
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID;
@@ -109,6 +103,7 @@ NUMHardCodedLayers};
 - (BOOL)layer:(HardCodedLayers)layerID
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID;
+
 - (BOOL)symbol:(int)symbol
        inLayer:(HardCodedLayers)layerID
  visibleAtZoom:(CGFloat)zoom;

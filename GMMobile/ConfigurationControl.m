@@ -15,7 +15,7 @@ static BOOL layerHasSymbols[NUMHardCodedLayers]={0};
 static BOOL userAerials[NUMHardCodedConfigs]={0};
 static BOOL configToobarSegs[NUMHardCodedConfigs][NUMMapToolbarProperty]={0};
 static int  configLayers[NUMHardCodedConfigs][NUMHardCodedLayers]={0};
-static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMBOLS_IN_LAYER]={0};
+static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMBOLS_IN_LAYER]={0};
 
 @implementation ApplicationObject
 
@@ -78,7 +78,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYM
 
 @implementation ConfigurationControl
 {
-    NSMutableArray* symLists[NUMHardCodedConfigs][NUMHardCodedLayers];
+    NSMutableArray *symLists[NUMHardCodedConfigs][NUMHardCodedLayers];
 }
 
 - (id)init
@@ -245,7 +245,7 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYM
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantHelpButton] = YES;
         configToobarSegs[HCConfigCrimes][MapToolbarPropertyWantReturnButton] = NO;
         
-        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = YES;
+        configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantDigitize] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantMapType] = NO;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantUserLocation] = YES;
@@ -257,6 +257,19 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYM
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantHelpButton] = YES;
         configToobarSegs[HCConfigMapleGrove][MapToolbarPropertyWantReturnButton] = NO;
+        
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantPlat] = YES;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantUserLocation] = YES;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantExtents] = YES;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantGrayscale] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantClearMarkers] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantEmailPDF] = YES;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantProgressBar] = NO;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantReturnButton] = NO;
         
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
@@ -375,13 +388,14 @@ static CGFloat  configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYM
                                value:configToobarSegs[_currentApp][prop]];
     }
     
-    if (appID != HCConfigFromSpreadsheet)
+    if (appID != HCConfigFromSpreadsheet && appID != HCConfigMapleGrovePDF)
     {
         [UserDefaults.defaults saveInteger:(appID + 1)
                                     forKey:@"CurrentConfig"];
     }
     
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    
     switch (_currentApp)
     {
         case HCConfigMetroProp:
