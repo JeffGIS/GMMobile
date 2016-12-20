@@ -285,16 +285,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 sfd.processingID = _processingID;
                 [sfd pickSHPPoint:pt ofType:SanitaryManhole highlightList:hlist];
             }
-            /*
-            fileName = @"ssGravityMain.shp";
+            
+            /*fileName = @"ssGravityMain.shp";
             shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
             sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
             if (sfd)
             {
                 sfd.processingID = _processingID;
                 [sfd pickSHPPoint:pt ofType:SanitaryMain highlightList:hlist];
-            }
-             */
+            }*/
+             
         }
         if ([ConfigurationControl.sharedInstance symbol:STORM_SYMBOLS
                                                 inLayer:HCLayerSewers

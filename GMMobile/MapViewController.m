@@ -1551,7 +1551,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.type = MarkerInfoWindowTypeMGVSanPoint;
                     break;
                 case SanitaryMain:
-                    _selectedSanMain = pi.identifier;
+                    _selectedSanMain = pi.data;
                     _selectedMGVSanPipe = (int)pi.refno;
                     marker.title = _selectedSanMain;
                     marker.snippet = pi.symbolName;
@@ -6266,10 +6266,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _splitPlatView = TRUE;
             NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanMH];
             _splitPlatView = splitPlatViewSave;
-            if (array.count)
-            {
-                
-            }
+            if (!array.count)
+                break;
             [newArray addObject:@"Display Plat"];
             [newArray addObject:@"Display Split Screen Profile to 1"];
             if (array.count > 1)
@@ -6285,6 +6283,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
             _splitPlatView = TRUE;
+            NSArray * manholes = [_selectedSanMain componentsSeparatedByString:@"-"];
             NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanPipe];
             _splitPlatView = splitPlatViewSave;
             if (array.count)
