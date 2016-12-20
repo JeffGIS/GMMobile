@@ -4059,12 +4059,14 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (NSArray *) getMGVPlatDataByRefno:(int)refno
 {
+    NSLog(@"REFNO:%i", refno);
     NSMutableArray * array = NSMutableArray.new;
     NSString * imageFile;
     NSString * manholeID;
     NSString * dataFile = [NSBundle.mainBundle pathForResource:@"SANPTID"
                                         ofType:@"txt"];
     NSString * fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    
     NSArray * Lines = [fileData componentsSeparatedByString:@"\r\n"];
     for (NSString * line in Lines)
     {
@@ -4091,7 +4093,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                 [[values[1] substringToIndex:imageFile.length] isEqualToString:imageFile])
             {
                 MGVPlatData *curData = [self loadMGVData:Lines[index]];
-                if (_splitPlatView)
+                //if (_splitPlatView)
                 {
                     if (index)
                     {
@@ -4126,16 +4128,17 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                         }
                     }
                 }
-                else
+                /*else
                 {
                     curData.ptUpper = PercentPoint (curData.ptUpper,curData.imageWidth,curData.imageHeight);
                     curData.ptLower = PercentPoint (curData.ptLower,curData.imageWidth,curData.imageHeight);
                     [array addObject:curData];
-                }
+                }*/
             }
         }
         index++;
     }
+    
     return array;
     
 }
@@ -5139,7 +5142,28 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectZoomExtent
 {
-    [self extentZoom];
+    BOOL hasPDF = NO;
+    
+    for (NVWebView *nvwvs in _firstView.subviews)
+    {
+        if ([nvwvs isKindOfClass:NVWebView.class])
+        {
+            [nvwvs gotoOriginalPosition];
+            hasPDF = YES;
+        }
+    }
+    
+    for (NVWebView *nvwvs in _secondView.subviews)
+    {
+        if ([nvwvs isKindOfClass:NVWebView.class])
+        {
+            [nvwvs gotoOriginalPosition];
+            hasPDF = YES;
+        }
+    }
+    
+    if (!hasPDF)
+        [self extentZoom];
 }
 
 - (void)mapToolbarDidSelectUserLocation:(BOOL)enabled
@@ -5712,8 +5736,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  _secondView.frame = frame1;
                              }];
             
-            _screenSetting = MapViewScreenSettingSplitPlatView;CGRectMake(0.0, statusBarHeight,
-                                                                          width, ((tabBarTop - statusBarHeight) / 2.0));
+            _screenSetting = MapViewScreenSettingSplitPlatView;
+            CGRectMake(0.0, statusBarHeight, width, ((tabBarTop - statusBarHeight) / 2.0));
         }
             break;
             
