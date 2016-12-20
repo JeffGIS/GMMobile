@@ -5142,7 +5142,28 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectZoomExtent
 {
-    [self extentZoom];
+    BOOL hasPDF = NO;
+    
+    for (NVWebView *nvwvs in _firstView.subviews)
+    {
+        if ([nvwvs isKindOfClass:NVWebView.class])
+        {
+            [nvwvs gotoOriginalPosition];
+            hasPDF = YES;
+        }
+    }
+    
+    for (NVWebView *nvwvs in _secondView.subviews)
+    {
+        if ([nvwvs isKindOfClass:NVWebView.class])
+        {
+            [nvwvs gotoOriginalPosition];
+            hasPDF = YES;
+        }
+    }
+    
+    if (!hasPDF)
+        [self extentZoom];
 }
 
 - (void)mapToolbarDidSelectUserLocation:(BOOL)enabled
