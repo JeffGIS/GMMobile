@@ -2,12 +2,53 @@
 //  NVMetroSettings.h
 //  NVMobile
 //
-//  Created by JEFFREY E SMITH on 12/7/16.
+//  Created by Jeff Smith on 12/23/16.
 //  Copyright © 2016 GSSi. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface NVMetroSettings : UIViewController
+typedef NS_ENUM(NSInteger, CPFeatures)
+{
+    CPFParcels,
+    CPFBlocks,
+    CPFBlockGroups,
+    CPFTracts,
+    CPFVoterDistricts,
+    CPFeaturesCount
+};
+
+typedef NS_ENUM(NSInteger, CPParcelValues)
+{
+    CPParcelVNone,
+    CPParcelVTotTax,
+    CPParcelVTotEMV,
+    CPParcelVBuildEMV,
+    CPParcelVLandEMV,
+    CPParcelVLastSalePrice,
+    CPParcelVCount
+};
+
+typedef NS_ENUM(NSInteger, CPBlockValues)
+{
+    CPBlockVNone,
+    CPBlockVCount
+};
+
+
+
+@interface NVMetroSettings : NSObject
+
++ (NVMetroSettings *)sharedInstance;
+
+@property CPFeatures currentFeature;
+@property BOOL OverUnder;
+
+
+- (NSArray *) features;
+- (NSString *) currentFeatureText;
+- (NSString *) currentValueText;
+- (void) setCurrentValue:(NSInteger)value;
+- (NSArray *) valuesForFeature:(CPFeatures)feature;
 
 @end

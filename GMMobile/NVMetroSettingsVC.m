@@ -8,7 +8,8 @@
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
 @property (nonatomic) CGFloat cornerRadius;
-
+@property UIButton *featureButton;
+@property UIButton *valueButton;
 @end
 
 @implementation NVMetroSettingsVC
@@ -83,13 +84,13 @@
     textLabel.text = @"Text:";
     [self setupLabel:textLabel fontSize:littleFont];
     
-    UIButton *featureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [featureButton setTitle:@" Parcels " forState:UIControlStateNormal];
-    [self setupButton:featureButton fontSize:littleFont];
+    _featureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_featureButton setTitle:paddedString([NVMetroSettings.sharedInstance currentFeatureText]) forState:UIControlStateNormal];
+    [self setupButton:_featureButton fontSize:littleFont];
     
-    UIButton *valueButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [valueButton setTitle:@" Total Tax " forState:UIControlStateNormal];
-    [self setupButton:valueButton fontSize:littleFont];
+    _valueButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
+    [self setupButton:_valueButton fontSize:littleFont];
     
     UIButton *colorSchemeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [colorSchemeButton setTitle:@" Red / Blue " forState:UIControlStateNormal];
@@ -156,10 +157,10 @@
                 [view addSubview:featureLabel];
                 [featureLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [featureLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
-                [view addSubview:featureButton];
-                [featureButton constrainCenterYToAnchor:view.centerYAnchor];
-                [featureButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
-                featureButton.tag = i;
+                [view addSubview:_featureButton];
+                [_featureButton constrainCenterYToAnchor:view.centerYAnchor];
+                [_featureButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                _featureButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 break;
@@ -168,10 +169,10 @@
                 [view addSubview:valueLabel];
                 [valueLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [valueLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
-                [view addSubview:valueButton];
-                [valueButton constrainCenterYToAnchor:view.centerYAnchor];
-                [valueButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
-                valueButton.tag = i;
+                [view addSubview:_valueButton];
+                [_valueButton constrainCenterYToAnchor:view.centerYAnchor];
+                [_valueButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                _valueButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 break;
@@ -281,15 +282,18 @@
 - (void)settingsButtonTapped:(UIButton *)button
 {
     NSString *keyword = @"";
+    NSArray *optionsList = nil;
     
     switch (button.tag)
     {
         case 2:
             keyword = @"Feature";
+            optionsList = NVMetroSettings.sharedInstance.features;
             break;
             
         case 3:
             keyword = @"Value";
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:NVMetroSettings.sharedInstance.currentFeature];
             break;
             
         case 5:
@@ -308,7 +312,7 @@
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
                                              title:[NSString stringWithFormat:@"%@ Options", keyword]
-                                         textArray:@[(button.titleLabel.text)]
+                                         textArray:optionsList
                                      includeCancel:YES];
     
     nvptv.tag = button.tag;
@@ -321,10 +325,15 @@
     switch (popoverTableView.tag)
     {
         case 2://feature
+            NVMetroSettings.sharedInstance.currentFeature = index;
+            [_featureButton setTitle:paddedString([NVMetroSettings.sharedInstance currentFeatureText]) forState:UIControlStateNormal];
+            [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             break;
             
         case 3://value
-            break;
+            [NVMetroSettings.sharedInstance setCurrentValue:index];
+            [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
+           break;
             
         case 5://color scheme
             break;
