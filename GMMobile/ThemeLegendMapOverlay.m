@@ -9,7 +9,7 @@
 @interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
-@property (nonatomic) UIFont *font, *headerFont;
+@property (nonatomic) UIFont *font, *headerFont, *reducedFont, *smallFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
@@ -96,6 +96,8 @@
                                 size:18.0];
     
     tlmo.headerFont = [UIFont boldSystemFontOfSize:18.0];
+    tlmo.reducedFont = [UIFont boldSystemFontOfSize:10.0];
+    tlmo.smallFont = [UIFont boldSystemFontOfSize:8.0];
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
     {
@@ -339,8 +341,10 @@ viewForHeaderInSection:(NSInteger)section
             _titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
             _titleButton.translatesAutoresizingMaskIntoConstraints = NO;
             _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
             _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+            _titleButton.titleLabel.numberOfLines = 0;
+            _titleButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
             
             [_titleButton setTitleColor:UIColor.whiteColor
                                forState:UIControlStateNormal];
@@ -365,7 +369,28 @@ viewForHeaderInSection:(NSInteger)section
                           forState:UIControlStateNormal];
         }
         
-        _titleButton.titleLabel.font = _headerFont;
+        if (_legend.title.length < 16)
+        {
+            _titleButton.titleLabel.font = _headerFont;
+            _titleButton.titleLabel.numberOfLines = 1;
+            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+        }
+        else if (_legend.title.length < 30)
+        {
+            _titleButton.titleLabel.numberOfLines = 0;
+            _titleButton.titleLabel.adjustsFontSizeToFitWidth = NO;
+            _titleButton.titleLabel.font = _reducedFont;
+            UIEdgeInsets  inset = UIEdgeInsetsMake(8, 8, 8, 8);
+            _titleButton.titleEdgeInsets = inset;
+        }
+        else
+        {
+            _titleButton.titleLabel.numberOfLines = 0;
+            _titleButton.titleLabel.adjustsFontSizeToFitWidth = NO;
+            _titleButton.titleLabel.font = _smallFont;
+            UIEdgeInsets  inset = UIEdgeInsetsMake(10, 10, 10, 10);
+            _titleButton.titleEdgeInsets = inset;
+        }
         
         [headerView addSubview:_titleButton];
         

@@ -28,6 +28,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     MGVFiberLineTheme,
     MGVFiberPointTheme,
     PropertyListTheme,
+    MetroPropTheme,
 };
 
 #endif /* ThemeTypes_h */

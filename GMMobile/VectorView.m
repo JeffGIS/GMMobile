@@ -10,6 +10,7 @@
 #import "CrimeDataDisplay.h"
 #import "UserLayerDisplay.h"
 #import "ConfigurationControl.h"
+#import "NVMetroSettings.h"
 #import "Themes.h"
 
 #define METERS_PER_MILE 1609.344
@@ -233,7 +234,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                        }
                                    }
                                }
-                               
+                               else if ([self doNVMetroDisplay:dc])
+                                   ;
                                else
                                {
                                    Themes * themes = [[Themes alloc]init];
@@ -611,5 +613,116 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
     }
 
+}
+
+- (BOOL) doNVMetroDisplay:(DisplayCharacteristics *)dc
+{
+    if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
+        return FALSE;
+    Themes * themes = [[Themes alloc]init];
+    themes.displayID = CRAPI.sharedInstance.keepProcessing;
+    
+    [themes setAppThemes];
+    switch (_displayDataOption)
+    {
+        case DISPLAY_DATA_OPTION_DISPLAY:
+        {
+            ItemProcessingPassTypes passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
+            while (passID < DonePass)
+            {
+                if (passID == DataPass)
+                    [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
+                else if (passID == DisplayPass)
+                    [themes themesBeginDisplayPass:CRAPI.sharedInstance.keepProcessing];
+                
+                if (CRAPI.sharedInstance.keepProcessing == self.displayID)
+                    switch (NVMetroSettings.sharedInstance.currentFeature)
+                {
+                    case CPFParcels:
+                    {
+                        PropertyData *pd = [[PropertyData alloc] init];
+                        
+                        pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        
+                        [pd displayParcels:_context
+                                 llCorners:&_latlonCornerPoints
+                                  LLBounds:&_latlonBounds
+                                viewBounds:&_viewBounds];
+                        
+                        [pd displayParcelText:_context
+                                    llCorners:&_latlonCornerPoints
+                                     LLBounds:&_latlonBounds
+                                   viewBounds:&_viewBounds];
+                    }
+                        break;
+                    case CPFLandUse:
+                    {
+                        BoundaryData *bd = [[BoundaryData alloc] init];
+                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        bd.zoom = _zoom;
+                        [bd displayLandUse:_context
+                                 llCorners:&_latlonCornerPoints
+                                  LLBounds:&_latlonBounds
+                                viewBounds:&_viewBounds
+                    displayCharacteristics:dc
+                                    themes:themes
+                               pointInArea:nil];
+                        
+                        
+                    }
+                        break;
+                        
+                    case CPFBlocks:
+                    {
+                        BoundaryData *bd = [[BoundaryData alloc] init];
+                        bd.pass = passID;
+                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        bd.zoom = _zoom;
+                        [bd displayCensusAreas:_context
+                                          type:@"BLOCK"
+                                     llCorners:&_latlonCornerPoints
+                                      LLBounds:&_latlonBounds
+                                    viewBounds:&_viewBounds];
+                    }
+                        break;
+                    case CPFBlockGroups:
+                    {
+                        BoundaryData *bd = [[BoundaryData alloc] init];
+                        bd.pass = passID;
+                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        bd.zoom = _zoom;
+                        [bd displayCensusAreas:_context
+                                          type:@"BLOCKGROUP"
+                                     llCorners:&_latlonCornerPoints
+                                      LLBounds:&_latlonBounds
+                                    viewBounds:&_viewBounds];
+                    }
+                        break;
+                    case CPFTracts:
+                    {
+                        BoundaryData *bd = [[BoundaryData alloc] init];
+                        bd.pass = passID;
+                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        bd.zoom = _zoom;
+                        [bd displayCensusAreas:_context
+                                          type:@"TRACT"
+                                     llCorners:&_latlonCornerPoints
+                                      LLBounds:&_latlonBounds
+                                    viewBounds:&_viewBounds];
+                    }
+                        break;
+                }
+                
+                if (passID == DataPass)
+                    [themes themesEndDataPass:CRAPI.sharedInstance.keepProcessing];
+                else if (passID == DisplayPass)
+                    [themes themesEndDisplayPass:CRAPI.sharedInstance.keepProcessing];
+                passID++;
+            }
+        }
+            break;
+            
+    }
+    return TRUE;
 }
 @end

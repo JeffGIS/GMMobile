@@ -48,6 +48,13 @@ static int currentValues[CPFeaturesCount];
     NSString * rtn = stringWithoutID(values[currentValues[_currentFeature]]);
     return rtn;
 }
+- (NSString *) currentValueField
+{
+    NSArray * values = [self valuesForFeature:_currentFeature];
+    NSString * rtn = textAfter(values[currentValues[_currentFeature]], @"\x03");
+    rtn = textBefore (rtn,@"\x04");
+    return rtn;
+}
 - (void) setCurrentValue:(NSInteger)value
 {
     currentValues[_currentFeature] = (int)value;
@@ -64,6 +71,9 @@ static int currentValues[CPFeaturesCount];
             case CPFParcels:
                 [rtn addObject:stringWithID("Parcels",feature)];
                 break;
+            case CPFLandUse:
+                [rtn addObject:stringWithID("Land Use",feature)];
+                break;
             case CPFBlocks:
                 [rtn addObject:stringWithID("Blocks",feature)];
                 break;
@@ -75,6 +85,9 @@ static int currentValues[CPFeaturesCount];
                 break;
             case CPFVoterDistricts:
                 [rtn addObject:stringWithID("Voting Districts",feature)];
+                break;
+            case CPFSchoolDistricts:
+                [rtn addObject:stringWithID("School Districts",feature)];
                 break;
             case CPFeaturesCount:
                 break;
@@ -146,13 +159,13 @@ static int currentValues[CPFeaturesCount];
     NSMutableArray *rtn = NSMutableArray.new;
     
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total people","B00001e1",0]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total housing units","CPBlockVB00002e1",1]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total housing units","B00002e1",1]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total number of people","POPTOTAL",2]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Households with 1 person alone","LIVEDALONE",3]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Family households with children and headed by a married couple","MARRKIDS",4]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Family households with children and headed by a single person or unmarried people","UNMARRKIDS",5]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Family households with no children","FAMNOKIDS",6]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Other households that are not families\n and with more than 1 person","NONFAMILY",7]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Other households that are not families and with more than 1 person","NONFAMILY",7]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Males age 0 to 4","M_0_4",8]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Males age 5 to 9","M_5_9",9]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Males age 10 to 14","M_10_14",10]];

@@ -2984,6 +2984,7 @@ haveVV:
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
@@ -3119,7 +3120,8 @@ haveVV:
         {
             ThemeLegend *tl = legends[i];
             
-            if (tl.drawOnMap || ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+            if (tl.drawOnMap ||
+                (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet || ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp))
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
