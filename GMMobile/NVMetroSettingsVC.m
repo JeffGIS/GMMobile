@@ -315,6 +315,7 @@
                                          textArray:optionsList
                                      includeCancel:YES];
     
+    nvptv.allowsMultipleSelection = YES;
     nvptv.tag = button.tag;
 }
 
