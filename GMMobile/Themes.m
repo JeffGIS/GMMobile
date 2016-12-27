@@ -64,13 +64,7 @@
             [_themeList addObject:thm];
             break;
         case HCConfigMetroProp:
-            thm = [Theme createTheme:MGVWaterLineTheme];
-            [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVHydrantTheme];
-            [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVFiberLineTheme];
-            [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVFiberPointTheme];
+            thm = [Theme createTheme:MetroPropTheme];
             [_themeList addObject:thm];
             break;
         default:
@@ -134,7 +128,8 @@
     for (Theme *thm in _themeList)
     {
         thm.displayID = displayID;
-        
+        if (thm.type == MetroPropTheme)
+            rtn = DataPass;
         if (ConfigurationControl.sharedInstance.legendList.count > i)
         {
             ThemeLegend *tleg = ConfigurationControl.sharedInstance.legendList[i];

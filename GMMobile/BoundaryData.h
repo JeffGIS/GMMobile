@@ -22,6 +22,7 @@
 @property NSInteger fileSize;
 @property (nonatomic) int datasetVersion;
 @property int zoom;
+@property ItemProcessingPassTypes pass;
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;

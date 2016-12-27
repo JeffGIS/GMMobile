@@ -11,10 +11,12 @@
 typedef NS_ENUM(NSInteger, CPFeatures)
 {
     CPFParcels,
+    CPFLandUse,
     CPFBlocks,
     CPFBlockGroups,
     CPFTracts,
     CPFVoterDistricts,
+    CPFSchoolDistricts,
     CPFeaturesCount
 };
 
@@ -42,12 +44,15 @@ typedef NS_ENUM(NSInteger, CPBlockValues)
 + (NVMetroSettings *)sharedInstance;
 
 @property CPFeatures currentFeature;
+@property int currentFeatureValue;
 @property BOOL OverUnder;
+@property int themeClassType;
 
 
 - (NSArray *) features;
 - (NSString *) currentFeatureText;
 - (NSString *) currentValueText;
+- (NSString *) currentValueField;
 - (void) setCurrentValue:(NSInteger)value;
 - (NSArray *) valuesForFeature:(CPFeatures)feature;
 

@@ -309,6 +309,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    bd = [[BoundaryData alloc] init];
                                                    opened = [bd open];
                                                }
+                                               else if (dataType == GetDatabaseSettingCensus)
+                                               {
+                                                   bd = [[BoundaryData alloc] init];
+                                                   opened = [bd open];
+                                               }
                                                else if (dataType == GetDatabaseSettingAlleyWall)
                                                {
                                                    awd = [[AlleyWallData alloc] init];
@@ -351,6 +356,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                else if (dataType == GetDatabaseSettingCrimes)
                                                    [crimed startTransaction];
                                                
+                                               else if (dataType == GetDatabaseSettingCensus)
+                                                   [bd startTransaction];
                                                else
                                                    [pd startTransaction];
                                                
@@ -382,7 +389,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                        [awd executeCmd:str
                                                           sendToServer:_sendAlleyToServer];
                                                    }
-                                                   
+                                                   else if (dataType == GetDatabaseSettingCensus)
+                                                       [bd executeCmd:str];
                                                    else
                                                        [pd executeCmd:str];
                                                    
@@ -396,6 +404,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    [sd commitTransaction];
                                                
                                                else if (dataType == GetDatabaseSettingAreas)
+                                                   [bd commitTransaction];
+                                               
+                                               else if (dataType == GetDatabaseSettingCensus)
                                                    [bd commitTransaction];
                                                
                                                else if (dataType == GetDatabaseSettingAlleyWall)
@@ -426,6 +437,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    [sd close];
                                                
                                                if (dataType == GetDatabaseSettingAreas)
+                                                   [bd close:opened];
+                                               
+                                               if (dataType == GetDatabaseSettingCensus)
                                                    [bd close:opened];
                                                
                                                if (dataType == GetDatabaseSettingCrimes)

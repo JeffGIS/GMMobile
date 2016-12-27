@@ -110,6 +110,19 @@
                         action:@selector(overUnderSwitchTapped:)
               forControlEvents:UIControlEventValueChanged];
     
+    UISegmentedControl *segControlClassType =
+    [[UISegmentedControl alloc] initWithItems:@[@"Equal Class Ranges", @"Equal Class Counts"]];
+    
+    segControlClassType.translatesAutoresizingMaskIntoConstraints = NO;
+    segControlClassType.tintColor = UIColor.blackColor;
+    segControlClassType.selectedSegmentIndex = 0;
+    NSDictionary *attributesClassType = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
+    [segControlClassType setTitleTextAttributes:attributesClassType forState:UIControlStateNormal];
+    
+    [segControlClassType addTarget:self
+                   action:@selector(segControlClassTypeTapped:)
+         forControlEvents:UIControlEventValueChanged];
+    
     UISegmentedControl *segControl =
     [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
     
@@ -178,6 +191,8 @@
                 break;
                 
             case 4:
+                [view addSubview:segControlClassType];
+                [segControlClassType constrainCenterYToAnchor:view.centerYAnchor];
                 [view addSubview:overUnderLabel];
                 [overUnderLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [overUnderLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
@@ -380,12 +395,16 @@ didReturnWithSelectedRows:(NSArray *)selectedRows
 
 - (void)overUnderSwitchTapped:(UISwitch *)theSwitch
 {
-    
+    NVMetroSettings.sharedInstance.OverUnder = theSwitch.state;
 }
 
 - (void)segControlTapped:(UISegmentedControl *)segControl
 {
-    
+}
+
+- (void)segControlClassTypeTapped:(UISegmentedControl *)segControl
+{
+    NVMetroSettings.sharedInstance.themeClassType = (int)segControl.selectedSegmentIndex;
 }
 
 @end
