@@ -348,6 +348,30 @@
     [popoverTableView hide:YES];
 }
 
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+didReturnWithSelectedRows:(NSArray *)selectedRows
+{
+    switch (popoverTableView.tag)
+    {
+        case 2://feature
+            break;
+            
+        case 3://value
+            break;
+            
+        case 5://color scheme
+            break;
+            
+        case 6://text
+            break;
+            
+        default:
+            break;
+    }
+    
+    [popoverTableView hide:YES];
+}
+
 - (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
 {
     [popoverTableView hide:YES];
