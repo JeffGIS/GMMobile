@@ -7,9 +7,9 @@
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
-@property (nonatomic) CGFloat cornerRadius;
-@property UIButton *featureButton;
-@property UIButton *valueButton;
+@property (nonatomic) UIButton *featureButton;
+@property (nonatomic) UIButton *valueButton;
+
 @end
 
 @implementation NVMetroSettingsVC
@@ -25,17 +25,15 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    _cornerRadius = 10.0;
-    
-    CGFloat margin = 16.0, bigFont = 36.0, littleFont = 28.0;
+    CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 30.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 6.0, bigFont = 18.0, littleFont = 12.0, _cornerRadius = 4.0;
+        margin = 6.0, bigFont = 20.0, littleFont = 16.0, cornerRadius = 4.0;
     
     UIView *topView = UIView.new;
     topView.translatesAutoresizingMaskIntoConstraints = NO;
     topView.backgroundColor = UserDefaults.defaults.appleGray;
-    topView.layer.cornerRadius = _cornerRadius;
+    topView.layer.cornerRadius = cornerRadius;
     
     [self.view addSubview:topView];
     [topView constrainTopToAnchor:self.view.topAnchor constant:margin];
@@ -45,14 +43,14 @@
     UIView *bottomView = UIView.new;
     bottomView.translatesAutoresizingMaskIntoConstraints = NO;
     bottomView.backgroundColor = UserDefaults.defaults.appleGray;
-    bottomView.layer.cornerRadius = _cornerRadius;
+    bottomView.layer.cornerRadius = cornerRadius;
     
     [self.view addSubview:bottomView];
     [bottomView constrainTopToAnchor:topView.bottomAnchor constant:margin];
     [bottomView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [bottomView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [bottomView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
-    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.4];
+    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:(1.0 / 3.0)];
     
     UILabel *topLabel = UILabel.new;
     topLabel.text = @"Choropleth Parameters";
@@ -110,14 +108,15 @@
                         action:@selector(overUnderSwitchTapped:)
               forControlEvents:UIControlEventValueChanged];
     
+    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
+    
     UISegmentedControl *segControlClassType =
     [[UISegmentedControl alloc] initWithItems:@[@"Equal Class Ranges", @"Equal Class Counts"]];
     
     segControlClassType.translatesAutoresizingMaskIntoConstraints = NO;
     segControlClassType.tintColor = UIColor.blackColor;
     segControlClassType.selectedSegmentIndex = 0;
-    NSDictionary *attributesClassType = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
-    [segControlClassType setTitleTextAttributes:attributesClassType forState:UIControlStateNormal];
+    [segControlClassType setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
     [segControlClassType addTarget:self
                    action:@selector(segControlClassTypeTapped:)
@@ -129,7 +128,6 @@
     segControl.translatesAutoresizingMaskIntoConstraints = NO;
     segControl.tintColor = UIColor.blackColor;
     segControl.selectedSegmentIndex = 0;
-    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
     [segControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
     [segControl addTarget:self
@@ -169,10 +167,10 @@
             case 2:
                 [view addSubview:featureLabel];
                 [featureLabel constrainCenterYToAnchor:view.centerYAnchor];
-                [featureLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
+                [featureLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_featureButton];
                 [_featureButton constrainCenterYToAnchor:view.centerYAnchor];
-                [_featureButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                [_featureButton constrainLeadingToAnchor:featureLabel.trailingAnchor constant:margin];
                 _featureButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
@@ -181,10 +179,11 @@
             case 3:
                 [view addSubview:valueLabel];
                 [valueLabel constrainCenterYToAnchor:view.centerYAnchor];
-                [valueLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
+                [valueLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_valueButton];
                 [_valueButton constrainCenterYToAnchor:view.centerYAnchor];
-                [_valueButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                [_valueButton constrainLeadingToAnchor:valueLabel.trailingAnchor constant:margin];
+                [_valueButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:-margin].active = YES;
                 _valueButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
@@ -192,13 +191,14 @@
                 
             case 4:
                 [view addSubview:segControlClassType];
-                [segControlClassType constrainCenterYToAnchor:view.centerYAnchor];
+                [segControlClassType constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
+                [segControlClassType constrainCenterXToAnchor:view.centerXAnchor];
                 [view addSubview:overUnderLabel];
-                [overUnderLabel constrainCenterYToAnchor:view.centerYAnchor];
-                [overUnderLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
+                [overUnderLabel constrainTopToAnchor:view.centerYAnchor constant:(margin / 2.5)];
+                [overUnderLabel constrainTrailingToAnchor:view.centerXAnchor constant:(-margin / 2.5)];
                 [view addSubview:overUnderSwitch];
-                [overUnderSwitch constrainCenterYToAnchor:view.centerYAnchor];
-                [overUnderSwitch constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                [overUnderSwitch constrainTopToAnchor:view.centerYAnchor constant:(margin / 2.5)];
+                [overUnderSwitch constrainLeadingToAnchor:view.centerXAnchor constant:(margin / 2.5)];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 break;
@@ -206,10 +206,10 @@
             case 5:
                 [view addSubview:colorSchemeLabel];
                 [colorSchemeLabel constrainCenterYToAnchor:view.centerYAnchor];
-                [colorSchemeLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
+                [colorSchemeLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:colorSchemeButton];
                 [colorSchemeButton constrainCenterYToAnchor:view.centerYAnchor];
-                [colorSchemeButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                [colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
                 colorSchemeButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
@@ -218,10 +218,10 @@
             case 6:
                 [view addSubview:textLabel];
                 [textLabel constrainCenterYToAnchor:view.centerYAnchor];
-                [textLabel constrainTrailingToAnchor:view.centerXAnchor constant:-margin];
+                [textLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:textButton];
                 [textButton constrainCenterYToAnchor:view.centerYAnchor];
-                [textButton constrainLeadingToAnchor:view.centerXAnchor constant:margin];
+                [textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
                 textButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
@@ -242,6 +242,8 @@
                 [segControl constrainCenterXToAnchor:view.centerXAnchor];
                 [segControl constrainTopToAnchor:view.centerYAnchor constant:(-margin * 1.8)];
                 [segControl constrainBottomToAnchor:view.centerYAnchor constant:(margin * 1.8)];
+                [segControl constrainLeadingToAnchor:view.leadingAnchor constant:margin];
+                [segControl constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
                 break;
                 
             default:
@@ -278,10 +280,10 @@
            fontSize:(CGFloat)fontSize
 {
     button.translatesAutoresizingMaskIntoConstraints = NO;
-    button.backgroundColor = UIColor.blackColor;
-    button.layer.cornerRadius = _cornerRadius;
     button.titleLabel.textAlignment = NSTextAlignmentLeft;
+    button.titleLabel.backgroundColor = UIColor.blackColor;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:fontSize];
+    button.titleLabel.numberOfLines = 0;
     
     [button setTitleColor:UIColor.whiteColor
                  forState:UIControlStateNormal];
@@ -330,6 +332,7 @@
                                          textArray:optionsList
                                      includeCancel:YES];
     
+    nvptv.allowsMultipleSelection = YES;
     nvptv.tag = button.tag;
 }
 
