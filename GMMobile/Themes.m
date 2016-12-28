@@ -25,7 +25,7 @@
     switch (ConfigurationControl.sharedInstance.currentApp)
     {
         case HCConfigFromSpreadsheet:
-            thm = [Theme createTheme:PropertyListTheme];
+            thm = [Theme createTheme:MetroLandUseTheme];
             [_themeList addObject:thm];
             break;
         case HCConfigCrimes:

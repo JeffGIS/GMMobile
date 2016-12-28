@@ -324,7 +324,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        [pd displayParcels:_context
                                                                 llCorners:&_latlonCornerPoints
                                                                  LLBounds:&_latlonBounds
-                                                               viewBounds:&_viewBounds];
+                                                               viewBounds:&_viewBounds
+                                                                   themes:nil];
                                                        
                                                        [pd displayParcelText:_context
                                                                    llCorners:&_latlonCornerPoints
@@ -647,7 +648,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         [pd displayParcels:_context
                                  llCorners:&_latlonCornerPoints
                                   LLBounds:&_latlonBounds
-                                viewBounds:&_viewBounds];
+                                viewBounds:&_viewBounds
+                                    themes:themes];
+
                         
                         [pd displayParcelText:_context
                                     llCorners:&_latlonCornerPoints
@@ -680,9 +683,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         bd.zoom = _zoom;
                         [bd displayCensusAreas:_context
                                           type:@"BLOCK"
+                        displayCharacteristics:dc
                                      llCorners:&_latlonCornerPoints
                                       LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
+                                    viewBounds:&_viewBounds
+                                        themes:themes];
                     }
                         break;
                     case CPFBlockGroups:
@@ -693,9 +698,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         bd.zoom = _zoom;
                         [bd displayCensusAreas:_context
                                           type:@"BLOCKGROUP"
+                        displayCharacteristics:dc
                                      llCorners:&_latlonCornerPoints
                                       LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
+                                    viewBounds:&_viewBounds
+                                        themes:themes];
                     }
                         break;
                     case CPFTracts:
@@ -706,10 +713,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         bd.zoom = _zoom;
                         [bd displayCensusAreas:_context
                                           type:@"TRACT"
+                        displayCharacteristics:dc
                                      llCorners:&_latlonCornerPoints
                                       LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds];
-                    }
+                                    viewBounds:&_viewBounds
+                                        themes:themes];
+                   }
                         break;
                 }
                 

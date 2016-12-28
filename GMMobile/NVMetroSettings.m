@@ -58,6 +58,7 @@ static int currentValues[CPFeaturesCount];
 - (void) setCurrentValue:(NSInteger)value
 {
     currentValues[_currentFeature] = (int)value;
+    _currentFeatureValue = (int)value;
 }
 
 - (NSArray *) features

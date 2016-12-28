@@ -3,6 +3,7 @@
 
 #import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "Themes.h"
 @import CoreGraphics;
 #import <CoreText/CoreText.h>
 
@@ -133,7 +134,9 @@ typedef struct {int nMatchingProperties;
 - (void)displayParcels:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds;
+            viewBounds:(MNMXCORD *)pvbounds
+                themes:(Themes*)themes;
+
 
 -(void)displayParcelText:(CGContextRef)context
                llCorners:(CORNERPOINTS *) latlonCornerPoints

@@ -943,6 +943,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
+                themes:(Themes*)themes
 {
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);

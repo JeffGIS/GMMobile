@@ -47,6 +47,12 @@ typedef NS_ENUM(NSInteger, CPBlockValues)
 @property int currentFeatureValue;
 @property BOOL OverUnder;
 @property int themeClassType;
+@property int numThemeClasses;
+@property int roundTo;
+@property NSMutableArray * themeClassMin;
+@property NSMutableArray * themeClassMax;
+@property NSMutableArray * themeClassCounts;
+
 
 
 - (NSArray *) features;

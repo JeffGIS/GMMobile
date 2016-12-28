@@ -733,12 +733,85 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         CGContextDrawPath(context, kCGPathFill);
     }
 }
+- (BOOL) createSortedValuesTable
+{
+    BOOL rtn = FALSE;
+    
+    NSString * cmd = @"DROP TABLE IF EXISTS SORTEDVALUES;CREATE TEMP TABLE SORTEDVALUES (Value DOUBLE);";
+    rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    [self startTransaction];
+    return rtn;
+}
 
+- (void) addToSortedValues:(double)value
+{
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%f);",value];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+}
+
+- (NSArray *) getClassBounds:(int)numValues
+                  maxClasses:(int)maxClass
+                    minValue:(double)minVal
+                    maxValue:(double)maxVal
+                       theme:(Theme*)thm
+{
+    NSMutableArray * classBounds = NSMutableArray.new;
+    double value=0, lastValue=DBL_MIN;
+    [self commitTransaction];
+    sqlite3_stmt *statement = NULL;
+    int * classCounts = calloc (maxClass*3,sizeof(int));
+    int * classMin = classCounts + maxClass;
+    int * classMax = classMin + maxClass;
+    double numPerClass = (double)numValues / maxClass;
+    
+    NSString * query = @"SELECT Value FROM SORTEDVALUES ORDER BY Value";
+    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    int iClass = 0;
+    int iValue = 0;
+    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    {
+        value = sqlite3_column_double(statement,0);
+        if (!iValue)
+            classMin[0] = value;
+        else if (value != lastValue)
+        {
+            if (iValue > (iClass+1) * numPerClass)
+            {
+                classMax[iClass++] = lastValue;
+                classMin[iClass] = value;
+            }
+        }
+        lastValue = value;
+        classCounts[iClass]++;
+        iValue++;
+    }
+    classMax[iClass] = value;
+    SQLOK(0,sqlite3_finalize(statement), self.database);
+    query = @"DROP TABLE IF EXISTS SORTEDVALUES;";
+    [self executeCmd:(LPSTR)query.UTF8String];
+    NVMetroSettings.sharedInstance.numThemeClasses = iClass+1;
+    NVMetroSettings.sharedInstance.themeClassCounts = NSMutableArray.new;
+    NVMetroSettings.sharedInstance.themeClassMin = NSMutableArray.new;
+    NVMetroSettings.sharedInstance.themeClassMax = NSMutableArray.new;
+    for (int iClass = 0;iClass < NVMetroSettings.sharedInstance.numThemeClasses;iClass++)
+    {
+        NSNumber * count = [NSNumber numberWithInteger:classCounts[iClass]];
+        NSNumber * min = [NSNumber numberWithInteger:classMin[iClass]];
+        NSNumber * max = [NSNumber numberWithInteger:classMax[iClass]];
+        [NVMetroSettings.sharedInstance.themeClassCounts addObject:count];
+        [NVMetroSettings.sharedInstance.themeClassMin addObject:min];
+        [NVMetroSettings.sharedInstance.themeClassMax addObject:max];
+    }
+    free (classCounts);
+    return classBounds;
+}
 -(void)displayCensusAreas:(CGContextRef)context
-                    type:(NSString *)type
-            llCorners:(CORNERPOINTS *) latlonCornerPoints
-             LLBounds:(MNMXCORD *)platlonBounds
-           viewBounds:(MNMXCORD *)pvbounds
+                     type:(NSString *)type
+   displayCharacteristics:(DisplayCharacteristics*)dc
+                llCorners:(CORNERPOINTS *) latlonCornerPoints
+                 LLBounds:(MNMXCORD *)platlonBounds
+               viewBounds:(MNMXCORD *)pvbounds
+                   themes:(Themes*)themes;
 {
     NSString * field = [NVMetroSettings.sharedInstance currentValueField];
     NSString *query = @"";
@@ -746,6 +819,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
     int numPoints;
+    int numValues = 0;
     //NSInteger keyval;
     int numLoops;
     NSString * key = type;
@@ -753,12 +827,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString * dataTable = [NSString stringWithFormat:@"CENSUS%@DATA",key];
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
-    //double minValue, maxValue;
+    double minValue=DBL_MAX, maxValue=DBL_MIN;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     BOOL opened = [self open];
-    
+    if (_pass == DataPass)
+        [self createSortedValuesTable];
     query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     /*query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
@@ -772,7 +847,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         double dataValue = sqlite3_column_double(statement,6);
         if (_pass == DataPass)
         {
-            
+            if (dataValue > 0)
+            {
+                [self addToSortedValues:dataValue];
+                minValue = min (minValue,dataValue);
+                maxValue = max (maxValue,dataValue);
+                numValues++;
+            }
         }
         else
         {
@@ -806,7 +887,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            
+            dc.iValue = dataValue;
             if (!NVMetroSettings.sharedInstance.currentFeatureValue)
                 [self drawUseCode:context
                           nPoints:numPoints
@@ -815,15 +896,29 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                            points:llpoints
                         withColor:UIColor.redColor.CGColor
                          andWidth:3];
-            else
+            else if ([themes setDisplayCharacteristics:dc
+                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+            {
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
-                        withColor:UIColor.redColor.CGColor];
+                        withColor:dc.fillColor.CGColor];
+            }
         }
     }
     
     SQLOK(0,sqlite3_finalize(statement), self.database);
+    if (_pass == DataPass)
+    {
+        Theme * thm = themes.themeList[0];
+        [self getClassBounds:numValues
+                  maxClasses:8
+                    minValue:minValue
+                    maxValue:maxValue
+                       theme:thm];
+        [themes setAppThemes];
+    }
+
     [self close:opened];
 }
 

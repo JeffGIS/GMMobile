@@ -61,9 +61,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
 -(void)displayCensusAreas:(CGContextRef)context
                      type:(NSString *)type
+   displayCharacteristics:(DisplayCharacteristics*)dc
                 llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
-               viewBounds:(MNMXCORD *)pvbounds;
+               viewBounds:(MNMXCORD *)pvbounds
+                   themes:(Themes*)themes;
 - (LPDPOINT)getPolygonPointsForBoundary:(int)refno
                               numPoints:(int *)numPoints
                                numLoops:(int *)numLoops

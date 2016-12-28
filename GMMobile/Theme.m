@@ -81,6 +81,28 @@
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
             thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
             [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = NVMetroSettings.sharedInstance.numThemeClasses;
+            for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
+            {
+                NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
+                NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
+                NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
+                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",min.integerValue,max.integerValue]];
+                class.minValue = min.integerValue;
+                class.maxValue = max.integerValue;
+                class.numItems = (int)count.integerValue;
+                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
+                class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
+                [thm.classes addObject:class];
+            }
+            [thm adjustClassTitles];
+            break;
+        case MetroLandUseTheme:
+            thm.setColor = YES;
+            thm.legend.appendClassCount = YES;
+            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
+            thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
+            [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = 0;
             class = [ThemeClass createWithTitle:@"Single Family Residential"];
             class.values = @[@"111",@"112",@"113",@"116"];
@@ -164,6 +186,7 @@
             if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
+            
             [thm adjustClassTitles];
             break;
         case PropertyListTheme:
@@ -955,6 +978,25 @@ int getThemeOpt(ThemeTypes type)
                 }
                     break;
             }
+                break;
+            case MetroPropTheme:
+                val = 0;
+                rtn = DO_NOT_DISPLAY_ITEM;
+                for (ThemeClass *cls in _classes)
+                {
+                    if (dc.iValue >= cls.minValue && dc.iValue <= cls.maxValue)
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+                
+                
                 break;
             case Part1Theme:
                 if (dc.UCR < 1 || dc.UCR > 10 || dc.UCR == 9)
