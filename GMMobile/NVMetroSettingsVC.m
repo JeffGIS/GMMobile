@@ -115,7 +115,7 @@
     
     segControlClassType.translatesAutoresizingMaskIntoConstraints = NO;
     segControlClassType.tintColor = UIColor.blackColor;
-    segControlClassType.selectedSegmentIndex = 0;
+    segControlClassType.selectedSegmentIndex = NVMetroSettings.sharedInstance.themeClassType;
     [segControlClassType setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
     [segControlClassType addTarget:self

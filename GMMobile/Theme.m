@@ -76,6 +76,8 @@
     switch (type)
     {
         case MetroPropTheme:
+        {
+            CGFloat PropListAlpha = 0.55;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
@@ -96,6 +98,7 @@
                 [thm.classes addObject:class];
             }
             [thm adjustClassTitles];
+        }
             break;
         case MetroLandUseTheme:
             thm.setColor = YES;

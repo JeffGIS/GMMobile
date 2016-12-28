@@ -745,8 +745,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
 - (void) addToSortedValues:(double)value
 {
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%f);",value];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
+    if (NVMetroSettings.sharedInstance.themeClassType > -1)
+    {
+        NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%f);",value];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+    }
 }
 
 - (NSArray *) getClassBounds:(int)numValues
@@ -757,39 +760,76 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     NSMutableArray * classBounds = NSMutableArray.new;
     double value=0, lastValue=DBL_MIN;
+    double d95percentValue=maxVal;
+    int i95percentCount = 0.95 * numValues;
     [self commitTransaction];
     sqlite3_stmt *statement = NULL;
+    int factor = 1;
+    if (maxVal > 0 && maxVal <= 1.0)
+        factor = 100;
     int * classCounts = calloc (maxClass*3,sizeof(int));
     int * classMin = classCounts + maxClass;
     int * classMax = classMin + maxClass;
     double numPerClass = (double)numValues / maxClass;
     
-    NSString * query = @"SELECT Value FROM SORTEDVALUES ORDER BY Value";
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
-    int iClass = 0;
-    int iValue = 0;
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    if (NVMetroSettings.sharedInstance.themeClassType > -1)
     {
-        value = sqlite3_column_double(statement,0);
-        if (!iValue)
-            classMin[0] = value;
-        else if (value != lastValue)
+        NSString * query = @"SELECT Value FROM SORTEDVALUES ORDER BY Value";
+        SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+        int iClass = 0;
+        int iValue = 0;
+        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
-            if (iValue > (iClass+1) * numPerClass)
+            value = sqlite3_column_double(statement,0);
+            value *= factor;
+            if (iValue == i95percentCount)
+                d95percentValue = value;
+            if (!iValue)
+                classMin[0] = value;
+            else if (value != lastValue)
             {
-                classMax[iClass++] = lastValue;
-                classMin[iClass] = value;
+                if (iValue > classMin[0] + (iClass+1) * numPerClass)
+                {
+                    classMax[iClass++] = lastValue;
+                    classMin[iClass] = value;
+                }
             }
+            lastValue = value;
+            classCounts[iClass]++;
+            iValue++;
         }
-        lastValue = value;
-        classCounts[iClass]++;
-        iValue++;
+        classMax[iClass] = value;
+        SQLOK(0,sqlite3_finalize(statement), self.database);
+        query = @"DROP TABLE IF EXISTS SORTEDVALUES;";
+        [self executeCmd:(LPSTR)query.UTF8String];
+        NVMetroSettings.sharedInstance.numThemeClasses = iClass+1;
     }
-    classMax[iClass] = value;
-    SQLOK(0,sqlite3_finalize(statement), self.database);
-    query = @"DROP TABLE IF EXISTS SORTEDVALUES;";
-    [self executeCmd:(LPSTR)query.UTF8String];
-    NVMetroSettings.sharedInstance.numThemeClasses = iClass+1;
+    else
+    {
+        NVMetroSettings.sharedInstance.numThemeClasses = maxClass;
+        double classInc = (maxVal - minVal) / maxClass;
+        classMin[0] = minVal * factor;
+        for (int iclass = 0;iclass < maxClass-1;iclass++)
+        {
+            classMax[iclass] = IDNINT ((iclass+1) * classInc);
+            classMin[iclass+1] = classMax[iclass]+1;
+        }
+        classMax[maxClass-1] = IDNINT (maxVal);
+    }
+    if (!NVMetroSettings.sharedInstance.themeClassType)
+    {
+        NVMetroSettings.sharedInstance.numThemeClasses = maxClass;
+        double maxVal2 = d95percentValue;
+        double classInc = (maxVal2 - minVal) / maxClass;
+        classMin[0] = minVal * factor;
+        for (int iclass = 0;iclass < maxClass-1;iclass++)
+        {
+            classMax[iclass] = IDNINT ((iclass+1) * classInc);
+            classMin[iclass+1] = classMax[iclass]+1;
+        }
+        classMax[maxClass-1] = IDNINT (maxVal);
+    }
+    NVMetroSettings.sharedInstance.valueMultiplier = factor;
     NVMetroSettings.sharedInstance.themeClassCounts = NSMutableArray.new;
     NVMetroSettings.sharedInstance.themeClassMin = NSMutableArray.new;
     NVMetroSettings.sharedInstance.themeClassMax = NSMutableArray.new;
@@ -828,12 +868,15 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
+    int factor = 1;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     BOOL opened = [self open];
     if (_pass == DataPass)
         [self createSortedValuesTable];
+    else
+        factor = NVMetroSettings.sharedInstance.valueMultiplier;
     query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     /*query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
@@ -845,6 +888,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         double dataValue = sqlite3_column_double(statement,6);
+        dataValue *= factor;
         if (_pass == DataPass)
         {
             if (dataValue > 0)

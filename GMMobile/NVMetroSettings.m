@@ -110,7 +110,7 @@ static int currentValues[CPFeaturesCount];
             rtn = [self valuesForBlocks];
             break;
         case CPFBlockGroups:
-            rtn = [NSArray arrayWithObjects:@"", nil];
+            rtn = [self valuesForBlocks];
             break;
         case CPFTracts:
             rtn = [NSArray arrayWithObjects:@"", nil];
