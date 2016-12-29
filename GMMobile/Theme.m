@@ -89,7 +89,7 @@
                 NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
                 NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
                 NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
-                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",min.integerValue,max.integerValue]];
+                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",(long)min.integerValue,(long)max.integerValue]];
                 class.minValue = min.integerValue;
                 class.maxValue = max.integerValue;
                 class.numItems = (int)count.integerValue;

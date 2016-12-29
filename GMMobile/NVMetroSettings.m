@@ -120,6 +120,9 @@ static int currentValues[CPFeaturesCount];
             break;
         case CPFeaturesCount:
             break;
+            
+        default:
+            break;
     }
     return rtn;
 }
