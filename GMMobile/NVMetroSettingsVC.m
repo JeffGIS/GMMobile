@@ -25,10 +25,10 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 30.0;
+    CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 28.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 6.0, bigFont = 20.0, littleFont = 16.0, cornerRadius = 4.0;
+        margin = 6.0, bigFont = 20.0, littleFont = 18.0, cornerRadius = 4.0;
     
     UIView *topView = UIView.new;
     topView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -50,7 +50,7 @@
     [bottomView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [bottomView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [bottomView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
-    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:(1.0 / 3.0)];
+    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.25];
     
     UILabel *topLabel = UILabel.new;
     topLabel.text = @"Choropleth Parameters";
@@ -110,29 +110,41 @@
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
     
-    UISegmentedControl *segControlClassType =
-    [[UISegmentedControl alloc] initWithItems:@[@"Equal Class Ranges", @"Equal Class Counts"]];
+    UISegmentedControl *controlClassSC =
+    [[UISegmentedControl alloc] initWithItems:@[@"Equal Ranges", @"Equal Counts"]];
     
-    segControlClassType.translatesAutoresizingMaskIntoConstraints = NO;
-    segControlClassType.tintColor = UIColor.blackColor;
-    segControlClassType.selectedSegmentIndex = NVMetroSettings.sharedInstance.themeClassType;
-    [segControlClassType setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    controlClassSC.translatesAutoresizingMaskIntoConstraints = NO;
+    controlClassSC.tintColor = UIColor.blackColor;
+    controlClassSC.selectedSegmentIndex = NVMetroSettings.sharedInstance.themeClassType;
+    [controlClassSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
-    [segControlClassType addTarget:self
-                   action:@selector(segControlClassTypeTapped:)
-         forControlEvents:UIControlEventValueChanged];
+    [controlClassSC addTarget:self
+                       action:@selector(controlClassSCTapped:)
+             forControlEvents:UIControlEventValueChanged];
     
-    UISegmentedControl *segControl =
+    UISegmentedControl *displayParamsSC =
     [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
     
-    segControl.translatesAutoresizingMaskIntoConstraints = NO;
-    segControl.tintColor = UIColor.blackColor;
-    segControl.selectedSegmentIndex = 0;
-    [segControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    displayParamsSC.translatesAutoresizingMaskIntoConstraints = NO;
+    displayParamsSC.tintColor = UIColor.blackColor;
+    displayParamsSC.selectedSegmentIndex = 0;
+    [displayParamsSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
-    [segControl addTarget:self
-                   action:@selector(segControlTapped:)
-         forControlEvents:UIControlEventValueChanged];
+    [displayParamsSC addTarget:self
+                        action:@selector(displayParamsSCTapped:)
+              forControlEvents:UIControlEventValueChanged];
+    
+    UISegmentedControl *pctPopSC =
+    [[UISegmentedControl alloc] initWithItems:@[@"Pct of Population", @"Pct of Units"]];
+    
+    pctPopSC.translatesAutoresizingMaskIntoConstraints = NO;
+    pctPopSC.tintColor = UIColor.blackColor;
+    pctPopSC.selectedSegmentIndex = 0;
+    [pctPopSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [pctPopSC addTarget:self
+                 action:@selector(pctPopSCTapped:)
+       forControlEvents:UIControlEventValueChanged];
     
     for (int i = 1; i < 9; i++)
     {
@@ -163,7 +175,7 @@
                 [topLabel constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
                 [view constrainTopToAnchor:topView.topAnchor];
                 break;
-            
+                
             case 2:
                 [view addSubview:featureLabel];
                 [featureLabel constrainCenterYToAnchor:view.centerYAnchor];
@@ -173,7 +185,7 @@
                 [_featureButton constrainLeadingToAnchor:featureLabel.trailingAnchor constant:margin];
                 _featureButton.tag = i;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.75];
                 break;
                 
             case 3:
@@ -190,15 +202,20 @@
                 break;
                 
             case 4:
-                [view addSubview:segControlClassType];
-                [segControlClassType constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
-                [segControlClassType constrainCenterXToAnchor:view.centerXAnchor];
+                [view addSubview:pctPopSC];
+                [pctPopSC constrainTopToAnchor:view.centerYAnchor constant:margin / 2.5];
+                [pctPopSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [pctPopSC constrainHeightToConstant:bigFont];
                 [view addSubview:overUnderLabel];
-                [overUnderLabel constrainTopToAnchor:view.centerYAnchor constant:(margin / 2.5)];
-                [overUnderLabel constrainTrailingToAnchor:view.centerXAnchor constant:(-margin / 2.5)];
+                [overUnderLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
+                [overUnderLabel constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
                 [view addSubview:overUnderSwitch];
-                [overUnderSwitch constrainTopToAnchor:view.centerYAnchor constant:(margin / 2.5)];
-                [overUnderSwitch constrainLeadingToAnchor:view.centerXAnchor constant:(margin / 2.5)];
+                [overUnderSwitch constrainLeadingToAnchor:overUnderLabel.trailingAnchor constant:(margin / 2.5)];
+                [overUnderSwitch constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
+                [view addSubview:controlClassSC];
+                [controlClassSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [controlClassSC constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
+                [controlClassSC constrainHeightToConstant:bigFont];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 break;
@@ -236,14 +253,12 @@
                 
             case 8:
                 [view constrainTopToAnchor:[bottomView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[bottomView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[bottomView viewWithTag:i-1].heightAnchor multiplier:1.5];
                 [view constrainBottomToAnchor:bottomView.bottomAnchor];
-                [view addSubview:segControl];
-                [segControl constrainCenterXToAnchor:view.centerXAnchor];
-                [segControl constrainTopToAnchor:view.centerYAnchor constant:(-margin * 1.8)];
-                [segControl constrainBottomToAnchor:view.centerYAnchor constant:(margin * 1.8)];
-                [segControl constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [segControl constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [view addSubview:displayParamsSC];
+                [displayParamsSC constrainCenterXToAnchor:view.centerXAnchor];
+                [displayParamsSC constrainCenterYToAnchor:view.centerYAnchor];
+                [displayParamsSC constrainHeightToConstant:bigFont];
                 break;
                 
             default:
@@ -351,7 +366,7 @@
         case 3://value
             [NVMetroSettings.sharedInstance setCurrentValue:index];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
-           break;
+            break;
             
         case 5://color scheme
             break;
@@ -400,13 +415,19 @@ didReturnWithSelectedRows:(NSArray *)selectedRows
     NVMetroSettings.sharedInstance.OverUnder = theSwitch.state;
 }
 
-- (void)segControlTapped:(UISegmentedControl *)segControl
+- (void)displayParamsSCTapped:(UISegmentedControl *)segControl
 {
+    
 }
 
-- (void)segControlClassTypeTapped:(UISegmentedControl *)segControl
+- (void)controlClassSCTapped:(UISegmentedControl *)segControl
 {
     NVMetroSettings.sharedInstance.themeClassType = (int)segControl.selectedSegmentIndex;
+}
+
+- (void)pctPopSCTapped:(UISegmentedControl *)segControl
+{
+    
 }
 
 @end

@@ -80,9 +80,6 @@
 - (void)findPIDViewController:(FindPIDViewController *)findPID
                  didSelectPID:(NSString *)PID
 {
-    [findPID dismissViewControllerAnimated:YES
-                                completion:nil];
-    
     PropertyData *propData = [[PropertyData alloc] init];
     
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
@@ -90,20 +87,23 @@
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentPropOwner = [propData getOwnerNameForPID:PID];
     self.tabBarController.selectedIndex = 0;
+    
+    [findPID dismissViewControllerAnimated:YES
+                                completion:nil];
 }
 
 - (void)findAddressViewController:(FindAddressViewController *)findAddress
                  didSelectAddress:(NSString *)address
                               PID:(NSString *)PID
 {
-    [findAddress dismissViewControllerAnimated:YES
-                                    completion:nil];
-    
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingAddress;
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentAddress = address;
     self.tabBarController.selectedIndex = 0;
+    
+    [findAddress dismissViewControllerAnimated:YES
+                                    completion:nil];
 }
 
 - (void)findIntersectionViewController:(FindIntersectionViewController *)findIntersection
@@ -117,13 +117,14 @@
                  didSelectPropOwner:(NSString *)propOwner
                                 PID:(NSString *)PID
 {
-    [findPropOwner dismissViewControllerAnimated:YES
-                                      completion:nil];
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingPropOwner;
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentPropOwner = propOwner;
     self.tabBarController.selectedIndex = 0;
+    
+    [findPropOwner dismissViewControllerAnimated:YES
+                                      completion:nil];
 }
 
 - (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
@@ -131,15 +132,22 @@
                             type:(NSString *)type
                            refno:(int)refno
 {
-    [findBounds dismissViewControllerAnimated:YES
-                                   completion:nil];
-    
     CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
     CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
     CRAPI.sharedInstance.currentOverallBoundaryType = type;
     CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     self.tabBarController.selectedIndex = 0;
+    
+    [findBounds dismissViewControllerAnimated:YES
+                                   completion:nil];
+}
+
+- (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
+             didSelectMultipleProps:(NSArray<PropertyRecord *> *)multipleProps
+{
+    [findPropOwner dismissViewControllerAnimated:YES
+                                      completion:nil];
 }
 
 @end

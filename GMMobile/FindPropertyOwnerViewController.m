@@ -14,7 +14,6 @@
 @property (nonatomic) NVConstrainedLabel *multipleLabel;
 @property (nonatomic) CGFloat fontSize, cornerRadius;
 @property LimitToOption limitToOption;
-@property BOOL selectMultiple;
 
 @end
 
@@ -36,7 +35,6 @@
     [super viewDidLoad];
     
     _limitToOption = [UserDefaults.defaults integerForKey:@"LimitToOption"];
-    _selectMultiple = [UserDefaults.defaults boolForKey:@"SelectMultiple"];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         _fontSize = 24.0, _cornerRadius = 4.0;
@@ -76,6 +74,7 @@
     _tableView.rowHeight = rowHeight;
     _tableView.layer.borderWidth = (rowHeight / 20.0);
     _tableView.layer.cornerRadius = _cornerRadius;
+    _tableView.allowsMultipleSelection = [UserDefaults.defaults boolForKey:@"SelectMultiple"];
     
     [self.view addSubview:_tableView];
 }
@@ -102,7 +101,7 @@
     [self updateLimitButtonTitle];
     
     [_limitButton addTarget:self
-                    action:@selector(limitButtonTapped:)
+                     action:@selector(limitButtonTapped:)
            forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:_limitButton];
@@ -135,7 +134,7 @@
         propData.processingID = CRAPI.sharedInstance.keepProcessing;
         propData.delegate = self;
         [propData getOwnersMatchingString:propOwnerSearchText];
-
+        
     }
     
     [_propOwnerTF addTarget:self
@@ -164,7 +163,7 @@
     _multipleSwitch = NVConstrainedSwitch.new;
     _multipleSwitch.backgroundColor = UIColor.redColor;
     _multipleSwitch.layer.cornerRadius = 16.0;
-    _multipleSwitch.on = _selectMultiple;
+    _multipleSwitch.on = _tableView.allowsMultipleSelection;
     
     [_multipleSwitch addTarget:self
                         action:@selector(multipleSwitchTapped:)
@@ -248,10 +247,36 @@
 {
     [self dismissTextField];
     
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
-}
+    if (_delegate && _tableView.allowsMultipleSelection && _tableView.indexPathsForSelectedRows.count)
+    {
+        NSMutableArray<PropertyRecord *> *prArray = NSMutableArray.array;
+        
+        for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
+        {
+            NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
+            NSString *propOwner = textBeforeTab(_propOwnerList[indexPath.row]);
+            PropertyData *propData = PropertyData.new;
+            LLPOINT point = [propData getPointForPID:pin];
+            CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(point.lat, point.lon);
+            
+            PropertyRecord *propRec = [PropertyRecord propertyRecordWithPin:pin
+                                                                  propOwner:propOwner
+                                                                 coordinate:coord];
+            
+            [prArray addObject:propRec];
+        }
+        
+        [_delegate findPropOwnerViewController:self
+                        didSelectMultipleProps:prArray];
+    }
     
+    else
+    {
+        [self dismissViewControllerAnimated:YES
+                                 completion:nil];
+    }
+}
+
 - (void)limitButtonTapped:(UIButton *)button
 {
     NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
@@ -280,8 +305,14 @@
 
 - (void)multipleSwitchTapped:(UISwitch *)theSwitch
 {
-    _selectMultiple = theSwitch.on;
     [UserDefaults.defaults saveBool:theSwitch.on forKey:@"SelectMultiple"];
+    _tableView.allowsMultipleSelection = theSwitch.on;
+    
+    if (!theSwitch.on)
+    {
+        [_returnButton setTitle:@"< Return"
+                       forState:UIControlStateNormal];
+    }
 }
 
 - (void)touchesBegan:(NSSet *)touches
@@ -363,11 +394,27 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissTextField];
     
-    if (_delegate)
+    if (tableView.allowsMultipleSelection)
+    {
+        [_returnButton setTitle:@"Go to Map"
+                       forState:UIControlStateNormal];
+    }
+    
+    else if (_delegate)
     {
         [_delegate findPropOwnerViewController:self
                             didSelectPropOwner:textBeforeTab(_propOwnerList[indexPath.row])
                                            PID:textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]))];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView
+didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (!tableView.indexPathsForSelectedRows.count)
+    {
+        [_returnButton setTitle:@"< Return"
+                       forState:UIControlStateNormal];
     }
 }
 

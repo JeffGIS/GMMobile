@@ -47,6 +47,21 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 @end
 #define COORDINATE_FACTOR 10000000.0
 
+@implementation PropertyRecord
+
++ (instancetype)propertyRecordWithPin:(NSString *)pin
+                            propOwner:(NSString *)propOwner
+                           coordinate:(CLLocationCoordinate2D)coordinate
+{
+    PropertyRecord *propRec = PropertyRecord.new;
+    propRec.pin = pin;
+    propRec.propOwner = propOwner;
+    propRec.coordinate = coordinate;
+    return propRec;
+}
+
+@end
+
 @implementation PropertyHistory
 
 @end
