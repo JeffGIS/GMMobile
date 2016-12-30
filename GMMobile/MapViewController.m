@@ -383,6 +383,8 @@
     
     if (CRAPI.sharedInstance.appChanged)
     {
+        [self themeLegendWasDraggedOffLeftSide];
+        
         for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
         {
             if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
@@ -3274,7 +3276,7 @@ haveVV:
 
 - (void)themeLegendWasDraggedOffLeftSide
 {
-    if (_legendsAreOffMap && ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
+    if (_legendsAreOffMap)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         
