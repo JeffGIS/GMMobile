@@ -185,12 +185,12 @@
                 
             case 2:
                 [view addSubview:featureLabel];
-                [featureLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [featureLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_featureButton];
                 [_featureButton constrainCenterYToAnchor:view.centerYAnchor];
                 [_featureButton constrainLeadingToAnchor:featureLabel.trailingAnchor constant:margin];
                 _featureButton.tag = 22;
+                [featureLabel constrainCenterYToAnchor:_featureButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.75];
                 break;
@@ -236,24 +236,24 @@
                 
             case 5:
                 [view addSubview:colorSchemeLabel];
-                [colorSchemeLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [colorSchemeLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:colorSchemeButton];
                 [colorSchemeButton constrainCenterYToAnchor:view.centerYAnchor];
                 [colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
                 colorSchemeButton.tag = 55;
+                [colorSchemeLabel constrainCenterYToAnchor:colorSchemeButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-3].heightAnchor];
                 break;
                 
             case 6:
                 [view addSubview:textLabel];
-                [textLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [textLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:textButton];
                 [textButton constrainCenterYToAnchor:view.centerYAnchor];
                 [textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
                 textButton.tag = 66;
+                [textLabel constrainCenterYToAnchor:textButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 [view constrainBottomToAnchor:topView.bottomAnchor];
