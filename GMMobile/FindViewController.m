@@ -3,6 +3,8 @@
 
 #import "FindViewController.h"
 #import "PropertyData.h"
+#import "MapViewController.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 @interface FindViewController ()
 
@@ -146,6 +148,12 @@
 - (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
              didSelectMultipleProps:(NSArray<PropertyRecord *> *)multipleProps
 {
+    MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
+                                                                    inTabBarController:self.tabBarController];
+    
+    if (mapVC)
+        mapVC.propArray = multipleProps;
+    
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingMultipleProps;
     self.tabBarController.selectedIndex = 0;

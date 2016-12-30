@@ -300,7 +300,7 @@
             }
             
             [_delegate findPropOwnerViewController:self
-                            didSelectMultipleProps:prArray];
+                            didSelectMultipleProps:prArray.copy];
         }
     }
     
