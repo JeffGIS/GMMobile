@@ -788,7 +788,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 classMin[0] = value;
             else if (value != lastValue)
             {
-                if (iValue > classMin[0] + (iClass+1) * numPerClass)
+                if (iValue > (iClass+1) * numPerClass)
                 {
                     classMax[iClass++] = lastValue;
                     classMin[iClass] = value;
@@ -819,12 +819,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (!NVMetroSettings.sharedInstance.themeClassType)
     {
         NVMetroSettings.sharedInstance.numThemeClasses = maxClass;
-        double maxVal2 = d95percentValue;
+        double maxVal2 = maxVal;//d95percentValue;
         double classInc = (maxVal2 - minVal) / maxClass;
         classMin[0] = minVal * factor;
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
-            classMax[iclass] = IDNINT ((iclass+1) * classInc);
+            classMax[iclass] = classMin[0] + IDNINT ((iclass+1) * classInc);
             classMin[iclass+1] = classMax[iclass]+1;
         }
         classMax[maxClass-1] = IDNINT (maxVal);
@@ -874,20 +874,23 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     BOOL opened = [self open];
     if (_pass == DataPass)
+    {
         [self createSortedValuesTable];
+        query = [NSString stringWithFormat:@"SELECT %@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+    }
     else
+    {
         factor = NVMetroSettings.sharedInstance.valueMultiplier;
-    query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
-             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
-    /*query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
-             platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];*/
-            //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
+        query = [NSString stringWithFormat:@"SELECT %@,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+    }
     
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        double dataValue = sqlite3_column_double(statement,6);
+        double dataValue = sqlite3_column_double(statement,0);
         dataValue *= factor;
         if (_pass == DataPass)
         {
@@ -901,13 +904,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            BasePt.x = sqlite3_column_double(statement,0);
-            BasePt.y = sqlite3_column_double(statement,1);
-            numPoints = sqlite3_column_int(statement,2);
-            numLoops = sqlite3_column_int(statement,3);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,4);
+            BasePt.x = sqlite3_column_double(statement,1);
+            BasePt.y = sqlite3_column_double(statement,2);
+            numPoints = sqlite3_column_int(statement,3);
+            numLoops = sqlite3_column_int(statement,4);
+            int *polyPartLen = (int *)sqlite3_column_blob(statement,5);
             //int nBlobBytes = sqlite3_column_bytes(statement,4);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,6);
             //nBlobBytes = sqlite3_column_bytes(statement,5);
             LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             //keyval = sqlite3_column_int64(statement,6);
@@ -956,7 +959,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         Theme * thm = themes.themeList[0];
         [self getClassBounds:numValues
-                  maxClasses:8
+                  maxClasses:10
                     minValue:minValue
                     maxValue:maxValue
                        theme:thm];
