@@ -381,6 +381,17 @@
 {
     [super viewWillAppear:animated];
     
+    if (CRAPI.sharedInstance.appChanged)
+    {
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlmos removeFromSuperview];
+        }
+        
+        CRAPI.sharedInstance.appChanged = NO;
+    }
+    
     if (_fromLegends)
     {
         self.view.userInteractionEnabled = NO;
@@ -3075,6 +3086,10 @@ haveVV:
         
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
+        
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+            yFactor += _mapToolbar.frame.size.height;
+        
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
         NSUInteger portraitColumnCount = 1, landscapeColumnCount = portraitColumnCount;
@@ -3150,8 +3165,8 @@ haveVV:
         {
             ThemeLegend *tl = legends[i];
             
-            if (tl.drawOnMap ||
-                (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet || ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp))
+            if (tl.drawOnMap || (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+                                 ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp))
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
@@ -3241,7 +3256,7 @@ haveVV:
 
 - (void)themeLegendWasDraggedOffRightSide
 {
-    if (!_legendsAreOffMap)
+    if (!_legendsAreOffMap && ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         _legendScrollView.alpha = 1.0;
@@ -3259,7 +3274,7 @@ haveVV:
 
 - (void)themeLegendWasDraggedOffLeftSide
 {
-    if (_legendsAreOffMap)
+    if (_legendsAreOffMap && ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         

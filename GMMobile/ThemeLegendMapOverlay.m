@@ -5,6 +5,7 @@
 #import "CCodeLibrary/SymbolDictionary.h"
 #import "CCodeLibrary/UIImage+ImageFromColor.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "ConfigurationControl.h"
 
 @interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
@@ -35,7 +36,16 @@
 
 + (CGFloat)headerHeight
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            return 72.0;
+        
+        else
+            return 90.0;
+    }
+    
+    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         return 32.0;
     
     else
@@ -44,11 +54,20 @@
 
 + (CGFloat)width
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            return 148.0;
+        
+        else
+            return 292.0;
+    }
+    
+    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         return 118.0;
     
     else
-        return 232.0;
+        return 236.0;
 }
 
 + (CGFloat)buttonMargin
@@ -193,7 +212,7 @@
             
             if (CGRectContainsPoint(tv.frame, point))
             {
-                NSUInteger row = (NSUInteger)(point.y / tv.rowHeight);
+                NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
                 
                 if (_firstTimeDrag)
                 {
@@ -209,7 +228,7 @@
                 else
                     return;
                 
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(_currentRow - 1)
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:_currentRow
                                                             inSection:0];
                 
                 if (![_dragSelectedCells containsObject:indexPath])
@@ -259,6 +278,10 @@ viewForHeaderInSection:(NSInteger)section
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
     UIEdgeInsets insets = UIEdgeInsetsMake(4.0, 4.0, 4.0, 4.0);
+    CGFloat size = 40.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        size = 32.0;
     
     if (![headerView.subviews containsObject:_expandButton])
     {
@@ -290,10 +313,10 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:_expandButton];
         
         [_expandButton removeAllConstraints];
-        [_expandButton constrainLeadingToAnchor:headerView.trailingAnchor constant:(-_headerHeight * 1.5)];
-        [_expandButton constrainTrailingToAnchor:headerView.trailingAnchor];
-        [_expandButton constrainTopToAnchor:headerView.topAnchor];
-        [_expandButton constrainBottomToAnchor:headerView.bottomAnchor];
+        [_expandButton constrainTrailingToAnchor:headerView.trailingAnchor constant:-4.0];
+        [_expandButton constrainCenterYToAnchor:headerView.centerYAnchor];
+        [_expandButton constrainHeightToConstant:size];
+        [_expandButton constrainWidthToConstant:size];
     }
     
     if (![headerView.subviews containsObject:_dragButton])
@@ -328,10 +351,10 @@ viewForHeaderInSection:(NSInteger)section
         [headerView addSubview:_dragButton];
         
         [_dragButton removeAllConstraints];
-        [_dragButton constrainLeadingToAnchor:headerView.leadingAnchor];
-        [_dragButton constrainTrailingToAnchor:headerView.leadingAnchor constant:(_headerHeight * 1.5)];
-        [_dragButton constrainTopToAnchor:headerView.topAnchor];
-        [_dragButton constrainBottomToAnchor:headerView.bottomAnchor];
+        [_dragButton constrainLeadingToAnchor:headerView.leadingAnchor constant:4.0];
+        [_dragButton constrainCenterYToAnchor:headerView.centerYAnchor];
+        [_dragButton constrainHeightToConstant:size];
+        [_dragButton constrainWidthToConstant:size];
     }
     
     if (![headerView.subviews containsObject:_titleButton])
@@ -342,7 +365,6 @@ viewForHeaderInSection:(NSInteger)section
             _titleButton.translatesAutoresizingMaskIntoConstraints = NO;
             _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
             _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
             _titleButton.titleLabel.numberOfLines = 0;
             _titleButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
             
@@ -367,29 +389,6 @@ viewForHeaderInSection:(NSInteger)section
             
             [_titleButton setTitle:_legend.title
                           forState:UIControlStateNormal];
-        }
-        
-        if (_legend.title.length < 16)
-        {
-            _titleButton.titleLabel.font = _headerFont;
-            _titleButton.titleLabel.numberOfLines = 1;
-            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-        }
-        else if (_legend.title.length < 30)
-        {
-            _titleButton.titleLabel.numberOfLines = 0;
-            _titleButton.titleLabel.adjustsFontSizeToFitWidth = NO;
-            _titleButton.titleLabel.font = _reducedFont;
-            UIEdgeInsets  inset = UIEdgeInsetsMake(8, 8, 8, 8);
-            _titleButton.titleEdgeInsets = inset;
-        }
-        else
-        {
-            _titleButton.titleLabel.numberOfLines = 0;
-            _titleButton.titleLabel.adjustsFontSizeToFitWidth = NO;
-            _titleButton.titleLabel.font = _smallFont;
-            UIEdgeInsets  inset = UIEdgeInsetsMake(10, 10, 10, 10);
-            _titleButton.titleEdgeInsets = inset;
         }
         
         [headerView addSubview:_titleButton];
@@ -646,7 +645,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)dragButtonEnd:(UIButton *)button
 {
     if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
-        self.legend.drawOnMap = NO;
+        _legend.drawOnMap = NO;
     
     else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
         [_delegate themeLegendWasDraggedOffRightSide];
@@ -690,6 +689,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!_delegate.themeLegendIsOffMap)
         newCenterX = MAX(newCenterX, (self.frame.size.width / 2.0));
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        newCenterX = MIN(newCenterX, (self.superview.frame.size.width - (self.frame.size.width / 2.0)));
     
     self.center = CGPointMake(newCenterX, newCenterY);
 }

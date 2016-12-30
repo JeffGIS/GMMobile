@@ -6,6 +6,7 @@
 #import "AppDelegate.h"
 #import "PlanimetricData.h"
 #import "CCodeLibrary/FTPDataPull.h"
+
 #define MAX_SYMBOLS_IN_LAYER    16
 static char layerName[NUMHardCodedLayers][MAX_LAYER_NAME]={0};
 //static BOOL layerVisible[NUMHardCodedLayers]={0};
@@ -395,6 +396,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     }
     
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    CRAPI.sharedInstance.appChanged = YES;
     
     switch (_currentApp)
     {
