@@ -11,7 +11,7 @@
 @property (nonatomic) NVConstrainedTextField *propOwnerTF;
 @property (nonatomic) NVConstrainedTableView *tableView;
 @property (nonatomic) NVConstrainedSwitch *multipleSwitch;
-@property (nonatomic) NVConstrainedLabel *multipleLabel;
+@property (nonatomic) NVConstrainedLabel *multipleLabel, *countLabel;
 @property (nonatomic) CGFloat fontSize, cornerRadius;
 @property LimitToOption limitToOption;
 
@@ -147,6 +147,18 @@
 - (void)reloadTable
 {
     [_tableView reloadData];
+    
+    if (_tableView.allowsMultipleSelection)
+    {
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                            _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+    }
+    
+    else
+    {
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list.",
+                            _propOwnerList.count];
+    }
 }
 
 - (void)matchingOwners:(NSMutableArray *)ownerArray
@@ -171,11 +183,17 @@
     
     [self.view addSubview:_multipleSwitch];
     
+    UIFont *font = [UIFont systemFontOfSize:24.0];
+    
     _multipleLabel = NVConstrainedLabel.new;
     _multipleLabel.text = @"Select Multiple";
-    _multipleLabel.font = [UIFont systemFontOfSize:_fontSize];
-    
+    _multipleLabel.font = font;
     [self.view addSubview:_multipleLabel];
+    
+    _countLabel = NVConstrainedLabel.new;
+    _countLabel.font = font;
+    _countLabel.text = @" ";
+    [self.view addSubview:_countLabel];
 }
 
 - (void)setupConstraints
@@ -208,8 +226,12 @@
     [_propOwnerTF constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [_propOwnerTF constrainHeightToConstant:height];
     
+    [_countLabel constrainLeadingToAnchor:self.view.leadingAnchor];
+    [_countLabel constrainTrailingToAnchor:self.view.trailingAnchor];
+    [_countLabel constrainTopToAnchor:_propOwnerTF.bottomAnchor];
+    
     [_tableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_tableView constrainTopToAnchor:_propOwnerTF.bottomAnchor constant:margin];
+    [_tableView constrainTopToAnchor:_countLabel.bottomAnchor];
     [_tableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [_tableView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
     
@@ -249,25 +271,37 @@
     
     if (_delegate && _tableView.allowsMultipleSelection && _tableView.indexPathsForSelectedRows.count)
     {
-        NSMutableArray<PropertyRecord *> *prArray = NSMutableArray.array;
-        
-        for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
+        if (_tableView.indexPathsForSelectedRows.count == 1)
         {
-            NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
-            NSString *propOwner = textBeforeTab(_propOwnerList[indexPath.row]);
-            PropertyData *propData = PropertyData.new;
-            LLPOINT point = [propData getPointForPID:pin];
-            CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(point.lat, point.lon);
+            NSIndexPath *indexPath = _tableView.indexPathsForSelectedRows[0];
             
-            PropertyRecord *propRec = [PropertyRecord propertyRecordWithPin:pin
-                                                                  propOwner:propOwner
-                                                                 coordinate:coord];
-            
-            [prArray addObject:propRec];
+            [_delegate findPropOwnerViewController:self
+                                didSelectPropOwner:textBeforeTab(_propOwnerList[indexPath.row])
+                                               PID:textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]))];
         }
         
-        [_delegate findPropOwnerViewController:self
-                        didSelectMultipleProps:prArray];
+        else
+        {
+            NSMutableArray<PropertyRecord *> *prArray = NSMutableArray.array;
+            
+            for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
+            {
+                NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
+                NSString *propOwner = textBeforeTab(_propOwnerList[indexPath.row]);
+                PropertyData *propData = PropertyData.new;
+                LLPOINT point = [propData getPointForPID:pin];
+                CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(point.lat, point.lon);
+                
+                PropertyRecord *propRec = [PropertyRecord propertyRecordWithPin:pin
+                                                                      propOwner:propOwner
+                                                                     coordinate:coord];
+                
+                [prArray addObject:propRec];
+            }
+            
+            [_delegate findPropOwnerViewController:self
+                            didSelectMultipleProps:prArray];
+        }
     }
     
     else
@@ -312,6 +346,15 @@
     {
         [_returnButton setTitle:@"< Return"
                        forState:UIControlStateNormal];
+        
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list.",
+                            _propOwnerList.count];
+    }
+    
+    else
+    {
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                            _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
     }
 }
 
@@ -398,6 +441,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [_returnButton setTitle:@"Go to Map"
                        forState:UIControlStateNormal];
+        
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                            _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
     }
     
     else if (_delegate)
@@ -416,6 +462,9 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
         [_returnButton setTitle:@"< Return"
                        forState:UIControlStateNormal];
     }
+    
+    _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                        _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
 }
 
 @end

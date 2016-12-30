@@ -132,11 +132,11 @@
                             type:(NSString *)type
                            refno:(int)refno
 {
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
     CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
     CRAPI.sharedInstance.currentOverallBoundaryType = type;
     CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
-    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     self.tabBarController.selectedIndex = 0;
     
     [findBounds dismissViewControllerAnimated:YES
@@ -146,6 +146,10 @@
 - (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
              didSelectMultipleProps:(NSArray<PropertyRecord *> *)multipleProps
 {
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    CRAPI.sharedInstance.GMMSetting = GMMSettingMultipleProps;
+    self.tabBarController.selectedIndex = 0;
+    
     [findPropOwner dismissViewControllerAnimated:YES
                                       completion:nil];
 }

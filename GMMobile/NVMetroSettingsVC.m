@@ -7,8 +7,7 @@
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
-@property (nonatomic) UIButton *featureButton;
-@property (nonatomic) UIButton *valueButton;
+@property (nonatomic) UIButton *featureButton, *valueButton;
 
 @end
 
@@ -70,6 +69,10 @@
     valueLabel.text = @"Value:";
     [self setupLabel:valueLabel fontSize:littleFont];
     
+    UILabel *adjLabel = UILabel.new;
+    adjLabel.text = @"Adjustment:";
+    [self setupLabel:adjLabel fontSize:littleFont];
+    
     UILabel *overUnderLabel = UILabel.new;
     overUnderLabel.text = @"Over/Under:";
     [self setupLabel:overUnderLabel fontSize:littleFont];
@@ -90,12 +93,16 @@
     [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
     [self setupButton:_valueButton fontSize:littleFont];
     
+    UIButton *adjButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [adjButton setTitle:paddedString(@"Some Adjustment") forState:UIControlStateNormal];
+    [self setupButton:adjButton fontSize:littleFont];
+    
     UIButton *colorSchemeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [colorSchemeButton setTitle:@" Red / Blue " forState:UIControlStateNormal];
+    [colorSchemeButton setTitle:paddedString(@"Red / Blue") forState:UIControlStateNormal];
     [self setupButton:colorSchemeButton fontSize:littleFont];
     
     UIButton *textButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [textButton setTitle:@" Taxpayer / Total EMT " forState:UIControlStateNormal];
+    [textButton setTitle:paddedString(@"Taxpayer / Total EMT") forState:UIControlStateNormal];
     [self setupButton:textButton fontSize:littleFont];
     
     UISwitch *overUnderSwitch = UISwitch.new;
@@ -183,27 +190,34 @@
                 [view addSubview:_featureButton];
                 [_featureButton constrainCenterYToAnchor:view.centerYAnchor];
                 [_featureButton constrainLeadingToAnchor:featureLabel.trailingAnchor constant:margin];
-                _featureButton.tag = i;
+                _featureButton.tag = 22;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.75];
                 break;
                 
             case 3:
                 [view addSubview:valueLabel];
-                [valueLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [valueLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_valueButton];
-                [_valueButton constrainCenterYToAnchor:view.centerYAnchor];
+                [_valueButton constrainBottomToAnchor:view.centerYAnchor];
                 [_valueButton constrainLeadingToAnchor:valueLabel.trailingAnchor constant:margin];
                 [_valueButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:-margin].active = YES;
-                _valueButton.tag = i;
+                _valueButton.tag = 33;
+                [valueLabel constrainCenterYToAnchor:_valueButton.centerYAnchor];
+                [view addSubview:adjLabel];
+                [adjLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
+                [view addSubview:adjButton];
+                [adjButton constrainBottomToAnchor:view.bottomAnchor constant:(-margin / 2.5)];
+                [adjButton constrainLeadingToAnchor:adjLabel.trailingAnchor constant:margin];
+                adjButton.tag = 44;
+                [adjLabel constrainCenterYToAnchor:adjButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.5];
                 break;
                 
             case 4:
                 [view addSubview:pctPopSC];
-                [pctPopSC constrainTopToAnchor:view.centerYAnchor constant:margin / 2.5];
+                [pctPopSC constrainTopToAnchor:view.centerYAnchor constant:margin / 2.0];
                 [pctPopSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
                 [pctPopSC constrainHeightToConstant:bigFont];
                 [view addSubview:overUnderLabel];
@@ -214,7 +228,7 @@
                 [overUnderSwitch constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
                 [view addSubview:controlClassSC];
                 [controlClassSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
-                [controlClassSC constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
+                [controlClassSC constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
                 [controlClassSC constrainHeightToConstant:bigFont];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
@@ -227,9 +241,9 @@
                 [view addSubview:colorSchemeButton];
                 [colorSchemeButton constrainCenterYToAnchor:view.centerYAnchor];
                 [colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
-                colorSchemeButton.tag = i;
+                colorSchemeButton.tag = 55;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-3].heightAnchor];
                 break;
                 
             case 6:
@@ -239,7 +253,7 @@
                 [view addSubview:textButton];
                 [textButton constrainCenterYToAnchor:view.centerYAnchor];
                 [textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
-                textButton.tag = i;
+                textButton.tag = 66;
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 [view constrainBottomToAnchor:topView.bottomAnchor];
@@ -299,6 +313,13 @@
     button.titleLabel.backgroundColor = UIColor.blackColor;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:fontSize];
     button.titleLabel.numberOfLines = 0;
+    button.titleLabel.layer.masksToBounds = NO;
+    button.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
+    button.titleLabel.layer.shadowRadius = 0.0;
+    button.titleLabel.layer.shadowOpacity = 1.0;
+    button.titleLabel.layer.shadowOffset = CGSizeMake(-6.0, 0.0);
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     
     [button setTitleColor:UIColor.whiteColor
                  forState:UIControlStateNormal];
@@ -315,25 +336,34 @@
 {
     NSString *keyword = @"";
     NSArray *optionsList = nil;
+    BOOL multipleSelect = NO;
     
     switch (button.tag)
     {
-        case 2:
+        case 22:
             keyword = @"Feature";
             optionsList = NVMetroSettings.sharedInstance.features;
             break;
             
-        case 3:
+        case 33:
             keyword = @"Value";
             optionsList = [NVMetroSettings.sharedInstance valuesForFeature:NVMetroSettings.sharedInstance.currentFeature];
+            multipleSelect = YES;
             break;
             
-        case 5:
+        case 44:
+            keyword = @"Adjustment";
+            optionsList = @[@"Some Adjustment", @"Unnecessary Adjustment", @"Innane Adjustment", @"Ridiculous Adjustment"];
+            break;
+            
+        case 55:
             keyword = @"Color Scheme";
+            optionsList = @[@"Red/Blue", @"Amelia's Favorite Colors", @"Really Dumb Colors"];
             break;
             
-        case 6:
+        case 66:
             keyword = @"Text";
+            optionsList = @[@"Taxpayer / Total EMT", @"Unintelligible Text", @"Useless Text", @"Random Garbage"];
             break;
             
         default:
@@ -347,7 +377,7 @@
                                          textArray:optionsList
                                      includeCancel:YES];
     
-    nvptv.allowsMultipleSelection = YES;
+    nvptv.allowsMultipleSelection = multipleSelect;
     nvptv.tag = button.tag;
 }
 
@@ -357,21 +387,24 @@
 {
     switch (popoverTableView.tag)
     {
-        case 2://feature
+        case 22://feature
             NVMetroSettings.sharedInstance.currentFeature = index;
             [_featureButton setTitle:paddedString([NVMetroSettings.sharedInstance currentFeatureText]) forState:UIControlStateNormal];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             break;
             
-        case 3://value
+        case 33://value
             [NVMetroSettings.sharedInstance setCurrentValue:index];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             break;
             
-        case 5://color scheme
+        case 44://adjustment
             break;
             
-        case 6://text
+        case 55://color scheme
+            break;
+            
+        case 66://text
             break;
             
         default:
