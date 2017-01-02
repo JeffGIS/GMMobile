@@ -25,6 +25,7 @@
 @property double totCount;
 @property BOOL setSymbol;
 @property BOOL setColor;
+@property BOOL showSymbolAsBarChart;
 @property int minUCR, maxUCR;
 @property int minYear, maxYear;
 

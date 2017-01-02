@@ -31,10 +31,11 @@ typedef NS_ENUM(NSInteger, CPParcelValues)
     CPParcelVCount
 };
 
-typedef NS_ENUM(NSInteger, CPBlockValues)
+typedef NS_ENUM(NSInteger, CPLandUseValues)
 {
-    CPBlockVNone,
-    CPBlockVCount
+    CPLandUseVNone,
+    CPLandUseVCodes,
+    CPLandUseVCount
 };
 
 

@@ -11,6 +11,15 @@
 
 @implementation ThemeLegend
 
+- (id)init
+{
+    self = [super init];
+    
+    self.showSymbolAsBarChart = TRUE;
+    return self;
+}
+
+
 -(id) copyWithZone: (NSZone *) zone
 {
     ThemeLegend *another = [[ThemeLegend allocWithZone: zone] init];
@@ -23,6 +32,7 @@
     another.pctSymbol = _pctSymbol;
     another.pctTitle = _pctTitle;
     another.usePointSymbols = _usePointSymbols;
+    another.showSymbolAsBarChart = _showSymbolAsBarChart;
     another.useClassColors = _useClassColors;
     another.appendClassCount = _appendClassCount;
     another.borderColor = [[UIColor alloc]initWithCGColor:_borderColor.CGColor];

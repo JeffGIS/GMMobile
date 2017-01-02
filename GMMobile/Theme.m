@@ -13,6 +13,14 @@
 #import "NVMetroSettings.h"
 
 @implementation Theme
+- (id)init
+{
+    self = [super init];
+    
+    self.showSymbolAsBarChart = TRUE;
+    return self;
+}
+
 
 + (NSString *)formattedDate:(NSDate *)date
 {
@@ -102,6 +110,7 @@
             break;
         case MetroLandUseTheme:
             thm.setColor = YES;
+            thm.showSymbolAsBarChart = NO;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
             thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
@@ -110,28 +119,32 @@
             class = [ThemeClass createWithTitle:@"Single Family Residential"];
             class.values = @[@"111",@"112",@"113",@"116"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Multi Family Residential "];
             class.values = @[@"114",@"115"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0.5 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Mixed Use Residential    "];
             class.values = @[@"141"];
             class.color = [UIColor colorWithRed:1 green:1 blue:0.75 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_Residential)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Retail/Commercial        "];
             class.values = @[@"120",@"143"];
             class.color = [UIColor colorWithRed:0.6 green:0.4 blue:0.2 alpha:PropListAlpha];;
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Commercial)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_Commercial)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
@@ -143,7 +156,8 @@
             class = [ThemeClass createWithTitle:@"Industrial"               ];
             class.values = @[@"142",@"151",@"153"];
             class.color = [UIColor colorWithRed:1 green:0.5 blue:0 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_Industrial)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_Industrial)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
@@ -165,28 +179,32 @@
             class = [ThemeClass createWithTitle:@"Park/Rec/Preserve"        ];
             class.values = @[@"170",@"173"];
             class.color = [UIColor colorWithRed:0.5 green:1 blue:0.5 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Agriculture"              ];
             class.values = @[@"100"];
             class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Undeveloped"              ];
             class.values = @[@"210"];
             class.color = [UIColor colorWithRed:0.75 green:1 blue:0.75 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
             class = [ThemeClass createWithTitle:@"Water"                    ];
             class.values = @[@"220"];
             class.color = [UIColor colorWithRed:0 green:0 blue:1 alpha:PropListAlpha];
-            if ([PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
+            if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
+                [PropertyList getBaseTypeForField:thm.subType] == PBT_OpenSpace)
                 class.color = selectedColor;
             [thm.classes addObject:class];thm.numDesiredClasses++;
             
@@ -824,6 +842,7 @@
     thm.legend.currentTitleIndex = thm.currentTitleIndex;
     thm.legend.numCells = thm.numClasses;
     thm.legend.useClassColors = thm.setColor;
+    thm.legend.showSymbolAsBarChart = thm.showSymbolAsBarChart;
     thm.legend.cells = [[NSMutableArray alloc]init];
     
     for (ThemeClass *cls in thm.classes)
@@ -980,6 +999,26 @@ int getThemeOpt(ThemeTypes type)
                     
                 }
                     break;
+            }
+                break;
+            case MetroLandUseTheme:
+            {
+                val = 0;
+                rtn = DO_NOT_DISPLAY_ITEM;
+                for (ThemeClass *cls in _classes)
+                {
+                    if ([self classValues:cls.values containInteger:dc.iValue])
+                    {
+                        if ([self incrementCount:val
+                                              by:1
+                                              dc:dc
+                                        testPass:test])
+                            rtn = DISPLAY_ITEM;
+                        break;
+                    }
+                    val++;
+                }
+                
             }
                 break;
             case MetroPropTheme:

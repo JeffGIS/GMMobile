@@ -13,6 +13,7 @@
 @property int numColumns;
 @property BOOL usePointSymbols; // if true each cell has a point symbol which is displayed
                                 // instead of the bar chart.
+@property BOOL showSymbolAsBarChart;
 @property BOOL useClassColors;  // if true the symbol color comes from each ThemeLegendCell
                                 // otherwise use symbolDefaultColor
 @property BOOL appendClassCount;// if true class count is appended to class label.

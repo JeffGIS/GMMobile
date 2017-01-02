@@ -118,6 +118,9 @@ static int currentValues[CPFeaturesCount];
         case CPFVoterDistricts:
             rtn = [NSArray arrayWithObjects:@"", nil];
             break;
+        case CPFLandUse:
+            rtn = [self valuesForLandUse];
+            break;
         case CPFeaturesCount:
             break;
     }
@@ -150,6 +153,26 @@ static int currentValues[CPFeaturesCount];
                 [rtn addObject:stringWithID("Last Sale Price",value)];
                 break;
             case CPParcelVCount:
+                break;
+        }
+    }
+    return rtn;
+}
+- (NSArray *) valuesForLandUse
+{
+    NSMutableArray *rtn = NSMutableArray.new;
+    
+    for (CPLandUseValues value = 0;value<CPLandUseVCount;value++)
+    {
+        switch (value)
+        {
+            case CPLandUseVNone:
+                [rtn addObject:stringWithID("None",value)];
+                break;
+            case CPLandUseVCodes:
+                [rtn addObject:stringWithID("Land Use Codes",value)];
+                break;
+            case CPLandUseVCount:
                 break;
         }
     }

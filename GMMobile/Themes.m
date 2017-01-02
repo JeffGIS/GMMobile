@@ -8,6 +8,7 @@
 //extern int CRAPI.sharedInstance.keepProcessing;
 
 #import "Themes.h"
+#import "NVMetroSettings.h"
 
 @implementation Themes
 
@@ -64,8 +65,19 @@
             [_themeList addObject:thm];
             break;
         case HCConfigMetroProp:
-            thm = [Theme createTheme:MetroPropTheme];
-            [_themeList addObject:thm];
+            if (NVMetroSettings.sharedInstance.currentFeature == CPFLandUse)
+            {
+                if (NVMetroSettings.sharedInstance.currentFeatureValue)
+                {
+                    thm = [Theme createTheme:MetroLandUseTheme];
+                    [_themeList addObject:thm];
+                }
+            }
+            else
+            {
+                thm = [Theme createTheme:MetroPropTheme];
+                [_themeList addObject:thm];
+            }
             break;
         default:
             break;

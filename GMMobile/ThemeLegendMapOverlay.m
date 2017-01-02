@@ -972,7 +972,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         textOriginX = (tableView.frame.size.width - textWidth);
         
         //this is temporary - just to show that bars are being drawn with colors!
-        if ([_legend.title isEqualToString:@"Land Use"])
+        if (!_legend.showSymbolAsBarChart)
             tlc.symbolWidth = 1.0;
         
         CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
