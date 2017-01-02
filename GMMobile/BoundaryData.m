@@ -876,13 +876,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (_pass == DataPass)
     {
         [self createSortedValuesTable];
-        query = [NSString stringWithFormat:@"SELECT %@, Area FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
+        query = [NSString stringWithFormat:@"SELECT %@, Area,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     }
     else
     {
         factor = NVMetroSettings.sharedInstance.valueMultiplier;
-        query = [NSString stringWithFormat:@"SELECT %@,Area,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
+        query = [NSString stringWithFormat:@"SELECT %@,Area,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     }
     
@@ -891,9 +891,29 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         double dataValue = sqlite3_column_double(statement,0);
-        double area = sqlite3_column_double(statement,1) * SQMILES_PER_SQMETER;
-        dataValue *= factor;
-        dataValue /= area;
+        double area = sqlite3_column_double(statement,1);
+        double totalPop = sqlite3_column_double(statement,2);
+        double totalHousingUnits = sqlite3_column_double(statement,3);
+        
+        switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
+        {
+            case CPAdjustCountPerAcre:
+                area *= ACRES_PER_SQMETER;
+                dataValue /= area;
+                break;
+            case CPAdjustCountPerSQMile:
+                area *= SQMILES_PER_SQMETER;
+                dataValue /= area;
+                break;
+            case CPAdjustPctOfTotalPop:
+                dataValue /= totalPop;
+                break;
+            case CPAdjustCountPerHousingUnit:
+            case CPAdjustPctOfTotalHousingUnits:
+                dataValue /= totalHousingUnits;
+                break;
+        }
+//        dataValue *= factor;
         if (_pass == DataPass)
         {
             if (dataValue > 0)
@@ -906,14 +926,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            BasePt.x = sqlite3_column_double(statement,2);
-            BasePt.y = sqlite3_column_double(statement,3);
-            numPoints = sqlite3_column_int(statement,4);
-            numLoops = sqlite3_column_int(statement,5);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,6);
-            //int nBlobBytes = sqlite3_column_bytes(statement,4);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,7);
-            //nBlobBytes = sqlite3_column_bytes(statement,5);
+            BasePt.x = sqlite3_column_double(statement,4);
+            BasePt.y = sqlite3_column_double(statement,5);
+            numPoints = sqlite3_column_int(statement,6);
+            numLoops = sqlite3_column_int(statement,7);
+            int *polyPartLen = (int *)sqlite3_column_blob(statement,8);
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,9);
             LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             //keyval = sqlite3_column_int64(statement,6);
             

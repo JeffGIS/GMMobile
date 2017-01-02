@@ -33,4 +33,8 @@
     return  another;
 }
 
+- (void) setSymbolColor:(UIColor *)symbolColor
+{
+    _symbolColor = symbolColor;
+}
 @end

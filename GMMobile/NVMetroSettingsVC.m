@@ -7,7 +7,7 @@
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
-@property (nonatomic) UIButton *featureButton, *valueButton;
+@property (nonatomic) UIButton *featureButton, *valueButton, *adjButton;
 
 @end
 
@@ -93,9 +93,9 @@
     [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
     [self setupButton:_valueButton fontSize:littleFont];
     
-    UIButton *adjButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [adjButton setTitle:paddedString(@"Some Adjustment") forState:UIControlStateNormal];
-    [self setupButton:adjButton fontSize:littleFont];
+    _adjButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_adjButton setTitle:paddedString([NVMetroSettings.sharedInstance currentAdjustmentText]) forState:UIControlStateNormal];
+    [self setupButton:_adjButton fontSize:littleFont];
     
     UIButton *colorSchemeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [colorSchemeButton setTitle:paddedString(@"Red / Blue") forState:UIControlStateNormal];
@@ -206,11 +206,11 @@
                 [valueLabel constrainCenterYToAnchor:_valueButton.centerYAnchor];
                 [view addSubview:adjLabel];
                 [adjLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [view addSubview:adjButton];
-                [adjButton constrainBottomToAnchor:view.bottomAnchor constant:(-margin / 2.5)];
-                [adjButton constrainLeadingToAnchor:adjLabel.trailingAnchor constant:margin];
-                adjButton.tag = 44;
-                [adjLabel constrainCenterYToAnchor:adjButton.centerYAnchor];
+                [view addSubview:_adjButton];
+                [_adjButton constrainBottomToAnchor:view.bottomAnchor constant:(-margin / 2.5)];
+                [_adjButton constrainLeadingToAnchor:adjLabel.trailingAnchor constant:margin];
+                _adjButton.tag = 44;
+                [adjLabel constrainCenterYToAnchor:_adjButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.5];
                 break;
@@ -353,7 +353,7 @@
             
         case 44:
             keyword = @"Adjustment";
-            optionsList = @[@"Some Adjustment", @"Unnecessary Adjustment", @"Innane Adjustment", @"Ridiculous Adjustment"];
+            optionsList = NVMetroSettings.sharedInstance.adjustmentOptions;
             break;
             
         case 55:
@@ -399,6 +399,9 @@
             break;
             
         case 44://adjustment
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = index;
+            [_adjButton setTitle:paddedString([NVMetroSettings.sharedInstance currentAdjustmentText]) forState:UIControlStateNormal];
+
             break;
             
         case 55://color scheme

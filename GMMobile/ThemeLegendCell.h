@@ -8,7 +8,7 @@
 @property int count;
 @property PointSymbols symbol;
 @property float symbolWidth;
-@property UIColor *symbolColor;
+@property (nonatomic) UIColor *symbolColor;
 @property NSString *label;
 @property BOOL status;
 

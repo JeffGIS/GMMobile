@@ -48,6 +48,12 @@ static int currentValues[CPFeaturesCount];
     NSString * rtn = stringWithoutID(values[currentValues[_currentFeature]]);
     return rtn;
 }
+- (NSString *) currentAdjustmentText
+{
+    NSArray * values = [self adjustmentOptions];
+    NSString * rtn = stringWithoutID(values[_currentAdjustmentValue]);
+    return rtn;
+}
 - (NSString *) currentValueField
 {
     NSArray * values = [self valuesForFeature:_currentFeature];
@@ -176,6 +182,44 @@ static int currentValues[CPFeaturesCount];
                 [rtn addObject:stringWithID("Land Use Codes",value)];
                 break;
             case CPLandUseVCount:
+                break;
+        }
+    }
+    return rtn;
+}
+- (NSArray *) adjustmentOptions
+{
+    NSMutableArray *rtn = NSMutableArray.new;
+    
+    for (CPAdjustmentValues value = 0;value<CPAdjustCount;value++)
+    {
+        switch (value)
+        {
+            case CPAdjustRawCounts:
+                [rtn addObject:stringWithID("None (raw counts)",value)];
+                break;
+
+            case CPAdjustCountPerSQMile:
+                [rtn addObject:stringWithID("Count per Square Mile",value)];
+                break;
+
+            case CPAdjustCountPerAcre:
+                [rtn addObject:stringWithID("Count per Acre",value)];
+                break;
+
+            case CPAdjustCountPerHousingUnit:
+                [rtn addObject:stringWithID("Count per Housing Unit",value)];
+                break;
+
+            case CPAdjustPctOfTotalPop:
+                [rtn addObject:stringWithID("As Percent of Total Population",value)];
+                break;
+
+            case CPAdjustPctOfTotalHousingUnits:
+                [rtn addObject:stringWithID("As Percent of Total Housing Units",value)];
+                break;
+                
+            case CPAdjustCount:
                 break;
         }
     }

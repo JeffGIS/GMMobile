@@ -38,6 +38,17 @@ typedef NS_ENUM(NSInteger, CPLandUseValues)
     CPLandUseVCount
 };
 
+typedef NS_ENUM(NSInteger, CPAdjustmentValues)
+{
+    CPAdjustRawCounts,
+    CPAdjustCountPerSQMile,
+    CPAdjustCountPerAcre,
+    CPAdjustCountPerHousingUnit,
+    CPAdjustPctOfTotalPop,
+    CPAdjustPctOfTotalHousingUnits,
+    CPAdjustCount
+};
+
 
 
 @interface NVMetroSettings : NSObject
@@ -46,6 +57,7 @@ typedef NS_ENUM(NSInteger, CPLandUseValues)
 
 @property CPFeatures currentFeature;
 @property int currentFeatureValue;
+@property CPAdjustmentValues currentAdjustmentValue;
 @property BOOL OverUnder;
 @property int themeClassType;
 @property int numThemeClasses;
@@ -58,9 +70,11 @@ typedef NS_ENUM(NSInteger, CPLandUseValues)
 
 
 - (NSArray *) features;
+- (NSArray *) adjustmentOptions;
 - (NSString *) currentFeatureText;
 - (NSString *) currentValueText;
 - (NSString *) currentValueField;
+- (NSString *) currentAdjustmentText;
 - (void) setCurrentValue:(NSInteger)value;
 - (NSArray *) valuesForFeature:(CPFeatures)feature;
 

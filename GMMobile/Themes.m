@@ -111,7 +111,7 @@
                     {
                         ThemeLegendCell *cl = tl.cells[j++];
                         tlc.status = cl.status;
-                        tlc.symbolColor = cl.symbolColor;
+                        cl.symbolColor = tlc.symbolColor;
                     }
                 }
             }
