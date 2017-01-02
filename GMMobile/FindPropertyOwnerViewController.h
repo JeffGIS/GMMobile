@@ -20,6 +20,9 @@ typedef NS_ENUM(NSInteger, LimitToOption)
                  didSelectPropOwner:(NSString *)propOwner
                                 PID:(NSString *)PID;
 
+- (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
+             didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps;
+
 @end
 
 @interface FindPropertyOwnerViewController : UIViewController <PropertyDataDelegate>

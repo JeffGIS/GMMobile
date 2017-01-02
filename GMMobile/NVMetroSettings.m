@@ -123,6 +123,9 @@ static int currentValues[CPFeaturesCount];
             break;
         case CPFeaturesCount:
             break;
+            
+        default:
+            break;
     }
     return rtn;
 }
@@ -182,9 +185,9 @@ static int currentValues[CPFeaturesCount];
 {
     NSMutableArray *rtn = NSMutableArray.new;
     
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total people","B00001e1",0]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total housing units","B00002e1",1]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total number of people","POPTOTAL",2]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","None","",0]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total number of people","POPTOTAL",1]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total housing units","B00002e1",2]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Households with 1 person alone","LIVEDALONE",3]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Family households with children and headed by a married couple","MARRKIDS",4]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Family households with children and headed by a single person or unmarried people","UNMARRKIDS",5]];

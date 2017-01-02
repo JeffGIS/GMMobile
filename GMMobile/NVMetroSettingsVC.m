@@ -7,8 +7,7 @@
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
-@property (nonatomic) UIButton *featureButton;
-@property (nonatomic) UIButton *valueButton;
+@property (nonatomic) UIButton *featureButton, *valueButton;
 
 @end
 
@@ -25,10 +24,10 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
-    CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 30.0;
+    CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 28.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 6.0, bigFont = 20.0, littleFont = 16.0, cornerRadius = 4.0;
+        margin = 6.0, bigFont = 20.0, littleFont = 18.0, cornerRadius = 4.0;
     
     UIView *topView = UIView.new;
     topView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -50,7 +49,7 @@
     [bottomView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [bottomView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [bottomView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
-    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:(1.0 / 3.0)];
+    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.25];
     
     UILabel *topLabel = UILabel.new;
     topLabel.text = @"Choropleth Parameters";
@@ -69,6 +68,10 @@
     UILabel *valueLabel = UILabel.new;
     valueLabel.text = @"Value:";
     [self setupLabel:valueLabel fontSize:littleFont];
+    
+    UILabel *adjLabel = UILabel.new;
+    adjLabel.text = @"Adjustment:";
+    [self setupLabel:adjLabel fontSize:littleFont];
     
     UILabel *overUnderLabel = UILabel.new;
     overUnderLabel.text = @"Over/Under:";
@@ -90,12 +93,16 @@
     [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
     [self setupButton:_valueButton fontSize:littleFont];
     
+    UIButton *adjButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [adjButton setTitle:paddedString(@"Some Adjustment") forState:UIControlStateNormal];
+    [self setupButton:adjButton fontSize:littleFont];
+    
     UIButton *colorSchemeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [colorSchemeButton setTitle:@" Red / Blue " forState:UIControlStateNormal];
+    [colorSchemeButton setTitle:paddedString(@"Red / Blue") forState:UIControlStateNormal];
     [self setupButton:colorSchemeButton fontSize:littleFont];
     
     UIButton *textButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [textButton setTitle:@" Taxpayer / Total EMT " forState:UIControlStateNormal];
+    [textButton setTitle:paddedString(@"Taxpayer / Total EMT") forState:UIControlStateNormal];
     [self setupButton:textButton fontSize:littleFont];
     
     UISwitch *overUnderSwitch = UISwitch.new;
@@ -110,29 +117,41 @@
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
     
-    UISegmentedControl *segControlClassType =
-    [[UISegmentedControl alloc] initWithItems:@[@"Equal Class Ranges", @"Equal Class Counts"]];
+    UISegmentedControl *controlClassSC =
+    [[UISegmentedControl alloc] initWithItems:@[@"Equal Ranges", @"Equal Counts"]];
     
-    segControlClassType.translatesAutoresizingMaskIntoConstraints = NO;
-    segControlClassType.tintColor = UIColor.blackColor;
-    segControlClassType.selectedSegmentIndex = NVMetroSettings.sharedInstance.themeClassType;
-    [segControlClassType setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    controlClassSC.translatesAutoresizingMaskIntoConstraints = NO;
+    controlClassSC.tintColor = UIColor.blackColor;
+    controlClassSC.selectedSegmentIndex = NVMetroSettings.sharedInstance.themeClassType;
+    [controlClassSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
-    [segControlClassType addTarget:self
-                   action:@selector(segControlClassTypeTapped:)
-         forControlEvents:UIControlEventValueChanged];
+    [controlClassSC addTarget:self
+                       action:@selector(controlClassSCTapped:)
+             forControlEvents:UIControlEventValueChanged];
     
-    UISegmentedControl *segControl =
+    UISegmentedControl *displayParamsSC =
     [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
     
-    segControl.translatesAutoresizingMaskIntoConstraints = NO;
-    segControl.tintColor = UIColor.blackColor;
-    segControl.selectedSegmentIndex = 0;
-    [segControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    displayParamsSC.translatesAutoresizingMaskIntoConstraints = NO;
+    displayParamsSC.tintColor = UIColor.blackColor;
+    displayParamsSC.selectedSegmentIndex = 0;
+    [displayParamsSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
-    [segControl addTarget:self
-                   action:@selector(segControlTapped:)
-         forControlEvents:UIControlEventValueChanged];
+    [displayParamsSC addTarget:self
+                        action:@selector(displayParamsSCTapped:)
+              forControlEvents:UIControlEventValueChanged];
+    
+    UISegmentedControl *pctPopSC =
+    [[UISegmentedControl alloc] initWithItems:@[@"Pct of Population", @"Pct of Units"]];
+    
+    pctPopSC.translatesAutoresizingMaskIntoConstraints = NO;
+    pctPopSC.tintColor = UIColor.blackColor;
+    pctPopSC.selectedSegmentIndex = 0;
+    [pctPopSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [pctPopSC addTarget:self
+                 action:@selector(pctPopSCTapped:)
+       forControlEvents:UIControlEventValueChanged];
     
     for (int i = 1; i < 9; i++)
     {
@@ -163,66 +182,78 @@
                 [topLabel constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
                 [view constrainTopToAnchor:topView.topAnchor];
                 break;
-            
+                
             case 2:
                 [view addSubview:featureLabel];
-                [featureLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [featureLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_featureButton];
                 [_featureButton constrainCenterYToAnchor:view.centerYAnchor];
                 [_featureButton constrainLeadingToAnchor:featureLabel.trailingAnchor constant:margin];
-                _featureButton.tag = i;
+                _featureButton.tag = 22;
+                [featureLabel constrainCenterYToAnchor:_featureButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.75];
                 break;
                 
             case 3:
                 [view addSubview:valueLabel];
-                [valueLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [valueLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_valueButton];
-                [_valueButton constrainCenterYToAnchor:view.centerYAnchor];
+                [_valueButton constrainBottomToAnchor:view.centerYAnchor];
                 [_valueButton constrainLeadingToAnchor:valueLabel.trailingAnchor constant:margin];
                 [_valueButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:-margin].active = YES;
-                _valueButton.tag = i;
+                _valueButton.tag = 33;
+                [valueLabel constrainCenterYToAnchor:_valueButton.centerYAnchor];
+                [view addSubview:adjLabel];
+                [adjLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
+                [view addSubview:adjButton];
+                [adjButton constrainBottomToAnchor:view.bottomAnchor constant:(-margin / 2.5)];
+                [adjButton constrainLeadingToAnchor:adjLabel.trailingAnchor constant:margin];
+                adjButton.tag = 44;
+                [adjLabel constrainCenterYToAnchor:adjButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.5];
                 break;
                 
             case 4:
-                [view addSubview:segControlClassType];
-                [segControlClassType constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
-                [segControlClassType constrainCenterXToAnchor:view.centerXAnchor];
+                [view addSubview:pctPopSC];
+                [pctPopSC constrainTopToAnchor:view.centerYAnchor constant:margin / 2.0];
+                [pctPopSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [pctPopSC constrainHeightToConstant:bigFont];
                 [view addSubview:overUnderLabel];
-                [overUnderLabel constrainTopToAnchor:view.centerYAnchor constant:(margin / 2.5)];
-                [overUnderLabel constrainTrailingToAnchor:view.centerXAnchor constant:(-margin / 2.5)];
+                [overUnderLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
+                [overUnderLabel constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
                 [view addSubview:overUnderSwitch];
-                [overUnderSwitch constrainTopToAnchor:view.centerYAnchor constant:(margin / 2.5)];
-                [overUnderSwitch constrainLeadingToAnchor:view.centerXAnchor constant:(margin / 2.5)];
+                [overUnderSwitch constrainLeadingToAnchor:overUnderLabel.trailingAnchor constant:(margin / 2.5)];
+                [overUnderSwitch constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
+                [view addSubview:controlClassSC];
+                [controlClassSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [controlClassSC constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
+                [controlClassSC constrainHeightToConstant:bigFont];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 break;
                 
             case 5:
                 [view addSubview:colorSchemeLabel];
-                [colorSchemeLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [colorSchemeLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:colorSchemeButton];
                 [colorSchemeButton constrainCenterYToAnchor:view.centerYAnchor];
                 [colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
-                colorSchemeButton.tag = i;
+                colorSchemeButton.tag = 55;
+                [colorSchemeLabel constrainCenterYToAnchor:colorSchemeButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-3].heightAnchor];
                 break;
                 
             case 6:
                 [view addSubview:textLabel];
-                [textLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [textLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:textButton];
                 [textButton constrainCenterYToAnchor:view.centerYAnchor];
                 [textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
-                textButton.tag = i;
+                textButton.tag = 66;
+                [textLabel constrainCenterYToAnchor:textButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
                 [view constrainBottomToAnchor:topView.bottomAnchor];
@@ -236,14 +267,12 @@
                 
             case 8:
                 [view constrainTopToAnchor:[bottomView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[bottomView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[bottomView viewWithTag:i-1].heightAnchor multiplier:1.5];
                 [view constrainBottomToAnchor:bottomView.bottomAnchor];
-                [view addSubview:segControl];
-                [segControl constrainCenterXToAnchor:view.centerXAnchor];
-                [segControl constrainTopToAnchor:view.centerYAnchor constant:(-margin * 1.8)];
-                [segControl constrainBottomToAnchor:view.centerYAnchor constant:(margin * 1.8)];
-                [segControl constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [segControl constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [view addSubview:displayParamsSC];
+                [displayParamsSC constrainCenterXToAnchor:view.centerXAnchor];
+                [displayParamsSC constrainCenterYToAnchor:view.centerYAnchor];
+                [displayParamsSC constrainHeightToConstant:bigFont];
                 break;
                 
             default:
@@ -284,6 +313,13 @@
     button.titleLabel.backgroundColor = UIColor.blackColor;
     button.titleLabel.font = [UIFont boldSystemFontOfSize:fontSize];
     button.titleLabel.numberOfLines = 0;
+    button.titleLabel.layer.masksToBounds = NO;
+    button.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
+    button.titleLabel.layer.shadowRadius = 0.0;
+    button.titleLabel.layer.shadowOpacity = 1.0;
+    button.titleLabel.layer.shadowOffset = CGSizeMake(-6.0, 0.0);
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     
     [button setTitleColor:UIColor.whiteColor
                  forState:UIControlStateNormal];
@@ -300,25 +336,34 @@
 {
     NSString *keyword = @"";
     NSArray *optionsList = nil;
+    BOOL multipleSelect = NO;
     
     switch (button.tag)
     {
-        case 2:
+        case 22:
             keyword = @"Feature";
             optionsList = NVMetroSettings.sharedInstance.features;
             break;
             
-        case 3:
+        case 33:
             keyword = @"Value";
             optionsList = [NVMetroSettings.sharedInstance valuesForFeature:NVMetroSettings.sharedInstance.currentFeature];
+            multipleSelect = YES;
             break;
             
-        case 5:
+        case 44:
+            keyword = @"Adjustment";
+            optionsList = @[@"Some Adjustment", @"Unnecessary Adjustment", @"Innane Adjustment", @"Ridiculous Adjustment"];
+            break;
+            
+        case 55:
             keyword = @"Color Scheme";
+            optionsList = @[@"Red/Blue", @"Amelia's Favorite Colors", @"Really Dumb Colors"];
             break;
             
-        case 6:
+        case 66:
             keyword = @"Text";
+            optionsList = @[@"Taxpayer / Total EMT", @"Unintelligible Text", @"Useless Text", @"Random Garbage"];
             break;
             
         default:
@@ -332,7 +377,7 @@
                                          textArray:optionsList
                                      includeCancel:YES];
     
-    nvptv.allowsMultipleSelection = YES;
+    nvptv.allowsMultipleSelection = multipleSelect;
     nvptv.tag = button.tag;
 }
 
@@ -342,21 +387,24 @@
 {
     switch (popoverTableView.tag)
     {
-        case 2://feature
+        case 22://feature
             NVMetroSettings.sharedInstance.currentFeature = index;
             [_featureButton setTitle:paddedString([NVMetroSettings.sharedInstance currentFeatureText]) forState:UIControlStateNormal];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             break;
             
-        case 3://value
+        case 33://value
             [NVMetroSettings.sharedInstance setCurrentValue:index];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
-           break;
-            
-        case 5://color scheme
             break;
             
-        case 6://text
+        case 44://adjustment
+            break;
+            
+        case 55://color scheme
+            break;
+            
+        case 66://text
             break;
             
         default:
@@ -400,13 +448,19 @@ didReturnWithSelectedRows:(NSArray *)selectedRows
     NVMetroSettings.sharedInstance.OverUnder = theSwitch.state;
 }
 
-- (void)segControlTapped:(UISegmentedControl *)segControl
+- (void)displayParamsSCTapped:(UISegmentedControl *)segControl
 {
+    
 }
 
-- (void)segControlClassTypeTapped:(UISegmentedControl *)segControl
+- (void)controlClassSCTapped:(UISegmentedControl *)segControl
 {
     NVMetroSettings.sharedInstance.themeClassType = (int)segControl.selectedSegmentIndex;
+}
+
+- (void)pctPopSCTapped:(UISegmentedControl *)segControl
+{
+    
 }
 
 @end

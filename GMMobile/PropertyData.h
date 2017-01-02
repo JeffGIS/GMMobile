@@ -34,7 +34,17 @@ typedef struct {int nMatchingProperties;
 
 @end
 
+@interface PropertyRecord : NSObject
 
+@property (nonatomic) NSString *pin;
+@property (nonatomic) NSString *propOwner;
+@property CLLocationCoordinate2D coordinate;
+
++ (instancetype)propertyRecordWithPin:(NSString *)pin
+                            propOwner:(NSString *)propOwner
+                           coordinate:(CLLocationCoordinate2D)coordinate;
+
+@end
 
 @interface PropertyDataExtract : NSObject
 @property NSString* PIN;

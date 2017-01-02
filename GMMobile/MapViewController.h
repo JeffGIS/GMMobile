@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 @property (nonatomic) GMSMapView *mapView;
 @property NSUInteger fromIndex;
 @property BOOL firstMove;
+@property (nonatomic) NSArray <PropertyRecord *> *propArray;
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;

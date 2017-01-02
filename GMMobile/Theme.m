@@ -92,16 +92,22 @@
             thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
             [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = NVMetroSettings.sharedInstance.numThemeClasses;
+            NSNumber * themeMin = NVMetroSettings.sharedInstance.themeClassMin[0];
+            NSNumber * themeMax = NVMetroSettings.sharedInstance.themeClassMax[thm.numDesiredClasses-1];
             for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
             {
                 NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
                 NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
                 NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
-                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",min.integerValue,max.integerValue]];
+                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",(long)min.integerValue,(long)max.integerValue]];
                 class.minValue = min.integerValue;
                 class.maxValue = max.integerValue;
                 class.numItems = (int)count.integerValue;
-                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
+//                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
+                double intensity = 0;
+                double range = themeMax.integerValue - themeMin.integerValue;
+                if (range > 0)
+                    intensity = 1.0-(class.maxValue - themeMin.integerValue)/range;
                 class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
                 [thm.classes addObject:class];
             }

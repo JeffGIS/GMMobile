@@ -720,6 +720,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                         themes:themes];
                    }
                         break;
+                        
+                    default:
+                        break;
                 }
                 
                 if (passID == DataPass)

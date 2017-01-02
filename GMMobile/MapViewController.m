@@ -38,6 +38,7 @@
 @end
 
 @interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate>
+
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
 @property (nonatomic, copy) NSArray *options, *linkedList;
@@ -380,6 +381,19 @@
 {
     [super viewWillAppear:animated];
     
+    if (CRAPI.sharedInstance.appChanged)
+    {
+        [self themeLegendWasDraggedOffLeftSide];
+        
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlmos removeFromSuperview];
+        }
+        
+        CRAPI.sharedInstance.appChanged = NO;
+    }
+    
     if (_fromLegends)
     {
         self.view.userInteractionEnabled = NO;
@@ -426,10 +440,10 @@
     }
 
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID || CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
-        CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner)
+        CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner || CRAPI.sharedInstance.GMMSetting == GMMSettingMultipleProps)
     {
         GMSCameraPosition *camera = nil;
-        
+        MarkerButton *marker = nil;
         _tableView.hidden = YES;
         
         for (GSSiDatePicker *datePicker in self.view.subviews)
@@ -444,80 +458,109 @@
                 [notesView hideNotesView:NO];
         }
         
-        _selectedPID = CRAPI.sharedInstance.currentPID;
-        
-        PropertyData *propData = [[PropertyData alloc] init];
-        
-        LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
-        MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
-        
-        CLLocationCoordinate2D pidCoord = CLLocationCoordinate2DMake(pidPoint.lat, pidPoint.lon);
-        CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
-        CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
-        
-        if (northeast.latitude == 0.0 || northeast.longitude == 0.0 ||
-            southwest.latitude == 0.0 || southwest.longitude == 0.0)
-        {
-            camera = [GMSCameraPosition cameraWithTarget:pidCoord
-                                                    zoom:21.0];
-        }
-        
-        else
-        {
-            GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
-                                                                                    coordinate:southwest];
-            
-            camera = [_mapView cameraForBounds:coordBounds
-                                        insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
-        }
-        
-        [self animateToCamPos:camera];
-        
-        _selectedPIDCoords = pidCoord;
-        
         for (MarkerButton *marker in _markerArray)
         {
             if ([marker.title isEqualToString:_selectedPID])
                 [marker removeFromSuperview];
         }
         
-        MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
-                                                           view:self.view
-                                                            map:_mapView
-                                                statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
-                                                       delegate:self];
-        
-        [self removePreviousInfoWindow];
-        _infoWindow = MarkerInfoWindow.new;
-        _infoWindow.linkedPID = NO;
-        
-        switch (CRAPI.sharedInstance.GMMSetting)
+        if (CRAPI.sharedInstance.GMMSetting == GMMSettingMultipleProps)
         {
-            case GMMSettingPID:
-                marker.snippet = CRAPI.sharedInstance.currentPropOwner;
-                break;
+            for (PropertyRecord *propRec in _propArray)
+            {
+                marker = [MarkerButton markerWithPosition:propRec.coordinate
+                                                     view:self.view
+                                                      map:_mapView
+                                          statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
+                                                 delegate:self];
                 
-            case GMMSettingAddress:
-                marker.snippet = CRAPI.sharedInstance.currentAddress;
-                break;
-                
-            case GMMSettingPropOwner:
-                marker.snippet = CRAPI.sharedInstance.currentPropOwner;
-                break;
+                marker.title = propRec.pin;
+                marker.snippet = propRec.propOwner;
+                marker.type = MarkerInfoWindowTypePID;
+                [_markerArray addObject:marker];
+            }
+            
+            CLLocationCoordinate2D myLocation = ((MarkerButton *)_markerArray.firstObject).position;
+            
+            GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:myLocation
+                                                                               coordinate:myLocation];
+            
+            for (MarkerButton *marker in _markerArray)
+                bounds = [bounds includingCoordinate:marker.position];
+            
+            [_mapView animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds
+                                                             withPadding:40.0]];
         }
         
-        marker.title = _selectedPID;
-        marker.type = MarkerInfoWindowTypePID;
-        
-        [_markerArray addObject:marker];
-        
-        _infoWindow.marker = marker;
-        _infoWindow.optionsTitle = marker.title;
-        _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
-        _infoWindow.delegate = self;
-        _noneSelected = NO;
-        
-        [self.view addSubview:_infoWindow];
+        else
+        {
+            _selectedPID = CRAPI.sharedInstance.currentPID;
+            
+            PropertyData *propData = [[PropertyData alloc] init];
+            
+            LLPOINT pidPoint = [propData getPointForPID:_selectedPID];
+            MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
+            
+            CLLocationCoordinate2D pidCoord = CLLocationCoordinate2DMake(pidPoint.lat, pidPoint.lon);
+            CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
+            CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
+            
+            if (northeast.latitude == 0.0 || northeast.longitude == 0.0 ||
+                southwest.latitude == 0.0 || southwest.longitude == 0.0)
+            {
+                camera = [GMSCameraPosition cameraWithTarget:pidCoord
+                                                        zoom:21.0];
+            }
+            
+            else
+            {
+                GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
+                                                                                        coordinate:southwest];
+                
+                camera = [_mapView cameraForBounds:coordBounds
+                                            insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
+            }
+            
+            [self animateToCamPos:camera];
+            
+            _selectedPIDCoords = pidCoord;
+            
+            MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
+                                                               view:self.view
+                                                                map:_mapView
+                                                    statusBarHeight:[self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]
+                                                           delegate:self];
+            
+            [self removePreviousInfoWindow];
+            _infoWindow = MarkerInfoWindow.new;
+            _infoWindow.linkedPID = NO;
+            
+            switch (CRAPI.sharedInstance.GMMSetting)
+            {
+                case GMMSettingPID:
+                    marker.snippet = CRAPI.sharedInstance.currentPropOwner;
+                    break;
+                    
+                case GMMSettingAddress:
+                    marker.snippet = CRAPI.sharedInstance.currentAddress;
+                    break;
+                    
+                case GMMSettingPropOwner:
+                    marker.snippet = CRAPI.sharedInstance.currentPropOwner;
+                    break;
+            }
+            
+            marker.title = _selectedPID;
+            marker.type = MarkerInfoWindowTypePID;
+            [_markerArray addObject:marker];
+            
+            _infoWindow.marker = marker;
+            _infoWindow.optionsTitle = marker.title;
+            _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+            _infoWindow.delegate = self;
+            _noneSelected = NO;
+            [self.view addSubview:_infoWindow];
+        }
         
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
@@ -3045,6 +3088,10 @@ haveVV:
         
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
+        
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+            yFactor += _mapToolbar.frame.size.height;
+        
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
         NSUInteger portraitColumnCount = 1, landscapeColumnCount = portraitColumnCount;
@@ -3120,8 +3167,8 @@ haveVV:
         {
             ThemeLegend *tl = legends[i];
             
-            if (tl.drawOnMap ||
-                (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet || ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp))
+            if (tl.drawOnMap || (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+                                 ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp))
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
@@ -3211,7 +3258,7 @@ haveVV:
 
 - (void)themeLegendWasDraggedOffRightSide
 {
-    if (!_legendsAreOffMap)
+    if (!_legendsAreOffMap && ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         _legendScrollView.alpha = 1.0;
