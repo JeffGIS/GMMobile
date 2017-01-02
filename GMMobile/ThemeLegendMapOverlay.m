@@ -867,6 +867,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     static NSString *cellID = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+    int row = (int)indexPath.row;
     
     if (!cell)
     {
@@ -880,7 +881,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [views removeFromSuperview];
     }
     
-    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[row];
     
     NSMutableString *text = tlc.label.mutableCopy;
     CGFloat margin = 4.0;
@@ -973,7 +974,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         textWidth = MIN(textWidth, (tableView.frame.size.width * 0.85));
         textOriginX = (tableView.frame.size.width - textWidth);
         
-        //this is temporary - just to show that bars are being drawn with colors!
         if (!_legend.showSymbolAsBarChart)
             tlc.symbolWidth = 1.0;
         
