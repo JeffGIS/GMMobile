@@ -716,7 +716,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
-    
+    static BOOL drawLines = TRUE;
     if (!color)
         return;
     CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
@@ -725,12 +725,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
     
     CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
-    
+    CGContextClosePath(context);
     if (!CGContextIsPathEmpty(context))
     {
         CGContextSetStrokeColorWithColor(context,color);
         CGContextSetFillColorWithColor(context,color);
-        CGContextDrawPath(context, kCGPathFill);
+        if (drawLines)
+            CGContextDrawPath(context, kCGPathEOFillStroke);
+        else
+            CGContextDrawPath(context, kCGPathEOFill);
+        
     }
 }
 - (BOOL) createSortedValuesTable
@@ -767,10 +771,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int factor = 1;
     if (maxVal > 0 && maxVal <= 1.0)
         factor = 100;
-    int * classCounts = calloc (maxClass*3,sizeof(int));
+    int * classCounts = calloc (maxClass*3,sizeof(int)+maxClass*sizeof(double));
     int * classMin = classCounts + maxClass;
     int * classMax = classMin + maxClass;
+    double * classAve = (double *)(classMax + maxClass);
     double numPerClass = (double)numValues / maxClass;
+    double classTot = 0;
     
     if (NVMetroSettings.sharedInstance.themeClassType > -1)
     {
@@ -790,15 +796,19 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             {
                 if (iValue > (iClass+1) * numPerClass)
                 {
+                    classAve[iClass] = classTot / classCounts[iClass];
                     classMax[iClass++] = lastValue;
                     classMin[iClass] = value;
+                    classTot = 0;
                 }
             }
             lastValue = value;
+            classTot += value;
             classCounts[iClass]++;
             iValue++;
         }
         classMax[iClass] = value;
+        classAve[iClass] = classTot / classCounts[iClass];
         SQLOK(0,sqlite3_finalize(statement), self.database);
         query = @"DROP TABLE IF EXISTS SORTEDVALUES;";
         [self executeCmd:(LPSTR)query.UTF8String];
@@ -833,14 +843,17 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NVMetroSettings.sharedInstance.themeClassCounts = NSMutableArray.new;
     NVMetroSettings.sharedInstance.themeClassMin = NSMutableArray.new;
     NVMetroSettings.sharedInstance.themeClassMax = NSMutableArray.new;
+    NVMetroSettings.sharedInstance.themeClassAve = NSMutableArray.new;
     for (int iClass = 0;iClass < NVMetroSettings.sharedInstance.numThemeClasses;iClass++)
     {
         NSNumber * count = [NSNumber numberWithInteger:classCounts[iClass]];
         NSNumber * min = [NSNumber numberWithInteger:classMin[iClass]];
         NSNumber * max = [NSNumber numberWithInteger:classMax[iClass]];
+        NSNumber * ave = [NSNumber numberWithDouble:classAve[iClass]];
         [NVMetroSettings.sharedInstance.themeClassCounts addObject:count];
         [NVMetroSettings.sharedInstance.themeClassMin addObject:min];
         [NVMetroSettings.sharedInstance.themeClassMax addObject:max];
+        [NVMetroSettings.sharedInstance.themeClassAve addObject:ave];
     }
     free (classCounts);
     return classBounds;
@@ -869,6 +882,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CloseTRANS2(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
     int factor = 1;
+    int ii=0;
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
@@ -916,7 +930,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 //        dataValue *= factor;
         if (_pass == DataPass)
         {
-            if (dataValue > 0)
+            //if (dataValue > 0)
             {
                 [self addToSortedValues:dataValue];
                 minValue = min (minValue,dataValue);
@@ -971,6 +985,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                            points:llpoints
                         withColor:dc.fillColor.CGColor];
             }
+            else
+                ii=1;
         }
     }
     

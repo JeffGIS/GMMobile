@@ -66,6 +66,7 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
 @property NSMutableArray * themeClassMin;
 @property NSMutableArray * themeClassMax;
 @property NSMutableArray * themeClassCounts;
+@property NSMutableArray * themeClassAve;
 
 
 

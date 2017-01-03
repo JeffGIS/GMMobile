@@ -85,29 +85,38 @@
     {
         case MetroPropTheme:
         {
-            CGFloat PropListAlpha = 0.55;
+            CGFloat PropListAlpha = 1;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
             thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
+            NSString * adjustText = [NSString stringWithFormat:@" %@",[NVMetroSettings.sharedInstance currentAdjustmentText]];
+            if (![adjustText containsString:@" None"])
+                thm.legend.title = [thm.legend.title stringByAppendingString:adjustText];
             [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = NVMetroSettings.sharedInstance.numThemeClasses;
             NSNumber * themeMin = NVMetroSettings.sharedInstance.themeClassMin[0];
             NSNumber * themeMax = NVMetroSettings.sharedInstance.themeClassMax[thm.numDesiredClasses-1];
+            NSNumber * rangeAveTop = NVMetroSettings.sharedInstance.themeClassAve[thm.numDesiredClasses-1];
+            NSNumber * rangeAveBot = NVMetroSettings.sharedInstance.themeClassAve[0];
+            double range = rangeAveTop.doubleValue - rangeAveBot.doubleValue;
+            if (range <= 0)
+                range = themeMax.integerValue - themeMin.integerValue;
             for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
             {
                 NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
                 NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
                 NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
+                NSNumber * ave = NVMetroSettings.sharedInstance.themeClassAve[iClass];
                 class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",(long)min.integerValue,(long)max.integerValue]];
                 class.minValue = min.integerValue;
                 class.maxValue = max.integerValue;
+                class.aveValue = ave.doubleValue;
                 class.numItems = (int)count.integerValue;
 //                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
                 double intensity = 0;
-                double range = themeMax.integerValue - themeMin.integerValue;
                 if (range > 0)
-                    intensity = 1.0-(class.maxValue - themeMin.integerValue)/range;
+                    intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
                 class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
                 [thm.classes addObject:class];
             }

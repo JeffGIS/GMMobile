@@ -200,15 +200,15 @@ static int currentValues[CPFeaturesCount];
                 break;
 
             case CPAdjustCountPerSQMile:
-                [rtn addObject:stringWithID("Count per Square Mile",value)];
+                [rtn addObject:stringWithID("Per Square Mile",value)];
                 break;
 
             case CPAdjustCountPerAcre:
-                [rtn addObject:stringWithID("Count per Acre",value)];
+                [rtn addObject:stringWithID("Per Acre",value)];
                 break;
 
             case CPAdjustCountPerHousingUnit:
-                [rtn addObject:stringWithID("Count per Housing Unit",value)];
+                [rtn addObject:stringWithID("Per Housing Unit",value)];
                 break;
 
             case CPAdjustPctOfTotalPop:

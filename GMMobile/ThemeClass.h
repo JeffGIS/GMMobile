@@ -16,7 +16,7 @@
 @property UIColor *color;
 @property float size;
 @property PointSymbols symbol;
-@property double minValue, maxValue;
+@property double minValue, maxValue, aveValue;
 
 + (ThemeClass *) createWithTitle:(NSString *)title;
 
