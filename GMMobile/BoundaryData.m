@@ -911,6 +911,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
         switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
         {
+            case CPAdjustCount:
+            case CPAdjustRawCounts:
+                break;
             case CPAdjustCountPerAcre:
                 area *= ACRES_PER_SQMETER;
                 dataValue /= area;
