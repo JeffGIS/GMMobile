@@ -30,6 +30,7 @@
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"Boundary.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+        NSLog(@"Boundary Database init");
     }
     
     return self;
@@ -62,8 +63,8 @@
     {
         SQLOK(0,sqlite3_close(_database),_database);
         NSLog(@"Boundary Database close");
+        _isOpen = NO;
     }
-    _isOpen = NO;
 }
 
 - (void)clear
@@ -741,17 +742,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     BOOL rtn = FALSE;
     
-    NSString * cmd = @"DROP TABLE IF EXISTS SORTEDVALUES;CREATE TEMP TABLE SORTEDVALUES (Value DOUBLE);";
+    NSString * cmd = @"DROP TABLE IF EXISTS SORTEDVALUES;CREATE TEMP TABLE SORTEDVALUES (ID INTEGER PRIMARY KEY,Value INT8);";
     rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
     [self startTransaction];
     return rtn;
 }
 
-- (void) addToSortedValues:(double)value
+- (void) addToSortedValues:(long long)value
+                        id:(long long)id
 {
     if (NVMetroSettings.sharedInstance.themeClassType > -1)
     {
-        NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%f);",value];
+        NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%lli,%lli);",id,value];
         [self executeCmd:(LPSTR)cmd.UTF8String];
     }
 }
@@ -811,7 +813,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         classAve[iClass] = classTot / classCounts[iClass];
         SQLOK(0,sqlite3_finalize(statement), self.database);
         query = @"DROP TABLE IF EXISTS SORTEDVALUES;";
-        [self executeCmd:(LPSTR)query.UTF8String];
+//        [self executeCmd:(LPSTR)query.UTF8String];
         NVMetroSettings.sharedInstance.numThemeClasses = iClass+1;
     }
     else
@@ -890,13 +892,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (_pass == DataPass)
     {
         [self createSortedValuesTable];
-        query = [NSString stringWithFormat:@"SELECT %@, Area,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
+        query = [NSString stringWithFormat:@"SELECT %@.id,%@, Area,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     }
     else
     {
         factor = NVMetroSettings.sharedInstance.valueMultiplier;
-        query = [NSString stringWithFormat:@"SELECT %@,Area,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",field,polyTable,polyTable,dataTable,polyTable,polyTable,
+        query = [NSString stringWithFormat:@"SELECT %@.id,%@,Area,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     }
     
@@ -904,10 +906,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        double dataValue = sqlite3_column_double(statement,0);
-        double area = sqlite3_column_double(statement,1);
-        double totalPop = sqlite3_column_double(statement,2);
-        double totalHousingUnits = sqlite3_column_double(statement,3);
+        long long ID = sqlite3_column_int64(statement,0);
+        double dataValue = sqlite3_column_double(statement,1);
+        double area = sqlite3_column_double(statement,2);
+        double totalPop = sqlite3_column_double(statement,3);
+        double totalHousingUnits = sqlite3_column_double(statement,4);
         
         switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
         {
@@ -935,7 +938,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             //if (dataValue > 0)
             {
-                [self addToSortedValues:dataValue];
+                [self addToSortedValues:dataValue id:ID];
                 minValue = min (minValue,dataValue);
                 maxValue = max (maxValue,dataValue);
                 numValues++;
@@ -943,12 +946,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            BasePt.x = sqlite3_column_double(statement,4);
-            BasePt.y = sqlite3_column_double(statement,5);
-            numPoints = sqlite3_column_int(statement,6);
-            numLoops = sqlite3_column_int(statement,7);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,8);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,9);
+            BasePt.x = sqlite3_column_double(statement,5);
+            BasePt.y = sqlite3_column_double(statement,6);
+            numPoints = sqlite3_column_int(statement,7);
+            numLoops = sqlite3_column_int(statement,8);
+            int *polyPartLen = (int *)sqlite3_column_blob(statement,9);
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,10);
             LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             //keyval = sqlite3_column_int64(statement,6);
             

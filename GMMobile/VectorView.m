@@ -24,6 +24,7 @@
 @property (nonatomic) dispatch_queue_t vectorQueue;
 @property (nonatomic) CGRect rect;
 @property BOOL haveVectorLayer;
+@property BoundaryData *bd;
 
 @end
 
@@ -676,51 +677,36 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         break;
                         
                     case CPFBlocks:
-                    {
-                        BoundaryData *bd = [[BoundaryData alloc] init];
-                        bd.pass = passID;
-                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                        bd.zoom = _zoom;
-                        [bd displayCensusAreas:_context
-                                          type:@"BLOCK"
-                        displayCharacteristics:dc
-                                     llCorners:&_latlonCornerPoints
-                                      LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds
-                                        themes:themes];
-                    }
-                        break;
                     case CPFBlockGroups:
-                    {
-                        BoundaryData *bd = [[BoundaryData alloc] init];
-                        bd.pass = passID;
-                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                        bd.zoom = _zoom;
-                        [bd displayCensusAreas:_context
-                                          type:@"BLOCKGROUP"
-                        displayCharacteristics:dc
-                                     llCorners:&_latlonCornerPoints
-                                      LLBounds:&_latlonBounds
-                                    viewBounds:&_viewBounds
-                                        themes:themes];
-                    }
-                        break;
                     case CPFTracts:
                     {
-                        BoundaryData *bd = [[BoundaryData alloc] init];
-                        bd.pass = passID;
-                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                        bd.zoom = _zoom;
-                        [bd displayCensusAreas:_context
-                                          type:@"TRACT"
+                        NSString *CenType = @"BLOCK";
+                        if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups)
+                            CenType = @"BLOCKGROUP";
+                        if (NVMetroSettings.sharedInstance.currentFeature == CPFTracts)
+                            CenType = @"TRACT";
+                        if (passID == DataPass || !_bd)
+                        {
+                            _bd = BoundaryData.new;
+                            [_bd open];
+                        }
+                        _bd.pass = passID;
+                        _bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        _bd.zoom = _zoom;
+                        [_bd displayCensusAreas:_context
+                                          type:CenType
                         displayCharacteristics:dc
                                      llCorners:&_latlonCornerPoints
                                       LLBounds:&_latlonBounds
                                     viewBounds:&_viewBounds
                                         themes:themes];
-                   }
+                        if (passID != DataPass)
+                        {
+                            [_bd close:YES];
+                            _bd = nil;
+                        }
+                    }
                         break;
-                        
                     default:
                         break;
                 }
