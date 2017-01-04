@@ -471,7 +471,7 @@
 }
 
 
-- (MNMXCORD)getBoundaryAreaBounds:(int)refno
+- (MNMXCORD)getBoundaryAreaBounds:(long long)refno
                            ofType:(NSString*)type
 {
     MNMXCORD bounds = {0};
@@ -484,12 +484,12 @@
     
     if ([type isEqualToString:@"BOUNDARY"])
     {
-        query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%i AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
+        query = [NSString stringWithFormat:@"SELECT BOUNDARYAREA.id,minX,maxX,minY,maxY FROM BOUNDARYAREA,BOUNDARYAREA_index WHERE BOUNDARYAREA.ID=%lli AND BOUNDARYAREA_index.id=BOUNDARYAREA.id",
                  refno];
     }
     else
     {
-        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM %@_index WHERE ID=%i",table,refno];
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM %@_index WHERE ID=%lli",table,refno];
 
     }
     
@@ -497,7 +497,7 @@
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        int ref = sqlite3_column_int(statement, 0);
+        long long ref = sqlite3_column_int64(statement, 0);
         bounds.xmn = sqlite3_column_double(statement, 1);
         bounds.xmx = sqlite3_column_double(statement, 2);
         bounds.ymn = sqlite3_column_double(statement, 3);
@@ -758,13 +758,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
 }
 
-- (NSArray *) getClassBounds:(int)numValues
+- (long long) getClassBounds:(int)numValues
                   maxClasses:(int)maxClass
                     minValue:(double)minVal
                     maxValue:(double)maxVal
                        theme:(Theme*)thm
 {
-    NSMutableArray * classBounds = NSMutableArray.new;
+    //NSMutableArray * classBounds = NSMutableArray.new;
+    long long rtn = -1;
     double value=0, lastValue=DBL_MIN;
     double d95percentValue=maxVal;
     int i95percentCount = 0.95 * numValues;
@@ -782,13 +783,17 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     if (NVMetroSettings.sharedInstance.themeClassType > -1)
     {
-        NSString * query = @"SELECT Value FROM SORTEDVALUES ORDER BY Value";
+        NSString * query = @"SELECT ID,Value FROM SORTEDVALUES ORDER BY Value";
         SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
         int iClass = 0;
+        int startClass = 0;
+        int startValue = 0;
         int iValue = 0;
+        long long ID=-1;
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
-            value = sqlite3_column_double(statement,0);
+            ID = sqlite3_column_int64(statement,0);
+            value = sqlite3_column_double(statement,1);
             value *= factor;
             if (iValue == i95percentCount)
                 d95percentValue = value;
@@ -796,12 +801,15 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 classMin[0] = value;
             else if (value != lastValue)
             {
-                if (iValue > (iClass+1) * numPerClass)
+                if ((iValue-startValue) > ((iClass-startClass)+1) * numPerClass)
                 {
                     classAve[iClass] = classTot / classCounts[iClass];
                     classMax[iClass++] = lastValue;
                     classMin[iClass] = value;
                     classTot = 0;
+                    startClass = iClass;
+                    startValue = iValue;
+                    numPerClass = (double)(numValues - iValue) / (maxClass - startClass);
                 }
             }
             lastValue = value;
@@ -809,6 +817,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             classCounts[iClass]++;
             iValue++;
         }
+        rtn = ID;
         classMax[iClass] = value;
         classAve[iClass] = classTot / classCounts[iClass];
         SQLOK(0,sqlite3_finalize(statement), self.database);
@@ -858,7 +867,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         [NVMetroSettings.sharedInstance.themeClassAve addObject:ave];
     }
     free (classCounts);
-    return classBounds;
+    return rtn;
 }
 -(void)displayCensusAreas:(CGContextRef)context
                      type:(NSString *)type
@@ -1000,12 +1009,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (_pass == DataPass)
     {
         Theme * thm = themes.themeList[0];
-        [self getClassBounds:numValues
+        long long maxValID = [self getClassBounds:numValues
                   maxClasses:10
                     minValue:minValue
                     maxValue:maxValue
                        theme:thm];
         [themes setAppThemes];
+        thm = themes.themeList[0];
+        thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
 
     [self close:opened];
@@ -1245,6 +1256,8 @@ NextPass:
     NSString *keyval = @"";
     int numLoops = 0;
     NSString *key = areaType;
+    NSString *fldval;
+    LPSTR pfldval;
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 6.0;
@@ -1269,8 +1282,10 @@ NextPass:
     }
     else
     {
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
-                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        NSString * dataTable = [NSString stringWithFormat:@"CENSUS%@DATA",key];
+        NSString * field = [NVMetroSettings.sharedInstance currentValueField];
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,field,table,table,dataTable,table,table,
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,table,areaType];
         
     }
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
@@ -1295,6 +1310,9 @@ NextPass:
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
         keyval = [NSString stringWithUTF8String:pkeyval];
+        pfldval = (LPSTR)sqlite3_column_text(statement,7);
+        if (pfldval)
+            fldval = [NSString stringWithUTF8String:pfldval];
         int numNewPoints = 0;
         int iloop = 0;
         int nextLoopi = polyPartLen[0] - 1;
@@ -1352,7 +1370,10 @@ NextPass:
         else
         {
             count = 1;
-            text = keyval;
+            if (pfldval)
+                text = [NSString stringWithFormat:@"%@\n%@",keyval,fldval];
+            else
+                text = keyval;
         }
         if (count >= 0)
         {

@@ -28,6 +28,7 @@
 @property BOOL showSymbolAsBarChart;
 @property int minUCR, maxUCR;
 @property int minYear, maxYear;
+@property MNMXCORD maxValBounds;
 
 + (Theme *)createTheme:(ThemeTypes)type;
 

@@ -700,8 +700,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                       LLBounds:&_latlonBounds
                                     viewBounds:&_viewBounds
                                         themes:themes];
-                        if (passID != DataPass)
+                        if (passID == DisplayPass)
                         {
+                            [_bd displayText:_context
+                                   areaType:CenType
+                                textOptions:nil
+                               pointInAreas:nil
+                                  llCorners:&_latlonCornerPoints
+                                   LLBounds:&_latlonBounds
+                                 viewBounds:&_viewBounds];
+                            
                             [_bd close:YES];
                             _bd = nil;
                         }

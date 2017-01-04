@@ -119,7 +119,7 @@ static int currentValues[CPFeaturesCount];
             rtn = [self valuesForBlocks];
             break;
         case CPFTracts:
-            rtn = [NSArray arrayWithObjects:@"", nil];
+            rtn = [self valuesForBlocks];
             break;
         case CPFVoterDistricts:
             rtn = [NSArray arrayWithObjects:@"", nil];

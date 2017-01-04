@@ -1048,6 +1048,9 @@ int getThemeOpt(ThemeTypes type)
                                               dc:dc
                                         testPass:test])
                             rtn = DISPLAY_ITEM;
+                        if (val == _classes.count-1)//debug
+                            rtn = DISPLAY_ITEM;
+
                         break;
                     }
                     val++;

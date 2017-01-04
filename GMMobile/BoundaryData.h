@@ -32,7 +32,7 @@
 
 - (NSMutableArray *)getBoundaryAreaTypes;
 - (NSMutableArray *)getBoundaryAreaDataForType:(NSString *)type;
-- (MNMXCORD) getBoundaryAreaBounds:(int)refno
+- (MNMXCORD) getBoundaryAreaBounds:(long long)refno
                             ofType:(NSString*)type;
 
 -(void)displayBoundary:(int)refno
