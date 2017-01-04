@@ -13,14 +13,16 @@
 #import "NVMetroSettings.h"
 
 @implementation Theme
+
 - (id)init
 {
     self = [super init];
     
-    self.showSymbolAsBarChart = TRUE;
+    if (self)
+        _showSymbolAsBarChart = YES;
+    
     return self;
 }
-
 
 + (NSString *)formattedDate:(NSDate *)date
 {

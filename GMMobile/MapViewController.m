@@ -2981,7 +2981,8 @@ haveVV:
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
                            ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
                            ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
-                           ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+                           ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
                        {
                            if (!_legendsAreOffMap)
                            {

@@ -15,10 +15,11 @@
 {
     self = [super init];
     
-    self.showSymbolAsBarChart = TRUE;
+    if (self)
+        _showSymbolAsBarChart = YES;
+    
     return self;
 }
-
 
 -(id) copyWithZone: (NSZone *) zone
 {

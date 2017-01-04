@@ -235,8 +235,12 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                        }
                                    }
                                }
+                               
                                else if ([self doNVMetroDisplay:dc])
-                                   ;
+                               {
+                                   
+                               }
+                               
                                else
                                {
                                    Themes * themes = [[Themes alloc]init];
