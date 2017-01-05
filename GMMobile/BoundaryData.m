@@ -1014,7 +1014,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     minValue:minValue
                     maxValue:maxValue
                        theme:thm];
-        //[themes setAppThemes];
+        [themes setAppThemes];
         thm = themes.themeList[0];
         thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
