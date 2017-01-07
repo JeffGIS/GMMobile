@@ -1870,6 +1870,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
 {
+    if (CRAPI.sharedInstance.currentApp ==  HCConfigMetroProp)
+    {
+        if (gesture.state == UIGestureRecognizerStateBegan)
+            _vectorView.alpha = 0.0;
+        
+        else if (gesture.state == UIGestureRecognizerStateEnded)
+            _vectorView.alpha = 1.0;
+        
+        return;
+    }
+    
     if (_inDigitizationMode)
     {
         [self handleLongPressDigitizingForState:gesture];
