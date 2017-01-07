@@ -167,6 +167,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    {
                                        switch (dataType)
                                        {
+                                           case GetDatabaseSettingCensus:
                                            case GetDatabaseSettingNVMetro:
                                            {
                                                dispatch_async(dispatch_get_main_queue(),
@@ -191,12 +192,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            }
                                                break;
                                                
-                                           case GetDatabaseSettingCensus:
+/*                                           case GetDatabaseSettingCensus:
                                            {
                                                file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
                                                _popover.title = @"Load Census Tables";
                                            }
-                                               break;
+                                               break;*/
                                            case GetDatabaseSettingCrimes:
                                            {
                                                file = [NSString stringWithFormat:@"%@/crimes_latlon.sqltran",toDirectory];
@@ -637,7 +638,7 @@ Exit:
 - (IBAction)loadCensus:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MetroGIS_census.gcf";
+    NSString *fileName = @"MetroGIS_censusdata.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;

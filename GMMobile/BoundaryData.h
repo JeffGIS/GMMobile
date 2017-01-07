@@ -18,7 +18,9 @@
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
+@property (nonatomic, copy) NSString *cenfileName;
 @property (nonatomic, copy) NSString *path;
+@property (nonatomic, copy) NSString *cenpath;
 @property NSInteger fileSize;
 @property (nonatomic) int datasetVersion;
 @property int zoom;

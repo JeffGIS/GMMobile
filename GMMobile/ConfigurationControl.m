@@ -451,6 +451,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     {
         NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingNVMetro];
         [list addObject:dsid];
+        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
     }
     else
     {

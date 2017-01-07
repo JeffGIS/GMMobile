@@ -31,6 +31,9 @@ static int currentValues[CPFeaturesCount];
     
     if (self)
     {
+        self.currentFeature = CPFTracts;
+        self.currentAdjustmentValue = CPAdjustCountPerSQMile;
+        currentValues[self.currentFeature] = self.currentFeatureValue = 1;
     }
     
     return self;

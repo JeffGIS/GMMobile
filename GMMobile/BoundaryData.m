@@ -30,6 +30,8 @@
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"Boundary.sqlite";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+        _cenfileName = @"censusdata.slt";
+        _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
         NSLog(@"Boundary Database init");
     }
     
@@ -50,6 +52,12 @@
         _isOpen = !SQLOK(0,sqlite3_open(self.path.UTF8String, &_database), _database);
         NSLog(@"Boundary Database open");
         
+        if (_isOpen)
+        {
+            NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",_cenpath];
+            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+
+        }
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
         rtn = TRUE;
@@ -173,7 +181,8 @@
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpoints
-                withColor:maskColor.CGColor];
+                withColor:maskColor.CGColor
+                drawLines:NO];
         
     }
     
@@ -249,26 +258,31 @@
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            if (CRAPI.sharedInstance.showPolylineForBounds)
-            {
-                UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.60];
-                [self drawBoundary:context
-                           nPoints:numPoints
-                            nLoops:numLoops
-                           partLen:polyPartLen
-                            points:llpoints
-                         withColor:boundaryColor.CGColor];
-            }
+            LPDPOINT llpointsDrawLine = llpoints;
+            int nPointsAddedByMask = 0;
             if (mask)
             {
-                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
+                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.85];
                 
                 CreateMask(&llpoints, &numPoints,pvbounds);
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
-                        withColor:maskColor.CGColor];
+                        withColor:maskColor.CGColor
+                        drawLines:NO];
+                nPointsAddedByMask = 5;
+                llpointsDrawLine = &llpoints[nPointsAddedByMask];
                 
+            }
+            if (CRAPI.sharedInstance.showPolylineForBounds)
+            {
+                UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.80];
+                [self drawBoundary:context
+                           nPoints:numPoints-nPointsAddedByMask
+                            nLoops:numLoops
+                           partLen:polyPartLen
+                            points:llpointsDrawLine
+                         withColor:boundaryColor.CGColor];
             }
             
             free(llpoints);
@@ -637,7 +651,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             [self fillUseCode:context
                       nPoints:numPoints
                        points:llpoints
-                    withColor:dc.fillColor.CGColor];
+                    withColor:dc.fillColor.CGColor
+                    drawLines:NO];
             [self drawUseCode:context
                       nPoints:numPoints
                        nLoops:numLoops
@@ -712,12 +727,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
            nPoints:(int)np
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
+          drawLines:(BOOL) drawLines
 {
     //CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
     //CGContextStrokeEllipseInRect(context, pointRect);
     //CGContextFillPath(context);
-    static BOOL drawLines = TRUE;
     if (!color)
         return;
     CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
@@ -846,9 +861,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
             classMax[iclass] = classMin[0] + IDNINT ((iclass+1) * classInc);
+            classAve[iclass] = (classMin[iclass] + classMax[iclass])/2;
             classMin[iclass+1] = classMax[iclass]+1;
         }
         classMax[maxClass-1] = IDNINT (maxVal);
+        classAve[maxClass-1] = (classMin[maxClass-1] + classMax[maxClass-1])/2;
     }
     NVMetroSettings.sharedInstance.valueMultiplier = factor;
     NVMetroSettings.sharedInstance.themeClassCounts = NSMutableArray.new;
@@ -888,10 +905,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int numLoops;
     NSString * key = type;
     NSString * polyTable = [NSString stringWithFormat:@"CENSUS%@POLY",key];
-    NSString * dataTable = [NSString stringWithFormat:@"CENSUS%@DATA",key];
+    NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
+    double area;
     int factor = 1;
     int ii=0;
     
@@ -901,13 +919,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (_pass == DataPass)
     {
         [self createSortedValuesTable];
-        query = [NSString stringWithFormat:@"SELECT %@.id,%@, Area,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+        query = [NSString stringWithFormat:@"SELECT %@.id,%@, LandArea,WaterArea,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     }
     else
     {
         factor = NVMetroSettings.sharedInstance.valueMultiplier;
-        query = [NSString stringWithFormat:@"SELECT %@.id,%@,Area,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
+        query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
     }
     
@@ -917,9 +935,15 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         long long ID = sqlite3_column_int64(statement,0);
         double dataValue = sqlite3_column_double(statement,1);
-        double area = sqlite3_column_double(statement,2);
-        double totalPop = sqlite3_column_double(statement,3);
-        double totalHousingUnits = sqlite3_column_double(statement,4);
+        double landArea = sqlite3_column_double(statement,2);
+        double waterArea = sqlite3_column_double(statement,3);
+        double totalPop = sqlite3_column_double(statement,4);
+        double totalHousingUnits = sqlite3_column_double(statement,5);
+        area = landArea;
+        if (!ID)
+            continue;
+        if (!area)
+            ii=1;
         
         switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
         {
@@ -955,12 +979,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            BasePt.x = sqlite3_column_double(statement,5);
-            BasePt.y = sqlite3_column_double(statement,6);
-            numPoints = sqlite3_column_int(statement,7);
-            numLoops = sqlite3_column_int(statement,8);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,9);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,10);
+            BasePt.x = sqlite3_column_double(statement,6);
+            BasePt.y = sqlite3_column_double(statement,7);
+            numPoints = sqlite3_column_int(statement,8);
+            numLoops = sqlite3_column_int(statement,9);
+            int *polyPartLen = (int *)sqlite3_column_blob(statement,10);
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,11);
             LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             //keyval = sqlite3_column_int64(statement,6);
             
@@ -998,7 +1022,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
-                        withColor:dc.fillColor.CGColor];
+                        withColor:dc.fillColor.CGColor
+                        drawLines:YES];
             }
             else
                 ii=1;
@@ -1218,7 +1243,8 @@ NextPass:
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpoints
-                withColor:color];
+                withColor:color
+                drawLines:NO];
         
         [self drawUseCode:context
                   nPoints:numPoints
@@ -1282,7 +1308,7 @@ NextPass:
     }
     else
     {
-        NSString * dataTable = [NSString stringWithFormat:@"CENSUS%@DATA",key];
+        NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
         NSString * field = [NVMetroSettings.sharedInstance currentValueField];
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,field,table,table,dataTable,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,table,areaType];

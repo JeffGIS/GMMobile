@@ -704,7 +704,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                       LLBounds:&_latlonBounds
                                     viewBounds:&_viewBounds
                                         themes:themes];
-                        if (passID == DisplayPass)
+                        BOOL showText = NO;
+                        if (passID == DisplayPass && showText)
                         {
                             [_bd displayText:_context
                                    areaType:CenType
@@ -726,7 +727,25 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 if (passID == DataPass)
                     [themes themesEndDataPass:CRAPI.sharedInstance.keepProcessing];
                 else if (passID == DisplayPass)
+                {
                     [themes themesEndDisplayPass:CRAPI.sharedInstance.keepProcessing];
+                    if (CRAPI.sharedInstance.keepProcessing == _displayID && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+                        (CRAPI.sharedInstance.showPolylineForBounds ||
+                         CRAPI.sharedInstance.maskBoundsForBounds))
+                    {
+                        BoundaryData *bd = [[BoundaryData alloc] init];
+                        
+                        [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                     ofType:@"BOUNDARY"
+                                     asMask:CRAPI.sharedInstance.maskBoundsForBounds
+                                  inContext:_context
+                                  llCorners:&_latlonCornerPoints
+                                   LLBounds:&_latlonBounds
+                                 viewBounds:&_viewBounds];
+                    }
+                    
+
+                }
                 passID++;
             }
         }

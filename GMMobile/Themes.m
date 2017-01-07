@@ -103,15 +103,22 @@
             if (ConfigurationControl.sharedInstance.legendList.count > i)
             {
                 ThemeLegend *tl = ConfigurationControl.sharedInstance.legendList[i++];
-                int j=0;
-                
-                for (ThemeLegendCell *tlc in thm.legend.cells)
+                if (tl.type == thm.type)
                 {
-                    if (tl.cells.count > j)
+                    int j=0;
+                    thm.legend.scrollYPosition = tl.scrollYPosition;
+                    thm.legend.portraitMapOrigin = tl.portraitMapOrigin;
+                    thm.legend.landscapeMapOrigin = tl.landscapeMapOrigin;
+                    thm.legend.isDraggedPortrait = tl.isDraggedPortrait;
+                    thm.legend.isDraggedLandscape = tl.isDraggedLandscape;
+                    for (ThemeLegendCell *tlc in thm.legend.cells)
                     {
-                        ThemeLegendCell *cl = tl.cells[j++];
-                        tlc.status = cl.status;
-                        cl.symbolColor = tlc.symbolColor;
+                        if (tl.cells.count > j)
+                        {
+                            ThemeLegendCell *cl = tl.cells[j++];
+                            tlc.status = cl.status;
+                            cl.symbolColor = tlc.symbolColor;
+                        }
                     }
                 }
             }

@@ -95,7 +95,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _fileName = @"Property.sqlite";
         _fileName = @"PropertyData2.slt";
+        _cenfileName = @"censusdata.slt";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
+        _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
         _multiValueFile = [NSString stringWithFormat:@"%@/changevalues.bin", _documentsDirectory];
         
     }
@@ -118,6 +120,13 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         //NSLog(@"Property Database open");
         
+        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_cenpath
+                     error:nil].fileSize;
+        if (self.isOpen)
+        {
+            NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",self.cenpath];
+            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+        }
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
         return TRUE;
@@ -223,17 +232,17 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     if (_isOpen && _fileSize > 0)
     {
-        NSString *query = [NSString stringWithFormat:@"SELECT max(GEOG_UNIT) FROM CENSUSBLOCKGROUPDATA"];
+        //NSString *query = [NSString stringWithFormat:@"SELECT VersionNumber FROM VERSION"];
+        NSString *query = [NSString stringWithFormat:@"SELECT max(GEOG_UNIT) FROM CENSUSDB.CENSUSBLOCKGROUPDATA"];
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 12);
+        int st = SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 12);
         
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
-            LPSTR maxID = (LPSTR)sqlite3_column_text(statement, 0);
-            if (maxID && *maxID != 0)
-                rtn = 0;
+            LPSTR version  = (LPSTR)sqlite3_column_text(statement, 0);
+            rtn = atoi (version);
         }
         
         SQLOKpd(sqlite3_finalize(statement), _database, 13);
@@ -1628,6 +1637,7 @@ Exit:
     
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     int numLinked;
+    int maxPixels;
     DPOINT p1, p2;
     MNMXCORD bnds, bndsScreen;
     CGFloat boundsWidthInMeters, boundsHeightInMeters;
@@ -1694,6 +1704,9 @@ Exit:
         BasePt.y = sqlite3_column_double(statement,1);
         BasePt.x = sqlite3_column_double(statement,2);
         acres = (CGFloat)sqlite3_column_double(statement, 3);
+        maxPixels = acres *acresToPixelsFactor;
+        if (maxPixels < 100)
+            continue;
         //homeStead = (LPSTR)sqlite3_column_text(statement, 4);
         //useCode = (LPSTR)sqlite3_column_text(statement, 5);
         //useDesc = (LPSTR)sqlite3_column_text(statement, 6);
@@ -1712,7 +1725,6 @@ Exit:
         bnds.xmx = (CGFloat)sqlite3_column_double(statement, 18);
         bnds.ymn = (CGFloat)sqlite3_column_double(statement, 19);
         bnds.ymx = (CGFloat)sqlite3_column_double(statement, 20);
-        
         //CGFloat alpha = 0.0;
         //UIColor *color;
         //int opt = CRAPI.sharedInstance.parcelTextOption;
@@ -1779,7 +1791,7 @@ Exit:
                    forPID:PID
                   atPoint:&viewPoint
                    inRect:(CGRect*)&textRect
-                maxPixels:acres *acresToPixelsFactor
+                maxPixels:maxPixels
                   context:context];
     }
     

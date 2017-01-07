@@ -78,5 +78,8 @@
     _currentTitleIndex = currentTitleIndex;
     _title = (NSString *)_titles[_currentTitleIndex];
 }
-
+- (void) setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin
+{
+    _landscapeMapOrigin = landscapeMapOrigin;
+}
 @end
