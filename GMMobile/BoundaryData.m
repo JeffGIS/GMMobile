@@ -32,6 +32,9 @@
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _cenfileName = @"censusdata.slt";
         _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
+        _propfileName =  @"PropertyData2.slt";
+        _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
+
         NSLog(@"Boundary Database init");
     }
     
@@ -49,12 +52,14 @@
     BOOL rtn = FALSE;
     if (!_isOpen)
     {
-        _isOpen = !SQLOK(0,sqlite3_open(self.path.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
         NSLog(@"Boundary Database open");
         
         if (_isOpen)
         {
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",_cenpath];
+            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS PROPERTYDB",_proppath];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
 
         }
@@ -894,6 +899,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                viewBounds:(MNMXCORD *)pvbounds
                    themes:(Themes*)themes;
 {
+    BOOL isParcel = NO;
     NSString * field = [NVMetroSettings.sharedInstance currentValueField];
     NSString *query = @"";
     //NSString *querys;
@@ -906,44 +912,73 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString * key = type;
     NSString * polyTable = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
+    if ([type isEqualToString:@"PARCEL"])
+    {
+        polyTable = [NSString stringWithFormat:@"PARCELPOLY"];
+        dataTable = [NSString stringWithFormat:@"PROPINFO"];
+        isParcel = YES;
+    }
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
     double area;
     int factor = 1;
     int ii=0;
-    
+    double waterArea = 0;
+    double totalPop = 0;
+    double totalHousingUnits = 0;
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     BOOL opened = [self open];
     if (_pass == DataPass)
     {
         [self createSortedValuesTable];
-        query = [NSString stringWithFormat:@"SELECT %@.id,%@, LandArea,WaterArea,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
-                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+        if (isParcel)
+        {
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
+        }
+        else
+        {
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LandArea,WaterArea,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+        }
     }
     else
     {
         factor = NVMetroSettings.sharedInstance.valueMultiplier;
-        query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
-                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+        if (isParcel)
+        {
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
+        }
+        else
+        {
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+            
+        }
     }
     
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        long long ID = sqlite3_column_int64(statement,0);
-        double dataValue = sqlite3_column_double(statement,1);
-        double landArea = sqlite3_column_double(statement,2);
-        double waterArea = sqlite3_column_double(statement,3);
-        double totalPop = sqlite3_column_double(statement,4);
-        double totalHousingUnits = sqlite3_column_double(statement,5);
+        int i = 0;
+        long long ID = sqlite3_column_int64(statement,i++);
+        double dataValue = sqlite3_column_double(statement,i++);
+        double landArea = sqlite3_column_double(statement,i++);
+        if (isParcel)
+            landArea /= ACRES_PER_SQMETER;
+        else
+        {
+            waterArea = sqlite3_column_double(statement,i++);
+            totalPop = sqlite3_column_double(statement,i++);
+            totalHousingUnits = sqlite3_column_double(statement,i++);
+        }
         area = landArea;
-        if (!ID)
-            continue;
         if (!area)
-            ii=1;
+            continue;
         
         switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
         {
@@ -979,12 +1014,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            BasePt.x = sqlite3_column_double(statement,6);
-            BasePt.y = sqlite3_column_double(statement,7);
-            numPoints = sqlite3_column_int(statement,8);
-            numLoops = sqlite3_column_int(statement,9);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,10);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,11);
+            BasePt.x = sqlite3_column_double(statement,i++);
+            BasePt.y = sqlite3_column_double(statement,i++);
+            numPoints = sqlite3_column_int(statement,i++);
+            numLoops = sqlite3_column_int(statement,i++);
+            int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
             LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
             //keyval = sqlite3_column_int64(statement,6);
             
@@ -1041,7 +1076,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                        theme:thm];
         [themes setAppThemes];
         thm = themes.themeList[0];
-        thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
+        if (!isParcel)
+            thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
 
     [self close:opened];

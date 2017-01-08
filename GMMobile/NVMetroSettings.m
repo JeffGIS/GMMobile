@@ -141,28 +141,28 @@ static int currentValues[CPFeaturesCount];
 - (NSArray *) valuesForParcels
 {
     NSMutableArray *rtn = NSMutableArray.new;
-    
+/*PID,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PARCELPOLY.id,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,EMV_BLDG,ACRES_POLY,SPEC_ASSES,OWNER_NAME,SALE_DATE,SALE_VALUE,NUMLINKEDPARCELS  FROM PARCELPOLY,PARCELPOLY_index,PROPINFO WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND*/
     for (CPParcelValues value = 0;value<CPParcelVCount;value++)
     {
         switch (value)
         {
             case CPParcelVNone:
-                [rtn addObject:stringWithID("None",value)];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","None","",0]];
                 break;
             case CPParcelVTotTax:
-                [rtn addObject:stringWithID("Total Tax",value)];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total Tax","TOTAL_TAX",(int)value]];
                 break;
             case CPParcelVTotEMV:
-                [rtn addObject:stringWithID("Total EMV",value)];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total EMV","EMV_TOTAL",(int)value]];
                 break;
             case CPParcelVBuildEMV:
-                [rtn addObject:stringWithID("Building EMV",value)];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Building EMV","EMV_BLDG",(int)value]];
                 break;
             case CPParcelVLandEMV:
-                [rtn addObject:stringWithID("Land EMV",value)];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Land EMV","EMV_LAND",(int)value]];
                 break;
             case CPParcelVLastSalePrice:
-                [rtn addObject:stringWithID("Last Sale Price",value)];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Last Sale Price","SALE_VALUE",(int)value]];
                 break;
             case CPParcelVCount:
                 break;

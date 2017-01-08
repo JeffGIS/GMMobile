@@ -644,7 +644,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                     switch (NVMetroSettings.sharedInstance.currentFeature)
                 {
-                    case CPFParcels:
+/*                    case CPFParcels:
                     {
                         PropertyData *pd = [[PropertyData alloc] init];
                         
@@ -662,7 +662,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                      LLBounds:&_latlonBounds
                                    viewBounds:&_viewBounds];
                     }
-                        break;
+                        break;*/
                     case CPFLandUse:
                     {
                         BoundaryData *bd = [[BoundaryData alloc] init];
@@ -680,6 +680,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     }
                         break;
                         
+                    case CPFParcels:
                     case CPFBlocks:
                     case CPFBlockGroups:
                     case CPFTracts:
@@ -689,6 +690,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             CenType = @"BLOCKGROUP";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFTracts)
                             CenType = @"TRACT";
+                        if (NVMetroSettings.sharedInstance.currentFeature == CPFParcels)
+                            CenType = @"PARCEL";
                         if (passID == DataPass || !_bd)
                         {
                             _bd = BoundaryData.new;
