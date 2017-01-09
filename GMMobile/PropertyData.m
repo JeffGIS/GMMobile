@@ -116,7 +116,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (!_isOpen)
     {
         self.isOpen = YES;
-        self.isOpen = !SQLOKpd(sqlite3_open(self.path.UTF8String, &_database), _database, 1);
+        self.isOpen = !SQLOKpd(sqlite3_open(_path.UTF8String, &_database), _database, 1);
         
         //NSLog(@"Property Database open");
         
@@ -233,7 +233,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (_isOpen && _fileSize > 0)
     {
         //NSString *query = [NSString stringWithFormat:@"SELECT VersionNumber FROM VERSION"];
-        NSString *query = [NSString stringWithFormat:@"SELECT max(GEOG_UNIT) FROM CENSUSDB.CENSUSBLOCKGROUPDATA"];
+        NSString *query = [NSString stringWithFormat:@"SELECT VersionNum FROM CENSUSDB.VERSION"];
         
         sqlite3_stmt *statement = NULL;
         

@@ -227,7 +227,7 @@ Top:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
-            if (pd.censusDatasetVersion >= 0)
+            if (pd.censusDatasetVersion >= 2)
                 rtn = YES;
         }
             break;

@@ -918,6 +918,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         dataTable = [NSString stringWithFormat:@"PROPINFO"];
         isParcel = YES;
     }
+    else if ([type isEqualToString:@"BLOCKGROUP_ACS"])
+    {
+        polyTable = [NSString stringWithFormat:@"CENSUSBLOCKGROUPPOLY"];
+        dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUSBLOCKGROUPACS"];
+        type = @"BLOCKGROUP";
+    }
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
@@ -940,7 +946,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LandArea,WaterArea,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
         }
     }

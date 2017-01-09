@@ -11,9 +11,12 @@
 typedef NS_ENUM(NSInteger, CPFeatures)
 {
     CPFParcels,
+    CPFParcels_RES,
+    CPFParcels_COM,
     CPFLandUse,
     CPFBlocks,
     CPFBlockGroups,
+    CPFBlockGroups_ACS,
     CPFTracts,
     CPFVoterDistricts,
     CPFSchoolDistricts,

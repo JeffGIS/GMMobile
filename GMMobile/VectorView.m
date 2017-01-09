@@ -683,11 +683,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     case CPFParcels:
                     case CPFBlocks:
                     case CPFBlockGroups:
+                    case CPFBlockGroups_ACS:
                     case CPFTracts:
                     {
                         NSString *CenType = @"BLOCK";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups)
                             CenType = @"BLOCKGROUP";
+                        if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups_ACS)
+                            CenType = @"BLOCKGROUP_ACS";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFTracts)
                             CenType = @"TRACT";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFParcels)
