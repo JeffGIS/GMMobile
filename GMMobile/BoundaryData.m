@@ -448,6 +448,8 @@
     {
         table = @"BOUNDARYAREA";
     }
+    else if ([areaType isEqualToString:@"PARCEL"])
+        table = @"PARCELPOLY";
     return table;
 }
 
@@ -929,6 +931,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                viewBounds:(MNMXCORD *)pvbounds
                    themes:(Themes*)themes;
 {
+#define MIN_PARCEL_ACRES 0.01
     BOOL isParcel = NO;
     NSString * field = [NVMetroSettings.sharedInstance currentValueField];
     NSString *query = @"";
@@ -1024,6 +1027,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         double landArea = sqlite3_column_double(statement,i++);
         if (isParcel)
         {
+            if (landArea < MIN_PARCEL_ACRES)
+                continue;
             landArea /= ACRES_PER_SQMETER;
             genUseCode = sqlite3_column_int(statement,i++);
             if (genUseCode < 113 || genUseCode > 115)
@@ -1153,7 +1158,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         [themes setAppThemes];
         thm = themes.themeList[0];
         thm.numDecimals = nDecimals;
-        if (!isParcel)
+        if (isParcel)
+            thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:@"PARCEL"];
+        else
             thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
     else

@@ -432,9 +432,11 @@ viewForHeaderInSection:(NSInteger)section
         superview = self.superview.superview;
     
     NSMutableArray *textArray = NSMutableArray.array;
-    [textArray addObject:@"Cancel"];
-    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
-    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
+    NSMutableArray *idArray = NSMutableArray.array;
+    [textArray addObject:@"Cancel"];[idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
+    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];[idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];[idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
+    [textArray addObject:@"Zoom to Item With\nMaximum Value"];[idArray addObject:[NSNumber numberWithInteger:TLTZoomToMax]];
     
     
     if (_legend.titles.count > 1)
@@ -446,7 +448,7 @@ viewForHeaderInSection:(NSInteger)section
                                                                 _legend.title]
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
-    
+    alert.buttonIdentifiers = idArray;
     alert.identifier = @"TopLevelAlert";
     
     if ([_delegate respondsToSelector:@selector(clearVectorView)])
@@ -480,38 +482,50 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
         {
             [alertView hideLargeAlertView:YES];
-            
-            if (buttonIndex == 1)//Apply Existing Colors
+            if (alertView.buttonIdentifiers.count > buttonIndex)
             {
-                
+                NSNumber *num = alertView.buttonIdentifiers[buttonIndex];
+                buttonIndex = num.integerValue;
             }
-            
-            if (buttonIndex == 2)//Select Colors Option
+            switch (buttonIndex)
             {
-                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
-                                                                  delegate:self
-                                                                     title:@"Select Color Scheme"
-                                                           buttonTextArray:NVColorSet.colorOptions
-                                                          destructiveIndex:1];
-                
-                alert.identifier = @"ColorOptionsAlert";
+                case TLTApplyExistingColors:
+                    break;
+                case TLTSelectColors:
+                {
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Color Scheme"
+                                                               buttonTextArray:NVColorSet.colorOptions
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"ColorOptionsAlert";
+                }
+                    break;
+                case TLTTitles:
+                {
+                    NSMutableArray *textArray = NSMutableArray.array;
+                    [textArray addObject:@"Cancel"];
+                    [textArray addObjectsFromArray:_legend.titles.copy];
+                    
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Legend Title"
+                                                               buttonTextArray:textArray
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"TitlesAlert";
+                }
+                    break;
+                case TLTZoomToMax:
+                {
+                    MNMXCORD bnds = _legend.maxValBounds;
+                    if ([_delegate respondsToSelector:@selector(zoomToBounds:)])
+                        [_delegate zoomToBounds:bnds];
+
+                }
+                    break;
             }
-            
-            else if (buttonIndex == 3)//Titles Option
-            {
-                NSMutableArray *textArray = NSMutableArray.array;
-                [textArray addObject:@"Cancel"];
-                [textArray addObjectsFromArray:_legend.titles.copy];
-                
-                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
-                                                                  delegate:self
-                                                                     title:@"Select Legend Title"
-                                                           buttonTextArray:textArray
-                                                          destructiveIndex:1];
-                
-                alert.identifier = @"TitlesAlert";
-            }
-            
             return;
         }
         
