@@ -2210,7 +2210,7 @@ wasTappedAtPoint:(DPOINT)point
     
     if (![self legendIsExpanded] && ![self alertVisible] && !_showsPanorama)
     {
-        [self.view bringSubviewToFront:_mapToolbar];
+        [_mapToolbar bringToFrontOfView];
         [self.view bringSubviewToFront:_compass];
         
         if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
@@ -2817,6 +2817,7 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
+    _mapToolbar.showIndicator = YES;
     [self allocateVectorView];
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
@@ -2927,7 +2928,7 @@ haveVV:
                            if (!_compass.hidden)
                                [self.view bringSubviewToFront:_compass];
                            
-                           [self.view bringSubviewToFront:_mapToolbar];
+                           [_mapToolbar bringToFrontOfView];
                            
                            if (_legendsAreOffMap && [self.view.subviews containsObject:_legendScrollView])
                                [self.view bringSubviewToFront:_legendScrollView];
@@ -5548,7 +5549,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [self.view bringSubviewToFront:_vectorView];
         
         if ([self.view.subviews containsObject:_mapToolbar])
-            [self.view bringSubviewToFront:_mapToolbar];
+            [_mapToolbar bringToFrontOfView];
         
         if ([self.view.subviews containsObject:_compass])
             [self.view bringSubviewToFront:_compass];
@@ -6048,7 +6049,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _mapToolbar.orientation = MapToolbarOrientationRight;
     }
     
-    [self.view bringSubviewToFront:_mapToolbar];
+    [_mapToolbar bringToFrontOfView];
     
     if (_mapToolbar.orientation != MapToolbarOrientationMinimized)
         [self updateCompassPosition:YES];
