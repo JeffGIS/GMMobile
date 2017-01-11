@@ -11,6 +11,7 @@
 @property int numCells;         // number of desired cells. Actual number in cells
                                 // array may differ
 @property int numColumns;
+@property int numDecimals;
 @property BOOL usePointSymbols; // if true each cell has a point symbol which is displayed
                                 // instead of the bar chart.
 @property BOOL showSymbolAsBarChart;

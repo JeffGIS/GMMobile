@@ -86,6 +86,7 @@ typedef struct {int nMatchingProperties;
 @property (nonatomic, weak) id <PropertyDataDelegate> delegate;
 @property sqlite3 *database;
 @property (atomic) BOOL isOpen;
+@property NSString* version;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
 @property (nonatomic, copy) NSString *cenfileName;

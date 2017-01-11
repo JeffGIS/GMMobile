@@ -32,7 +32,7 @@
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _cenfileName = @"censusdata.slt";
         _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
-        _propfileName =  @"PropertyData2.slt";
+        _propfileName =  @"PropertyData.slt";
         _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
 
         NSLog(@"Boundary Database init");
@@ -53,6 +53,7 @@
     if (!_isOpen)
     {
         _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
+//        _isOpen = !SQLOK(0,sqlite3_open(_proppath.UTF8String, &_database), _database);
         NSLog(@"Boundary Database open");
         
         if (_isOpen)
@@ -767,6 +768,20 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     [self startTransaction];
     return rtn;
 }
+- (INT64)getCountOfSortedValues
+{
+    NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM SORTEDVALUES"];
+    sqlite3_stmt *statement = NULL;
+    INT64 count = 0;
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, NULL), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+        count = sqlite3_column_int64(statement, 0);
+    
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    return count;
+}
+
 
 - (void) addToSortedValues:(long long)value
                         id:(long long)id
@@ -774,7 +789,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (NVMetroSettings.sharedInstance.themeClassType > -1)
     {
         NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%lli,%lli);",id,value];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+      //  int st = [self executeCmd:(LPSTR)cmd.UTF8String];
+        int st = sqlite3_exec(_database,(LPSTR)cmd.UTF8String, 0, 0, 0);
+        if (!st)
+            st = 0;
     }
 }
 
@@ -794,9 +812,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int factor = 1;
     if (maxVal > 0 && maxVal <= 1.0)
         factor = 100;
-    int * classCounts = calloc (maxClass*3,sizeof(int)+maxClass*sizeof(double));
-    int * classMin = classCounts + maxClass;
-    int * classMax = classMin + maxClass;
+    INT64 * classCounts = calloc (maxClass*3,sizeof(INT64)+maxClass*sizeof(double));
+    INT64  * classMin = classCounts + maxClass;
+    INT64  * classMax = classMin + maxClass;
     double * classAve = (double *)(classMax + maxClass);
     double numPerClass = (double)numValues / maxClass;
     double classTot = 0;
@@ -852,10 +870,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         classMin[0] = minVal * factor;
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
-            classMax[iclass] = IDNINT ((iclass+1) * classInc);
+            classMax[iclass] = IDNINT64 ((iclass+1) * classInc);
             classMin[iclass+1] = classMax[iclass]+1;
         }
-        classMax[maxClass-1] = IDNINT (maxVal);
+        classMax[maxClass-1] = IDNINT64 (maxVal);
     }
     if (!NVMetroSettings.sharedInstance.themeClassType)
     {
@@ -865,11 +883,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         classMin[0] = minVal * factor;
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
-            classMax[iclass] = classMin[0] + IDNINT ((iclass+1) * classInc);
+            classMax[iclass] = classMin[0] + IDNINT64 ((iclass+1) * classInc);
             classAve[iclass] = (classMin[iclass] + classMax[iclass])/2;
             classMin[iclass+1] = classMax[iclass]+1;
         }
-        classMax[maxClass-1] = IDNINT (maxVal);
+        classMax[maxClass-1] = IDNINT64 (maxVal);
         classAve[maxClass-1] = (classMin[maxClass-1] + classMax[maxClass-1])/2;
     }
     NVMetroSettings.sharedInstance.valueMultiplier = factor;
@@ -879,9 +897,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NVMetroSettings.sharedInstance.themeClassAve = NSMutableArray.new;
     for (int iClass = 0;iClass < NVMetroSettings.sharedInstance.numThemeClasses;iClass++)
     {
-        NSNumber * count = [NSNumber numberWithInteger:classCounts[iClass]];
-        NSNumber * min = [NSNumber numberWithInteger:classMin[iClass]];
-        NSNumber * max = [NSNumber numberWithInteger:classMax[iClass]];
+        NSNumber * count = [NSNumber numberWithLongLong:classCounts[iClass]];
+        NSNumber * min = [NSNumber numberWithLongLong:classMin[iClass]];
+        NSNumber * max = [NSNumber numberWithLongLong:classMax[iClass]];
         NSNumber * ave = [NSNumber numberWithDouble:classAve[iClass]];
         [NVMetroSettings.sharedInstance.themeClassCounts addObject:count];
         [NVMetroSettings.sharedInstance.themeClassMin addObject:min];
@@ -929,10 +947,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     double minValue=DBL_MAX, maxValue=DBL_MIN;
     double area;
     int factor = 1;
+    int nDecimals = 0;
     int ii=0;
     double waterArea = 0;
     double totalPop = 0;
     double totalHousingUnits = 0;
+    int genUseCode;
+    INT64 svc=-1;;
     _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
     
     BOOL opened = [self open];
@@ -941,7 +962,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         [self createSortedValuesTable];
         if (isParcel)
         {
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,GENUSECODE FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
         }
         else
@@ -952,10 +973,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     else
     {
-        factor = NVMetroSettings.sharedInstance.valueMultiplier;
         if (isParcel)
         {
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
         }
         else
@@ -975,7 +995,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         double dataValue = sqlite3_column_double(statement,i++);
         double landArea = sqlite3_column_double(statement,i++);
         if (isParcel)
+        {
             landArea /= ACRES_PER_SQMETER;
+            genUseCode = sqlite3_column_int(statement,i++);
+            if (genUseCode < 113 || genUseCode > 115)
+                continue;
+        }
         else
         {
             waterArea = sqlite3_column_double(statement,i++);
@@ -992,6 +1017,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             case CPAdjustRawCounts:
                 break;
             case CPAdjustCountPerAcre:
+                factor = 10;
+                nDecimals = 1;
                 area *= ACRES_PER_SQMETER;
                 dataValue /= area;
                 break;
@@ -1000,14 +1027,21 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 dataValue /= area;
                 break;
             case CPAdjustPctOfTotalPop:
+                factor = 1000;
+                nDecimals = 1;
                 dataValue /= totalPop;
                 break;
             case CPAdjustCountPerHousingUnit:
             case CPAdjustPctOfTotalHousingUnits:
                 dataValue /= totalHousingUnits;
+                factor = 1000;
+                nDecimals = 1;
                 break;
         }
-//        dataValue *= factor;
+        dataValue *= factor;
+        NVMetroSettings.sharedInstance.valueMultiplier = factor;
+        NVMetroSettings.sharedInstance.roundTo = nDecimals;
+
         if (_pass == DataPass)
         {
             //if (dataValue > 0)
@@ -1072,6 +1106,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     
     SQLOK(0,sqlite3_finalize(statement), self.database);
+    //svc = [self getCountOfSortedValues];
     if (_pass == DataPass)
     {
         Theme * thm = themes.themeList[0];
@@ -1082,6 +1117,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                        theme:thm];
         [themes setAppThemes];
         thm = themes.themeList[0];
+        thm.numDecimals = nDecimals;
         if (!isParcel)
             thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }

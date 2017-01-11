@@ -27,6 +27,7 @@
     
     another.numCells = _numCells;
     another.numColumns = _numColumns;
+    another.numDecimals = _numDecimals;
     another.aspectRatio = _aspectRatio;
     another.pctBorder = _pctBorder;
     another.pctInnerMargin = _pctInnerMargin;

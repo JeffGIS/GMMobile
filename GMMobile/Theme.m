@@ -97,6 +97,7 @@
                 thm.legend.title = [thm.legend.title stringByAppendingString:adjustText];
             [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = NVMetroSettings.sharedInstance.numThemeClasses;
+            thm.numDecimals = NVMetroSettings.sharedInstance.roundTo;
             NSNumber * themeMin = NVMetroSettings.sharedInstance.themeClassMin[0];
             NSNumber * themeMax = NVMetroSettings.sharedInstance.themeClassMax[thm.numDesiredClasses-1];
             NSNumber * rangeAveTop = NVMetroSettings.sharedInstance.themeClassAve[thm.numDesiredClasses-1];
@@ -110,11 +111,17 @@
                 NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
                 NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
                 NSNumber * ave = NVMetroSettings.sharedInstance.themeClassAve[iClass];
-                class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",(long)min.integerValue,(long)max.integerValue]];
-                class.minValue = min.integerValue;
-                class.maxValue = max.integerValue;
+                if (thm.numDecimals)
+                {
+                    NSString * fmt = [NSString stringWithFormat:@"%%.%if to %%.%if",thm.numDecimals,thm.numDecimals];
+                    class = [ThemeClass createWithTitle:[NSString stringWithFormat:fmt,min.doubleValue/pow(10,thm.numDecimals),max.doubleValue/pow(10,thm.numDecimals)]];
+                }
+                else
+                    class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",(long)min.integerValue,(long)max.integerValue]];
+                class.minValue = min.longLongValue;
+                class.maxValue = max.longLongValue;
                 class.aveValue = ave.doubleValue;
-                class.numItems = (int)count.integerValue;
+                class.numItems = count.longLongValue;
 //                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
                 double intensity = 0;
                 if (range > 0)

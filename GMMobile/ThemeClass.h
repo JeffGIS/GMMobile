@@ -8,7 +8,7 @@
 
 @property NSString *title;
 @property double count;
-@property int numItems;
+@property long long numItems;
 @property int status;
 @property NSArray * values;
 @property float pctOfTotal;

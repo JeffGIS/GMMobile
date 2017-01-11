@@ -659,7 +659,8 @@ Exit:
 - (IBAction)loadNVMetro:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"MetroGIS_database.gcf";
+    //NSString *fileName = @"MetroGIS_database.gcf";
+    NSString *fileName = @"MetroGIS_propfiles.gcf";
     
     
     FTPDataPull *pull = FTPDataPull.pull;

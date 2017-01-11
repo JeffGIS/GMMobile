@@ -21,6 +21,7 @@
 @property ThemeLegend* legend;
 @property int numDesiredClasses;
 @property int numClasses;
+@property int numDecimals;
 @property int totNumItems;
 @property double totCount;
 @property BOOL setSymbol;

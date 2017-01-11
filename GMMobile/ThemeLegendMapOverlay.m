@@ -115,8 +115,8 @@
                                 size:18.0];
     
     tlmo.headerFont = [UIFont boldSystemFontOfSize:18.0];
-    tlmo.reducedFont = [UIFont boldSystemFontOfSize:10.0];
-    tlmo.smallFont = [UIFont boldSystemFontOfSize:8.0];
+    tlmo.reducedFont = [UIFont boldSystemFontOfSize:14.0];
+    tlmo.smallFont = [UIFont boldSystemFontOfSize:12.0];
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
     {
@@ -364,6 +364,7 @@ viewForHeaderInSection:(NSInteger)section
             _titleButton = [UIButton buttonWithType:UIButtonTypeCustom];
             _titleButton.translatesAutoresizingMaskIntoConstraints = NO;
             _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+            _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
             _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
             _titleButton.titleLabel.numberOfLines = 0;
             _titleButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -389,6 +390,19 @@ viewForHeaderInSection:(NSInteger)section
             
             [_titleButton setTitle:_legend.title
                           forState:UIControlStateNormal];
+        }
+        
+        if (_legend.title.length > 100)
+        {
+            _titleButton.titleLabel.font = _smallFont;
+            UIEdgeInsets  inset = UIEdgeInsetsMake(8, 8, 8, 8);
+            _titleButton.titleEdgeInsets = inset;
+        }
+        else if (_legend.title.length > 60)
+        {
+            _titleButton.titleLabel.font = _reducedFont;
+            UIEdgeInsets  inset = UIEdgeInsetsMake(4, 4, 4, 4);
+            _titleButton.titleEdgeInsets = inset;
         }
         
         [headerView addSubview:_titleButton];

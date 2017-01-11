@@ -1,3 +1,4 @@
+NSString *fileName = @"MetroGIS_database.gcf";
 //  PropertyData.m
 //  GMMobile
 #import "PropertyData.h"
@@ -93,8 +94,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (self)
     {
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
-        _fileName = @"Property.sqlite";
-        _fileName = @"PropertyData2.slt";
+        _fileName = @"PropertyData.slt";
         _cenfileName = @"censusdata.slt";
         _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
         _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
@@ -124,6 +124,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                      error:nil].fileSize;
         if (self.isOpen)
         {
+            [self propVersion];
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",self.cenpath];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
         }
@@ -170,59 +171,31 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     SQLOKpd(sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database, 5);
 }
 
-- (int)propertyDatasetVersion
+- (NSString *) propVersion
 {
-    int rtn = -1;
-    BOOL opened = [self open];
-    if (_isOpen && _fileSize > 0)
+    _version = @"-1";
+    NSString *query = [NSString stringWithFormat:@"SELECT VersionNum FROM VERSION"];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        NSString *query = [NSString stringWithFormat:@"SELECT id FROM PROPINFO"];
-        
-        sqlite3_stmt *statement = NULL;
-        
-        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 6);
-        
-        while (sqlite3_step(statement) == SQLITE_ROW)
-        {
-            int maxID = sqlite3_column_int(statement, 0);
-            if (maxID > 0)
-            {
-                rtn = 0;
-                break;
-            }
-        }
-        
-        SQLOKpd(sqlite3_finalize(statement), _database, 7);
+        LPSTR ver = (LPSTR)sqlite3_column_text(statement, 0);
+        _version = [NSString stringWithUTF8String:ver];
     }
     
-    [self close:opened];
-    return rtn;
+    SQLOKpd(sqlite3_finalize(statement), _database, 7);
+    return _version;
 }
 
-- (int) parcelDatasetVersion
+- (int)parcelDatasetVersion
 {
-    int rtn = -1;
     BOOL opened = [self open];
     
-    if (_isOpen && _fileSize > 0)
-    {
-        NSString *query = [NSString stringWithFormat:@"SELECT max(id) FROM PARCELPOLY"];
-        
-        sqlite3_stmt *statement = NULL;
-        
-        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 10);
-        if (sqlite3_step(statement) == SQLITE_ROW)
-        {
-            int maxID = sqlite3_column_int(statement, 0);
-            if (maxID > 0)
-                rtn = 0;
-        }
-        
-        SQLOKpd(sqlite3_finalize(statement), _database, 11);
-    }
-    
     [self close:opened];
-    return rtn;
+    return atoi (_version.UTF8String);
 }
 
 - (int) censusDatasetVersion
