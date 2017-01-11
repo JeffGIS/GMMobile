@@ -6,6 +6,17 @@
 #import "ThemeLegend.h"
 #import "CCodeLibrary/NVColorSet.h"
 
+typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
+{
+    TLTCancel,
+    TLTApplyExistingColors,
+    TLTSelectColors,
+    TLTTitles,
+    TLTZoomToMax,
+    TLTCount
+};
+
+
 @class ThemeLegendMapOverlay;
 
 @protocol ThemeLegendMapOverlayDelegate <NSObject>
@@ -22,6 +33,7 @@
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend;
 
+- (void)zoomToBounds:(MNMXCORD)bounds;
 @end
 
 @interface ThemeLegendMapOverlay : UIView

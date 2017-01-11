@@ -53,6 +53,7 @@
     another.isDraggedPortrait = _isDraggedPortrait;
     another.type = _type;
     another.hasColors = _hasColors;
+    another.maxValBounds = _maxValBounds;
     
     for (ThemeLegendCell *cl in _cells)
     {

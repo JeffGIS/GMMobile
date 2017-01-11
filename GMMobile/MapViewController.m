@@ -1407,6 +1407,10 @@
 
 - (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
 {
+    [self zoomToBounds:bounds];
+}
+- (void)zoomToBounds:(MNMXCORD)bounds
+{
     CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
     CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
     

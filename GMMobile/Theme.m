@@ -1304,6 +1304,7 @@ DisplayExit:
     if (displayID == _displayID)
     {
         _legend.useClassColors = _setColor;
+        _legend.maxValBounds = _maxValBounds;
         for (ThemeClass *cls in _classes)
         {
             if (_totCount > 0)

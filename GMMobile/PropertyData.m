@@ -2057,7 +2057,7 @@ Exit:
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
 {
-    NSMutableArray *history = [self getParcelHistory:pid];
+    NSMutableArray *history = nil;//[self getParcelHistory:pid];
     NSMutableArray *report = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement = NULL;
     char censusBlock[32];
