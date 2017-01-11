@@ -768,6 +768,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     [self startTransaction];
     return rtn;
 }
+- (INT64)getQueryCount:(NSString*)query
+{
+    sqlite3_stmt *statement = NULL;
+    INT64 count = 0;
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, NULL), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+        count = sqlite3_column_int64(statement, 0);
+    
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    return count;
+}
 - (INT64)getCountOfSortedValues
 {
     NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM SORTEDVALUES"];
@@ -953,26 +965,42 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     double totalPop = 0;
     double totalHousingUnits = 0;
     int genUseCode;
-    INT64 svc=-1;;
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    static INT64 totRecords=-1;
+    INT64 currentRec=0;
+    int iPass = 0;
     
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+
     BOOL opened = [self open];
     if (_pass == DataPass)
     {
+        [CRAPI.sharedInstance updateProgress:-1
+                                     current:0
+                                       range:1
+                                   numRanges:2];
+        iPass = 0;
         [self createSortedValuesTable];
         if (isParcel)
         {
+            query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            totRecords = [self getQueryCount:query];
             query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,GENUSECODE FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
         }
         else
         {
+            query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            totRecords = [self getQueryCount:query];
             query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
         }
     }
     else
     {
+        iPass = 1;
+        totRecords = [self getCountOfSortedValues];
         if (isParcel)
         {
             query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
@@ -987,7 +1015,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
     
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
-    
+    currentRec = 0;
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         int i = 0;
@@ -1102,8 +1130,15 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             }
             else
                 ii=1;
+            free (llpoints);
         }
+        [CRAPI.sharedInstance updateProgress:totRecords
+                                     current:++currentRec
+                                       range:iPass
+                                   numRanges:2];
+        
     }
+    iPass++;
     
     SQLOK(0,sqlite3_finalize(statement), self.database);
     //svc = [self getCountOfSortedValues];
@@ -1121,6 +1156,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         if (!isParcel)
             thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
+    else
+        [CRAPI.sharedInstance updateProgress:totRecords
+                                 current:totRecords
+                                   range:2
+                                   numRanges:2];
+    
 
     [self close:opened];
 }
