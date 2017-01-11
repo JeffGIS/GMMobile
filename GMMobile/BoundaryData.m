@@ -774,12 +774,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     sqlite3_stmt *statement = NULL;
     INT64 count = 0;
+    CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+
     SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, NULL), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
         count = sqlite3_column_int64(statement, 0);
     
     SQLOK(0,sqlite3_finalize(statement), _database);
+    CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+
     return count;
 }
 - (INT64)getCountOfSortedValues
@@ -787,12 +791,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM SORTEDVALUES"];
     sqlite3_stmt *statement = NULL;
     INT64 count = 0;
+    CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+
     SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, NULL), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
         count = sqlite3_column_int64(statement, 0);
     
     SQLOK(0,sqlite3_finalize(statement), _database);
+    CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+
     return count;
 }
 

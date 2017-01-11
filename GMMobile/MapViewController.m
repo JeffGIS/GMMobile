@@ -2821,7 +2821,6 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
-    _mapToolbar.showIndicator = YES;
     [self allocateVectorView];
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
