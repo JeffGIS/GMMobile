@@ -15,7 +15,7 @@
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
-@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons, headerLongPressed, expandLongPressed;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat buttonMargin;
@@ -104,6 +104,7 @@
     tlmo.tag = tag;
     tlmo.isExpanded = tlmo.dragSelectActive = NO;
     tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
+    tlmo.headerLongPressed = tlmo.expandLongPressed = NO;
     tlmo.hideButtons = hideButtons;
     tlmo.delegate = delegate;
     tlmo.tabBar = view.parentViewController.tabBarController.tabBar;
@@ -154,10 +155,8 @@
     lpgr.minimumPressDuration = 1.0;
     lpgr.delegate = tlmo;
     [tlmo.tableView addGestureRecognizer:lpgr];
-    
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
-    
     [view addSubview:tlmo];
     
     return tlmo;
@@ -166,12 +165,32 @@
 - (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
 {
     UITableView *tv = (UITableView *)gesture.view;
+    CGPoint point = [gesture locationInView:tv];
     
     switch (gesture.state)
     {
         case UIGestureRecognizerStateEnded:
         {
-            _dragSelectActive = NO;
+            if (_headerLongPressed)
+            {
+                [self showLegendOptions:_titleButton];
+                _headerLongPressed = NO;
+                
+                [_titleButton setTitleColor:UIColor.whiteColor
+                                   forState:UIControlStateNormal];
+                return;
+            }
+            
+            else if (_expandLongPressed)
+            {
+                _expandLongPressed = NO;
+                _expandButton.layer.borderWidth = 0.0;
+                
+                if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
+                    [_delegate themeLegendDidWantMinimize];
+                
+                return;
+            }
             
             for (NSIndexPath *indexPaths in _dragSelectedCells)
             {
@@ -180,37 +199,49 @@
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 
                 if (cell.selected)
-                {
-                    [self tableView:_tableView
-          didDeselectRowAtIndexPath:indexPaths];
-                }
+                    [self tableView:_tableView didDeselectRowAtIndexPath:indexPaths];
                
                 else
-                {
-                    [self tableView:_tableView
-            didSelectRowAtIndexPath:indexPaths];
-                }
+                    [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
                 
                 cell.selected = !cell.selected;
             }
             
             _preventRefresh = NO;
-            [_delegate themeLegendDidChangeStatus:YES];
+            [_delegate themeLegendDidChangeStatus:_dragSelectActive];
+            _dragSelectActive = NO;
         }
             break;
         
         case UIGestureRecognizerStateBegan:
         {
-            _dragSelectActive = _preventRefresh = YES;
-            _dragSelectedCells = NSMutableArray.array;
-            _firstTimeDrag = YES;
+            if (point.y > _headerHeight)
+            {
+                _dragSelectActive = YES;
+                _dragSelectedCells = NSMutableArray.array;
+                _firstTimeDrag = YES;
+            }
+            
+            else if (CGRectContainsPoint(_titleButton.frame, point))
+            {
+                _headerLongPressed = YES;
+                
+                [_titleButton setTitleColor:UIColor.greenColor
+                                   forState:UIControlStateNormal];
+            }
+            
+            else if (CGRectContainsPoint(_expandButton.frame, point))
+            {
+                _expandLongPressed = YES;
+                _expandButton.layer.borderWidth = 4.0;
+            }
+            
+            _preventRefresh = YES;
         }
             
         default:
         {
-            CGPoint point = [gesture locationInView:tv];
-            
-            if (CGRectContainsPoint(tv.frame, point))
+            if (CGRectContainsPoint(tv.frame, point) && _dragSelectActive)
             {
                 NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
                 
@@ -221,9 +252,7 @@
                 }
                 
                 else if (row != _currentRow)
-                {
                     _currentRow = row;
-                }
                 
                 else
                     return;
@@ -289,6 +318,7 @@ viewForHeaderInSection:(NSInteger)section
         {
             _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
             _expandButton.translatesAutoresizingMaskIntoConstraints = NO;
+            _expandButton.layer.borderColor = UIColor.greenColor.CGColor;
             _expandButton.imageView.contentMode = UIViewContentModeScaleToFill;
             _expandButton.imageEdgeInsets = insets;
             
@@ -481,16 +511,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
         {
-            [alertView hideLargeAlertView:YES];
             if (alertView.buttonIdentifiers.count > buttonIndex)
             {
                 NSNumber *num = alertView.buttonIdentifiers[buttonIndex];
                 buttonIndex = num.integerValue;
             }
+            
             switch (buttonIndex)
             {
                 case TLTApplyExistingColors:
                     break;
+                    
                 case TLTSelectColors:
                 {
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
@@ -502,6 +533,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     alert.identifier = @"ColorOptionsAlert";
                 }
                     break;
+                    
                 case TLTTitles:
                 {
                     NSMutableArray *textArray = NSMutableArray.array;
@@ -517,15 +549,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     alert.identifier = @"TitlesAlert";
                 }
                     break;
+                    
                 case TLTZoomToMax:
                 {
                     MNMXCORD bnds = _legend.maxValBounds;
+                    
                     if ([_delegate respondsToSelector:@selector(zoomToBounds:)])
                         [_delegate zoomToBounds:bnds];
-
                 }
                     break;
             }
+            
+            [alertView hideLargeAlertView:YES];
             return;
         }
         
@@ -583,8 +618,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                 case NVColorOptionRandom:
                 {
-                    [alertView hideLargeAlertView:YES];
-                    
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                       delegate:self
                                                                          title:@"Select Color Palette"
@@ -592,6 +625,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               destructiveIndex:1];
                     
                     alert.identifier = @"RandomColorAlert";
+                    [alertView hideLargeAlertView:YES];
                     return;
                 }
                     break;
@@ -607,9 +641,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else if ([alertView.identifier isEqualToString:@"RandomColorAlert"] ||
                  [alertView.identifier isEqualToString:@"RandomColorConfirmation"])
         {
-            
-            [alertView hideLargeAlertView:YES];
-            
             if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
                 _currentColorPalette = buttonIndex;
             
@@ -640,11 +671,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 _tabBar.userInteractionEnabled = YES;
             }
             
+            [alertView hideLargeAlertView:YES];
             return;
         }
     }
-    
-    [alertView hideLargeAlertView:YES];
     
     if (!_isExpanded)
     {
@@ -657,6 +687,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         _tabBar.userInteractionEnabled = YES;
     }
+    
+    [alertView hideLargeAlertView:YES];
 }
 
 - (void)dragButtonBegin:(UIButton *)button
@@ -730,9 +762,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!_isExpanded)
     {
-        if ([_delegate respondsToSelector:@selector(clearVectorView)])
-            [_delegate clearVectorView];
-        
         CGRect bounds = UIScreen.mainScreen.bounds;
         CGFloat longestSide = MAX(bounds.size.height, bounds.size.width);
         CGFloat shortestSide = MIN(bounds.size.height, bounds.size.width);
@@ -1079,11 +1108,8 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        if (orientation == UIDeviceOrientationLandscapeLeft ||
-            orientation == UIDeviceOrientationLandscapeRight)
-        {
+        if (orientation == UIDeviceOrientationLandscapeLeft || orientation == UIDeviceOrientationLandscapeRight)
             return 0.0;
-        }
     }
     
     return 20.0;
