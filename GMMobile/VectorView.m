@@ -674,27 +674,31 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 viewBounds:&_viewBounds
                     displayCharacteristics:dc
                                     themes:themes
-                               pointInArea:nil];
+                               pointInArea:_pia];
                         
                         
                     }
                         break;
                         
                     case CPFParcels:
+                    case CPFParcels_IND:
+                    case CPFParcels_AG:
+                    case CPFParcels_RES:
+                    case CPFParcels_COM:
                     case CPFBlocks:
                     case CPFBlockGroups:
                     case CPFBlockGroups_ACS:
                     case CPFTracts:
                     {
-                        NSString *CenType = @"BLOCK";
+                        NSString *CenType = @"PARCEL";
+                        if (NVMetroSettings.sharedInstance.currentFeature == CPFBlocks)
+                            CenType = @"BLOCK";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups)
                             CenType = @"BLOCKGROUP";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups_ACS)
                             CenType = @"BLOCKGROUP_ACS";
                         if (NVMetroSettings.sharedInstance.currentFeature == CPFTracts)
                             CenType = @"TRACT";
-                        if (NVMetroSettings.sharedInstance.currentFeature == CPFParcels)
-                            CenType = @"PARCEL";
                         if (passID == DataPass || !_bd)
                         {
                             _bd = BoundaryData.new;
@@ -709,7 +713,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                      llCorners:&_latlonCornerPoints
                                       LLBounds:&_latlonBounds
                                     viewBounds:&_viewBounds
-                                        themes:themes];
+                                        themes:themes
+                                    pointInArea:_pia];
                         BOOL showText = NO;
                         if (passID == DisplayPass && showText)
                         {

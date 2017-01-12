@@ -937,7 +937,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
-                   themes:(Themes*)themes;
+                   themes:(Themes*)themes
+              pointInArea:(PointInArea *)pia
 {
 #define MIN_PARCEL_ACRES 0.01
     BOOL isParcel = NO;
@@ -996,7 +997,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             totRecords = [self getQueryCount:query];
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,GENUSECODE FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,GENUSECODE,minX,maxX,minY,maxY FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
         }
         else
@@ -1004,7 +1005,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             totRecords = [self getQueryCount:query];
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,minX,maxX,minY,maxY FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
         }
     }
@@ -1014,13 +1015,17 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         totRecords = [self getCountOfSortedValues];
         if (isParcel)
         {
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
+/*            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];*/
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@,SORTEDVALUES  WHERE %@.id= SORTEDVALUES.ID AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
+                     dataTable,polyTable];
         }
         else
         {
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+ /*           query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];*/
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@,SORTEDVALUES  WHERE %@.id=SORTEDVALUES.ID AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
+                     dataTable,polyTable,type];
             
         }
     }
@@ -1030,17 +1035,18 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         int i = 0;
+        MNMXCORD bounds;
         long long ID = sqlite3_column_int64(statement,i++);
         double dataValue = sqlite3_column_double(statement,i++);
         double landArea = sqlite3_column_double(statement,i++);
         if (isParcel)
         {
             if (landArea < MIN_PARCEL_ACRES)
-                continue;
+                goto SkipRecord;
             landArea /= ACRES_PER_SQMETER;
             genUseCode = sqlite3_column_int(statement,i++);
-            if (genUseCode < 113 || genUseCode > 115)
-                continue;
+            if (![NVMetroSettings.sharedInstance wantUseCode:genUseCode])
+                goto SkipRecord;
         }
         else
         {
@@ -1050,8 +1056,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         area = landArea;
         if (!area)
-            continue;
-        
+            goto SkipRecord;
         switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
         {
             case CPAdjustCount:
@@ -1085,7 +1090,30 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
         if (_pass == DataPass)
         {
-            //if (dataValue > 0)
+            BOOL haveInPoint = TRUE;
+            DPOINT points[4];
+            bounds.xmn = sqlite3_column_double(statement,i++);
+            bounds.xmx = sqlite3_column_double(statement,i++);
+            bounds.ymn = sqlite3_column_double(statement,i++);
+            bounds.ymx = sqlite3_column_double(statement,i++);
+            
+            
+            if (pia)
+            {
+                haveInPoint = FALSE;
+                BoundsToPoints (&bounds, points,0);
+                for (int ip = 0;ip < 4; ip++)
+                {
+                    if ([pia DPointInArea:&points[ip]] == 1)
+                    {
+                        haveInPoint = TRUE;
+                        break;
+                    }
+                }
+            }
+            if (!haveInPoint)
+                goto SkipRecord;
+            else
             {
                 [self addToSortedValues:dataValue id:ID];
                 minValue = min (minValue,dataValue);
@@ -1093,6 +1121,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 numValues++;
             }
         }
+        
         else
         {
             BasePt.x = sqlite3_column_double(statement,i++);
@@ -1145,6 +1174,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 ii=1;
             free (llpoints);
         }
+    SkipRecord:
         [CRAPI.sharedInstance updateProgress:totRecords
                                      current:++currentRec
                                        range:iPass

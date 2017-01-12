@@ -13,6 +13,8 @@ typedef NS_ENUM(NSInteger, CPFeatures)
     CPFParcels,
     CPFParcels_RES,
     CPFParcels_COM,
+    CPFParcels_IND,
+    CPFParcels_AG,
     CPFLandUse,
     CPFBlocks,
     CPFBlockGroups,
@@ -58,7 +60,7 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
 
 + (NVMetroSettings *)sharedInstance;
 
-@property CPFeatures currentFeature;
+@property (nonatomic)CPFeatures currentFeature;
 @property int currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
 @property BOOL OverUnder;
@@ -81,5 +83,7 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
 - (NSString *) currentAdjustmentText;
 - (void) setCurrentValue:(NSInteger)value;
 - (NSArray *) valuesForFeature:(CPFeatures)feature;
+- (BOOL) wantUseCode:(int)code;
+
 
 @end

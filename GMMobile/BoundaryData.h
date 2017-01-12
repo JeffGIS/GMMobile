@@ -69,7 +69,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
-                   themes:(Themes*)themes;
+                   themes:(Themes*)themes
+              pointInArea:(PointInArea *)pia;
 - (LPDPOINT)getPolygonPointsForBoundary:(int)refno
                               numPoints:(int *)numPoints
                                numLoops:(int *)numLoops

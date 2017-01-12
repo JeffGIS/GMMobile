@@ -9,6 +9,8 @@
 #import "NVMetroSettings.h"
 
 static int currentValues[CPFeaturesCount];
+static int nParcelTypesWanted=-1;
+static int parcelsWanted[CPFeaturesCount];
 
 @implementation NVMetroSettings
 
@@ -39,6 +41,52 @@ static int currentValues[CPFeaturesCount];
     return self;
 }
 
+-(void) setCurrentFeature:(CPFeatures)currentFeature
+{
+    _currentFeature = currentFeature;
+    
+    switch (_currentFeature)
+    {
+        default:
+        case CPFParcels:
+            nParcelTypesWanted = -1;
+            break;
+        case CPFParcels_COM:
+            nParcelTypesWanted = 3;
+            parcelsWanted[0]=120;
+            parcelsWanted[1]=130;
+            parcelsWanted[2]=143;
+            break;
+        case CPFParcels_RES:
+            nParcelTypesWanted = 5;
+            parcelsWanted[0]=111;
+            parcelsWanted[0]=112;
+            parcelsWanted[1]=113;
+            parcelsWanted[2]=114;
+            parcelsWanted[3]=115;
+            break;
+        case CPFParcels_AG:
+            nParcelTypesWanted = 1;
+            parcelsWanted[0]=100;
+        case CPFParcels_IND:
+            nParcelTypesWanted = 2;
+            parcelsWanted[0]=142;
+            parcelsWanted[1]=151;
+            break;
+    }
+}
+
+-(BOOL) wantUseCode:(int)code
+{
+    if (nParcelTypesWanted < 1)
+        return TRUE;
+    for (int i=0;i<nParcelTypesWanted;i++)
+    {
+        if (code == parcelsWanted[i])
+            return TRUE;
+    }
+    return FALSE;
+}
 - (NSString *) currentFeatureText
 {
     NSString * rtn = stringWithoutID([self features][_currentFeature]);
@@ -87,6 +135,12 @@ static int currentValues[CPFeaturesCount];
             case CPFParcels_COM:
                 [rtn addObject:stringWithID("Parcels - Commercial Only",feature)];
                 break;
+            case CPFParcels_IND:
+                [rtn addObject:stringWithID("Parcels - Industrial Only",feature)];
+                break;
+            case CPFParcels_AG:
+                [rtn addObject:stringWithID("Parcels - Agricultural Only",feature)];
+                break;
             case CPFLandUse:
                 [rtn addObject:stringWithID("Land Use",feature)];
                 break;
@@ -124,6 +178,8 @@ static int currentValues[CPFeaturesCount];
         case CPFParcels:
         case CPFParcels_COM:
         case CPFParcels_RES:
+        case CPFParcels_AG:
+        case CPFParcels_IND:
             rtn = [self valuesForParcels];
             break;
         case CPFBlocks:
