@@ -92,7 +92,7 @@
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NSMutableString *dataString;
-@property BOOL splitPlatView;
+@property BOOL splitPlatView, legendMinimized;
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) GMSPanoramaView *panView;
@@ -134,7 +134,7 @@
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
     _animateToLocation = _usePlatView = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanorama = _splitPlatView = NO;
+    _showsPanorama = _splitPlatView = _legendMinimized = NO;
     self.tabBarController.delegate = self;
     
     _nvssvc = NVSpreadsheetVC.new;
@@ -2313,11 +2313,8 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     
     if (!_firstTimeMap)
     {
-        if (![self legendIsExpanded] && ![self alertVisible])
-        {
-            [self refreshVectorView:_mapView.projection.visibleRegion
-                             atZoom:position.zoom];
-        }
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:position.zoom];
     }
     
     else
@@ -2352,6 +2349,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     NSTimeInterval duration = 0.25;
     CGSize size = self.view.frame.size;
+    
+    CGFloat margin = 8.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 4.0;
+    
+    if ([self.view.subviews containsObject:[self.view viewWithTag:99999]])
+    {
+        [self.view viewWithTag:99999].frame = CGRectMake((self.view.frame.size.width - _compassSize - margin),
+                                                         statusBarHeight + margin, _compassSize, _compassSize);
+    }
     
     [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
@@ -2536,6 +2544,21 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     CGFloat statusBarHeight = [self statusBarHeight:toInterfaceOrientation];
     CGSize size = self.view.frame.size;
+    
+    CGFloat margin = 8.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 4.0;
+    
+    if ([self.view.subviews containsObject:[self.view viewWithTag:99999]])
+    {
+        [UIView animateWithDuration:duration
+                         animations:^{
+                             [self.view viewWithTag:99999].frame =
+                             CGRectMake((self.view.frame.size.height - _compassSize - margin + _tabBarHeight),
+                                        statusBarHeight + margin, _compassSize, _compassSize);
+                         }];
+    }
     
     CGRect frame1 = CGRectMake(0.0, statusBarHeight + ((size.width - _tabBarHeight - statusBarHeight) / 2.0),
                                (size.height + _tabBarHeight), ((size.width - _tabBarHeight - statusBarHeight) / 2.0));
@@ -2982,6 +3005,9 @@ haveVV:
                            if ([self.view.subviews containsObject:_nvdv])
                                [self.view bringSubviewToFront:_nvdv];
                            
+                           if ([self.view.subviews containsObject:[self.view viewWithTag:99999]])
+                               [[self.view viewWithTag:99999] bringSubviewToFront:_nvdv];
+                           
                            if (_displayRandomColorAlert)
                            {
                                self.tabBarController.tabBar.userInteractionEnabled = NO;
@@ -3039,6 +3065,9 @@ haveVV:
 
 - (void)updateLegendPositions
 {
+    if (_legendMinimized)
+        return;
+    
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
@@ -3312,6 +3341,49 @@ haveVV:
 - (BOOL)themeLegendIsOffMap
 {
     return _legendsAreOffMap;
+}
+
+- (void)themeLegendDidWantMinimize
+{
+    _legendMinimized = YES;
+    
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            [tlmos removeFromSuperview];
+    }
+    
+    CGFloat margin = 8.0;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        margin = 4.0;
+    
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    
+    UIButton *minimizeLegend = [UIButton buttonWithType:UIButtonTypeCustom];
+    minimizeLegend.tag = 99999;
+    minimizeLegend.backgroundColor = _mapToolbar.backgroundColor;
+    minimizeLegend.layer.cornerRadius = 10.0;
+    minimizeLegend.layer.borderColor = _mapToolbar.layer.borderColor;
+    minimizeLegend.layer.borderWidth = _mapToolbar.layer.borderWidth;
+    minimizeLegend.titleLabel.font = [UIFont boldSystemFontOfSize:24.0];
+    minimizeLegend.titleLabel.adjustsFontSizeToFitWidth = YES;
+    [minimizeLegend setTitle:@"L" forState:UIControlStateNormal];
+    [minimizeLegend setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [minimizeLegend setTitleColor:UIColor.darkGrayColor forState:UIControlStateHighlighted];
+    
+    minimizeLegend.frame = CGRectMake((self.view.frame.size.width - _compassSize - margin),
+                                      statusBarHeight + margin, _compassSize, _compassSize);
+    
+    [minimizeLegend addTarget:self action:@selector(unminimizeLegend:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:minimizeLegend];
+}
+
+- (void)unminimizeLegend:(UIButton *)button
+{
+    [button removeFromSuperview];
+    _legendMinimized = NO;
+    [self updateLegendPositions];
 }
 
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
