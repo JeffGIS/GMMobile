@@ -61,7 +61,7 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
 + (NVMetroSettings *)sharedInstance;
 
 @property (nonatomic)CPFeatures currentFeature;
-@property int currentFeatureValue;
+@property (nonatomic) int currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
 @property BOOL OverUnder;
 @property int themeClassType;

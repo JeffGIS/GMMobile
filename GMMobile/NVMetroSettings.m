@@ -44,7 +44,7 @@ static int parcelsWanted[CPFeaturesCount];
 -(void) setCurrentFeature:(CPFeatures)currentFeature
 {
     _currentFeature = currentFeature;
-    
+    self.currentFeatureValue = currentValues[currentFeature];
     switch (_currentFeature)
     {
         default:
@@ -75,6 +75,11 @@ static int parcelsWanted[CPFeaturesCount];
             parcelsWanted[1]=151;
             break;
     }
+}
+
+-(void) setCurrentFeatureValue:(int)currentFeatureValue
+{
+    _currentFeatureValue = currentFeatureValue;
 }
 
 -(BOOL) wantUseCode:(int)code
@@ -116,7 +121,7 @@ static int parcelsWanted[CPFeaturesCount];
 - (void) setCurrentValue:(NSInteger)value
 {
     currentValues[_currentFeature] = (int)value;
-    _currentFeatureValue = (int)value;
+    self.currentFeatureValue = (int)value;
 }
 
 - (NSArray *) features
@@ -271,7 +276,7 @@ static int parcelsWanted[CPFeaturesCount];
         {
             case CPAdjustRawCounts:
                 [rtn addObject:stringWithID("None (raw counts)",value)];
-                break;
+               break;
 
             case CPAdjustCountPerSQMile:
                 [rtn addObject:stringWithID("Per Square Mile",value)];
