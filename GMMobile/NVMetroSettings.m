@@ -60,14 +60,15 @@ static int parcelsWanted[CPFeaturesCount];
         case CPFParcels_RES:
             nParcelTypesWanted = 5;
             parcelsWanted[0]=111;
-            parcelsWanted[0]=112;
-            parcelsWanted[1]=113;
-            parcelsWanted[2]=114;
-            parcelsWanted[3]=115;
+            parcelsWanted[1]=112;
+            parcelsWanted[2]=113;
+            parcelsWanted[3]=114;
+            parcelsWanted[4]=115;
             break;
         case CPFParcels_AG:
             nParcelTypesWanted = 1;
             parcelsWanted[0]=100;
+            break;
         case CPFParcels_IND:
             nParcelTypesWanted = 2;
             parcelsWanted[0]=142;
