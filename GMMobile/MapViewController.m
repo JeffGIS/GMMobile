@@ -1363,8 +1363,7 @@
                     [subviewsArray addObject:subviews];
             }
             
-            else if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet &&
-                     [subviews isKindOfClass:MapToolbar.class])
+            else if ([subviews isKindOfClass:MapToolbar.class])
             {
                 if (!subviews.hidden)
                     [subviewsArray addObject:subviews];
@@ -5967,7 +5966,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [self animateToCamPos:camera];
 }
 
-- (void)mapToolbarDidFinishDrag
+- (void)mapToolbarDidFinishDrag:(CGPoint)locationInSuperview
 {
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CGFloat margin = 8.0;
@@ -5976,8 +5975,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         margin = 4.0;
     
-    if (_mapToolbar.frame.origin.x < 0.0 &&
-        _mapToolbar.frame.origin.y < 0.0)
+    if (locationInSuperview.x < (_compassSize + (margin * 2.0)) &&
+        locationInSuperview.y < (_compassSize + statusBarHeight + (margin * 2.0)))
     {
         _mapToolbar.previousOrientation = _mapToolbar.orientation;
         _mapToolbar.orientation = MapToolbarOrientationMinimized;
