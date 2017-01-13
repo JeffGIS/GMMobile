@@ -7,7 +7,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
 
-@interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
+@interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) UIFont *font, *headerFont;
@@ -149,8 +149,11 @@
     UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:tlmo
                                                                                        action:@selector(tlmoLongPressed:)];
     
-    lpgr.delegate = tlmo;
+    UIPinchGestureRecognizer *pgr = [[UIPinchGestureRecognizer alloc] initWithTarget:tlmo
+                                                                              action:@selector(tlmoPinched:)];
+    
     [tlmo.tableView addGestureRecognizer:lpgr];
+    [tlmo addGestureRecognizer:pgr];
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [view addSubview:tlmo];
@@ -652,7 +655,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [alertView hideLargeAlertView:YES];
 }
 
-- (void)expandLegend:(UIButton *)button
+- (void)expandLegend
 {
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     
@@ -738,7 +741,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [_tableView reloadData];
         _isExpanded = YES;
-        button.selected = YES;
     }
     
     else
@@ -800,7 +802,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         [overlayView removeFromSuperview];
         [_tableView reloadData];
         _isExpanded = NO;
-        button.selected = NO;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -1006,6 +1007,12 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     return 20.0;
+}
+
+- (void)tlmoPinched:(UIPinchGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateEnded)
+        [self expandLegend];
 }
 
 @end
