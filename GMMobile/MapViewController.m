@@ -37,7 +37,7 @@
 @implementation MGVPlatData
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate>
 
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -98,6 +98,7 @@
 @property (nonatomic) GMSPanoramaView *panView;
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
+@property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 
 @end
 
@@ -1200,6 +1201,12 @@
                            statusBarHeight:statusBarHeight];
     
     [self updateCompassPosition:NO];
+    
+    _zoomExtentsGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(extentZoom)];
+    _zoomExtentsGesture.delegate = self;
+    _zoomExtentsGesture.numberOfTouchesRequired = 2;
+    _zoomExtentsGesture.numberOfTapsRequired = 2;
+    [self.view addGestureRecognizer:_zoomExtentsGesture];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
