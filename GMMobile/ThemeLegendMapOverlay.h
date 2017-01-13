@@ -44,7 +44,6 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) CGFloat rowHeight, width, headerHeight;
 @property NSUInteger currentColorPalette;
-@property (nonatomic) UIButton *dragButton, *expandButton;
 
 + (CGFloat)rowHeight;
 + (CGFloat)headerHeight;

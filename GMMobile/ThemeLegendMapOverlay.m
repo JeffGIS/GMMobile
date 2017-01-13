@@ -10,16 +10,16 @@
 @interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
-@property (nonatomic) UIFont *font, *headerFont, *reducedFont, *smallFont;
+@property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
-@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons, headerLongPressed, expandLongPressed;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons, headerLongPressed;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat buttonMargin;
-@property (nonatomic) CGPoint previousContentOffset;
+@property (nonatomic) CGPoint previousContentOffset, previousLocation;
 
 @end
 
@@ -104,7 +104,7 @@
     tlmo.tag = tag;
     tlmo.isExpanded = tlmo.dragSelectActive = NO;
     tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
-    tlmo.headerLongPressed = tlmo.expandLongPressed = NO;
+    tlmo.headerLongPressed = NO;
     tlmo.hideButtons = hideButtons;
     tlmo.delegate = delegate;
     tlmo.tabBar = view.parentViewController.tabBarController.tabBar;
@@ -116,8 +116,6 @@
                                 size:18.0];
     
     tlmo.headerFont = [UIFont boldSystemFontOfSize:18.0];
-    tlmo.reducedFont = [UIFont boldSystemFontOfSize:14.0];
-    tlmo.smallFont = [UIFont boldSystemFontOfSize:12.0];
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
     {
@@ -148,11 +146,9 @@
     tlmo.tableView.separatorInset = UIEdgeInsetsZero;
     tlmo.tableView.layoutMargins = UIEdgeInsetsZero;
     
-    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
-                                          initWithTarget:tlmo
-                                          action:@selector(tlmoLongPressed:)];
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:tlmo
+                                                                                       action:@selector(tlmoLongPressed:)];
     
-    lpgr.minimumPressDuration = 1.0;
     lpgr.delegate = tlmo;
     [tlmo.tableView addGestureRecognizer:lpgr];
     [tlmo addSubview:tlmo.tableView];
@@ -173,43 +169,99 @@
         {
             if (_headerLongPressed)
             {
-                [self showLegendOptions:_titleButton];
                 _headerLongPressed = NO;
+                _tableView.layer.borderColor = UIColor.blackColor.CGColor;
+                _tableView.layer.borderWidth = 2.0;
                 
-                [_titleButton setTitleColor:UIColor.whiteColor
-                                   forState:UIControlStateNormal];
-                return;
+                if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+                {
+                    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+                    CGFloat margin = 8.0, size = 52.0;
+                    
+                    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                        margin = 4.0, size = 44;
+                    
+                    if (_previousLocation.x > (self.superview.frame.size.width - (size + (margin * 2.0))) &&
+                        _previousLocation.y < (size + statusBarHeight + (margin * 2.0)))
+                    {
+                        if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
+                            [_delegate themeLegendDidWantMinimize];
+                    }
+                    
+                    else
+                    {
+                        margin = 2.0;
+                        CGPoint center = self.center;
+                        center.x = MAX(center.x, (self.frame.size.width * 0.5) + margin);
+                        center.x = MIN(center.x, self.superview.frame.size.width - (self.frame.size.width * 0.5) - margin);
+                        center.y = MAX(center.y, (self.frame.size.height * 0.5) + margin);
+                        center.y = MIN(center.y, self.superview.frame.size.height - (self.frame.size.height * 0.5) - margin);
+                        self.center = center;
+                        
+                        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                        {
+                            _legend.landscapeMapOrigin = self.frame.origin;
+                            _legend.isDraggedLandscape = YES;
+                        }
+                        
+                        else
+                        {
+                            _legend.portraitMapOrigin = self.frame.origin;
+                            _legend.isDraggedPortrait = YES;
+                        }
+                    }
+                }
+                
+                else if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
+                    _legend.drawOnMap = NO;
+                
+                else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
+                    [_delegate themeLegendWasDraggedOffRightSide];
+                
+                else if (self.frame.origin.x < 0.0)
+                    [_delegate themeLegendWasDraggedOffLeftSide];
+                
+                else if (!_delegate.themeLegendIsOffMap)
+                {
+                    if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                        UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                    {
+                        _legend.landscapeMapOrigin = self.frame.origin;
+                        _legend.isDraggedLandscape = YES;
+                    }
+                    
+                    else
+                    {
+                        _legend.portraitMapOrigin = self.frame.origin;
+                        _legend.isDraggedPortrait = YES;
+                    }
+                }
+                
+                [_delegate themeLegendDidChangeStatus:NO];
             }
             
-            else if (_expandLongPressed)
+            else
             {
-                _expandLongPressed = NO;
-                _expandButton.layer.borderWidth = 0.0;
+                for (NSIndexPath *indexPaths in _dragSelectedCells)
+                {
+                    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                    
+                    if (cell.selected)
+                        [self tableView:_tableView didDeselectRowAtIndexPath:indexPaths];
+                    
+                    else
+                        [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
+                    
+                    cell.selected = !cell.selected;
+                }
                 
-                if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
-                    [_delegate themeLegendDidWantMinimize];
-                
-                return;
+                _preventRefresh = NO;
+                [_delegate themeLegendDidChangeStatus:_dragSelectActive];
+                _dragSelectActive = NO;
             }
-            
-            for (NSIndexPath *indexPaths in _dragSelectedCells)
-            {
-                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
-                cell.backgroundColor = UIColor.whiteColor;
-                cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                
-                if (cell.selected)
-                    [self tableView:_tableView didDeselectRowAtIndexPath:indexPaths];
-               
-                else
-                    [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
-                
-                cell.selected = !cell.selected;
-            }
-            
-            _preventRefresh = NO;
-            [_delegate themeLegendDidChangeStatus:_dragSelectActive];
-            _dragSelectActive = NO;
         }
             break;
         
@@ -225,15 +277,9 @@
             else if (CGRectContainsPoint(_titleButton.frame, point))
             {
                 _headerLongPressed = YES;
-                
-                [_titleButton setTitleColor:UIColor.greenColor
-                                   forState:UIControlStateNormal];
-            }
-            
-            else if (CGRectContainsPoint(_expandButton.frame, point))
-            {
-                _expandLongPressed = YES;
-                _expandButton.layer.borderWidth = 4.0;
+                _tableView.layer.borderColor = UserDefaults.defaults.appleBlue.CGColor;
+                _tableView.layer.borderWidth = 4.0;
+                _previousLocation = [gesture locationInView:self.superview];
             }
             
             _preventRefresh = YES;
@@ -241,7 +287,15 @@
             
         default:
         {
-            if (CGRectContainsPoint(tv.frame, point) && _dragSelectActive)
+            if (_headerLongPressed)
+            {
+                point = [gesture locationInView:self.superview];
+                CGPoint translation = CGPointMake(point.x - _previousLocation.x, point.y - _previousLocation.y);
+                self.center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
+                _previousLocation = point;
+            }
+            
+            else if (CGRectContainsPoint(tv.frame, point) && _dragSelectActive)
             {
                 NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
                 
@@ -306,86 +360,10 @@ viewForHeaderInSection:(NSInteger)section
     UIView *headerView = UIView.new;
     headerView.backgroundColor = UIColor.blackColor;
     headerView.contentMode = UIViewContentModeCenter;
-    UIEdgeInsets insets = UIEdgeInsetsMake(4.0, 4.0, 4.0, 4.0);
     CGFloat size = 40.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         size = 32.0;
-    
-    if (![headerView.subviews containsObject:_expandButton])
-    {
-        if (!_expandButton)
-        {
-            _expandButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            _expandButton.translatesAutoresizingMaskIntoConstraints = NO;
-            _expandButton.layer.borderColor = UIColor.greenColor.CGColor;
-            _expandButton.imageView.contentMode = UIViewContentModeScaleToFill;
-            _expandButton.imageEdgeInsets = insets;
-            
-            [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeOut"
-                                                                                                   ofType:@"png"]]
-                           forState:UIControlStateNormal];
-            
-            [_expandButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"resizeIn"
-                                                                                                   ofType:@"png"]]
-                           forState:UIControlStateSelected];
-            
-            [_expandButton addTarget:self
-                              action:@selector(expandLegend:)
-                    forControlEvents:UIControlEventTouchUpInside];
-        }
-
-        _expandButton.selected = _isExpanded;
-        
-        if (_hideButtons)
-            _expandButton.hidden = YES;
-        
-        [headerView addSubview:_expandButton];
-        
-        [_expandButton removeAllConstraints];
-        [_expandButton constrainTrailingToAnchor:headerView.trailingAnchor constant:-4.0];
-        [_expandButton constrainCenterYToAnchor:headerView.centerYAnchor];
-        [_expandButton constrainHeightToConstant:size];
-        [_expandButton constrainWidthToConstant:size];
-    }
-    
-    if (![headerView.subviews containsObject:_dragButton])
-    {
-        if (!_dragButton)
-        {
-            _dragButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            _dragButton.translatesAutoresizingMaskIntoConstraints = NO;
-            _dragButton.imageView.contentMode = UIViewContentModeScaleToFill;
-            _dragButton.imageEdgeInsets = insets;
-            
-            [_dragButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"dragIcon"
-                                                                                                 ofType:@"png"]]
-                         forState:UIControlStateNormal];
-            
-            [_dragButton addTarget:self
-                            action:@selector(legendWasDragged:withEvent:)
-                  forControlEvents:UIControlEventTouchDragInside];
-            
-            [_dragButton addTarget:self
-                            action:@selector(dragButtonBegin:)
-                  forControlEvents:UIControlEventTouchDown];
-            
-            [_dragButton addTarget:self
-                            action:@selector(dragButtonEnd:)
-                  forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
-        }
-        
-        if (_isExpanded || _hideButtons)
-            _dragButton.hidden = YES;
-        
-        [headerView addSubview:_dragButton];
-        
-        [_dragButton removeAllConstraints];
-        [_dragButton constrainLeadingToAnchor:headerView.leadingAnchor constant:4.0];
-        [_dragButton constrainCenterYToAnchor:headerView.centerYAnchor];
-        [_dragButton constrainHeightToConstant:size];
-        [_dragButton constrainWidthToConstant:size];
-    }
     
     if (![headerView.subviews containsObject:_titleButton])
     {
@@ -398,6 +376,7 @@ viewForHeaderInSection:(NSInteger)section
             _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
             _titleButton.titleLabel.numberOfLines = 0;
             _titleButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+            _titleButton.titleLabel.font = _headerFont;
             
             [_titleButton setTitleColor:UIColor.whiteColor
                                forState:UIControlStateNormal];
@@ -422,26 +401,8 @@ viewForHeaderInSection:(NSInteger)section
                           forState:UIControlStateNormal];
         }
         
-        if (_legend.title.length > 100)
-        {
-            _titleButton.titleLabel.font = _smallFont;
-            UIEdgeInsets  inset = UIEdgeInsetsMake(8, 8, 8, 8);
-            _titleButton.titleEdgeInsets = inset;
-        }
-        else if (_legend.title.length > 60)
-        {
-            _titleButton.titleLabel.font = _reducedFont;
-            UIEdgeInsets  inset = UIEdgeInsetsMake(4, 4, 4, 4);
-            _titleButton.titleEdgeInsets = inset;
-        }
-        
         [headerView addSubview:_titleButton];
-        
-        [_titleButton removeAllConstraints];
-        [_titleButton constrainLeadingToAnchor:_dragButton.trailingAnchor];
-        [_titleButton constrainTrailingToAnchor:_expandButton.leadingAnchor];
-        [_titleButton constrainTopToAnchor:headerView.topAnchor];
-        [_titleButton constrainBottomToAnchor:headerView.bottomAnchor];
+        [_titleButton constrainToView:headerView leading:4.0 trailing:-4.0 top:4.0 bottom:-4.0];
     }
     
     return headerView;
@@ -691,71 +652,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [alertView hideLargeAlertView:YES];
 }
 
-- (void)dragButtonBegin:(UIButton *)button
-{
-    _previousFrame = self.frame;
-    self.superview.clipsToBounds = NO;
-    
-    if (self.superview.superview)
-        [self.superview.superview bringSubviewToFront:self.superview];
-    
-    [self.superview bringSubviewToFront:self];
-}
-
-- (void)dragButtonEnd:(UIButton *)button
-{
-    if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
-        _legend.drawOnMap = NO;
-    
-    else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
-        [_delegate themeLegendWasDraggedOffRightSide];
-    
-    else if (self.frame.origin.x < 0.0)
-        [_delegate themeLegendWasDraggedOffLeftSide];
-    
-    else if (!_delegate.themeLegendIsOffMap)
-    {
-        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-        {
-            _legend.landscapeMapOrigin = self.frame.origin;
-            _legend.isDraggedLandscape = YES;
-        }
-        
-        else
-        {
-            _legend.portraitMapOrigin = self.frame.origin;
-            _legend.isDraggedPortrait = YES;
-        }
-    }
-    
-    self.superview.clipsToBounds = YES;
-    [_delegate themeLegendDidChangeStatus:NO];
-}
-
-- (void)legendWasDragged:(UIButton *)button
-               withEvent:(UIEvent *)event
-{
-    UITouch *touch = [[event touchesForView:button] anyObject];
-    CGPoint previousLocation = [touch previousLocationInView:button];
-    CGPoint location = [touch locationInView:button];
-    
-    CGFloat newCenterX = (self.center.x + (location.x - previousLocation.x));
-    CGFloat newCenterY = (self.center.y + (location.y - previousLocation.y));
-    CGFloat statusBarHeight = [_delegate statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    
-    newCenterY = MAX(newCenterY, ((self.frame.size.height / 2.0) + statusBarHeight));
-    newCenterY = MIN(newCenterY, (self.superview.frame.size.height - (self.frame.size.height / 2.0)));
-    
-    if (!_delegate.themeLegendIsOffMap)
-        newCenterX = MAX(newCenterX, (self.frame.size.width / 2.0));
-    
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
-        newCenterX = MIN(newCenterX, (self.superview.frame.size.width - (self.frame.size.width / 2.0)));
-    
-    self.center = CGPointMake(newCenterX, newCenterY);
-}
-
 - (void)expandLegend:(UIButton *)button
 {
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
@@ -811,8 +707,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                 size:36.0];
         
         _headerFont = [UIFont boldSystemFontOfSize:36.0];
-        _dragButton.enabled = NO;
-        
         CGFloat legendHeight = (_rowHeight * (_legend.numCells + 1));
         
         if ([self.superview isKindOfClass:UIScrollView.class])
@@ -828,8 +722,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             overlayView.alpha = 0.7;
             contentOffset += (_tabBar.frame.size.height / 2.0);
         }
-        
-        _dragButton.alpha = 0.0;
+
         _tabBar.alpha = 0.0;
         
         [self constrainLeadingToAnchor:self.superview.centerXAnchor constant:(-shortestSide * 0.45)];
