@@ -1494,8 +1494,7 @@ NextPass:
     }
     else if ([areaType isEqualToString:@"PARCEL"])
     {
-/*        query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,
-                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];*/
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID FROM PARCELPOLY,PARCELPOLY_index  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
     {
