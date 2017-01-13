@@ -1514,6 +1514,8 @@ NextPass:
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
+        if (abs (numPoints) <3)
+            continue;
         numLoops = sqlite3_column_int(statement,3);
         int nBlobBytes = sqlite3_column_bytes(statement,4);
         if (nBlobBytes > 0)
@@ -1575,36 +1577,39 @@ NextPass:
         }
         
         numPoints = numNewPoints;
-        NSString * text;
-        double count;
-        if (pias)
+        if (numPoints > 2)
         {
-            count = [pias countForArea:keyval] * to.adjustCount;
-            NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
-            text = [NSString stringWithFormat:fmt,count];
-        }
-        else
-        {
-            count = 1;
-            if (pfldval)
-                text = [NSString stringWithFormat:@"%@\n%@",keyval,fldval];
+            NSString * text;
+            double count;
+            if (pias)
+            {
+                count = [pias countForArea:keyval] * to.adjustCount;
+                NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
+                text = [NSString stringWithFormat:fmt,count];
+            }
             else
-                text = keyval;
-        }
-        if (count >= 0)
-        {
-            UIColor *textColor = UIColor.redColor;
-            [NVTextDrawing drawText:text
-                          inContext:context
-                      withinPolygon:llpoints
-                      withNumPoints:numPoints
-                        andNumLoops:numLoops
-                            loopLen:polyPartLen
-                       withinBounds:pvbounds
-                           fontSize:fontSize
-                        minFontSize:minFontSize
-                          textColor:textColor
-                       processingID:0];
+            {
+                count = 1;
+                if (pfldval)
+                    text = [NSString stringWithFormat:@"%@\n%@",keyval,fldval];
+                else
+                    text = keyval;
+            }
+            if (count >= 0)
+            {
+                UIColor *textColor = UIColor.redColor;
+                [NVTextDrawing drawText:text
+                              inContext:context
+                          withinPolygon:llpoints
+                          withNumPoints:numPoints
+                            andNumLoops:numLoops
+                                loopLen:polyPartLen
+                           withinBounds:pvbounds
+                               fontSize:fontSize
+                            minFontSize:minFontSize
+                              textColor:textColor
+                           processingID:0];
+            }
         }
         free (llpoints);
     }
