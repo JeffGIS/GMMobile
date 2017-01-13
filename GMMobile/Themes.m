@@ -65,6 +65,8 @@
             [_themeList addObject:thm];
             break;
         case HCConfigMetroProp:
+            if (!NVMetroSettings.sharedInstance.currentFeatureValue)
+                break;
             if (NVMetroSettings.sharedInstance.currentFeature == CPFLandUse)
             {
                 if (NVMetroSettings.sharedInstance.currentFeatureValue)

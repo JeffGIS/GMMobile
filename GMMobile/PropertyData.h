@@ -150,6 +150,7 @@ typedef struct {int nMatchingProperties;
             viewBounds:(MNMXCORD *)pvbounds
                 themes:(Themes*)themes;
 
++(NSString*) adjustParcelText:(NSString*)text;
 
 -(void)displayParcelText:(CGContextRef)context
                llCorners:(CORNERPOINTS *) latlonCornerPoints

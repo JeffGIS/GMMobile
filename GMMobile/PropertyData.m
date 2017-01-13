@@ -1353,34 +1353,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     return '?';
 }
 
-- (void)displayText:(NSString *)text
-             forPID:(NSString *)PID
-            atPoint:(LPDPOINT)pviewPointx
-             inRect:(CGRect *)ptextRect
-          maxPixels:(CGFloat)maxPixels
-            context:(CGContextRef)context
++(NSString*) adjustParcelText:(NSString*)text
 {
-    extern MNMXCORD curbounds;
-    //BOOL dbug = NO;
-    CGFloat scale = [UIScreen mainScreen].scale;
-    scale = [UIScreen mainScreen].nativeScale;
-    CGFloat fontSize = 18.0 * scale;
-    CGFloat minFontSize = 4.0 * scale;
-    int numPoints = 0, numLoops = 0;
-    int *polyPartLen = 0;
-    //int ii=0;
-    UIColor *textColor = nil;
-    
-    if (text.length < 1)
-        return;
-    if (text.length * minFontSize * minFontSize > maxPixels)
-        return;
-    if (ConfigurationControl.sharedInstance.GMTilesVisible)
-        textColor = UIColor.redColor;
-    
-    else
-        textColor = UIColor.blackColor;
-    
     
     text = [text stringByReplacingOccurrencesOfString:@"& "
                                            withString:@"&\n"];
@@ -1424,6 +1398,35 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         text = tempString;
     }
     
+    return text;
+}
+- (void)displayText:(NSString *)text
+             forPID:(NSString *)PID
+            atPoint:(LPDPOINT)pviewPointx
+             inRect:(CGRect *)ptextRect
+          maxPixels:(CGFloat)maxPixels
+            context:(CGContextRef)context
+{
+    extern MNMXCORD curbounds;
+    //BOOL dbug = NO;
+    CGFloat scale = [UIScreen mainScreen].scale;
+    scale = [UIScreen mainScreen].nativeScale;
+    CGFloat fontSize = 18.0 * scale;
+    CGFloat minFontSize = 4.0 * scale;
+    int numPoints = 0, numLoops = 0;
+    int *polyPartLen = 0;
+    //int ii=0;
+    UIColor *textColor = nil;
+    if (text.length < 1)
+        return;
+    if (text.length * minFontSize * minFontSize > maxPixels)
+        return;
+    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+        textColor = UIColor.redColor;
+    else
+        textColor = UIColor.blackColor;
+    
+    text = [PropertyData adjustParcelText:text];
     //if ([text isEqualToString:@"CALHOUN SQ ENTERPRISE LLC\n$1,112,000"])
     //ii=0;
     
