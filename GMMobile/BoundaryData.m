@@ -270,13 +270,12 @@
             {
                 UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.85];
                 
-                CreateMask(&llpoints, &numPoints,pvbounds);
+                nPointsAddedByMask = CreateMask(&llpoints, &numPoints,pvbounds);
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
                         withColor:maskColor.CGColor
                         drawLines:NO];
-                nPointsAddedByMask = 5;
                 llpointsDrawLine = &llpoints[nPointsAddedByMask];
                 
             }
