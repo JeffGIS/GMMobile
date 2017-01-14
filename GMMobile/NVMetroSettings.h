@@ -54,6 +54,12 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
     CPAdjustCount
 };
 
+typedef NS_ENUM(NSInteger, CPTextOptions)
+{
+    CPTextOptionNoText,
+    CPTextOptionCount
+};
+
 
 
 @interface NVMetroSettings : NSObject
@@ -63,6 +69,7 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
 @property (nonatomic)CPFeatures currentFeature;
 @property (nonatomic) int currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
+@property CPTextOptions currentTextOption;
 @property BOOL OverUnder;
 @property int themeClassType;
 @property int numThemeClasses;

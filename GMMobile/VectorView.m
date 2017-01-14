@@ -715,8 +715,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     viewBounds:&_viewBounds
                                         themes:themes
                                     pointInArea:_pia];
-                        BOOL showText = YES;
-                        if (passID == DisplayPass && showText)
+                        if (passID == DisplayPass)
                         {
                             [_bd displayText:_context
                                    areaType:CenType

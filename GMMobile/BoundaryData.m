@@ -183,7 +183,7 @@
     {
         UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
         
-        CreateMask(&llpoints, &numPoints,pvbounds);
+        CreateMask(&llpoints, &numPoints,pvbounds,TRUE);
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpoints
@@ -264,29 +264,28 @@
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
-            LPDPOINT llpointsDrawLine = llpoints;
-            int nPointsAddedByMask = 0;
+            LPDPOINT existingPoints = llpoints;
+            int numExistingPoints = numPoints;
             if (mask)
             {
                 UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.85];
                 
-                nPointsAddedByMask = CreateMask(&llpoints, &numPoints,pvbounds);
+                CreateMask(&llpoints, &numPoints,pvbounds,FALSE);
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
                         withColor:maskColor.CGColor
                         drawLines:NO];
-                llpointsDrawLine = &llpoints[nPointsAddedByMask];
                 
             }
             if (CRAPI.sharedInstance.showPolylineForBounds)
             {
                 UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.80];
                 [self drawBoundary:context
-                           nPoints:numPoints-nPointsAddedByMask
+                           nPoints:numExistingPoints
                             nLoops:numLoops
                            partLen:polyPartLen
-                            points:llpointsDrawLine
+                            points:existingPoints
                          withColor:boundaryColor.CGColor];
             }
             
@@ -310,13 +309,13 @@
     if (nLoops > 1)
     {
         int ip = 0;
-        //int ii;
+        int ii;
         
         for (int loop = 0; loop < nLoops; loop++)
         {
             CGContextMoveToPoint(context, pPoints[ip].x, pPoints[ip].y);
             ip++;
-            //ii = pPartLen[loop];
+            ii = pPartLen[loop];
             
             for (int i = 1; i < pPartLen[loop]; i++)
             {
@@ -334,7 +333,7 @@
             }
         }
         
-        //ii = ip;
+        ii = ip;
     }
     
     else
@@ -1457,6 +1456,8 @@ NextPass:
        LLBounds:(MNMXCORD *)platlonBounds
      viewBounds:(MNMXCORD *)pvbounds
 {
+    if (!NVMetroSettings.sharedInstance.currentTextOption)
+        return 0;
     extern MNMXCORD curbounds;
     int nLoaded = 0;
     NSString *query = @"";
