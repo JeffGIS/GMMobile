@@ -3005,7 +3005,7 @@ haveVV:
                                [self.view bringSubviewToFront:_nvdv];
                            
                            if ([self.view.subviews containsObject:[self.view viewWithTag:99999]])
-                               [[self.view viewWithTag:99999] bringSubviewToFront:_nvdv];
+                               [self.view bringSubviewToFront:[self.view viewWithTag:99999]];
                            
                            if (_displayRandomColorAlert)
                            {

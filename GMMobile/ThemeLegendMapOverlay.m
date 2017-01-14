@@ -7,7 +7,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "ConfigurationControl.h"
 
-@interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate>
+@interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
 @property (nonatomic) UIFont *font, *headerFont;
@@ -15,11 +15,11 @@
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
-@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons, headerLongPressed;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat buttonMargin;
-@property (nonatomic) CGPoint previousContentOffset, previousLocation;
+@property (nonatomic) CGPoint previousContentOffset;
 
 @end
 
@@ -104,7 +104,6 @@
     tlmo.tag = tag;
     tlmo.isExpanded = tlmo.dragSelectActive = NO;
     tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
-    tlmo.headerLongPressed = NO;
     tlmo.hideButtons = hideButtons;
     tlmo.delegate = delegate;
     tlmo.tabBar = view.parentViewController.tabBarController.tabBar;
@@ -170,101 +169,24 @@
     {
         case UIGestureRecognizerStateEnded:
         {
-            if (_headerLongPressed)
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
             {
-                _headerLongPressed = NO;
-                _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-                _tableView.layer.borderWidth = 2.0;
+                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+                cell.backgroundColor = UIColor.whiteColor;
+                cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 
-                if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
-                {
-                    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-                    CGFloat margin = 8.0, size = 52.0;
-                    
-                    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-                        margin = 4.0, size = 44;
-                    
-                    if (_previousLocation.x > (self.superview.frame.size.width - (size + (margin * 2.0))) &&
-                        _previousLocation.y < (size + statusBarHeight + (margin * 2.0)))
-                    {
-                        if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
-                            [_delegate themeLegendDidWantMinimize];
-                    }
-                    
-                    else
-                    {
-                        margin = 2.0;
-                        CGPoint center = self.center;
-                        center.x = MAX(center.x, (self.frame.size.width * 0.5) + margin);
-                        center.x = MIN(center.x, self.superview.frame.size.width - (self.frame.size.width * 0.5) - margin);
-                        center.y = MAX(center.y, (self.frame.size.height * 0.5) + margin);
-                        center.y = MIN(center.y, self.superview.frame.size.height - (self.frame.size.height * 0.5) - margin);
-                        self.center = center;
-                        
-                        if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                            UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                        {
-                            _legend.landscapeMapOrigin = self.frame.origin;
-                            _legend.isDraggedLandscape = YES;
-                        }
-                        
-                        else
-                        {
-                            _legend.portraitMapOrigin = self.frame.origin;
-                            _legend.isDraggedPortrait = YES;
-                        }
-                    }
-                }
+                if (cell.selected)
+                    [self tableView:_tableView didDeselectRowAtIndexPath:indexPaths];
                 
-                else if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
-                    _legend.drawOnMap = NO;
+                else
+                    [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
                 
-                else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
-                    [_delegate themeLegendWasDraggedOffRightSide];
-                
-                else if (self.frame.origin.x < 0.0)
-                    [_delegate themeLegendWasDraggedOffLeftSide];
-                
-                else if (!_delegate.themeLegendIsOffMap)
-                {
-                    if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                        UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                    {
-                        _legend.landscapeMapOrigin = self.frame.origin;
-                        _legend.isDraggedLandscape = YES;
-                    }
-                    
-                    else
-                    {
-                        _legend.portraitMapOrigin = self.frame.origin;
-                        _legend.isDraggedPortrait = YES;
-                    }
-                }
-                
-                [_delegate themeLegendDidChangeStatus:NO];
+                cell.selected = !cell.selected;
             }
             
-            else
-            {
-                for (NSIndexPath *indexPaths in _dragSelectedCells)
-                {
-                    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
-                    cell.backgroundColor = UIColor.whiteColor;
-                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                    
-                    if (cell.selected)
-                        [self tableView:_tableView didDeselectRowAtIndexPath:indexPaths];
-                    
-                    else
-                        [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
-                    
-                    cell.selected = !cell.selected;
-                }
-                
-                _preventRefresh = NO;
-                [_delegate themeLegendDidChangeStatus:_dragSelectActive];
-                _dragSelectActive = NO;
-            }
+            _preventRefresh = NO;
+            [_delegate themeLegendDidChangeStatus:_dragSelectActive];
+            _dragSelectActive = NO;
         }
             break;
         
@@ -277,28 +199,12 @@
                 _firstTimeDrag = YES;
             }
             
-            else if (CGRectContainsPoint(_titleButton.frame, point))
-            {
-                _headerLongPressed = YES;
-                _tableView.layer.borderColor = UserDefaults.defaults.appleBlue.CGColor;
-                _tableView.layer.borderWidth = 4.0;
-                _previousLocation = [gesture locationInView:self.superview];
-            }
-            
             _preventRefresh = YES;
         }
             
         default:
         {
-            if (_headerLongPressed)
-            {
-                point = [gesture locationInView:self.superview];
-                CGPoint translation = CGPointMake(point.x - _previousLocation.x, point.y - _previousLocation.y);
-                self.center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
-                _previousLocation = point;
-            }
-            
-            else if (CGRectContainsPoint(tv.frame, point) && _dragSelectActive)
+            if (CGRectContainsPoint(tv.frame, point) && _dragSelectActive)
             {
                 NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
                 
@@ -336,7 +242,6 @@
             }
         }
             break;
-            
     }
 }
 
@@ -406,9 +311,104 @@ viewForHeaderInSection:(NSInteger)section
         
         [headerView addSubview:_titleButton];
         [_titleButton constrainToView:headerView leading:4.0 trailing:-4.0 top:4.0 bottom:-4.0];
+        
+        UIPanGestureRecognizer *dragGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(legendDragged:)];
+        dragGesture.delegate = self;
+        [_titleButton addGestureRecognizer:dragGesture];
     }
     
     return headerView;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
+
+- (void)legendDragged:(UIPanGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint location = [gesture locationInView:self.superview];
+        
+        _tableView.layer.borderColor = UIColor.blackColor.CGColor;
+        _tableView.layer.borderWidth = 2.0;
+        
+        if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+        {
+            CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+            CGFloat margin = 8.0, size = 52.0;
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                margin = 4.0, size = 44;
+            
+            if (location.x > (self.superview.frame.size.width - (size + (margin * 2.0))) &&
+                location.y < (size + statusBarHeight + (margin * 2.0)))
+            {
+                if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
+                    [_delegate themeLegendDidWantMinimize];
+            }
+            
+            else
+            {
+                margin = 2.0;
+                CGPoint center = self.center;
+                center.x = MAX(center.x, (self.frame.size.width * 0.5) + margin);
+                center.x = MIN(center.x, self.superview.frame.size.width - (self.frame.size.width * 0.5) - margin);
+                center.y = MAX(center.y, (self.frame.size.height * 0.5) + margin);
+                center.y = MIN(center.y, self.superview.frame.size.height - (self.frame.size.height * 0.5) - margin);
+                self.center = center;
+                
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                {
+                    _legend.landscapeMapOrigin = self.frame.origin;
+                    _legend.isDraggedLandscape = YES;
+                }
+                
+                else
+                {
+                    _legend.portraitMapOrigin = self.frame.origin;
+                    _legend.isDraggedPortrait = YES;
+                }
+            }
+        }
+        
+        else if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
+            _legend.drawOnMap = NO;
+        
+        else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
+            [_delegate themeLegendWasDraggedOffRightSide];
+        
+        else if (self.frame.origin.x < 0.0)
+            [_delegate themeLegendWasDraggedOffLeftSide];
+        
+        else if (!_delegate.themeLegendIsOffMap)
+        {
+            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+            {
+                _legend.landscapeMapOrigin = self.frame.origin;
+                _legend.isDraggedLandscape = YES;
+            }
+            
+            else
+            {
+                _legend.portraitMapOrigin = self.frame.origin;
+                _legend.isDraggedPortrait = YES;
+            }
+        }
+        
+        [_delegate themeLegendDidChangeStatus:NO];
+    }
+    
+    else
+    {
+        CGPoint translation = [gesture translationInView:self.superview];
+        self.center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
+        [gesture setTranslation:CGPointZero inView:gesture.view];
+    }
 }
 
 - (void)showLegendOptions:(UIButton *)button
