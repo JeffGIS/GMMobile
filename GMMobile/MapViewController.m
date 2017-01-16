@@ -301,6 +301,7 @@
                                                   view:self.view
                                               delegate:self];
     
+    _mapToolbar.hidden = YES;
     _mapToolbar.legendOffset = _mapViewLegendOffset;
     CRAPI.sharedInstance.mapToolbar = _mapToolbar;
     CRAPI.sharedInstance.mapVC = self;
@@ -1200,6 +1201,7 @@
     [_mapToolbar didRotateWithTabBarHeight:_tabBarHeight
                            statusBarHeight:statusBarHeight];
     
+    _mapToolbar.hidden = NO;
     [self updateCompassPosition:NO];
     
     _zoomExtentsGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(extentZoom)];
