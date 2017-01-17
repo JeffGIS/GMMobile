@@ -33,24 +33,6 @@
         return 26.0;
 }
 
-+ (CGFloat)headerHeight
-{
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
-    {
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            return 72.0;
-        
-        else
-            return 90.0;
-    }
-    
-    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return 32.0;
-    
-    else
-        return 40.0;
-}
-
 + (UIFont *)headerFont
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -153,7 +135,7 @@
     }
     
     tlmo.rowHeight = ThemeLegendMapOverlay.rowHeight;
-    tlmo.headerHeight = ThemeLegendMapOverlay.headerHeight;
+    tlmo.headerHeight = tlmo.legend.headerHeight;
     tlmo.width = ThemeLegendMapOverlay.width;
     tlmo.buttonMargin = ThemeLegendMapOverlay.buttonMargin;
 
@@ -802,7 +784,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             overlayView = [self.superview viewWithTag:123456789];
         
         _rowHeight = ThemeLegendMapOverlay.rowHeight;
-        _headerHeight = ThemeLegendMapOverlay.headerHeight;
+        _headerHeight = _legend.headerHeight;
         
         _tabBar.userInteractionEnabled = YES;
         _tableView.rowHeight = _rowHeight;
@@ -926,10 +908,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.adjustsFontSizeToFitWidth = YES;
     textLabel.backgroundColor = UIColor.clearColor;
+    textLabel.numberOfLines = 1;
     textLabel.tag = 888;
     
     cell.layer.borderColor = UIColor.blackColor.CGColor;
-    cell.layer.borderWidth = 0.5;
+    cell.layer.borderWidth = 1.0;
     cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.contentView.backgroundColor = UIColor.clearColor;
     cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;

@@ -1,13 +1,9 @@
-//
 //  ThemeLegend.m
 //  GMMobile
-//
-//  Created by JEFFREY E SMITH on 11/2/15.
-//  Copyright © 2015 GSSi. All rights reserved.
-//
 
 #import "ThemeLegend.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "ThemeLegendMapOverlay.h"
 
 @implementation ThemeLegend
 
@@ -80,8 +76,45 @@
     _currentTitleIndex = currentTitleIndex;
     _title = (NSString *)_titles[_currentTitleIndex];
 }
-- (void) setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin
+
+- (void)setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin
 {
     _landscapeMapOrigin = landscapeMapOrigin;
 }
+
+- (CGFloat)headerHeight
+{
+    return [self getHeightForText:_title
+                             font:ThemeLegendMapOverlay.headerFont
+                            width:ThemeLegendMapOverlay.width];
+}
+
+- (CGFloat)getHeightForText:(NSString *)text
+                       font:(UIFont *)font
+                      width:(CGFloat)width
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        width -= 4.0;
+    
+    else
+        width -= 8.0;
+    
+    CGSize constraint = CGSizeMake(width , 20000.0);
+    CGSize titleSize = CGSizeZero;
+    CGFloat height = 0.0;
+    
+    titleSize = [text boundingRectWithSize:constraint
+                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                attributes:@{NSFontAttributeName:font}
+                                   context:nil].size;
+    
+    height = ceil(titleSize.height);
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return (height + 6.0);
+    
+    else
+        return (height + 10.0);
+}
+
 @end

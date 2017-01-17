@@ -81,6 +81,10 @@
     colorSchemeLabel.text = @"Color Scheme:";
     [self setupLabel:colorSchemeLabel fontSize:littleFont];
     
+    UILabel *transparencyLabel = UILabel.new;
+    transparencyLabel.text = @"Transparency:";
+    [self setupLabel:transparencyLabel fontSize:littleFont];
+    
     UILabel *textLabel = UILabel.new;
     textLabel.text = @"Text:";
     [self setupLabel:textLabel fontSize:littleFont];
@@ -104,6 +108,14 @@
     UIButton *textButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [textButton setTitle:paddedString(@"Taxpayer / Total EMT") forState:UIControlStateNormal];
     [self setupButton:textButton fontSize:littleFont];
+    
+    UISlider *transparencySlider = UISlider.new;
+    transparencySlider.translatesAutoresizingMaskIntoConstraints = NO;
+    transparencySlider.continuous = NO;
+    
+    [transparencySlider addTarget:self
+                           action:@selector(transparencySliderChanged:)
+                 forControlEvents:UIControlEventValueChanged];
     
     UISwitch *overUnderSwitch = UISwitch.new;
     overUnderSwitch.translatesAutoresizingMaskIntoConstraints = NO;
@@ -141,18 +153,6 @@
                         action:@selector(displayParamsSCTapped:)
               forControlEvents:UIControlEventValueChanged];
     
-    UISegmentedControl *pctPopSC =
-    [[UISegmentedControl alloc] initWithItems:@[@"Pct of Population", @"Pct of Units"]];
-    
-    pctPopSC.translatesAutoresizingMaskIntoConstraints = NO;
-    pctPopSC.tintColor = UIColor.blackColor;
-    pctPopSC.selectedSegmentIndex = 0;
-    [pctPopSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    
-    [pctPopSC addTarget:self
-                 action:@selector(pctPopSCTapped:)
-       forControlEvents:UIControlEventValueChanged];
-    
     for (int i = 1; i < 9; i++)
     {
         UIView *view = UIView.new;
@@ -189,6 +189,7 @@
                 [view addSubview:_featureButton];
                 [_featureButton constrainCenterYToAnchor:view.centerYAnchor];
                 [_featureButton constrainLeadingToAnchor:featureLabel.trailingAnchor constant:margin];
+                [_featureButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.5)].active = YES;
                 _featureButton.tag = 22;
                 [featureLabel constrainCenterYToAnchor:_featureButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
@@ -201,14 +202,15 @@
                 [view addSubview:_valueButton];
                 [_valueButton constrainBottomToAnchor:view.centerYAnchor];
                 [_valueButton constrainLeadingToAnchor:valueLabel.trailingAnchor constant:margin];
-                [_valueButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:-margin].active = YES;
+                [_valueButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.5)].active = YES;
                 _valueButton.tag = 33;
                 [valueLabel constrainCenterYToAnchor:_valueButton.centerYAnchor];
                 [view addSubview:adjLabel];
                 [adjLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:_adjButton];
-                [_adjButton constrainBottomToAnchor:view.bottomAnchor constant:(-margin / 2.5)];
+                [_adjButton constrainBottomToAnchor:view.bottomAnchor constant:(-margin * 0.4)];
                 [_adjButton constrainLeadingToAnchor:adjLabel.trailingAnchor constant:margin];
+                [_adjButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.5)].active = YES;
                 _adjButton.tag = 44;
                 [adjLabel constrainCenterYToAnchor:_adjButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
@@ -216,34 +218,38 @@
                 break;
                 
             case 4:
-                [view addSubview:pctPopSC];
-                [pctPopSC constrainTopToAnchor:view.centerYAnchor constant:margin / 2.0];
-                [pctPopSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
-                [pctPopSC constrainHeightToConstant:bigFont];
                 [view addSubview:overUnderLabel];
                 [overUnderLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [overUnderLabel constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.5)];
+                [overUnderLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [view addSubview:overUnderSwitch];
-                [overUnderSwitch constrainLeadingToAnchor:overUnderLabel.trailingAnchor constant:(margin / 2.5)];
-                [overUnderSwitch constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
+                [overUnderSwitch constrainLeadingToAnchor:overUnderLabel.trailingAnchor constant:margin];
+                [overUnderSwitch constrainCenterYToAnchor:view.centerYAnchor];
                 [view addSubview:controlClassSC];
                 [controlClassSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
-                [controlClassSC constrainBottomToAnchor:view.centerYAnchor constant:(-margin / 2.0)];
+                [controlClassSC constrainCenterYToAnchor:view.centerYAnchor];
                 [controlClassSC constrainHeightToConstant:bigFont];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-2].heightAnchor];
                 break;
                 
             case 5:
                 [view addSubview:colorSchemeLabel];
                 [colorSchemeLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
                 [view addSubview:colorSchemeButton];
-                [colorSchemeButton constrainCenterYToAnchor:view.centerYAnchor];
+                [colorSchemeButton constrainBottomToAnchor:view.centerYAnchor constant:(-margin * 0.4)];
                 [colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
+                [colorSchemeButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.4)].active = YES;
                 colorSchemeButton.tag = 55;
                 [colorSchemeLabel constrainCenterYToAnchor:colorSchemeButton.centerYAnchor];
+                [view addSubview:transparencyLabel];
+                [transparencyLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
+                [transparencyLabel constrainTopToAnchor:view.centerYAnchor constant:(margin * 0.4)];
+                [view addSubview:transparencySlider];
+                [transparencySlider constrainLeadingToAnchor:transparencyLabel.trailingAnchor constant:margin];
+                [transparencySlider constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [transparencySlider constrainTopToAnchor:transparencyLabel.topAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-3].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.25];
                 break;
                 
             case 6:
@@ -252,10 +258,11 @@
                 [view addSubview:textButton];
                 [textButton constrainCenterYToAnchor:view.centerYAnchor];
                 [textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
+                [textButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.5)].active = YES;
                 textButton.tag = 66;
                 [textLabel constrainCenterYToAnchor:textButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-2].heightAnchor];
                 [view constrainBottomToAnchor:topView.bottomAnchor];
                 break;
                 
@@ -462,6 +469,11 @@ didReturnWithSelectedRows:(NSArray *)selectedRows
 }
 
 - (void)pctPopSCTapped:(UISegmentedControl *)segControl
+{
+    
+}
+
+- (void)transparencySliderChanged:(UISlider *)slider
 {
     
 }

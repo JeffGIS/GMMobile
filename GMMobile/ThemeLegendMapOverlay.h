@@ -46,9 +46,9 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 @property NSUInteger currentColorPalette;
 
 + (CGFloat)rowHeight;
-+ (CGFloat)headerHeight;
 + (CGFloat)width;
 + (CGFloat)buttonMargin;
++ (UIFont *)headerFont;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
