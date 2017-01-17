@@ -10,7 +10,6 @@
 @interface ThemeLegendMapOverlay () <UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate,UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) id <ThemeLegendMapOverlayDelegate> delegate;
-@property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSUInteger countLength;
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
@@ -52,12 +51,48 @@
         return 40.0;
 }
 
++ (UIFont *)headerFont
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return [UIFont systemFontOfSize:11.0];
+    
+    else
+        return [UIFont systemFontOfSize:18.0];
+}
+
++ (UIFont *)expandedHeaderFont
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return [UIFont systemFontOfSize:16.0];
+    
+    else
+        return [UIFont systemFontOfSize:32.0];
+}
+
++ (UIFont *)expandedFont
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return [UIFont fontWithName:@"CourierNewPS-BoldMT" size:18.0];
+    
+    else
+        return [UIFont fontWithName:@"CourierNewPS-BoldMT" size:32.0];
+}
+
++ (UIFont *)font
+{
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        return [UIFont fontWithName:@"CourierNewPS-BoldMT" size:14.0];
+    
+    else
+        return [UIFont fontWithName:@"CourierNewPS-BoldMT" size:18.0];
+}
+
 + (CGFloat)width
 {
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            return 148.0;
+            return 160.0;
         
         else
             return 292.0;
@@ -110,11 +145,6 @@
     tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
     tlmo.currentRow = tlmo.currentColorPalette = 0;
     tlmo.previousContentOffset = CGPointZero;
-    
-    tlmo.font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:18.0];
-    
-    tlmo.headerFont = [UIFont boldSystemFontOfSize:18.0];
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
     {
@@ -282,9 +312,7 @@ viewForHeaderInSection:(NSInteger)section
             _titleButton.titleLabel.textAlignment = NSTextAlignmentCenter;
             _titleButton.titleLabel.adjustsFontSizeToFitWidth = YES;
             _titleButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-            _titleButton.titleLabel.numberOfLines = 0;
             _titleButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            _titleButton.titleLabel.font = _headerFont;
             
             [_titleButton setTitleColor:UIColor.whiteColor
                                forState:UIControlStateNormal];
@@ -307,15 +335,28 @@ viewForHeaderInSection:(NSInteger)section
             
             [_titleButton setTitle:_legend.title
                           forState:UIControlStateNormal];
+            
+            UIPanGestureRecognizer *dragGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(legendDragged:)];
+            dragGesture.delegate = self;
+            [_titleButton addGestureRecognizer:dragGesture];
         }
         
         [headerView addSubview:_titleButton];
-        [_titleButton constrainToView:headerView leading:4.0 trailing:-4.0 top:4.0 bottom:-4.0];
         
-        UIPanGestureRecognizer *dragGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(legendDragged:)];
-        dragGesture.delegate = self;
-        [_titleButton addGestureRecognizer:dragGesture];
+        CGFloat margin = 4.0;
+        
+        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+            margin = 2.0;
+             
+        
+        [_titleButton constrainToView:headerView leading:margin trailing:-margin top:margin bottom:-margin];
     }
+    
+    if (_isExpanded)
+        _titleButton.titleLabel.font = ThemeLegendMapOverlay.expandedHeaderFont;
+    
+    else
+        _titleButton.titleLabel.font = ThemeLegendMapOverlay.headerFont;
     
     return headerView;
 }
@@ -328,6 +369,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)legendDragged:(UIPanGestureRecognizer *)gesture
 {
+    if (_isExpanded)
+        return;
+    
     if (gesture.state == UIGestureRecognizerStateEnded)
     {
         CGPoint location = [gesture locationInView:self.superview];
@@ -444,6 +488,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                               destructiveIndex:1];
     alert.buttonIdentifiers = idArray;
     alert.identifier = @"TopLevelAlert";
+    
+    if (_isExpanded)
+        _tabBar.alpha = 0.0;
     
     if ([_delegate respondsToSelector:@selector(clearVectorView)])
         [_delegate clearVectorView];
@@ -653,6 +700,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     [alertView hideLargeAlertView:YES];
+    
+    if (_isExpanded)
+        _tabBar.alpha = 0.0;
 }
 
 - (void)expandLegend
@@ -700,17 +750,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         _previousFrame = self.frame;
         
         CGFloat maxRowHeight = MIN((ThemeLegendMapOverlay.rowHeight * 4.0),
-                                   ((shortestSide * 0.9) / (_legend.numCells + 1)));
+                                   ((shortestSide * 0.95) / (_legend.numCells + 2)));
         
-        _rowHeight = _headerHeight = maxRowHeight;
+        _rowHeight = maxRowHeight;
+        _headerHeight = (_rowHeight * 2.0);
         _tableView.rowHeight = _rowHeight;
         _tabBar.userInteractionEnabled = NO;
-        
-        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:36.0];
-        
-        _headerFont = [UIFont boldSystemFontOfSize:36.0];
-        CGFloat legendHeight = (_rowHeight * (_legend.numCells + 1));
+        CGFloat legendHeight = (_rowHeight * (_legend.numCells + 2));
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -728,8 +774,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
         _tabBar.alpha = 0.0;
         
-        [self constrainLeadingToAnchor:self.superview.centerXAnchor constant:(-shortestSide * 0.45)];
-        [self constrainTrailingToAnchor:self.superview.centerXAnchor constant:(shortestSide * 0.45)];
+        [self constrainLeadingToAnchor:self.superview.centerXAnchor constant:(-shortestSide * 0.475)];
+        [self constrainTrailingToAnchor:self.superview.centerXAnchor constant:(shortestSide * 0.475)];
         [self constrainTopToAnchor:self.superview.centerYAnchor constant:((-legendHeight / 2.0) + contentOffset)];
         [self constrainBottomToAnchor:self.superview.centerYAnchor constant:((legendHeight / 2.0) + contentOffset)];
         
@@ -739,8 +785,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 tlmos.alpha = 0.0;
         }
         
-        [_tableView reloadData];
         _isExpanded = YES;
+        [_tableView performSelector:@selector(reloadData) withObject:nil afterDelay:0.05];
     }
     
     else
@@ -760,11 +806,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         _tabBar.userInteractionEnabled = YES;
         _tableView.rowHeight = _rowHeight;
-        
-        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:18.0];
-        
-        _headerFont = [UIFont boldSystemFontOfSize:18.0];
         _tabBar.alpha = 1.0;
         
         if ([self.superview isKindOfClass:UIScrollView.class])
@@ -800,8 +841,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         
         [overlayView removeFromSuperview];
-        [_tableView reloadData];
         _isExpanded = NO;
+        [_tableView reloadData];
         
         if ([self.superview isKindOfClass:UIScrollView.class])
         {
@@ -874,7 +915,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     UILabel *textLabel = UILabel.new;
     textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     textLabel.textColor = UIColor.blackColor;
-    textLabel.font = _font;
+    
+    if (_isExpanded)
+        textLabel.font = ThemeLegendMapOverlay.expandedFont;
+    
+    else
+        textLabel.font = ThemeLegendMapOverlay.font;
+    
     textLabel.text = text.copy;
     textLabel.textAlignment = NSTextAlignmentCenter;
     textLabel.adjustsFontSizeToFitWidth = YES;
@@ -888,7 +935,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     [cell.contentView constrainToView:cell leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
-    NSDictionary *attributes = @{NSFontAttributeName:_font};
+    NSDictionary *attributes = @{NSFontAttributeName:textLabel.font};
     
     CGRect textSize = [text boundingRectWithSize:cell.frame.size
                                          options:NSStringDrawingUsesLineFragmentOrigin
