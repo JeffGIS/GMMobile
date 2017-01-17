@@ -524,8 +524,7 @@
                                             insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
             }
             
-            [self animateToCamPos:camera];
-            
+            [_mapView animateToCameraPosition:camera];
             _selectedPIDCoords = pidCoord;
             
             MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
@@ -1361,16 +1360,11 @@
                                               (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
                                               (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
-        [self moveCam:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
+        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
     }
     
     else
-    {
-        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_target
-                                                                   zoom:12.0];
-        
-        [self animateToCamPos:camera];
-    }
+        [_mapView animateToCameraPosition:[GMSCameraPosition cameraWithTarget:_target zoom:12.0]];
 }
 
 - (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
@@ -1388,7 +1382,7 @@
     GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
     
-    [self animateToCamPos:camera];
+    [_mapView animateToCameraPosition:camera];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -2419,10 +2413,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self setMapType];
     
     if (_rotateZoom)
-        [self moveCam:[GMSCameraUpdate zoomBy:0.000001]];
+        [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
     
     else
-        [self moveCam:[GMSCameraUpdate zoomBy:-0.000001]];
+        [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
    
     _rotateZoom = !_rotateZoom;
     
@@ -4373,7 +4367,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
                                                          title:@"Select Route Type"
-                                               buttonTextArray:@[@"Cancel", @"Driving", @"Transit"]
+                                               buttonTextArray:@[@"Cancel", @"Driving", @"Transit", @"Biking", @"Walking"]
                                               destructiveIndex:1];
     alert.identifier = @"RouteType";
 }
@@ -4947,19 +4941,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             case 0://cancel
                 return;
-            case 1://driving
+            case 1:
                 _routeMode = @"driving";
                 break;
-            case 2://transit
+            case 2:
                 _routeMode = @"transit";
+                break;
+            case 3:
+                _routeMode = @"bicycling";
+                break;
+            case 4:
+                _routeMode = @"walking";
                 break;
         }
         
         _animateToLocation = NO;
         [self dismissTableView];
-        
-        if (CLLocationManager.headingAvailable)
-            [_locationManager startUpdatingLocation];
+        [self startTrackingUserLocation];
     }
 }
 
@@ -5037,7 +5035,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [self animateToCamPos:camera];
+    [_mapView animateToCameraPosition:camera];
 }
 
 - (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xFrame
@@ -5180,9 +5178,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else if (_locationCount > 2)
     {
-        [_locationManager stopUpdatingLocation];
-        _animateToLocation = YES;
+        [self stopTrackingUserLocation];
         [self beginLocationRouteTrace];
+        _locationCount = 0;
     }
 }
 
@@ -5208,12 +5206,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                            error:&error];
     
     NSString *status = json[@"status"];
+    NSString *message = @"";
     
     if (error)
-        NSLog(@"JSON error:%@", error.localizedDescription);
+        message = [NSString stringWithFormat:@"JSON error:%@", error.localizedDescription];
     
     else if (![status isEqualToString:@"OK"])
-        NSLog(@"JSON error:%@", status);
+        message = [NSString stringWithFormat:@"JSON error:%@", status];
+    
+    if (message.length)
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:CRAPI.sharedInstance
+                                                             title:message
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
+    }
     
     else
     {
@@ -5224,37 +5233,59 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [_polylines removeAllObjects];
         
-        NSDictionary *legs = json[@"routes"][0][@"legs"][0];
-        
-        NSArray *steps = legs[@"steps"];
-        
-        for (int i = 0; i < steps.count; i++)
+        if ([_routeMode isEqualToString:@"transit"])
         {
-            NSString *travelMode = legs[@"steps"][i][@"travel_mode"];
+            NSDictionary *legs = json[@"routes"][0][@"legs"][0];
+            NSArray *steps = legs[@"steps"];
             
-            GMSPath *path = [GMSPath pathFromEncodedPath:legs[@"steps"][i][@"polyline"][@"points"]];
-            GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+            for (int i = 0; i < steps.count; i++)
+            {
+                NSString *travelMode = steps[i][@"travel_mode"];
+                GMSPath *path = [GMSPath pathFromEncodedPath:steps[i][@"polyline"][@"points"]];
+                GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+                [_polylines addObject:polyline];
+                polyline.strokeWidth = 10.0;
+                
+                if ([travelMode isEqualToString:@"TRANSIT"])
+                    polyline.strokeColor = UserDefaults.defaults.appleBlue;
+                
+                else if ([travelMode isEqualToString:@"WALKING"])
+                    polyline.strokeColor = UIColor.orangeColor;
+                
+                else if ([travelMode isEqualToString:@"BICYCLING"])
+                    polyline.strokeColor = UIColor.brownColor;
+                
+                else
+                    polyline.strokeColor = UserDefaults.defaults.darkGreen;
+                
+                polyline.map = _mapView;
+            }
+        }
+        
+        else
+        {
+            GMSPolyline *polyline = [GMSPolyline polylineWithPath:overviewPath];
             [_polylines addObject:polyline];
             polyline.strokeWidth = 10.0;
             
-            if ([travelMode isEqualToString:@"TRANSIT"])
-                polyline.strokeColor = UserDefaults.defaults.appleBlue;
+            if ([_routeMode isEqualToString:@"walking"])
+                polyline.strokeColor = UIColor.orangeColor;
+            
+            else if ([_routeMode isEqualToString:@"bicycling"])
+                polyline.strokeColor = UIColor.brownColor;
             
             else
                 polyline.strokeColor = UserDefaults.defaults.darkGreen;
             
             polyline.map = _mapView;
-            
-            GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
-            
-            GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                     withPadding:40.0];
-            
-            [self setMapType];
-            [self moveCam:update];
-            [self updateMarkerPosition];
         }
+        
+        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
+        [_mapView moveCamera:[GMSCameraUpdate fitBounds:bounds withPadding:40.0]];
+        [self updateMarkerPosition];
     }
+    
+    _animateToLocation = YES;
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -5717,7 +5748,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [self animateToCamPos:camera];
+    [_mapView animateToCameraPosition:camera];
 }
 
 - (void)mapToolbarDidFinishDrag:(CGPoint)locationInSuperview
@@ -5977,22 +6008,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record", @"Display Google Street View",
                          @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Set as Target Parcel",
-                         @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
+                         @"Perform 3D Fly Around", @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
             if (_routeTraceExists)
             {
                 [newArray insertObject:@"Perform 3D Route Flyover" atIndex:8];
-                _options = newArray.copy;
-            }
-            
-            NSString *flyOverURL = @"NVFlyover:";
-            [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
-            
-            if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
-            {
-                [newArray insertObject:@"Perform 3D Fly Around" atIndex:8];
                 _options = newArray.copy;
             }
             
@@ -6063,17 +6085,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCrime:
         {
             _selectedCrime = refno;
-            _options = @[@"", @"Display Report", @"Display Google Street View"];
-            
-            NSString *flyOverURL = @"NVFlyover:";
-            [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
-            
-            if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
-            {
-                NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
-                [newArray insertObject:@"Perform 3D Fly Around" atIndex:2];
-                _options = newArray.copy;
-            }
+            _options = @[@"", @"Display Report", @"Perform 3D Fly Around", @"Display Google Street View"];
         }
             break;
             
@@ -6543,10 +6555,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:farRight
                                                                        coordinate:nearLeft];
     
-    GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                             withPadding:20.0];
-    
-    [_mapView animateWithCameraUpdate:update];
+    [_mapView animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds withPadding:20.0]];
 }
 
 - (NVWebView *)webViewWithTag:(NSInteger)tag
@@ -6556,16 +6565,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     
     else
         return nil;
-}
-
-- (void)moveCam:(GMSCameraUpdate *)update
-{
-    [_mapView moveCamera:update];
-}
-
-- (void)animateToCamPos:(GMSCameraPosition *)camera
-{
-    [_mapView animateToCameraPosition:camera];
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController
