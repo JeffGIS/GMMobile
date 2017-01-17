@@ -150,14 +150,14 @@
     
     if (_tableView.allowsMultipleSelection)
     {
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                            _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %lu selected.",
+                            (int)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
     }
     
     else
     {
         _countLabel.text = [NSString stringWithFormat:@"%i properties in list.",
-                            _propOwnerList.count];
+                            (int)_propOwnerList.count];
     }
 }
 
@@ -347,14 +347,14 @@
         [_returnButton setTitle:@"< Return"
                        forState:UIControlStateNormal];
         
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list.",
-                            _propOwnerList.count];
+        _countLabel.text = [NSString stringWithFormat:@"%lu properties in list.",
+                            (unsigned long)_propOwnerList.count];
     }
     
     else
     {
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                            _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+        _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
+                            (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
     }
 }
 

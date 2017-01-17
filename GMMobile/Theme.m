@@ -105,6 +105,19 @@
             double range = rangeAveTop.doubleValue - rangeAveBot.doubleValue;
             if (range <= 0)
                 range = themeMax.integerValue - themeMin.integerValue;
+            int targetClass = -1;
+            if (NVMetroSettings.sharedInstance.overUnder && CRAPI.sharedInstance.currentPID)
+            {
+                long long intVal = IDNINT64(NVMetroSettings.sharedInstance.targetValue);
+                for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
+                {
+                    NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
+                    NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
+                    if (intVal >=  min.longLongValue && NVMetroSettings.sharedInstance.targetValue <=  max.longLongValue)
+                        targetClass = iClass;
+                }
+            }
+
             for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
             {
                 NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
@@ -127,6 +140,10 @@
                 if (range > 0)
                     intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
                 class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
+                if (iClass == targetClass)
+                    class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
+                else if (iClass < targetClass)
+                    class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
                 [thm.classes addObject:class];
             }
             [thm adjustClassTitles];
@@ -967,11 +984,11 @@ int getThemeOpt(ThemeTypes type)
 }
 
 - (BOOL) classValues:(NSArray*)values
-      containInteger:(int)ival
+      containInteger:(long long)ival
 {
     for (NSNumber *num in values)
     {
-        if (num.integerValue == ival)
+        if (num.longLongValue == ival)
             return TRUE;
     }
     return FALSE;

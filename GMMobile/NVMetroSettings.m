@@ -9,8 +9,12 @@
 #import "NVMetroSettings.h"
 
 static int currentValues[CPFeaturesCount];
+static int currentTextValues[CPFeaturesCount];
 static int nParcelTypesWanted=-1;
 static int parcelsWanted[CPFeaturesCount];
+
+@implementation NVMetroTextOptions
+@end
 
 @implementation NVMetroSettings
 
@@ -41,6 +45,10 @@ static int parcelsWanted[CPFeaturesCount];
     return self;
 }
 
+- (void) setOverUnder:(BOOL)overUnder
+{
+    _overUnder = overUnder;
+}
 -(void) setCurrentFeature:(CPFeatures)currentFeature
 {
     _currentFeature = currentFeature;
@@ -151,13 +159,13 @@ static int parcelsWanted[CPFeaturesCount];
                 [rtn addObject:stringWithID("Land Use",feature)];
                 break;
             case CPFBlocks:
-                [rtn addObject:stringWithID("Blocks",feature)];
+                [rtn addObject:stringWithID("Census Blocks",feature)];
                 break;
             case CPFBlockGroups:
-                [rtn addObject:stringWithID("Block Groups",feature)];
+                [rtn addObject:stringWithID("Census Block Groups",feature)];
                 break;
             case CPFBlockGroups_ACS:
-                [rtn addObject:stringWithID("Block Groups (2015 ACS Data)",feature)];
+                [rtn addObject:stringWithID("Census Block Groups (2015 ACS Data)",feature)];
                 break;
             case CPFTracts:
                 [rtn addObject:stringWithID("Census Tracts",feature)];
@@ -598,4 +606,76 @@ static int parcelsWanted[CPFeaturesCount];
     return rtn;
 }
 
+- (NSArray *) currentTextOptions
+{
+    NSMutableArray * rtn = NSMutableArray.new;
+    NSArray * options = [self textValuesForFeature:_currentFeature];
+    
+    for (NVMetroTextOptions * to in options)
+    {
+        NSString *desc = to.desc.copy;
+        [rtn addObject:desc];
+    }
+    return rtn;
+}
+- (NSArray *) textValuesForFeature:(CPFeatures)feature
+{
+    NSArray *rtn = nil;
+    
+    switch (feature)
+    {
+        case CPFParcels:
+        case CPFParcels_COM:
+        case CPFParcels_RES:
+        case CPFParcels_AG:
+        case CPFParcels_IND:
+            rtn = [self textValuesForParcels];
+            break;
+        case CPFBlocks:
+        case CPFBlockGroups:
+        case CPFBlockGroups_ACS:
+        case CPFTracts:
+        case CPFVoterDistricts:
+        case CPFLandUse:
+            rtn = [self valuesForBlocks];
+            break;
+        case CPFeaturesCount:
+            break;
+            
+        default:
+            break;
+    }
+    return rtn;
+}
+- (NSArray *) textValuesForParcels
+{
+    NSMutableArray * rtn = NSMutableArray.new;
+    NVMetroTextOptions *to = NVMetroTextOptions.new;
+    to.desc = @"No Text";
+    [rtn addObject:to];
+    to = NVMetroTextOptions.new;
+    to.desc = @"Auto Text";
+    to.numTextFields = -1;
+    [rtn addObject:to];
+    to = NVMetroTextOptions.new;
+    to.desc = @"Total EMV\nTaxpayer";
+    to.numTextFields = 2;
+    to.fields = @",TOTAL_EMV,OWNER_NAME,OWNER_MORE,TAX_NAME";
+    to.format = TXTAdjustOwnerNames;
+    [rtn addObject:to];
+    return rtn;
+}
+- (NSArray *) textValuesForBlocks
+{
+    NSMutableArray * rtn = NSMutableArray.new;
+    NVMetroTextOptions *to = NVMetroTextOptions.new;
+    to.desc = @"No Text";
+    [rtn addObject:to];
+    to = NVMetroTextOptions.new;
+    to.desc = @"Auto Text";
+    to.numTextFields = -1;
+    [rtn addObject:to];
+    return rtn;
+}
 @end
+

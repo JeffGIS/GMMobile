@@ -109,7 +109,7 @@
     overUnderSwitch.translatesAutoresizingMaskIntoConstraints = NO;
     overUnderSwitch.tintColor = UIColor.redColor;
     overUnderSwitch.onTintColor = UIColor.greenColor;
-    overUnderSwitch.on = YES;
+    overUnderSwitch.on = NO;
     
     [overUnderSwitch addTarget:self
                         action:@selector(overUnderSwitchTapped:)
@@ -363,7 +363,7 @@
             
         case 66:
             keyword = @"Text";
-            optionsList = @[@"Taxpayer / Total EMT", @"Unintelligible Text", @"Useless Text", @"Random Garbage"];
+            optionsList = NVMetroSettings.sharedInstance.currentTextOptions;
             break;
             
         default:
@@ -448,7 +448,7 @@ didReturnWithSelectedRows:(NSArray *)selectedRows
 
 - (void)overUnderSwitchTapped:(UISwitch *)theSwitch
 {
-    NVMetroSettings.sharedInstance.OverUnder = theSwitch.state;
+    NVMetroSettings.sharedInstance.overUnder = theSwitch.on;
 }
 
 - (void)displayParamsSCTapped:(UISegmentedControl *)segControl

@@ -54,13 +54,23 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
     CPAdjustCount
 };
 
-typedef NS_ENUM(NSInteger, CPTextOptions)
+typedef NS_ENUM(NSInteger, TXTAdjustment)
 {
-    CPTextOptionNoText,
-    CPTextOptionCount
+    TXTAdjustNone,
+    TXTAdjustOwnerNames,
+    TXTAdjustCount
 };
 
 
+#define MAX_NVM_TEXT_FIELDS 16
+
+@interface NVMetroTextOptions : NSObject
+@property NSString* desc;
+@property int numTextFields;
+@property NSString* fields;
+@property int format;
+@property int nDecimals;
+@end
 
 @interface NVMetroSettings : NSObject
 
@@ -69,12 +79,13 @@ typedef NS_ENUM(NSInteger, CPTextOptions)
 @property (nonatomic)CPFeatures currentFeature;
 @property (nonatomic) int currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
-@property CPTextOptions currentTextOption;
-@property BOOL OverUnder;
+@property NVMetroTextOptions* currentTextOption;
+@property (nonatomic)BOOL overUnder;
 @property int themeClassType;
 @property int numThemeClasses;
 @property int roundTo;
 @property int valueMultiplier;
+@property double targetValue;
 @property NSMutableArray * themeClassMin;
 @property NSMutableArray * themeClassMax;
 @property NSMutableArray * themeClassCounts;
@@ -88,6 +99,7 @@ typedef NS_ENUM(NSInteger, CPTextOptions)
 - (NSString *) currentValueText;
 - (NSString *) currentValueField;
 - (NSString *) currentAdjustmentText;
+- (NSArray *) currentTextOptions;
 - (void) setCurrentValue:(NSInteger)value;
 - (NSArray *) valuesForFeature:(CPFeatures)feature;
 - (BOOL) wantUseCode:(int)code;
