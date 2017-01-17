@@ -3,6 +3,7 @@ NSString *fileName = @"MetroGIS_database.gcf";
 //  GMMobile
 #import "PropertyData.h"
 #import "ConfigurationControl.h"
+#import "NVMetroSettings.h"
 #import "MapViewENUMS.h"
 #import "CCodeLibrary/NVTextDrawing.h"
 #import "CCodeLibrary/MathUtil.h"
@@ -793,9 +794,23 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 - (int)pickParcel:(LLPOINT *)pt
     highlightList:(NSMutableArray*)hlist
 {
-    if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
-                                      visibleAtZoom:_zoom
-                                            andPass:PickPass])
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        switch (NVMetroSettings.sharedInstance.currentFeature)
+        {
+            case CPFParcels:
+            case CPFParcels_IND:
+            case CPFParcels_AG:
+            case CPFParcels_RES:
+            case CPFParcels_COM:
+                break;
+            default:
+                return 0;
+        }
+    }
+    else if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
+                                           visibleAtZoom:_zoom
+                                                 andPass:PickPass])
         return 0;
     
     NSString *minPID = [[NSString alloc] init];

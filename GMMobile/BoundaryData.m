@@ -1137,7 +1137,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 goto SkipRecord;
             genUseCode = sqlite3_column_int(statement,i++);
             LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,i++);
-            if (NVMetroSettings.sharedInstance.overUnder)
+            if (field.length > 0 && NVMetroSettings.sharedInstance.overUnder)
             {
                 if (genUseCode != wantGenUseCode)
                     goto SkipRecord;
@@ -1145,8 +1145,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     goto SkipRecord;
             }
             if (![NVMetroSettings.sharedInstance wantUseCode:genUseCode])
-                goto SkipRecord;
-            if (strcasecmp (homeStead,"Y"))
                 goto SkipRecord;
         }
         else
