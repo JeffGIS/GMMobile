@@ -48,7 +48,7 @@
 @property (nonatomic) UIColor *tableViewBackgroundColor;
 @property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
-@property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedSanMain, *selectedPlat;
+@property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedSanMain, *selectedPlat, *routeMode;
 @property (nonatomic) int selectedPlatRefno, nVectorViews;
 @property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
 @property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
@@ -136,6 +136,7 @@
     _animateToLocation = _usePlatView = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _splitPlatView = _legendMinimized = NO;
+    _routeMode = @"driving";
     self.tabBarController.delegate = self;
     
     _nvssvc = NVSpreadsheetVC.new;
@@ -542,11 +543,9 @@
                 case GMMSettingPID:
                     marker.snippet = CRAPI.sharedInstance.currentPropOwner;
                     break;
-                    
                 case GMMSettingAddress:
                     marker.snippet = CRAPI.sharedInstance.currentAddress;
                     break;
-                    
                 case GMMSettingPropOwner:
                     marker.snippet = CRAPI.sharedInstance.currentPropOwner;
                     break;
@@ -659,19 +658,15 @@
             case MapToolbarOrientationTop:
                 _compass.center = CGPointMake(_mapToolbar.center.x, yCenterBottom);
                 break;
-                
             case MapToolbarOrientationBottom:
                 _compass.center = CGPointMake(_mapToolbar.center.x, yCenterTop);
                 break;
-                
             case MapToolbarOrientationLeft:
                 _compass.center = CGPointMake(xCenterRight, _mapToolbar.center.y);
                 break;
-                
             case MapToolbarOrientationRight:
                 _compass.center = CGPointMake(xCenterLeft, _mapToolbar.center.y);
                 break;
-                
             default:
                 break;
         }
@@ -685,12 +680,10 @@
             case MapToolbarOrientationBottom:
                 _compass.center = CGPointMake(xCenterLeft, _mapToolbar.center.y);
                 break;
-                
             case MapToolbarOrientationLeft:
             case MapToolbarOrientationRight:
                 _compass.center = CGPointMake(_mapToolbar.center.x, yCenterTop);
                 break;
-                
             default:
                 break;
         }
@@ -699,14 +692,9 @@
 
 - (void)setupTempButton:(UIButton *)button
 {
-    [button setTitleColor:UIColor.whiteColor
-                       forState:UIControlStateNormal];
-    
-    [button setTitleColor:UIColor.grayColor
-                       forState:UIControlStateHighlighted];
-    
+    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.grayColor forState:UIControlStateHighlighted];
     button.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
-    
     button.backgroundColor = UIColor.blackColor;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.layer.cornerRadius = 10.0;
@@ -767,7 +755,6 @@
     
     NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
     UIView *legendsView = [[UIView alloc] initWithFrame:self.view.frame];
-    
     legendsView.hidden = YES;
     legendsView.backgroundColor = UIColor.lightGrayColor;
     [self.view addSubview:legendsView];
@@ -868,19 +855,15 @@
         case MFMailComposeResultCancelled:
             NSLog(@"Mail cancelled");
             break;
-            
         case MFMailComposeResultSaved:
             NSLog(@"Mail saved");
             break;
-            
         case MFMailComposeResultSent:
             NSLog(@"Mail sent");
             break;
-            
         case MFMailComposeResultFailed:
             NSLog(@"Mail sent failure:%@", error.localizedDescription);
             break;
-            
         default:
             break;
     }
@@ -1039,18 +1022,14 @@
     
     else
     {
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"NVSpreadsheet"];
-        
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVSpreadsheet"];
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:lvc
                                atIndex:1];
         
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"NVWebKitVC"];
-        
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVWebKitVC"];
         UIViewController *svc = [storyboard instantiateViewControllerWithIdentifier:@"SettingsVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
@@ -1083,10 +1062,7 @@
     }
     
     else
-    {
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"MGThemesVC"];
-    }
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"MGThemesVC"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
@@ -1113,11 +1089,8 @@
     
     else
     {
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"NVPageController"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CrimeDataOptionsVC"];
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVPageController"];
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
@@ -1268,14 +1241,9 @@
     button.titleLabel.layer.shadowOpacity = 1.0;
     button.titleLabel.layer.shadowRadius = 4.0;
     
-    [button setTitleColor:UIColor.whiteColor
-                 forState:UIControlStateNormal];
-    
-    [button setTitleColor:UIColor.redColor
-                 forState:UIControlStateHighlighted];
-    
-    [button setTitle:title
-            forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.redColor forState:UIControlStateHighlighted];
+    [button setTitle:title forState:UIControlStateNormal];
     
     [button addTarget:self
                action:selector
@@ -1561,28 +1529,24 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeAlleyLine;
                     break;
-                    
                 case AlleyWallPoint:
                     _selectedAlleyWall = pi.identifier;
                     marker.title = _selectedAlleyWall;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeAlleyWall;
                     break;
-                    
                 case StreetIntersection:
                     _selectedCRIntPt = pi.identifier;
                     marker.title = _selectedCRIntPt;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeCRInt;
                     break;
-                    
                 case StormMain:
                     _selectedSewerPipe = pi.identifier;
                     marker.title = _selectedSewerPipe;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
-                    
                 case ParcelBoundary:
                     _selectedPID = pi.identifier;
                     CRAPI.sharedInstance.selectedPID = _selectedPID;
@@ -1604,7 +1568,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeMGVSanMain;
                     break;
-                    
                 default:
                     break;
             }
@@ -1661,27 +1624,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case MarkerInfoWindowTypeStormSewer:
                 _selectedSewerPipe = marker.title;
                 break;
-                
             case MarkerInfoWindowTypePID:
                 _selectedPID = marker.title;
                 break;
-                
             case MarkerInfoWindowTypeAlleyWall:
                 _selectedAlleyWall = marker.title;
                 break;
-                
             case MarkerInfoWindowTypeCRInt:
                 _selectedCRIntPt = marker.title;
                 break;
-                
             case MarkerInfoWindowTypeAlleyLine:
                 _selectedAlleySeg = marker.title;
                 break;
-                
             case MarkerInfoWindowTypeCrime:
                 _selectedCrime = marker.refno;
                 break;
-                
             default:
                 break;
         }
@@ -1695,7 +1652,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         _infoWindow.marker = marker;
         _infoWindow.optionsTitle = marker.title;
         _noneSelected = NO;
-        
         [self.view addSubview:_infoWindow];
     }
 }
@@ -2119,34 +2075,8 @@ wasTappedAtPoint:(DPOINT)point
     switch (webView.tag)
     {
         case 111://top PDF
-        {
             NSLog(@"Top PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
-            
-            /*_mgvData = [self getMGVPlatDataByViewport:111
-                                           coordinate:point
-                                                 file:_mgvData.pdfFile
-                                              andPage:_mgvData.page];
-            
-            [webView zoomToPoint:_mgvData.ptUpper
-                      withinPage:_mgvData.page
-                       withScale:_mgvData.scaleUpper
-                        rotation:_mgvData.rotUpper];
-            
-            if (_splitPlatView)
-            {
-                NVWebView *nvwv2 = [self webViewWithTag:222];
-                
-                if (nvwv2)
-                {
-                    [nvwv2 zoomToPoint:_mgvData.ptLower
-                            withinPage:_mgvData.page
-                             withScale:_mgvData.scaleLower
-                              rotation:_mgvData.rotLower];
-                }
-            }*/
-        }
-           break;
-            
+            break;
         case 222://bottom PDF
             NSLog(@"Bottom PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
             break;
@@ -3480,12 +3410,10 @@ viewForHeaderInSection:(NSInteger)section
             headerLabel.numberOfLines = 1;
             headerLabel.text = [NSString stringWithFormat:@"Options for %@", _infoWindow.optionsTitle];
             break;
-            
         case PropertyTableViewSettingPropertyReport:
             headerLabel.numberOfLines = 2;
             headerLabel.text = @"Property Report for\nFirst Quarter 2016";
             break;
-            
         default:
             break;
     }
@@ -3503,11 +3431,9 @@ viewForHeaderInSection:(NSInteger)section
         case PropertyTableViewSettingOptions:
             numberOfRows = _options.count;
             break;
-            
         case PropertyTableViewSettingPropertyReport:
             numberOfRows = _propertyReport.count;
             break;
-            
         default:
             break;
     }
@@ -3704,116 +3630,100 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if ([text isEqualToString:@"Property Report"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyReport forKey:@"PIDOption"];
         [self showPropReport];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyReport
-                                    forKey:@"PIDOption"];
     }
     
     else if ([text isEqualToString:@"Property History"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyHistory forKey:@"PIDOption"];
         [self showPropHistory];
         [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Zillow Property Record"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingZillow forKey:@"PIDOption"];
         [self showZillow];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingZillow
-                                      forKey:@"PIDOption"];
     }
     
     else if ([text isEqualToString:@"County Property Record"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCountyRecord forKey:@"PIDOption"];
         [self showCountyRecord];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCountyRecord
-                                      forKey:@"PIDOption"];
     }
     
     else if ([text isEqualToString:@"Display Google Street View"])
     {
-        [self showStreetView];
-        
         switch (_infoWindow.marker.type)
         {
             case MarkerInfoWindowTypePID:
-                [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetView
-                                              forKey:@"PIDOption"];
+                [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetView forKey:@"PIDOption"];
                 break;
-                
             case MarkerInfoWindowTypeCrime:
-                [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetView
-                                              forKey:@"CrimePointOption"];
+                [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetView forKey:@"CrimePointOption"];
                 break;
-                
             default:
                 break;
         }
+        
+        [self showStreetView];
     }
     
     else if ([text isEqualToString:@"Display Bing Streetside"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetside forKey:@"PIDOption"];
         [self showStreetside];
         [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Zoom to Census Area"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea forKey:@"PIDOption"];
         [self showCensusArea];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
-                                      forKey:@"PIDOption"];
     }
     
     else if ([text isEqualToString:@"Color Parcels"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingColorParcels forKey:@"PIDOption"];
         [self selectParcelColor];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
-                                      forKey:@"PIDOption"];
     }
+    
     else if ([text isEqualToString:@"Parcel Text"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingParcelText forKey:@"PIDOption"];
         [self selectParcelText];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingCensusArea
-                                      forKey:@"PIDOption"];
     }
+    
+    else if ([text isEqualToString:@"Set as Target Parcel"])
+    {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingSetTargetParcel forKey:@"PIDOption"];
+        [self setTargetParcel];
+    }
+    
     else if ([text isEqualToString:@"Add to Property List"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropList forKey:@"PIDOption"];
         [self addToPropList];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropList
-                                      forKey:@"PIDOption"];
     }
     
     else if ([text isEqualToString:@"Add to Destinations"])
     {
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingDestinations forKey:@"PIDOption"];
         [self addToDestinations];
-        
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingDestinations
-                                      forKey:@"PIDOption"];
     }
     
     else if ([text isEqualToString:@"Route From Current Location"])
     {
-        [self dismissTableView];
-        
-        [self performSelector:@selector(traceRouteFromCurrentLocation)
-                   withObject:nil
-                   afterDelay:0.3];
+        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingRoute forKey:@"PIDOption"];
+        [self traceRouteFromCurrentLocation];
     }
     
     else if ([text isEqualToString:@"Perform 3D Route Flyover"])
     {
-        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
-                                        forKey:@"FlyOverType"];
-        
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer forKey:@"FlyOverType"];
         GMSPath *path = _polyline.path;
         int numPoints = (int)path.count;
-        
         LPDPOINT llpoints = malloc(numPoints * sizeof(DPOINT) + 4);
         
         for (int i = 0; i < numPoints; i++)
@@ -3846,7 +3756,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 fwrite(&numPoints, sizeof(int), 1, tracePolyFile);
                 fwrite(llpoints, sizeof(DPOINT), numPoints, tracePolyFile);
                 fclose(tracePolyFile);
-                
                 [self perform3DFlyAround];
             }
         }
@@ -3861,12 +3770,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         if (_infoWindow.marker.type == MarkerInfoWindowTypeCrime)
         {
-            [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeCrime
-                                            forKey:@"FlyOverType"];
-            
+            [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeCrime forKey:@"FlyOverType"];
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
             int symbol = _infoWindow.marker.symbol;
-            
             FILE *pidPolyFile = fopen(filePath, "wb");
             
             if (!pidPolyFile)
@@ -3885,18 +3791,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 fwrite(&centerCoord, sizeof(CLLocationCoordinate2D), 1, pidPolyFile);
                 fwrite(&symbol, sizeof(int), 1, pidPolyFile);
                 fclose(pidPolyFile);
-                
                 [self perform3DFlyAround];
             }
         }
         
         else
         {
-            [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID
-                                            forKey:@"FlyOverType"];
-            
+            [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID forKey:@"FlyOverType"];
             int numPoints = 0, numLoops = 0, *polyPartLen = 0;
-            
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
             PropertyData *propData = [[PropertyData alloc] init];
             MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
@@ -3927,7 +3829,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                 fwrite(&bounds, sizeof(MNMXCORD), 1, pidPolyFile);
                 fwrite(llpoints, sizeof(DPOINT), numPoints, pidPolyFile);
                 fclose(pidPolyFile);
-                
                 [self perform3DFlyAround];
             }
             
@@ -3937,198 +3838,135 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([[text substringToIndex:min(text.length,19)] isEqualToString:@"Display Plat"])
     {
-        [self dismissTableView];
         _splitPlatView = NO;
-        
-        [self performSelector:@selector(loadPlat)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self dismissTableView];
+        [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
     else if ([[text substringToIndex:min(text.length,33)] isEqualToString:@"Display Split Screen Profile to 1"])
     {
-        [self dismissTableView];
         _splitPlatView = YES;
         _splitPlatDirection = 0;
-        [self performSelector:@selector(loadPlat)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self dismissTableView];
+        [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
     else if ([[text substringToIndex:min(text.length,33)] isEqualToString:@"Display Split Screen Profile to 2"])
     {
-        [self dismissTableView];
         _splitPlatView = YES;
         _splitPlatDirection = 1;
-        
-        [self performSelector:@selector(loadPlat)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self dismissTableView];
+        [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Display Pipe Attributes"])
     {
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingAttributes forKey:@"SewerOption"];
         [self showPipeAttributes];
-        
-        [UserDefaults.defaults saveNSInteger:SewerPipeSettingAttributes
-                                      forKey:@"SewerOption"];
     }
     
     else if ([text isEqualToString:@"Trace Pipe Upstream"])
     {
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceUp forKey:@"SewerOption"];
         [self dismissTableView];
-        
-        [self performSelector:@selector(showPipeTraceUpstream)
-                   withObject:nil
-                   afterDelay:0.3];
-        
-        [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceUp
-                                      forKey:@"SewerOption"];
+        [self performSelector:@selector(showPipeTraceUpstream) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Trace Pipe Downstream"])
     {
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown forKey:@"SewerOption"];
         [self dismissTableView];
-        
-        [self performSelector:@selector(showPipeTraceDownstream)
-                   withObject:nil
-                   afterDelay:0.3];
-        
-        [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown
-                                      forKey:@"SewerOption"];
+        [self performSelector:@selector(showPipeTraceDownstream) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Perform Downstream\n3D Fly Over"])
     {
-        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer
-                                        forKey:@"FlyOverType"];
-        
+        [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer forKey:@"FlyOverType"];
         [self dismissTableView];
-        
-        [self performSelector:@selector(performDownstreamFlyOver)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self performSelector:@selector(performDownstreamFlyOver) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Remove Pipe Trace"])
     {
         [self dismissTableView];
-        
-        [self performSelector:@selector(removePipeTrace)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self performSelector:@selector(removePipeTrace) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Update Cleaning Date"])
     {
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingUpdateCleanDate forKey:@"SewerOption"];
         [self updateCleaningDate];
-        
-        [UserDefaults.defaults saveNSInteger:SewerPipeSettingUpdateCleanDate
-                                      forKey:@"SewerOption"];
     }
     
     else if ([text isEqualToString:@"Update Inspection Notes"])
     {
+        [UserDefaults.defaults saveNSInteger:SewerPipeSettingUpdateNotes forKey:@"SewerOption"];
         [self updateInspectionNotes];
-        
-        [UserDefaults.defaults saveNSInteger:SewerPipeSettingUpdateNotes
-                                      forKey:@"SewerOption"];
     }
     
     else if ([text isEqualToString:@"Snap to Node"])
     {
+        [UserDefaults.defaults saveNSInteger:CustomSettingSnapToNode forKey:@"CustomOption"];
         [self snapToNode];
-        
-        [UserDefaults.defaults saveNSInteger:CustomSettingSnapToNode
-                                      forKey:@"CustomOption"];
     }
     
     else if ([text isEqualToString:@"Snap to Line"])
     {
+        [UserDefaults.defaults saveNSInteger:CustomSettingSnapToLine forKey:@"CustomOption"];
         [self snapToLine];
-        
-        [UserDefaults.defaults saveNSInteger:CustomSettingSnapToLine
-                                      forKey:@"CustomOption"];
     }
     
     else if ([text isEqualToString:@"Move Wall Point"])
     {
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingMoveWallPoint forKey:@"AlleyWallOption"];
         [self dismissTableView];
-        
-        [self performSelector:@selector(moveWallPoint)
-                   withObject:nil
-                   afterDelay:0.3];
-        
-        [UserDefaults.defaults saveNSInteger:AlleyWallSettingMoveWallPoint
-                                      forKey:@"AlleyWallOption"];
+        [self performSelector:@selector(moveWallPoint) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Delete Wall Point"])
     {
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingDeleteWallPoint forKey:@"AlleyWallOption"];
         [self deleteWallPoint];
-        
-        [UserDefaults.defaults saveNSInteger:AlleyWallSettingDeleteWallPoint
-                                      forKey:@"AlleyWallOption"];
     }
     
     else if ([text isEqualToString:@"Edit Wall Attributes"])
     {
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes forKey:@"AlleyWallOption"];
         [self editWallAttributes];
-        
-        [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes
-                                      forKey:@"AlleyWallOption"];
     }
     
     else if ([text isEqualToString:@"View Wall Photos"])
     {
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewWallPhotos forKey:@"AlleyWallOption"];
         [self viewWallPhotos];
-        
-        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewWallPhotos
-                                      forKey:@"AlleyWallOption"];
     }
     
     else if ([text isEqualToString:@"View Inset Wall Photos"])
     {
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewInsetWallPhotos forKey:@"AlleyWallOption"];
         [self dismissTableView];
-        
-        [self performSelector:@selector(viewInsetWallPhotos)
-                   withObject:nil
-                   afterDelay:0.3];
-        
-        [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewInsetWallPhotos
-                                      forKey:@"AlleyWallOption"];
+        [self performSelector:@selector(viewInsetWallPhotos) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
+        [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes forKey:@"AlleyLineOption"];
         [self dismissTableView];
-        
-        [self performSelector:@selector(toggleCompletionStatus)
-                   withObject:nil
-                   afterDelay:0.3];
-        
-        [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes
-                                      forKey:@"AlleyLineOption"];
+        [self performSelector:@selector(toggleCompletionStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Alley Centerline Status"])
     {
         [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingCenterline;
-        
-        [self performSelector:@selector(alleyStatus)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self performSelector:@selector(alleyStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Alley Wall Status"])
     {
         [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingWall;
-        
-        [self performSelector:@selector(alleyStatus)
-                   withObject:nil
-                   afterDelay:0.3];
+        [self performSelector:@selector(alleyStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Edit Intersection Attributes"])
@@ -4143,10 +3981,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([text isEqualToString:@"Display Report"])
     {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayReport forKey:@"CrimePointOption"];
         [self displayCrimeReport];
-        
-        [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayReport
-                                      forKey:@"CrimePointOption"];
     }
 }
 
@@ -4478,7 +4314,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
                                                       delegate:self
                                                          title:title
                                                buttonTextArray:@[@"Cancel", @"Zoom to Block", @"Zoom to BlockGroup", @"Zoom to Tract"]
-                                              destructiveIndex:0];
+                                              destructiveIndex:1];
     
     alert.identifier = @"CensusZoomAlert";
 }
@@ -4492,7 +4328,7 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
                                                          title:title
                                                buttonTextArray:@[@"Cancel|0", @"Owner/Total Tax|1", @"Building Number|2",
                                                                  @"Land EMV|3", @"Land EMV per Acre|4", @"Last Sale|5"]
-                                              destructiveIndex:0];
+                                              destructiveIndex:1];
     
     alert.identifier = @"ParcelTextAlert";
 }
@@ -4507,34 +4343,39 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
                                                buttonTextArray:@[@"Cancel|0", @"Total EMV|1", @"Building EMV|2",@"Land EMV|3",
                                                                  @"Land EMV per Acre|4", @"Homestead|5", @"Residential/Commercial|6",
                                                                  @"Special Assessment|7", @"Tax Exempt|8", @"Tax Forfeit|9",@"Last Sale|10"]
-                                              destructiveIndex:0];
+                                              destructiveIndex:1];
     
     alert.identifier = @"ParcelColorAlert";
 }
 
+- (void)setTargetParcel
+{
+    CRAPI.sharedInstance.currentPID = _selectedPID;
+    [self dismissTableView];
+}
+
 - (void)addToPropList
 {
+    PropertyList *pl = PropertyList.new;
+    [pl addParcelToPropertyList:_selectedPID popover:_popover];
     [self dismissTableView];
-    
-    PropertyList *pl = [[PropertyList alloc] init];
-    [pl addParcelToPropertyList:_selectedPID
-                        popover:_popover];
 }
 
 - (void)addToDestinations
 {
+    Destinations *dests = Destinations.new;
+    [dests addParcelToDestinations:_selectedPID];
     [self dismissTableView];
-    
-    Destinations *pl = [[Destinations alloc] init];
-    [pl addParcelToDestinations:_selectedPID];
 }
 
 - (void)traceRouteFromCurrentLocation
 {
-    _animateToLocation = NO;
-    
-    if (CLLocationManager.headingAvailable)
-        [_locationManager startUpdatingLocation];
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Select Route Type"
+                                               buttonTextArray:@[@"Cancel", @"Driving", @"Transit"]
+                                              destructiveIndex:1];
+    alert.identifier = @"RouteType";
 }
 
 - (void)URLSession:(NSURLSession *)session
@@ -4549,25 +4390,13 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     if ([dataString containsString:@"-->"])
     {
         NSString *data = _dataString.copy;
+        data = [data stringByReplacingOccurrencesOfString:@">" withString:@">\n"];
+        data = [data stringByReplacingOccurrencesOfString:@"</" withString:@"\n</"];
+        data = [data stringByReplacingOccurrencesOfString:@" xsi:" withString:@"\nxsi:"];
+        data = [data stringByReplacingOccurrencesOfString:@" https:" withString:@"\nhttps:"];
+        data = [data stringByReplacingOccurrencesOfString:@" xmlns:" withString:@"\nxmlns:"];
         
-        data = [data stringByReplacingOccurrencesOfString:@">"
-                                               withString:@">\n"];
-        
-        data = [data stringByReplacingOccurrencesOfString:@"</"
-                                               withString:@"\n</"];
-        
-        data = [data stringByReplacingOccurrencesOfString:@" xsi:"
-                                               withString:@"\nxsi:"];
-        
-        data = [data stringByReplacingOccurrencesOfString:@" https:"
-                                               withString:@"\nhttps:"];
-        
-        data = [data stringByReplacingOccurrencesOfString:@" xmlns:"
-                                               withString:@"\nxmlns:"];
-        
-        NVTextVC *textVC = [[NVTextVC alloc] initWithText:data
-                                                 fontSize:16.0];
-        
+        NVTextVC *textVC = [[NVTextVC alloc] initWithText:data fontSize:16.0];
         textVC.clampTextViewToText = YES;
         textVC.zoomingEnabled = NO;
         
@@ -5021,20 +4850,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             case CensusZoomSettingCancel:
                 break;
-                
             case CensusZoomSettingBlock:
                 [self dismissTableView];
                 //implement zoom to block here
                 break;
-                
             case CensusZoomSettingBlockGroup:
                 [self dismissTableView];
                 //implement zoom to block group here
                 break;
-                
             case CensusZoomSettingTract:
                 [self dismissTableView];
                 //implement zoom to tract here
+                break;
+            default:
                 break;
         }
     }
@@ -5045,17 +4873,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             case ParcelTextSettingCancel:
                 break;
-                
             case ParcelTextSettingOwnerTax:
             case ParcelTextSettingBuildingNum:
             case ParcelTextSettingEMVLand:
             case ParcelTextSettingEMVLandPerAcre:
-            case 5:
-                [self dismissTableView];
+            case ParcelTextSettingLastSale:
                 CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
-                
-                [self refreshVectorView:_mapView.projection.visibleRegion
-                                 atZoom:_mapView.camera.zoom];
+                [self dismissTableView];
+                [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+            default:
                 break;
         }
     }
@@ -5068,42 +4894,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 CRAPI.sharedInstance.parcelColorOption = 0;
                 CRAPI.sharedInstance.parcelShadingOption = 0;
                 break;
-                
             case ParcelColorSettingTotEMV:
             case ParcelColorSettingLandEMV:
             case ParcelColorSettingLandEMVPerAcre:
             case ParcelColorSettingBuildingEMV:
                 CRAPI.sharedInstance.parcelShadingOption = 0;
-                [self dismissTableView];
                 CRAPI.sharedInstance.parcelColorOption = (int)buttonIndex;
-                
-                [self refreshVectorView:_mapView.projection.visibleRegion
-                                 atZoom:_mapView.camera.zoom];
+                [self dismissTableView];
+                [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
                 break;
-                
             case ParcelColorSettingHomestead:
-                CRAPI.sharedInstance.parcelShadingOption = 1;
-                break;
-                
             case ParcelColorSettingResCom:
-                CRAPI.sharedInstance.parcelShadingOption = 2;
-                break;
-                
             case ParcelColorSettingSpecialAssessment:
-                CRAPI.sharedInstance.parcelShadingOption = 3;
-                break;
-                
             case ParcelColorSettingTaxExempt:
-                CRAPI.sharedInstance.parcelShadingOption = 4;
-                break;
             case ParcelColorSettingTaxForfeit:
-                CRAPI.sharedInstance.parcelShadingOption = 5;
+            case ParcelColorSettingLastSale:
+                CRAPI.sharedInstance.parcelShadingOption = ((int)buttonIndex - 4);
+                [self dismissTableView];
+                [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
                 break;
-                
-            case 10:
-                CRAPI.sharedInstance.parcelShadingOption = 6;
-                break;
-                
             default:
                 break;
         }
@@ -5131,6 +4940,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else if ([alertView.identifier isEqualToString:@"NoStreetViewAvailable"])
         [self dismissPanTapped:nil];
+    
+    else if ([alertView.identifier isEqualToString:@"RouteType"])
+    {
+        switch (buttonIndex)
+        {
+            case 0://cancel
+                return;
+            case 1://driving
+                _routeMode = @"driving";
+                break;
+            case 2://transit
+                _routeMode = @"transit";
+                break;
+        }
+        
+        _animateToLocation = NO;
+        [self dismissTableView];
+        
+        if (CLLocationManager.headingAvailable)
+            [_locationManager startUpdatingLocation];
+    }
 }
 
 - (void)dismissTableView
@@ -5141,10 +4971,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [UIView animateWithDuration:0.25
                          animations:^{
-                             _tableView.frame = CGRectMake(self.view.center.x,
-                                                           self.view.center.y,
-                                                           0.0, 0.0);
-                             
+                             _tableView.frame = CGRectMake(self.view.center.x, self.view.center.y, 0.0, 0.0);
                              _mapToolbar.alpha = 1.0;
                          }
                          completion:^(BOOL finished){
@@ -5355,93 +5182,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         [_locationManager stopUpdatingLocation];
         _animateToLocation = YES;
-        
         [self beginLocationRouteTrace];
-        
-        /*[self getPathDirections:_currentLocation
-                withDestination:_selectedPIDCoords
-                  transportType:MKDirectionsTransportTypeTransit
-                     routeColor:UserDefaults.defaults.appleBlue];*/
     }
-}
-
-- (void)getPathDirections:(CLLocationCoordinate2D)source
-          withDestination:(CLLocationCoordinate2D)destination
-            transportType:(MKDirectionsTransportType)transportType
-               routeColor:(UIColor *)routeColor
-{
-    
-    MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:source
-                                                      addressDictionary:nil];
-    
-    MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
-    
-    MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:destination
-                                                       addressDictionary:nil];
-    
-    MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
-    
-    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-    request.source = mapItemSrc;
-    request.destination = mapItemDest;
-    request.transportType = transportType;
-    request.requestsAlternateRoutes = NO;
-    
-    MKDirections *directions = [[MKDirections alloc] initWithRequest:request];
-    
-    [directions calculateDirectionsWithCompletionHandler:
-     ^(MKDirectionsResponse *response, NSError *error) {
-         if (error && ![self.view viewWithTag:888])
-         {
-             NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                               delegate:self
-                                                                  title:error.localizedDescription
-                                                        buttonTextArray:@[@"OK"]
-                                                       destructiveIndex:0];
-             alert.tag = 888;
-         }
-         
-         else
-         {
-             MKRoute *theRoute = response.routes[0];
-             NSUInteger pointCount = theRoute.polyline.pointCount;
-             
-             CLLocationCoordinate2D *routeCoordinates = malloc(pointCount * sizeof(CLLocationCoordinate2D) + 4);
-             
-             [theRoute.polyline getCoordinates:routeCoordinates
-                                         range:NSMakeRange(0, pointCount)];
-             
-             GMSMutablePath *path = [[GMSMutablePath alloc] init];
-             
-             for (int i = 0; i < pointCount; i++)
-                 [path addCoordinate:routeCoordinates[i]];
-             
-             free(routeCoordinates);
-             
-             _polyline = [GMSPolyline polylineWithPath:path];
-             _polyline.strokeWidth = 10.0;
-             _polyline.strokeColor = routeColor;
-             _polyline.map = _mapView;
-             
-             GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
-             
-             GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                      withPadding:40.0];
-             
-             [self setMapType];
-             [self moveCam:update];
-             [self updateMarkerPosition];
-             
-             _routeTraceExists = YES;
-         }
-     }];
 }
 
 - (void)beginLocationRouteTrace
 {
     NSString *urlString =
-    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=transit",
-     _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude];
+    [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?origin=%f,%f&destination=%f,%f&sensor=true&mode=%@",
+     _currentLocation.latitude, _currentLocation.longitude, _selectedPIDCoords.latitude, _selectedPIDCoords.longitude, _routeMode];
     
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     urlRequest.timeoutInterval = 15;
@@ -5507,68 +5256,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
     }
 }
-
-/*
-- (void)connection:(nonnull NSURLConnection *)connection
-    didReceiveData:(nonnull NSData *)data
-{
-    NSError *error = nil;
-    
-    NSDictionary *json =[NSJSONSerialization JSONObjectWithData:data
-                                                        options:NSJSONReadingMutableContainers
-                                                          error:&error];
-    
-    if (!error)
-    {
-        for (GMSPolyline *polylines in _polylines)
-            polylines.map = nil;
- 
-        [_polylines removeAllObjects];
- 
-        GMSPath *path = [GMSPath pathFromEncodedPath:json[@"routes"][0][@"overview_polyline"][@"points"]];
-        _polyline = [GMSPolyline polylineWithPath:path];
-        _polyline.strokeWidth = 10.0;
-        _polyline.strokeColor = UIColor.greenColor;
-        _polyline.map = _mapView;
-        
-        GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:path];
-        
-        GMSCameraUpdate *update = [GMSCameraUpdate fitBounds:bounds
-                                                 withPadding:40.0];
-        
-        [self moveCam:update];
-        [self updateMarkerPosition];
-        
-        _routeTraceExists = YES;
-    }
-
-    else if (![self.view viewWithTag:888])
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:error.localizedDescription
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-        alert.tag = 888;
-        alert.tabBar = self.tabBarController.tabBar;
-    }
-}
-
-- (void)connection:(nonnull NSURLConnection *)connection
-  didFailWithError:(nonnull NSError *)error
-{
-    if (![self.view viewWithTag:999])
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:error.localizedDescription
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-        alert.tag = 999;
-        alert.tabBar = self.tabBarController.tabBar;
-    }
-}
-*/
 
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
@@ -5661,7 +5348,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigAlleyWalls:
             _digitizationMode = DigitizationModeAlleyWallNew;
             break;
-            
         case HCConfigMetroProp:
         {
             _digitizationMode = DigitizationModeProperty;
@@ -5677,11 +5363,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigSewers:
             _digitizationMode = DigitizationModeSewer;
             break;
-            
         case HCConfigCurbRamps:
             _digitizationMode = DigitizationModeCurbRamps;
             break;
-            
         default:
             break;
     }
@@ -5714,7 +5398,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MapTypeSettingStandard:
             _mapView.mapType = kGMSTypeNormal;
             break;
-            
         case MapTypeSettingHybrid:
             _mapView.mapType = kGMSTypeHybrid;
             break;
@@ -5948,11 +5631,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case MapViewScreenSettingSplitScreen:
                 frame = CGRectMake(0.0, 0.0, frame1.size.width, frame1.size.height);
                 break;
-                
             case MapViewScreenSettingTriScreen:
                 frame = CGRectMake(0.0, 0.0, frame2.size.width, frame2.size.height);
                 break;
-                
             case MapViewScreenSettingPlatView:
                 frame = CGRectMake(0.0, 0.0, frame6.size.width, frame6.size.height);
         }
@@ -6295,25 +5976,30 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedPID = title;
             
             _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record", @"Display Google Street View",
-                         @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Perform 3D Fly Around",
+                         @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Set as Target Parcel",
                          @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
             if (_routeTraceExists)
             {
-                [newArray insertObject:@"Perform 3D Route Flyover"
-                               atIndex:8];
-                
-                _options = newArray;
+                [newArray insertObject:@"Perform 3D Route Flyover" atIndex:8];
+                _options = newArray.copy;
+            }
+            
+            NSString *flyOverURL = @"NVFlyover:";
+            [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
+            
+            if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
+            {
+                [newArray insertObject:@"Perform 3D Fly Around" atIndex:8];
+                _options = newArray.copy;
             }
             
             if (countySupportsLookupForPID(_selectedPID))
             {
-                [newArray insertObject:@"County Property Record"
-                               atIndex:3];
-                
-                _options = newArray;
+                [newArray insertObject:@"County Property Record" atIndex:3];
+                _options = newArray.copy;
             }
         }
             break;
@@ -6322,20 +6008,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedSewerPipe = title;
             
-            _options = @[@"", @"Display Pipe Attributes", @"Trace Pipe Upstream",
-                         @"Trace Pipe Downstream", @"Remove Pipe Trace", @"Update Cleaning Date",
-                         @"Update Inspection Notes"];
+            _options = @[@"", @"Display Pipe Attributes", @"Trace Pipe Upstream", @"Trace Pipe Downstream",
+                         @"Remove Pipe Trace", @"Update Cleaning Date", @"Update Inspection Notes"];
            
             PipeTrace *pipeTrace = PipeTrace.new;
             
             if (pipeTrace.havePipeTrace)
             {
                 NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
-                
-                [newArray insertObject:@"Perform Downstream\n3D Fly Over"
-                               atIndex:3];
-                
-                _options = newArray;
+                [newArray insertObject:@"Perform Downstream\n3D Fly Over" atIndex:3];
+                _options = newArray.copy;
             }
         }
             break;
@@ -6344,8 +6026,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWall = title;
             _selectedAlleyWallRefno = refno;
             
-            _options = @[@"", @"Move Wall Point", @"Delete Wall Point",
-                         @"Edit Wall Attributes", @"View Wall Photos"];
+            _options = @[@"", @"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes", @"View Wall Photos"];
             
             BOOL hasInsetWallPhoto = NO;
             
@@ -6359,7 +6040,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
                 [newArray addObject:@"View Inset Wall Photos"];
-                _options = newArray;
+                _options = newArray.copy;
             }
             
             break;
@@ -6372,9 +6053,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
         case MarkerInfoWindowTypeCRInt:
             _selectedCRIntPt = title;
-            
-            _options = @[@"", @"Edit Intersection Attributes",
-                         @"Edit Intersection Status"];
+            _options = @[@"", @"Edit Intersection Attributes", @"Edit Intersection Status"];
             break;
             
         case MarkerInfoWindowTypeCustom:
@@ -6386,12 +6065,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedCrime = refno;
             _options = @[@"", @"Display Report", @"Display Google Street View"];
             
-            NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
+            NSString *flyOverURL = @"NVFlyover:";
+            [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
             
-            [newArray insertObject:@"Perform 3D Fly Around"
-                           atIndex:2];
-            
-            _options = newArray;
+            if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
+            {
+                NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
+                [newArray insertObject:@"Perform 3D Fly Around" atIndex:2];
+                _options = newArray.copy;
+            }
         }
             break;
             
@@ -6400,17 +6082,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _options = @[@""];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
-            _splitPlatView = TRUE;
-            NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanMH];
+            _splitPlatView = YES;
+            NSArray *array = [self getMGVPlatDataByRefno:_selectedMGVSanMH];
             _splitPlatView = splitPlatViewSave;
-            if (!array.count)
-                break;
-            [newArray addObject:@"Display Plat"];
-            [newArray addObject:@"Display Split Screen Profile to 1"];
-            if (array.count > 1)
-                [newArray addObject:@"Display Split Screen Profile to 2"];
             
-            _options = newArray;
+            if (array.count)
+            {
+                [newArray addObject:@"Display Plat"];
+                [newArray addObject:@"Display Split Screen Profile to 1"];
+                
+                if (array.count > 1)
+                    [newArray addObject:@"Display Split Screen Profile to 2"];
+                
+                _options = newArray.copy;
+            }
         }
             break;
             
@@ -6419,18 +6104,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _options = @[@""];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
-            _splitPlatView = TRUE;
-            NSArray * manholes = [_selectedSanMain componentsSeparatedByString:@"-"];
-            NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanPipe];
+            _splitPlatView = YES;
+            //NSArray *manholes = [_selectedSanMain componentsSeparatedByString:@"-"];
+            NSArray *array = [self getMGVPlatDataByRefno:_selectedMGVSanPipe];
             _splitPlatView = splitPlatViewSave;
+            
             if (array.count)
             {
-                
+                [newArray addObject:@"Display Plat"];
+                [newArray addObject:@"Display Split Screen Profile Along Pipe"];
+                _options = newArray;
             }
-            [newArray addObject:@"Display Plat"];
-            [newArray addObject:@"Display Split Screen Profile Along Pipe"];
-            
-            _options = newArray;
         }
             break;
             
@@ -6472,23 +6156,41 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     [self presentTableView];
                     [self showPropReport];
                     break;
-                    
-                case PropertyTableViewSettingZillow:
-                    [self showZillow];
+                case PropertyTableViewSettingPropertyHistory:
+                    [self showPropHistory];
                     break;
-                    
                 case PropertyTableViewSettingCountyRecord:
                     [self showCountyRecord];
                     break;
-                    
+                case PropertyTableViewSettingZillow:
+                    [self showZillow];
+                    break;
                 case PropertyTableViewSettingStreetView:
                     [self showStreetView];
                     break;
-                    
+                case PropertyTableViewSettingStreetside:
+                    [self showStreetside];
+                    break;
                 case PropertyTableViewSettingCensusArea:
                     [self showCensusArea];
                     break;
-                    
+                case PropertyTableViewSettingParcelText:
+                    [self selectParcelText];
+                    break;
+                case PropertyTableViewSettingColorParcels:
+                    [self selectParcelColor];
+                    break;
+                case PropertyTableViewSettingFlyover:
+                    break;
+                case PropertyTableViewSettingPropList:
+                    [self addToPropList];
+                    break;
+                case PropertyTableViewSettingDestinations:
+                    [self addToDestinations];
+                    break;
+                case PropertyTableViewSettingRoute:
+                    [self traceRouteFromCurrentLocation];
+                    break;
                 default:
                     break;
             }
@@ -6508,23 +6210,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case SewerPipeSettingAttributes:
                     [self showPipeAttributes];
                     break;
-                    
                 case SewerPipeSettingTraceUp:
                     [self showPipeTraceUpstream];
                     break;
-                    
                 case SewerPipeSettingTraceDown:
                     [self showPipeTraceDownstream];
                     break;
-                    
                 case SewerPipeSettingUpdateCleanDate:
                     [self updateCleaningDate];
                     break;
-                    
                 case SewerPipeSettingUpdateNotes:
                     [self updateInspectionNotes];
                     break;
-                    
                 default:
                     break;
             }
@@ -6543,19 +6240,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case AlleyWallSettingMoveWallPoint:
                     [self moveWallPoint];
                     break;
-                    
                 case AlleyWallSettingDeleteWallPoint:
                     [self deleteWallPoint];
                     break;
-                    
                 case AlleyWallSettingEditWallAttributes:
                     [self editWallAttributes];
                     break;
-                    
                 case AlleyWallSettingViewWallPhotos:
                     [self viewWallPhotos];
                     break;
-                    
                 default:
                     break;
             }
@@ -6572,10 +6265,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 case AlleyLineSettingToggleCompletionStatus:
                     [self toggleCompletionStatus];
-                    [self refreshVectorView:_mapView.projection.visibleRegion
-                                     atZoom:_mapView.camera.zoom];
+                    [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
                     break;
-                    
                 default:
                     break;
             }
@@ -6593,11 +6284,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case CustomSettingSnapToLine:
                     [self snapToLine];
                     break;
-                    
                 case CustomSettingSnapToNode:
                     [self snapToNode];
                     break;
-                    
                 default:
                     break;
             }
@@ -6612,11 +6301,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case CrimePointSettingDisplayReport:
                     [self displayCrimeReport];
                     break;
-                    
                 case CrimePointSettingDisplayStreetView:
                     [self showStreetView];
                     break;
-                
                 default:
                     break;
             }
@@ -6744,9 +6431,7 @@ didFindMatchBetweenNote:(NSString *)note
 - (void)launchAlleyWallApp
 {
     NSString *AlleyWallURL = @"NVAlleyWalls:";
-    
-    [SharedDefaults.defaults saveString:@"NVMobile"
-                                 forKey:@"SourceApplication"];
+    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:AlleyWallURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:AlleyWallURL]];
@@ -6800,11 +6485,9 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
         case AlleyStatusSettingWall:
             title = @"Wall Status";
             break;
-            
         case AlleyStatusSettingCenterline:
             title = @"Centerline\nStatus";
             break;
-            
         default:
             break;
     }
@@ -6816,15 +6499,10 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     didReturnTopText:(NSString *)topText
           bottomText:(NSString *)bottomText
 {
-    [SharedDefaults.defaults saveString:topText
-                                 forKey:@"OrganizationName"];
-    
-    [SharedDefaults.defaults saveString:bottomText
-                                 forKey:@"DeviceNumber"];
-    
+    [SharedDefaults.defaults saveString:topText forKey:@"OrganizationName"];
+    [SharedDefaults.defaults saveString:bottomText forKey:@"DeviceNumber"];
     CRAPI.sharedInstance.organizationName = topText;
     CRAPI.sharedInstance.deviceNumber = (int)bottomText.integerValue;
-
     [twoTextAlert hideTwoTextAlert:YES];
 }
 
@@ -6855,7 +6533,6 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 - (void)digitizerViewDidComplete:(NVDigitizerView *)digitizerView
 {
     [digitizerView removeFromSuperview];
-    
     [self showMarkersAndInfoWindows:YES];
     [_mapToolbar show];
 }
