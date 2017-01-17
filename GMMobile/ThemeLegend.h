@@ -42,5 +42,6 @@
 @property (nonatomic) CGPoint portraitMapOrigin, landscapeMapOrigin;
 @property (nonatomic) CGFloat scrollYPosition;
 @property MNMXCORD maxValBounds;
+@property (readonly) CGFloat headerHeight;
 
 @end

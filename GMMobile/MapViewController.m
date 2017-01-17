@@ -3125,7 +3125,6 @@ haveVV:
         
         CGFloat tlmoWidth = (ThemeLegendMapOverlay.width + 2.0);
         CGFloat rowHeight = ThemeLegendMapOverlay.rowHeight;
-        CGFloat headerHeight = ThemeLegendMapOverlay.headerHeight;
         
         CGFloat landscapeWidth = MAX(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
         CGFloat portraitWidth = MIN(UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height);
@@ -3201,7 +3200,7 @@ haveVV:
                 
                 if (tl.drawOnMap)
                 {
-                    CGFloat legendHeight = (((rowHeight * tl.numCells) + headerHeight) + yFactor);
+                    CGFloat legendHeight = (((rowHeight * tl.numCells) + tl.headerHeight) + yFactor);
                     scrollHeight += legendHeight;
                 }
             }
