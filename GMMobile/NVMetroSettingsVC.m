@@ -7,7 +7,9 @@
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
-@property (nonatomic) UIButton *featureButton, *valueButton, *adjButton;
+@property (nonatomic) UIButton *featureButton, *valueButton, *adjButton, *textButton;
+@property NSArray *optionsList;
+
 
 @end
 
@@ -105,9 +107,9 @@
     [colorSchemeButton setTitle:paddedString(@"Red / Blue") forState:UIControlStateNormal];
     [self setupButton:colorSchemeButton fontSize:littleFont];
     
-    UIButton *textButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [textButton setTitle:paddedString(@"Taxpayer / Total EMT") forState:UIControlStateNormal];
-    [self setupButton:textButton fontSize:littleFont];
+    _textButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_textButton setTitle:paddedString(@"Taxpayer / Total EMT") forState:UIControlStateNormal];
+    [self setupButton:_textButton fontSize:littleFont];
     
     UISlider *transparencySlider = UISlider.new;
     transparencySlider.translatesAutoresizingMaskIntoConstraints = NO;
@@ -255,12 +257,12 @@
             case 6:
                 [view addSubview:textLabel];
                 [textLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [view addSubview:textButton];
-                [textButton constrainCenterYToAnchor:view.centerYAnchor];
-                [textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
-                [textButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.5)].active = YES;
-                textButton.tag = 66;
-                [textLabel constrainCenterYToAnchor:textButton.centerYAnchor];
+                [view addSubview:_textButton];
+                [_textButton constrainCenterYToAnchor:view.centerYAnchor];
+                [_textButton constrainLeadingToAnchor:textLabel.trailingAnchor constant:margin];
+                [_textButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.5)].active = YES;
+                _textButton.tag = 66;
+                [textLabel constrainCenterYToAnchor:_textButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
                 [view constrainHeightToAnchor:[topView viewWithTag:i-2].heightAnchor];
                 [view constrainBottomToAnchor:topView.bottomAnchor];
@@ -342,35 +344,34 @@
 - (void)settingsButtonTapped:(UIButton *)button
 {
     NSString *keyword = @"";
-    NSArray *optionsList = nil;
     BOOL multipleSelect = NO;
     
     switch (button.tag)
     {
         case 22:
             keyword = @"Feature";
-            optionsList = NVMetroSettings.sharedInstance.features;
+            _optionsList = NVMetroSettings.sharedInstance.features;
             break;
             
         case 33:
             keyword = @"Value";
-            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:NVMetroSettings.sharedInstance.currentFeature];
+            _optionsList = [NVMetroSettings.sharedInstance valuesForFeature:NVMetroSettings.sharedInstance.currentFeature];
             multipleSelect = YES;
             break;
             
         case 44:
             keyword = @"Adjustment";
-            optionsList = NVMetroSettings.sharedInstance.adjustmentOptions;
+            _optionsList = NVMetroSettings.sharedInstance.adjustmentOptions;
             break;
             
         case 55:
             keyword = @"Color Scheme";
-            optionsList = @[@"Red/Blue", @"Amelia's Favorite Colors", @"Really Dumb Colors"];
+            _optionsList = @[@"Red/Blue", @"Amelia's Favorite Colors", @"Really Dumb Colors"];
             break;
             
         case 66:
             keyword = @"Text";
-            optionsList = NVMetroSettings.sharedInstance.currentTextOptions;
+            _optionsList = NVMetroSettings.sharedInstance.currentTextOptions;
             break;
             
         default:
@@ -381,7 +382,7 @@
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
                                              title:[NSString stringWithFormat:@"%@ Options", keyword]
-                                         textArray:optionsList
+                                         textArray:_optionsList
                                      includeCancel:YES];
     
     nvptv.allowsMultipleSelection = multipleSelect;
@@ -415,6 +416,14 @@
             break;
             
         case 66://text
+        {
+            NSString * option = _optionsList[index];
+            NSString * textIndex = textAfter(option, @"\x04");
+            
+
+            [NVMetroSettings.sharedInstance currentTextSelection:(int)textIndex.integerValue];
+            [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentAdjustmentText]) forState:UIControlStateNormal];
+        }
             break;
             
         default:
@@ -475,7 +484,7 @@ didReturnWithSelectedRows:(NSArray *)selectedRows
 
 - (void)transparencySliderChanged:(UISlider *)slider
 {
-    
+    NVMetroSettings.sharedInstance.themeTransparency = slider.value;
 }
 
 @end

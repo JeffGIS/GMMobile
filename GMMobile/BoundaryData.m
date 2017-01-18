@@ -1093,10 +1093,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             else
             {
                 /*           query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
-                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];*/
-                query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@,SORTEDVALUES  WHERE %@.id=SORTEDVALUES.ID AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
-                         dataTable,polyTable,type];
+                 platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+                query = [NSString stringWithFormat:@"SELECT %@.id,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@,SORTEDVALUES  WHERE %@.id=SORTEDVALUES.ID AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,polyTable,dataTable,polyTable,
+                         dataTable,polyTable,type];*/
                 
+                query = [NSString stringWithFormat:@"SELECT %@.id,LANDAREA,LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                         platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
             }
             
         }

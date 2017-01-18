@@ -86,6 +86,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 @property int roundTo;
 @property int valueMultiplier;
 @property double targetValue;
+@property float themeTransparency;
 @property NSMutableArray * themeClassMin;
 @property NSMutableArray * themeClassMax;
 @property NSMutableArray * themeClassCounts;
@@ -97,11 +98,13 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 - (NSArray *) adjustmentOptions;
 - (NSString *) currentFeatureText;
 - (NSString *) currentValueText;
+- (NSString *) currentValueText;
 - (NSString *) currentValueField;
 - (NSString *) currentAdjustmentText;
 - (NSArray *) currentTextOptions;
 - (void) setCurrentValue:(NSInteger)value;
 - (NSArray *) valuesForFeature:(CPFeatures)feature;
+- (void) currentTextSelection:(int)index;
 - (BOOL) wantUseCode:(int)code;
 
 

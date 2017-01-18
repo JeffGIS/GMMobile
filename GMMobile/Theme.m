@@ -87,7 +87,7 @@
     {
         case MetroPropTheme:
         {
-            CGFloat PropListAlpha = 1;
+            CGFloat PropListAlpha = 1.0-NVMetroSettings.sharedInstance.themeTransparency;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;

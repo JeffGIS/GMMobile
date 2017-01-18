@@ -8,8 +8,8 @@
 
 #import "NVMetroSettings.h"
 
-static int currentValues[CPFeaturesCount];
-static int currentTextValues[CPFeaturesCount];
+static int currentValues[CPFeaturesCount]={0};
+static int currentTextValues[CPFeaturesCount]={0};
 static int nParcelTypesWanted=-1;
 static int parcelsWanted[CPFeaturesCount];
 
@@ -637,7 +637,7 @@ static int parcelsWanted[CPFeaturesCount];
         case CPFTracts:
         case CPFVoterDistricts:
         case CPFLandUse:
-            rtn = [self valuesForBlocks];
+            rtn = [self textValuesForBlocks];
             break;
         case CPFeaturesCount:
             break;
