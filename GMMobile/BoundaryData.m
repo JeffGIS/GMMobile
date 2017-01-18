@@ -1564,7 +1564,8 @@ NextPass:
     }
     else if ([areaType isEqualToString:@"PARCEL"])
     {
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PID=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",NVMetroSettings.sharedInstance.currentTextOption,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        NSString * fields = NVMetroSettings.sharedInstance.currentTextOption.fields;
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
     {
@@ -1590,10 +1591,10 @@ NextPass:
         numLoops = sqlite3_column_int(statement,i++);
         int nBlobBytes = sqlite3_column_bytes(statement,i);
         if (nBlobBytes > 0)
-            polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+            polyPartLen = (int *)sqlite3_column_blob(statement,i);
         else
             polyPartLen = &numPoints;
-
+        i++;
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);

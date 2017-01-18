@@ -649,18 +649,19 @@ static int parcelsWanted[CPFeaturesCount];
 }
 - (NSArray *) textValuesForParcels
 {
+    int i=0;
     NSMutableArray * rtn = NSMutableArray.new;
     NVMetroTextOptions *to = NVMetroTextOptions.new;
-    to.desc = @"No Text";
+    to.desc = [NSString stringWithFormat:@"%s\x04%i","No Text",i++];
     [rtn addObject:to];
     to = NVMetroTextOptions.new;
-    to.desc = @"Auto Text";
+    to.desc = [NSString stringWithFormat:@"%s\x04%i","Auto Text",i++];
     to.numTextFields = -1;
     [rtn addObject:to];
     to = NVMetroTextOptions.new;
-    to.desc = @"Total EMV\nTaxpayer";
-    to.numTextFields = 2;
-    to.fields = @",TOTAL_EMV,OWNER_NAME,OWNER_MORE,TAX_NAME";
+    to.desc = [NSString stringWithFormat:@"%s\x04%i","Total EMV/Taxpayer",i++];
+    to.numTextFields = 4;
+    to.fields = @"EMV_TOTAL,OWNER_NAME,OWNER_MORE,TAX_NAME";
     to.format = TXTAdjustOwnerNames;
     [rtn addObject:to];
     return rtn;
@@ -677,5 +678,13 @@ static int parcelsWanted[CPFeaturesCount];
     [rtn addObject:to];
     return rtn;
 }
+
+- (void) currentTextSelection:(int)index
+{
+    NSArray * textOptions = [self textValuesForFeature:_currentFeatureValue];
+    if (index < textOptions.count)
+        _currentTextOption = textOptions[index];
+}
+
 @end
 

@@ -70,6 +70,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 @property NSString* fields;
 @property int format;
 @property int nDecimals;
+
 @end
 
 @interface NVMetroSettings : NSObject
