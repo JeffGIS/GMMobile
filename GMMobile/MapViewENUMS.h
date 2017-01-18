@@ -9,12 +9,19 @@ typedef NS_ENUM(NSInteger, PropertyTableViewSetting)
     PropertyTableViewSettingDefault,
     PropertyTableViewSettingOptions,
     PropertyTableViewSettingPropertyReport,
-    PropertyTableViewSettingZillow,
+    PropertyTableViewSettingPropertyHistory,
     PropertyTableViewSettingCountyRecord,
+    PropertyTableViewSettingZillow,
     PropertyTableViewSettingStreetView,
+    PropertyTableViewSettingStreetside,
     PropertyTableViewSettingCensusArea,
+    PropertyTableViewSettingParcelText,
+    PropertyTableViewSettingColorParcels,
+    PropertyTableViewSettingSetTargetParcel,
+    PropertyTableViewSettingFlyover,
     PropertyTableViewSettingPropList,
     PropertyTableViewSettingDestinations,
+    PropertyTableViewSettingRoute,
 };
 
 typedef NS_ENUM(NSInteger, CensusZoomSetting)
@@ -32,6 +39,7 @@ typedef NS_ENUM(NSInteger, ParcelTextSetting)
     ParcelTextSettingBuildingNum,
     ParcelTextSettingEMVLand,
     ParcelTextSettingEMVLandPerAcre,
+    ParcelTextSettingLastSale,
 };
 
 typedef NS_ENUM(NSInteger, ParcelColorSetting)
@@ -46,7 +54,7 @@ typedef NS_ENUM(NSInteger, ParcelColorSetting)
     ParcelColorSettingSpecialAssessment,
     ParcelColorSettingTaxExempt,
     ParcelColorSettingTaxForfeit,
-
+    ParcelColorSettingLastSale,
 };
 
 typedef NS_ENUM(NSInteger, SewerPipeSetting)
