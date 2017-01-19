@@ -5168,6 +5168,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [_locationManager stopUpdatingLocation];
     [_mapToolbar deselectMyLocationButton];
     _myLocationMarker.hidden = YES;
+    _locationCount = 0;
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -5178,12 +5179,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (_animateToLocation)
     {
-        [_mapView animateToLocation:_currentLocation];
+        if (_locationCount < 2)
+            [_mapView animateToLocation:_currentLocation];
+        
         CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
-        
-        _myLocationMarker.center =
-        CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
-        
+        _myLocationMarker.center = CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
         _myLocationMarker.hidden = NO;
     }
     
@@ -5191,7 +5191,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         [self stopTrackingUserLocation];
         [self beginLocationRouteTrace];
-        _locationCount = 0;
     }
 }
 
