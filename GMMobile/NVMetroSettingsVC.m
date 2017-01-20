@@ -399,6 +399,7 @@
             NVMetroSettings.sharedInstance.currentFeature = index;
             [_featureButton setTitle:paddedString([NVMetroSettings.sharedInstance currentFeatureText]) forState:UIControlStateNormal];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
+            [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentTextText]) forState:UIControlStateNormal];
             break;
             
         case 33://value
@@ -422,7 +423,7 @@
             
 
             [NVMetroSettings.sharedInstance currentTextSelection:(int)textIndex.integerValue];
-            [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentAdjustmentText]) forState:UIControlStateNormal];
+            [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentTextText]) forState:UIControlStateNormal];
         }
             break;
             

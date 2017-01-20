@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 - (NSArray *) adjustmentOptions;
 - (NSString *) currentFeatureText;
 - (NSString *) currentValueText;
-- (NSString *) currentValueText;
+- (NSString *) currentTextText;
 - (NSString *) currentValueField;
 - (NSString *) currentAdjustmentText;
 - (NSArray *) currentTextOptions;

@@ -1667,6 +1667,9 @@ NextPass:
                 count = 1;
                 for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
                 {
+                    if (iField)
+                        text = [text stringByAppendingString:@"\n"];
+                    
                     NSString *line = formatText (pTextValue[iField],NVMetroSettings.sharedInstance.currentTextOption.format,NVMetroSettings.sharedInstance.currentTextOption.nDecimals);
                     text = [text stringByAppendingString:line];
                     
@@ -1699,7 +1702,7 @@ NextPass:
 }
 NSString * formatText (LPSTR text,int option,int nDecimals)
 {
-    NSString * rtn = @"";
+    NSString * rtn = [NSString stringWithUTF8String:text];
     
     return rtn;
 }
