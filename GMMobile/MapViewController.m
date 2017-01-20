@@ -81,7 +81,7 @@
 @property AlleyStatusSetting alleyStatusSetting;
 @property (nonatomic) NVDataLoader *nvdl;
 @property (nonatomic) NVLegendView *legendView;
-@property (nonatomic) NSInteger locationCount;
+@property (nonatomic) NSInteger locationCount, headingCount;
 @property (nonatomic) GMSPolyline *polyline;
 @property (nonatomic) NSMutableSet *polylines;
 @property (nonatomic) UIScrollView *legendScrollView;
@@ -154,9 +154,7 @@
     _legendScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
     _legendScrollView.alpha = 0.0;
-    
     [self.view addSubview:_legendScrollView];
-    
     [_legendScrollView constrainLeadingToAnchor:self.view.trailingAnchor constant:-_mapViewLegendOffset];
     [_legendScrollView constrainTrailingToAnchor:self.view.trailingAnchor];
     [_legendScrollView constrainTopToAnchor:self.view.topAnchor constant:statusBarHeight];
@@ -171,7 +169,7 @@
     
     _firstTimeAppear = _firstTimeMap = YES;
     _digitizationMode = DigitizationModeCustom;
-    _locationCount = 0;
+    _locationCount = _headingCount = 0;
     _target = CLLocationCoordinate2DMake(44.97, -93.27);
     
     _mapView = GMSMapView.new;
@@ -181,10 +179,7 @@
     _mapView.settings.compassButton = NO;
     _mapView.settings.rotateGestures = YES;
     _mapView.settings.tiltGestures = NO;
-    
-    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target
-                                                     zoom:12.0];
-    
+    _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:12.0];
     [self.view addSubview:_mapView];
     
     [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
@@ -214,7 +209,6 @@
     _digitizationToolbar.layer.borderColor = UIColor.darkGrayColor.CGColor;
     _digitizationToolbar.layer.borderWidth = 1.0;
     _digitizationToolbar.alpha = 0.0;
-    
     [self.view addSubview:_digitizationToolbar];
     
     _cancelDigitizerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -257,7 +251,7 @@
     _markerArray = NSMutableArray.array;
     _insetPixArray = NSMutableArray.array;
     
-    _locationManager = [[CLLocationManager alloc] init];
+    _locationManager = CLLocationManager.new;
     _locationManager.delegate = self;
     
     if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
@@ -5168,6 +5162,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [_locationManager stopUpdatingLocation];
     [_mapToolbar deselectMyLocationButton];
     _myLocationMarker.hidden = YES;
+    _locationCount = 0;
 }
 
 - (void)locationManager:(CLLocationManager *)manager
@@ -5178,12 +5173,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (_animateToLocation)
     {
-        [_mapView animateToLocation:_currentLocation];
+        if (_locationCount < 2)
+        {
+            GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
+                                                                       zoom:_mapView.camera.zoom
+                                                                    bearing:_mapView.camera.bearing
+                                                               viewingAngle:_mapView.camera.viewingAngle];
+            
+            GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
+            [_mapView moveCamera:update];
+            
+            if (_mapToolbar.applyRotation && CLLocationManager.headingAvailable)
+                [_locationManager startUpdatingHeading];
+        }
+       
         CGPoint target = [_mapView.projection pointForCoordinate:_currentLocation];
-        
-        _myLocationMarker.center =
-        CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
-        
+        _myLocationMarker.center = CGPointMake(target.x, target.y + ([self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
         _myLocationMarker.hidden = NO;
     }
     
@@ -5191,7 +5196,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         [self stopTrackingUserLocation];
         [self beginLocationRouteTrace];
-        _locationCount = 0;
     }
 }
 
@@ -5302,7 +5306,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)locationManager:(CLLocationManager *)manager
        didUpdateHeading:(CLHeading *)newHeading
 {
-    [_mapView animateToBearing:newHeading.trueHeading];
+    GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_mapView.camera.target
+                                                               zoom:_mapView.camera.zoom
+                                                            bearing:newHeading.trueHeading
+                                                       viewingAngle:_mapView.camera.viewingAngle];
+    
+    GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
+    [_mapView moveCamera:update];
+    [_locationManager performSelector:@selector(stopUpdatingHeading) withObject:nil afterDelay:0.5];
 }
 
 - (void)mapToolbarDidSelectClearMarkers
