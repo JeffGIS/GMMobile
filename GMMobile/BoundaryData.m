@@ -1521,6 +1521,7 @@ NextPass:
 }
 
 - (int) displayText:(CGContextRef)context
+               from:(TextFromOption)from
        areaType:(NSString*)areaType
           textOptions:(TextOptions *)to
    pointInAreas:(PointInAreas*)pias
@@ -1535,6 +1536,7 @@ NextPass:
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt = {0};
+    NSString *keyval = @"";
     int numPoints = 0;
     int numLoops = 0;
     NSString *key = areaType;
@@ -1598,7 +1600,9 @@ NextPass:
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-        LPSTR pPID = (LPSTR)sqlite3_column_text(statement,i++);
+        LPSTR pkeyval = (LPSTR)sqlite3_column_text(statement,i++);
+        keyval = [NSString stringWithUTF8String:pkeyval];
+
         _acres = sqlite3_column_double(statement,i++);
         
         for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
@@ -1662,7 +1666,7 @@ NextPass:
                 NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
                 text = [NSString stringWithFormat:fmt,count];
             }
-            else
+            else if (from == TFONVMetroDisplay)
             {
                 count = 1;
                 for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
@@ -1674,6 +1678,11 @@ NextPass:
                     text = [text stringByAppendingString:line];
                     
                 }
+            }
+            else
+            {
+                text = keyval;
+                count = 1;
             }
             if (count >= 0)
             {
@@ -1746,9 +1755,11 @@ NSString * formatText (LPSTR text,int option,int nDecimals)
     return bounds;
 }
 
-- (int)pickBoundaryArea:(LLPOINT)point
+- (PickedItem *)pickBoundaryArea:(LLPOINT)point
+                            type:(NSString*)areaType
 {
     int nPicked = 0;
+    PickedItem *pi = nil;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
@@ -1759,7 +1770,6 @@ NSString * formatText (LPSTR text,int option,int nDecimals)
     NSString * keyval;
     NSString * pickedName;
     int numLoops;
-    NSString * areaType = CRAPI.sharedInstance.selectBoundaryFromMapType;
     NSString * key = areaType;
     NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     BOOL opened = [self open];
@@ -1826,13 +1836,27 @@ NSString * formatText (LPSTR text,int option,int nDecimals)
     [self close:opened];
     if (nPicked == 1)
     {
-        CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-        CRAPI.sharedInstance.currentOverallBoundaryName = pickedName;
-        CRAPI.sharedInstance.currentOverallBoundaryType = areaType;
-        CRAPI.sharedInstance.currentOverallBoundaryRefno = pickedRefno;
-        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+        pi = PickedItem.new;
+        pi.identifier = pickedName;
+        pi.symbolName = areaType;
+        pi.refno = pickedRefno;
     }
-    return nPicked;
+    return pi;
+}
+- (void) setCityAndCounty
+{
+    DPOINT pt;
+    LLPOINT llpt;
+    MNMXCORD bnds = CRAPI.sharedInstance.lastDisplayBounds;
+    pt = DBoundsMid(&bnds);
+    llpt.lat = pt.y;
+    llpt.lon = pt.x;
+    PickedItem *pi = [self pickBoundaryArea:llpt type:@"Counties"];
+    if (pi)
+        CRAPI.sharedInstance.currentCountyName = pi.identifier;
+    pi = [self pickBoundaryArea:llpt type:@"Cities And Townships"];
+    if (pi)
+        CRAPI.sharedInstance.currentCity = pi.identifier;
 }
 
 @end

@@ -347,6 +347,7 @@ NextPass:
             to.adjustCount = 1000;
         }
         [bd displayText:context
+                   from:TFOSelectBoundary
                areaType:_choroplethTarget
             textOptions:to
                 pointInAreas:pias

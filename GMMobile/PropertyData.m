@@ -2,6 +2,7 @@ NSString *fileName = @"MetroGIS_database.gcf";
 //  PropertyData.m
 //  GMMobile
 #import "PropertyData.h"
+#import "BoundaryData.h"
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
 #import "MapViewENUMS.h"
@@ -467,9 +468,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 }
 
 - (int)pickPID:(LLPOINT *)pt
+ useVisibility:(BOOL)useVis
  highlightList:(NSMutableArray*)hlist
 {
-    if (![ConfigurationControl.sharedInstance layer:HCLayerParcels
+    if (useVis && ![ConfigurationControl.sharedInstance layer:HCLayerParcels
                                       visibleAtZoom:_zoom
                                             andPass:PickPass])
         return 0;
@@ -2505,6 +2507,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
 }
 
 - (BOOL)getOwnersMatchingString:(NSString *)INstring
+                        limitTo:(LimitToOption)limitTo
 {
     if (!INstring)
         return FALSE;
@@ -2525,6 +2528,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     //int nowner;
     BOOL GetNext = TRUE;
     char Name[66];
+    NSString * cityName = @"";
     sqlite3_stmt *statement = NULL;
     
     NSString *string = INstring.uppercaseString;
@@ -2544,23 +2548,24 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         if (PartLen[ipart] >= Trigger)
         {
             char endWord[12] = {0};
+            char begWord[12] = {0};
             [self open];
             
+            strncpy (begWord, PartLoc[ipart], 8);
             strncpy (endWord, PartLoc[ipart], 8);
-            
-            for (int i= (int)strlen(PartLoc[ipart]); i < 11; i++)
+            for (int i= (int)strlen(begWord); i < 11; i++)
                 endWord[i] = 'Z';
             
             endWord[11] = 0;
             
             NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
-                               PartLoc[ipart],endWord];
+                               begWord,endWord];
             
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 59);
             
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
-                //LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
+                LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
                 int nOffsets = sqlite3_column_int(statement,1);
                 LPINT pOffsets = (LPINT)sqlite3_column_blob(statement, 2);
                 
@@ -2607,9 +2612,9 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             delim = ',';
         }
         
-        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
+        NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
-        
+        BoundaryData * bd = BoundaryData.new;
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 61);
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
@@ -2620,6 +2625,9 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             LPSTR house = (LPSTR)sqlite3_column_text(statement,3);
             LPSTR street = (LPSTR)sqlite3_column_text(statement,4);
             LPSTR city = (LPSTR)sqlite3_column_text(statement,5);
+            cityName = [NSString stringWithUTF8String:city];
+            double lat = sqlite3_column_double(statement,6);
+            double lon = sqlite3_column_double(statement,7);
             char testName[256];
             strcpy(testName,owner);
             int nPartsTest = GetNameParts(testName, PartLocTest, PartLenTest, MAXPARTS);
@@ -2665,19 +2673,29 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                 }
 
             }
+            if (ShowThisOwner)
+            {
+                LLPOINT llpt;
+                llpt.lat = lat;
+                llpt.lon = lon;
+                PickedItem *pi = [bd pickBoundaryArea:llpt type:@"Cities And Townships"];
+                if (pi)
+                    cityName = pi.identifier;
+            }
             if (ShowThisOwner == 1)
             {
-                NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %s",
-                                    owner, pin, house, street, city];
-                
-                [ownerArray addObject:output];
+                NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %@",
+                                    owner, pin, house, street, cityName];
+                if ([self checkLimits:limitTo PIN:pin City:cityName.UTF8String])
+                    [ownerArray addObject:output];
             }
             if (ShowThisOwner == 2)
             {
                 NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %s",
-                                   taxpayer, pin, house, street, city];
+                                   taxpayer, pin, house, street, cityName.UTF8String];
                 
-                [ownerArray addObject:output];
+                if ([self checkLimits:limitTo PIN:pin City:city])
+                    [ownerArray addObject:output];
             }
         }
         
@@ -2694,6 +2712,33 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     return TRUE;
 }
 
+- (BOOL) checkLimits:(LimitToOption)limitTo PIN:(LPSTR)pinC City:(LPSTR)cityC
+{
+    NSString *pin = [NSString stringWithUTF8String:pinC];
+    NSString *city = [NSString stringWithUTF8String:cityC];
+    if (limitTo == LimitToOptionNoLimit)
+        return YES;
+    NSString *county = textBefore(pin, @"-");
+    if (limitTo == LimitToOptionCurrentCounty)
+    {
+        if ([county isEqualToString:CRAPI.sharedInstance.currentCounty])
+            return YES;
+    }
+    if (limitTo == LimitToOptionCurrentCity)
+    {
+        NSString * curCity = [CRAPI.sharedInstance.currentCity uppercaseString];
+        if ([[city uppercaseString] isEqualToString:curCity])
+            return YES;
+    }
+    if (limitTo == LimitToOptionMapBounds)
+    {
+        MNMXCORD parcelBounds = [self getBoundsForPID:pin];
+        MNMXCORD displayBounds = CRAPI.sharedInstance.lastDisplayBounds;
+        if (BoundsInBounds(&parcelBounds, &displayBounds,1))
+            return YES;
+    }
+    return NO;
+}
 int GetNameParts(LPSTR Field, LPSTR *pLoc, LPINT pLen, int MaxParts)
 {
     int	nParts = 0;

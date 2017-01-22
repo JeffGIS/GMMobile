@@ -1405,9 +1405,17 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         BoundaryData *bd = [[BoundaryData alloc]init];
-        
-        if ([bd pickBoundaryArea:llpickPt] == 1)
-            [self extentZoom];
+        PickedItem *pi = [bd pickBoundaryArea:llpickPt type:CRAPI.sharedInstance.selectBoundaryFromMapType];
+        if (pi)
+        {
+            CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+            CRAPI.sharedInstance.currentOverallBoundaryName = pi.identifier;
+            CRAPI.sharedInstance.currentOverallBoundaryType = pi.symbolName;
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = pi.refno;
+            CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+
+        [self extentZoom];
+        }
     }
     
     else

@@ -21,7 +21,9 @@
 
 + (NSArray *)limitToOptions
 {
-    return @[@"No Limit", @"Map Bounds", @"Current City", @"Current County"];
+    BoundaryData *bd = [[BoundaryData alloc] init];
+    [bd setCityAndCounty];
+    return @[@"No Limit", @"Current Display Bounds", [NSString stringWithFormat:@"Current City (%@)",CRAPI.sharedInstance.currentCity], [NSString stringWithFormat: @"Current County (%@)",CRAPI.sharedInstance.currentCountyName]];
 }
 
 - (void)loadView
@@ -133,7 +135,7 @@
         PropertyData *propData = [[PropertyData alloc] init];
         propData.processingID = CRAPI.sharedInstance.keepProcessing;
         propData.delegate = self;
-        [propData getOwnersMatchingString:propOwnerSearchText];
+        [propData getOwnersMatchingString:propOwnerSearchText limitTo:_limitToOption];
         
     }
     
@@ -240,9 +242,10 @@
     _propOwnerTF.leftViewMode = UITextFieldViewModeAlways;
 }
 
-- (void)textFieldDidChange:(UITextField *)textField
+- (void)processText
 {
-    if ([textField.text isEqualToString:@""])
+    NSString * inputText = _propOwnerTF.text;
+    if ([inputText isEqualToString:@""])
     {
         _propOwnerList = nil;
         [_tableView reloadData];
@@ -254,9 +257,15 @@
         PropertyData *propData = [[PropertyData alloc] init];
         propData.processingID = CRAPI.sharedInstance.keepProcessing;
         propData.delegate = self;
-        [propData getOwnersMatchingString:textField.text];
+        [propData getOwnersMatchingString:inputText
+                                  limitTo:_limitToOption];
         [_tableView reloadData];
     }
+
+}
+- (void)textFieldDidChange:(UITextField *)textField
+{
+    [self processText];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -335,6 +344,7 @@
     _limitToOption = (LimitToOption)index;
     [UserDefaults.defaults saveNSInteger:index forKey:@"LimitToOption"];
     [self updateLimitButtonTitle];
+    [self processText];
 }
 
 - (void)multipleSwitchTapped:(UISwitch *)theSwitch

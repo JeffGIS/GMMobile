@@ -116,7 +116,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _latlonCornerPoints.nearRight.y = region.nearRight.latitude;
 
     _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
-    
+    CRAPI.sharedInstance.lastDisplayBounds = _latlonBounds;
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         
@@ -182,6 +182,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     
     self.displayID = CRAPI.sharedInstance.keepProcessing;
     
+    CGRect bnds = self.bounds;
     _viewBounds.xmn = (self.bounds.origin.x * scale);
     _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
     _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
@@ -265,6 +266,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                 viewBounds:&_viewBounds];
                                                
                                                [bd displayText:_context
+                                                          from:TFOSelectBoundary
                                                       areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
                                                      textOptions:nil
                                                   pointInAreas:nil
@@ -625,6 +627,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 {
     if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
         return FALSE;
+    if (CRAPI.sharedInstance.selectBoundaryFromMapType)
+        return FALSE;
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
     
@@ -718,6 +722,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         if (passID == DisplayPass)
                         {
                             [_bd displayText:_context
+                                        from:TFONVMetroDisplay
                                    areaType:CenType
                                 textOptions:nil
                                pointInAreas:nil

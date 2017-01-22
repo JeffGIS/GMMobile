@@ -5,6 +5,14 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "Themes.h"
 
+typedef NS_ENUM(NSInteger, TextFromOption)
+{
+    TFOSelectBoundary,
+    TFOCrime,
+    TFONVMetroDisplay,
+};
+
+
 @interface BoundaryAreaData : NSObject
 
 @property NSString *name;
@@ -91,6 +99,7 @@ boundsPointInAreas:(PointInAreas*)pias
      viewBounds:(MNMXCORD *)pvbounds;
 
 - (int) displayText:(CGContextRef)context
+               from:(TextFromOption)from
            areaType:(NSString*)areaType
           textOptions:(TextOptions *)textOptions
        pointInAreas:(PointInAreas*)pias
@@ -98,9 +107,11 @@ boundsPointInAreas:(PointInAreas*)pias
            LLBounds:(MNMXCORD *)platlonBounds
          viewBounds:(MNMXCORD *)pvbounds;
 - (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type;
-- (int)pickBoundaryArea:(LLPOINT)point;
+- (PickedItem *)pickBoundaryArea:(LLPOINT)point
+                            type:(NSString*)areaType;
 + (int)getBoundaryAreaRefnoForType:(NSString *)type
                            andName:(NSString *)name;
 
+- (void) setCityAndCounty;
 
 @end

@@ -3,14 +3,7 @@
 
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "PropertyData.h"
-
-typedef NS_ENUM(NSInteger, LimitToOption)
-{
-    LimitToOptionNoLimit,
-    LimitToOptionMapBounds,
-    LimitToOptionCurrentCity,
-    LimitToOptionCurrentCounty,
-};
+#import "BoundaryData.h"
 
 @class FindPropertyOwnerViewController;
 

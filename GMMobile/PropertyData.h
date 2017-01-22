@@ -13,6 +13,14 @@ typedef NS_ENUM(NSInteger, PropDataOption)
     PDSettingRank,
     PDSettingComputed,
 };
+typedef NS_ENUM(NSInteger, LimitToOption)
+{
+    LimitToOptionNoLimit,
+    LimitToOptionMapBounds,
+    LimitToOptionCurrentCity,
+    LimitToOptionCurrentCounty,
+};
+
 
 typedef struct {int nMatchingProperties;
                 int stability5yr,
@@ -122,6 +130,7 @@ typedef struct {int nMatchingProperties;
 - (MNMXCORD) getBoundsForPID:(NSString*)PID;
 
 - (int)pickPID:(LLPOINT *)pt
+ useVisibility:(BOOL)useVis
   highlightList:(NSMutableArray *)hlist;
 - (int)pickParcel:(LLPOINT *)pt
     highlightList:(NSMutableArray*)hlist;
@@ -160,7 +169,8 @@ typedef struct {int nMatchingProperties;
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid;
 
-- (BOOL)getOwnersMatchingString:(NSString *)string;
+- (BOOL)getOwnersMatchingString:(NSString *)INstring
+                        limitTo:(LimitToOption)limitTo;
 - (BOOL)getDistinctUseCodes:(NSString *)outFile;
 
 - (LPDPOINT)getParcelPolygonPointsForPID:(NSString *)PID
@@ -168,5 +178,6 @@ typedef struct {int nMatchingProperties;
                                 numLoops:(int *)numLoops
                              polyPartLen:(int **)polyPartLen;
 -(NSArray*)getLinkedParcels:(NSString*)pid;
+
 
 @end
