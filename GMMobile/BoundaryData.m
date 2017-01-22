@@ -751,10 +751,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CGContextClosePath(context);
     if (!CGContextIsPathEmpty(context))
     {
-        CGContextSetStrokeColorWithColor(context,color);
         CGContextSetFillColorWithColor(context,color);
         if (drawLines)
+        {
+            CGContextSetLineWidth(context, 1);
+            CGContextSetStrokeColorWithColor(context,UIColor.blackColor.CGColor);
             CGContextDrawPath(context, kCGPathEOFillStroke);
+        }
         else
             CGContextDrawPath(context, kCGPathEOFill);
         
@@ -833,6 +836,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int factor = 1;
     if (maxVal > 0 && maxVal <= 1.0)
         factor = 100;
+    else if (maxVal > 0 && maxVal <= 100.0)
+        factor = 10;
     INT64 * classCounts = calloc (maxClass*3,sizeof(INT64)+maxClass*sizeof(double));
     INT64  * classMin = classCounts + maxClass;
     INT64  * classMax = classMin + maxClass;
@@ -930,6 +935,16 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     free (classCounts);
     return rtn;
 }
+
+NSString * formatValueText (long long ival,double factor,int ndecimals)
+{
+    double ndfac = pow (10,ndecimals);
+    NSString * fmt = [NSString stringWithFormat:@"%%.%if",ndecimals];
+    double dvalue = ival / ndfac;
+    NSString *text = [NSString stringWithFormat:fmt,dvalue];
+    
+    return text;
+}
 -(void)displayCensusAreas:(CGContextRef)context
                      type:(NSString *)type
    displayCharacteristics:(DisplayCharacteristics*)dc
@@ -981,6 +996,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     static INT64 totRecords=-1;
     INT64 currentRec=0;
     int iPass = 0;
+    CGFloat fontSize = 48.0;
+    CGFloat minFontSize = 6.0;
     static int wantGenUseCode = 0;
     static char wantHomeStead = 0;
     
@@ -1046,7 +1063,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     double landArea = sqlite3_column_double(statement,1);
                     wantGenUseCode = sqlite3_column_int(statement,2);
                     LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,3);
-                    INT64 ID = (LPSTR)sqlite3_column_int64(statement,4);
+                    INT64 ID = sqlite3_column_int64(statement,4);
                     wantHomeStead = *homeStead;
 
                     landArea *= areaFactor;
@@ -1261,6 +1278,23 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                            points:llpoints
                         withColor:dc.fillColor.CGColor
                         drawLines:YES];
+                if (NVMetroSettings.sharedInstance.currentTextOption.numTextFields < 0)
+                {
+                    NSString * text = formatValueText (dc.iValue,factor,nDecimals);
+                    UIColor *textColor = UIColor.redColor;
+                    [NVTextDrawing drawText:text
+                                  inContext:context
+                              withinPolygon:llpoints
+                              withNumPoints:numPoints
+                                andNumLoops:numLoops
+                                    loopLen:polyPartLen
+                               withinBounds:pvbounds
+                                   fontSize:fontSize
+                                minFontSize:minFontSize
+                                  textColor:textColor
+                               processingID:_processingID];
+                }
+
             }
             else
                 ii=1;
@@ -1571,6 +1605,7 @@ NextPass:
     }
     else
     {
+        NSString * fields = NVMetroSettings.sharedInstance.currentTextOption.fields;
         NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
         NSString * field = [NVMetroSettings.sharedInstance currentValueField];
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,field,table,table,dataTable,table,table,
@@ -1697,7 +1732,7 @@ NextPass:
                                fontSize:fontSize
                             minFontSize:minFontSize
                               textColor:textColor
-                           processingID:0];
+                           processingID:_processingID];
             }
         }
         free (llpoints);

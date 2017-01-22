@@ -719,7 +719,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     viewBounds:&_viewBounds
                                         themes:themes
                                     pointInArea:_pia];
-                        if (passID == DisplayPass)
+                        if (passID == DisplayPass &&
+                            NVMetroSettings.sharedInstance.currentTextOption.numTextFields > 0)
                         {
                             [_bd displayText:_context
                                         from:TFONVMetroDisplay

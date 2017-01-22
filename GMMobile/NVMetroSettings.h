@@ -67,7 +67,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 @interface NVMetroTextOptions : NSObject
 @property NSString* desc;
 @property int numTextFields;
-@property NSString* fields;
+@property (nonatomic)NSString* fields;
 @property int format;
 @property int nDecimals;
 

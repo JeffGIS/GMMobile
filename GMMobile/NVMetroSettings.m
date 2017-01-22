@@ -19,6 +19,15 @@ static int parcelsWanted[CPFeaturesCount];
     NSString * rtn = textBefore(_desc,@"\x03");
     return rtn;
 }
+-(NSString *)fields
+{
+    if (_numTextFields < 0)
+    {
+        return @"";
+    }
+    else
+        return _fields;
+}
 @end
 
 @implementation NVMetroSettings
