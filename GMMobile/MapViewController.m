@@ -433,7 +433,6 @@
         _digitizerTargetView.alpha = 0.0;
     
     [self initTableView];
-    _mapView.mapType = kGMSTypeNormal;
     
     if ([ConfigurationControl.sharedInstance haveUserAerials])
         _mapView.mapType = kGMSTypeNormal;
