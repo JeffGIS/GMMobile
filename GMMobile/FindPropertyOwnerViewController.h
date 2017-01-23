@@ -23,5 +23,6 @@
 @property (weak, nonatomic) id <FindPropOwnerViewControllerDelegate> delegate;
 
 + (NSArray *)limitToOptions;
++ (NSArray *)actionOptions;
 
 @end

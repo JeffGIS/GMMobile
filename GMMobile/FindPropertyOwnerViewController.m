@@ -7,13 +7,14 @@
 @interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
-@property (nonatomic) NVConstrainedButton *returnButton, *limitButton;
+@property (nonatomic) NVConstrainedButton *returnButton, *limitButton, *actionButton;
 @property (nonatomic) NVConstrainedTextField *propOwnerTF;
 @property (nonatomic) NVConstrainedTableView *tableView;
 @property (nonatomic) NVConstrainedSwitch *multipleSwitch;
 @property (nonatomic) NVConstrainedLabel *multipleLabel, *countLabel;
 @property (nonatomic) CGFloat fontSize, cornerRadius;
 @property LimitToOption limitToOption;
+@property ActionOption actionOption;
 
 @end
 
@@ -23,7 +24,22 @@
 {
     BoundaryData *bd = [[BoundaryData alloc] init];
     [bd setCityAndCounty];
-    return @[@"No Limit", @"Current Display Bounds", [NSString stringWithFormat:@"Current City (%@)",CRAPI.sharedInstance.currentCity], [NSString stringWithFormat: @"Current County (%@)",CRAPI.sharedInstance.currentCountyName]];
+    
+    return @[@"No Limit", @"Current Display Bounds", [NSString stringWithFormat:@"Current City (%@)", CRAPI.sharedInstance.currentCity],
+             [NSString stringWithFormat: @"Current County (%@)", CRAPI.sharedInstance.currentCountyName]];
+}
+
++ (NSArray *)actionOptions
+{
+    NSMutableArray *options = NSMutableArray.array;
+    [options addObject:@"Add to Map"];
+    [options addObject:@"Clear and Add to Map"];
+    [options addObject:@"Add to New Property List"];
+    
+    for (NSString *props in PropertyList.getPropertyLists)
+        [options addObject:[NSString stringWithFormat:@"Add to %@", props]];
+    
+    return options.copy;
 }
 
 - (void)loadView
@@ -37,6 +53,13 @@
     [super viewDidLoad];
     
     _limitToOption = [UserDefaults.defaults integerForKey:@"LimitToOption"];
+    _actionOption = [UserDefaults.defaults integerForKey:@"ActionOption"];
+    
+    if (_actionOption >= FindPropertyOwnerViewController.actionOptions.count)
+    {
+        _actionOption = (FindPropertyOwnerViewController.actionOptions.count - 1);
+        [UserDefaults.defaults saveNSInteger:_actionOption forKey:@"ActionOption"];
+    }
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         _fontSize = 24.0, _cornerRadius = 4.0;
@@ -68,11 +91,10 @@
 
 - (void)setupTableView
 {
+    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 40.0);
     _tableView = NVConstrainedTableView.new;
     _tableView.delegate = self;
     _tableView.dataSource = self;
-    
-    CGFloat rowHeight = MAX((MAX(self.view.frame.size.width, self.view.bounds.size.height) / 16.0), 40.0);
     _tableView.rowHeight = rowHeight;
     _tableView.layer.borderWidth = (rowHeight / 20.0);
     _tableView.layer.cornerRadius = _cornerRadius;
@@ -107,12 +129,37 @@
            forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:_limitButton];
+    
+    _actionButton = NVConstrainedButton.new;
+    _actionButton.titleLabel.font = [UIFont boldSystemFontOfSize:_fontSize];
+    _actionButton.layer.cornerRadius = _cornerRadius;
+    [self updateActionButtonTitle];
+    
+    if (!_tableView.allowsMultipleSelection)
+    {
+        _actionButton.alpha = 0.4;
+        _actionButton.enabled = NO;
+    }
+    
+    [_actionButton addTarget:self
+                      action:@selector(actionButtonTapped:)
+            forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:_actionButton];
 }
 
 - (void)updateLimitButtonTitle
 {
-    [_limitButton setTitle:[NSString stringWithFormat:@"Limit To: %@", FindPropertyOwnerViewController.limitToOptions[_limitToOption]]
+    [_limitButton setTitle:[NSString stringWithFormat:@"Limit To: %@",
+                            FindPropertyOwnerViewController.limitToOptions[_limitToOption]]
                   forState:UIControlStateNormal];
+}
+
+- (void)updateActionButtonTitle
+{
+    [_actionButton setTitle:[NSString stringWithFormat:@"Action: %@",
+                             FindPropertyOwnerViewController.actionOptions[_actionOption]]
+                   forState:UIControlStateNormal];
 }
 
 - (void)setupTextField
@@ -183,14 +230,10 @@
                         action:@selector(multipleSwitchTapped:)
               forControlEvents:UIControlEventValueChanged];
     
-    [self.view addSubview:_multipleSwitch];
-    
     UIFont *font = [UIFont systemFontOfSize:24.0];
-    
     _multipleLabel = NVConstrainedLabel.new;
     _multipleLabel.text = @"Select Multiple";
     _multipleLabel.font = font;
-    [self.view addSubview:_multipleLabel];
     
     _countLabel = NVConstrainedLabel.new;
     _countLabel.font = font;
@@ -203,38 +246,52 @@
     CGFloat margin = 20.0, width = 160.0, height = 60.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 8.0, width = 100.0, height = 48.0;
+        margin = 8.0, width = 100.0, height = 46.0;
     
     [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [_returnButton constrainTopToAnchor:self.view.topAnchor constant:margin];
     [_returnButton constrainWidthToConstant:width];
     [_returnButton constrainHeightToConstant:height];
     
-    [_multipleLabel constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
-    [_multipleLabel constrainBottomToAnchor:_returnButton.bottomAnchor];
-    [_multipleLabel constrainWidthToConstant:(width * 0.8)];
-    
-    [_limitButton constrainTopToAnchor:self.view.topAnchor constant:margin];
-    [_limitButton constrainLeadingToAnchor:_multipleLabel.trailingAnchor constant:margin];
+    [_limitButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
+    [_limitButton constrainTopToAnchor:_returnButton.topAnchor];
     [_limitButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [_limitButton constrainBottomToAnchor:_returnButton.bottomAnchor];
     
-    [_multipleSwitch constrainCenterXToAnchor:_multipleLabel.centerXAnchor];
-    [_multipleSwitch constrainTopToAnchor:_returnButton.topAnchor];
-    [_multipleLabel constrainTopToAnchor:_multipleSwitch.bottomAnchor];
+    NVConstrainedView *container = NVConstrainedView.new;
+    container.layer.cornerRadius = _cornerRadius;
+    [self.view addSubview:container];
+    [container constrainLeadingToAnchor:_returnButton.leadingAnchor];
+    [container constrainTopToAnchor:_returnButton.bottomAnchor constant:(margin * 0.5)];
+    [container constrainTrailingToAnchor:_returnButton.trailingAnchor];
+    [container constrainHeightToConstant:height * 1.25];
     
-    [_propOwnerTF constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
-    [_propOwnerTF constrainTopToAnchor:_returnButton.bottomAnchor constant:margin];
-    [_propOwnerTF constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [container addSubview:_multipleLabel];
+    [_multipleLabel constrainBottomToAnchor:container.bottomAnchor constant:(-margin * 0.25)];
+    [_multipleLabel constrainLeadingToAnchor:container.leadingAnchor constant:(margin * 0.5)];
+    [_multipleLabel constrainTrailingToAnchor:container.trailingAnchor constant:(-margin * 0.5)];
+    [container addSubview:_multipleSwitch];
+    [_multipleSwitch constrainTopToAnchor:container.topAnchor constant:(margin * 0.5)];
+    [_multipleSwitch constrainCenterXToAnchor:_multipleLabel.centerXAnchor];
+    [_multipleLabel constrainTopToAnchor:_multipleSwitch.bottomAnchor constant:(margin * 0.25)];
+    
+    [_actionButton constrainLeadingToAnchor:_limitButton.leadingAnchor];
+    [_actionButton constrainTrailingToAnchor:_limitButton.trailingAnchor];
+    [_actionButton constrainTopToAnchor:container.topAnchor];
+    [_actionButton constrainBottomToAnchor:container.bottomAnchor];
+
+    [_propOwnerTF constrainLeadingToAnchor:_returnButton.leadingAnchor];
+    [_propOwnerTF constrainTopToAnchor:container.bottomAnchor constant:(margin * 0.5)];
+    [_propOwnerTF constrainTrailingToAnchor:_limitButton.trailingAnchor];
     [_propOwnerTF constrainHeightToConstant:height];
     
-    [_countLabel constrainLeadingToAnchor:self.view.leadingAnchor];
-    [_countLabel constrainTrailingToAnchor:self.view.trailingAnchor];
+    [_countLabel constrainLeadingToAnchor:_returnButton.leadingAnchor];
+    [_countLabel constrainTrailingToAnchor:_limitButton.trailingAnchor];
     [_countLabel constrainTopToAnchor:_propOwnerTF.bottomAnchor];
     
-    [_tableView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
+    [_tableView constrainLeadingToAnchor:_returnButton.leadingAnchor];
     [_tableView constrainTopToAnchor:_countLabel.bottomAnchor];
-    [_tableView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_tableView constrainTrailingToAnchor:_limitButton.trailingAnchor];
     [_tableView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
     
     UIView *leftMarginView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 10.0, height)];
@@ -244,7 +301,8 @@
 
 - (void)processText
 {
-    NSString * inputText = _propOwnerTF.text;
+    NSString *inputText = _propOwnerTF.text;
+    
     if ([inputText isEqualToString:@""])
     {
         _propOwnerList = nil;
@@ -257,12 +315,11 @@
         PropertyData *propData = [[PropertyData alloc] init];
         propData.processingID = CRAPI.sharedInstance.keepProcessing;
         propData.delegate = self;
-        [propData getOwnersMatchingString:inputText
-                                  limitTo:_limitToOption];
+        [propData getOwnersMatchingString:inputText limitTo:_limitToOption];
         [_tableView reloadData];
     }
-
 }
+
 - (void)textFieldDidChange:(UITextField *)textField
 {
     [self processText];
@@ -327,7 +384,17 @@
                                                                          title:@"Limit To Options"
                                                                      textArray:FindPropertyOwnerViewController.limitToOptions
                                                                  includeCancel:YES];
-#pragma unused(nvptv)
+    nvptv.identifier = @"LimitTo";
+}
+
+- (void)actionButtonTapped:(UIButton *)button
+{
+    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                      delegate:self
+                                                                         title:@"Action Options"
+                                                                     textArray:FindPropertyOwnerViewController.actionOptions
+                                                                 includeCancel:YES];
+    nvptv.identifier = @"Action";
 }
 
 - (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
@@ -339,12 +406,22 @@
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    [popoverTableView hide:YES];
+    if ([popoverTableView.identifier isEqualToString:@"LimitTo"])
+    {
+        _limitToOption = (LimitToOption)index;
+        [UserDefaults.defaults saveNSInteger:index forKey:@"LimitToOption"];
+        [self updateLimitButtonTitle];
+        [self processText];
+    }
     
-    _limitToOption = (LimitToOption)index;
-    [UserDefaults.defaults saveNSInteger:index forKey:@"LimitToOption"];
-    [self updateLimitButtonTitle];
-    [self processText];
+    else
+    {
+        _actionOption = (ActionOption)index;
+        [UserDefaults.defaults saveNSInteger:index forKey:@"ActionOption"];
+        [self updateActionButtonTitle];
+    }
+    
+    [popoverTableView hide:YES];
 }
 
 - (void)multipleSwitchTapped:(UISwitch *)theSwitch
@@ -354,8 +431,9 @@
     
     if (!theSwitch.on)
     {
-        [_returnButton setTitle:@"< Return"
-                       forState:UIControlStateNormal];
+        [_returnButton setTitle:@"< Return" forState:UIControlStateNormal];
+        _actionButton.alpha = 0.4;
+        _actionButton.enabled = NO;
         
         _countLabel.text = [NSString stringWithFormat:@"%lu properties in list.",
                             (unsigned long)_propOwnerList.count];
@@ -363,6 +441,9 @@
     
     else
     {
+        _actionButton.alpha = 1.0;
+        _actionButton.enabled = YES;
+        
         _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
                             (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
     }
@@ -452,8 +533,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [_returnButton setTitle:@"Go to Map"
                        forState:UIControlStateNormal];
         
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                            _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+        _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
+                            (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
     }
     
     else if (_delegate)
@@ -473,8 +554,8 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
                        forState:UIControlStateNormal];
     }
     
-    _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                        _propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+    _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
+                        (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
 }
 
 @end

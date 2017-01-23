@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, PropDataOption)
     PDSettingRank,
     PDSettingComputed,
 };
+
 typedef NS_ENUM(NSInteger, LimitToOption)
 {
     LimitToOptionNoLimit,
@@ -21,6 +22,12 @@ typedef NS_ENUM(NSInteger, LimitToOption)
     LimitToOptionCurrentCounty,
 };
 
+typedef NS_ENUM(NSInteger, ActionOption)
+{
+    ActionOptionAddToMap,
+    ActionOptionClearAndAddToMap,
+    ActionOptionAddToNewPropList,
+};
 
 typedef struct {int nMatchingProperties;
                 int stability5yr,

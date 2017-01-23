@@ -134,7 +134,7 @@ BOOL nameInList (NSString* name,NSArray* list)
         [UserDefaults.defaults saveString:lists[0]
                                    forKey:@"CurrentPropertyList"];
     else
-        [UserDefaults.defaults saveString:@""
+        [UserDefaults.defaults saveString:@"PropertyList1"
                                    forKey:@"CurrentPropertyList"];
     
     return TRUE;

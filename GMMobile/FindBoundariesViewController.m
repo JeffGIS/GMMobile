@@ -137,7 +137,6 @@
 
 - (void)setupView:(UIView *)view
 {
-    view.layer.borderWidth = 2.0;
     view.layer.cornerRadius = _cornerRadius;
     [self.view addSubview:view];
 }
