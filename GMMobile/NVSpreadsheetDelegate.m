@@ -71,11 +71,11 @@
 {
     PropertyList *proplist = PropertyList.new;
     NSArray *list = proplist.getPropertyNumbers;
-    
+    PropFieldType type = (PFT_PIN + row - 1);
+   
     if (column <= list.count && row < proplist.availablePropertyFields.count)
     {
         NSInteger propNum = [list[column - 1] integerValue];
-        PropFieldType type = (PFT_PIN + row - 1);
         
         if (type == PFT_TimeToDestinations)
         {
@@ -100,7 +100,14 @@
         return [proplist getFieldValue:propNum
                                   type:type];
     }
-    
+    else if (column == list.count+1 && row < proplist.availablePropertyFields.count)
+    {
+        return [proplist getFieldTotal:type];
+    }
+    else if (column == list.count+2 && row < proplist.availablePropertyFields.count)
+    {
+        return [proplist getFieldAverage:type];
+    }
     else
         return @"";
 }

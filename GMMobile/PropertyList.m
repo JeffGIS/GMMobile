@@ -7,6 +7,7 @@
 #import "Destinations.h"
 #import "ConfigurationControl.h"
 #import "CCodeLibrary/SQLiteLib.h"
+#import "CCodeLibrary/MathUtil.h"
 
 //#define CURRENT_VERSION 28
 
@@ -600,6 +601,38 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return bt;
 }
 
+- (ValueTypes) getFieldValueType:(PropFieldType)type
+{
+    ValueTypes rtn = VTInteger;
+    switch (type)
+    {
+        case PFT_LatLon:
+            rtn = VTLLPoint;
+            break;
+        case PFT_UserID:
+        case PFT_PIN:
+        case PFT_Address:
+        case PFT_Owner:
+        case PFT_TaxPayer:
+        case PFT_Links:
+            rtn = VTString;
+            break;
+        case PFT_ACRES:
+        case PFT_EMV_TOTAL:
+        case PFT_EMV_BUILDING:
+        case PFT_EMV_LAND:
+        case PFT_EMV_LAND_PER_ACRE:
+        case PFT_TOTAL_TAX:
+        case PFT_SPEC_ASSESSMENT:
+            rtn = VTDouble;
+            break;
+        default:
+            rtn = VTInteger;
+            break;
+    }
+     return rtn;
+}
+
 - (NSArray*) getPropertyNumbers
 {
     NSMutableArray * propNums = [[NSMutableArray alloc]init];
@@ -718,11 +751,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_SPEC_ASSESSMENT:
             case PFT_TOTAL_TAX:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
-                value = [NSString stringWithFormat:@"%.0f",dval];
+                value = [NSString stringWithFormat:@"$%.0f",dval];
+                value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
                 break;
             case PFT_ACRES:
-               dval = *(double*)sqlite3_column_blob(statement, 0);
+                dval = *(double*)sqlite3_column_blob(statement, 0);
                 value = [NSString stringWithFormat:@"%.2f",dval];
+                value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
@@ -734,6 +769,67 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     SQLOK(0,sqlite3_finalize(statement), _database);
     [self close:opened];
     
+    return value;
+}
+
+- (NSString *) getFieldTotal:(PropFieldType)fieldType
+{
+    NSString *value = @"";
+    if ([self getFieldValueType:fieldType] == VTDouble)
+    {
+        double totval = 0;
+        int nval = 0;
+        NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
+        
+        BOOL opened = [self open];
+        
+        sqlite3_stmt *statement = NULL;
+        
+        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            double dval = *(double*)sqlite3_column_blob(statement, 0);
+            totval += dval;
+            nval++;
+        }
+        SQLOK(0,sqlite3_finalize(statement), _database);
+        [self close:opened];
+        value = [NSString stringWithFormat:@"%.0f",totval];
+        value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
+    }
+    return value;
+}
+
+- (NSString *) getFieldAverage:(PropFieldType)fieldType
+{
+    NSString *value = @"";
+    if ([self getFieldValueType:fieldType] == VTDouble)
+    {
+        double totval = 0;
+        int nval = 0;
+        NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
+        
+        BOOL opened = [self open];
+        
+        sqlite3_stmt *statement = NULL;
+        
+        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            double dval = *(double*)sqlite3_column_blob(statement, 0);
+            totval += dval;
+            nval++;
+        }
+        SQLOK(0,sqlite3_finalize(statement), _database);
+        [self close:opened];
+        if (nval > 0)
+        {
+            value = [NSString stringWithFormat:@"%.0f",totval/nval];
+            value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
+        }
+    }
     return value;
 }
 

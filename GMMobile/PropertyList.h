@@ -5,6 +5,13 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "GetSlowValues.h"
 
+typedef NS_ENUM(NSInteger, ValueTypes)
+{
+    VTInteger,
+    VTDouble,
+    VTLLPoint,
+    VTString,
+};
 typedef NS_ENUM(NSInteger, PropFieldType)
 {
     PFT_LatLon,
@@ -120,5 +127,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 + (PropBaseType)getBaseTypeForField:(PropFieldType) field;
 + (void) deleteProperty:(NSInteger)propNum;
 NSString* propertyListFieldDescription (NSInteger fieldNumber);
+- (NSString *) getFieldAverage:(PropFieldType)fieldType;
+- (NSString *) getFieldTotal:(PropFieldType)fieldType;
 
 @end
