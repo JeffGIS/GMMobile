@@ -4,7 +4,7 @@
 #import "FindPropertyOwnerViewController.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
 
-@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate>
+@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate,UIGestureRecognizerDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
 @property (nonatomic) NVConstrainedButton *returnButton, *limitButton, *actionButton;
@@ -15,6 +15,7 @@
 @property (nonatomic) CGFloat fontSize, cornerRadius;
 @property LimitToOption limitToOption;
 @property ActionOption actionOption;
+@property int lastRowTapped;
 
 @end
 
@@ -54,6 +55,7 @@
     
     _limitToOption = [UserDefaults.defaults integerForKey:@"LimitToOption"];
     _actionOption = [UserDefaults.defaults integerForKey:@"ActionOption"];
+    _lastRowTapped = 0;
     
     if (_actionOption >= FindPropertyOwnerViewController.actionOptions.count)
     {
@@ -99,7 +101,9 @@
     _tableView.layer.borderWidth = (rowHeight / 20.0);
     _tableView.layer.cornerRadius = _cornerRadius;
     _tableView.allowsMultipleSelection = [UserDefaults.defaults boolForKey:@"SelectMultiple"];
-    
+    UILongPressGestureRecognizer *lp = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(tvLongPressed:)];
+    lp.delegate = self;
+    [_tableView addGestureRecognizer:lp];
     [self.view addSubview:_tableView];
 }
 
@@ -199,8 +203,8 @@
     
     if (_tableView.allowsMultipleSelection)
     {
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %lu selected.",
-                            (int)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                            (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
     }
     
     else
@@ -388,6 +392,10 @@
                 
             }
                 break;
+            case ActionOptionClearAndAddToMap:
+                break;
+            default:
+                break;
         }
     }
     
@@ -465,8 +473,8 @@
         _actionButton.alpha = 1.0;
         _actionButton.enabled = YES;
         
-        _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
-                            (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                            (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
     }
 }
 
@@ -540,6 +548,8 @@
     cell.detailTextLabel.font = [UIFont systemFontOfSize:(tableView.rowHeight / 3.0)];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+    cell.layer.borderColor = UIColor.blackColor.CGColor;
+    cell.layer.borderWidth = 1.0;
     
     return cell;
 }
@@ -548,14 +558,14 @@
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self dismissTextField];
+    _lastRowTapped = (int)indexPath.row;
     
     if (tableView.allowsMultipleSelection)
     {
-        [_returnButton setTitle:@"Take Action"
-                       forState:UIControlStateNormal];
+        [_returnButton setTitle:@"Take Action" forState:UIControlStateNormal];
         
-        _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
-                            (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                            (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
     }
     
     else if (_delegate)
@@ -569,14 +579,47 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!tableView.indexPathsForSelectedRows.count)
-    {
-        [_returnButton setTitle:@"< Return"
-                       forState:UIControlStateNormal];
-    }
+    _lastRowTapped = (int)indexPath.row;
     
-    _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
-                        (unsigned long)_propOwnerList.count, _tableView.indexPathsForSelectedRows.count];
+    if (!tableView.indexPathsForSelectedRows.count)
+        [_returnButton setTitle:@"< Return" forState:UIControlStateNormal];
+    
+    _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                        (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
+}
+
+- (void)tvLongPressed:(UILongPressGestureRecognizer *)gesture
+{
+    if (gesture.state == UIGestureRecognizerStateEnded)
+    {
+        CGPoint point = [gesture locationInView:gesture.view];
+        int row = (point.y / _tableView.rowHeight);
+        int start = MIN(row, _lastRowTapped);
+        int stop  = MAX(row, _lastRowTapped);
+        
+        for (int i = start; i <= stop; i++)
+        {
+            if (i == _lastRowTapped)
+                continue;
+            
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+            
+            if (cell.selected)
+                [_tableView deselectRowAtIndexPath:indexPath animated:NO];
+            
+            else
+                [_tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+        }
+        
+        _lastRowTapped = 0;
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
 }
 
 @end
