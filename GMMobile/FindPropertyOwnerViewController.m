@@ -596,6 +596,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
         int row = (point.y / _tableView.rowHeight);
         int start = MIN(row, _lastRowTapped);
         int stop  = MAX(row, _lastRowTapped);
+        NSArray<NSIndexPath *> *selectedRows = _tableView.indexPathsForSelectedRows;
         
         for (int i = start; i <= stop; i++)
         {
@@ -603,9 +604,8 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
                 continue;
             
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
-            UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
             
-            if (cell.selected)
+            if ([selectedRows containsObject:indexPath])
                 [_tableView deselectRowAtIndexPath:indexPath animated:NO];
             
             else
