@@ -50,8 +50,20 @@
                                   type:PFT_UserID];
     }
     
+    else if (column == (list.count + 1))
+        return @"Total";
+    
+    else if (column == (list.count + 2))
+        return @"Average";
+    
+    else if (column == (list.count + 3))
+        return @"Minimum";
+    
+    else if (column == (list.count + 4))
+        return @"Maximum";
+    
     else
-        return [NSString stringWithFormat:@"Property %lu", (unsigned long)column];
+        return @"";
 }
 
 - (NSString *)textForColumn:(NSUInteger)column
