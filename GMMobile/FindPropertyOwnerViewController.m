@@ -337,36 +337,57 @@
     
     if (_delegate && _tableView.allowsMultipleSelection && _tableView.indexPathsForSelectedRows.count)
     {
-        if (_tableView.indexPathsForSelectedRows.count == 1)
+        switch (_actionOption)
         {
-            NSIndexPath *indexPath = _tableView.indexPathsForSelectedRows[0];
-            
-            [_delegate findPropOwnerViewController:self
-                                didSelectPropOwner:textBeforeTab(_propOwnerList[indexPath.row])
-                                               PID:textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]))];
-        }
-        
-        else
-        {
-            NSMutableArray<PropertyRecord *> *prArray = NSMutableArray.array;
-            
-            for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
+            case ActionOptionAddToMap:
+                
+                if (_tableView.indexPathsForSelectedRows.count == 1)
+                {
+                    NSIndexPath *indexPath = _tableView.indexPathsForSelectedRows[0];
+                    
+                    [_delegate findPropOwnerViewController:self
+                                        didSelectPropOwner:textBeforeTab(_propOwnerList[indexPath.row])
+                                                       PID:textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]))];
+                }
+                
+                else
+                {
+                    NSMutableArray<PropertyRecord *> *prArray = NSMutableArray.array;
+                    
+                    for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
+                    {
+                        NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
+                        NSString *propOwner = textBeforeTab(_propOwnerList[indexPath.row]);
+                        PropertyData *propData = PropertyData.new;
+                        LLPOINT point = [propData getPointForPID:pin];
+                        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(point.lat, point.lon);
+                        
+                        PropertyRecord *propRec = [PropertyRecord propertyRecordWithPin:pin
+                                                                              propOwner:propOwner
+                                                                             coordinate:coord];
+                        
+                        [prArray addObject:propRec];
+                    }
+                    
+                    [_delegate findPropOwnerViewController:self
+                                    didSelectMultipleProps:prArray.copy];
+                }
+                
+                break;
+            case ActionOptionAddToNewPropList:
             {
-                NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
-                NSString *propOwner = textBeforeTab(_propOwnerList[indexPath.row]);
-                PropertyData *propData = PropertyData.new;
-                LLPOINT point = [propData getPointForPID:pin];
-                CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(point.lat, point.lon);
+                [PropertyList createNewPropertyList];
+                PropertyList *pl = PropertyList.new;
+                for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
+                {
+                    NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
+                    [pl addParcelToPropertyList:pin popover:nil];
+                }
+                [self dismissViewControllerAnimated:YES
+                                         completion:nil];
                 
-                PropertyRecord *propRec = [PropertyRecord propertyRecordWithPin:pin
-                                                                      propOwner:propOwner
-                                                                     coordinate:coord];
-                
-                [prArray addObject:propRec];
             }
-            
-            [_delegate findPropOwnerViewController:self
-                            didSelectMultipleProps:prArray.copy];
+                break;
         }
     }
     
@@ -530,7 +551,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (tableView.allowsMultipleSelection)
     {
-        [_returnButton setTitle:@"Go to Map"
+        [_returnButton setTitle:@"Take Action"
                        forState:UIControlStateNormal];
         
         _countLabel.text = [NSString stringWithFormat:@"%lu properties in list, %lu selected.",
