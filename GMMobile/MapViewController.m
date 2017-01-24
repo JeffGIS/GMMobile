@@ -1770,9 +1770,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
                                           city:nil
+                                     ownerName:nil
+                                  taxpayerName:nil
                                    censusBlock:nil
                                        useDesc:nil
-                                        totEMV:nil];
+                                        totEMV:nil
+                                       landEMV:nil
+                                       bldgEMV:nil
+                                        totTAX:nil
+                                       specAss:nil
+                                         acres:nil];
                 }
                 
                 [awd createNewWall:newWallID
@@ -4189,9 +4196,16 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
              houseNumAndUnit:&houseAndUnit
                   streetName:&streetName
                         city:&city
+                   ownerName:nil
+                taxpayerName:nil
                  censusBlock:&cenblock
                      useDesc:&usedesc
-                      totEMV:&totEMV])
+                      totEMV:&totEMV
+                     landEMV:nil
+                     bldgEMV:nil
+                      totTAX:nil
+                     specAss:nil
+                       acres:nil])
     {
         houseAndUnit = [houseAndUnit stringByReplacingOccurrencesOfString:@" " withString:@"-"];
         streetName = [streetName stringByReplacingOccurrencesOfString:@" " withString:@"-"];

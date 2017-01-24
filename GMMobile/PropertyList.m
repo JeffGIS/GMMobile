@@ -316,8 +316,35 @@ BOOL nameInList (NSString* name,NSArray* list)
         case PFT_Address:
             name = @"Address";
             break;
+        case PFT_Owner:
+            name = @"Owner";
+            break;
+        case PFT_TaxPayer:
+            name = @"Taxpayer";
+            break;
+        case PFT_ACRES:
+            name = @"Acres";
+            break;
         case PFT_Links:
             name = @"Links";
+            break;
+        case PFT_EMV_TOTAL:
+            name = @"Total EMV";
+            break;
+        case PFT_EMV_BUILDING:
+            name = @"Building EMV";
+            break;
+        case PFT_EMV_LAND:
+            name = @"Land EMV";
+            break;
+        case PFT_EMV_LAND_PER_ACRE:
+            name = @"EMV Land per Acre";
+            break;
+        case PFT_TOTAL_TAX:
+            name = @"Total Tax";
+            break;
+        case PFT_SPEC_ASSESSMENT:
+            name = @"Special Assessment";
             break;
         case PFT_RankEMV_block:
             name = @"EMV Rank (Block)";
@@ -650,7 +677,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (NSString *) getFieldValue:(NSInteger)propNum
                         type:(PropFieldType)fieldType
 {
-    NSString *value = nil;
+    NSString *value = @"";
     
     NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE PropNum = %li AND FieldType = %li",
                        (long)propNum, (long)fieldType];
@@ -665,6 +692,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     {
         LPSTR val;
         int ival;
+        double dval;
         
         switch (fieldType)
         {
@@ -677,8 +705,24 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_UserID:
             case PFT_PIN:
             case PFT_Address:
+            case PFT_Owner:
+            case PFT_TaxPayer:
                 val = (LPSTR)sqlite3_column_blob(statement, 0);
-                value = [NSString stringWithFormat:@"%s",val];
+                if (val)
+                    value = [NSString stringWithFormat:@"%s",val];
+                break;
+            case PFT_EMV_TOTAL:
+            case PFT_EMV_LAND_PER_ACRE:
+            case PFT_EMV_LAND:
+            case PFT_EMV_BUILDING:
+            case PFT_SPEC_ASSESSMENT:
+            case PFT_TOTAL_TAX:
+                dval = *(double*)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithFormat:@"%.0f",dval];
+                break;
+            case PFT_ACRES:
+               dval = *(double*)sqlite3_column_blob(statement, 0);
+                value = [NSString stringWithFormat:@"%.2f",dval];
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
@@ -735,6 +779,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 
 -(NSString *) stringToBlob:(NSString*)str
 {
+    if (!str)
+        str = @"";
     NSString * blob=@"";
     NSInteger sln = str.length;
     NSInteger lblb = 0;
@@ -924,15 +970,29 @@ LLPOINT LLPOINTFromString (NSString* string)
     NSString *city = @"";
     NSString *cenblock = @"";
     NSString *usedesc = @"";
-    CGFloat totEMV = 0;
+    NSString *owner = @"";
+    NSString *taxpayer = @"";
+    double totEMV = 0;
+    double landEMV = 0;
+    double bldgEMV = 0;
+    double totTax = 0;
+    double specAssmt = 0;
+    double acres = 0;
     
     [propData getAddressForPID:PID
                houseNumAndUnit:&houseAndUnit
                     streetName:&streetName
                           city:&city
+                     ownerName:&owner
+                  taxpayerName:&taxpayer
                    censusBlock:&cenblock
                        useDesc:&usedesc
-                        totEMV:&totEMV];
+                        totEMV:&totEMV
+                       landEMV:&landEMV
+                       bldgEMV:&bldgEMV
+                        totTAX:&totTax
+                       specAss:&specAssmt
+                         acres:&acres];
     
     char cenBlock[20];
     strcpy (cenBlock, cenblock.UTF8String);
@@ -955,7 +1015,8 @@ LLPOINT LLPOINTFromString (NSString* string)
     int dbid = [self next_id];
     int PropNum = [self nextPropNum];
     int propVersion = [propData propertyDatasetVersion];
-
+    NSString *dataBlob;
+    
     //add PID to Proplist
     NSString *PIDBlob = [self stringToBlob:PID];
     NSString *pointBlob = [self llpointsToBlob:&pidPoint
@@ -973,9 +1034,40 @@ LLPOINT LLPOINTFromString (NSString* string)
     NSString *addressBlob = [self stringToBlob:address];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,propVersion,addressBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
-
+    
+    dataBlob = [self doubleToBlob:totEMV];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_TOTAL,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self doubleToBlob:landEMV];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_LAND,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self doubleToBlob:bldgEMV];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_BUILDING,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self doubleToBlob:totTax];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_TOTAL_TAX,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self doubleToBlob:specAssmt];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_SPEC_ASSESSMENT,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self doubleToBlob:acres];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_ACRES,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    if (acres > 0)
+    {
+        double landPerAcre = landEMV/acres;
+        dataBlob = [self doubleToBlob:landPerAcre];
+        cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_LAND_PER_ACRE,propVersion,dataBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+    }
+    dataBlob = [self stringToBlob:owner];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Owner,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
+    dataBlob = [self stringToBlob:taxpayer];
+    cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_TaxPayer,propVersion,dataBlob];
+    [self executeCmd:(LPSTR)cmd.UTF8String];
     //add values from tables to Proplist
-    NSString *dataBlob = [self intToBlob:values_block.rankTotEMV];
+    dataBlob = [self intToBlob:values_block.rankTotEMV];
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_block,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     dataBlob = [self intToBlob:values_block.pctHomestead];
