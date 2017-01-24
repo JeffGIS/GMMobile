@@ -253,10 +253,10 @@
     [_returnButton constrainWidthToConstant:width];
     [_returnButton constrainHeightToConstant:height];
     
-    [_limitButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:margin];
-    [_limitButton constrainTopToAnchor:_returnButton.topAnchor];
-    [_limitButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
-    [_limitButton constrainBottomToAnchor:_returnButton.bottomAnchor];
+    [_actionButton constrainLeadingToAnchor:_returnButton.trailingAnchor constant:(margin * 0.5)];
+    [_actionButton constrainTopToAnchor:_returnButton.topAnchor];
+    [_actionButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
+    [_actionButton constrainBottomToAnchor:_returnButton.bottomAnchor];
     
     NVConstrainedView *container = NVConstrainedView.new;
     container.layer.cornerRadius = _cornerRadius;
@@ -275,10 +275,10 @@
     [_multipleSwitch constrainCenterXToAnchor:_multipleLabel.centerXAnchor];
     [_multipleLabel constrainTopToAnchor:_multipleSwitch.bottomAnchor constant:(margin * 0.25)];
     
-    [_actionButton constrainLeadingToAnchor:_limitButton.leadingAnchor];
-    [_actionButton constrainTrailingToAnchor:_limitButton.trailingAnchor];
-    [_actionButton constrainTopToAnchor:container.topAnchor];
-    [_actionButton constrainBottomToAnchor:container.bottomAnchor];
+    [_limitButton constrainLeadingToAnchor:_actionButton.leadingAnchor];
+    [_limitButton constrainTrailingToAnchor:_actionButton.trailingAnchor];
+    [_limitButton constrainTopToAnchor:container.topAnchor];
+    [_limitButton constrainBottomToAnchor:container.bottomAnchor];
 
     [_propOwnerTF constrainLeadingToAnchor:_returnButton.leadingAnchor];
     [_propOwnerTF constrainTopToAnchor:container.bottomAnchor constant:(margin * 0.5)];
