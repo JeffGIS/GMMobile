@@ -3,8 +3,9 @@
 
 #import "FindPropertyOwnerViewController.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
+#import "CCodeLibrary/GSSiPopoverView.h"
 
-@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate,UIGestureRecognizerDelegate>
+@interface FindPropertyOwnerViewController () <UITextFieldDelegate,UITableViewDataSource,UITableViewDelegate,NVPopoverTableViewDelegate,UIGestureRecognizerDelegate,GSSiPopoverViewDelegate>
 
 @property (nonatomic) NSMutableArray *propOwnerList;
 @property (nonatomic) NVConstrainedButton *returnButton, *limitButton, *actionButton;
@@ -16,6 +17,8 @@
 @property LimitToOption limitToOption;
 @property ActionOption actionOption;
 @property int lastRowTapped;
+@property (nonatomic) GSSiPopoverView *popover;
+@property BOOL cancelAddProperties;
 
 @end
 
@@ -55,6 +58,7 @@
     
     _limitToOption = [UserDefaults.defaults integerForKey:@"LimitToOption"];
     _actionOption = [UserDefaults.defaults integerForKey:@"ActionOption"];
+    _cancelAddProperties = NO;
     _lastRowTapped = 0;
     
     if (_actionOption >= FindPropertyOwnerViewController.actionOptions.count)
@@ -75,6 +79,9 @@
     [self setupTextField];
     [self setupSwitch];
     [self setupConstraints];
+    
+    _popover = [[GSSiPopoverView alloc] initWithView:self.view];
+    _popover.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning
@@ -381,15 +388,16 @@
             case ActionOptionAddToNewPropList:
             {
                 [PropertyList createNewPropertyList];
-                PropertyList *pl = PropertyList.new;
-                for (NSIndexPath *indexPath in _tableView.indexPathsForSelectedRows)
-                {
-                    NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
-                    [pl addParcelToPropertyList:pin popover:nil];
-                }
-                [self dismissViewControllerAnimated:YES
-                                         completion:nil];
+                NSString *propListName = PropertyList.getCurrentPropertyListName;
+                __weak typeof(self) weakSelf = self;
                 
+                [_popover showAfter:0.0
+                          withTitle:[NSString stringWithFormat:@"Adding Properties to %@", propListName]
+                          andButton:@"Cancel"];
+                
+                [self addPropertiesToList:^{
+                    [weakSelf.popover hide];
+                }];
             }
                 break;
             case ActionOptionClearAndAddToMap:
@@ -400,10 +408,35 @@
     }
     
     else
-    {
-        [self dismissViewControllerAnimated:YES
-                                 completion:nil];
-    }
+        [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)addPropertiesToList:(void (^)(void))completion
+{
+    dispatch_async(dispatch_queue_create("AddPropertiesToList",NULL), ^{
+        PropertyList *pl = PropertyList.new;
+        NSArray <NSIndexPath *> *indexPaths = _tableView.indexPathsForSelectedRows;
+        
+        for (NSIndexPath *indexPath in indexPaths)
+        {
+            if (!_cancelAddProperties)
+            {
+                NSString *pin = textBeforeTab(textAfterTab(_propOwnerList[indexPath.row]));
+                [pl addParcelToPropertyList:pin popover:nil];
+                
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [_popover updateProgress:([indexPaths indexOfObject:indexPath] + 1) / (CGFloat)indexPaths.count];
+                               });
+            }
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion();
+            }
+        });
+    });
 }
 
 - (void)limitButtonTapped:(UIButton *)button
@@ -620,6 +653,12 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     return YES;
+}
+
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    _cancelAddProperties = YES;
+    [popoverView hide];
 }
 
 @end
