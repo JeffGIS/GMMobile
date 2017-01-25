@@ -207,7 +207,7 @@ BOOL nameInList (NSString* name,NSArray* list)
     {
         _isOpen = YES;
         _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
-        //NSLog(@"PropertyList Database open");
+        NSLog(@"PropertyList Database open");
         
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                    error:nil].fileSize;
@@ -221,7 +221,7 @@ BOOL nameInList (NSString* name,NSArray* list)
     if (opened && _isOpen)
     {
         SQLOK(0,sqlite3_close(_database),_database);
-        //NSLog(@"PropertyList Database close");
+        NSLog(@"PropertyList Database close");
         _isOpen = NO;
     }
 }
@@ -1221,7 +1221,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
     [self close:opened];
-    
+    return rtn;
     dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
     
     dispatch_async(getSlowValueQue,
