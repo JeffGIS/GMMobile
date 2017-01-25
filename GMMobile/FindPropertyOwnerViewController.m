@@ -590,7 +590,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)tvLongPressed:(UILongPressGestureRecognizer *)gesture
 {
-    if (gesture.state == UIGestureRecognizerStateEnded)
+    if (gesture.state == UIGestureRecognizerStateBegan)
     {
         CGPoint point = [gesture locationInView:gesture.view];
         int row = (point.y / _tableView.rowHeight);
@@ -609,7 +609,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
                 [_tableView deselectRowAtIndexPath:indexPath animated:NO];
             
             else
-                [_tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+                [_tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
         
         _lastRowTapped = 0;
