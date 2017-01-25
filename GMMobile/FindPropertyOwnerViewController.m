@@ -209,16 +209,10 @@
     [_tableView reloadData];
     
     if (_tableView.allowsMultipleSelection)
-    {
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                            (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
-    }
+        [self updateCountLabelText];
     
     else
-    {
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list.",
-                            (int)_propOwnerList.count];
-    }
+        _countLabel.text = [NSString stringWithFormat:@"%i properties in list.", (int)_propOwnerList.count];
 }
 
 - (void)matchingOwners:(NSMutableArray *)ownerArray
@@ -397,6 +391,12 @@
                 
                 [self addPropertiesToList:^{
                     [weakSelf.popover hide];
+                    
+                    for (NSIndexPath *indexPaths in weakSelf.tableView.indexPathsForSelectedRows)
+                        [weakSelf.tableView deselectRowAtIndexPath:indexPaths animated:NO];
+                    
+                    [weakSelf.returnButton setTitle:@"< Return" forState:UIControlStateNormal];
+                    [weakSelf updateCountLabelText];
                 }];
             }
                 break;
@@ -508,9 +508,7 @@
     {
         _actionButton.alpha = 1.0;
         _actionButton.enabled = YES;
-        
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                            (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
+        [self updateCountLabelText];
     }
 }
 
@@ -599,9 +597,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (tableView.allowsMultipleSelection)
     {
         [_returnButton setTitle:@"Take Action" forState:UIControlStateNormal];
-        
-        _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                            (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
+        [self updateCountLabelText];
     }
     
     else if (_delegate)
@@ -620,8 +616,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     if (!tableView.indexPathsForSelectedRows.count)
         [_returnButton setTitle:@"< Return" forState:UIControlStateNormal];
     
-    _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
-                        (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
+    [self updateCountLabelText];
 }
 
 - (void)tvLongPressed:(UILongPressGestureRecognizer *)gesture
@@ -647,9 +642,16 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
             else
                 [_tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
-        
+
+        [self updateCountLabelText];
         _lastRowTapped = 0;
     }
+}
+
+- (void)updateCountLabelText
+{
+    _countLabel.text = [NSString stringWithFormat:@"%i properties in list, %i selected.",
+                        (int)_propOwnerList.count, (int)_tableView.indexPathsForSelectedRows.count];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
