@@ -106,6 +106,9 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 + (BOOL) setCurrentPropertyList:(NSString *)propList;
 + (void) createNewPropertyList;
 
+- (BOOL)open;
+- (void)close:(BOOL)opened;
+
 - (BOOL)addParcelToPropertyList:(NSString *)PID
                         popover:(GSSiPopoverView*)popover;
 

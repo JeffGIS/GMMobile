@@ -11,6 +11,7 @@
 
 //#define CURRENT_VERSION 28
 
+int dbIsOpen = 0;
 
 @interface PropertyList ()
 
@@ -18,7 +19,8 @@
 @property sqlite3 *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
-
+@property NSNumberFormatter *dollarFmt;
+@property NSNumberFormatter *acreFmt;
 @end
 
 @implementation PropertyList
@@ -89,10 +91,7 @@ BOOL nameInList (NSString* name,NSArray* list)
 
 + (NSString*) getCurrentPropertyListName
 {
-    NSString *name;
-    
-    PropertyList *pl = [[PropertyList alloc]init];
-    name = pl.fileName;
+    NSString *name = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
     return name;
 }
 
@@ -190,7 +189,24 @@ BOOL nameInList (NSString* name,NSArray* list)
         }
 
         [self createTables];
+        _dollarFmt = [[NSNumberFormatter alloc] init];
+        _dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
+        _dollarFmt.groupingSeparator = @"'";
+        _dollarFmt.groupingSize = 3;
+        _dollarFmt.alwaysShowsDecimalSeparator = NO;
+        _dollarFmt.usesGroupingSeparator = YES;
+        _dollarFmt.maximumFractionDigits = 0;
+        _acreFmt = [[NSNumberFormatter alloc] init];
+        _acreFmt.numberStyle = NSNumberFormatterNoStyle;
+        _acreFmt.roundingMode = NSNumberFormatterRoundHalfUp;
+        _acreFmt.groupingSeparator = @"'";
+        _acreFmt.groupingSize = 3;
+        _acreFmt.alwaysShowsDecimalSeparator = NO;
+        _acreFmt.usesGroupingSeparator = YES;
+        _acreFmt.maximumFractionDigits = 2;
+
     }
+    NSLog(@"Init property list %@", _fileName);
     
     return self;
 }
@@ -198,14 +214,20 @@ BOOL nameInList (NSString* name,NSArray* list)
 - (void)dealloc
 {
     [self close:YES];
-    //NSLog(@"PropertyList Database dealloc");
+    NSLog(@"PropertyList Database dealloc");
 }
 - (BOOL)open
 {
     BOOL rtn = NO;
     if (!_isOpen)
     {
-        _isOpen = YES;
+        if (dbIsOpen)
+            NSLog(@"PropertyList already open");
+        dbIsOpen++;
+        _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
+        _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
+
+//        _isOpen = !SQLOK(0,sqlite3_open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
         _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
         NSLog(@"PropertyList Database open");
         
@@ -220,9 +242,10 @@ BOOL nameInList (NSString* name,NSArray* list)
 {
     if (opened && _isOpen)
     {
-        SQLOK(0,sqlite3_close(_database),_database);
         NSLog(@"PropertyList Database close");
+        SQLOK(0,sqlite3_close(_database),_database);
         _isOpen = NO;
+        dbIsOpen--;
     }
 }
 
@@ -711,7 +734,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                         type:(PropFieldType)fieldType
 {
     NSString *value = @"";
-    
+    NSNumber *num;
     NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE PropNum = %li AND FieldType = %li",
                        (long)propNum, (long)fieldType];
     
@@ -751,13 +774,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_SPEC_ASSESSMENT:
             case PFT_TOTAL_TAX:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
-                value = [NSString stringWithFormat:@"$%.0f",dval];
-                value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
+                num = [[NSNumber alloc] initWithDouble:dval];
+                value = [_dollarFmt stringFromNumber:num];
                 break;
             case PFT_ACRES:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
-                value = [NSString stringWithFormat:@"%.2f",dval];
-                value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
+                num = [[NSNumber alloc] initWithDouble:dval];
+                value = [_acreFmt stringFromNumber:num];
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
@@ -778,6 +801,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     if ([self getFieldValueType:fieldType] == VTDouble)
     {
         double totval = 0;
+        NSNumber *num;
         int nval = 0;
         NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
         
@@ -795,8 +819,22 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         }
         SQLOK(0,sqlite3_finalize(statement), _database);
         [self close:opened];
-        value = [NSString stringWithFormat:@"%.0f",totval];
-        value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
+        switch (fieldType)
+        {
+            case PFT_EMV_TOTAL:
+            case PFT_EMV_LAND_PER_ACRE:
+            case PFT_EMV_LAND:
+            case PFT_EMV_BUILDING:
+            case PFT_SPEC_ASSESSMENT:
+            case PFT_TOTAL_TAX:
+                num = [[NSNumber alloc] initWithDouble:totval];
+                value = [_dollarFmt stringFromNumber:num];
+                break;
+            case PFT_ACRES:
+                num = [[NSNumber alloc] initWithDouble:totval];
+                value = [_acreFmt stringFromNumber:num];
+                break;
+        }
     }
     return value;
 }
@@ -808,6 +846,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     {
         double totval = 0;
         int nval = 0;
+        NSNumber *num;
         NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",(long)fieldType];
         
         BOOL opened = [self open];
@@ -826,8 +865,23 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self close:opened];
         if (nval > 0)
         {
-            value = [NSString stringWithFormat:@"%.0f",totval/nval];
-            value = [NSString stringWithUTF8String:AddCommas ((LPSTR)value.UTF8String)];
+            totval /= nval;
+            switch (fieldType)
+            {
+                case PFT_EMV_TOTAL:
+                case PFT_EMV_LAND_PER_ACRE:
+                case PFT_EMV_LAND:
+                case PFT_EMV_BUILDING:
+                case PFT_SPEC_ASSESSMENT:
+                case PFT_TOTAL_TAX:
+                    num = [[NSNumber alloc] initWithDouble:totval];
+                    value = [_dollarFmt stringFromNumber:num];
+                    break;
+                case PFT_ACRES:
+                    num = [[NSNumber alloc] initWithDouble:totval];
+                    value = [_acreFmt stringFromNumber:num];
+                    break;
+            }
         }
     }
     return value;

@@ -7,21 +7,44 @@
 #import "MapViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 
+@interface NVSpreadsheetDelegate ()
+
+@property PropertyList *propList;
+@end
+
 @implementation NVSpreadsheetDelegate
 
+- (BOOL) openPropertyList
+{
+    BOOL rtn = FALSE;
+    
+    _propList = PropertyList.new;
+    if (_propList)
+    {
+        [_propList open];
+        rtn = TRUE;
+    }
+    return rtn;
+}
+
+- (void) closePropertyList
+{
+    [_propList close:TRUE];
+    _propList = nil;
+}
 - (NSInteger)numRowsInSpreadsheet
 {
-    return (PropertyList.new.availablePropertyFields.count - 1);
+    return (_propList.availablePropertyFields.count - 1);
 }
 
 - (NSInteger)numColumnsInSpreadsheet
 {
-    return PropertyList.new.getPropertyNumbers.count;
+    return _propList.getPropertyNumbers.count;
 }
 
 - (NSString *)headerTextForRow:(NSUInteger)row
 {
-    PropertyList *proplist = PropertyList.new;
+    PropertyList *proplist = _propList;
     NSArray *list = proplist.availablePropertyFields;
     
     if (row < list.count)
@@ -39,7 +62,7 @@
 
 - (NSString *)headerTextForColumn:(NSUInteger)column
 {
-    PropertyList *proplist = PropertyList.new;
+    PropertyList *proplist = _propList;
     NSArray *list = proplist.getPropertyNumbers;
     
     if (column <= list.count)
@@ -69,7 +92,7 @@
 - (NSString *)textForColumn:(NSUInteger)column
                         row:(NSUInteger)row
 {
-    PropertyList *proplist = PropertyList.new;
+    PropertyList *proplist = _propList;
     NSArray *list = proplist.getPropertyNumbers;
     PropFieldType type = (PFT_PIN + row - 1);
    
@@ -115,6 +138,7 @@
 - (NSString *)titleTextForSpreadsheet
 {
     return PropertyList.getCurrentPropertyListName;
+
 }
 
 - (void)spreadsheetDidEditTitleText:(NSString *)titleText
@@ -126,28 +150,37 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
-    [PropertyList.new updatePropertyUserID:(index + 1)
+    [_propList updatePropertyUserID:(index + 1)
                                     userID:text];
 }
 
 - (NSArray *)spreadsheetDidGetLists
 {
-    return [PropertyList getPropertyLists];
+    [_propList close:YES];
+    NSArray * rtn = [PropertyList getPropertyLists];
+    [_propList open];
+    return rtn;
 }
 
 - (void)spreadsheetDidSetCurrentList:(NSString *)file
 {
+    [_propList close:YES];
     [PropertyList setCurrentPropertyList:file];
+    [_propList open];
 }
 
 - (void)spreadsheetDidDeleteCurrentList
 {
+    [_propList close:YES];
     [PropertyList deleteCurrentPropertyList];
+    [_propList open];
 }
 
 - (void)spreadsheetDidCreateList
 {
+    [_propList close:YES];
     [PropertyList createNewPropertyList];
+    [_propList open];
 }
 
 - (void)spreadsheetDidMapItForRow:(NSInteger)row
