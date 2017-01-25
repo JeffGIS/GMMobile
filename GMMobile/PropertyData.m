@@ -628,14 +628,27 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     [self close:opened];
     return ownerName;
 }
-
+- (NSString *) noNullString:(LPSTR)str
+{
+    NSString * rtn = @"";
+    if (str)
+        rtn = [NSString stringWithUTF8String:str];
+    return rtn;
+}
 - (BOOL)getAddressForPID:(NSString *)PID
          houseNumAndUnit:(NSString **)houseAndUnit
               streetName:(NSString **)streetName
                     city:(NSString **)city
+             ownerName:(NSString **)owner
+             taxpayerName:(NSString **)taxpayer
              censusBlock:(NSString **)cenblock
                  useDesc:(NSString **)usedesc
-                  totEMV:(CGFloat *)totEMV
+                  totEMV:(double *)totEMV
+                  landEMV:(double *)landEMV
+                 bldgEMV:(double *)bldgEMV
+                  totTAX:(double *)totTax
+                 specAss:(double *)specAss
+                  acres:(double *)acres
 {
     BOOL rtn = FALSE;
     *houseAndUnit = @"";
@@ -649,32 +662,60 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (totEMV)
         *totEMV = 0;
     BOOL opened = [self open];
-    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL] FROM PROPINFO Where PIN = '%@'",
+    NSString *query = [NSString stringWithFormat:@"SELECT [BLDG_NUM],[STREETNAME],[UNIT_INFO],[CITY],[CENBLOCK],[USE1_DESC],[EMV_TOTAL],[OWNER_NAME],[OWNER_MORE],[TAX_NAME],[EMV_LAND],[EMV_BLDG],[TOTAL_TAX],[SPEC_ASSES],[ACRES_POLY]  FROM PROPINFO Where PIN = '%@'",
                        PID];
-    
     sqlite3_stmt *statement = NULL;
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0),_database, 40);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        LPSTR bldgnum = (LPSTR)sqlite3_column_text(statement, 0);
-        LPSTR street = (LPSTR)sqlite3_column_text(statement, 1);
-        LPSTR unit = (LPSTR)sqlite3_column_text(statement, 2);
-        LPSTR cityc = (LPSTR)sqlite3_column_text(statement, 3);
-        LPSTR cenblockc = (LPSTR)sqlite3_column_text(statement, 4);
-        LPSTR usedescc = (LPSTR)sqlite3_column_text(statement, 5);
-        double emvtot = sqlite3_column_double(statement, 6);
+        int i=0;
+        LPSTR bldgnum = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR street = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR unit = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR cityc = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR cenblockc = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR usedescc = (LPSTR)sqlite3_column_text(statement, i++);
+        double emvtot = sqlite3_column_double(statement, i++);
+        LPSTR ownerName = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR ownerMore = (LPSTR)sqlite3_column_text(statement, i++);
+        LPSTR taxpayr = (LPSTR)sqlite3_column_text(statement, i++);
+        double emvLand = sqlite3_column_double(statement, i++);
+        double emvBldg = sqlite3_column_double(statement, i++);
+        double totTx = sqlite3_column_double(statement, i++);
+        double specAssmt = sqlite3_column_double(statement, i++);
+        double acresp = sqlite3_column_double(statement, i++);
         *houseAndUnit = [NSString stringWithFormat:@"%s%s",bldgnum,unit];
         *streetName = [NSString stringWithUTF8String:street];
         if (city)
-            *city = [NSString stringWithUTF8String:cityc];
+            *city = [self noNullString:cityc];
         if (cenblock)
-            *cenblock = [NSString stringWithUTF8String:cenblockc];
+            *cenblock = [self noNullString:cenblockc];
         if (usedesc)
-            *usedesc = [NSString stringWithUTF8String:usedescc];
+            *usedesc = [self noNullString:usedescc];
+        if (owner)
+        {
+            *owner = [self noNullString:ownerName];
+            if (strlen (ownerMore)>0)
+                *owner = [*owner stringByAppendingFormat:@"\\n%s",ownerMore];
+        }
+        if (taxpayer)
+            *taxpayer = [self noNullString:taxpayr];
+        if (usedesc)
+            *usedesc = [self noNullString:usedescc];
         if (totEMV)
             *totEMV = emvtot;
+        if (landEMV)
+            *landEMV = emvLand;
+        if (bldgEMV)
+            *bldgEMV = emvBldg;
+        if (totTax)
+            *totTax = totTx;
+        if (specAss)
+            *specAss = specAssmt;
+        if (acres)
+            *acres = acresp;
         rtn = TRUE;
     }
     

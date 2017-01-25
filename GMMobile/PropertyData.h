@@ -147,9 +147,16 @@ typedef struct {int nMatchingProperties;
          houseNumAndUnit:(NSString **)houseAndUnit
               streetName:(NSString **)streetName
                     city:(NSString **)city
+               ownerName:(NSString **)owner
+            taxpayerName:(NSString **)taxpayer
              censusBlock:(NSString **)cenblock
                  useDesc:(NSString **)usedesc
-                  totEMV:(CGFloat *)totEMV;
+                  totEMV:(double *)totEMV
+                 landEMV:(double *)landEMV
+                 bldgEMV:(double *)bldgEMV
+                  totTAX:(double *)totTAX
+                 specAss:(double *)specAss
+                   acres:(double *)acres;
 
 - (void)computeValuesFromTables:(DATA_FROM_TABLES *)values
                    inCensusArea:(LPSTR)cenBlockIN
