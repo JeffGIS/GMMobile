@@ -108,6 +108,8 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;
+- (void)startTransaction;
+- (void)commitTransaction;
 
 - (BOOL)addParcelToPropertyList:(NSString *)PID
                         popover:(GSSiPopoverView*)popover;

@@ -416,7 +416,8 @@
     dispatch_async(dispatch_queue_create("AddPropertiesToList",NULL), ^{
         PropertyList *pl = PropertyList.new;
         NSArray <NSIndexPath *> *indexPaths = _tableView.indexPathsForSelectedRows;
-        
+        BOOL opened = [pl open];
+        [pl startTransaction];
         for (NSIndexPath *indexPath in indexPaths)
         {
             if (!_cancelAddProperties)
@@ -430,7 +431,9 @@
                                });
             }
         }
-        
+        if (!_cancelAddProperties)
+            [pl commitTransaction];
+        [pl close:opened];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (completion) {
                 completion();
