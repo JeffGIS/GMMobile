@@ -188,7 +188,7 @@ BOOL nameInList (NSString* name,NSArray* list)
             
             CRAPI.sharedInstance.resetPropList = NO;
         }
-
+        
         [self createTables];
     }
     
@@ -203,16 +203,15 @@ BOOL nameInList (NSString* name,NSArray* list)
 - (BOOL)open
 {
     BOOL rtn = NO;
+    
     if (!_isOpen)
     {
-        _isOpen = YES;
         _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
         NSLog(@"PropertyList Database open");
-        
-        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
-                                                                   error:nil].fileSize;
+        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
         rtn = YES;
     }
+    
     return rtn;
 }
 
@@ -226,13 +225,6 @@ BOOL nameInList (NSString* name,NSArray* list)
     }
 }
 
-- (void)clear
-{
-    //[self close];
-    
-    //BOOL st = [NSFileManager.defaultManager removeItemAtPath:_path
-    //error:nil];
-}
 - (BOOL) createTables
 {
     BOOL opened = [self open];
@@ -1222,7 +1214,8 @@ LLPOINT LLPOINTFromString (NSString* string)
     rtn = YES;
     [self close:opened];
     return rtn;
-    dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
+    
+    /*dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
     
     dispatch_async(getSlowValueQue,
                    ^{
@@ -1235,11 +1228,11 @@ LLPOINT LLPOINTFromString (NSString* string)
                                       totEMV:totEMV
                                      useDesc:(LPSTR)usedesc.UTF8String];
                    });
-   
     
-    return rtn;
+    return rtn;*/
 }
 
+/*
 - (void)getSlowValuesDidComplete:(int)propNum
                           values:(SlowValues *)vals
 {
@@ -1250,6 +1243,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
+*/
 
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
