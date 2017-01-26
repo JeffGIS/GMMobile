@@ -1271,13 +1271,11 @@ LLPOINT LLPOINTFromString (NSString* string)
     cmd = [NSString stringWithFormat:@"INSERT INTO PropertyList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,propVersion,dataBlob];
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
-    [self close:opened];
-    return rtn;
     
     /*dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
     
     dispatch_async(getSlowValueQue,
-                   ^{
+                   ^{*/
                        GetSlowValues *sv = [[GetSlowValues alloc]init];
                        sv.delegate = self;
                        [sv computeSlowValues:PropNum
@@ -1286,9 +1284,10 @@ LLPOINT LLPOINTFromString (NSString* string)
                                 aroundLatLon:pidPoint
                                       totEMV:totEMV
                                      useDesc:(LPSTR)usedesc.UTF8String];
-                   });
+                 //  });
     
-    return rtn;*/
+    [self close:opened];
+    return rtn;
 }
 
 
