@@ -1410,7 +1410,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
             CRAPI.sharedInstance.currentOverallBoundaryName = pi.identifier;
             CRAPI.sharedInstance.currentOverallBoundaryType = pi.symbolName;
-            CRAPI.sharedInstance.currentOverallBoundaryRefno = pi.refno;
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)pi.refno;
             CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
 
         [self extentZoom];
