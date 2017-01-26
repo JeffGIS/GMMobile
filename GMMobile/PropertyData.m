@@ -2745,9 +2745,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     free (Hits);
     [self close:25];
     if ([self continue] && _delegate)
-    {
-        [_delegate matchingOwners:ownerArray];
-    }
+        [_delegate matchingOwners:[ownerArray.copy sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
     }
                    });
     return TRUE;

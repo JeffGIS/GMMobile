@@ -892,7 +892,7 @@
         tlc.symbol = cls.symbol;
         tlc.symbolColor = cls.color;
         tlc.symbolWidth = cls.symbolWidth;
-        tlc.count = cls.numItems;
+        tlc.count = (int)cls.numItems;
         tlc.status = cls.status;
         [thm.legend.cells addObject:tlc];
     }
@@ -1343,7 +1343,7 @@ DisplayExit:
         {
             ThemeLegendCell * tlc = _legend.cells[i++];
             tlc.symbolWidth = cls.symbolWidth;
-            tlc.count = cls.numItems;
+            tlc.count = (int)cls.numItems;
             tlc.status = cls.status;
         }
     }

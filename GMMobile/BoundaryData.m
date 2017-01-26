@@ -65,8 +65,8 @@
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
 
         }
-        _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path
-                                                                   error:nil].fileSize;
+        _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
+                                                                              error:nil].fileSize;
         rtn = TRUE;
     }
     return rtn;
@@ -1301,8 +1301,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             free (llpoints);
         }
     SkipRecord:
-        [CRAPI.sharedInstance updateProgress:totRecords
-                                     current:++currentRec
+        [CRAPI.sharedInstance updateProgress:(NSInteger)totRecords
+                                     current:(NSInteger)++currentRec
                                        range:iPass
                                    numRanges:2];
         
@@ -1328,12 +1328,13 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
     else
-        [CRAPI.sharedInstance updateProgress:totRecords
-                                 current:totRecords
-                                   range:2
+    {
+        [CRAPI.sharedInstance updateProgress:(int)totRecords
+                                     current:(int)totRecords
+                                       range:2
                                    numRanges:2];
+    }
     
-
     [self close:opened];
 }
 

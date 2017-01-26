@@ -215,7 +215,7 @@
         _countLabel.text = [NSString stringWithFormat:@"%i properties in list.", (int)_propOwnerList.count];
 }
 
-- (void)matchingOwners:(NSMutableArray *)ownerArray
+- (void)matchingOwners:(NSArray *)ownerArray
 {
     _propOwnerList = ownerArray.copy;
     

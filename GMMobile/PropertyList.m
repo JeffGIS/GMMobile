@@ -827,6 +827,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                 num = [[NSNumber alloc] initWithDouble:totval];
                 value = [_acreFmt stringFromNumber:num];
                 break;
+            default:
+                break;
         }
     }
     return value;
@@ -873,6 +875,8 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                 case PFT_ACRES:
                     num = [[NSNumber alloc] initWithDouble:totval];
                     value = [_acreFmt stringFromNumber:num];
+                    break;
+                default:
                     break;
             }
         }
@@ -1287,7 +1291,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     return rtn;*/
 }
 
-/*
+
 - (void)getSlowValuesDidComplete:(int)propNum
                           values:(SlowValues *)vals
 {
@@ -1298,7 +1302,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
-*/
+
 
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {

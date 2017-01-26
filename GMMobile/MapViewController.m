@@ -4188,7 +4188,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)showZillow
 {
     NSString *houseAndUnit, *streetName, *city, *cenblock, *usedesc;
-    CGFloat totEMV;
+    double totEMV;
     
     PropertyData *pd = PropertyData.new;
     
