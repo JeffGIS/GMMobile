@@ -78,7 +78,8 @@
             else
             {
                 thm = [Theme createTheme:MetroPropTheme];
-                [_themeList addObject:thm];
+                if (thm)
+                    [_themeList addObject:thm];
             }
             break;
         default:
