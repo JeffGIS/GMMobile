@@ -45,7 +45,7 @@ typedef struct {int nMatchingProperties;
 
 @protocol PropertyDataDelegate <NSObject>
 
-- (void)matchingOwners:(NSMutableArray *)ownerArray;
+- (void)matchingOwners:(NSArray *)ownerArray;
 
 @end
 

@@ -25,6 +25,7 @@
 @property (nonatomic, copy) NSString *snippet;
 @property int symbol;
 @property (nonatomic) NVPhotoView *photoView;
+@property (nonatomic) GMSMapView *mapView;
 
 + (CGFloat)markerButtonSize;
 

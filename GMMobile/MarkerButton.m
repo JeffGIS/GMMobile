@@ -17,6 +17,7 @@
     marker.frame = CGRectMake(0.0, 0.0, size, size);
     marker.position = position;
     marker.delegate = delegate;
+    marker.mapView = map;
         
     CGPoint target = [map.projection pointForCoordinate:position];
     
