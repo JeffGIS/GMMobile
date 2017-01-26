@@ -129,4 +129,14 @@
         [_delegate markerInfoWindowWasSwiped];
 }
 
+- (BOOL)pointInside:(CGPoint)point
+          withEvent:(UIEvent *)event
+{
+    CGPoint pointInSuperview = [self.superview convertPoint:point fromView:self];
+    CGRect frame1 = [self.superview convertRect:_optionsButton.frame fromView:self];
+    CGRect frame2 = [self.superview convertRect:_propReportButton.frame fromView:self];
+    BOOL rtn = CGRectContainsPoint(frame1, pointInSuperview) || CGRectContainsPoint(frame2, pointInSuperview);
+    return rtn;
+}
+
 @end
