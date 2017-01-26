@@ -2725,15 +2725,17 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             }
             if (ShowThisOwner == 1)
             {
-                NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %@",
-                                    owner, pin, house, street, cityName];
+                NSString *name = [[NSString stringWithUTF8String:owner] stringByReplacingOccurrencesOfString:@"," withString:@""];
+                NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %@",
+                                    name, pin, house, street, cityName];
                 if ([self checkLimits:limitTo PIN:pin City:cityName.UTF8String])
                     [ownerArray addObject:output];
             }
             if (ShowThisOwner == 2)
             {
-                NSString *output = [NSString stringWithFormat:@"%s\t%s\t%s %s, %s",
-                                   taxpayer, pin, house, street, cityName.UTF8String];
+                NSString *name = [[NSString stringWithUTF8String:taxpayer] stringByReplacingOccurrencesOfString:@"," withString:@""];
+                NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %s",
+                                   name, pin, house, street, cityName.UTF8String];
                 
                 if ([self checkLimits:limitTo PIN:pin City:city])
                     [ownerArray addObject:output];

@@ -1622,6 +1622,7 @@ NextPass:
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         int *polyPartLen;
+        NSNumber *textFormat[MAX_NVM_TEXT_FIELDS];
         int i=0;
         BasePt.x = sqlite3_column_double(statement,i++);
         BasePt.y = sqlite3_column_double(statement,i++);
@@ -1642,11 +1643,18 @@ NextPass:
         keyval = [NSString stringWithUTF8String:pkeyval];
 
         _acres = sqlite3_column_double(statement,i++);
-        
+        int nTextFields = 0;
         for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
         {
-            pTextValue[iField] = (LPSTR)sqlite3_column_text(statement,i++);
-            
+            pTextValue[nTextFields] = (LPSTR)sqlite3_column_text(statement,i++);
+            textFormat[nTextFields] = NVMetroSettings.sharedInstance.currentTextOption.formats[iField];
+            if (pTextValue[nTextFields] && *pTextValue[nTextFields])
+            {
+                if (nTextFields && !strcmp (pTextValue[nTextFields],pTextValue[nTextFields-1]))
+                    ;
+                else
+                    nTextFields++;
+            }
         }
         int numNewPoints = 0;
         int iloop = 0;
@@ -1707,14 +1715,14 @@ NextPass:
             else if (from == TFONVMetroDisplay)
             {
                 count = 1;
-                for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
+                for (int iField=0;iField<nTextFields;iField++)
                 {
-                    if (strlen (pTextValue[iField]) > 0)
+                    if (pTextValue[iField] && strlen (pTextValue[iField]) > 0)
                     {
                         if (iField)
                             text = [text stringByAppendingString:@"\n"];
                         
-                        NSString *line = formatText (pTextValue[iField],NVMetroSettings.sharedInstance.currentTextOption.formats[iField],_acres);
+                        NSString *line = formatText (pTextValue[iField],textFormat[iField],_acres);
                         text = [text stringByAppendingString:line];
                     }
                 }
