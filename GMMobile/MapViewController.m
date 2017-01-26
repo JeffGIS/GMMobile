@@ -2911,9 +2911,6 @@ haveVV:
                            
                            [self updateLegendPositions];
                            
-                           if (!_tableView.hidden)
-                               [self.view bringSubviewToFront:_tableView];
-                           
                            for (GSSiDatePicker *datePicker in self.view.subviews)
                            {
                                if ([datePicker isKindOfClass:GSSiDatePicker.class])
@@ -2978,6 +2975,9 @@ haveVV:
                                }
                            }
                        }
+                       
+                       if (!_tableView.hidden)
+                           [self.view bringSubviewToFront:_tableView];
                        
                        for (NVAlertView *alert in self.view.subviews)
                        {
