@@ -2728,7 +2728,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                 NSString *name = [[NSString stringWithUTF8String:owner] stringByReplacingOccurrencesOfString:@"," withString:@""];
                 NSString *output = [NSString stringWithFormat:@"%@\t%s\t%s %s, %@",
                                     name, pin, house, street, cityName];
-                if ([self checkLimits:limitTo PIN:pin City:cityName.UTF8String])
+                if ([self checkLimits:limitTo PIN:pin City:(LPSTR)cityName.UTF8String])
                     [ownerArray addObject:output];
             }
             if (ShowThisOwner == 2)
