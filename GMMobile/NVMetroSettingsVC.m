@@ -59,7 +59,7 @@
     topLabel.textAlignment = NSTextAlignmentCenter;
     
     UILabel *bottomLabel = UILabel.new;
-    bottomLabel.text = @"Spreadsheet Display Parameters";
+    bottomLabel.text = @"Propertylist Display Parameters";
     [self setupLabel:bottomLabel fontSize:bigFont];
     bottomLabel.textAlignment = NSTextAlignmentCenter;
     
