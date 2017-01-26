@@ -58,6 +58,9 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 {
     TXTAdjustNone,
     TXTAdjustOwnerNames,
+    TXTAdjustDollars,
+    TXTAdjustDollarsPerAcre,
+    TXTAdjustAcres,
     TXTAdjustCount
 };
 
@@ -68,8 +71,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 @property NSString* desc;
 @property int numTextFields;
 @property (nonatomic)NSString* fields;
-@property int format;
-@property int nDecimals;
+@property NSArray *formats;
 
 @end
 

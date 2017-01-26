@@ -1708,12 +1708,14 @@ NextPass:
                 count = 1;
                 for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
                 {
-                    if (iField)
-                        text = [text stringByAppendingString:@"\n"];
-                    
-                    NSString *line = formatText (pTextValue[iField],NVMetroSettings.sharedInstance.currentTextOption.format,NVMetroSettings.sharedInstance.currentTextOption.nDecimals);
-                    text = [text stringByAppendingString:line];
-                    
+                    if (strlen (pTextValue[iField]) > 0)
+                    {
+                        if (iField)
+                            text = [text stringByAppendingString:@"\n"];
+                        
+                        NSString *line = formatText (pTextValue[iField],NVMetroSettings.sharedInstance.currentTextOption.formats[iField],_acres);
+                        text = [text stringByAppendingString:line];
+                    }
                 }
             }
             else
@@ -1746,9 +1748,30 @@ NextPass:
     return nLoaded;
     
 }
-NSString * formatText (LPSTR text,int option,int nDecimals)
+NSString * formatText (LPSTR text,NSNumber * format,double acres)
 {
-    NSString * rtn = [NSString stringWithUTF8String:text];
+    NSString * rtn;
+    TXTAdjustment option = format.integerValue;
+    switch (option)
+    {
+        case TXTAdjustAcres:
+            rtn = [CRAPI.sharedInstance acreFormat:atof(text)];
+            break;
+        case TXTAdjustDollars:
+            rtn = [CRAPI.sharedInstance dollarsFormat:atof(text)];
+            break;
+        case TXTAdjustDollarsPerAcre:
+        {
+            double value = atof(text);
+            if (acres)
+                value /= acres;
+            rtn = [CRAPI.sharedInstance dollarsFormat:value];
+        }
+            break;
+        default:
+            rtn = [NSString stringWithUTF8String:text];
+            break;
+    }
     
     return rtn;
 }

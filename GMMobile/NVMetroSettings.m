@@ -682,7 +682,21 @@ static int parcelsWanted[CPFeaturesCount];
     to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Total EMV/Taxpayer",i++];
     to.numTextFields = 4;
     to.fields = @"EMV_TOTAL,OWNER_NAME,OWNER_MORE,TAX_NAME";
-    to.format = TXTAdjustOwnerNames;
+    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustDollars],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames], nil];
+    [rtn addObject:to];
+
+    to = NVMetroTextOptions.new;
+    to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Land EMV/Acres/Land EMV per Acre",i++];
+    to.numTextFields = 3;
+    to.fields = @"EMV_LAND,ACRES_POLY,EMV_LAND";
+    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustDollars],[NSNumber numberWithInt:TXTAdjustAcres],[NSNumber numberWithInt:TXTAdjustDollarsPerAcre], nil];
+    [rtn addObject:to];
+    
+    to = NVMetroTextOptions.new;
+    to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Owner/Land EMV/Acres/Land EMV per Acre",i++];
+    to.numTextFields = 6;
+    to.fields = @"OWNER_NAME,OWNER_MORE,TAX_NAME,EMV_LAND,ACRES_POLY,EMV_LAND";
+    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustDollars],[NSNumber numberWithInt:TXTAdjustAcres],[NSNumber numberWithInt:TXTAdjustDollarsPerAcre], nil];
     [rtn addObject:to];
     return rtn;
 }

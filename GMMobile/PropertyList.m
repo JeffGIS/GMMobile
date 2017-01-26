@@ -19,8 +19,6 @@ int dbIsOpen = 0;
 @property sqlite3 *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
-@property NSNumberFormatter *dollarFmt;
-@property NSNumberFormatter *acreFmt;
 @end
 
 @implementation PropertyList
@@ -189,21 +187,6 @@ BOOL nameInList (NSString* name,NSArray* list)
         }
         
         [self createTables];
-        _dollarFmt = [[NSNumberFormatter alloc] init];
-        _dollarFmt.numberStyle = NSNumberFormatterCurrencyStyle;
-        _dollarFmt.groupingSeparator = @"'";
-        _dollarFmt.groupingSize = 3;
-        _dollarFmt.alwaysShowsDecimalSeparator = NO;
-        _dollarFmt.usesGroupingSeparator = YES;
-        _dollarFmt.maximumFractionDigits = 0;
-        _acreFmt = [[NSNumberFormatter alloc] init];
-        _acreFmt.numberStyle = NSNumberFormatterNoStyle;
-        _acreFmt.roundingMode = NSNumberFormatterRoundHalfUp;
-        _acreFmt.groupingSeparator = @"'";
-        _acreFmt.groupingSize = 3;
-        _acreFmt.alwaysShowsDecimalSeparator = NO;
-        _acreFmt.usesGroupingSeparator = YES;
-        _acreFmt.maximumFractionDigits = 2;
 
     }
     NSLog(@"Init property list %@", _fileName);
@@ -768,12 +751,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_TOTAL_TAX:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
-                value = [_dollarFmt stringFromNumber:num];
+                value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
                 break;
             case PFT_ACRES:
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
-                value = [_acreFmt stringFromNumber:num];
+                value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
@@ -821,11 +804,11 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             case PFT_SPEC_ASSESSMENT:
             case PFT_TOTAL_TAX:
                 num = [[NSNumber alloc] initWithDouble:totval];
-                value = [_dollarFmt stringFromNumber:num];
+                value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
                 break;
             case PFT_ACRES:
                 num = [[NSNumber alloc] initWithDouble:totval];
-                value = [_acreFmt stringFromNumber:num];
+                value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
                 break;
         }
     }
@@ -868,11 +851,11 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
                 case PFT_SPEC_ASSESSMENT:
                 case PFT_TOTAL_TAX:
                     num = [[NSNumber alloc] initWithDouble:totval];
-                    value = [_dollarFmt stringFromNumber:num];
+                    value = [CRAPI.sharedInstance.dollarFmt stringFromNumber:num];
                     break;
                 case PFT_ACRES:
                     num = [[NSNumber alloc] initWithDouble:totval];
-                    value = [_acreFmt stringFromNumber:num];
+                    value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
                     break;
             }
         }
