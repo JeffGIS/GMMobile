@@ -625,7 +625,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
 - (BOOL) doNVMetroDisplay:(DisplayCharacteristics *)dc
 {
-    if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
+    if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp &&
+        ConfigurationControl.sharedInstance.currentApp != HCConfigFromSpreadsheet)
         return FALSE;
     if (CRAPI.sharedInstance.selectBoundaryFromMapType)
         return FALSE;

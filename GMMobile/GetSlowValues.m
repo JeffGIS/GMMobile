@@ -70,7 +70,7 @@ displayCharacteristics:dc
            pointInArea:nil];
 
 }
-
+//[PropertyList getRadiusForField:ifield];
 /*UIGraphicsBeginImageContext(size);
  _context = UIGraphicsGetCurrentContext();
  CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);

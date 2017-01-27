@@ -1310,6 +1310,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         
     }
     iPass++;
+    CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
     
     SQLOK(0,sqlite3_finalize(statement), self.database);
     //svc = [self getCountOfSortedValues];
