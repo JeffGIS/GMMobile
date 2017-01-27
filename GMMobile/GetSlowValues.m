@@ -44,14 +44,38 @@
                       totEMV:(int)totEMV
                      useDesc:(LPSTR) usedescIN
 {
-    PercentInArea * pctInA = [[PercentInArea alloc]init];
+    return;
+    Themes * themes = [[Themes alloc]init];
+    void *bmData = NULL;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    int width = 1024;
+    int height = 1024;
+    CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
+    DisplayCharacteristics *dc = DisplayCharacteristics.new;
+    MNMXCORD latlonBounds;
+    MNMXCORD viewBounds;
+    double OneMile = 5280 * MFT;
+    double dist = OneMile / 2;
+    
+    CORNERPOINTS latlonCornerPoints = CornerPointsFromPointAndDist (latlon,dist);
+    latlonBounds = CornerPointBounds (&latlonCornerPoints);
     
     BoundaryData *bd = [[BoundaryData alloc] init];
-/*    [bd displayLandUse:_context
-             llCorners:&_latlonCornerPoints
-              LLBounds:&_latlonBounds
-            viewBounds:&_viewBounds];*/
+    [bd displayLandUse:context
+             llCorners:&latlonCornerPoints
+              LLBounds:&latlonBounds
+            viewBounds:&viewBounds
+displayCharacteristics:dc
+                themes:themes
+           pointInArea:nil];
 
 }
+
+/*UIGraphicsBeginImageContext(size);
+ _context = UIGraphicsGetCurrentContext();
+ CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
+ UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+ NSData * pngData = UIImagePNGRepresentation(image);
+ [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
 
 @end
