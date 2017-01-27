@@ -374,8 +374,7 @@
                         [prArray addObject:propRec];
                     }
                     
-                    [_delegate findPropOwnerViewController:self
-                                    didSelectMultipleProps:prArray.copy];
+                    [_delegate findPropOwnerViewController:self didSelectMultipleProps:prArray.copy];
                 }
                 
                 break;

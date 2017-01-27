@@ -3,6 +3,7 @@
 
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "CCodeLibrary/NVUnitPickerTextAlert.h"
+#import "PropertyData.h"
 
 @class FindBoundariesViewController;
 
@@ -12,6 +13,9 @@
                  didSelectBounds:(NSString *)bounds
                             type:(NSString *)type
                            refno:(int)refno;
+
+- (void)findBoundsViewController:(FindBoundariesViewController *)findPropOwner
+          didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps;
 
 @end
 

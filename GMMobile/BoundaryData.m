@@ -362,7 +362,7 @@
 }
 - (NSMutableArray *)getBoundaryAreaTypes
 {
-    NSMutableArray * types=[[NSMutableArray alloc] init];
+    NSMutableArray *types= NSMutableArray.array;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
@@ -376,8 +376,7 @@
     else
     {
         sqlite3_stmt *statement = NULL;
-        NSString *query = [[NSString alloc] init];
-        
+        NSString *query = NSString.new;
         BOOL opened = [self open];
         
         switch (CRAPI.sharedInstance.project)
@@ -397,7 +396,6 @@
         }
         
         SQLOK(0,sqlite3_finalize(statement), _database);
-        
         [self close:opened];
     }
     return types;
