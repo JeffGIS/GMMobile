@@ -4,6 +4,7 @@
 #import "FindBoundariesViewController.h"
 #import "BoundaryData.h"
 #import "CrimeDataOptions.h"
+#import "PropertyList.h"
 
 @interface FindBoundariesViewController ()
 
@@ -41,12 +42,14 @@
     else
         _fontSize = 36.0, _cornerRadius = 10.0;
     
-    BoundaryData *boundData = [[BoundaryData alloc] init];
+    BoundaryData *boundData = BoundaryData.new;
     _boundaryList = [boundData getBoundaryAreaTypes];
     _useOtherAreas = NO;
     
     if (_otherAreas.count)
         [_boundaryList addObject:@"Other Areas"];
+    
+    [_boundaryList addObject:@"Property Lists"];
     
     _topTableView = NVConstrainedTableView.new;
     _bottomTableView = NVConstrainedTableView.new;
@@ -368,7 +371,10 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (tableView == _bottomTableView && !_useOtherAreas)
+    if ([_selectedType isEqualToString:@"Property Lists"])
+        return 1;
+    
+    else if (tableView == _bottomTableView && !_useOtherAreas)
         return _sections.count;
     
     else
@@ -377,7 +383,10 @@
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-    if (tableView == _bottomTableView && !_useOtherAreas)
+    if ([_selectedType isEqualToString:@"Property Lists"])
+        return nil;
+    
+    else if (tableView == _bottomTableView && !_useOtherAreas)
         return _sectionKeys;
 
     return nil;
@@ -404,20 +413,20 @@
             return 1;
     }
     
-    else
+    else if (_boundaryDataList.count)
     {
-        if (_boundaryDataList.count)
-        {
-            if (_sectionCounts.count)
-                return [_sectionCounts[section] integerValue];
-            
-            else
-                return _boundaryDataList.count;
-        }
+        if ([_selectedType isEqualToString:@"Property Lists"])
+            return _boundaryDataList.count;
+        
+        else if (_sectionCounts.count)
+            return [_sectionCounts[section] integerValue];
         
         else
-            return 1;
+            return _boundaryDataList.count;
     }
+    
+    else
+        return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -473,14 +482,20 @@
         {
             if (_boundaryDataList.count)
             {
-                NSNumber *begin = _sectionBegins[indexPath.section];
-                BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
-                
-                if ([_selectedType isEqualToString:@"Minneapolis Wards"])
-                    cell.textLabel.text = [NSString stringWithFormat:@"Ward %@", baData.name.capitalizedString];
+                if ([_selectedType isEqualToString:@"Property Lists"])
+                    cell.textLabel.text = _boundaryDataList[indexPath.row];
                 
                 else
-                    cell.textLabel.text = baData.name.capitalizedString;
+                {
+                    NSNumber *begin = _sectionBegins[indexPath.section];
+                    BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
+                    
+                    if ([_selectedType isEqualToString:@"Minneapolis Wards"])
+                        cell.textLabel.text = [NSString stringWithFormat:@"Ward %@", baData.name.capitalizedString];
+                    
+                    else
+                        cell.textLabel.text = baData.name.capitalizedString;
+                }
                 
                 cell.textLabel.textColor = UIColor.blackColor;
                 cell.userInteractionEnabled = YES;
@@ -508,7 +523,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _selectedType = _boundaryList[indexPath.row];
         
-        if ([_selectedType isEqualToString:@"Other Areas"])
+        if ([_selectedType isEqualToString:@"Property Lists"])
+        {
+            _boundaryDataList = PropertyList.getPropertyLists.mutableCopy;
+            [_bottomTableView reloadData];
+            _selectFromMapButton.enabled = YES;
+            _selectFromMapButton.alpha = 1.0;
+            return;
+        }
+        
+        else if ([_selectedType isEqualToString:@"Other Areas"])
             _useOtherAreas = YES;
         
         else
@@ -530,6 +554,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             self.tabBarController.selectedIndex = 0;
             return;
         }
+        
         else if ([_selectedType isEqualToString:@"Minneapolis Wards"])
         {
             sort = [NSSortDescriptor sortDescriptorWithKey:@"name"
@@ -558,38 +583,61 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _selectFromMapButton.alpha = 1.0;
     }
     
-    else
+    else if (_delegate)
     {
-        if (_delegate)
+        NSString *boundsName = @"";
+        int refno = 0;
+        
+        if ([_selectedType isEqualToString:@"Property Lists"])
         {
-            NSString *boundsName = @"";
-            int refno = 0;
+            [PropertyList setCurrentPropertyList:_boundaryDataList[indexPath.row]];
+            PropertyList *propList = PropertyList.new;
+            NSArray<NSNumber *> *propNums = propList.getPropertyNumbers;
+            NSMutableArray<PropertyRecord *> *prArray = NSMutableArray.array;
             
-            if (_useOtherAreas)
-                boundsName = _otherAreas[indexPath.row];
-            
-            else
+            for (NSNumber *propNum in propNums)
             {
-                NSNumber *begin = _sectionBegins[indexPath.section];
-                BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
-                boundsName = baData.name;
-                refno = baData.refno;
+                NSInteger value = propNum.integerValue;
+                NSString *pin = [propList getFieldValue:value type:PFT_PIN];
+                NSString *propOwner = [propList getFieldValue:value type:PFT_Owner];
+                LLPOINT point = [PropertyData.new getPointForPID:pin];
+                CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(point.lat, point.lon);
+                
+                PropertyRecord *propRec = [PropertyRecord propertyRecordWithPin:pin
+                                                                      propOwner:propOwner
+                                                                     coordinate:coord];
+                
+                [prArray addObject:propRec];
             }
             
-            [_delegate findBoundsViewController:self
-                                didSelectBounds:boundsName
-                                           type:_selectedType
-                                          refno:refno];
+            [_delegate findBoundsViewController:self didSelectMultipleProps:prArray.copy];
+            return;
         }
+        
+        else if (_useOtherAreas)
+            boundsName = _otherAreas[indexPath.row];
+        
+        else
+        {
+            NSNumber *begin = _sectionBegins[indexPath.section];
+            BoundaryAreaData *baData = _boundaryDataList[(begin.integerValue + indexPath.row)];
+            boundsName = baData.name;
+            refno = baData.refno;
+        }
+        
+        [_delegate findBoundsViewController:self
+                            didSelectBounds:boundsName
+                                       type:_selectedType
+                                      refno:refno];
     }
 }
 
 - (void)setupSectionIndex
 {
-    _sections = [[NSMutableDictionary alloc] init];
-    _sectionBegins = [[NSMutableArray alloc] init];
-    _sectionCounts = [[NSMutableArray alloc] init];
-    _sectionKeys = [[NSMutableArray alloc] init];
+    _sections = NSMutableDictionary.dictionary;
+    _sectionBegins = NSMutableArray.array;
+    _sectionCounts = NSMutableArray.array;
+    _sectionKeys = NSMutableArray.array;
     
     int sectionCount = 0;
     

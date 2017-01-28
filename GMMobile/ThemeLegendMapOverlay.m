@@ -115,6 +115,12 @@
         return nil;
     }
     
+    if (!legend.numCells)
+    {
+        NSLog(@"ThemeLegendMapOverlay ERROR:Cannot draw if legend has no cells");
+        return nil;
+    }
+    
     ThemeLegendMapOverlay *tlmo = [[ThemeLegendMapOverlay alloc] init];
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;

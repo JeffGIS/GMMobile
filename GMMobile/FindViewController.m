@@ -89,9 +89,7 @@
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentPropOwner = [propData getOwnerNameForPID:PID];
     self.tabBarController.selectedIndex = 0;
-    
-    [findPID dismissViewControllerAnimated:YES
-                                completion:nil];
+    [findPID dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)findAddressViewController:(FindAddressViewController *)findAddress
@@ -103,9 +101,7 @@
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentAddress = address;
     self.tabBarController.selectedIndex = 0;
-    
-    [findAddress dismissViewControllerAnimated:YES
-                                    completion:nil];
+    [findAddress dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)findIntersectionViewController:(FindIntersectionViewController *)findIntersection
@@ -124,9 +120,7 @@
     CRAPI.sharedInstance.currentPID = PID;
     CRAPI.sharedInstance.currentPropOwner = propOwner;
     self.tabBarController.selectedIndex = 0;
-    
-    [findPropOwner dismissViewControllerAnimated:YES
-                                      completion:nil];
+    [findPropOwner dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
@@ -140,9 +134,7 @@
     CRAPI.sharedInstance.currentOverallBoundaryType = type;
     CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
     self.tabBarController.selectedIndex = 0;
-    
-    [findBounds dismissViewControllerAnimated:YES
-                                   completion:nil];
+    [findBounds dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
@@ -157,9 +149,22 @@
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingMultipleProps;
     self.tabBarController.selectedIndex = 0;
+    [findPropOwner dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
+          didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps
+{
+    MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
+                                                                    inTabBarController:self.tabBarController];
     
-    [findPropOwner dismissViewControllerAnimated:YES
-                                      completion:nil];
+    if (mapVC)
+        mapVC.propArray = multipleProps;
+    
+    CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+    CRAPI.sharedInstance.GMMSetting = GMMSettingMultipleProps;
+    self.tabBarController.selectedIndex = 0;
+    [findBounds dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -473,6 +473,8 @@
         
         if (CRAPI.sharedInstance.GMMSetting == GMMSettingMultipleProps)
         {
+            [self clearMapItems];
+            
             for (PropertyRecord *propRec in _propArray)
             {
                 marker = [MarkerButton markerWithPosition:propRec.coordinate
@@ -487,16 +489,19 @@
                 [_markerArray addObject:marker];
             }
             
-            CLLocationCoordinate2D myLocation = ((MarkerButton *)_markerArray.firstObject).position;
-            
-            GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:myLocation
-                                                                               coordinate:myLocation];
-            
-            for (MarkerButton *marker in _markerArray)
-                bounds = [bounds includingCoordinate:marker.position];
-            
-            [_mapView animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds
-                                                             withPadding:40.0]];
+            if (_propArray.count)
+            {
+                CLLocationCoordinate2D myLocation = ((MarkerButton *)_markerArray.firstObject).position;
+                
+                GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:myLocation
+                                                                                   coordinate:myLocation];
+                
+                for (MarkerButton *marker in _markerArray)
+                    bounds = [bounds includingCoordinate:marker.position];
+                
+                [_mapView animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds
+                                                                 withPadding:40.0]];
+            }
         }
         
         else
@@ -3225,8 +3230,11 @@ haveVV:
                                                                        atOrigin:mapOrigin
                                                                     hideButtons:NO];
                 
+                if (tlmo)
+                {
                     yOriginPortrait += (tlmo.frame.size.height + yFactor);
                     yOriginLandscape += (tlmo.frame.size.height + yFactor);
+                }
             }
         }
     }
