@@ -6,6 +6,7 @@
 #import "BoundaryData.h"
 #import "Destinations.h"
 #import "ConfigurationControl.h"
+#import "NVMetroSettings.h"
 #import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/MathUtil.h"
 
@@ -492,6 +493,13 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return file;
 }
 
+- (CPFeatures)setFeatureTypeForField:(PropFieldType) field
+{
+    CPFeatures rtn = NVMetroSettings.sharedInstance.currentFeature;
+    NVMetroSettings.sharedInstance.currentFeature = CPFLandUse;
+    
+    return rtn;
+}
 - (int)getBoundaryTypeForField:(PropFieldType) field
 {
     int type = MAPIT_CIRCULAR;
@@ -1059,6 +1067,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     ConfigurationControl.sharedInstance.MapitPID = PID;
     ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
     ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
+    NVMetroSettings.sharedInstance.currentFeatureSaved = [self setFeatureTypeForField:ifield];
     if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
         NSString * value = [self getFieldValue:propNum

@@ -152,6 +152,8 @@
         thm.displayID = displayID;
         if (thm.type == MetroPropTheme)
             rtn = DataPass;
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+            rtn = DataPass;
         if (ConfigurationControl.sharedInstance.legendList.count > i)
         {
             ThemeLegend *tleg = ConfigurationControl.sharedInstance.legendList[i];

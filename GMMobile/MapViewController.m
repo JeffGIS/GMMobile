@@ -499,7 +499,7 @@
                 for (MarkerButton *marker in _markerArray)
                     bounds = [bounds includingCoordinate:marker.position];
                 
-                [_mapView animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds
+                [self animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds
                                                                  withPadding:40.0]];
             }
         }
@@ -533,7 +533,7 @@
                                             insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
             }
             
-            [_mapView animateToCameraPosition:camera];
+            [self gotoNewCameraPosition:camera];
             _selectedPIDCoords = pidCoord;
             
             MarkerButton *marker = [MarkerButton markerWithPosition:pidCoord
@@ -713,6 +713,8 @@
 - (void)mapToolbarDidSelectReturnButton
 {
     [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    if (_fromSpreadsheet)
+        NVMetroSettings.sharedInstance.currentFeature = NVMetroSettings.sharedInstance.currentFeatureSaved;
     _fromSpreadsheet = NO;
     
     NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVSpreadsheet"
@@ -1369,17 +1371,32 @@
                                               (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
                                               (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
+        [self moveToNewCameraPosition:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
     }
     
     else
-        [_mapView animateToCameraPosition:[GMSCameraPosition cameraWithTarget:_target zoom:12.0]];
+        [self gotoNewCameraPosition:[GMSCameraPosition cameraWithTarget:_target zoom:12.0]];
+
 }
 
 - (void)zoomToPipeTraceBounds:(MNMXCORD)bounds
 {
     [self zoomToBounds:bounds];
 }
+
+-(void) gotoNewCameraPosition:(GMSCameraPosition*) camera
+{
+    [_mapView animateToCameraPosition:camera];
+}
+- (void) moveToNewCameraPosition:(GMSCameraUpdate *)newPos
+{
+    [_mapView moveCamera:newPos];
+}
+-(void) animateWithCameraUpdate:(GMSCameraUpdate*)update
+{
+    [_mapView animateWithCameraUpdate:update];
+}
+
 - (void)zoomToBounds:(MNMXCORD)bounds
 {
     CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
@@ -1390,8 +1407,7 @@
     
     GMSCameraPosition *camera = [_mapView cameraForBounds:coordBounds
                                                    insets:UIEdgeInsetsMake(20.0, 20.0, 20.0, 20.0)];
-    
-    [_mapView animateToCameraPosition:camera];
+    [self gotoNewCameraPosition:camera];
 }
 
 - (void)mapView:(GMSMapView *)mapView
@@ -2437,10 +2453,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self setMapType];
     
     if (_rotateZoom)
-        [_mapView moveCamera:[GMSCameraUpdate zoomBy:0.000001]];
+        [self moveToNewCameraPosition:[GMSCameraUpdate zoomBy:0.000001]];
     
     else
-        [_mapView moveCamera:[GMSCameraUpdate zoomBy:-0.000001]];
+        [self moveToNewCameraPosition:[GMSCameraUpdate zoomBy:-0.000001]];
    
     _rotateZoom = !_rotateZoom;
     
@@ -5069,7 +5085,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self gotoNewCameraPosition:camera];
 }
 
 - (void)platViewDidLongPressAtFrameXPosition:(CGFloat)xFrame
@@ -5210,7 +5226,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                viewingAngle:_mapView.camera.viewingAngle];
             
             GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
-            [_mapView moveCamera:update];
+            [self moveToNewCameraPosition:update];
             
             if (_mapToolbar.applyRotation && CLLocationManager.headingAvailable)
                 [_locationManager startUpdatingHeading];
@@ -5325,7 +5341,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         
         GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithPath:overviewPath];
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:bounds withPadding:40.0]];
+        [self moveToNewCameraPosition:[GMSCameraUpdate fitBounds:bounds withPadding:40.0]];
         [self updateMarkerPosition];
     }
     
@@ -5341,7 +5357,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                        viewingAngle:_mapView.camera.viewingAngle];
     
     GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
-    [_mapView moveCamera:update];
+    [self moveToNewCameraPosition:update];
     [_locationManager performSelector:@selector(stopUpdatingHeading) withObject:nil afterDelay:0.5];
 }
 
@@ -5799,7 +5815,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                             bearing:pBearing
                                                        viewingAngle:0.0];
     
-    [_mapView animateToCameraPosition:camera];
+    [self gotoNewCameraPosition:camera];
 }
 
 - (void)mapToolbarDidFinishDrag:(CGPoint)locationInSuperview
@@ -6606,7 +6622,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
     GMSCoordinateBounds *bounds = [[GMSCoordinateBounds alloc] initWithCoordinate:farRight
                                                                        coordinate:nearLeft];
     
-    [_mapView animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds withPadding:20.0]];
+    [self animateWithCameraUpdate:[GMSCameraUpdate fitBounds:bounds withPadding:20.0]];
 }
 
 - (NVWebView *)webViewWithTag:(NSInteger)tag

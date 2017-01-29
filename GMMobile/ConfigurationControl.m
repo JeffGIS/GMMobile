@@ -375,6 +375,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
 - (BOOL)setApp:(HardCodedConfigs)appID
 {
     BOOL rtn = YES;
+    static first = TRUE;
     
     if (_currentApp == appID)
         return FALSE;
@@ -401,9 +402,12 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     switch (_currentApp)
     {
         case HCConfigMetroProp:
-            CRAPI.sharedInstance.selectBoundaryFromMapType = @"Counties";
+            if (first)
+                CRAPI.sharedInstance.selectBoundaryFromMapType = @"Counties";
         case HCConfigFromSpreadsheet:
-            CRAPI.sharedInstance.parcelTextOption = 1;
+            if (first)
+                CRAPI.sharedInstance.parcelTextOption = 1;
+            first = FALSE;
             break;
         
         case HCConfigSewers:

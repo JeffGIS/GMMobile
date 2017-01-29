@@ -80,6 +80,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 + (NVMetroSettings *)sharedInstance;
 
 @property (nonatomic)CPFeatures currentFeature;
+@property CPFeatures currentFeatureSaved;
 @property (nonatomic) int currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
 @property NVMetroTextOptions* currentTextOption;
