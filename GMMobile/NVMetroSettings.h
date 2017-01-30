@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <GoogleMaps/GoogleMaps.h>
+
+CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region);
 
 typedef NS_ENUM(NSInteger, CPFeatures)
 {
@@ -81,6 +84,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 
 @property (nonatomic)CPFeatures currentFeature;
 @property CPFeatures currentFeatureSaved;
+@property MNMXCORD savedVisibleBounds;
 @property (nonatomic) int currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
 @property NVMetroTextOptions* currentTextOption;

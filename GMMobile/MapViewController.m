@@ -143,7 +143,7 @@
     _ssDelegate = NVSpreadsheetDelegate.new;
     _nvssvc.delegate = _ssDelegate;
     _nvssvc.restorationIdentifier = @"NVSpreadsheet";
-    _nvssvc.tabBarItem.title = @"Spreadsheet";
+    _nvssvc.tabBarItem.title = @"Property List";
     
     _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
                                                                                               ofType:@"png"]];
@@ -714,7 +714,10 @@
 {
     [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
     if (_fromSpreadsheet)
+    {
         NVMetroSettings.sharedInstance.currentFeature = NVMetroSettings.sharedInstance.currentFeatureSaved;
+        [self zoomToBounds:NVMetroSettings.sharedInstance.savedVisibleBounds];
+    }
     _fromSpreadsheet = NO;
     
     NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVSpreadsheet"

@@ -106,16 +106,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     int numPoints, numLoops;
     LPINT polyPartLen;
     
-    _latlonCornerPoints.nearLeft.x = region.nearLeft.longitude;
-    _latlonCornerPoints.nearLeft.y = region.nearLeft.latitude;
-    _latlonCornerPoints.farLeft.x = region.farLeft.longitude;
-    _latlonCornerPoints.farLeft.y = region.farLeft.latitude;
-    _latlonCornerPoints.farRight.x = region.farRight.longitude;
-    _latlonCornerPoints.farRight.y = region.farRight.latitude;
-    _latlonCornerPoints.nearRight.x = region.nearRight.longitude;
-    _latlonCornerPoints.nearRight.y = region.nearRight.latitude;
-
+    _latlonCornerPoints = CornerPointsFromRegion (region);
     _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
+    CRAPI.sharedInstance.lastViewBounds = _latlonBounds;
     CRAPI.sharedInstance.lastDisplayBounds = _latlonBounds;
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {

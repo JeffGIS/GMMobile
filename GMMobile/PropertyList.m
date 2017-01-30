@@ -1068,6 +1068,7 @@ LLPOINT LLPOINTFromString (NSString* string)
     ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
     ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
     NVMetroSettings.sharedInstance.currentFeatureSaved = [self setFeatureTypeForField:ifield];
+    NVMetroSettings.sharedInstance.savedVisibleBounds = CRAPI.sharedInstance.lastViewBounds;
     if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
         NSString * value = [self getFieldValue:propNum

@@ -30,6 +30,21 @@ static int parcelsWanted[CPFeaturesCount];
 }
 @end
 
+CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
+{
+    CORNERPOINTS _latlonCornerPoints;
+    _latlonCornerPoints.nearLeft.x = region.nearLeft.longitude;
+    _latlonCornerPoints.nearLeft.y = region.nearLeft.latitude;
+    _latlonCornerPoints.farLeft.x = region.farLeft.longitude;
+    _latlonCornerPoints.farLeft.y = region.farLeft.latitude;
+    _latlonCornerPoints.farRight.x = region.farRight.longitude;
+    _latlonCornerPoints.farRight.y = region.farRight.latitude;
+    _latlonCornerPoints.nearRight.x = region.nearRight.longitude;
+    _latlonCornerPoints.nearRight.y = region.nearRight.latitude;
+    return _latlonCornerPoints;
+}
+
+
 @implementation NVMetroSettings
 
 + (NVMetroSettings *)sharedInstance
