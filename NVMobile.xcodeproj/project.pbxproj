@@ -137,6 +137,7 @@
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
+		69E666051E414D27006A2055 /* mncomp.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 69E666041E414D27006A2055 /* mncomp.jpeg */; };
 		69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */; };
 		69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */; };
 		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
@@ -469,6 +470,7 @@
 		69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldOptionsViewController.h; sourceTree = "<group>"; };
 		69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldOptionsViewController.m; sourceTree = "<group>"; };
 		69E62D4F1BBF276B0018390B /* fieldOptions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fieldOptions.png; sourceTree = "<group>"; };
+		69E666041E414D27006A2055 /* mncomp.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mncomp.jpeg; sourceTree = "<group>"; };
 		69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeftPhone.png; sourceTree = "<group>"; };
 		69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRightPhone.png; sourceTree = "<group>"; };
 		69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumbPhone.png; sourceTree = "<group>"; };
@@ -709,6 +711,7 @@
 		694FB1801C5882D7005410F6 /* PDFReaderCore */ = {
 			isa = PBXGroup;
 			children = (
+				69E666041E414D27006A2055 /* mncomp.jpeg */,
 				69BCD5A71DF63C7E002E0384 /* CGPDFDocument.h */,
 				69BCD5A81DF63C7E002E0384 /* CGPDFDocument.m */,
 				69BCD5A91DF63C7E002E0384 /* ReaderConstants.h */,
@@ -1344,6 +1347,7 @@
 				69BCD60A1DF63C9E002E0384 /* Reader-Button-N@3x.png in Resources */,
 				69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */,
 				69BCD6161DF63C9E002E0384 /* Reader-Mark-Y@3x.png in Resources */,
+				69E666051E414D27006A2055 /* mncomp.jpeg in Resources */,
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
 				69E1CFDC1CF608DD002A4611 /* SampleCurbRamp1.jpg in Resources */,

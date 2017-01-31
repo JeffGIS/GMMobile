@@ -23,6 +23,7 @@
 #import "ChartsViewController.h"
 #import "NVSpreadsheetDelegate.h"
 #import "NVMetroSettingsVC.h"
+#import "CCodeLibrary/WMS.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -1200,6 +1201,11 @@
     _zoomExtentsGesture.numberOfTouchesRequired = 2;
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
+    
+    NSString *filepath = [NSString stringWithFormat:@"%@/image.jpg", UserDefaults.defaults.localFilePath];
+    wmsRequest(filepath.UTF8String);
+    NVWebView *webView = [NVWebView showWebViewInView:self.view showFileAtPath:filepath];
+#pragma unused(webView)
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
