@@ -10,6 +10,7 @@
 @interface NVSpreadsheetDelegate ()
 
 @property PropertyList *propList;
+
 @end
 
 @implementation NVSpreadsheetDelegate
