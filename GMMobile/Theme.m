@@ -998,7 +998,7 @@ int getThemeOpt(ThemeTypes type)
             testPass:(BOOL)test
 {
     int rtn = DO_NOT_DISPLAY_ITEM;
-    if (displayID == _displayID)
+    if (!displayID || displayID == _displayID)
     {
         time_t iTime = dc.itemBeginTime;
         //char* ctim = ctime (&iTime);

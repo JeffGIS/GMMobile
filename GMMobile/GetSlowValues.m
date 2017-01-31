@@ -55,6 +55,10 @@
     double OneMile = 5280 * MFT;
     double dist = OneMile / 2;
     
+    viewBounds.xmn = 0;
+    viewBounds.ymn = 0;
+    viewBounds.xmx = width;
+    viewBounds.ymx = height;
     CORNERPOINTS latlonCornerPoints = CornerPointsFromPointAndDist (latlon,dist);
     latlonBounds = CornerPointBounds (&latlonCornerPoints);
     
@@ -73,7 +77,7 @@
     
     BoundaryData *bd = [[BoundaryData alloc] init];
     
-    if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+    /*if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
         [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
                            withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
@@ -94,8 +98,17 @@
                    LLBounds:&latlonBounds
                  viewBounds:&viewBounds];
         
-    }
+    }*/
     NSString * file = CRAPI.sharedInstance.extractFile;
+    {
+        LPBYTE pbuf = bmData;
+        int ii;
+        for (int i=0;i<4*width*height;i++)
+        {
+            if (pbuf[i])
+                ii=pbuf[i];
+        }
+    }
     BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
     if (rtn)
         NSLog(@"Image written");

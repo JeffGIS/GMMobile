@@ -225,7 +225,7 @@
     //test pass
     for (Theme *thm in _themeList)
     {
-        if (thm.displayID != displayID)
+        if (displayID && thm.displayID != displayID)
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
                       displayID:displayID
@@ -236,7 +236,7 @@
     //display pass
     for (Theme *thm in _themeList)
     {
-        if (thm.displayID != displayID)
+        if (displayID && thm.displayID != displayID)
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
                       displayID:displayID
