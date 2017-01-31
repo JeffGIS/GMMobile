@@ -64,6 +64,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
     TXTAdjustDollars,
     TXTAdjustDollarsPerAcre,
     TXTAdjustAcres,
+    TXTAdjustDate,
     TXTAdjustCount
 };
 

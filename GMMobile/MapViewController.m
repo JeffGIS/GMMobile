@@ -808,9 +808,11 @@
     
     legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
     
-    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
+/*    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
                                      legendsView:legendsView
-                                     pickedItems:DispersePoint.getDispersedPoints];
+                                     pickedItems:DispersePoint.getDispersedPoints];*/
+    
+    NSData *pdf = [NSData dataWithContentsOfFile:CRAPI.sharedInstance.extractFile];
     
     if (MFMailComposeViewController.canSendMail)
     {
@@ -823,9 +825,12 @@
         
         [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
         
-        [composer addAttachmentData:pdf
+       /* [composer addAttachmentData:pdf
                            mimeType:@"application/pdf"
-                           fileName:@"testPDF.pdf"];
+                           fileName:@"testPDF.pdf"];*/
+        [composer addAttachmentData:pdf
+                           mimeType:@"application/bmp"
+                           fileName:@"testPDF.bmp"];
         
         [self presentViewController:composer
                            animated:YES

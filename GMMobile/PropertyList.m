@@ -503,7 +503,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (int)getBoundaryTypeForField:(PropFieldType) field
 {
     int type = MAPIT_CIRCULAR;
-    
+    return type;
     switch (field)
     {
         case PFT_Stability5yr_block:
@@ -542,7 +542,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 
 + (CGFloat)getRadiusForField:(PropFieldType)field
 {
-    CGFloat radius = 0.0;
+    CGFloat radius = 1.0;
     
     switch (field)
     {
@@ -1266,18 +1266,18 @@ LLPOINT LLPOINTFromString (NSString* string)
     rtn = YES;
     
     /*dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
-    
-    dispatch_async(getSlowValueQue,
-                   ^{*/
-                       GetSlowValues *sv = [[GetSlowValues alloc]init];
-                       sv.delegate = self;
-                       [sv computeSlowValues:PropNum
-                                        dbid:dbid
-                                     popover:_popover
-                                aroundLatLon:pidPoint
-                                      totEMV:totEMV
-                                     useDesc:(LPSTR)usedesc.UTF8String];
-                 //  });
+     
+     dispatch_async(getSlowValueQue,
+     ^{*/
+    GetSlowValues *sv = [[GetSlowValues alloc]init];
+    sv.delegate = self;
+    [sv computeSlowValues:PropNum
+                     dbid:dbid
+                  popover:_popover
+             aroundLatLon:pidPoint
+                   totEMV:totEMV
+                  useDesc:(LPSTR)usedesc.UTF8String];
+    //  });
     
     [self close:opened];
     return rtn;
@@ -1300,5 +1300,6 @@ LLPOINT LLPOINTFromString (NSString* string)
 {
     
 }
+
 
 @end

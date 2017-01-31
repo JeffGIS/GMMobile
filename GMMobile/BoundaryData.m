@@ -197,6 +197,21 @@
    
 }
 
+-(void)displayMapitBoundary:(CGContextRef)context
+                  llCorners:(CORNERPOINTS *) latlonCornerPoints
+                   LLBounds:(MNMXCORD *)platlonBounds
+                 viewBounds:(MNMXCORD *)pvbounds
+{
+    DPOINT BasePt;
+    int numPoints, numLoops;
+    
+    CloseTRANS2(&_pTranLLtoView);
+    CloseTRANS2(&_pTranViewtoLL);
+    
+    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+}
+
+
 -(void)displayBoundary:(int)refno
                 ofType:(NSString*)areaType
                 asMask:(CGFloat)mask
@@ -1160,8 +1175,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             {
                 if (genUseCode != wantGenUseCode)
                     goto SkipRecord;
-                if (*homeStead != wantHomeStead)
-                    goto SkipRecord;
+                //if (*homeStead != wantHomeStead)
+                //    goto SkipRecord;
             }
             if (![NVMetroSettings.sharedInstance wantUseCode:genUseCode])
                 goto SkipRecord;
@@ -1775,6 +1790,12 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
                 value /= acres;
             rtn = [CRAPI.sharedInstance dollarsFormat:value];
         }
+            break;
+        case TXTAdjustDate:
+            if (strlen (text) == 8)
+                rtn = [NSString stringWithFormat:@"%c%c%c%c-%c%c-%c%c",text[0],text[1],text[2],text[3],text[4],text[5],text[6],text[7]];
+            else
+                rtn = [NSString stringWithUTF8String:text];
             break;
         default:
             rtn = [NSString stringWithUTF8String:text];
