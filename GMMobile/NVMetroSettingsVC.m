@@ -435,7 +435,8 @@
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
-didReturnWithSelectedRows:(NSArray *)selectedRows
+didReturnWithSelectedRows:(NSArray <NSNumber *> *)selectedRows
+               textArray:(NSArray *)selectedTextArray
 {
     switch (popoverTableView.tag)
     {

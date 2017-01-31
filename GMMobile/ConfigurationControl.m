@@ -375,7 +375,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
 - (BOOL)setApp:(HardCodedConfigs)appID
 {
     BOOL rtn = YES;
-    static first = TRUE;
+    static BOOL first = TRUE;
     
     if (_currentApp == appID)
         return FALSE;

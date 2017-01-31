@@ -473,9 +473,6 @@ BOOL nameInList (NSString* name,NSArray* list)
         case PFT_PctResidential_qtrMile:
             name = @"PCT Residential (Qtr Mile)";
             break;
-            
-        
-            
     }
     
     return name;
@@ -504,7 +501,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {
     int type = MAPIT_CIRCULAR;
     return type;
-    switch (field)
+    /*switch (field)
     {
         case PFT_Stability5yr_block:
         case PFT_Stability15yr_block:
@@ -537,7 +534,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             break;
     }
     
-    return type;
+    return type;*/
 }
 
 + (CGFloat)getRadiusForField:(PropFieldType)field
@@ -562,8 +559,6 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctResidential_halfMile:
             radius = 0.5;
             break;
-            
-            
         default:
             break;
     }
@@ -599,9 +594,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         case PFT_PctCommercial_halfMile:
             bt = PBT_Commercial;
             break;
-            
-            
-        default:
+         default:
             break;
     }
     
