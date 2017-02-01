@@ -1202,16 +1202,28 @@
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
     
-    NSString *filepath = [NSString stringWithFormat:@"%@/image.jpg", UserDefaults.defaults.localFilePath];
-    wmsRequest(filepath.UTF8String);
-    
-    int fileSize =  (int)[NSFileManager.defaultManager attributesOfItemAtPath:filepath
-                                                                        error:nil].fileSize;
-    
-    NSLog(@"FILESIZE:%i", fileSize);
-    
+    dbounds bounds = {-93.2625,44.9750,-93.2675,44.9800};
+    NSString *filepath = [NSString stringWithFormat:@"%@/wmsImage.jpg", UserDefaults.defaults.localFilePath];
+    NSString *tmpFilePath = [NSString stringWithFormat:@"%@/tmpWmsImage.jpg", UserDefaults.defaults.localFilePath];
+    wmsRequest(filepath.UTF8String, tmpFilePath.UTF8String, bounds, 640, 640);
+    int fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:filepath error:nil].fileSize;
+    NSLog(@"wmsImage.jpg FILESIZE = %i", fileSize);
     UIImage *image = [UIImage imageWithContentsOfFile:filepath];
-    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.backgroundColor = UIColor.blackColor;
+    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    imageView.contentMode = UIViewContentModeCenter;
+    imageView.userInteractionEnabled = YES;
+    imageView.tag = 456456;
+    [self.view addSubview:imageView];
+    [imageView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(removeWmsView:)];
+    [imageView addGestureRecognizer:swipe];
+}
+
+- (void)removeWmsView:(UISwipeGestureRecognizer *)gesture
+{
+    [gesture.view removeFromSuperview];
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
@@ -2990,6 +3002,9 @@ haveVV:
                            
                            if ([self.view.subviews containsObject:[self.view viewWithTag:99999]])
                                [self.view bringSubviewToFront:[self.view viewWithTag:99999]];
+                           
+                           if ([self.view.subviews containsObject:[self.view viewWithTag:456456]])
+                               [self.view bringSubviewToFront:[self.view viewWithTag:456456]];
                            
                            if (_displayRandomColorAlert)
                            {
