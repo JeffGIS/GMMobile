@@ -8,7 +8,6 @@
 
 #import "NVMetroSettings.h"
 
-static int currentValues[CPFeaturesCount]={0};
 static int currentTextValues[CPFeaturesCount]={0};
 static int nParcelTypesWanted=-1;
 static int parcelsWanted[CPFeaturesCount];
@@ -68,7 +67,13 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     {
         self.currentFeature = CPFTracts;
         self.currentAdjustmentValue = CPAdjustCountPerSQMile;
-        currentValues[self.currentFeature] = self.currentFeatureValue = 1;
+        self.currentValues = NSMutableArray.new;
+        for (int i = 0;i<CPFeaturesCount;i++)
+        {
+            self.currentFeature = i;
+            [self setCurrentValue:0];
+        }
+//        currentValues[self.currentFeature] = self.currentFeatureValue = 1;
     }
     
     return self;
@@ -81,7 +86,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
 -(void) setCurrentFeature:(CPFeatures)currentFeature
 {
     _currentFeature = currentFeature;
-    self.currentFeatureValue = currentValues[currentFeature];
+    self.currentFeatureValue = _currentValues[currentFeature];
     [self currentTextSelection:currentTextValues[currentFeature]];
     switch (_currentFeature)
     {
@@ -115,7 +120,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     }
 }
 
--(void) setCurrentFeatureValue:(int)currentFeatureValue
+-(void) setCurrentFeatureValue:(NSArray *)currentFeatureValue
 {
     _currentFeatureValue = currentFeatureValue;
 }
@@ -139,8 +144,13 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
 
 - (NSString *) currentValueText
 {
-    NSArray * values = [self valuesForFeature:_currentFeature];
-    NSString * rtn = stringWithoutID(values[currentValues[_currentFeature]]);
+    NSArray * values = _currentValues[_currentFeature];
+    NSString * rtn = @"";
+    for (NSString *str in values)
+    {
+        NSString *str2 = stringWithoutID(str);
+        rtn = [rtn stringByAppendingString:str2];
+    }
     return rtn;
 }
 - (NSString *) currentTextText
@@ -154,18 +164,40 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     NSString * rtn = stringWithoutID(values[_currentAdjustmentValue]);
     return rtn;
 }
-- (NSString *) currentValueField
+- (NSString *) currentValueFields
+{
+    NSArray * values = _currentValues[_currentFeature];
+    NSString * rtn = @"";
+    for (NSString * value in values)
+    {
+        NSString * rtn = textAfter(value, @"\x03");
+        rtn = textBefore (rtn,@"\x04");
+        rtn = textBefore (rtn,@"\x05");
+    }
+    return rtn;
+}
+- (NSString *) currentValueField:(int)index
 {
     NSArray * values = [self valuesForFeature:_currentFeature];
-    NSString * rtn = textAfter(values[currentValues[_currentFeature]], @"\x03");
+    NSString * rtn = textAfter(values[index], @"\x03");
     rtn = textBefore (rtn,@"\x04");
     rtn = textBefore (rtn,@"\x05");
     return rtn;
 }
 - (void) setCurrentValue:(NSInteger)value
 {
-    currentValues[_currentFeature] = (int)value;
-    self.currentFeatureValue = (int)value;
+    NSArray * values = [self valuesForFeature:_currentFeature];
+    NSMutableArray *curValues = NSMutableArray.new;
+    if (values)
+        [curValues addObject:values[value]];
+    [_currentValues replaceObjectAtIndex:_currentFeature withObject:curValues];
+}
+
+- (void) setCurrentValues:(NSArray*)values
+{
+    [_currentValues replaceObjectAtIndex:_currentFeature withObject:values];
+    //currentValues[_currentFeature] = (int)value;
+    //self.currentFeatureValue = (int)value;
 }
 
 - (NSArray *) features

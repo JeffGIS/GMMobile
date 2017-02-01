@@ -86,7 +86,8 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 @property (nonatomic)CPFeatures currentFeature;
 @property CPFeatures currentFeatureSaved;
 @property MNMXCORD savedVisibleBounds;
-@property (nonatomic) int currentFeatureValue;
+@property NSMutableArray * currentValues;
+@property NSArray * currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
 @property NVMetroTextOptions* currentTextOption;
 @property (nonatomic)BOOL overUnder;
@@ -108,13 +109,15 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 - (NSString *) currentFeatureText;
 - (NSString *) currentValueText;
 - (NSString *) currentTextText;
-- (NSString *) currentValueField;
+- (NSString *) currentValueFields;
 - (NSString *) currentAdjustmentText;
 - (NSArray *) currentTextOptions;
 - (void) setCurrentValue:(NSInteger)value;
 - (NSArray *) valuesForFeature:(CPFeatures)feature;
 - (void) currentTextSelection:(int)index;
 - (BOOL) wantUseCode:(int)code;
+- (void) setCurrentValues:(NSArray*)values;
+
 
 
 @end

@@ -969,7 +969,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
 {
 #define MIN_PARCEL_ACRES 0.01
     BOOL isParcel = NO;
-    NSString * field = [NVMetroSettings.sharedInstance currentValueField];
+    NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
     NSString *query = @"";
     //NSString *querys;
     sqlite3_stmt *statement = NULL;
@@ -1164,6 +1164,9 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         MNMXCORD bounds;
         long long ID = sqlite3_column_int64(statement,i++);
         double dataValue = sqlite3_column_double(statement,i++);
+        NSArray * tempArray = [field componentsSeparatedByString:@","];
+        for (int ival = 1;ival < tempArray.count;ival++)
+            dataValue += sqlite3_column_double(statement,i++);
         double landArea = sqlite3_column_double(statement,i++);
         if (isParcel)
         {
@@ -1624,7 +1627,7 @@ NextPass:
     {
         NSString * fields = NVMetroSettings.sharedInstance.currentTextOption.fields;
         NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
-        NSString * field = [NVMetroSettings.sharedInstance currentValueField];
+        NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,field,table,table,dataTable,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,table,areaType];
         

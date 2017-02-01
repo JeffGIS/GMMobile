@@ -444,6 +444,9 @@ didReturnWithSelectedRows:(NSArray <NSNumber *> *)selectedRows
             break;
             
         case 3://value
+            [NVMetroSettings.sharedInstance setCurrentValues:selectedTextArray];
+            [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
+            
             break;
             
         case 5://color scheme
