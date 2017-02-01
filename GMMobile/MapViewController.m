@@ -1204,8 +1204,14 @@
     
     NSString *filepath = [NSString stringWithFormat:@"%@/image.jpg", UserDefaults.defaults.localFilePath];
     wmsRequest(filepath.UTF8String);
-    NVWebView *webView = [NVWebView showWebViewInView:self.view showFileAtPath:filepath];
-#pragma unused(webView)
+    
+    int fileSize =  (int)[NSFileManager.defaultManager attributesOfItemAtPath:filepath
+                                                                        error:nil].fileSize;
+    
+    NSLog(@"FILESIZE:%i", fileSize);
+    
+    UIImage *image = [UIImage imageWithContentsOfFile:filepath];
+    
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
