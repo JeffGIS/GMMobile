@@ -1203,13 +1203,18 @@
     _zoomExtentsGesture.numberOfTouchesRequired = 2;
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
-    _wmsLayers = @[@"dak13", @"met16"];
-    [self getWMSLayer:_wmsLayers[_currentLayer++]];
+    
+    _wmsLayers = @[@"hillshd", @"doq", @"bw1997", @"bw2000", @"fsa"/*2003*/, @"fsa2006", @"fsa2008", @"cir2008", @"fsa2009",
+                   @"fsa2010", @"dak10", @"dak10cir", @"fsa2013", @"fsa2013cir", @"dak13", @"dak13cir", @"fsa2015", @"fsa2015cir",
+                   @"met16", @"met16cir"];
+    
+    _currentLayer = 0;
+    [self getWMSLayer:_wmsLayers[_currentLayer]];
 }
 
 - (void)getWMSLayer:(NSString *)layer
 {
-    dbounds bounds = {-93.1083,44.5870,-93.1095,44.5882};
+    dbounds bounds = {-93.1078,44.5865,-93.1100,44.5887};
     NSString *filepath = [NSString stringWithFormat:@"%@/wmsImage.jpg", UserDefaults.defaults.localFilePath];
     wmsRequest(filepath.UTF8String, layer.UTF8String, bounds, 1536, 1536);
     UIImage *image = [UIImage imageWithContentsOfFile:filepath];
@@ -1221,20 +1226,29 @@
     imageView.tag = 456456;
     [self.view addSubview:imageView];
     [imageView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
-    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(switchWmsView:)];
+    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(forwardWmsView:)];
     swipe.direction = UISwipeGestureRecognizerDirectionLeft;
     [imageView addGestureRecognizer:swipe];
-    swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(switchWmsView:)];
+    swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(backWmsView:)];
     swipe.direction = UISwipeGestureRecognizerDirectionRight;
     [imageView addGestureRecognizer:swipe];
 }
 
-- (void)switchWmsView:(UISwipeGestureRecognizer *)gesture
+- (void)forwardWmsView:(UISwipeGestureRecognizer *)gesture
 {
     [gesture.view removeFromSuperview];
     
-    if (_currentLayer < _wmsLayers.count)
-        [self getWMSLayer:_wmsLayers[_currentLayer++]];
+    if (_currentLayer < (_wmsLayers.count - 1))
+        [self getWMSLayer:_wmsLayers[++_currentLayer]];
+}
+
+- (void)backWmsView:(UISwipeGestureRecognizer *)gesture
+{
+    if (_currentLayer > 0)
+    {
+        [gesture.view removeFromSuperview];
+        [self getWMSLayer:_wmsLayers[--_currentLayer]];
+    }
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
