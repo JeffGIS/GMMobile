@@ -140,6 +140,7 @@
 		69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */; };
 		69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */; };
 		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
+		69E9D9071E42D83C00B7B20F /* WMSImage.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 69E9D9061E42D83C00B7B20F /* WMSImage.jpeg */; };
 		69F05CCF1DF862BD000CB276 /* ENA_19_87-26_A0.PDF in Resources */ = {isa = PBXBuildFile; fileRef = 69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */; };
 		69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177331D7A0B7400741C68 /* GoogleMaps.framework */; };
 		69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */; };
@@ -472,6 +473,7 @@
 		69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeftPhone.png; sourceTree = "<group>"; };
 		69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRightPhone.png; sourceTree = "<group>"; };
 		69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumbPhone.png; sourceTree = "<group>"; };
+		69E9D9061E42D83C00B7B20F /* WMSImage.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = WMSImage.jpeg; sourceTree = "<group>"; };
 		69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "ENA_19_87-26_A0.PDF"; sourceTree = "<group>"; };
 		69F177331D7A0B7400741C68 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
@@ -1088,6 +1090,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				69E9D9061E42D83C00B7B20F /* WMSImage.jpeg */,
 				69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
 				BB2B13931D6F78B10072957F /* SANPTID.txt */,
@@ -1386,6 +1389,7 @@
 				6998225B1C6850C9003476DD /* brick_texture.png in Resources */,
 				69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */,
 				A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */,
+				69E9D9071E42D83C00B7B20F /* WMSImage.jpeg in Resources */,
 				69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */,
 				697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */,
 				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
