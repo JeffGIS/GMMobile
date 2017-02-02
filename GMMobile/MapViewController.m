@@ -1202,9 +1202,9 @@
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
     
-    dbounds bounds = {-93.2500,44.9900,-93.2600,45.0000};
+    dbounds bounds = {-93.2550,44.9950,-93.2650,45.0050};
     NSString *filepath = [NSString stringWithFormat:@"%@/wmsImage.jpg", UserDefaults.defaults.localFilePath];
-    wmsRequest_jeff(filepath.UTF8String, bounds, 768, 768);
+    wmsRequest(filepath.UTF8String, bounds, 768, 768);
     int fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:filepath error:nil].fileSize;
     NSLog(@"wmsImage.jpg FILESIZE = %i", fileSize);
     UIImage *image = [UIImage imageWithContentsOfFile:filepath];
