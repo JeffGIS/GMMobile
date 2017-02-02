@@ -1202,10 +1202,9 @@
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
     
-    dbounds bounds = {-93.2635,44.9760,-93.2665,44.9790};
+    dbounds bounds = {-93.2647,44.9777,-93.2677,44.9807};
     NSString *filepath = [NSString stringWithFormat:@"%@/wmsImage.jpg", UserDefaults.defaults.localFilePath];
-    NSString *tmpFilePath = [NSString stringWithFormat:@"%@/tmpWmsImage.jpg", UserDefaults.defaults.localFilePath];
-    wmsRequest(filepath.UTF8String, tmpFilePath.UTF8String, bounds, 768, 768);
+    wmsRequest(filepath.UTF8String, bounds, 768, 768);
     int fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:filepath error:nil].fileSize;
     NSLog(@"wmsImage.jpg FILESIZE = %i", fileSize);
     UIImage *image = [UIImage imageWithContentsOfFile:filepath];
@@ -1218,6 +1217,10 @@
     [self.view addSubview:imageView];
     [imageView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(removeWmsView:)];
+    swipe.direction = UISwipeGestureRecognizerDirectionLeft;
+    [imageView addGestureRecognizer:swipe];
+    swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(removeWmsView:)];
+    swipe.direction = UISwipeGestureRecognizerDirectionRight;
     [imageView addGestureRecognizer:swipe];
 }
 
