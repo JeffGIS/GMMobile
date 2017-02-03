@@ -1280,7 +1280,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
             dc.iValue = IDNINT64(dataValue);
-            if (!NVMetroSettings.sharedInstance.currentFeatureValue)
+            if (!field.length)
                 [self drawUseCode:context
                           nPoints:numPoints
                            nLoops:numLoops

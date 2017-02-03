@@ -126,7 +126,11 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
 {
     _currentFeatureValue = currentFeatureValue;
 }
-
+- (NSArray*) getCurrentFeatureValue
+{
+    int ii = 1;
+    return _currentFeatureValue;
+}
 -(BOOL) wantUseCode:(int)code
 {
     if (nParcelTypesWanted < 1)
@@ -197,8 +201,11 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
         [curValues addObject:values[value]];
     [_currentValues replaceObjectAtIndex:_currentFeature withObject:curValues];
 }
-
-- (void) setCurrentValues:(NSArray*)values
+- (NSMutableArray*) getCurrentValues
+{
+    return _currentValues;
+}
+- (void) updateCurrentValues:(NSArray*)values
 {
     [_currentValues replaceObjectAtIndex:_currentFeature withObject:values];
     //currentValues[_currentFeature] = (int)value;

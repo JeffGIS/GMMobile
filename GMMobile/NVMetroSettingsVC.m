@@ -443,8 +443,8 @@ didReturnWithSelectedRows:(NSArray <NSNumber *> *)selectedRows
         case 2://feature
             break;
             
-        case 3://value
-            [NVMetroSettings.sharedInstance setCurrentValues:selectedTextArray];
+        case 33://value
+            [NVMetroSettings.sharedInstance updateCurrentValues:selectedTextArray];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             
             break;
