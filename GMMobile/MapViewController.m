@@ -23,7 +23,6 @@
 #import "ChartsViewController.h"
 #import "NVSpreadsheetDelegate.h"
 #import "NVMetroSettingsVC.h"
-#import "CCodeLibrary/WMS.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -100,8 +99,6 @@
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
-@property (nonatomic, copy) NSArray *wmsLayers;
-@property int currentLayer;
 
 @end
 
@@ -1203,52 +1200,6 @@
     _zoomExtentsGesture.numberOfTouchesRequired = 2;
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
-    
-    _wmsLayers = @[@"hillshd", @"doq", @"bw1997", @"bw2000", @"fsa"/*2003*/, @"fsa2006", @"fsa2008", @"cir2008", @"fsa2009",
-                   @"fsa2010", @"dak10", @"dak10cir", @"fsa2013", @"fsa2013cir", @"dak13", @"dak13cir", @"fsa2015", @"fsa2015cir",
-                   @"met16", @"met16cir"];
-    
-    _currentLayer = 0;
-   // [self getWMSLayer:_wmsLayers[_currentLayer]];
-}
-
-- (void)getWMSLayer:(NSString *)layer
-{
-    dbounds bounds = {-93.1078,44.5865,-93.1100,44.5887};
-    NSString *filepath = [NSString stringWithFormat:@"%@/wmsImage.jpg", UserDefaults.defaults.localFilePath];
-    wmsRequest(filepath.UTF8String, layer.UTF8String, bounds, 1536, 1536);
-    UIImage *image = [UIImage imageWithContentsOfFile:filepath];
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.backgroundColor = UIColor.blackColor;
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.userInteractionEnabled = YES;
-    imageView.tag = 456456;
-    [self.view addSubview:imageView];
-    [imageView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
-    UISwipeGestureRecognizer *swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(forwardWmsView:)];
-    swipe.direction = UISwipeGestureRecognizerDirectionLeft;
-    [imageView addGestureRecognizer:swipe];
-    swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(backWmsView:)];
-    swipe.direction = UISwipeGestureRecognizerDirectionRight;
-    [imageView addGestureRecognizer:swipe];
-}
-
-- (void)forwardWmsView:(UISwipeGestureRecognizer *)gesture
-{
-    [gesture.view removeFromSuperview];
-    
-    if (_currentLayer < (_wmsLayers.count - 1))
-        [self getWMSLayer:_wmsLayers[++_currentLayer]];
-}
-
-- (void)backWmsView:(UISwipeGestureRecognizer *)gesture
-{
-    if (_currentLayer > 0)
-    {
-        [gesture.view removeFromSuperview];
-        [self getWMSLayer:_wmsLayers[--_currentLayer]];
-    }
 }
 
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
