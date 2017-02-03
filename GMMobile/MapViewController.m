@@ -1209,7 +1209,7 @@
                    @"met16", @"met16cir"];
     
     _currentLayer = 0;
-    [self getWMSLayer:_wmsLayers[_currentLayer]];
+   // [self getWMSLayer:_wmsLayers[_currentLayer]];
 }
 
 - (void)getWMSLayer:(NSString *)layer

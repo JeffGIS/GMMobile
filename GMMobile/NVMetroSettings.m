@@ -65,14 +65,16 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     
     if (self)
     {
-        self.currentFeature = CPFTracts;
         self.currentAdjustmentValue = CPAdjustCountPerSQMile;
-        self.currentValues = NSMutableArray.new;
+        _currentValues = NSMutableArray.new;
         for (int i = 0;i<CPFeaturesCount;i++)
         {
+            NSMutableArray * values = NSMutableArray.new;
+            [_currentValues addObject:values];
             self.currentFeature = i;
             [self setCurrentValue:0];
         }
+        self.currentFeature = CPFTracts;
 //        currentValues[self.currentFeature] = self.currentFeatureValue = 1;
     }
     
@@ -170,9 +172,12 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     NSString * rtn = @"";
     for (NSString * value in values)
     {
-        NSString * rtn = textAfter(value, @"\x03");
-        rtn = textBefore (rtn,@"\x04");
-        rtn = textBefore (rtn,@"\x05");
+        NSString * str = textAfter(value, @"\x03");
+        str = textBefore (str,@"\x04");
+        str = textBefore (str,@"\x05");
+        if (rtn.length)
+            rtn = [rtn stringByAppendingString:@","];
+        rtn = [rtn stringByAppendingString:str];
     }
     return rtn;
 }
