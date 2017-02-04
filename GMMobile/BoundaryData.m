@@ -8,7 +8,6 @@
 #import "CCodeLibrary/NVTextDrawing.h"
 #import "CCodeLibrary/NVColor.h"
 #import "ConfigurationControl.h"
-#import "NVMetroSettings.h"
 
 @implementation BoundaryAreaData
 
@@ -1044,10 +1043,13 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             factor = 1000;
             nDecimals = 1;
             break;
-        case CPAdjustCountPerHousingUnit:
         case CPAdjustPctOfTotalHousingUnits:
             factor = 1000;
             nDecimals = 1;
+            break;
+        case CPAdjustCountPerHousingUnit:
+            factor = 1000;
+            nDecimals = 3;
             break;
     }
     BOOL opened = [self open];
@@ -1205,10 +1207,14 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 dataValue /= area;
                 break;
             case CPAdjustPctOfTotalPop:
+                if (!totalPop)
+                    goto SkipRecord;
                 dataValue /= totalPop;
                 break;
             case CPAdjustCountPerHousingUnit:
             case CPAdjustPctOfTotalHousingUnits:
+                if (!totalHousingUnits)
+                    goto SkipRecord;
                 dataValue /= totalHousingUnits;
                break;
         }
@@ -1577,13 +1583,13 @@ NextPass:
 - (int) displayText:(CGContextRef)context
                from:(TextFromOption)from
        areaType:(NSString*)areaType
-          textOptions:(TextOptions *)to
+          textOptions:(NVMetroTextOptions*)to
    pointInAreas:(PointInAreas*)pias
       llCorners:(CORNERPOINTS *) latlonCornerPoints
        LLBounds:(MNMXCORD *)platlonBounds
      viewBounds:(MNMXCORD *)pvbounds
 {
-    if (!NVMetroSettings.sharedInstance.currentTextOption)
+    if (!to || !to.numTextFields)
         return 0;
     extern MNMXCORD curbounds;
     int nLoaded = 0;
@@ -1597,7 +1603,6 @@ NextPass:
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat fontSize = 48.0;
     CGFloat minFontSize = 6.0;
-    NSString * textFields = @"";
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
     
     BOOL opened = [self open];
@@ -1620,12 +1625,12 @@ NextPass:
     }
     else if ([areaType isEqualToString:@"PARCEL"])
     {
-        NSString * fields = NVMetroSettings.sharedInstance.currentTextOption.fields;
+        NSString * fields = to.fields;
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
     {
-        NSString * fields = NVMetroSettings.sharedInstance.currentTextOption.fields;
+        NSString * fields = to.fields;
         NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
         NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,field,table,table,dataTable,table,table,
@@ -1661,10 +1666,10 @@ NextPass:
 
         _acres = sqlite3_column_double(statement,i++);
         int nTextFields = 0;
-        for (int iField=0;iField<NVMetroSettings.sharedInstance.currentTextOption.numTextFields;iField++)
+        for (int iField=0;iField<to.numTextFields;iField++)
         {
             pTextValue[nTextFields] = (LPSTR)sqlite3_column_text(statement,i++);
-            textFormat[nTextFields] = NVMetroSettings.sharedInstance.currentTextOption.formats[iField];
+            textFormat[nTextFields] = to.formats[iField];
             if (pTextValue[nTextFields] && *pTextValue[nTextFields])
             {
                 if (nTextFields && !strcmp (pTextValue[nTextFields],pTextValue[nTextFields-1]))
@@ -1726,8 +1731,8 @@ NextPass:
             if (pias)
             {
 //                count = [pias countForArea:keyval] * to.adjustCount;
-                NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
-                text = [NSString stringWithFormat:fmt,count];
+//            NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
+//                text = [NSString stringWithFormat:fmt,count];
             }
             else if (from == TFONVMetroDisplay)
             {

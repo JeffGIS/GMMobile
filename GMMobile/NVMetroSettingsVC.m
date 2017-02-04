@@ -25,6 +25,7 @@
 {
     [super viewDidLoad];
     
+    [NVMetroSettings.sharedInstance setCurrentFeature:NVMetroSettings.sharedInstance.currentFeature];
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 28.0;
     
@@ -108,7 +109,7 @@
     [self setupButton:colorSchemeButton fontSize:littleFont];
     
     _textButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_textButton setTitle:paddedString(@"Taxpayer / Total EMT") forState:UIControlStateNormal];
+    [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentTextText]) forState:UIControlStateNormal];
     [self setupButton:_textButton fontSize:littleFont];
     
     UISlider *transparencySlider = UISlider.new;

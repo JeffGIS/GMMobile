@@ -148,20 +148,50 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     return rtn;
 }
 
+- (int) valueID:(NSString*)value
+{
+    NSString * IDStr = textAfter (value,@"\x04");
+    int ID = (int)IDStr.integerValue;
+    return ID;
+}
 - (NSString *) currentValueText
 {
     NSArray * values = _currentValues[_currentFeature];
     NSString * rtn = @"";
+    int lastID = -1;
+    int toPos = -1;
     for (NSString *str in values)
     {
+        int ID = [self valueID:str];
         NSString *str2 = stringWithoutID(str);
-        rtn = [rtn stringByAppendingString:str2];
+        if (ID - lastID == 1 && toPos != -1)
+        {
+            NSRange range = [str2 rangeOfString:@" to "];
+            
+            if (range.location != NSNotFound)
+            {
+                NSString * toVal = [str2 substringFromIndex:(range.location + 4)];
+                rtn = [rtn substringToIndex:toPos];
+                rtn = [rtn stringByAppendingString:toVal];
+            }
+            
+        }
+        else
+        {
+            if (rtn.length)
+                rtn = [rtn stringByAppendingString:@" "];
+            rtn = [rtn stringByAppendingString:str2];
+            NSRange range = [rtn rangeOfString:@" to " options:NSBackwardsSearch];
+            if (range.location != NSNotFound)
+                 toPos = (int)range.location + 4;
+        }
+        lastID = ID;
     }
     return rtn;
 }
 - (NSString *) currentTextText
 {
-    NSString * rtn = _currentTextOption.description;
+    NSString * rtn = self.currentTextOption.description;
     return rtn;
 }
 - (NSString *) currentAdjustmentText
@@ -201,7 +231,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
         [curValues addObject:values[value]];
     [_currentValues replaceObjectAtIndex:_currentFeature withObject:curValues];
 }
-- (NSMutableArray*) getCurrentValues
+- (NSMutableArray*) currentValues
 {
     return _currentValues;
 }
@@ -783,7 +813,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
 
 - (void) currentTextSelection:(int)index
 {
-    NSArray * textOptions = [self textValuesForFeature:_currentFeatureValue];
+    NSArray * textOptions = [self textValuesForFeature:_currentFeature];
     if (index < textOptions.count)
     {
         _currentTextOption = textOptions[index];
@@ -791,5 +821,14 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     }
 }
 
+-(NVMetroTextOptions*) textOptionsForAreas
+{
+    NVMetroTextOptions*to = NVMetroTextOptions.new;
+    to.numTextFields = 1;
+    to.desc = @"Boundary Name";
+    to.fields = @"NAME";
+    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustNone], nil];
+    return to;
+}
 @end
 

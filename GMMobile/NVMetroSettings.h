@@ -117,6 +117,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 - (void) currentTextSelection:(int)index;
 - (BOOL) wantUseCode:(int)code;
 - (void) updateCurrentValues:(NSArray*)values;
+-(NVMetroTextOptions*) textOptionsForAreas;
 
 
 

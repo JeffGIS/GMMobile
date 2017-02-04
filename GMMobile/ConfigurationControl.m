@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "ConfigurationControl.h"
+#import "NVMetroSettings.h"
 #import "CCodeLibrary/MapToolbar.h"
 #import "AppDelegate.h"
 #import "PlanimetricData.h"
@@ -403,7 +404,10 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     {
         case HCConfigMetroProp:
             if (first)
+            {
                 CRAPI.sharedInstance.selectBoundaryFromMapType = @"Counties";
+                NVMetroSettings.sharedInstance.currentTextOption = [NVMetroSettings.sharedInstance textOptionsForAreas];
+            }
         case HCConfigFromSpreadsheet:
             if (first)
                 CRAPI.sharedInstance.parcelTextOption = 1;

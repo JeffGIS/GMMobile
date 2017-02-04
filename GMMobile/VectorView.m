@@ -261,7 +261,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                [bd displayText:_context
                                                           from:TFOSelectBoundary
                                                       areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
-                                                     textOptions:nil
+                                                     textOptions:NVMetroSettings.sharedInstance.currentTextOption
                                                   pointInAreas:nil
                                                      llCorners:&_latlonCornerPoints
                                                       LLBounds:&_latlonBounds
@@ -720,7 +720,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             [_bd displayText:_context
                                         from:TFONVMetroDisplay
                                    areaType:CenType
-                                textOptions:nil
+                                textOptions:NVMetroSettings.sharedInstance.currentTextOption
                                pointInAreas:nil
                                   llCorners:&_latlonCornerPoints
                                    LLBounds:&_latlonBounds

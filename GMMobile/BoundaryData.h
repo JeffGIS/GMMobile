@@ -4,6 +4,7 @@
 #import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "Themes.h"
+#import "NVMetroSettings.h"
 
 typedef NS_ENUM(NSInteger, TextFromOption)
 {
@@ -101,7 +102,7 @@ boundsPointInAreas:(PointInAreas*)pias
 - (int) displayText:(CGContextRef)context
                from:(TextFromOption)from
            areaType:(NSString*)areaType
-          textOptions:(TextOptions *)textOptions
+          textOptions:(NVMetroTextOptions*)textOptions
        pointInAreas:(PointInAreas*)pias
           llCorners:(CORNERPOINTS *) latlonCornerPoints
            LLBounds:(MNMXCORD *)platlonBounds
