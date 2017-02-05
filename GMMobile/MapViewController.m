@@ -811,6 +811,8 @@
 /*    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
                                      legendsView:legendsView
                                      pickedItems:DispersePoint.getDispersedPoints];*/
+    int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:CRAPI.sharedInstance.extractFile
+                                                               error:nil].fileSize;
     
     NSData *pdf = [NSData dataWithContentsOfFile:CRAPI.sharedInstance.extractFile];
     

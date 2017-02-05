@@ -77,7 +77,7 @@
     
     BoundaryData *bd = [[BoundaryData alloc] init];
     
-    /*if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
+    if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
         [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
                            withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
@@ -98,7 +98,7 @@
                    LLBounds:&latlonBounds
                  viewBounds:&viewBounds];
         
-    }*/
+    }
     NSString * file = CRAPI.sharedInstance.extractFile;
     {
         LPBYTE pbuf = bmData;
@@ -109,15 +109,19 @@
                 ii=pbuf[i];
         }
     }
+    if (context)
+        CGContextRelease(context);
     BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
     if (rtn)
         NSLog(@"Image written");
     CGColorSpaceRelease(colorSpace);
     if (bmData)
         free (bmData);
-    if (context)
-        CGContextRelease(context);
-    
+    UIImage *image = [UIImage imageWithContentsOfFile:file];
+    UIImageWriteToSavedPhotosAlbum(image,
+                                   nil,
+                                   nil,
+                                   nil);
 
     /*UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
     NSData * pngData = UIImagePNGRepresentation(image);
@@ -148,70 +152,4 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
 
 //[PropertyList getRadiusForField:ifield];
-/*UIGraphicsBeginImageContext(size);
- _context = UIGraphicsGetCurrentContext();
- CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
- UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
- NSData * pngData = UIImagePNGRepresentation(image);
- [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
-BOOL WriteBitmapDataToFile (LPSTR file,int pixelsWide, int pixelsHigh, CGColorSpaceRef colorSpace, void *bmData)
-{
-    BOOL rtn = TRUE;
-    BITMAPINFOHEADER bih;
-    
-    int bitmapByteCount = 0, bitmapBytesPerRow = 0;
-    int nc = (int)CGColorSpaceGetNumberOfComponents(colorSpace);
-    uint32_t flags = 0;
-    if (nc > 1)
-    {
-        nc++;
-        flags = kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big;
-        flags = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little;
-        flags = kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big;
-    }
-    bitmapBytesPerRow = nc * pixelsWide;
-    bitmapByteCount = (bitmapBytesPerRow *pixelsHigh);
-    
-    bih.biHeight = pixelsHigh;
-    bih.biWidth = pixelsWide;
-    bih.biBitCount = nc*8;
-    bih.biSizeImage = bitmapByteCount;
-    bih.biSize = sizeof(BITMAPINFOHEADER);
-    int ii = sizeof(BITMAPINFOHEADER);
-    ii = sizeof(DWORD);
-    ii = sizeof(WORD);
-    ii = sizeof(LONG);
-    bih.biPlanes = 1;
-    bih.biCompression = BI_RGB;
-    bih.biXPelsPerMeter = 0;
-    bih.biYPelsPerMeter = 0;
-    bih.biClrUsed = 0;
-    bih.biClrImportant = 0;
-    
-    COLORREF_RGB rgb;
-    rgb.cRed = 0;
-    rgb.cGreen = 0;
-    rgb.cBlue = 0;
-    
-    BITMAPFILEHEADER bfh;
-    
-    bfh.bfType = 0x4D42;
-    bfh.bfReserved1 = 0;
-    bfh.bfReserved2 = 0;
-    bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + bih.biSize;
-    bfh.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + bitmapByteCount;
-    
-    FILE *Fid = fopen(file,"wb");
-    if (BigWrite(Fid ,(LPBYTE)&bfh ,sizeof(BITMAPFILEHEADER), -1) != sizeof(BITMAPFILEHEADER))
-        rtn = FALSE;
-    if (BigWrite(Fid ,(LPBYTE)&bih ,sizeof(BITMAPINFOHEADER), -1) != sizeof(BITMAPINFOHEADER))
-        rtn = FALSE;
-    if (BigWrite(Fid ,(LPBYTE)bmData ,bitmapByteCount, -1) != bitmapByteCount)
-        rtn = FALSE;
-    
-    fclose (Fid);
-    
-    return rtn;
-}
-
 @end
