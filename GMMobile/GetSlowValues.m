@@ -110,6 +110,28 @@
                 ii=pbuf[i];
         }
     }
+    Theme * theme = themes.themeList[0];
+    COLORREF_RGB4 *wantColors;
+    int *colorCounts;
+
+    _maxColors = [self getColorsFromTheme:theme colors:&wantColors];
+    colorCounts = calloc ((_maxColors+1),sizeof(int));
+    
+    COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
+    for (int irow = 0;irow < height;irow++)
+        for (int icol = 0;icol < width;icol++)
+        {
+            [self countColors:pColor++
+            wantColors:wantColors
+             counts:colorCounts];
+        }
+    double totPct=0;
+    for (int i=0;i<_maxColors;i++)
+    {
+        int c = colorCounts[i];
+        double pct = (double)(c * 100)/(width*height);
+        totPct += pct;
+    }
     if (context)
         CGContextRelease(context);
     BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
@@ -130,6 +152,65 @@
   
 }
 
+- (int) getColorsFromTheme:(Theme*)theme
+                    colors:(COLORREF_RGB4**)pclrs
+{
+    int nColors = theme.numClasses;
+    COLORREF_RGB4 * pColors = malloc ((nColors+1)*sizeof(COLORREF_RGB4));
+    ThemeLegend * legend = theme.legend;
+    for (int i=0;i<nColors;i++)
+    {
+        CGFloat R,G,B,Alpha;
+        ThemeLegendCell *cell = legend.cells[i];
+        UIColor *color = cell.symbolColor;
+        [color getRed:&R green:&G blue:&B alpha:&Alpha];
+        pColors[i].cRed = R*255;
+        pColors[i].cGreen = G*255;
+        pColors[i].cBlue = B*255;
+        pColors[i].cIntensity = Alpha*255;
+        
+    }
+    *pclrs = pColors;
+    
+    return nColors;
+}
+
+- (void) countColors:(COLORREF_RGB4*)color
+          wantColors:(COLORREF_RGB4*)wantColors
+              counts:(LPINT)colorCounts
+{
+    int r = color->cRed;
+    int g = color->cGreen;
+    int b = color->cBlue;
+    int a;
+    if (g != 255)
+    {
+        for (int j = 0;j<_maxColors;j++)
+        {
+            r = wantColors[j].cRed;
+            g = wantColors[j].cGreen;
+            b = wantColors[j].cBlue;
+            a = wantColors[j].cIntensity;
+        }
+    }
+    for (int i=0;i<_maxColors;i++)
+    {
+        if (*(LPINT)color == *(LPINT)&wantColors[i])
+        {
+            colorCounts[i]++;
+            return;
+        }
+        if (color->cRed == wantColors[i].cRed &&
+            color->cGreen == wantColors[i].cGreen &&
+            color->cBlue == wantColors[i].cBlue)
+        {
+            colorCounts[i]++;
+            return;
+        }
+    }
+    colorCounts[_maxColors]++;
+    return;
+}
 -(void)   displayMapit:(CGContextRef)context
 displayCharacteristics:(DisplayCharacteristics *)dc
              llCorners:(CORNERPOINTS *) latlonCornerPoints

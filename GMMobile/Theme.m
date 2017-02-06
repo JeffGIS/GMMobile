@@ -81,7 +81,7 @@
     thm.legend.symbolDefaultColor = [UIColor greenColor];
     thm.legend.hasColors = YES;
 
-    CGFloat PropListAlpha = 0.85;
+    CGFloat PropListAlpha = 1;
     UIColor *selectedColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
     switch (type)
     {

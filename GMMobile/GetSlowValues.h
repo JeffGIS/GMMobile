@@ -36,6 +36,7 @@
 @interface GetSlowValues : NSObject
 @property (nonatomic, weak) id <GetSlowValuesDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
+@property int maxColors;
 
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
