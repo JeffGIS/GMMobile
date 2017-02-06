@@ -153,10 +153,10 @@
                         LLBounds:(MNMXCORD *)platlonBounds
                       viewBounds:(MNMXCORD *)pvbounds
 {
-    int numPoints = 256;
+    int numPoints = 257;
     
     LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-    double ainc = (HALFPI * 4) / numPoints;
+    double ainc = (HALFPI * 4) / (numPoints-1);
     double az = PY;
     
     CloseTRANS2(&_pTranLLtoView);
@@ -773,7 +773,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
-            CGContextSetLineWidth(context, 0);
             CGContextDrawPath(context, kCGPathEOFill);
         }
         
