@@ -49,6 +49,9 @@
     int width = 1024;
     int height = 1024;
     CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
+    CGContextSetAllowsAntialiasing(context, NO);
+    CGContextSetShouldAntialias(context, NO);
+
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     MNMXCORD latlonBounds;
     MNMXCORD viewBounds;
