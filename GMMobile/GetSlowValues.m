@@ -52,20 +52,21 @@
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     MNMXCORD latlonBounds;
     MNMXCORD viewBounds;
-    double OneMile = 5280 * MFT;
-    double dist = OneMile / 2;
+    double OneMile = 5280 * FTM;
+    double radius = OneMile / 2;
     
     viewBounds.xmn = 0;
-    viewBounds.ymn = 0;
+    viewBounds.ymn = height;
     viewBounds.xmx = width;
-    viewBounds.ymx = height;
-    CORNERPOINTS latlonCornerPoints = CornerPointsFromPointAndDist (latlon,dist);
+    viewBounds.ymx = 0;
+    CORNERPOINTS latlonCornerPoints = CornerPointsFromLatLonAndDist (latlon,radius);
     latlonBounds = CornerPointBounds (&latlonCornerPoints);
     
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
     ConfigurationControl.sharedInstance.currentApp = HCConfigFromSpreadsheet;
     [themes setAppThemes];
+    dc.width = 0;
     
     [self        displayMapit:context
        displayCharacteristics:dc
@@ -77,10 +78,10 @@
     
     BoundaryData *bd = [[BoundaryData alloc] init];
     
-    if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
-        [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
-                           withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
+        [bd displayCircularBoundaryAt:latlon
+                           withRadius:radius
+                            lineWidth:0
                                asMask:1
                             inContext:context
                             llCorners:&latlonCornerPoints
@@ -88,7 +89,7 @@
                            viewBounds:&viewBounds];
         
     }
-    else
+/*    else
     {
         [bd displayBoundary:ConfigurationControl.sharedInstance.MapitBoundaryRefno
                      ofType:ConfigurationControl.sharedInstance.MapitBoundaryType
@@ -98,7 +99,7 @@
                    LLBounds:&latlonBounds
                  viewBounds:&viewBounds];
         
-    }
+    }*/
     NSString * file = CRAPI.sharedInstance.extractFile;
     {
         LPBYTE pbuf = bmData;

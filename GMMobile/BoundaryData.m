@@ -146,6 +146,7 @@
 
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radiusInMeters
+                       lineWidth:(CGFloat)lineWidth
                           asMask:(CGFloat)mask
                        inContext:(CGContextRef)context
                        llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -156,7 +157,7 @@
     
     LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
     double ainc = (HALFPI * 4) / numPoints;
-    double az = 0;
+    double az = PY;
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
@@ -169,7 +170,7 @@
         llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
     }
     llpoints[numPoints-1] = llpoints[0];
-    if (CRAPI.sharedInstance.showPolylineForBounds)
+    if (lineWidth)
     {
         UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.60];
         [self drawBoundary:context
@@ -771,7 +772,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             CGContextDrawPath(context, kCGPathEOFillStroke);
         }
         else
+        {
+            CGContextSetLineWidth(context, 0);
             CGContextDrawPath(context, kCGPathEOFill);
+        }
         
     }
 }

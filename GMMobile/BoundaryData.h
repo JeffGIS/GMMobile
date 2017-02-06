@@ -58,11 +58,12 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
                       withRadius:(double)radius
-                asMask:(CGFloat)mask
-             inContext:(CGContextRef)context
-             llCorners:(CORNERPOINTS *) latlonCornerPoints
-              LLBounds:(MNMXCORD *)platlonBounds
-            viewBounds:(MNMXCORD *)pvbounds;
+                       lineWidth:(CGFloat)lineWidth
+                          asMask:(CGFloat)mask
+                       inContext:(CGContextRef)context
+                       llCorners:(CORNERPOINTS *) latlonCornerPoints
+                        LLBounds:(MNMXCORD *)platlonBounds
+                      viewBounds:(MNMXCORD *)pvbounds;
 
 -(void) displayLandUse:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -102,7 +103,7 @@ boundsPointInAreas:(PointInAreas*)pias
 - (int) displayText:(CGContextRef)context
                from:(TextFromOption)from
            areaType:(NSString*)areaType
-          textOptions:(NVMetroTextOptions*)textOptions
+        textOptions:(NVMetroTextOptions*)textOptions
        pointInAreas:(PointInAreas*)pias
           llCorners:(CORNERPOINTS *) latlonCornerPoints
            LLBounds:(MNMXCORD *)platlonBounds

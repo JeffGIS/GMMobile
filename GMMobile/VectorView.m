@@ -608,6 +608,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             [bd displayCircularBoundaryAt:ConfigurationControl.sharedInstance.MapitTargetCenterPoint
                                withRadius:ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles*METERS_PER_MILE
+                                lineWidth:0
                                    asMask:1
                                 inContext:_context
                                 llCorners:&_latlonCornerPoints
