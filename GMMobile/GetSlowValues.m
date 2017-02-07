@@ -75,6 +75,8 @@
     int *colorCounts;
     
     _maxColors = [self getColorsFromTheme:theme colors:&wantColors];
+    _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+
     colorCounts = calloc ((_maxColors+1),sizeof(int));
     
     dc.width = 0;
@@ -180,18 +182,23 @@
     return nColors;
 }
 
-int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,COLORREF_RGB4** pclrs)
+int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,void *bmData,COLORREF_RGB4** pclrs)
 {
+    int r,g,b,a;
+    COLORREF_RGB4 * pColor = (COLORREF_RGB4 *)bmData;
+    COLORREF_RGB4 testColor;
     CGRect colorRect;
     colorRect.origin.x = 0;
     colorRect.origin.y = 0;
     colorRect.size.width = width;
     colorRect.size.height = height;
-    UIColor *clr = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
+    UIColor *clr = [UIColor colorWithRed:0.25 green:0.5 blue:0.75 alpha:1];
     
     CGColorRef color =[clr CGColor];
     CGContextSetFillColorWithColor(context,color);
+    r = pColor->cRed; g = pColor->cGreen; b = pColor->cBlue; a = pColor->cIntensity;
     CGContextFillRect (context,colorRect);
+    r = pColor->cRed; g = pColor->cGreen; b = pColor->cBlue; a = pColor->cIntensity;
     int nColors = theme.numClasses;
     COLORREF_RGB4 * pColors = malloc ((nColors+1)*sizeof(COLORREF_RGB4));
     ThemeLegend * legend = theme.legend;
