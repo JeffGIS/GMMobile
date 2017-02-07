@@ -67,8 +67,16 @@
     
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
-    ConfigurationControl.sharedInstance.currentApp = HCConfigFromSpreadsheet;
+    ConfigurationControl.sharedInstance.currentApp = HCConfigFromSlowValues;
     [themes setAppThemes];
+
+    Theme * theme = themes.themeList[0];
+    COLORREF_RGB4 *wantColors;
+    int *colorCounts;
+    
+    _maxColors = [self getColorsFromTheme:theme colors:&wantColors];
+    colorCounts = calloc ((_maxColors+1),sizeof(int));
+    
     dc.width = 0;
     
     [self        displayMapit:context
@@ -113,12 +121,6 @@
                 ii=pbuf[i];
         }
     }
-    Theme * theme = themes.themeList[0];
-    COLORREF_RGB4 *wantColors;
-    int *colorCounts;
-
-    _maxColors = [self getColorsFromTheme:theme colors:&wantColors];
-    colorCounts = calloc ((_maxColors+1),sizeof(int));
     
     COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
     for (int irow = 0;irow < height;irow++)
@@ -158,6 +160,38 @@
 - (int) getColorsFromTheme:(Theme*)theme
                     colors:(COLORREF_RGB4**)pclrs
 {
+    int nColors = theme.numClasses;
+    COLORREF_RGB4 * pColors = malloc ((nColors+1)*sizeof(COLORREF_RGB4));
+    ThemeLegend * legend = theme.legend;
+    for (int i=0;i<nColors;i++)
+    {
+        CGFloat R,G,B,Alpha;
+        ThemeLegendCell *cell = legend.cells[i];
+        UIColor *color = cell.symbolColor;
+        [color getRed:&R green:&G blue:&B alpha:&Alpha];
+        pColors[i].cRed = R*255;
+        pColors[i].cGreen = G*255;
+        pColors[i].cBlue = B*255;
+        pColors[i].cIntensity = Alpha*255;
+        
+    }
+    *pclrs = pColors;
+    
+    return nColors;
+}
+
+int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,COLORREF_RGB4** pclrs)
+{
+    CGRect colorRect;
+    colorRect.origin.x = 0;
+    colorRect.origin.y = 0;
+    colorRect.size.width = width;
+    colorRect.size.height = height;
+    UIColor *clr = [UIColor colorWithRed:0 green:1 blue:0 alpha:1];
+    
+    CGColorRef color =[clr CGColor];
+    CGContextSetFillColorWithColor(context,color);
+    CGContextFillRect (context,colorRect);
     int nColors = theme.numClasses;
     COLORREF_RGB4 * pColors = malloc ((nColors+1)*sizeof(COLORREF_RGB4));
     ThemeLegend * legend = theme.legend;

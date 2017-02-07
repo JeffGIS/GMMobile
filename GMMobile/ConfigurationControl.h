@@ -70,7 +70,8 @@ NUMHardCodedLayers};
 + (ConfigurationControl *)sharedInstance;
 
 @property NSMutableArray *appList, *legendList;
-@property HardCodedConfigs legendApp, currentApp;
+@property HardCodedConfigs legendApp;
+@property HardCodedConfigs currentApp;
 @property BOOL GMTilesVisible, wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;

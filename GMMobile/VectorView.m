@@ -110,7 +110,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _latlonBounds = CornerPointBounds (&_latlonCornerPoints);
     CRAPI.sharedInstance.lastViewBounds = _latlonBounds;
     CRAPI.sharedInstance.lastDisplayBounds = _latlonBounds;
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
         
     }
@@ -584,6 +585,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 - (BOOL) doNVMetroDisplay:(DisplayCharacteristics *)dc
 {
     if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp &&
+        ConfigurationControl.sharedInstance.currentApp != HCConfigFromSpreadsheet &&
         ConfigurationControl.sharedInstance.currentApp != HCConfigFromSpreadsheet)
         return FALSE;
     if (CRAPI.sharedInstance.selectBoundaryFromMapType)
@@ -592,7 +594,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
     [themes setAppThemes];
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigFromSlowValues)
     {
         [self        displayMapit:_context
            displayCharacteristics:dc

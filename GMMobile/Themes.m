@@ -26,6 +26,7 @@
     switch (ConfigurationControl.sharedInstance.currentApp)
     {
         case HCConfigFromSpreadsheet:
+        case HCConfigFromSlowValues:
             thm = [Theme createTheme:MetroLandUseTheme];
             [_themeList addObject:thm];
             break;
@@ -152,7 +153,8 @@
         thm.displayID = displayID;
         if (thm.type == MetroPropTheme)
             rtn = DataPass;
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+            ConfigurationControl.sharedInstance.currentApp == HCConfigFromSlowValues)
             rtn = DataPass;
         if (ConfigurationControl.sharedInstance.legendList.count > i)
         {
