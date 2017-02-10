@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 @property (nonatomic) int datasetVersion;
 @property int zoom;
 @property ItemProcessingPassTypes pass;
+@property int numPass;
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;

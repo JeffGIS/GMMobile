@@ -671,6 +671,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         BoundaryData *bd = [[BoundaryData alloc] init];
                         bd.processingID = CRAPI.sharedInstance.keepProcessing;
                         bd.zoom = _zoom;
+                        bd.numPass = 2;
                         [bd displayLandUse:_context
                                  llCorners:&_latlonCornerPoints
                                   LLBounds:&_latlonBounds
@@ -705,6 +706,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         if (passID == DataPass || !_bd)
                         {
                             _bd = BoundaryData.new;
+                            _bd.numPass = 1;
+                            if ([NVMetroSettings.sharedInstance currentValueFields].length > 0)
+                                _bd.numPass++;
+                            if (NVMetroSettings.sharedInstance.currentTextOption.numTextFields > 0)
+                                _bd.numPass++;
                             [_bd open];
                         }
                         _bd.pass = passID;
