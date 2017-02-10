@@ -24,6 +24,7 @@
                       totEMV:(int)totEMV
                      useDesc:(LPSTR) usedescIN
 {
+    return;
     SlowValues * slowVals = [[SlowValues alloc]init];
     _popover = popover;
     _popover.title = @"Computing Values From Map";
@@ -113,16 +114,6 @@
                  viewBounds:&viewBounds];
         
     }*/
-    NSString * file = CRAPI.sharedInstance.extractFile;
-    {
-        LPBYTE pbuf = bmData;
-        int ii;
-        for (int i=0;i<4*width*height;i++)
-        {
-            if (pbuf[i])
-                ii=pbuf[i];
-        }
-    }
     
     COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
     for (int irow = 0;irow < height;irow++)
@@ -141,22 +132,19 @@
     }
     if (context)
         CGContextRelease(context);
+/*     NSString * file = CRAPI.sharedInstance.extractFile;
     BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
     if (rtn)
         NSLog(@"Image written");
-    CGColorSpaceRelease(colorSpace);
-    if (bmData)
-        free (bmData);
     UIImage *image = [UIImage imageWithContentsOfFile:file];
     UIImageWriteToSavedPhotosAlbum(image,
                                    nil,
                                    nil,
                                    nil);
-
-    /*UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
-    NSData * pngData = UIImagePNGRepresentation(image);
-    [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
-  
+*/
+    CGColorSpaceRelease(colorSpace);
+    if (bmData)
+        free (bmData);
 }
 
 - (int) getColorsFromTheme:(Theme*)theme

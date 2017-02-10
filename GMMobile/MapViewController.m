@@ -1015,6 +1015,7 @@
             if (CRAPI.sharedInstance.mapPropList)
             {
                 PropertyList *pl = PropertyList.new;
+                BOOL opened = [pl open];
                 NSArray *props = pl.getPropertyNumbers;
                 
                 for (NSNumber *numbers in props)
@@ -1036,6 +1037,7 @@
                         nvmib.tag = ((num * 100) + 3);
                     }
                 }
+                [pl close:opened];
             }
         }
     }

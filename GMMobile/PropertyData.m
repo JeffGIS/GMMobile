@@ -2565,7 +2565,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     LPINT partOffsets[MAXPARTS], partoff;
     int nPartOffsets[MAXPARTS], PartLen[MAXPARTS], PartLenTest[MAXPARTS];
     LPSTR PartLoc[MAXPARTS], PartLocTest[MAXPARTS];
-    int Trigger = 2, nHits = 0;
+    int Trigger = 1, nHits = 0;
     //int nowner;
     BOOL GetNext = TRUE;
     char Name[66];
@@ -2719,9 +2719,9 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                 LLPOINT llpt;
                 llpt.lat = lat;
                 llpt.lon = lon;
-                PickedItem *pi = [bd pickBoundaryArea:llpt type:@"Cities And Townships"];
+                /*PickedItem *pi = [bd pickBoundaryArea:llpt type:@"Cities And Townships"];
                 if (pi)
-                    cityName = pi.identifier;
+                    cityName = pi.identifier;*/
             }
             if (ShowThisOwner == 1)
             {
