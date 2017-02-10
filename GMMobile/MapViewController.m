@@ -932,18 +932,29 @@
         }
         
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
-        
         UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
            replaceViewControllerWithID:@"FieldOptionsVC"
                     withViewController:findvc];
         
-        UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
+        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+        {
+            UIViewController *nvmsvc = [storyboard instantiateViewControllerWithIdentifier:@"NVMetroSettingsVC"];
+            
+            [NVTabBarEdit tabBarController:self.tabBarController
+               replaceViewControllerWithID:@"DestinationsVC"
+                        withViewController:nvmsvc];
+        }
         
-        [NVTabBarEdit tabBarController:self.tabBarController
-           replaceViewControllerWithID:@"DestinationsVC"
-                    withViewController:avc];
+        else
+        {
+            UIViewController *avc = [storyboard instantiateViewControllerWithIdentifier:@"ApplicationsVC"];
+            
+            [NVTabBarEdit tabBarController:self.tabBarController
+               replaceViewControllerWithID:@"DestinationsVC"
+                        withViewController:avc];
+        }
         
         NVMetroSettingsVC *nvmsvc = NVMetroSettingsVC.new;
         nvmsvc.restorationIdentifier = @"NVMetroSettingsVC";
