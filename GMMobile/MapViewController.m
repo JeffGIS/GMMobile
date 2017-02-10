@@ -931,6 +931,13 @@
             _legendsAreOffMap = YES;
         }
         
+        NVMetroSettingsVC *nvmsvc = NVMetroSettingsVC.new;
+        nvmsvc.restorationIdentifier = @"NVMetroSettingsVC";
+        nvmsvc.tabBarItem.title = @"Settings";
+        
+        nvmsvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"settings"
+                                                                                                 ofType:@"png"]];
+        
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"LayersVC"];
         UIViewController *findvc = [storyboard instantiateViewControllerWithIdentifier:@"FindVC"];
         
@@ -940,8 +947,6 @@
         
         if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
         {
-            UIViewController *nvmsvc = [storyboard instantiateViewControllerWithIdentifier:@"NVMetroSettingsVC"];
-            
             [NVTabBarEdit tabBarController:self.tabBarController
                replaceViewControllerWithID:@"DestinationsVC"
                         withViewController:nvmsvc];
@@ -955,13 +960,6 @@
                replaceViewControllerWithID:@"DestinationsVC"
                         withViewController:avc];
         }
-        
-        NVMetroSettingsVC *nvmsvc = NVMetroSettingsVC.new;
-        nvmsvc.restorationIdentifier = @"NVMetroSettingsVC";
-        nvmsvc.tabBarItem.title = @"Settings";
-        
-        nvmsvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"settings"
-                                                                                                 ofType:@"png"]];
         
         [NVTabBarEdit tabBarController:self.tabBarController
            replaceViewControllerWithID:@"SettingsVC"
