@@ -1617,7 +1617,7 @@ NextPass:
     NSString *key = areaType;
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat fontSize = 48.0;
-    CGFloat minFontSize = 24.0;
+    CGFloat minFontSize = 20.0;
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
     
     BOOL opened = [self open];
@@ -1773,6 +1773,8 @@ NextPass:
             if (count >= 0)
             {
                 UIColor *textColor = UIColor.redColor;
+                if (nTextFields < 2)
+                    minFontSize = 6;
                 BOOL st = [NVTextDrawing drawText:text
                               inContext:context
                           withinPolygon:llpoints
@@ -1799,6 +1801,13 @@ NextPass:
                                        range:_iPass
                                    numRanges:_numPass];
         
+    }
+    if ([self continue])
+    {
+        [CRAPI.sharedInstance updateProgress:(int)1
+                                     current:(int)1
+                                       range:1
+                                   numRanges:1];
     }
     
     SQLOK(0,sqlite3_finalize(statement), self.database);

@@ -808,13 +808,13 @@
     
     legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
     
-/*    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
+    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
                                      legendsView:legendsView
-                                     pickedItems:DispersePoint.getDispersedPoints];*/
-    int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:CRAPI.sharedInstance.extractFile
+                                     pickedItems:DispersePoint.getDispersedPoints];
+/*    int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:CRAPI.sharedInstance.extractFile
                                                                error:nil].fileSize;
     
-    NSData *pdf = [NSData dataWithContentsOfFile:CRAPI.sharedInstance.extractFile];
+    NSData *pdf = [NSData dataWithContentsOfFile:CRAPI.sharedInstance.extractFile];*/
     
     if (MFMailComposeViewController.canSendMail)
     {
@@ -827,12 +827,12 @@
         
         [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
         
-       /* [composer addAttachmentData:pdf
-                           mimeType:@"application/pdf"
-                           fileName:@"testPDF.pdf"];*/
         [composer addAttachmentData:pdf
+                           mimeType:@"application/pdf"
+                           fileName:@"testPDF.pdf"];
+       /* [composer addAttachmentData:pdf
                            mimeType:@"application/bmp"
-                           fileName:@"testPDF.bmp"];
+                           fileName:@"testPDF.bmp"];*/
         
         [self presentViewController:composer
                            animated:YES
@@ -2242,8 +2242,8 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
     
-    if (_firstMove)
-        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+//    if (_firstMove)
+//        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     
     _firstMove = NO;
     
