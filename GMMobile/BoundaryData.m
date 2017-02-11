@@ -1617,7 +1617,7 @@ NextPass:
     NSString *key = areaType;
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat fontSize = 48.0;
-    CGFloat minFontSize = 6.0;
+    CGFloat minFontSize = 24.0;
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
     
     BOOL opened = [self open];
@@ -1744,6 +1744,8 @@ NextPass:
         {
             NSString * text=@"";
             double count;
+        TryLessText:
+            count = 1;
             if (pias)
             {
 //                count = [pias countForArea:keyval] * to.adjustCount;
@@ -1752,7 +1754,6 @@ NextPass:
             }
             else if (from == TFONVMetroDisplay)
             {
-                count = 1;
                 for (int iField=0;iField<nTextFields;iField++)
                 {
                     if (pTextValue[iField] && strlen (pTextValue[iField]) > 0)
@@ -1768,12 +1769,11 @@ NextPass:
             else
             {
                 text = keyval;
-                count = 1;
             }
             if (count >= 0)
             {
                 UIColor *textColor = UIColor.redColor;
-                [NVTextDrawing drawText:text
+                BOOL st = [NVTextDrawing drawText:text
                               inContext:context
                           withinPolygon:llpoints
                           withNumPoints:numPoints
@@ -1784,6 +1784,12 @@ NextPass:
                             minFontSize:minFontSize
                               textColor:textColor
                            processingID:_processingID];
+                if (!st && from == TFONVMetroDisplay && nTextFields>1)
+                {
+                    nTextFields--;
+                    text = @"";
+                    goto TryLessText;
+                }
             }
         }
         free (llpoints);
