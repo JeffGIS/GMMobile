@@ -75,6 +75,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
             [self setCurrentValue:0];
         }
         self.currentFeature = CPFTracts;
+        [self setCurrentValue:1];
 //        currentValues[self.currentFeature] = self.currentFeatureValue = 1;
     }
     

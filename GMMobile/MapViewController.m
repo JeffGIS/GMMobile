@@ -2895,11 +2895,11 @@ haveVV:
 
 - (void)vectorViewDidComplete:(VectorView *)vectorView
 {
+    static BOOL first = TRUE;
    _waitForVectorViewRefresh = NO;
     
     if (vectorView.displayID != CRAPI.sharedInstance.keepProcessing)
         vectorViews[vectorView.ivv] = nil;
-    
     else dispatch_async(dispatch_get_main_queue(),
                    ^{
                        if (_fromLegends)
@@ -3041,6 +3041,9 @@ haveVV:
                            [_cd update:self.view];
                            CRAPI.sharedInstance.becameActive = NO;
                        }
+                       if (first)
+                           [self extentZoom];
+                       first = FALSE;
                    });
 }
 

@@ -127,8 +127,6 @@
         }
     }
     [self close:opened];
-    if ( _fileSize > 100)
-        rtn = 0;
     return rtn;
 }
 
@@ -1510,6 +1508,7 @@ NextPass:
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Cities And Townships"] ||
         [areaType isEqualToString:@"Counties"] ||
+        [areaType isEqualToString:@"Seven County Metro Area"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
         table = @"BOUNDARYAREA";
@@ -1629,6 +1628,7 @@ NextPass:
         [areaType isEqualToString:@"Minneapolis Wards"] ||
         [areaType isEqualToString:@"Cities And Townships"] ||
         [areaType isEqualToString:@"Counties"] ||
+        [areaType isEqualToString:@"Seven County Metro Area"] ||
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
@@ -1911,6 +1911,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
         [areaType isEqualToString:@"Minneapolis Sectors"] ||
         [areaType isEqualToString:@"Cities And Townships"] ||
         [areaType isEqualToString:@"Counties"] ||
+        [areaType isEqualToString:@"Seven County Metro Area"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
         table = @"BOUNDARYAREA";
