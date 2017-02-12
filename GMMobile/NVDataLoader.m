@@ -191,7 +191,7 @@ Top:
         {
             BoundaryData *bd = [[BoundaryData alloc] init];
             
-            if (bd.datasetVersion >= 0)
+            if (bd.datasetVersion >= 2)
                 rtn = YES;
         }
             break;

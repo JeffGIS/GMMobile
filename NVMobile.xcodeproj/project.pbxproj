@@ -217,6 +217,8 @@
 		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
 		BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13931D6F78B10072957F /* SANPTID.txt */; };
 		BB7592B81E0CFCCA001871EB /* NVMetroSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */; };
+		BBCDF7E41E50AE9D00156827 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7E21E50AE9D00156827 /* areapoly.slt */; };
+		BBCDF7E51E50AE9D00156827 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7E31E50AE9D00156827 /* censusdata.slt */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -563,6 +565,8 @@
 		BB2B13931D6F78B10072957F /* SANPTID.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SANPTID.txt; sourceTree = "<group>"; };
 		BB7592B61E0CFCCA001871EB /* NVMetroSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettings.h; sourceTree = "<group>"; };
 		BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettings.m; sourceTree = "<group>"; };
+		BBCDF7E21E50AE9D00156827 /* areapoly.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = areapoly.slt; sourceTree = "<group>"; };
+		BBCDF7E31E50AE9D00156827 /* censusdata.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = censusdata.slt; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
@@ -1055,6 +1059,15 @@
 			name = Controller;
 			sourceTree = "<group>";
 		};
+		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
+			isa = PBXGroup;
+			children = (
+				BBCDF7E21E50AE9D00156827 /* areapoly.slt */,
+				BBCDF7E31E50AE9D00156827 /* censusdata.slt */,
+			);
+			name = DataBases;
+			sourceTree = "<group>";
+		};
 		EB5521C01A61B6A8008CE2D1 = {
 			isa = PBXGroup;
 			children = (
@@ -1090,6 +1103,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				69E9D9061E42D83C00B7B20F /* WMSImage.jpeg */,
 				69F05CCE1DF862BD000CB276 /* ENA_19_87-26_A0.PDF */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
@@ -1312,6 +1326,7 @@
 				69BCD6141DF63C9E002E0384 /* Reader-Mark-Y.png in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
 				699822611C69734F003476DD /* hotspottest.bin in Resources */,
+				BBCDF7E41E50AE9D00156827 /* areapoly.slt in Resources */,
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,
 				69BCD6031DF63C9E002E0384 /* AppIcon-167.png in Resources */,
 				6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */,
@@ -1394,6 +1409,7 @@
 				697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */,
 				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
+				BBCDF7E51E50AE9D00156827 /* censusdata.slt in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */,
 				69BCD6191DF63C9E002E0384 /* Reader-Print@3x.png in Resources */,

@@ -31,10 +31,11 @@
     if (self)
     {
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
-        _fileName = @"Boundary.sqlite";
-        _path = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _fileName];
-        _cenfileName = @"censusdata.slt";
-        _cenpath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _cenfileName];
+        _path = [NSBundle.mainBundle pathForResource:@"areapoly"
+                                              ofType:@"slt"];
+        _cenpath = [NSBundle.mainBundle pathForResource:@"censusdata"
+                                                 ofType:@"slt"];
+        
         _propfileName =  @"PropertyData.slt";
         _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
         _totRecords = -1;
@@ -96,7 +97,7 @@
 - (void) createVersionTable
 {
     NSString * cmd = @"CREATE TABLE IF NOT EXISTS BOUNDARY_VERSION (id INTEGER PRIMARY KEY,Version REAL); INSERT INTO BOUNDARY_VERSION VALUES(1,1.0);";
-    [self executeCmd:(LPSTR)cmd.UTF8String];
+    //[self executeCmd:(LPSTR)cmd.UTF8String];
 }
 - (int) datasetVersion
 {
@@ -104,11 +105,11 @@
     BOOL opened = [self open];
     if (_isOpen && _fileSize > 0)
     {
-        NSString *query = [NSString stringWithFormat:@"SELECT max(Version) FROM BOUNDARY_VERSION"];
+        NSString *query = [NSString stringWithFormat:@"SELECT VersionNum FROM BOUNDARY_VERSION"];
         
         sqlite3_stmt *statement = NULL;
         
-        BOOL st = sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0);
+        BOOL st = SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);;
         if (st)
             [self createVersionTable];
         else
@@ -843,6 +844,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                   maxClasses:(int)maxClass
                     minValue:(double)minVal
                     maxValue:(double)maxVal
+                      factor:(int)factor
                        theme:(Theme*)thm
 {
     //NSMutableArray * classBounds = NSMutableArray.new;
@@ -852,11 +854,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int i95percentCount = 0.95 * numValues;
     [self commitTransaction];
     sqlite3_stmt *statement = NULL;
-    int factor = 1;
-    if (maxVal > 0 && maxVal <= 1.0)
-        factor = 100;
-    else if (maxVal > 0 && maxVal <= 100.0)
-        factor = 10;
     INT64 * classCounts = calloc (maxClass*3,sizeof(INT64)+maxClass*sizeof(double));
     INT64  * classMin = classCounts + maxClass;
     INT64  * classMax = classMin + maxClass;
@@ -1357,6 +1354,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                   maxClasses:10
                     minValue:minValue
                     maxValue:maxValue
+                                           factor:factor
                        theme:thm];
         [themes setAppThemes];
         thm = themes.themeList[0];
