@@ -207,7 +207,8 @@
 		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
 		BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13931D6F78B10072957F /* SANPTID.txt */; };
 		BB7592B81E0CFCCA001871EB /* NVMetroSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */; };
-		BBCDF7E71E51290700156827 /* bundle.gcf in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7E61E51290700156827 /* bundle.gcf */; };
+		BBCDF7ED1E513B2800156827 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; };
+		BBCDF7EE1E513B2800156827 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -543,7 +544,8 @@
 		BB2B13931D6F78B10072957F /* SANPTID.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SANPTID.txt; sourceTree = "<group>"; };
 		BB7592B61E0CFCCA001871EB /* NVMetroSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettings.h; sourceTree = "<group>"; };
 		BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettings.m; sourceTree = "<group>"; };
-		BBCDF7E61E51290700156827 /* bundle.gcf */ = {isa = PBXFileReference; lastKnownFileType = file; path = bundle.gcf; sourceTree = "<group>"; };
+		BBCDF7EB1E513B2800156827 /* areapoly.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = areapoly.slt; sourceTree = "<group>"; };
+		BBCDF7EC1E513B2800156827 /* censusdata.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = censusdata.slt; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
 		BBEC48141D2D466100DD74A0 /* UploadDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadDirectory.m; sourceTree = "<group>"; };
 		EB00EEA11B7EB99200F6C25A /* MapViewENUMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewENUMS.h; sourceTree = "<group>"; };
@@ -1032,7 +1034,8 @@
 		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
 			isa = PBXGroup;
 			children = (
-				BBCDF7E61E51290700156827 /* bundle.gcf */,
+				BBCDF7EB1E513B2800156827 /* areapoly.slt */,
+				BBCDF7EC1E513B2800156827 /* censusdata.slt */,
 			);
 			name = DataBases;
 			sourceTree = "<group>";
@@ -1286,7 +1289,6 @@
 				692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */,
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				69BCD6101DF63C9E002E0384 /* Reader-Export@3x.png in Resources */,
-				BBCDF7E71E51290700156827 /* bundle.gcf in Resources */,
 				69352E511C1A7D57009A486B /* grayscale.png in Resources */,
 				69BCD6141DF63C9E002E0384 /* Reader-Mark-Y.png in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
@@ -1307,6 +1309,7 @@
 				69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */,
 				695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
+				BBCDF7EE1E513B2800156827 /* censusdata.slt in Resources */,
 				6938F3991CB2CEBB00DD975D /* webIcon.png in Resources */,
 				69F1774C1D7A0CA400741C68 /* GooglePlaces.bundle in Resources */,
 				69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */,
@@ -1315,6 +1318,7 @@
 				6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */,
 				6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */,
 				692EFA551D36B0F5007B0D18 /* question-256x256.png in Resources */,
+				BBCDF7ED1E513B2800156827 /* areapoly.slt in Resources */,
 				A95EC7E01B21FC280031B903 /* greenPlusSign.png in Resources */,
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
