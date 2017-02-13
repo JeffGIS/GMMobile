@@ -8,6 +8,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/SharedDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
+#import "CCodeLibrary/GSSiPopoverView.h"
 
 @interface AppDelegate ()
 
@@ -93,15 +94,14 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
         [self scheduleLocationTracking];
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
-    
-    [self checkOnDemandResources];
+    [self checkOnDemandResources:@[@"areapoly", @"censusdata", @"landuse"]];
     
     return YES;
 }
 
-- (void)checkOnDemandResources
+- (void)checkOnDemandResources:(NSArray *)odrTags
 {
-    NSSet *tags = [NSSet setWithObjects:@"landuse", @"areapoly", @"censusdata", nil];
+    NSSet *tags = [NSSet setWithArray:odrTags];
     [NSBundle.mainBundle setPreservationPriority:1.0 forTags:tags];
     _resourceRequest = [[NSBundleResourceRequest alloc] initWithTags:tags];
     
@@ -109,9 +109,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     {
          if (resourcesAvailable)
          {
+             [_resourceRequest endAccessingResources];
              NSLog(@"on demand resources loaded successfully");
              CRAPI.sharedInstance.resourcesAvailable = YES;
-             [_resourceRequest endAccessingResources];
+             [self checkOnResourceFilePaths:odrTags];
          }
         
          else
@@ -129,19 +130,34 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                   
                   if (error)
                   {
-                      NSLog(@"ERROR: on demand resources NOT downloaded");
+                      NSLog(@"ERROR: on demand resources NOT downloaded (%@)", error.localizedDescription);
                       CRAPI.sharedInstance.resourcesAvailable = NO;
                   }
                   
                   else
                   {
+                      [_resourceRequest endAccessingResources];
                       NSLog(@"on demand resources downloaded successfully");
                       CRAPI.sharedInstance.resourcesAvailable = YES;
-                      [_resourceRequest endAccessingResources];
+                      [self checkOnResourceFilePaths:odrTags];
                   }
               }];
          }
     }];
+}
+
+- (void)checkOnResourceFilePaths:(NSArray *)odrTags
+{
+    NSBundle *bundle = NSBundle.mainBundle;
+    NSFileManager *fm = NSFileManager.defaultManager;
+    
+    for (NSString *tag in odrTags)
+    {
+        NSString *filePath = [bundle pathForResource:tag ofType:@"slt"];
+        long long fileSize = [fm attributesOfItemAtPath:filePath error:nil].fileSize;
+        NSLog(@"%@ path:%@", tag, filePath);
+        NSLog(@"%@ size:%lli", tag, fileSize);
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath

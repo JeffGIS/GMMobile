@@ -1036,9 +1036,9 @@
 		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
 			isa = PBXGroup;
 			children = (
-				69D2C7EF1E5209CC0040FCF9 /* landuse.slt */,
 				BBCDF7EB1E513B2800156827 /* areapoly.slt */,
 				BBCDF7EC1E513B2800156827 /* censusdata.slt */,
+				69D2C7EF1E5209CC0040FCF9 /* landuse.slt */,
 			);
 			name = DataBases;
 			sourceTree = "<group>";
