@@ -14,6 +14,7 @@
 		690E2DA61DAD3D86005FAE3A /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 690E2DA01DAD3CF6005FAE3A /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
+		691B5DC91E520AA400C90383 /* landuse.slt in Resources */ = {isa = PBXBuildFile; fileRef = 69D2C7EF1E5209CC0040FCF9 /* landuse.slt */; settings = {ASSET_TAGS = (landuse, ); }; };
 		6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = 6924B4351D37BDC8007C6C76 /* trackLocation.png */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
@@ -207,8 +208,8 @@
 		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
 		BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13931D6F78B10072957F /* SANPTID.txt */; };
 		BB7592B81E0CFCCA001871EB /* NVMetroSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */; };
-		BBCDF7ED1E513B2800156827 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; };
-		BBCDF7EE1E513B2800156827 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; };
+		BBCDF7ED1E513B2800156827 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; settings = {ASSET_TAGS = (areapoly, ); }; };
+		BBCDF7EE1E513B2800156827 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; settings = {ASSET_TAGS = (censusdata, ); }; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -1179,7 +1180,9 @@
 			isa = PBXProject;
 			attributes = {
 				KnownAssetTags = (
-					propdata,
+					areapoly,
+					censusdata,
+					landuse,
 				);
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = GSSi;
@@ -1300,6 +1303,7 @@
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,
 				69BCD6031DF63C9E002E0384 /* AppIcon-167.png in Resources */,
 				6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */,
+				691B5DC91E520AA400C90383 /* landuse.slt in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				69BCD6051DF63C9E002E0384 /* Reader-Button-H.png in Resources */,
