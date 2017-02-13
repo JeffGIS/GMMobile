@@ -1455,10 +1455,27 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)pi.refno;
             CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
 
-        [self extentZoom];
+            [self extentZoom];
+        }
+        return;
+    }
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    {
+        LLPOINT llpickPt = {0};
+        llpickPt.lat = coordinate.latitude;
+        llpickPt.lon = coordinate.longitude;
+        BoundaryData *bd = [[BoundaryData alloc]init];
+        PickedItem *pi = [bd pickBoundaryArea:llpickPt type:CRAPI.sharedInstance.selectBoundaryFromMapType];
+        if (pi)
+        {
+            CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
+            CRAPI.sharedInstance.currentOverallBoundaryName = pi.identifier;
+            CRAPI.sharedInstance.currentOverallBoundaryType = pi.symbolName;
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)pi.refno;
+            CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
+            
         }
     }
-    
     else
     {
         LLPOINT llpickPt = {0}, llSewerPt = {0}, llPropPt = {0}, llCrimePt = {0};
