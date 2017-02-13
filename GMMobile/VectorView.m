@@ -647,25 +647,6 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 if (CRAPI.sharedInstance.keepProcessing == self.displayID)
                     switch (NVMetroSettings.sharedInstance.currentFeature)
                 {
-/*                    case CPFParcels:
-                    {
-                        PropertyData *pd = [[PropertyData alloc] init];
- 
-                        pd.processingID = CRAPI.sharedInstance.keepProcessing;
- 
-                        [pd displayParcels:_context
-                                 llCorners:&_latlonCornerPoints
-                                  LLBounds:&_latlonBounds
-                                viewBounds:&_viewBounds
-                                    themes:themes];
-
-                        
-                        [pd displayParcelText:_context
-                                    llCorners:&_latlonCornerPoints
-                                     LLBounds:&_latlonBounds
-                                   viewBounds:&_viewBounds];
-                    }
-                        break;*/
                     case CPFLandUse:
                     {
                         BoundaryData *bd = [[BoundaryData alloc] init];
