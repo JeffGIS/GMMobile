@@ -64,7 +64,7 @@
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
-@property NSInteger selectedCrime;
+@property NSInteger selectedCrime, selectedCensusBoundary;
 @property int selectedMGVSanMH, selectedMGVSanPipe;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
@@ -1464,21 +1464,52 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         }
         return;
     }
+    NSMutableArray *highlightList = [[NSMutableArray alloc] init];
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         LLPOINT llpickPt = {0};
         llpickPt.lat = coordinate.latitude;
         llpickPt.lon = coordinate.longitude;
         BoundaryData *bd = [[BoundaryData alloc]init];
-        PickedItem *pi = [bd pickBoundaryArea:llpickPt type:CRAPI.sharedInstance.selectBoundaryFromMapType];
-        if (pi)
+        NSString *CenType = @"PARCEL";
+        switch (NVMetroSettings.sharedInstance.currentFeature)
         {
-            CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-            CRAPI.sharedInstance.currentOverallBoundaryName = pi.identifier;
-            CRAPI.sharedInstance.currentOverallBoundaryType = pi.symbolName;
-            CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)pi.refno;
-            CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
-            
+            case CPFLandUse:
+            {
+            }
+                break;
+                
+            case CPFParcels:
+            {
+                PropertyData *propData = [[PropertyData alloc] init];
+
+                [propData pickParcel:&llpickPt
+                       highlightList:highlightList];
+            }
+                break;
+            case CPFParcels_IND:
+            case CPFParcels_AG:
+            case CPFParcels_RES:
+            case CPFParcels_COM:
+            case CPFBlocks:
+            case CPFBlockGroups:
+            case CPFBlockGroups_ACS:
+            case CPFTracts:
+            {
+                if (NVMetroSettings.sharedInstance.currentFeature == CPFBlocks)
+                    CenType = @"BLOCK";
+                if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups)
+                    CenType = @"BLOCKGROUP";
+                if (NVMetroSettings.sharedInstance.currentFeature == CPFBlockGroups_ACS)
+                    CenType = @"BLOCKGROUP_ACS";
+                if (NVMetroSettings.sharedInstance.currentFeature == CPFTracts)
+                    CenType = @"TRACT";
+                
+                PickedItem *pi = [bd pickBoundaryArea:llpickPt type:CenType];
+                if (pi)
+                    [highlightList addObject:pi];
+            }
+            break;
         }
     }
     else
@@ -1491,7 +1522,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llCrimePt = llpickPt;
         CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
 
-        NSMutableArray *highlightList = [[NSMutableArray alloc] init];
         PropertyData *propData = [[PropertyData alloc] init];
         SewerData *sewerData = [[SewerData alloc] init];
         PlanimetricData *planData = [[PlanimetricData alloc] init];
@@ -1553,7 +1583,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         [planData pickCurbRampIntersectionPoint:llpickPt
                                   highlightList:highlightList];
-        
+    }
+    
         if (highlightList.count)
         {
             PickedItem *pi = [PickedItem nearestPickedItem:highlightList];
@@ -1618,11 +1649,14 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.type = MarkerInfoWindowTypeStormSewer;
                     break;
                 case ParcelBoundary:
+                {
+                    PropertyData *propData = [[PropertyData alloc] init];
                     _selectedPID = pi.identifier;
                     CRAPI.sharedInstance.selectedPID = _selectedPID;
                     marker.title = _selectedPID;
                     marker.snippet = [propData getOwnerNameForPID:_selectedPID];
                     marker.type = MarkerInfoWindowTypePID;
+                }
                     break;
                 case SanitaryManhole:
                     _selectedSanPoint = pi.identifier;
@@ -1637,6 +1671,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.title = _selectedSanMain;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeMGVSanMain;
+                    break;
+                case CensusBlockBoundary:
+                case CensusTractBoundary:
+                case CensusBlockGroupBoundary:
+                    marker.title = pi.identifier;
+                    marker.snippet = pi.symbolName;
+                    marker.type = MarkerInfoWindowTypeCensusBoundary;
                     break;
                 default:
                     break;
@@ -1670,7 +1711,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
             }
         }
-    }
 }
 
 - (void)markerButtonWasTapped:(MarkerButton *)marker
@@ -6245,6 +6285,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
+        case MarkerInfoWindowTypeCensusBoundary:
+        {
+            _selectedCensusBoundary = refno;
+            _options = @[@"", @"Display Report", @"Perform 3D Fly Around", @"Display Google Street View"];
+        }
+            break;
+            
             
         default:
             break;

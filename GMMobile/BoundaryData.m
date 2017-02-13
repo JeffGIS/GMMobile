@@ -1892,6 +1892,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
 {
     int nPicked = 0;
     PickedItem *pi = nil;
+    GraphicElementTypes itemType = CensusBlockBoundary;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     DPOINT BasePt;
@@ -1914,12 +1915,18 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
         [areaType isEqualToString:@"Seven County Metro Area"] ||
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
+        itemType = BoundaryArea;
         table = @"BOUNDARYAREA";
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME, %@.id FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,areaType,table,table,
                  point.lon,point.lon,point.lat,point.lat];
     }
     else
     {
+        if ([areaType isEqualToString:@"TRACT"]) itemType = CensusTractBoundary;
+        if ([areaType isEqualToString:@"BLOCKGROUP"]) itemType = CensusBlockGroupBoundary;
+        
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@, %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",areaType,table,table,table,table,table,
+                 point.lon,point.lon,point.lat,point.lat];
     }
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
@@ -1954,8 +1961,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
         DPOINT dp;
-        dp.x = point.lon;
-        dp.y = point.lat;
+        dp = LLPointToDPoint (point);
         if (POINT_IN_AREAD(dp, numPoints, llpoints, 1, 0, 0, 0))
         {
             nPicked++;
@@ -1973,6 +1979,8 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
         pi.identifier = pickedName;
         pi.symbolName = areaType;
         pi.refno = pickedRefno;
+        pi.pickedPoint = LLPointToDPoint(point);
+        pi.itemType = itemType;
     }
     return pi;
 }

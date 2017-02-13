@@ -504,8 +504,8 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
 {
     NSMutableArray *rtn = NSMutableArray.new;
 
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","N people participating in sample of completed surveys","B00001e1",0]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","N housing units represented in sample of completed surveys","B00002e1",1]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Number of people participating in sample of completed surveys","B00001e1",0]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Number of housing units represented in sample of completed surveys","B00002e1",1]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total population","POPTOTAL",2]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population in households and not in GQ","POPINHH",3]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Total households","HHTOTAL",4]];
@@ -555,8 +555,8 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population age 16+","POPOVER16",48]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population age 18+","POPOVER18",49]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population age under 18","AGEUNDER18",50]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population in this range","AGE18_39",51]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population in this range","AGE40_64",52]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population age 18 to 39","AGE18_39",51]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population age 40 to 64","AGE40_64",52]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population age 65+","AGE65UP",53]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population that identifies as white only and non-Hispanic","WHITENH",54]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Population that identifies as black only and non-Hispanic","BLACKNH",55]];
@@ -679,10 +679,10 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $700 to $799","R700_799",172]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $800 to $899","R800_899",173]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $900 to $999","R900_999",174]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $1000 to $1249","R1000_1249",175]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $1250 to $1499","R1250_1499",176]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $1500 to $1999","R1500_1999",177]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $2000+","R2000up",178]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $1,000 to $1,249","R1000_1249",175]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $1,250 to $1,499","R1250_1499",176]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $1,500 to $1,999","R1500_1999",177]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with gross rent in the range of $2,000+","R2000up",178]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Renter households with cash rent used as denominator in percent calculations","R_DENOM",179]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Homeowners valuing their home less than $40,000","VALLT40",180]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Homeowners valuing their home in the range of $40,000 to $69,000","VAL40_69",181]];
