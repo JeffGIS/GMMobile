@@ -438,6 +438,7 @@
 		69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
+		69D2C7EF1E5209CC0040FCF9 /* landuse.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = landuse.slt; sourceTree = "<group>"; };
 		69DA47841C74CEFC0042E47F /* singleArrowReverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowReverse.png; sourceTree = "<group>"; };
 		69DA47851C74CEFC0042E47F /* singleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowForward.png; sourceTree = "<group>"; };
 		69DA47861C74CEFC0042E47F /* doubleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowForward.png; sourceTree = "<group>"; };
@@ -1034,6 +1035,7 @@
 		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
 			isa = PBXGroup;
 			children = (
+				69D2C7EF1E5209CC0040FCF9 /* landuse.slt */,
 				BBCDF7EB1E513B2800156827 /* areapoly.slt */,
 				BBCDF7EC1E513B2800156827 /* censusdata.slt */,
 			);
@@ -1176,6 +1178,9 @@
 		EB5521C11A61B6A8008CE2D1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					propdata,
+				);
 				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = GSSi;
 				TargetAttributes = {
