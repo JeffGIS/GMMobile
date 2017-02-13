@@ -16,6 +16,7 @@
 @property (nonatomic) GeoMasterServer *GMServer;
 @property (nonatomic) CLLocation *currentLocation;
 @property BOOL skipMethodCall;
+@property (nonatomic)  NSBundleResourceRequest *resourceRequest;
 
 @end
 
@@ -93,7 +94,66 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
+    [self checkOnDemandResources];
+    
     return YES;
+}
+
+- (void)checkOnDemandResources
+{
+    NSSet *tags = [NSSet setWithObjects:@"landuse", @"areapoly", @"censusdata", nil];
+    [NSBundle.mainBundle setPreservationPriority:1.0 forTags:tags];
+    _resourceRequest = [[NSBundleResourceRequest alloc] initWithTags:tags];
+    
+    [_resourceRequest conditionallyBeginAccessingResourcesWithCompletionHandler:^(BOOL resourcesAvailable)
+    {
+         if (resourcesAvailable)
+         {
+             NSLog(@"on demand resources loaded successfully");
+             CRAPI.sharedInstance.resourcesAvailable = YES;
+             [_resourceRequest endAccessingResources];
+         }
+        
+         else
+         {
+             [_resourceRequest.progress addObserver:self
+                                         forKeyPath:@"fractionCompleted"
+                                            options:NSKeyValueObservingOptionNew
+                                            context:@"observeForrestLoad"];
+             
+             [_resourceRequest beginAccessingResourcesWithCompletionHandler:^(NSError * __nullable error)
+             {
+                 [_resourceRequest.progress removeObserver:self
+                                                forKeyPath:@"fractionCompleted"
+                                                   context:@"observeForrestLoad"];
+                  
+                  if (error)
+                  {
+                      NSLog(@"ERROR: on demand resources NOT downloaded");
+                      CRAPI.sharedInstance.resourcesAvailable = NO;
+                  }
+                  
+                  else
+                  {
+                      NSLog(@"on demand resources downloaded successfully");
+                      CRAPI.sharedInstance.resourcesAvailable = YES;
+                      [_resourceRequest endAccessingResources];
+                  }
+              }];
+         }
+    }];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    if ((object == _resourceRequest.progress) && ([keyPath isEqualToString:@"fractionCompleted"]))
+    {
+        double progress = _resourceRequest.progress.fractionCompleted;
+        NSLog(@"on demand resource progress: %f", progress);
+    }
 }
 
 - (void)scheduleLocationTracking
@@ -260,6 +320,8 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
                                                     userInfo:nil];
     
     CRAPI.sharedInstance.becameActive = YES;
+    
+    
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
