@@ -1208,7 +1208,7 @@
     _mapToolbar.hidden = NO;
     [self updateCompassPosition:NO];
     
-    _zoomExtentsGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(extentZoom)];
+    _zoomExtentsGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(delayExtentZoom:)];
     _zoomExtentsGesture.delegate = self;
     _zoomExtentsGesture.numberOfTouchesRequired = 2;
     _zoomExtentsGesture.numberOfTapsRequired = 2;
@@ -1300,6 +1300,11 @@
         ar = fabs((pt[1].x - pt[0].x)/(pt[1].y - pt[0].y));
     
     return ar;
+}
+
+- (void)delayExtentZoom:(UITapGestureRecognizer *)gesture
+{
+    [self performSelector:@selector(extentZoom) withObject:nil afterDelay:0.5];
 }
 
 - (void)extentZoom
