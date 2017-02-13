@@ -9,6 +9,7 @@
 #import "CCodeLibrary/SharedDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/GSSiPopoverView.h"
+#import "BoundaryData.h"
 
 @interface AppDelegate ()
 
@@ -157,6 +158,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
         long long fileSize = [fm attributesOfItemAtPath:filePath error:nil].fileSize;
         NSLog(@"%@ path:%@", tag, filePath);
         NSLog(@"%@ size:%lli", tag, fileSize);
+        BoundaryData *bd = BoundaryData.new;
     }
 }
 
