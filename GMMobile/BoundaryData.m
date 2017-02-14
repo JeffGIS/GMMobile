@@ -35,7 +35,7 @@
                                               ofType:@"slt"];
         _cenpath = [NSBundle.mainBundle pathForResource:@"censusdata"
                                                  ofType:@"slt"];
-        
+        _landusePath = [NSString stringWithFormat:@"%@/landuse.slt",UserDefaults.defaults.sharedFilePath];
         _propfileName =  @"PropertyData.slt";
         _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
         _totRecords = -1;
@@ -66,6 +66,8 @@
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",_cenpath];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS PROPERTYDB",_proppath];
+            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
 
         }
@@ -627,13 +629,20 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE FROM LANDUSE,LANDUSE_index WHERE LANDUSE.id=LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+            _totRecords = [self getQueryCount:query];
+            [CRAPI.sharedInstance updateProgress:-1
+                                         current:0
+                                           range:1
+                                       numRanges:1];
+            query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
-    
+    _currentRec = 0;
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
@@ -684,6 +693,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     withColor:dc.penColor.CGColor
                      andWidth:dc.width];
         }
+        free (llpoints);
+        [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
+                                     current:(NSInteger)++_currentRec
+                                       range:0
+                                   numRanges:1];
+        
     }
     
     SQLOK(0,sqlite3_finalize(statement), self.database);

@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 @property (nonatomic, copy) NSString *propfileName;
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *cenpath;
+@property (nonatomic, copy) NSString *landusePath;
 @property (nonatomic, copy) NSString *proppath;
 @property NSInteger fileSize;
 @property (nonatomic) int datasetVersion;
