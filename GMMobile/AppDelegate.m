@@ -1,24 +1,21 @@
 //  AppDelegate.m
 //  GMMobile
 
-
 #import "AppDelegate.h"
 #import <GoogleMaps/GoogleMaps.h>
 #import "CCodeLibrary/NVDateRange.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/SharedDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
-#import "CCodeLibrary/GSSiPopoverView.h"
-#import "BoundaryData.h"
+#import "CCodeLibrary/NVGetODR.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <NVGetODRDelegate>
 
 @property UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 @property (nonatomic) NSTimer *locationTimer;
 @property (nonatomic) GeoMasterServer *GMServer;
 @property (nonatomic) CLLocation *currentLocation;
 @property BOOL skipMethodCall;
-@property (nonatomic)  NSBundleResourceRequest *resourceRequest;
 
 @end
 
@@ -95,83 +92,25 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
         [self scheduleLocationTracking];
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
-    [self checkOnDemandResources:@[@"areapoly", @"censusdata", @"landuse"]];
+    
+    [NVGetODR getResourcesWithTag:@"landuse"
+                             type:@"slt"
+                      toDirectory:UserDefaults.defaults.sharedFilePath
+                         delegate:self];
     
     return YES;
 }
 
-- (void)checkOnDemandResources:(NSArray *)odrTags
+- (void)getResourceDidCompleteWithFilePath:(NSString *)filePath
+                                    forTag:(NSString *)tag
 {
-    NSSet *tags = [NSSet setWithArray:odrTags];
-    [NSBundle.mainBundle setPreservationPriority:1.0 forTags:tags];
-    _resourceRequest = [[NSBundleResourceRequest alloc] initWithTags:tags];
-    
-    [_resourceRequest conditionallyBeginAccessingResourcesWithCompletionHandler:^(BOOL resourcesAvailable)
-    {
-         if (resourcesAvailable)
-         {
-             [_resourceRequest endAccessingResources];
-             NSLog(@"on demand resources loaded successfully");
-             CRAPI.sharedInstance.resourcesAvailable = YES;
-             [self checkOnResourceFilePaths:odrTags];
-         }
-        
-         else
-         {
-             [_resourceRequest.progress addObserver:self
-                                         forKeyPath:@"fractionCompleted"
-                                            options:NSKeyValueObservingOptionNew
-                                            context:@"observeForrestLoad"];
-             
-             [_resourceRequest beginAccessingResourcesWithCompletionHandler:^(NSError * __nullable error)
-             {
-                 [_resourceRequest.progress removeObserver:self
-                                                forKeyPath:@"fractionCompleted"
-                                                   context:@"observeForrestLoad"];
-                  
-                  if (error)
-                  {
-                      NSLog(@"ERROR: on demand resources NOT downloaded (%@)", error.localizedDescription);
-                      CRAPI.sharedInstance.resourcesAvailable = NO;
-                  }
-                  
-                  else
-                  {
-                      [_resourceRequest endAccessingResources];
-                      NSLog(@"on demand resources downloaded successfully");
-                      CRAPI.sharedInstance.resourcesAvailable = YES;
-                      [self checkOnResourceFilePaths:odrTags];
-                  }
-              }];
-         }
-    }];
+    NSLog(@"success for %@, filepath: %@", tag, filePath);
 }
 
-- (void)checkOnResourceFilePaths:(NSArray *)odrTags
+- (void)getResourceDidFailWithErrorMsg:(NSString *)errorMsg
+                                forTag:(NSString *)tag
 {
-    NSBundle *bundle = NSBundle.mainBundle;
-    NSFileManager *fm = NSFileManager.defaultManager;
-    
-    for (NSString *tag in odrTags)
-    {
-        NSString *filePath = [bundle pathForResource:tag ofType:@"slt"];
-        long long fileSize = [fm attributesOfItemAtPath:filePath error:nil].fileSize;
-        NSLog(@"%@ path:%@", tag, filePath);
-        NSLog(@"%@ size:%lli", tag, fileSize);
-        BoundaryData *bd = BoundaryData.new;
-    }
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    if ((object == _resourceRequest.progress) && ([keyPath isEqualToString:@"fractionCompleted"]))
-    {
-        double progress = _resourceRequest.progress.fractionCompleted;
-        NSLog(@"on demand resource progress: %f", progress);
-    }
+    NSLog(@"failed for %@, error msg: %@", tag, errorMsg);
 }
 
 - (void)scheduleLocationTracking

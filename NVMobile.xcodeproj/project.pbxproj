@@ -15,8 +15,8 @@
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
 		691B5DCC1E520E3300C90383 /* landuse.slt in Resources */ = {isa = PBXBuildFile; fileRef = 69D2C7EF1E5209CC0040FCF9 /* landuse.slt */; settings = {ASSET_TAGS = (landuse, ); }; };
-		691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; settings = {ASSET_TAGS = (areapoly, ); }; };
-		691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; settings = {ASSET_TAGS = (censusdata, ); }; };
+		691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; };
+		691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; };
 		6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = 6924B4351D37BDC8007C6C76 /* trackLocation.png */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
@@ -1180,8 +1180,6 @@
 			isa = PBXProject;
 			attributes = {
 				KnownAssetTags = (
-					areapoly,
-					censusdata,
 					landuse,
 				);
 				LastUpgradeCheck = 0800;
