@@ -657,6 +657,9 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         useCode = sqlite3_column_int(statement,6);
         dc.iValue = useCode;
         
+        int np = 0;
+        //if (abs(numPoints)<108000)
+        {
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -664,34 +667,49 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             
             for (int i = 0; i < numPoints; i++)
             {
-                llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                llpoints[np] = TranDPOINT(&llpoints[np], _pTranLLtoView);
+               /* if (np)
+                {
+                    if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                        np++;
+                }
+                else*/
+                    np++;
             }
         }
         
         else for (int i = 0; i < numPoints; i++)
         {
-            llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-            llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            llpoints[np] = TranDPOINT(&llpoints[np], _pTranLLtoView);
+           /* if (np)
+            {
+                if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
+                    np++;
+            }
+            else*/
+                np++;
         }
         if ([themes setDisplayCharacteristics:dc
                                     displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
         {
             
             [self fillUseCode:context
-                      nPoints:numPoints
+                      nPoints:np
                        points:llpoints
                     withColor:dc.fillColor.CGColor
                     drawLines:NO];
-            [self drawUseCode:context
-                      nPoints:numPoints
+            /*[self drawUseCode:context
+                      nPoints:np
                        nLoops:numLoops
                       partLen:polyPartLen
                        points:llpoints
                     withColor:dc.penColor.CGColor
-                     andWidth:dc.width];
+                     andWidth:dc.width];*/
+        }
         }
         free (llpoints);
         [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
@@ -776,7 +794,11 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
     
     for (int i = 1; i < np; i++)
+    {
+//        double x=pPoints[i].x, y=pPoints[i].y;
         CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
+    }
+//        CGContextAddLineToPoint(context, pPoints[i].x, pPoints[i].y);
     
     CGContextAddLineToPoint(context, pPoints[0].x, pPoints[0].y);
     CGContextClosePath(context);
@@ -791,6 +813,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         else
         {
+            //CGContextSetLineWidth(context, 1);
+           //CGContextSetStrokeColorWithColor(context,color);
             CGContextDrawPath(context, kCGPathEOFill);
         }
         

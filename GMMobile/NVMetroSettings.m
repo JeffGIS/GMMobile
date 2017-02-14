@@ -67,12 +67,15 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     {
         self.currentAdjustmentValue = CPAdjustCountPerSQMile;
         _currentValues = NSMutableArray.new;
-        for (int i = 0;i<CPFeaturesCount;i++)
+        for (CPFeatures i = 0;i<CPFeaturesCount;i++)
         {
             NSMutableArray * values = NSMutableArray.new;
             [_currentValues addObject:values];
             self.currentFeature = i;
-            [self setCurrentValue:0];
+            if (i == CPFLandUse)
+                [self setCurrentValue:1];
+            else
+                [self setCurrentValue:0];
         }
         self.currentFeature = CPFTracts;
         [self setCurrentValue:1];

@@ -159,22 +159,25 @@
         if (ConfigurationControl.sharedInstance.legendList.count > i)
         {
             ThemeLegend *tleg = ConfigurationControl.sharedInstance.legendList[i];
-            int j = 0;
-            thm.legend.portraitMapOrigin = tleg.portraitMapOrigin;
-            thm.legend.landscapeMapOrigin = tleg.landscapeMapOrigin;
-            thm.legend.isDraggedLandscape = tleg.isDraggedLandscape;
-            thm.legend.isDraggedPortrait = tleg.isDraggedPortrait;
-            thm.legend.title = tleg.title;
-            thm.legend.currentTitleIndex = tleg.currentTitleIndex;
-            thm.legend.type = tleg.type;
-            
-            for (ThemeClass * cls in thm.classes)
+            if (tleg.type == thm.type)
             {
-                if (tleg.cells.count > j)
+                int j = 0;
+                thm.legend.portraitMapOrigin = tleg.portraitMapOrigin;
+                thm.legend.landscapeMapOrigin = tleg.landscapeMapOrigin;
+                thm.legend.isDraggedLandscape = tleg.isDraggedLandscape;
+                thm.legend.isDraggedPortrait = tleg.isDraggedPortrait;
+                thm.legend.title = tleg.title;
+                thm.legend.currentTitleIndex = tleg.currentTitleIndex;
+                thm.legend.type = tleg.type;
+                
+                for (ThemeClass * cls in thm.classes)
                 {
-                    ThemeLegendCell *tlc = tleg.cells[j++];
-                    cls.status = tlc.status;
-                    cls.color = tlc.symbolColor;
+                    if (tleg.cells.count > j)
+                    {
+                        ThemeLegendCell *tlc = tleg.cells[j++];
+                        cls.status = tlc.status;
+                        cls.color = tlc.symbolColor;
+                    }
                 }
             }
         }

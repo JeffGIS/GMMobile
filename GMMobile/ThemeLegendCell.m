@@ -28,7 +28,7 @@
     another.symbolWidth = _symbolWidth;
     another.symbol = _symbol;
     another.status = _status;
-    another.symbolColor = [[UIColor alloc] initWithCGColor:_symbolColor.CGColor];
+    another.symbolColor = _symbolColor.copy;//[[UIColor alloc] initWithCGColor:_symbolColor.CGColor];
     another.label = [NSString stringWithString:_label];
     return  another;
 }

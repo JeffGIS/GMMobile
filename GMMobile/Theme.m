@@ -81,13 +81,12 @@
     thm.legend.symbolDefaultColor = [UIColor greenColor];
     thm.legend.hasColors = YES;
 
-    CGFloat PropListAlpha = 1;
-    UIColor *selectedColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:PropListAlpha];
+    CGFloat PropListAlpha = 1.0-NVMetroSettings.sharedInstance.themeTransparency;
+    UIColor *selectedColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
     switch (type)
     {
         case MetroPropTheme:
         {
-            CGFloat PropListAlpha = 1.0-NVMetroSettings.sharedInstance.themeTransparency;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
@@ -1055,6 +1054,8 @@ int getThemeOpt(ThemeTypes type)
                                               dc:dc
                                         testPass:test])
                             rtn = DISPLAY_ITEM;
+                        if (!val)
+                            val = 0;
                         break;
                     }
                     val++;
