@@ -7,8 +7,8 @@
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
-@property (nonatomic) UIButton *featureButton, *valueButton, *adjButton, *textButton;
-@property NSArray *optionsList;
+@property (nonatomic) UIButton *featureButton, *valueButton, *adjButton, *textButton, *colorSchemeButton;
+@property (nonatomic, copy) NSArray *optionsList;
 
 
 @end
@@ -52,7 +52,7 @@
     [bottomView constrainLeadingToAnchor:self.view.leadingAnchor constant:margin];
     [bottomView constrainTrailingToAnchor:self.view.trailingAnchor constant:-margin];
     [bottomView constrainBottomToAnchor:self.view.bottomAnchor constant:-margin];
-    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.25];
+    [bottomView constrainHeightToAnchor:topView.heightAnchor multiplier:0.2];
     
     UILabel *topLabel = UILabel.new;
     topLabel.text = @"Choropleth Parameters";
@@ -60,7 +60,7 @@
     topLabel.textAlignment = NSTextAlignmentCenter;
     
     UILabel *bottomLabel = UILabel.new;
-    bottomLabel.text = @"Propertylist Display Parameters";
+    bottomLabel.text = @"Property List Display Parameters";
     [self setupLabel:bottomLabel fontSize:bigFont];
     bottomLabel.textAlignment = NSTextAlignmentCenter;
     
@@ -92,6 +92,10 @@
     textLabel.text = @"Text:";
     [self setupLabel:textLabel fontSize:littleFont];
     
+    UILabel *outlineLabel = UILabel.new;
+    outlineLabel.text = @"Outline:";
+    [self setupLabel:outlineLabel fontSize:littleFont];
+    
     _featureButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_featureButton setTitle:paddedString([NVMetroSettings.sharedInstance currentFeatureText]) forState:UIControlStateNormal];
     [self setupButton:_featureButton fontSize:littleFont];
@@ -104,9 +108,9 @@
     [_adjButton setTitle:paddedString([NVMetroSettings.sharedInstance currentAdjustmentText]) forState:UIControlStateNormal];
     [self setupButton:_adjButton fontSize:littleFont];
     
-    UIButton *colorSchemeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [colorSchemeButton setTitle:paddedString(@"Red / Blue") forState:UIControlStateNormal];
-    [self setupButton:colorSchemeButton fontSize:littleFont];
+    _colorSchemeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_colorSchemeButton setTitle:paddedString(@"Red / Blue") forState:UIControlStateNormal];
+    [self setupButton:_colorSchemeButton fontSize:littleFont];
     
     _textButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentTextText]) forState:UIControlStateNormal];
@@ -115,6 +119,7 @@
     UISlider *transparencySlider = UISlider.new;
     transparencySlider.translatesAutoresizingMaskIntoConstraints = NO;
     transparencySlider.continuous = NO;
+    transparencySlider.tintColor = UIColor.blackColor;
     
     [transparencySlider addTarget:self
                            action:@selector(transparencySliderChanged:)
@@ -132,9 +137,7 @@
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:littleFont]};
     
-    UISegmentedControl *controlClassSC =
-    [[UISegmentedControl alloc] initWithItems:@[@"Equal Ranges", @"Equal Counts"]];
-    
+    UISegmentedControl *controlClassSC = [[UISegmentedControl alloc] initWithItems:@[@"Equal Ranges", @"Equal Counts"]];
     controlClassSC.translatesAutoresizingMaskIntoConstraints = NO;
     controlClassSC.tintColor = UIColor.blackColor;
     controlClassSC.selectedSegmentIndex = NVMetroSettings.sharedInstance.themeClassType;
@@ -144,9 +147,7 @@
                        action:@selector(controlClassSCTapped:)
              forControlEvents:UIControlEventValueChanged];
     
-    UISegmentedControl *displayParamsSC =
-    [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
-    
+    UISegmentedControl *displayParamsSC = [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
     displayParamsSC.translatesAutoresizingMaskIntoConstraints = NO;
     displayParamsSC.tintColor = UIColor.blackColor;
     displayParamsSC.selectedSegmentIndex = 0;
@@ -155,6 +156,16 @@
     [displayParamsSC addTarget:self
                         action:@selector(displayParamsSCTapped:)
               forControlEvents:UIControlEventValueChanged];
+    
+    UISegmentedControl *outlineSC = [[UISegmentedControl alloc] initWithItems:@[@"None", @"Light", @"Dark"]];
+    outlineSC.translatesAutoresizingMaskIntoConstraints = NO;
+    outlineSC.tintColor = UIColor.blackColor;
+    outlineSC.selectedSegmentIndex = 0;
+    [outlineSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    [outlineSC addTarget:self
+                  action:@selector(outlineSCTapped:)
+        forControlEvents:UIControlEventValueChanged];
     
     for (int i = 1; i < 9; i++)
     {
@@ -217,7 +228,7 @@
                 _adjButton.tag = 44;
                 [adjLabel constrainCenterYToAnchor:_adjButton.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.5];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.75];
                 break;
                 
             case 4:
@@ -236,23 +247,31 @@
                 break;
                 
             case 5:
-                [view addSubview:colorSchemeLabel];
-                [colorSchemeLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [view addSubview:colorSchemeButton];
-                [colorSchemeButton constrainBottomToAnchor:view.centerYAnchor constant:(-margin * 0.4)];
-                [colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
-                [colorSchemeButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.4)].active = YES;
-                colorSchemeButton.tag = 55;
-                [colorSchemeLabel constrainCenterYToAnchor:colorSchemeButton.centerYAnchor];
                 [view addSubview:transparencyLabel];
                 [transparencyLabel constrainLeadingToAnchor:view.leadingAnchor constant:margin];
-                [transparencyLabel constrainTopToAnchor:view.centerYAnchor constant:(margin * 0.4)];
+                [transparencyLabel constrainCenterYToAnchor:view.centerYAnchor];
                 [view addSubview:transparencySlider];
                 [transparencySlider constrainLeadingToAnchor:transparencyLabel.trailingAnchor constant:margin];
                 [transparencySlider constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
-                [transparencySlider constrainTopToAnchor:transparencyLabel.topAnchor];
+                [transparencySlider constrainCenterYToAnchor:transparencyLabel.centerYAnchor];
+                [view addSubview:colorSchemeLabel];
+                [colorSchemeLabel constrainLeadingToAnchor:transparencyLabel.leadingAnchor];
+                [view addSubview:_colorSchemeButton];
+                [_colorSchemeButton constrainBottomToAnchor:transparencySlider.topAnchor constant:(-margin * 0.25)];
+                [_colorSchemeButton constrainLeadingToAnchor:colorSchemeLabel.trailingAnchor constant:margin];
+                [_colorSchemeButton.trailingAnchor constraintLessThanOrEqualToAnchor:view.trailingAnchor constant:(-margin * 0.4)].active = YES;
+                _colorSchemeButton.tag = 55;
+                [colorSchemeLabel constrainCenterYToAnchor:_colorSchemeButton.centerYAnchor];
+                [view addSubview:outlineLabel];
+                [outlineLabel constrainLeadingToAnchor:transparencyLabel.leadingAnchor];
+                [view addSubview:outlineSC];
+                [outlineSC constrainLeadingToAnchor:outlineLabel.trailingAnchor constant:margin];
+                [outlineSC constrainTrailingToAnchor:view.trailingAnchor constant:-margin];
+                [outlineSC constrainTopToAnchor:transparencySlider.bottomAnchor constant:(margin * 0.5)];
+                [outlineSC constrainHeightToConstant:bigFont];
+                [outlineLabel constrainCenterYToAnchor:outlineSC.centerYAnchor];
                 [view constrainTopToAnchor:[topView viewWithTag:i-1].bottomAnchor];
-                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.25];
+                [view constrainHeightToAnchor:[topView viewWithTag:i-1].heightAnchor multiplier:1.75];
                 break;
                 
             case 6:
@@ -353,38 +372,34 @@
             keyword = @"Feature";
             _optionsList = NVMetroSettings.sharedInstance.features;
             break;
-            
         case 33:
             keyword = @"Value";
             _optionsList = [NVMetroSettings.sharedInstance valuesForFeature:NVMetroSettings.sharedInstance.currentFeature];
             multipleSelect = YES;
             break;
-            
         case 44:
             keyword = @"Adjustment";
             _optionsList = NVMetroSettings.sharedInstance.adjustmentOptions;
             break;
-            
         case 55:
             keyword = @"Color Scheme";
             _optionsList = @[@"Red/Blue", @"Amelia's Favorite Colors", @"Really Dumb Colors"];
             break;
-            
         case 66:
             keyword = @"Text";
             _optionsList = NVMetroSettings.sharedInstance.currentTextOptions;
             break;
-            
         default:
             break;
     }
     
-    NVPopoverTableView *nvptv =
-    [NVPopoverTableView showPopoverTableViewInView:self.view
-                                          delegate:self
-                                             title:[NSString stringWithFormat:@"%@ Options", keyword]
-                                         textArray:_optionsList
-                                     includeCancel:YES];
+    NSString *title = [NSString stringWithFormat:@"%@ Options", keyword];
+    
+    NVPopoverTableView *nvptv = [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                                      delegate:self
+                                                                         title:title
+                                                                     textArray:_optionsList
+                                                                 includeCancel:YES];
     
     nvptv.allowsMultipleSelection = multipleSelect;
     nvptv.tag = button.tag;
@@ -402,32 +417,25 @@
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentTextText]) forState:UIControlStateNormal];
             break;
-            
         case 33://value
             [NVMetroSettings.sharedInstance setCurrentValue:index];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
             break;
-            
         case 44://adjustment
             NVMetroSettings.sharedInstance.currentAdjustmentValue = index;
             [_adjButton setTitle:paddedString([NVMetroSettings.sharedInstance currentAdjustmentText]) forState:UIControlStateNormal];
-
             break;
-            
         case 55://color scheme
+            [_colorSchemeButton setTitle:paddedString(text) forState:UIControlStateNormal];
             break;
-            
         case 66://text
         {
-            NSString * option = _optionsList[index];
-            NSString * textIndex = textAfter(option, @"\x04");
-            
-
+            NSString *option = _optionsList[index];
+            NSString *textIndex = textAfter(option, @"\x04");
             [NVMetroSettings.sharedInstance currentTextSelection:(int)textIndex.integerValue];
             [_textButton setTitle:paddedString([NVMetroSettings.sharedInstance currentTextText]) forState:UIControlStateNormal];
-        }
             break;
-            
+        }
         default:
             break;
     }
@@ -441,21 +449,18 @@ didReturnWithSelectedRows:(NSArray <NSNumber *> *)selectedRows
 {
     switch (popoverTableView.tag)
     {
-        case 2://feature
+        case 22://feature
             break;
-            
         case 33://value
             [NVMetroSettings.sharedInstance updateCurrentValues:selectedTextArray];
             [_valueButton setTitle:paddedString([NVMetroSettings.sharedInstance currentValueText]) forState:UIControlStateNormal];
-            
             break;
-            
-        case 5://color scheme
+        case 44://adjustment
             break;
-            
-        case 6://text
+        case 55://color scheme
             break;
-            
+        case 66://text
+            break;
         default:
             break;
     }
@@ -474,6 +479,11 @@ didReturnWithSelectedRows:(NSArray <NSNumber *> *)selectedRows
 }
 
 - (void)displayParamsSCTapped:(UISegmentedControl *)segControl
+{
+    
+}
+
+- (void)outlineSCTapped:(UISegmentedControl *)segControl
 {
     
 }
