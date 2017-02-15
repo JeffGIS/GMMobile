@@ -485,6 +485,7 @@ didReturnWithSelectedRows:(NSArray <NSNumber *> *)selectedRows
 
 - (void)outlineSCTapped:(UISegmentedControl *)segControl
 {
+    NVMetroSettings.sharedInstance.areaOutlineType = (int)segControl.selectedSegmentIndex;
     
 }
 

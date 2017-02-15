@@ -194,7 +194,8 @@
                   nPoints:numPoints
                    points:llpoints
                 withColor:maskColor.CGColor
-                drawLines:NO];
+                lineColor:nil
+                lineWidth:0];
         
     }
     
@@ -296,7 +297,8 @@
                           nPoints:numPoints
                            points:llpoints
                         withColor:maskColor.CGColor
-                        drawLines:NO];
+                        lineColor:nil
+                        lineWidth:0];
                 
             }
             if (CRAPI.sharedInstance.showPolylineForBounds)
@@ -701,7 +703,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                       nPoints:np
                        points:llpoints
                     withColor:dc.fillColor.CGColor
-                    drawLines:NO];
+                    lineColor:nil
+                    lineWidth:0];
             /*[self drawUseCode:context
                       nPoints:np
                        nLoops:numLoops
@@ -783,7 +786,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
            nPoints:(int)np
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
-          drawLines:(BOOL) drawLines
+          lineColor:(CGColorRef)lineColor
+          lineWidth:(float)lineWidth
 {
     //CGContextSetLineWidth(context, 3);
     //CGContextFillEllipseInRect(context, pointRect);
@@ -805,16 +809,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (!CGContextIsPathEmpty(context))
     {
         CGContextSetFillColorWithColor(context,color);
-        if (drawLines)
+        if (lineWidth)
         {
-            CGContextSetLineWidth(context, 1);
-            CGContextSetStrokeColorWithColor(context,UIColor.blackColor.CGColor);
+            CGContextSetLineWidth(context, lineWidth);
+            CGContextSetStrokeColorWithColor(context,lineColor);
             CGContextDrawPath(context, kCGPathEOFillStroke);
         }
         else
         {
-            //CGContextSetLineWidth(context, 1);
-           //CGContextSetStrokeColorWithColor(context,color);
             CGContextDrawPath(context, kCGPathEOFill);
         }
         
@@ -1346,11 +1348,29 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             else if ([themes setDisplayCharacteristics:dc
                                              displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
             {
+                float lineWidth = 0;
+                float alpha = 1;
+                UIColor *lineColor = nil;
+                switch (NVMetroSettings.sharedInstance.areaOutlineType)
+                {
+                    case AreaOutlineNone:
+                    break;
+                    case AreaOutlineLight:
+                    lineWidth = 0.5;
+                    lineColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25];
+                    break;
+                    case AreaOutlineDark:
+                    lineWidth = 1;
+                    lineColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
+                    break;
+                    
+                }
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
                         withColor:dc.fillColor.CGColor
-                        drawLines:YES];
+                        lineColor:lineColor.CGColor
+                        lineWidth:lineWidth];
                 if (NVMetroSettings.sharedInstance.currentTextOption.numTextFields < 0)
                 {
                     NSString * text = formatValueText (dc.iValue,factor,nDecimals);
@@ -1611,7 +1631,8 @@ NextPass:
                   nPoints:numPoints
                    points:llpoints
                 withColor:color
-                drawLines:NO];
+                lineColor:nil
+                lineWidth:0];
         
         [self drawUseCode:context
                   nPoints:numPoints

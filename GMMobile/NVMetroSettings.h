@@ -68,6 +68,13 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
     TXTAdjustCount
 };
 
+typedef NS_ENUM(NSInteger, AreaOutlineTypes)
+{
+    AreaOutlineNone,
+    AreaOutlineLight,
+    AreaOutlineDark,
+};
+
 
 #define MAX_NVM_TEXT_FIELDS 16
 
@@ -92,6 +99,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
 @property NVMetroTextOptions* currentTextOption;
 @property (nonatomic)BOOL overUnder;
 @property int themeClassType;
+@property AreaOutlineTypes areaOutlineType;
 @property int numThemeClasses;
 @property int roundTo;
 @property int valueMultiplier;
