@@ -1216,6 +1216,8 @@
     [self.view addGestureRecognizer:_zoomExtentsGesture];
 }
 
+#pragma mark - EndOfViewDidAppear
+
 - (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
                                    statusString:(NSString *)statusString
                                       directory:(NSString *)directory
@@ -1473,13 +1475,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         llpickPt.lon = coordinate.longitude;
         BoundaryData *bd = [[BoundaryData alloc]init];
         NSString *CenType = @"PARCEL";
+        
         switch (NVMetroSettings.sharedInstance.currentFeature)
         {
             case CPFLandUse:
-            {
-            }
                 break;
-                
             case CPFParcels:
             {
                 PropertyData *propData = [[PropertyData alloc] init];
@@ -1510,7 +1510,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 if (pi)
                     [highlightList addObject:pi];
             }
-            break;
+                break;
+            default:
+                break;
         }
     }
     else
@@ -4584,22 +4586,28 @@ didCompleteWithError:(NSError *)error
 - (void)perform3DFlyAround
 {
     NSString *flyOverURL = @"NVFlyover:";
-    
-    [SharedDefaults.defaults saveString:@"NVMobile:"
-                                 forKey:@"FlyoverSourceApplication"];
+    [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
     
     else
     {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:@"NVMobile cannot launch Flyover App"
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
+        flyOverURL = @"https://itunes.apple.com/us/app/newvision-flyover/id1105410284";
         
-        alert.identifier = @"CannotLaunchFlyoverApp";
+        if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
+            [UIApplication.sharedApplication openURL:[NSURL URLWithString:flyOverURL]];
+        
+        else
+        {
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"NVMobile cannot launch Flyover App"
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+            
+            alert.identifier = @"CannotLaunchFlyoverApp";
+        }
     }
 }
 
@@ -5225,13 +5233,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             UIView *platIndicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, (5.0 / currentPlatScale), 1024.0)];
             platIndicatorView.backgroundColor = UIColor.redColor;
             [_platView addSubview:platIndicatorView];
-            
             CGFloat currentProfileScale = [[_profileView.layer valueForKeyPath:@"transform.scale"] floatValue];
-            
             UIView *profileIndicatorView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, (5.0 / currentProfileScale), 1024.0)];
             profileIndicatorView.backgroundColor = UIColor.redColor;
             [_profileView addSubview:profileIndicatorView];
-            
             _targetView.hidden = NO;
         }
         
