@@ -1661,7 +1661,7 @@ NextPass:
        LLBounds:(MNMXCORD *)platlonBounds
      viewBounds:(MNMXCORD *)pvbounds
 {
-    if (!to || !to.numTextFields)
+    if (from == TFONVMetroDisplay && (!to || !to.numTextFields))
         return 0;
     extern MNMXCORD curbounds;
     int nLoaded = 0;
@@ -2059,5 +2059,127 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
     if (pi)
         CRAPI.sharedInstance.currentCity = pi.identifier;
 }
+- (LPDPOINT)getBoundaryPolygonPointsForType:(NSString *)areaType
+                                      refno:(long)refno
+                               numPoints:(int *)numPoints
+                                numLoops:(int *)numLoops
+                             polyPartLen:(int **)polyPartLen
+{
+    DPOINT basePoint = {0};
+    LPDPOINT llpoints = NULL;
+    sqlite3_stmt *statement = NULL;
+    if (polyPartLen)
+    *polyPartLen = 0;
+    NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",areaType];
+    NSString * query;
+    BOOL opened = [self open];
 
+    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+        [areaType isEqualToString:@"Minneapolis Wards"] ||
+        [areaType isEqualToString:@"Cities And Townships"] ||
+        [areaType isEqualToString:@"Counties"] ||
+        [areaType isEqualToString:@"Seven County Metro Area"] ||
+        [areaType isEqualToString:@"Minneapolis Sectors"] ||
+        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+    {
+        table = @"BOUNDARYAREA";
+        
+        
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@ WHERE Type = %@ AND id=%li",
+                 table,areaType,refno];
+    }
+    else
+    {
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@ WHERE id=%li",
+                 table,refno];
+    }
+    
+    
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        basePoint.x = sqlite3_column_double(statement, 0);
+        basePoint.y = sqlite3_column_double(statement, 1);
+        *numPoints = sqlite3_column_int(statement, 2);
+        *numLoops = sqlite3_column_int(statement, 3);
+        if (*numLoops > 1 && polyPartLen)
+        {
+            *polyPartLen = malloc (*numLoops * sizeof (int));
+            memcpy (*polyPartLen,(int *)sqlite3_column_blob(statement,4),*numLoops * sizeof(int));
+        }
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 5);
+        llpoints = malloc(abs(*numPoints) * sizeof(DPOINT) + 4);
+        
+        if (*numPoints < 0)
+        {
+            *numPoints = -*numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < *numPoints; i++)
+            {
+                llpoints[i].x = (basePoint.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (basePoint.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+            }
+        }
+        
+        else for (int i = 0; i < *numPoints; i++)
+        {
+            llpoints[i].x = (basePoint.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (basePoint.y + offsetPoints[i].y / COORDINATE_FACTOR);
+        }
+    }
+    
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    
+    [self close:opened];
+    
+    return llpoints;
+}
+
+- (MNMXCORD)getBoundsForBoundaryType:(NSString *)areaType
+                                refno:(long)refno
+{
+    MNMXCORD bounds;
+    NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",areaType];
+    BOOL opened = [self open];
+    NSString *query;
+    sqlite3_stmt *statement = NULL;
+    
+    if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
+        [areaType isEqualToString:@"Minneapolis Wards"] ||
+        [areaType isEqualToString:@"Cities And Townships"] ||
+        [areaType isEqualToString:@"Counties"] ||
+        [areaType isEqualToString:@"Seven County Metro Area"] ||
+        [areaType isEqualToString:@"Minneapolis Sectors"] ||
+        [areaType isEqualToString:@"Minneapolis Neighborhoods"])
+    {
+        table = @"BOUNDARYAREA";
+        
+        
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM %@_index WHERE Type = %@ AND id=%li",
+                 table,areaType,refno];
+    }
+    else
+    {
+        query = [NSString stringWithFormat:@"SELECT id,minX,maxX,minY,maxY FROM %@_index WHERE id=%li",
+                 table,refno];
+    }
+    
+    
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        bounds.xmn = sqlite3_column_double(statement, 1);
+        bounds.xmx = sqlite3_column_double(statement, 2);
+        bounds.ymn = sqlite3_column_double(statement, 3);
+        bounds.ymx = sqlite3_column_double(statement, 4);
+    }
+    
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    
+    [self close:opened];
+    return bounds;
+}
 @end

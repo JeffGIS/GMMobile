@@ -64,7 +64,8 @@
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt;
-@property NSInteger selectedCrime, selectedCensusBoundary;
+@property NSInteger selectedCrime, selectedCensusBoundaryRefno;
+@property NSString * selectedCensusBoundaryType;
 @property int selectedMGVSanMH, selectedMGVSanPipe;
 @property (nonatomic) NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
@@ -1675,6 +1676,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 case CensusBlockBoundary:
                 case CensusTractBoundary:
                 case CensusBlockGroupBoundary:
+                    _selectedCensusBoundaryRefno = pi.refno;
+                    _selectedCensusBoundaryType = pi.symbolName;
                     marker.title = pi.identifier;
                     marker.snippet = pi.symbolName;
                     marker.type = MarkerInfoWindowTypeCensusBoundary;
@@ -3926,14 +3929,45 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID forKey:@"FlyOverType"];
             int numPoints = 0, numLoops = 0, *polyPartLen = 0;
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
+            MNMXCORD bounds;
+            LPDPOINT llpoints;
+            if (_infoWindow.marker.type == MarkerInfoWindowTypePID)
+            {
             PropertyData *propData = [[PropertyData alloc] init];
-            MNMXCORD bounds = [propData getBoundsForPID:_selectedPID];
+            bounds = [propData getBoundsForPID:_selectedPID];
             
-            LPDPOINT llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
+            llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
                                                              numPoints:&numPoints
                                                               numLoops:&numLoops
                                                            polyPartLen:&polyPartLen];
+            }
             
+            if (_infoWindow.marker.type == MarkerInfoWindowTypePID)
+            {
+                PropertyData *propData = [[PropertyData alloc] init];
+                bounds = [propData getBoundsForPID:_selectedPID];
+                
+                llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
+                                                        numPoints:&numPoints
+                                                         numLoops:&numLoops
+                                                      polyPartLen:&polyPartLen];
+            }
+            
+            if (_infoWindow.marker.type == MarkerInfoWindowTypeCensusBoundary)
+            {
+                NSString * areaType=_selectedCensusBoundaryType;
+                BoundaryData *boundaryData = [[BoundaryData alloc] init];
+                bounds = [boundaryData getBoundsForBoundaryType:areaType
+                                                          refno:_selectedCensusBoundaryRefno];
+                
+                llpoints = [boundaryData getBoundaryPolygonPointsForType:areaType
+                                                                refno:_selectedCensusBoundaryRefno
+                                                        numPoints:&numPoints
+                                                         numLoops:&numLoops
+                                                      polyPartLen:&polyPartLen];
+            }
+            
+           
             FILE *pidPolyFile = fopen(filePath, "wb");
             
             if (!pidPolyFile)
@@ -6287,7 +6321,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             break;
         case MarkerInfoWindowTypeCensusBoundary:
         {
-            _selectedCensusBoundary = refno;
+            _selectedCensusBoundaryRefno = refno;
             _options = @[@"", @"Display Report", @"Perform 3D Fly Around", @"Display Google Street View"];
         }
             break;

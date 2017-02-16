@@ -117,5 +117,12 @@ boundsPointInAreas:(PointInAreas*)pias
                            andName:(NSString *)name;
 
 - (void) setCityAndCounty;
+- (LPDPOINT)getBoundaryPolygonPointsForType:(NSString *)areaType
+                                      refno:(long)refno
+                                  numPoints:(int *)numPoints
+                                   numLoops:(int *)numLoops
+                                polyPartLen:(int **)polyPartLen;
+- (MNMXCORD)getBoundsForBoundaryType:(NSString *)type
+                                refno:(long)refno;
 
 @end
