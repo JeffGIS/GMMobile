@@ -3933,29 +3933,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
             MNMXCORD bounds;
             LPDPOINT llpoints;
-            if (_infoWindow.marker.type == MarkerInfoWindowTypePID)
-            {
-            PropertyData *propData = [[PropertyData alloc] init];
-            bounds = [propData getBoundsForPID:_selectedPID];
-            
-            llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
-                                                             numPoints:&numPoints
-                                                              numLoops:&numLoops
-                                                           polyPartLen:&polyPartLen];
-            }
             
             if (_infoWindow.marker.type == MarkerInfoWindowTypePID)
             {
                 PropertyData *propData = [[PropertyData alloc] init];
                 bounds = [propData getBoundsForPID:_selectedPID];
-                
+            
                 llpoints = [propData getParcelPolygonPointsForPID:_selectedPID
                                                         numPoints:&numPoints
                                                          numLoops:&numLoops
                                                       polyPartLen:&polyPartLen];
             }
             
-            if (_infoWindow.marker.type == MarkerInfoWindowTypeCensusBoundary)
+            else if (_infoWindow.marker.type == MarkerInfoWindowTypeCensusBoundary)
             {
                 NSString * areaType=_selectedCensusBoundaryType;
                 BoundaryData *boundaryData = [[BoundaryData alloc] init];
@@ -3963,13 +3953,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                           refno:_selectedCensusBoundaryRefno];
                 
                 llpoints = [boundaryData getBoundaryPolygonPointsForType:areaType
-                                                                refno:_selectedCensusBoundaryRefno
-                                                        numPoints:&numPoints
-                                                         numLoops:&numLoops
-                                                      polyPartLen:&polyPartLen];
+                                                                   refno:_selectedCensusBoundaryRefno
+                                                               numPoints:&numPoints
+                                                                numLoops:&numLoops
+                                                             polyPartLen:&polyPartLen];
             }
             
-           
             FILE *pidPolyFile = fopen(filePath, "wb");
             
             if (!pidPolyFile)
@@ -4146,9 +4135,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayReport forKey:@"CrimePointOption"];
         [self displayCrimeReport];
     }
+    
+    else if ([text isEqualToString:@"Display Census Data Chart"])
+    {
+        [self displayCensusDataChart];
+    }
 }
 
-- (MGVPlatData *) loadMGVData:(NSString*)line
+- (MGVPlatData *)loadMGVData:(NSString *)line
 {
     char imageFileName[64];
     
@@ -4282,7 +4276,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 {
     
     NSArray * array = [self getMGVPlatDataByRefno:_selectedMGVSanMH];
-//@"ENA_19_87-26_A0.pdf";
     SewerData *sd = [[SewerData alloc] init];
     
     if (array.count > _splitPlatDirection)
@@ -4290,7 +4283,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         _mgvData = array[_splitPlatDirection];
         if (_mgvData)
         {
-            
             [sd loadPlat:_mgvData.pdfFile
                   ofType:@"pdf"
             usingPopover:_popover
@@ -4304,20 +4296,21 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)displayCrimeReport
 {
     NSString *reportText = [CrimeData reportForControlNumber:_selectedCrime];
-    
-    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText
-                                             fontSize:16.0];
-    
-    [self presentViewController:textVC
-                       animated:YES
-                     completion:nil];
+    NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText fontSize:16.0];
+    [self presentViewController:textVC animated:YES completion:nil];
+}
+
+- (void)displayCensusDataChart
+{
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusData];
+    [self presentViewController:chartsVC animated:YES completion:nil];
+    [self deselectTableViewRow];
 }
 
 - (void)showPropReport
 {
     PropertyData *pd = PropertyData.new;
     _propertyReport = [pd getReport:PDSettingDefault forPID:_selectedPID];
-    
     _tableViewSetting = PropertyTableViewSettingPropertyReport;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.allowsSelection = NO;
@@ -4328,10 +4321,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showPropHistory
 {
-    ChartsViewController *chartsVC = ChartsViewController.new;
-    chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypePropReport];
     chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:_selectedPID];
     [self presentViewController:chartsVC animated:YES completion:nil];
+    [self deselectTableViewRow];
 }
 
 - (void)showZillow
@@ -6327,7 +6320,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCensusBoundary:
         {
             _selectedCensusBoundaryRefno = refno;
-            _options = @[@"", @"Display Report", @"Perform 3D Fly Around", @"Display Google Street View"];
+            _options = @[@"", @"Display Census Data Chart", @"Perform 3D Fly Around", @"Display Google Street View"];
         }
             break;
             

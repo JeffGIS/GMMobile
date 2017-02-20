@@ -3,25 +3,33 @@
 
 #import "ChartsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "CCodeLibrary/CensusData.h"
 #import "PropertyData.h"
 @import Charts;
 
 @interface ChartsViewController ()
 
-@property (nonatomic) CombinedChartView *chart;
 @property (nonatomic) UIButton *returnButton;
 @property int currentSaleVal;
+@property NSInteger type;
 
 @end
 
 @implementation ChartsViewController
+
++ (instancetype)chartViewWithType:(ChartsViewType)type
+{
+    ChartsViewController *chartsVC = ChartsViewController.new;
+    chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    chartsVC.type = type;
+    return chartsVC;
+}
 
 - (void)loadView
 {
     UIView *view = [[UIView alloc] initWithFrame:UIScreen.mainScreen.bounds];
     self.view = view;
 }
-
 
 - (void)viewDidLoad
 {
@@ -47,18 +55,33 @@
     [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
     [_returnButton constrainTopToAnchor:self.view.topAnchor constant:8.0];
     
-    _chart = CombinedChartView.new;
-    _chart.translatesAutoresizingMaskIntoConstraints = NO;
-    _chart.xAxis.labelPosition = XAxisLabelPositionBottom;
-    _chart.backgroundColor = UIColor.whiteColor;
-    _chart.descriptionText = @"";
-    _chart.legend.font = [UIFont systemFontOfSize:16.0];
+    switch (_type)
+    {
+        case ChartsViewTypePropReport:
+            [self setupPropReport];
+            break;
+        case ChartsViewTypeCensusData:
+            [self setupCensusData];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)setupPropReport
+{
+    CombinedChartView *chart = CombinedChartView.new;
+    chart.translatesAutoresizingMaskIntoConstraints = NO;
+    chart.xAxis.labelPosition = XAxisLabelPositionBottom;
+    chart.backgroundColor = UIColor.whiteColor;
+    chart.chartDescription.text = @"";
+    chart.legend.font = [UIFont systemFontOfSize:16.0];
     
-    [self.view addSubview:_chart];
-    [_chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [_chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
-    [_chart constrainTopToAnchor:_returnButton.bottomAnchor];
-    [_chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    [self.view addSubview:chart];
+    [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [chart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
     NSMutableArray *emvTotals = NSMutableArray.array;
     NSMutableArray *emvLands = NSMutableArray.array;
@@ -137,9 +160,41 @@
     CombinedChartData *data = CombinedChartData.new;
     data.lineData = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvBldgData), (emvLandData), (totalTaxData)]];
     data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
-    _chart.data = data;
-    _chart.xAxis.axisMinimum = (_chart.chartXMin - 0.5);
-    _chart.xAxis.axisMaximum = (_chart.chartXMax + 0.5);
+    chart.data = data;
+    chart.xAxis.axisMinimum = (chart.chartXMin - 0.5);
+    chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);
+}
+
+- (void)setupCensusData
+{
+    CensusData *cd = CensusData.new;
+    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:@"27053107000"];
+    NSLog(@"%@", values);
+    
+    PieChartView *chart = PieChartView.new;
+    chart.translatesAutoresizingMaskIntoConstraints = NO;
+    chart.backgroundColor = UIColor.whiteColor;
+    chart.chartDescription.text = @"GSSi Staff";
+    chart.chartDescription.font = [UIFont boldSystemFontOfSize:32.0];
+    chart.legend.font = [UIFont systemFontOfSize:24.0];
+    
+    [self.view addSubview:chart];
+    [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [chart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    
+    PieChartDataEntry *de1 = [[PieChartDataEntry alloc] initWithValue:200.0 label:@"Amelia"];
+    PieChartDataEntry *de2 = [[PieChartDataEntry alloc] initWithValue:100.0 label:@"Jeff"];
+    PieChartDataEntry *de3 = [[PieChartDataEntry alloc] initWithValue:75.0 label:@"Bill"];
+    PieChartDataEntry *de4 = [[PieChartDataEntry alloc] initWithValue:50.0 label:@"Mary Ellen"];
+    PieChartDataEntry *de5 = [[PieChartDataEntry alloc] initWithValue:25.0 label:@"Crystal"];
+    
+    PieChartDataSet *dataSet = [[PieChartDataSet alloc] initWithValues:@[(de1), (de2), (de3), (de4), (de5)] label:@""];
+    dataSet.colors = @[(UIColor.magentaColor), (UIColor.blueColor), (UserDefaults.defaults.darkGreen), (UIColor.purpleColor), (UIColor.brownColor)];
+    dataSet.valueFont = [UIFont systemFontOfSize:18.0];
+    PieChartData *data = [[PieChartData alloc] initWithDataSet:dataSet];
+    chart.data = data;
 }
 
 - (void)didReceiveMemoryWarning
