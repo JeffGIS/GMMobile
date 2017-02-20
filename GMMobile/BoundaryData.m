@@ -1983,6 +1983,13 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME, %@.id FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,areaType,table,table,
                  point.lon,point.lon,point.lat,point.lat];
     }
+    else if ([areaType isEqualToString:@"PARCEL"])
+    {
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id, NUMLINKEDPARCELS FROM PARCELPOLY,PROPINFO,PARCELPOLY_index WHERE PROPINFO.PIN = PARCELPOLY.PID AND PARCELPOLY.id=PARCELPOLY_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+                           point.lon,point.lon,point.lat,point.lat];
+
+    }
+
     else
     {
         if ([areaType isEqualToString:@"TRACT"]) itemType = CensusTractBoundary;
