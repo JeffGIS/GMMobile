@@ -477,8 +477,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                 switch (layer)
                 {
                     case HCLayerParcels:
-                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
-                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingProperty]];
+                        //[list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
+                        //[list addObject:[NSNumber numberWithInt:GetDatabaseSettingProperty]];
                         break;
                         
                     case HCLayerSewers:
