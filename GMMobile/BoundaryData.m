@@ -1047,8 +1047,9 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     double totalPop = 0;
     double totalHousingUnits = 0;
     int genUseCode;
-    CGFloat fontSize = 48.0;
-    CGFloat minFontSize = 6.0;
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+    CGFloat fontSize = 32.0 * screenScale;
+    CGFloat minFontSize = 6.0 * screenScale;
     static int wantGenUseCode = 0;
     static char wantHomeStead = 0;
     double screenAreaInAcres = LLRectInSQMeters (LLCornerPointsFromCornerPoints(latlonCornerPoints)) * ACRES_PER_SQMETER;
@@ -1673,8 +1674,9 @@ NextPass:
     int numLoops = 0;
     NSString *key = areaType;
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
-    CGFloat fontSize = 48.0;
-    CGFloat minFontSize = 20.0;
+    CGFloat screenScale = [[UIScreen mainScreen] scale];
+
+    CGFloat fontSize = 32.0 * screenScale;
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
     
     BOOL opened = [self open];
@@ -1831,8 +1833,9 @@ NextPass:
             if (count >= 0)
             {
                 UIColor *textColor = UIColor.redColor;
+                CGFloat minFontSize = fontSize / 3;
                 if (nTextFields < 2)
-                    minFontSize = 6;
+                    minFontSize = 6 * screenScale;
                 BOOL st = [NVTextDrawing drawText:text
                               inContext:context
                           withinPolygon:llpoints
