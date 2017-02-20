@@ -4,6 +4,7 @@
 #import "ChartsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CensusData.h"
+#import "CCodeLibrary/NVColor.h"
 #import "PropertyData.h"
 @import Charts;
 
@@ -60,7 +61,8 @@
         case ChartsViewTypePropReport:
             [self setupPropReport];
             break;
-        case ChartsViewTypeCensusData:
+        case ChartsViewTypeCensusDataPie:
+        case ChartsViewTypeCensusDataLine:
             [self setupCensusData];
             break;
         default:
@@ -167,16 +169,12 @@
 
 - (void)setupCensusData
 {
-    CensusData *cd = CensusData.new;
-    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:@"27053107000"];
-    NSLog(@"%@", values);
-    
     PieChartView *chart = PieChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
-    chart.chartDescription.text = @"GSSi Staff";
-    chart.chartDescription.font = [UIFont boldSystemFontOfSize:32.0];
-    chart.legend.font = [UIFont systemFontOfSize:24.0];
+    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for Tract %@", _geoid];
+    chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
+    chart.legend.font = [UIFont systemFontOfSize:16.0];
     
     [self.view addSubview:chart];
     [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
@@ -184,14 +182,31 @@
     [chart constrainTopToAnchor:_returnButton.bottomAnchor];
     [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
-    PieChartDataEntry *de1 = [[PieChartDataEntry alloc] initWithValue:200.0 label:@"Amelia"];
-    PieChartDataEntry *de2 = [[PieChartDataEntry alloc] initWithValue:100.0 label:@"Jeff"];
-    PieChartDataEntry *de3 = [[PieChartDataEntry alloc] initWithValue:75.0 label:@"Bill"];
-    PieChartDataEntry *de4 = [[PieChartDataEntry alloc] initWithValue:50.0 label:@"Mary Ellen"];
-    PieChartDataEntry *de5 = [[PieChartDataEntry alloc] initWithValue:25.0 label:@"Crystal"];
+    CensusData *cd = CensusData.new;
+    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:_geoid];
+    NSMutableArray *valueArray = NSMutableArray.array;
+    NSMutableArray *colorsArray = NSMutableArray.array;
+    NSArray *darkColors = NVColor.darkColors;
+    NSArray *mediumColors = NVColor.mediumColors;
     
-    PieChartDataSet *dataSet = [[PieChartDataSet alloc] initWithValues:@[(de1), (de2), (de3), (de4), (de5)] label:@""];
-    dataSet.colors = @[(UIColor.magentaColor), (UIColor.blueColor), (UserDefaults.defaults.darkGreen), (UIColor.purpleColor), (UIColor.brownColor)];
+    for (int i = 0; i < values.count; i++)
+    {
+        NSString *label = textBefore(values[i], @"\x03");
+        double value = [textAfter(values[i], @"\x03") doubleValue];
+        PieChartDataEntry *pcde = [[PieChartDataEntry alloc] initWithValue:value label:label];
+        [valueArray addObject:pcde];
+        
+        NSLog(@"%d", i % 2);
+        
+        if (i % 2)
+            [colorsArray addObject:darkColors[i]];
+        
+        else
+            [colorsArray addObject:mediumColors[i]];
+    }
+    
+    PieChartDataSet *dataSet = [[PieChartDataSet alloc] initWithValues:valueArray.copy label:@""];
+    dataSet.colors = colorsArray.copy;
     dataSet.valueFont = [UIFont systemFontOfSize:18.0];
     PieChartData *data = [[PieChartData alloc] initWithDataSet:dataSet];
     chart.data = data;

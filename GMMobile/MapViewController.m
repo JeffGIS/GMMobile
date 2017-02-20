@@ -4302,8 +4302,9 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)displayCensusDataChart
 {
-    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusData];
-    [self presentViewController:chartsVC animated:YES completion:nil];
+    ChartsViewController *pieChartVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusDataPie];
+    pieChartVC.geoid = _infoWindow.optionsTitle;
+    [self presentViewController:pieChartVC animated:YES completion:nil];
     [self deselectTableViewRow];
 }
 
