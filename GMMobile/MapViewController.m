@@ -23,6 +23,7 @@
 #import "ChartsViewController.h"
 #import "NVSpreadsheetDelegate.h"
 #import "NVMetroSettingsVC.h"
+#import "CCodeLibrary/NVPager.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -4304,7 +4305,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 {
     ChartsViewController *pieChartVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusDataPie];
     pieChartVC.geoid = _infoWindow.optionsTitle;
-    [self presentViewController:pieChartVC animated:YES completion:nil];
+    ChartsViewController *lineChartVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusDataBar];
+    lineChartVC.geoid = _infoWindow.optionsTitle;
+    NVPager *pager = [NVPager pagerWithViewControllers:@[(pieChartVC), (lineChartVC)]];
+    [self presentViewController:pager animated:YES completion:nil];
     [self deselectTableViewRow];
 }
 

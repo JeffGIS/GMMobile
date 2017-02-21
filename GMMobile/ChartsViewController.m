@@ -62,8 +62,12 @@
             [self setupPropReport];
             break;
         case ChartsViewTypeCensusDataPie:
+            [self setupPieCensusData];
+            break;
+        case ChartsViewTypeCensusDataBar:
+            [self setupBarCensusData];
+            break;
         case ChartsViewTypeCensusDataLine:
-            [self setupCensusData];
             break;
         default:
             break;
@@ -167,7 +171,7 @@
     chart.xAxis.axisMaximum = (chart.chartXMax + 0.5);
 }
 
-- (void)setupCensusData
+- (void)setupPieCensusData
 {
     PieChartView *chart = PieChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
@@ -196,8 +200,6 @@
         PieChartDataEntry *pcde = [[PieChartDataEntry alloc] initWithValue:value label:label];
         [valueArray addObject:pcde];
         
-        NSLog(@"%d", i % 2);
-        
         if (i % 2)
             [colorsArray addObject:darkColors[i]];
         
@@ -209,6 +211,49 @@
     dataSet.colors = colorsArray.copy;
     dataSet.valueFont = [UIFont systemFontOfSize:18.0];
     PieChartData *data = [[PieChartData alloc] initWithDataSet:dataSet];
+    chart.data = data;
+}
+
+- (void)setupBarCensusData
+{
+    BarChartView *chart = BarChartView.new;
+    chart.translatesAutoresizingMaskIntoConstraints = NO;
+    chart.backgroundColor = UIColor.whiteColor;
+    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for Tract %@", _geoid];
+    chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
+    chart.legend.font = [UIFont systemFontOfSize:16.0];
+    
+    [self.view addSubview:chart];
+    [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [chart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [chart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    
+    CensusData *cd = CensusData.new;
+    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:_geoid];
+    NSMutableArray *valueArray = NSMutableArray.array;
+    NSMutableArray *colorsArray = NSMutableArray.array;
+    NSArray *darkColors = NVColor.darkColors;
+    NSArray *mediumColors = NVColor.mediumColors;
+    
+    for (int i = 0; i < values.count; i++)
+    {
+        NSString *label = textBefore(values[i], @"\x03");
+        double value = [textAfter(values[i], @"\x03") doubleValue];
+        BarChartDataEntry *pcde = [[BarChartDataEntry alloc] initWithX:i+1 y:value];
+        [valueArray addObject:pcde];
+        
+        if (i % 2)
+            [colorsArray addObject:darkColors[i]];
+        
+        else
+            [colorsArray addObject:mediumColors[i]];
+    }
+    
+    BarChartDataSet *dataSet = [[BarChartDataSet alloc] initWithValues:valueArray.copy label:@""];
+    dataSet.colors = colorsArray.copy;
+    dataSet.valueFont = [UIFont systemFontOfSize:18.0];
+    BarChartData *data = [[BarChartData alloc] initWithDataSet:dataSet];
     chart.data = data;
 }
 

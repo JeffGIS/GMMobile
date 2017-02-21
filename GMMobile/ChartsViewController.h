@@ -8,6 +8,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
     ChartsViewTypeDefault,
     ChartsViewTypePropReport,
     ChartsViewTypeCensusDataPie,
+    ChartsViewTypeCensusDataBar,
     ChartsViewTypeCensusDataLine,
 };
 
