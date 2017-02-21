@@ -913,8 +913,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             ID = sqlite3_column_int64(statement,0);
             value = sqlite3_column_double(statement,1);
-            value *= factor;
-            if (iValue == i95percentCount)
+           if (iValue == i95percentCount)
                 d95percentValue = value;
             if (!iValue)
                 classMin[0] = value;
