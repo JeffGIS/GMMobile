@@ -1482,6 +1482,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             case CPFLandUse:
                 break;
             case CPFParcels:
+            case CPFParcels_IND:
+            case CPFParcels_AG:
+            case CPFParcels_RES:
+            case CPFParcels_COM:
             {
                 PropertyData *propData = [[PropertyData alloc] init];
 
@@ -1489,10 +1493,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                        highlightList:highlightList];
             }
                 break;
-            case CPFParcels_IND:
-            case CPFParcels_AG:
-            case CPFParcels_RES:
-            case CPFParcels_COM:
             case CPFBlocks:
             case CPFBlockGroups:
             case CPFBlockGroups_ACS:
