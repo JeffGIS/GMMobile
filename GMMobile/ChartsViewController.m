@@ -176,7 +176,7 @@
     PieChartView *chart = PieChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
-    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for Tract %@", _geoid];
+    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@", _areaType,_geoid];
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
     
@@ -187,7 +187,7 @@
     [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
     CensusData *cd = CensusData.new;
-    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:_geoid];
+    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:_areaType geoID:_geoid];
     NSMutableArray *valueArray = NSMutableArray.array;
     NSMutableArray *colorsArray = NSMutableArray.array;
     NSArray *darkColors = NVColor.darkColors;
@@ -219,7 +219,7 @@
     BarChartView *chart = BarChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
-    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for Tract %@", _geoid];
+    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@", _areaType,_geoid];
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
     
@@ -230,8 +230,8 @@
     [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
     CensusData *cd = CensusData.new;
-    NSArray *males = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:_geoid];
-    NSArray *females = [cd getCensusChartFieldValues:CAVFemalesByAge areaType:@"TRACT" geoID:_geoid];
+    NSArray *males = [cd getCensusChartFieldValues:CAVMalesByAge areaType:_areaType geoID:_geoid];
+    NSArray *females = [cd getCensusChartFieldValues:CAVFemalesByAge areaType:_areaType geoID:_geoid];
     NSMutableArray *totalsArray = NSMutableArray.array;
     NSMutableArray *malesArray = NSMutableArray.array;
     NSMutableArray *femalesArray = NSMutableArray.array;

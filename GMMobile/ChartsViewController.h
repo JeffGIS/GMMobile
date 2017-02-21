@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
 @interface ChartsViewController : UIViewController
 
 @property (nonatomic, copy) NSArray *propHistoryArray;
+@property (nonatomic) NSString *areaType;
 @property (nonatomic) NSString *geoid;
 
 + (instancetype)chartViewWithType:(ChartsViewType)type;
