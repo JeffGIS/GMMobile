@@ -54,7 +54,7 @@
     
     [self.view addSubview:_returnButton];
     [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [_returnButton constrainTopToAnchor:self.view.topAnchor constant:8.0];
+    [_returnButton constrainTopToAnchor:self.view.topAnchor];
     
     switch (_type)
     {
@@ -250,25 +250,25 @@
         }
         
         else
-            age = last;
+            age = (last + 2);
         
         double malesValue = [textAfter(males[i], @"\x03") doubleValue];
         double femalesValue = [textAfter(females[i], @"\x03") doubleValue];
         double totalValue = (malesValue + femalesValue);
         BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:age y:totalValue];
         [totalsArray addObject:data];
-        data = [[BarChartDataEntry alloc] initWithX:age y:malesValue];
+        data = [[BarChartDataEntry alloc] initWithX:(age - 1) y:malesValue];
         [malesArray addObject:data];
-        data = [[BarChartDataEntry alloc] initWithX:age y:femalesValue];
+        data = [[BarChartDataEntry alloc] initWithX:(age + 1) y:femalesValue];
         [femalesArray addObject:data];
     }
     
-    BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@""];
+    BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@"Total"];
     totalSet.color = NVColor.darkGreenColor;
-    BarChartDataSet *maleSet = [[BarChartDataSet alloc] initWithValues:malesArray.copy label:@""];
+    BarChartDataSet *maleSet = [[BarChartDataSet alloc] initWithValues:malesArray.copy label:@"Male"];
     maleSet.color = NVColor.blueColor;
-    BarChartDataSet *femaleSet = [[BarChartDataSet alloc] initWithValues:femalesArray.copy label:@""];
-    femaleSet.color = NVColor.pinkColor;
+    BarChartDataSet *femaleSet = [[BarChartDataSet alloc] initWithValues:femalesArray.copy label:@"Female"];
+    femaleSet.color = NVColor.deepPinkColor;
     BarChartData *data = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
     data.barWidth = 1.0;
     data.drawValues = NO;
