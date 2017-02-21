@@ -491,7 +491,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Share of households that own their housing","HOMEOWNPCT",0,58]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Owner households or owner-occupied units","OWNEROCC",0,59]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Renter households or renter-occupied units","RENTEROCC",0,60]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Vacant housing units;","VACANT",0,61]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Vacant housing units","VACANT",0,61]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population (age 5+) used as denominator in % calculations","POPOVER5",0,62]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population age 16+","POPOVER16",0,63]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population age 18+","POPOVER18",0,64]];
