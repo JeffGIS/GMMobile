@@ -54,7 +54,7 @@
     
     [self.view addSubview:_returnButton];
     [_returnButton constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [_returnButton constrainTopToAnchor:self.view.topAnchor constant:8.0];
+    [_returnButton constrainTopToAnchor:self.view.topAnchor];
     
     switch (_type)
     {
@@ -230,30 +230,48 @@
     [chart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
     CensusData *cd = CensusData.new;
-    NSArray *values = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:_geoid];
-    NSMutableArray *valueArray = NSMutableArray.array;
-    NSMutableArray *colorsArray = NSMutableArray.array;
-    NSArray *darkColors = NVColor.darkColors;
-    NSArray *mediumColors = NVColor.mediumColors;
+    NSArray *males = [cd getCensusChartFieldValues:CAVMalesByAge areaType:@"TRACT" geoID:_geoid];
+    NSArray *females = [cd getCensusChartFieldValues:CAVFemalesByAge areaType:@"TRACT" geoID:_geoid];
+    NSMutableArray *totalsArray = NSMutableArray.array;
+    NSMutableArray *malesArray = NSMutableArray.array;
+    NSMutableArray *femalesArray = NSMutableArray.array;
     
-    for (int i = 0; i < values.count; i++)
+    for (int i = 0; i < males.count; i++)
     {
-        NSString *label = textBefore(values[i], @"\x03");
-        double value = [textAfter(values[i], @"\x03") doubleValue];
-        BarChartDataEntry *pcde = [[BarChartDataEntry alloc] initWithX:i+1 y:value];
-        [valueArray addObject:pcde];
+        NSString *label = textBefore(males[i], @"\x03");
+        NSArray *tokens = [label componentsSeparatedByString:@" "];
+        double last = [tokens[2] doubleValue];
+        double age = 0;
         
-        if (i % 2)
-            [colorsArray addObject:darkColors[i]];
+        if ([tokens containsObject:@"to"])
+        {
+            double first = [tokens[0] doubleValue];
+            age = ((first + last) / 2.0);
+        }
         
         else
-            [colorsArray addObject:mediumColors[i]];
+            age = (last + 2);
+        
+        double malesValue = [textAfter(males[i], @"\x03") doubleValue];
+        double femalesValue = [textAfter(females[i], @"\x03") doubleValue];
+        double totalValue = (malesValue + femalesValue);
+        BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:age y:totalValue];
+        [totalsArray addObject:data];
+        data = [[BarChartDataEntry alloc] initWithX:(age - 1) y:malesValue];
+        [malesArray addObject:data];
+        data = [[BarChartDataEntry alloc] initWithX:(age + 1) y:femalesValue];
+        [femalesArray addObject:data];
     }
     
-    BarChartDataSet *dataSet = [[BarChartDataSet alloc] initWithValues:valueArray.copy label:@""];
-    dataSet.colors = colorsArray.copy;
-    dataSet.valueFont = [UIFont systemFontOfSize:18.0];
-    BarChartData *data = [[BarChartData alloc] initWithDataSet:dataSet];
+    BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@"Total"];
+    totalSet.color = NVColor.darkGreenColor;
+    BarChartDataSet *maleSet = [[BarChartDataSet alloc] initWithValues:malesArray.copy label:@"Male"];
+    maleSet.color = NVColor.blueColor;
+    BarChartDataSet *femaleSet = [[BarChartDataSet alloc] initWithValues:femalesArray.copy label:@"Female"];
+    femaleSet.color = NVColor.deepPinkColor;
+    BarChartData *data = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
+    data.barWidth = 1.0;
+    data.drawValues = NO;
     chart.data = data;
 }
 

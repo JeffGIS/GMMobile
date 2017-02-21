@@ -4307,7 +4307,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     pieChartVC.geoid = _infoWindow.optionsTitle;
     ChartsViewController *lineChartVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusDataBar];
     lineChartVC.geoid = _infoWindow.optionsTitle;
-    NVPager *pager = [NVPager pagerWithViewControllers:@[(pieChartVC), (lineChartVC)]];
+    NVPager *pager = [NVPager pagerWithViewControllers:@[(lineChartVC), (pieChartVC)]];
     [self presentViewController:pager animated:YES completion:nil];
     [self deselectTableViewRow];
 }
