@@ -216,7 +216,7 @@
 
 - (void)setupBarCensusData
 {
-    BarChartView *chart = BarChartView.new;
+    CombinedChartView *chart = CombinedChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
     chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for Tract %@", _geoid];
@@ -235,6 +235,9 @@
     NSMutableArray *totalsArray = NSMutableArray.array;
     NSMutableArray *malesArray = NSMutableArray.array;
     NSMutableArray *femalesArray = NSMutableArray.array;
+    double totalTotals = 0, totalMales = 0, totalFemales = 0;
+    double totalSumAge = 0, malesSumAge = 0, femalesSumAge = 0;
+    double largestValue = 0;
     
     for (int i = 0; i < males.count; i++)
     {
@@ -255,6 +258,13 @@
         double malesValue = [textAfter(males[i], @"\x03") doubleValue];
         double femalesValue = [textAfter(females[i], @"\x03") doubleValue];
         double totalValue = (malesValue + femalesValue);
+        largestValue = MAX(largestValue, totalValue);
+        totalTotals += totalValue;
+        totalMales += malesValue;
+        totalFemales += femalesValue;
+        totalSumAge += (totalValue * age);
+        malesSumAge += (malesValue * age);
+        femalesSumAge += (femalesValue * age);
         BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:age y:totalValue];
         [totalsArray addObject:data];
         data = [[BarChartDataEntry alloc] initWithX:(age - 1) y:malesValue];
@@ -263,16 +273,39 @@
         [femalesArray addObject:data];
     }
     
+    double totalMean = (totalSumAge / totalTotals);
+    double malesMean = (malesSumAge / totalMales);
+    double femalesMean = (femalesSumAge / totalFemales);
+    CGFloat circleRadius = 12.0;
+    
     BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@"Total"];
     totalSet.color = NVColor.darkGreenColor;
     BarChartDataSet *maleSet = [[BarChartDataSet alloc] initWithValues:malesArray.copy label:@"Male"];
     maleSet.color = NVColor.blueColor;
     BarChartDataSet *femaleSet = [[BarChartDataSet alloc] initWithValues:femalesArray.copy label:@"Female"];
     femaleSet.color = NVColor.deepPinkColor;
-    BarChartData *data = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
-    data.barWidth = 1.0;
+    ChartDataEntry *totalMeanEntry = [[ChartDataEntry alloc] initWithX:totalMean y:(largestValue * 1.05)];
+    LineChartDataSet *totalMeanSet = [[LineChartDataSet alloc] initWithValues:@[(totalMeanEntry)] label:@""];
+    totalMeanSet.circleColor = NVColor.darkGreenColor;
+    totalMeanSet.circleRadius = circleRadius;
+    ChartDataEntry *malesMeanEntry = [[ChartDataEntry alloc] initWithX:malesMean y:(largestValue * 1.025)];
+    LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(malesMeanEntry)] label:@""];
+    malesMeanSet.circleColor = NVColor.blueColor;
+    malesMeanSet.circleRadius = circleRadius;
+    ChartDataEntry *femalesMeanEntry = [[ChartDataEntry alloc] initWithX:femalesMean y:(largestValue * 1.075)];
+    LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(femalesMeanEntry)] label:@""];
+    femalesMeanSet.circleColor = NVColor.deepPinkColor;
+    femalesMeanSet.circleRadius = circleRadius;
+    CombinedChartData *data = CombinedChartData.new;
+    data.barData = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
+    data.barData.barWidth = 1.0;
+    data.lineData = [[LineChartData alloc] initWithDataSets:@[(totalMeanSet), (malesMeanSet), (femalesMeanSet)]];
     data.drawValues = NO;
     chart.data = data;
+    chart.xAxis.axisMinimum = chart.chartXMin - 1;
+    chart.xAxis.axisMaximum = chart.chartXMax + 1;
+    chart.leftAxis.axisMaximum = (largestValue * 1.1);
+    chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
 }
 
 - (void)didReceiveMemoryWarning
