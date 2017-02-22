@@ -237,7 +237,7 @@
     NSMutableArray *femalesArray = NSMutableArray.array;
     double totalTotals = 0, totalMales = 0, totalFemales = 0;
     double totalSumAge = 0, malesSumAge = 0, femalesSumAge = 0;
-    double largestValue = 0;
+    double largestValue = 0, barWidth = 1.5;
     
     for (int i = 0; i < males.count; i++)
     {
@@ -265,18 +265,20 @@
         totalSumAge += (totalValue * age);
         malesSumAge += (malesValue * age);
         femalesSumAge += (femalesValue * age);
+        
         BarChartDataEntry *data = [[BarChartDataEntry alloc] initWithX:age y:totalValue];
         [totalsArray addObject:data];
-        data = [[BarChartDataEntry alloc] initWithX:(age - 1) y:malesValue];
+        data = [[BarChartDataEntry alloc] initWithX:(age - barWidth) y:malesValue];
         [malesArray addObject:data];
-        data = [[BarChartDataEntry alloc] initWithX:(age + 1) y:femalesValue];
+        data = [[BarChartDataEntry alloc] initWithX:(age + barWidth) y:femalesValue];
         [femalesArray addObject:data];
     }
     
     double totalMean = (totalSumAge / totalTotals);
     double malesMean = (malesSumAge / totalMales);
     double femalesMean = (femalesSumAge / totalFemales);
-    CGFloat circleRadius = 12.0;
+    double topOfChart = (largestValue * 1.1);
+    NSArray *meanDashPattern = @[([NSNumber numberWithInt:4]), ([NSNumber numberWithInt:2])];
     
     BarChartDataSet *totalSet = [[BarChartDataSet alloc] initWithValues:totalsArray.copy label:@"Total"];
     totalSet.color = NVColor.darkGreenColor;
@@ -284,26 +286,41 @@
     maleSet.color = NVColor.blueColor;
     BarChartDataSet *femaleSet = [[BarChartDataSet alloc] initWithValues:femalesArray.copy label:@"Female"];
     femaleSet.color = NVColor.deepPinkColor;
-    ChartDataEntry *totalMeanEntry = [[ChartDataEntry alloc] initWithX:totalMean y:(largestValue * 1.05)];
-    LineChartDataSet *totalMeanSet = [[LineChartDataSet alloc] initWithValues:@[(totalMeanEntry)] label:@""];
-    totalMeanSet.circleColor = NVColor.darkGreenColor;
-    totalMeanSet.circleRadius = circleRadius;
-    ChartDataEntry *malesMeanEntry = [[ChartDataEntry alloc] initWithX:malesMean y:(largestValue * 1.025)];
-    LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(malesMeanEntry)] label:@""];
-    malesMeanSet.circleColor = NVColor.blueColor;
-    malesMeanSet.circleRadius = circleRadius;
-    ChartDataEntry *femalesMeanEntry = [[ChartDataEntry alloc] initWithX:femalesMean y:(largestValue * 1.075)];
-    LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(femalesMeanEntry)] label:@""];
-    femalesMeanSet.circleColor = NVColor.deepPinkColor;
-    femalesMeanSet.circleRadius = circleRadius;
+    
+    ChartDataEntry *totalMean1 = [[ChartDataEntry alloc] initWithX:totalMean y:topOfChart];
+    ChartDataEntry *totalMean2 = [[ChartDataEntry alloc] initWithX:totalMean y:0];
+    LineChartDataSet *totalMeanSet = [[LineChartDataSet alloc] initWithValues:@[(totalMean1), (totalMean2)] label:@""];
+    totalMeanSet.color = NVColor.darkGreenColor;
+    totalMeanSet.lineWidth = 2.0;
+    totalMeanSet.lineDashLengths = meanDashPattern;
+    totalMeanSet.drawCirclesEnabled = NO;
+    
+    ChartDataEntry *malesMean1 = [[ChartDataEntry alloc] initWithX:malesMean y:topOfChart];
+    ChartDataEntry *malesMean2 = [[ChartDataEntry alloc] initWithX:malesMean y:0];
+    LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(malesMean1), (malesMean2)] label:@""];
+    malesMeanSet.color = NVColor.blueColor;
+    malesMeanSet.lineWidth = 2.0;
+    malesMeanSet.lineDashLengths = meanDashPattern;
+    malesMeanSet.drawCirclesEnabled = NO;
+    
+    ChartDataEntry *femalesMean1 = [[ChartDataEntry alloc] initWithX:femalesMean y:topOfChart];
+    ChartDataEntry *femalesMean2 = [[ChartDataEntry alloc] initWithX:femalesMean y:0];
+    LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(femalesMean1), (femalesMean2)] label:@""];
+    femalesMeanSet.color = NVColor.deepPinkColor;
+    femalesMeanSet.lineWidth = 2.0;
+    femalesMeanSet.lineDashLengths = meanDashPattern;
+    femalesMeanSet.drawCirclesEnabled = NO;
+    
     CombinedChartData *data = CombinedChartData.new;
-    data.barData = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
-    data.barData.barWidth = 1.0;
     data.lineData = [[LineChartData alloc] initWithDataSets:@[(totalMeanSet), (malesMeanSet), (femalesMeanSet)]];
+    data.barData = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
+    data.barData.barWidth = barWidth;
     data.drawValues = NO;
+    chart.drawOrder = @[([NSNumber numberWithInt:2]), ([NSNumber numberWithInt:0])];
     chart.data = data;
-    chart.xAxis.axisMinimum = chart.chartXMin - 1;
-    chart.xAxis.axisMaximum = chart.chartXMax + 1;
+    
+    chart.xAxis.axisMinimum = (chart.chartXMin - barWidth);
+    chart.xAxis.axisMaximum = (chart.chartXMax + barWidth);
     chart.leftAxis.axisMaximum = (largestValue * 1.1);
     chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
 }
