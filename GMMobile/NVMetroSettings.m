@@ -314,13 +314,13 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
             rtn = [self valuesForBlocks];
             break;
         case CPFBlockGroups:
-            rtn = [self valuesForBlocks];
+            rtn = [self valuesForBlockGroups];
             break;
         case CPFBlockGroups_ACS:
             rtn = [self valuesForBlockGroups_ACS];
             break;
         case CPFTracts:
-            rtn = [self valuesForBlocks];
+            rtn = [self valuesForTracts];
             break;
         case CPFVoterDistricts:
             rtn = [NSArray arrayWithObjects:@"", nil];
@@ -425,6 +425,14 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
         }
     }
     return rtn;
+}
+- (NSArray *) valuesForTracts
+{
+    return [self valuesForBlocks];
+}
+- (NSArray *) valuesForBlockGroups
+{
+    return [self valuesForBlocks];
 }
 - (NSArray *) valuesForBlocks
 {
@@ -833,6 +841,48 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     to.fields = @"NAME";
     to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustNone], nil];
     return to;
+}
+
+-(int) factorForField:(NSString *)field
+              inTable:(NSString *)table
+          numDecimals:(int*) pnDecimals
+{
+    int factor = 1;
+    *pnDecimals = 0;
+    NSArray * values;
+    if ([table isEqualToString:@"TRACT"])
+        values = [self valuesForTracts];
+    else if ([table isEqualToString:@"BLOCK"])
+        values = [self valuesForBlocks];
+    else if ([table isEqualToString:@"BLOCKGROUP"])
+        values = [self valuesForBlockGroups];
+    else
+        return factor;
+    
+    for (NSString *str in values)
+    {
+        NSString * fieldName = textBefore(str, @"\x05");
+        fieldName = textAfter(fieldName, @"\x03");
+        if ([fieldName isEqualToString:field])
+        {
+            NSString * fieldiD = textBefore(str,@"\x03");
+            if ([fieldiD containsString:@"Average "] ||
+                [fieldiD containsString:@"Median "] ||
+                [fieldiD containsString:@"Mean "])
+            {
+                factor = 1000;
+                *pnDecimals = 3;
+            }
+            if ([fieldiD containsString:@"Percent "] ||
+                [fieldiD containsString:@"Share "] )
+            {
+                factor = 1000;
+                *pnDecimals = 1;
+            }
+            break;
+        }
+    }
+    return factor;
 }
 @end
 

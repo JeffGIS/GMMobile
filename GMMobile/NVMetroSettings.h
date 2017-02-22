@@ -126,6 +126,9 @@ typedef NS_ENUM(NSInteger, AreaOutlineTypes)
 - (BOOL) wantUseCode:(int)code;
 - (void) updateCurrentValues:(NSArray*)values;
 -(NVMetroTextOptions*) textOptionsForAreas;
+-(int) factorForField:(NSString *)field
+              inTable:(NSString *)table
+          numDecimals:(int*)pnDecimals;
 
 
 

@@ -947,7 +947,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         NVMetroSettings.sharedInstance.numThemeClasses = maxClass;
         double classInc = (maxVal - minVal) / maxClass;
-        classMin[0] = minVal * factor;
+        classMin[0] = minVal;
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
             classMax[iclass] = IDNINT64 ((iclass+1) * classInc);
@@ -960,7 +960,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         NVMetroSettings.sharedInstance.numThemeClasses = maxClass;
         double maxVal2 = maxVal;//d95percentValue;
         double classInc = (maxVal2 - minVal) / maxClass;
-        classMin[0] = minVal * factor;
+        classMin[0] = minVal;
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
             classMax[iclass] = classMin[0] + IDNINT64 ((iclass+1) * classInc);
@@ -1038,9 +1038,9 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     CloseTRANS2(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
     double area;
-    int factor = 1;
-    double areaFactor = 1;
     int nDecimals = 0;
+    int factor = [NVMetroSettings.sharedInstance factorForField:field inTable:type numDecimals:&nDecimals];
+    double areaFactor = 1;
     int ii=0;
     double waterArea = 0;
     double totalPop = 0;
