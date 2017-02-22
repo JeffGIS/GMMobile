@@ -179,6 +179,7 @@
     chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@", _areaType,_geoid];
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
+    chart.rotationEnabled = NO;
     
     [self.view addSubview:chart];
     [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
@@ -222,6 +223,10 @@
     chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@", _areaType,_geoid];
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
+    chart.pinchZoomEnabled = NO;
+    chart.dragEnabled = NO;
+    chart.scaleXEnabled = NO;
+    chart.scaleYEnabled = NO;
     
     [self.view addSubview:chart];
     [chart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
@@ -316,11 +321,12 @@
     data.barData = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
     data.barData.barWidth = barWidth;
     data.drawValues = NO;
-    chart.drawOrder = @[([NSNumber numberWithInt:2]), ([NSNumber numberWithInt:0])];
+    chart.drawOrder = @[([NSNumber numberWithInt:(CombinedChartDrawOrderLine)]), ([NSNumber numberWithInt:CombinedChartDrawOrderBar])];
     chart.data = data;
     
     chart.xAxis.axisMinimum = (chart.chartXMin - barWidth);
     chart.xAxis.axisMaximum = (chart.chartXMax + barWidth);
+    chart.xAxis.labelCount = 18;
     chart.leftAxis.axisMaximum = (largestValue * 1.1);
     chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
 }
