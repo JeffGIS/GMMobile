@@ -16,6 +16,10 @@
 @implementation SlowValues
 @end
 
+@interface GetSlowValues ()
+@property BoundaryData * bd;
+@end
+
 @implementation GetSlowValues
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
@@ -24,11 +28,16 @@
                       totEMV:(int)totEMV
                      useDesc:(LPSTR) usedescIN
 {
-    return;
+    
     SlowValues * slowVals = [[SlowValues alloc]init];
     _popover = popover;
     _popover.title = @"Computing Values From Map";
-    [self computeValuesFromMap:slowVals dbid:propNum popover:popover aroundLatLon:latlon totEMV:totEMV useDesc:usedescIN];
+    [self computeValuesFromMap:slowVals
+                          dbid:propNum
+                       popover:popover
+                  aroundLatLon:latlon
+                        totEMV:totEMV
+                       useDesc:usedescIN];
     
     //add routes from property to destinations
     Destinations *dests = [[Destinations alloc]init];
@@ -81,8 +90,10 @@
     colorCounts = calloc ((_maxColors+1),sizeof(int));
     
     dc.width = 0;
+    _bd = [[BoundaryData alloc] init];
     
     [self        displayMapit:context
+                    baseLayer:MBL_LandUse
        displayCharacteristics:dc
                     llCorners:&latlonCornerPoints
                      LLBounds:&latlonBounds
@@ -90,10 +101,9 @@
                        themes:themes
                   pointInArea:nil];
     
-    BoundaryData *bd = [[BoundaryData alloc] init];
     
     {
-        [bd displayCircularBoundaryAt:latlon
+        [_bd displayCircularBoundaryAt:latlon
                            withRadius:radius
                             lineWidth:0
                                asMask:1
@@ -238,7 +248,18 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     colorCounts[_maxColors]++;
     return;
 }
+- (BOOL) createColorByIDTable
+{
+    BOOL rtn = FALSE;
+    
+    NSString * cmd = @"DROP TABLE IF EXISTS COLORBYID;CREATE TEMP TABLE COLORBYID (ID INTEGER PRIMARY KEY,SOURCEKEY CHAR(32));";
+    rtn = [_bd executeCmd:(LPSTR)cmd.UTF8String];
+    [_bd startTransaction];
+    return rtn;
+}
+
 -(void)   displayMapit:(CGContextRef)context
+             baseLayer:(MapitBaseLayer)baseLayer
 displayCharacteristics:(DisplayCharacteristics *)dc
              llCorners:(CORNERPOINTS *) latlonCornerPoints
               LLBounds:(MNMXCORD *)platlonBounds
@@ -247,16 +268,34 @@ displayCharacteristics:(DisplayCharacteristics *)dc
            pointInArea:(PointInArea *)pia
 {
     
-        BoundaryData *bd = [[BoundaryData alloc] init];
-        [bd displayLandUse:context
-                 llCorners:latlonCornerPoints
-                  LLBounds:platlonBounds
-                viewBounds:pvBounds
-    displayCharacteristics:dc
-                    themes:themes
-               pointInArea:pia];
-        
-    
+    switch (baseLayer)
+    {
+        case MBL_LandUse:
+        {
+            [_bd displayLandUse:context
+                     llCorners:latlonCornerPoints
+                      LLBounds:platlonBounds
+                    viewBounds:pvBounds
+        displayCharacteristics:dc
+                        themes:themes
+                   pointInArea:pia];
+        }
+            break;
+            
+        case MBL_CensusTracts:
+        {
+            [_bd displayCensusAreas:context
+                              type:@"TRACTS"
+            displayCharacteristics:dc
+                     llCorners:latlonCornerPoints
+                      LLBounds:platlonBounds
+                    viewBounds:pvBounds
+                        themes:themes
+                   pointInArea:pia];
+        }
+            break;
+            
+    }
 }
 
 

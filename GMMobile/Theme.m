@@ -1005,6 +1005,12 @@ int getThemeOpt(ThemeTypes type)
         int val;
         switch (_type)
         {
+            case ColorByRefnoTheme:
+            {
+                dc.fillColor = UIColorFromInt ((unsigned int)dc.refno);
+                rtn = DISPLAY_ITEM;
+            }
+                break;
             case PropertyListTheme:
                 switch (_subType)//propListValue
             {
