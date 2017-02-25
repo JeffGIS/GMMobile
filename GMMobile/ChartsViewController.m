@@ -220,7 +220,6 @@
     CombinedChartView *chart = CombinedChartView.new;
     chart.translatesAutoresizingMaskIntoConstraints = NO;
     chart.backgroundColor = UIColor.whiteColor;
-    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@", _areaType,_geoid];
     chart.chartDescription.font = [UIFont boldSystemFontOfSize:24.0];
     chart.legend.font = [UIFont systemFontOfSize:16.0];
     chart.pinchZoomEnabled = NO;
@@ -329,6 +328,9 @@
     chart.xAxis.labelCount = 18;
     chart.leftAxis.axisMaximum = (largestValue * 1.1);
     chart.rightAxis.axisMaximum = chart.leftAxis.axisMaximum;
+    chart.descriptionFont = [UIFont systemFontOfSize:20.0];
+    chart.chartDescription.text = [NSString stringWithFormat:@"Age Distribution for %@ %@\nMales:%.0f, Females:%.0f, Total:%.0f",
+                                   _areaType, _geoid, totalMales, totalFemales, totalTotals];
 }
 
 - (void)didReceiveMemoryWarning
