@@ -9,6 +9,16 @@
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
 
+typedef NS_ENUM(NSInteger, MapitBaseLayer)
+{
+    MBL_LandUse,
+    MBL_Parcels,
+    MBL_CensusBlocks,
+    MBL_CensusBlockGroups,
+    MBL_CensusTracts,
+};
+
+
 @interface SlowValues : NSObject
 @property int nMatchingProperties;
 @property int stability5yr_qtrMile;
@@ -36,6 +46,7 @@
 @interface GetSlowValues : NSObject
 @property (nonatomic, weak) id <GetSlowValuesDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
+//@property BoundaryData *bd;
 @property int maxColors;
 
 - (void)computeSlowValues:(int)propNum

@@ -1216,6 +1216,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         int i = 0;
         MNMXCORD bounds;
         long long ID = sqlite3_column_int64(statement,i++);
+        dc.refno = ID;
         double dataValue = sqlite3_column_double(statement,i++);
         NSArray * tempArray = [field componentsSeparatedByString:@","];
         for (int ival = 1;ival < tempArray.count;ival++)

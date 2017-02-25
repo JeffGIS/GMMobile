@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctCommercial_qtrMile,
     PFT_PctCommercial_halfMile,
     PFT_PctCommercial_Mile,
-    PFT_END
+    PFT_END,
 };
 typedef NS_ENUM(NSInteger, PropBaseType)
 {
