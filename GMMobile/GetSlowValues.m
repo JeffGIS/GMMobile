@@ -37,7 +37,16 @@
                        popover:popover
                   aroundLatLon:latlon
                         totEMV:totEMV
-                       useDesc:usedescIN];
+                       useDesc:usedescIN
+                     baseLayer:MBL_LandUse];
+    
+    [self computeValuesFromMap:slowVals
+                          dbid:propNum
+                       popover:popover
+                  aroundLatLon:latlon
+                        totEMV:totEMV
+                       useDesc:usedescIN
+                     baseLayer:MBL_CensusTracts];
     
     //add routes from property to destinations
     Destinations *dests = [[Destinations alloc]init];
@@ -53,6 +62,8 @@
                 aroundLatLon:(LLPOINT)latlon
                       totEMV:(int)totEMV
                      useDesc:(LPSTR) usedescIN
+                   baseLayer:(MapitBaseLayer)baseLayer
+
 {
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -78,7 +89,9 @@
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
     ConfigurationControl.sharedInstance.currentApp = HCConfigFromSlowValues;
+    ConfigurationControl.sharedInstance.currentMapitBaseLayer = baseLayer;
     [themes setAppThemes];
+    
 
     Theme * theme = themes.themeList[0];
     COLORREF_RGB4 *wantColors;
@@ -93,7 +106,7 @@
     _bd = [[BoundaryData alloc] init];
     
     [self        displayMapit:context
-                    baseLayer:MBL_LandUse
+                    baseLayer:baseLayer
        displayCharacteristics:dc
                     llCorners:&latlonCornerPoints
                      LLBounds:&latlonBounds

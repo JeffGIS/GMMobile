@@ -83,6 +83,7 @@ NUMHardCodedLayers};
 @property int MapitTargetParcelRefno;
 @property LLPOINT MapitTargetCenterPoint;
 @property CGFloat MapitCirularBoundaryRadiusInMiles;
+@property MapitBaseLayer currentMapitBaseLayer;
 
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
 

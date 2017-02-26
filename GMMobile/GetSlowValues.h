@@ -9,15 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
 
-typedef NS_ENUM(NSInteger, MapitBaseLayer)
-{
-    MBL_LandUse,
-    MBL_Parcels,
-    MBL_CensusBlocks,
-    MBL_CensusBlockGroups,
-    MBL_CensusTracts,
-};
-
 
 @interface SlowValues : NSObject
 @property int nMatchingProperties;

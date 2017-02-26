@@ -27,8 +27,13 @@
     {
         case HCConfigFromSpreadsheet:
         case HCConfigFromSlowValues:
-            thm = [Theme createTheme:MetroLandUseTheme];
+        {
+            if (ConfigurationControl.sharedInstance.currentMapitBaseLayer == MBL_LandUse)
+                thm = [Theme createTheme:MetroLandUseTheme];
+            else
+                thm = [Theme createTheme:ColorByRefnoTheme];
             [_themeList addObject:thm];
+        }
             break;
         case HCConfigCrimes:
             thm = [Theme createTheme:Part1Theme];
