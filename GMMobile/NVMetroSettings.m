@@ -411,13 +411,21 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
             case CPAdjustCountPerHousingUnit:
                 [rtn addObject:stringWithID("Per Housing Unit",value)];
                 break;
-
+                
+            case CPAdjustCountPerHousehold:
+                [rtn addObject:stringWithID("Per Household",value)];
+                break;
+                
             case CPAdjustPctOfTotalPop:
                 [rtn addObject:stringWithID("As Percent of Total Population",value)];
                 break;
 
             case CPAdjustPctOfTotalHousingUnits:
                 [rtn addObject:stringWithID("As Percent of Total Housing Units",value)];
+                break;
+                
+            case CPAdjustPctOfTotalHouseholds:
+                [rtn addObject:stringWithID("As Percent of Total Households",value)];
                 break;
                 
             case CPAdjustCount:
@@ -490,7 +498,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population that identifies as other race and non-Hispanic","OTHERNH",0,49]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population that identifies as multi-racial and non-Hispanic","MULTRACENH",0,50]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population that identifies as Hispanic in combination with any race","HISPPOP",0,51]];
-    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population that identifies as non-Hispanic)","NOTHISPPOP",0,52]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population that identifies as non-Hispanic","NOTHISPPOP",0,52]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Total housing units","HUTOTAL",0,53]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Total households, also number of occupied housing units","HHTOTAL",0,54]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Population in households and not in group quarters","POPINHH",0,55]];
@@ -508,6 +516,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Median age for area","MEDIANAGE",0,67]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Housieholds with children ages 0-17 present","HH_UNDER18",0,68]];
     [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Households with senior citizens ages 65+ present","HH_65OVER",0,69]];
+    [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x05%i\x04%i","Standard deviation of age","STDV_AGE",0,70]];
     return rtn;
 }
 
@@ -877,6 +886,11 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
                 [fieldiD containsString:@"Share "] )
             {
                 factor = 1000;
+                *pnDecimals = 1;
+            }
+            if ([fieldiD containsString:@"Standard deviation of age"])
+            {
+                factor = 10;
                 *pnDecimals = 1;
             }
             break;

@@ -27,10 +27,8 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 @property (atomic) BOOL isOpen;
 @property (nonatomic, copy) NSString *documentsDirectory;
 @property (nonatomic, copy) NSString *fileName;
-@property (nonatomic, copy) NSString *cenfileName;
 @property (nonatomic, copy) NSString *propfileName;
 @property (nonatomic, copy) NSString *path;
-@property (nonatomic, copy) NSString *cenpath;
 @property (nonatomic, copy) NSString *landusePath;
 @property (nonatomic, copy) NSString *proppath;
 @property NSInteger fileSize;

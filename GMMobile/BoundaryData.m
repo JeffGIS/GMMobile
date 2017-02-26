@@ -5,6 +5,7 @@
 
 #import "BoundaryData.h"
 #import "PropertyData.h"
+#import "CCodeLibrary/CensusData.h"
 #import "CCodeLibrary/NVTextDrawing.h"
 #import "CCodeLibrary/NVColor.h"
 #import "ConfigurationControl.h"
@@ -33,8 +34,6 @@
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _path = [NSBundle.mainBundle pathForResource:@"areapoly"
                                               ofType:@"slt"];
-        _cenpath = [NSBundle.mainBundle pathForResource:@"censusdata"
-                                                 ofType:@"slt"];
         _landusePath = [NSString stringWithFormat:@"%@/landuse.slt",UserDefaults.defaults.sharedFilePath];
         _propfileName =  @"PropertyData.slt";
         _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
@@ -63,7 +62,9 @@
         
         if (_isOpen)
         {
-            NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",_cenpath];
+            NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",[CensusData databasePath]];
+            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS COMPUTEDCENSUSFIELDS",[CensusData computedFieldsPath]];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS PROPERTYDB",_proppath];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
@@ -327,7 +328,7 @@
               points:(LPDPOINT)pPoints
            withColor:(CGColorRef)color
 {
-    CGContextSetLineWidth(context, 10);
+    CGContextSetLineWidth(context, 5*UIScreen.mainScreen.scale);
     
     if (nLoops > 1)
     {
@@ -1009,6 +1010,14 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
               pointInArea:(PointInArea *)pia
 {
 #define MIN_PARCEL_ACRES 0.01
+    static BOOL first = TRUE;
+    if (first)
+    {
+        first = FALSE;
+        CensusData * cd = CensusData.new;
+        BOOL opened = [cd open];
+        [cd close:opened];
+    }
     BOOL isParcel = NO;
     NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
     NSString *query = @"";
@@ -1045,6 +1054,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     double waterArea = 0;
     double totalPop = 0;
     double totalHousingUnits = 0;
+    double totalHouseholds = 0;
     int genUseCode;
     CGFloat screenScale = [[UIScreen mainScreen] scale];
     CGFloat fontSize = 32.0 * screenScale;
@@ -1088,7 +1098,14 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             factor = 1000;
             nDecimals = 1;
             break;
+        case CPAdjustPctOfTotalHouseholds:
+            factor = 1000;
+            nDecimals = 1;
+            break;
         case CPAdjustCountPerHousingUnit:
+            factor = 1000;
+            nDecimals = 3;
+        case CPAdjustCountPerHousehold:
             factor = 1000;
             nDecimals = 3;
             break;
@@ -1151,8 +1168,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             _totRecords = [self getQueryCount:query];
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,minX,maxX,minY,maxY FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
-                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,HHTOTAL,minX,maxX,minY,maxY FROM %@,%@_index,%@,COMPUTEDCENSUSFIELDS.ADDEDFIELDS  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ AND COMPUTEDCENSUSFIELDS.ADDEDFIELDS.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+                     platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type,polyTable,type];
         }
     }
     else
@@ -1178,7 +1195,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 _totRecords = [self getQueryCount:query];
-                query = [NSString stringWithFormat:@"SELECT %@.id,LANDAREA,LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                query = [NSString stringWithFormat:@"SELECT %@.id,LANDAREA,LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,HHTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];
                 
             }
@@ -1200,8 +1217,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             {
                 /*           query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable,type];*/
-                query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@,SORTEDVALUES  WHERE %@.id=SORTEDVALUES.ID AND %@.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
-                         dataTable,polyTable,type];
+                query = [NSString stringWithFormat:@"SELECT %@.id,%@,LandArea,WaterArea,POPTOTAL,HUTOTAL,HHTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@,COMPUTEDCENSUSFIELDS.ADDEDFIELDS,SORTEDVALUES  WHERE %@.id=SORTEDVALUES.ID AND %@.GEOG_UNIT = %@.%@ AND COMPUTEDCENSUSFIELDS.ADDEDFIELDS.GEOG_UNIT = %@.%@ ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
+                         dataTable,polyTable,type,polyTable,type];
                 
             }
         }
@@ -1243,6 +1260,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             waterArea = sqlite3_column_double(statement,i++);
             totalPop = sqlite3_column_double(statement,i++);
             totalHousingUnits = sqlite3_column_double(statement,i++);
+            totalHouseholds = sqlite3_column_double(statement,i++);
         }
         area = landArea;
         if (!area)
@@ -1268,7 +1286,13 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 if (!totalHousingUnits)
                     goto SkipRecord;
                 dataValue /= totalHousingUnits;
-               break;
+                break;
+            case CPAdjustCountPerHousehold:
+            case CPAdjustPctOfTotalHouseholds:
+                if (!totalHouseholds)
+                    goto SkipRecord;
+                dataValue /= totalHouseholds;
+                break;
         }
         NVMetroSettings.sharedInstance.valueMultiplier = factor;
         NVMetroSettings.sharedInstance.roundTo = nDecimals;
