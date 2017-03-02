@@ -93,9 +93,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
-    if (![self checkUnbundledFile:@"landuse"
+    /*if (![self checkUnbundledFile:@"landuse"
                              type:@"slt"
-                      inDirectory:UserDefaults.defaults.sharedFilePath])
+                      inDirectory:UserDefaults.defaults.sharedFilePath])*/
+        
         [NVGetODR getResourcesWithTag:@"landuse"
                              type:@"slt"
                       toDirectory:UserDefaults.defaults.sharedFilePath
@@ -115,6 +116,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                                                                          error:nil].fileSize;
     NSInteger fileSize2 = [NSFileManager.defaultManager attributesOfItemAtPath:toFile
                                                                          error:nil].fileSize;
+    
     if (fileSize1 == fileSize2)
         rtn = TRUE;
     else
