@@ -93,14 +93,42 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
-    [NVGetODR getResourcesWithTag:@"landuse"
+    if (![self checkUnbundledFile:@"landuse"
+                             type:@"slt"
+                      inDirectory:UserDefaults.defaults.sharedFilePath])
+        [NVGetODR getResourcesWithTag:@"landuse"
                              type:@"slt"
                       toDirectory:UserDefaults.defaults.sharedFilePath
                          delegate:self];
     
     return YES;
 }
-
+- (BOOL) checkUnbundledFile:(NSString*)fileName
+                       type:(NSString*)type
+                inDirectory:(NSString*)dir
+{
+    BOOL rtn = FALSE;
+    NSString * fileInBundle = [NSBundle.mainBundle pathForResource:fileName
+                                                            ofType:type];
+    NSString * toFile = [NSString stringWithFormat:@"%@/%@.%@",dir,fileName,type];
+    NSInteger fileSize1 = [NSFileManager.defaultManager attributesOfItemAtPath:fileInBundle
+                                                                         error:nil].fileSize;
+    NSInteger fileSize2 = [NSFileManager.defaultManager attributesOfItemAtPath:toFile
+                                                                         error:nil].fileSize;
+    if (fileSize1 == fileSize2)
+        rtn = TRUE;
+    else
+    {
+        NSError *error = nil;
+        BOOL success = [NSFileManager.defaultManager removeItemAtPath:toFile
+                                                                error:&error];
+        
+        if (!success)
+            NSLog(@"Could not delete %@:%@ ", toFile, error.localizedDescription);
+        
+    }
+    return rtn;
+}
 - (void)getResourceDidCompleteWithFilePath:(NSString *)filePath
                                     forTag:(NSString *)tag
 {
