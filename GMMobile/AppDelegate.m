@@ -93,9 +93,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
-    /*if (![self checkUnbundledFile:@"landuse"
+    if (![self checkUnbundledFile:@"landuse"
                              type:@"slt"
-                      inDirectory:UserDefaults.defaults.sharedFilePath])*/
+                      inDirectory:UserDefaults.defaults.sharedFilePath])
         
         [NVGetODR getResourcesWithTag:@"landuse"
                              type:@"slt"
@@ -109,15 +109,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                 inDirectory:(NSString*)dir
 {
     BOOL rtn = FALSE;
-    NSString * fileInBundle = [NSBundle.mainBundle pathForResource:fileName
-                                                            ofType:type];
     NSString * toFile = [NSString stringWithFormat:@"%@/%@.%@",dir,fileName,type];
-    NSInteger fileSize1 = [NSFileManager.defaultManager attributesOfItemAtPath:fileInBundle
-                                                                         error:nil].fileSize;
-    NSInteger fileSize2 = [NSFileManager.defaultManager attributesOfItemAtPath:toFile
-                                                                         error:nil].fileSize;
-    
-    if (fileSize1 == fileSize2)
+    long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:toFile
+                                                                        error:nil].fileSize;
+    if (fileSize == 43315200)
         rtn = TRUE;
     else
     {
@@ -127,6 +122,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
         
         if (!success)
             NSLog(@"Could not delete %@:%@ ", toFile, error.localizedDescription);
+        fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:toFile
+                                                                  error:nil].fileSize;
         
     }
     return rtn;
