@@ -298,7 +298,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         case MBL_CensusTracts:
         {
             [_bd displayCensusAreas:context
-                              type:@"TRACTS"
+                              type:@"TRACT"
             displayCharacteristics:dc
                      llCorners:latlonCornerPoints
                       LLBounds:platlonBounds

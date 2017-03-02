@@ -875,16 +875,17 @@
             [thm.classes addObject:class];
             break;
     }
-    
-    thm.numClasses = (int)thm.classes.count;
-    thm.legend.type = thm.type;
-    thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles];
-    thm.legend.currentTitleIndex = thm.currentTitleIndex;
-    thm.legend.numCells = thm.numClasses;
-    thm.legend.useClassColors = thm.setColor;
-    thm.legend.showSymbolAsBarChart = thm.showSymbolAsBarChart;
-    thm.legend.cells = [[NSMutableArray alloc]init];
-    
+    if (thm.type != ColorByRefnoTheme)
+    {
+        thm.numClasses = (int)thm.classes.count;
+        thm.legend.type = thm.type;
+        thm.legend.titles = [NSMutableArray arrayWithArray:thm.titles];
+        thm.legend.currentTitleIndex = thm.currentTitleIndex;
+        thm.legend.numCells = thm.numClasses;
+        thm.legend.useClassColors = thm.setColor;
+        thm.legend.showSymbolAsBarChart = thm.showSymbolAsBarChart;
+        thm.legend.cells = [[NSMutableArray alloc]init];
+    }
     for (ThemeClass *cls in thm.classes)
     {
         ThemeLegendCell * tlc = [ThemeLegendCell createWithLabel:cls.title];

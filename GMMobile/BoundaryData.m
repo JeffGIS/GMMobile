@@ -1029,6 +1029,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     }
     BOOL isParcel = NO;
     NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
+    if ([themes containsColorByRefTheme])
+        field = @"";
     NSString *query = @"";
     //NSString *querys;
     sqlite3_stmt *statement = NULL;
@@ -1371,7 +1373,18 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
             dc.iValue = IDNINT64(dataValue);
-            if (!field.length)
+            if ([themes containsColorByRefTheme])
+            {
+                [themes setDisplayCharacteristics:dc
+                                        displayID:_processingID];
+                [self fillUseCode:context
+                          nPoints:numPoints
+                           points:llpoints
+                        withColor:dc.fillColor.CGColor
+                        lineColor:nil
+                        lineWidth:0];
+            }
+            else if (!field.length)
                 [self drawUseCode:context
                           nPoints:numPoints
                            nLoops:numLoops

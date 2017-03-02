@@ -73,8 +73,11 @@
 
 - (void)setCurrentTitleIndex:(int)currentTitleIndex
 {
-    _currentTitleIndex = currentTitleIndex;
-    _title = (NSString *)_titles[_currentTitleIndex];
+    if (currentTitleIndex < _titles.count)
+    {
+        _currentTitleIndex = currentTitleIndex;
+        _title = (NSString *)_titles[_currentTitleIndex];
+    }
 }
 
 - (void)setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin

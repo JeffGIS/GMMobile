@@ -29,5 +29,6 @@
 
 - (int) getNumUCRRanges;
 - (int) getNumTimeRanges;
+- (BOOL) containsColorByRefTheme;
 
 @end

@@ -348,5 +348,15 @@
     
     return n;
 }
+- (BOOL) containsColorByRefTheme
+{
+    BOOL rtn = FALSE;
+    for (Theme *thm in _themeList)
+    {
+        if (thm.type == ColorByRefnoTheme)
+            rtn = TRUE;
+    }
+    return rtn;
 
+}
 @end
