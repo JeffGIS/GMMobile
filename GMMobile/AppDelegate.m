@@ -104,7 +104,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 - (void)getResourceDidCompleteWithFilePath:(NSString *)filePath
                                     forTag:(NSString *)tag
 {
-    NSLog(@"success for %@, filepath: %@", tag, filePath);
+    int fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:filePath
+                                                                             error:nil].fileSize;
+    NSLog(@"success for %@, filepath: %@  size:%i", tag, filePath, fileSize);
 }
 
 - (void)getResourceDidFailWithErrorMsg:(NSString *)errorMsg

@@ -62,13 +62,22 @@
         
         if (_isOpen)
         {
+            _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:[CensusData databasePath]
+                                                                                  error:nil].fileSize;
+
             NSString *attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS CENSUSDB",[CensusData databasePath]];
-            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            BOOL st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:[CensusData computedFieldsPath]
+                                                                                  error:nil].fileSize;
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS COMPUTEDCENSUSFIELDS",[CensusData computedFieldsPath]];
-            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_proppath
+                                                                                  error:nil].fileSize;
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS PROPERTYDB",_proppath];
-            [self executeCmd:(LPSTR)attachCmd.UTF8String];
-            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
+            st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_landusePath
+                                                                                  error:nil].fileSize;
+            st = attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
             [self executeCmd:(LPSTR)attachCmd.UTF8String];
 
         }
