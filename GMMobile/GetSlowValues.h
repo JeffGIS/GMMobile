@@ -39,6 +39,8 @@
 @property (nonatomic) GSSiPopoverView *popover;
 //@property BoundaryData *bd;
 @property int maxColors;
+@property CGContextRef colorConversionContext;
+@property void * colorConversionBmData;
 
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
@@ -46,5 +48,7 @@
              aroundLatLon:(LLPOINT)latlon
                    totEMV:(int)totEMV
                   useDesc:(LPSTR) usedescIN;
+- (void) addIDtoColorByIDTable:(UINT)fileAndID
+                         color:(UIColor*)color;
 
 @end

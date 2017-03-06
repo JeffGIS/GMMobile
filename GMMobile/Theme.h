@@ -5,6 +5,7 @@
 #import "CCodeLibrary/CRAPI.h"
 #import "ThemeClass.h"
 #import "ThemeLegend.h"
+#import "GetSlowValues.h"
 
 #define DO_NOT_DISPLAY_ITEM     1
 #define DISPLAY_ITEM            2
@@ -30,6 +31,7 @@
 @property int minUCR, maxUCR;
 @property int minYear, maxYear;
 @property MNMXCORD maxValBounds;
+@property GetSlowValues * getSlowValues;
 
 + (Theme *)createTheme:(ThemeTypes)type;
 

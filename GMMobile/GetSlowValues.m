@@ -12,7 +12,6 @@
 #import "BoundaryData.h"
 #import "CCodeLibrary/PercentInArea.h"
 
-
 @implementation SlowValues
 @end
 
@@ -72,6 +71,9 @@
     CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
     CGContextSetAllowsAntialiasing(context, NO);
     CGContextSetShouldAntialias(context, NO);
+    _colorConversionContext = createBitmapContext(10,10,colorSpace, &_colorConversionBmData);
+    CGContextSetAllowsAntialiasing(_colorConversionContext, NO);
+    CGContextSetShouldAntialias(_colorConversionContext, NO);
 
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     MNMXCORD latlonBounds;
@@ -94,17 +96,17 @@
     
 
     Theme * theme = themes.themeList[0];
+    theme.getSlowValues = self;
     COLORREF_RGB4 *wantColors;
     int *colorCounts;
     
 //    _maxColors = [self getColorsFromTheme:theme colors:&wantColors];
-    _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
-
-    colorCounts = calloc ((_maxColors+1),sizeof(int));
     
     dc.width = 0;
     _bd = [[BoundaryData alloc] init];
     
+    if (baseLayer != MBL_LandUse)
+        [self createColorByIDTable];
     [self        displayMapit:context
                     baseLayer:baseLayer
        displayCharacteristics:dc
@@ -138,23 +140,69 @@
         
     }*/
     
+    if (baseLayer == MBL_LandUse)
+        _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+    else
+    {
+        _maxColors = theme.totNumItems;
+        wantColors = nil;
+    }
+    
+    colorCounts = calloc ((_maxColors+1),sizeof(int));
     COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
+    int count = 0;
+    COLORREF_RGB4 lastColor = *pColor;
     for (int irow = 0;irow < height;irow++)
+    {
         for (int icol = 0;icol < width;icol++)
         {
-            [self countColors:pColor++
-            wantColors:wantColors
-             counts:colorCounts];
+            if (*(LPUINT)pColor == *(LPUINT)&lastColor)
+                count++;
+            else
+            {
+                if (wantColors)
+                    [self countColors:&lastColor
+                           wantColors:wantColors
+                               counts:colorCounts
+                                count:count];
+                else
+                {
+                    COLORREF_RGB4 clr = lastColor;
+                    int ir = clr.cRed;
+                    int ig = clr.cGreen;
+                    int ib = clr.cBlue;
+                    int ii = clr.cIntensity;
+                    clr.cIntensity = 0;
+                    [self addPixelsToTable:*(LPUINT)&clr numPixels:count];
+                }
+                lastColor = *pColor;
+                count = 1;
+            }
+            pColor++;
         }
-    double totPct=0;
-    for (int i=0;i<_maxColors;i++)
+    }
+    if (wantColors)
     {
-        int c = colorCounts[i];
-        double pct = (double)(c * 100)/(width*height);
-        totPct += pct;
+        [self countColors:&lastColor
+               wantColors:wantColors
+                   counts:colorCounts
+                    count:count];
+        double totPct=0;
+        for (int i=0;i<_maxColors;i++)
+        {
+            int c = colorCounts[i];
+            double pct = (double)(c * 100)/(width*height);
+            totPct += pct;
+        }
+    }
+    else
+    {
+        [self getPixelTotals];
     }
     if (context)
         CGContextRelease(context);
+    if (_colorConversionContext)
+        CGContextRelease(_colorConversionContext);
 /*     NSString * file = CRAPI.sharedInstance.extractFile;
     BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
     if (rtn)
@@ -168,6 +216,8 @@
     CGColorSpaceRelease(colorSpace);
     if (bmData)
         free (bmData);
+    if (_colorConversionBmData)
+        free (_colorConversionBmData);
 }
 
 - (int) getColorsFromTheme:(Theme*)theme
@@ -228,8 +278,9 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
 - (void) countColors:(COLORREF_RGB4*)color
           wantColors:(COLORREF_RGB4*)wantColors
               counts:(LPINT)colorCounts
+               count:(int)count
 {
-    int r = color->cRed;
+/*    int r = color->cRed;
     int g = color->cGreen;
     int b = color->cBlue;
     int a;
@@ -242,35 +293,86 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
             b = wantColors[j].cBlue;
             a = wantColors[j].cIntensity;
         }
-    }
+    }*/
     for (int i=0;i<_maxColors;i++)
     {
         if (*(LPINT)color == *(LPINT)&wantColors[i])
         {
-            colorCounts[i]++;
+            colorCounts[i] += count;
             return;
         }
         if (color->cRed == wantColors[i].cRed &&
             color->cGreen == wantColors[i].cGreen &&
             color->cBlue == wantColors[i].cBlue)
         {
-            colorCounts[i]++;
+            colorCounts[i] += count;
             return;
         }
     }
-    colorCounts[_maxColors]++;
+    colorCounts[_maxColors] += count;
     return;
 }
 - (BOOL) createColorByIDTable
 {
     BOOL rtn = FALSE;
     
-    NSString * cmd = @"DROP TABLE IF EXISTS COLORBYID;CREATE TEMP TABLE COLORBYID (ID INTEGER PRIMARY KEY,SOURCEKEY CHAR(32));";
-    rtn = [_bd executeCmd:(LPSTR)cmd.UTF8String];
     [_bd startTransaction];
+    NSString * cmd = @"DROP TABLE IF EXISTS COLORBYID;CREATE TEMP TABLE COLORBYID (IDFROMCOLOR INTEGER PRIMARY KEY,SOURCEFILEID INT,NUMPIXELS INT);";
+    rtn = [_bd executeCmd:(LPSTR)cmd.UTF8String];
     return rtn;
 }
-
+- (void) addIDtoColorByIDTable:(UINT)fileAndID
+                         color:(UIColor*)color
+{
+    CGRect colorRect;
+    colorRect.origin.x = 0;
+    colorRect.origin.y = 0;
+    colorRect.size.width = 10;
+    colorRect.size.height = 10;
+    
+    COLORREF_RGB4 * pColors = (COLORREF_RGB4 *)_colorConversionBmData;
+    pColors += 45;
+    CGColorRef colorRef =[color CGColor];
+    CGContextSetFillColorWithColor(_colorConversionContext,colorRef);
+    CGContextFillRect (_colorConversionContext,colorRect);
+    
+    pColors->cIntensity = 0;
+    UINT idFromColor = *(LPUINT)pColors;
+    int ii = pColors->cBlue;
+    ii = pColors->cGreen;
+    ii = pColors->cRed;
+    ii = pColors->cIntensity;
+    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO COLORBYID VALUES (%u,%i,0)",idFromColor,fileAndID];
+    [_bd executeCmd:(LPSTR)cmd.UTF8String];
+}
+- (void) addPixelsToTable:(UINT)idFromColor
+                numPixels:(int)nPixels
+{
+    NSString * cmd = [NSString stringWithFormat:@"UPDATE COLORBYID SET NUMPIXELS = NUMPIXELS + %i WHERE IDFROMCOLOR = %u",nPixels,idFromColor];
+    [_bd executeCmd:(LPSTR)cmd.UTF8String];
+}
+- (int) getPixelTotals
+{
+    NSString * query = @"SELECT * FROM COLORBYID";
+    sqlite3_stmt *statement = NULL;
+    UINT fileAndID;
+    UINT idFromColor;
+    int totPix = 0;
+    int pixels;
+    
+    SQLOK(0,sqlite3_prepare_v2(_bd.database, query.UTF8String, -1, &statement, 0), _bd.database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        idFromColor = sqlite3_column_int(statement, 0);
+        fileAndID = sqlite3_column_int(statement, 1);
+        pixels = sqlite3_column_int(statement, 2);
+        totPix += pixels;
+    }
+    
+    SQLOK(0,sqlite3_finalize(statement), _bd.database);
+    return totPix;
+}
 -(void)   displayMapit:(CGContextRef)context
              baseLayer:(MapitBaseLayer)baseLayer
 displayCharacteristics:(DisplayCharacteristics *)dc

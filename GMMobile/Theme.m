@@ -1008,7 +1008,14 @@ int getThemeOpt(ThemeTypes type)
         {
             case ColorByRefnoTheme:
             {
-                dc.fillColor = UIColorFromInt ((unsigned int)dc.refno);
+                if (!test)
+                {
+                    UINT fileAndID = (UINT)dc.refno;
+                    dc.fillColor = UIColorFromInt (fileAndID);
+                    _totNumItems++;
+                    [_getSlowValues addIDtoColorByIDTable:fileAndID
+                                                    color:dc.fillColor];
+                }
                 rtn = DISPLAY_ITEM;
             }
                 break;
@@ -1326,6 +1333,10 @@ DisplayExit:
 {
     double maxPct = 0;
     
+    if (_type == ColorByRefnoTheme)
+    {
+        int ii = _totNumItems;
+    }
     if (displayID == _displayID)
     {
         _legend.useClassColors = _setColor;
