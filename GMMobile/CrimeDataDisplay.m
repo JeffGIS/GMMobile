@@ -37,7 +37,7 @@
 {
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
-    [_cd close];
+    [_cd close:YES];
     NSLog(@"Crime Database dealloc");
 }
 
@@ -120,10 +120,9 @@
 
     if (_zoom > 15)
         sizeFactor += (_zoom - 15)/2;
-    sizeFactor *= scale/2;
+    sizeFactor *= scale;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
-    [_cd open];
-    [_cd startTransaction];
+    BOOL opened = [_cd startTransaction];
     
     if (!ConfigurationControl.sharedInstance.wantAllCrimes)
         [self createCNUMCheckTable];
@@ -172,9 +171,11 @@ NextPass:
     int iRange = 0;
     for (int ucrRange = 0; ucrRange < numUCRRanges; ucrRange++)
     {
+        if (![self continue]) break;
         [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
+            if (![self continue]) break;
             BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
             query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE, Attempt FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                      OFFENSEXY_index.minTime >=%f AND\
@@ -222,7 +223,7 @@ NextPass:
                 dc.string1 = [NSString stringWithUTF8String:offense];
                 dc.string2 = [NSString stringWithUTF8String:dept];
                 dc.fillColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
-                size = 25;
+                size = 15;
                 
 /*                if (attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == IgnoreAttempts)
                     continue;
@@ -363,7 +364,7 @@ NextPass:
             [hs dump:@"hotspottest"];
     }
 Exit:
-    [_cd close];
+    [_cd close:opened];
 }
 
 

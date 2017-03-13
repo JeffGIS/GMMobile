@@ -445,7 +445,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    [bd close:opened];
                                                
                                                if (dataType == GetDatabaseSettingCrimes)
-                                                   [crimed close];
+                                                   [crimed close:YES];
                                                
                                                if (dataType == GetDatabaseSettingCurbRamp)
                                                    [crd close:YES];

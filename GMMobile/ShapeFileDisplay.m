@@ -263,7 +263,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     atPoint:&pt
                                 usingSymbol:_dc.pointSymbol
                                   withColor:_dc.fillColor.CGColor
-                                    andSize:(_dc.size * _sizeFactor)];
+                                    andSize:(_dc.size * _sizeFactor *[UIScreen mainScreen].nativeScale)];
                     }
                 }
                     break;

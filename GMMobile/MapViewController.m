@@ -3106,6 +3106,7 @@ haveVV:
                            [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
                            ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
                        {
+                           [self clearVectorView];
                            _cd = [CrimeData new];
                            [_cd update:self.view
                                   auto:YES];
