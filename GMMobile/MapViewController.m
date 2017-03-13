@@ -262,6 +262,7 @@
     self.view.backgroundColor = UIColor.whiteColor;
     
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
+    _popover.hideAtCancel = NO;
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0 green:0.0  blue:0.3 alpha:1.0];
     
@@ -3106,7 +3107,8 @@ haveVV:
                            ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
                        {
                            _cd = [CrimeData new];
-                           [_cd update:self.view];
+                           [_cd update:self.view
+                                  auto:YES];
                            CRAPI.sharedInstance.becameActive = NO;
                        }
                        if (first)

@@ -509,7 +509,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
         {
             _cd = [CrimeData new];
-            [_cd update:self.view];
+            [_cd update:self.view
+                   auto:NO];
         }
     }
     

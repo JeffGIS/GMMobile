@@ -20,6 +20,7 @@
 {
     [UIApplication.sharedApplication setIdleTimerDisabled:YES];
     _popover = popover;
+    _popover.hideAtCancel = NO;
     _saveDelegate = popover.delegate;
     _popover.delegate = self;
     _dbList = [ConfigurationControl.sharedInstance getDatasetsForApp:appID];
@@ -149,6 +150,10 @@ Top:
             sel = @selector(loadMapleGrove:);
             break;
             
+        case GetDatabaseSettingCrimes:
+            sel = @selector(loadCrimeData:);
+            break;
+            
         default:
             break;
     }
@@ -174,6 +179,15 @@ Top:
             PropertyData *pd = [[PropertyData alloc] init];
             
             if (pd.parcelDatasetVersion >= 2)
+                rtn = YES;
+        }
+            break;
+            
+        case GetDatabaseSettingCrimes:
+        {
+            CrimeData *cd = [[CrimeData alloc] init];
+            
+            if (cd.datasetVersion >= 0)
                 rtn = YES;
         }
             break;

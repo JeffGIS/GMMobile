@@ -169,7 +169,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        {
                                            case GetDatabaseSettingCensus:
                                            case GetDatabaseSettingNVMetro:
-                                           {
+                                           case GetDatabaseSettingCrimes:
+                                          {
                                                dispatch_async(dispatch_get_main_queue(),
                                                               ^{
                                                                   [_popover hide];
@@ -197,13 +198,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                file = [NSString stringWithFormat:@"%@/censusdata.sqltran",toDirectory];
                                                _popover.title = @"Load Census Tables";
                                            }
-                                               break;*/
+                                               break;
                                            case GetDatabaseSettingCrimes:
                                            {
                                                file = [NSString stringWithFormat:@"%@/crimes_latlon.sqltran",toDirectory];
                                                _popover.title = @"Load Crime Tables";
                                            }
-                                               break;
+                                               break;*/
                                            case GetDatabaseSettingMapleGrove:
                                            {
                                                dispatch_async(dispatch_get_main_queue(),
@@ -545,6 +546,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 [_delegate SettingsViewControllerFailed:DLSTATUS_USER_CANCELLED];
                 _popover.title = [_popover.title stringByAppendingFormat:@"\n%@",statusString];
+                if (status == FTPStatusUserCancel)
+                    [_popover hide];
             }
             else
             {
@@ -705,7 +708,8 @@ Exit:
 - (IBAction)loadCrimeData:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"Crimes_ll.gcf";
+    //NSString *fileName = @"Crimes_ll.gcf";
+    NSString *fileName = @"CrimeData.gcf";
     
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;

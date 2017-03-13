@@ -506,6 +506,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         
         if (appID == HCConfigMetroProp)
             [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
+        if (appID == HCConfigCrimes)
+            [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCrimes]];
     }
     return list;
 }
