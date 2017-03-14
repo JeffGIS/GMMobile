@@ -698,15 +698,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
     [dateFormatter setDateFormat:@"MMedd"];
-    
     NSString *dateString = [dateFormatter stringFromDate:NSDate.date];
     dateString = reverseString(dateString);
     
     if ([dateString isEqualToString:text])
-    {
-        [self performSegueWithIdentifier:@"ShowSettings"
-                                  sender:self];
-    }
+        [self performSegueWithIdentifier:@"ShowSettings" sender:self];
     
     else
     {
@@ -740,8 +736,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     switch (aSwitch.tag)
     {
         case 777://Auto upload
-            [UserDefaults.defaults saveBool:aSwitch.on
-                                     forKey:@"AutoUpdate"];
+            [UserDefaults.defaults saveBool:aSwitch.on forKey:@"AutoUpdate"];
             break;
             
         case 888://Track location
@@ -752,8 +747,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             else
                 [AppDelegate.sharedAppDelegate stopLocationTracking];
             
-            [UserDefaults.defaults saveBool:aSwitch.on
-                                     forKey:@"TrackLocation"];
+            [UserDefaults.defaults saveBool:aSwitch.on forKey:@"TrackLocation"];
         }
             break;
             
@@ -764,32 +758,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)synchronizeControllerDidReturn:(NVSynchronizeVC *)controller
 {
-    [controller dismissViewControllerAnimated:YES
-                                   completion:nil];
+    [controller dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)calibrationControllerNeedsRefresh:(NVCalibrationController *)controller
 {
-    [self dismissViewControllerAnimated:NO
-                             completion:nil];
-    
-    NVCalibrationController *calibrationController = [[NVCalibrationController alloc] init];
+    NVCalibrationController *calibrationController = NVCalibrationController.new;
     calibrationController.delegate = self;
-    
-    [self presentViewController:calibrationController
-                       animated:YES
-                     completion:nil];
+    calibrationController.useHeadingCalibration = controller.useHeadingCalibration;
+    calibrationController.headingErrorShown = YES;
+    [controller dismissViewControllerAnimated:NO completion:nil];
+    [self presentViewController:calibrationController animated:YES completion:nil];
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        if (orientation == UIDeviceOrientationLandscapeLeft ||
-            orientation == UIDeviceOrientationLandscapeRight)
-        {
+        if (orientation == UIDeviceOrientationLandscapeLeft || orientation == UIDeviceOrientationLandscapeRight)
             return 0.0;
-        }
     }
     
     return 20.0;
