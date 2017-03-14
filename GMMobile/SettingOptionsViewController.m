@@ -330,18 +330,6 @@ EAGLContext *CreateBestEAGLContext()
     _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, trackLocation, nil];
     CGFloat margin = 0.0;
     
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        _tableView.rowHeight = 48.0;
-        margin = 8.0;
-    }
-    
-    else
-    {
-        _tableView.rowHeight = 72.0;
-        margin = 20.0;
-    }
-    
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.bounces = NO;
@@ -351,11 +339,23 @@ EAGLContext *CreateBestEAGLContext()
     
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
     
     _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
     _versionLabel.adjustsFontSizeToFitWidth = YES;
     
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        [_tableView constrainToView:self.view leading:margin trailing:-margin top:64.0 bottom:-_versionLabel.frame.size.height];
+        _tableView.rowHeight = 48.0;
+        margin = 8.0;
+    }
+    
+    else
+    {
+        [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
+        _tableView.rowHeight = 72.0;
+        margin = 20.0;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -365,7 +365,7 @@ EAGLContext *CreateBestEAGLContext()
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location",
-                  @"Test Keyboard", @"View PDF in WKWebView"];
+                  @"Test Keyboard"];
     
     [_tableView reloadData];
 }
@@ -550,15 +550,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NVKeyboard *keyboard = [NVKeyboard showKeyboardInView:self.view
                                                      delegate:self];
 #pragma unused(keyboard)
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"View PDF in WKWebView"])
-    {
-        NVWebView *nvwv = [NVWebView showWebViewInView:self.view
-                                        showFileAtPath:[NSBundle.mainBundle pathForResource:@"ENA_19_87-26_A0"
-                                                                                     ofType:@"PDF"]];
-#pragma unused(nvwv)
     }
 }
 

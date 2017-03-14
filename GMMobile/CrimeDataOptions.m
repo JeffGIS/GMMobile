@@ -42,10 +42,7 @@
         _rowHeight = 36.0;
         _headerHeight = 24.0;
         _cornerRadius = 4.0;
-        
-        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:14.0];
-        
+        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT" size:14.0];
         _headerFont = [UIFont boldSystemFontOfSize:18.0];
     }
     
@@ -54,10 +51,7 @@
         _rowHeight = 52.0;
         _headerHeight = 40.0;
         _cornerRadius = 10.0;
-        
-        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:24.0];
-        
+        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT" size:24.0];
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
     
@@ -537,17 +531,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     return formattedDate;
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue
-                 sender:(id)sender
+- (IBAction)selectBounds:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"ShowCrimeAreas"])
-    {
-        FindBoundariesViewController *findBounds = segue.destinationViewController;
-        findBounds.delegate = self;
-        
-        findBounds.otherAreas = @[@"Entire City", @"Broadway Area", @"Downtown Improvement District", @"NorthWest L",
-                                  @"Midtown", @"Midtown (expanded)", @"Violent Crime Hotspots"];
-    }
+    FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
+    findBounds.delegate = self;
+    
+    findBounds.otherAreas = @[@"Entire City", @"Broadway Area", @"Downtown Improvement District", @"NorthWest L",
+                              @"Midtown", @"Midtown (expanded)", @"Violent Crime Hotspots"];
+    
+    [self presentViewController:findBounds animated:YES completion:nil];
 }
 
 - (void)findBoundsViewController:(FindBoundariesViewController *)findBounds

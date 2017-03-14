@@ -14,6 +14,7 @@
                             type:(NSString *)type
                            refno:(int)refno;
 
+@optional
 - (void)findBoundsViewController:(FindBoundariesViewController *)findPropOwner
           didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps;
 
