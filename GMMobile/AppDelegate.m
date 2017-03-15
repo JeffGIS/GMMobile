@@ -8,6 +8,7 @@
 #import "CCodeLibrary/SharedDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/NVGetODR.h"
+#import "CCodeLibrary/GSSiDefs.h"
 
 @interface AppDelegate () <NVGetODRDelegate>
 
@@ -40,7 +41,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.showParcelBoundary = YES;
     CRAPI.sharedInstance.parcelShadingOption = 0;
     CRAPI.sharedInstance.currentPlatType = @"storm";
-    [GMSServices provideAPIKey:@"AIzaSyBHsmI7nwgf4vt0jiCI11dzRs5dAlqQ3es"];
+    [GMSServices provideAPIKey:GOOGLE_API_KEY];
     
     CRAPI.sharedInstance.defaultColors = UserDefaults.defaults.defaultColors;
     CRAPI.sharedInstance.currentGeoid = 2743000;

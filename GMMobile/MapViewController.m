@@ -3854,6 +3854,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self traceRouteFromCurrentLocation];
     }
     
+    else if ([text isEqualToString:@"Trip Time Profile"])
+    {
+        [self tripTimeProfile];
+        [self deselectTableViewRow];
+    }
+    
     else if ([text isEqualToString:@"Perform 3D Route Flyover"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer forKey:@"FlyOverType"];
@@ -4612,6 +4618,14 @@ didCompleteWithError:(NSError *)error
             alert.identifier = @"CannotLaunchFlyoverApp";
         }
     }
+}
+
+- (void)tripTimeProfile
+{
+    ChartsViewController *chartsVC = [ChartsViewController routingChartFromDestination:_selectedPIDCoords
+                                                                         toDestination:CLLocationCoordinate2DMake(44.97916, -93.26602)];
+    
+    [self presentViewController:chartsVC animated:YES completion:nil];
 }
 
 - (void)showPipeAttributes
@@ -6206,7 +6220,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record", @"Display Google Street View",
                          @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Set as Target Parcel",
-                         @"Perform 3D Fly Around", @"Add to Property List", @"Add to Destinations", @"Route From Current Location"];
+                         @"Perform 3D Fly Around", @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Trip Time Profile"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
@@ -6330,7 +6344,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCensusBoundary:
         {
             _selectedCensusBoundaryRefno = refno;
-            _options = @[@"", @"Display Census Data Chart", @"Perform 3D Fly Around", @"Display Google Street View"];
+            _options = @[@"", @"Display Census Data Chart", @"Perform 3D Fly Around", @"Display Google Street View", @"Trip Time Profile"];
         }
             break;
             

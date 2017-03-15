@@ -6,13 +6,15 @@
 #import "CCodeLibrary/CensusData.h"
 #import "CCodeLibrary/NVColor.h"
 #import "PropertyData.h"
+#import "CCodeLibrary/NVDateRange.h"
 @import Charts;
 
 @interface ChartsViewController ()
 
 @property (nonatomic) UIButton *returnButton;
 @property int currentSaleVal;
-@property NSInteger type;
+@property CLLocationCoordinate2D toDestination, fromDestination;
+@property ChartsViewType type;
 
 @end
 
@@ -23,6 +25,17 @@
     ChartsViewController *chartsVC = ChartsViewController.new;
     chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     chartsVC.type = type;
+    return chartsVC;
+}
+
++ (instancetype)routingChartFromDestination:(CLLocationCoordinate2D)fromDestination
+                              toDestination:(CLLocationCoordinate2D)toDestination
+{
+    ChartsViewController *chartsVC = ChartsViewController.new;
+    chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    chartsVC.fromDestination = fromDestination;
+    chartsVC.toDestination = toDestination;
+    chartsVC.type = ChartsViewTypeRouting;
     return chartsVC;
 }
 
@@ -69,9 +82,27 @@
             break;
         case ChartsViewTypeCensusDataLine:
             break;
+        case ChartsViewTypeRouting:
+            [self setupRouting];
+            break;
         default:
             break;
     }
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
+- (void)returnButtonTapped:(UIButton *)button
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)setupPropReport
@@ -333,19 +364,66 @@
                                    _areaType, _geoid, totalMales, totalFemales, totalTotals];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)setupRouting
 {
-    [super didReceiveMemoryWarning];
-}
-
-- (BOOL)prefersStatusBarHidden
-{
-    return YES;
-}
-
-- (void)returnButtonTapped:(UIButton *)button
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
+    NVDateRange *nvdr = NVDateRange.new;
+    NSDate *startOfToday = [nvdr startOfDayDateForDate:NSDate.date];
+    int departureTime = (startOfToday.timeIntervalSince1970 + SECONDS_PER_DAY);
+    
+    for (int i = 0; i < 24; i++)
+    {
+        NSString *urlString = [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?"
+                               "origin=%f,%f"
+                               "&destination=%f,%f"
+                               "&departure_time=%i"
+                               "&key=%@",
+                               _fromDestination.latitude, _fromDestination.longitude,
+                               _toDestination.latitude, _toDestination.longitude,
+                               departureTime, GOOGLE_API_KEY];
+        
+        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+        urlRequest.timeoutInterval = 15;
+        
+        NSURLResponse *response = nil;
+        NSError *error = nil;
+        
+        NSData *urlData = [NSURLConnection sendSynchronousRequest:urlRequest
+                                                returningResponse:&response
+                                                            error:&error];
+        
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:&error];
+        
+        NSString *status = json[@"status"];
+        NSString *message = @"";
+        
+        if (error)
+            message = [NSString stringWithFormat:@"JSON error:%@", error.localizedDescription];
+        
+        else if (![status isEqualToString:@"OK"])
+            message = [NSString stringWithFormat:@"JSON error:%@", status];
+        
+        if (message.length)
+        {
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:CRAPI.sharedInstance
+                                                                 title:message
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+#pragma unused(alert)
+        }
+        
+        else
+        {
+            NSDictionary *leg = json[@"routes"][0][@"legs"][0];
+            NSString *durationInTraffic = leg[@"duration_in_traffic"][@"value"];
+            NSDate *thisDate = [NSDate dateWithTimeIntervalSince1970:departureTime];
+            NSLog(@"TIME:%@, DURATION:%@ seconds", thisDate.description, durationInTraffic);
+        }
+        
+        departureTime += SECONDS_PER_HOUR;
+    }
 }
 
 @end
