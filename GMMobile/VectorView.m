@@ -12,6 +12,7 @@
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
 #import "Themes.h"
+#import "CCodeLibrary/NVDateRange.h"
 
 #define METERS_PER_MILE 1609.344
 
@@ -148,7 +149,10 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
 
 - (void)drawRect:(CGRect)rect
 {
-    
+    NSInteger fromDate = 0, toDate = 0;
+    [NVDateRange getCurrentFromDate:&fromDate toDate:&toDate];
+    CRAPI.sharedInstance.fromDate = fromDate;
+    CRAPI.sharedInstance.toDate = toDate;
     
     if (CRAPI.sharedInstance.keepProcessing < 0)
         return;

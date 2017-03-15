@@ -47,11 +47,6 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.resetPropList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
     
-    NSInteger fromDate = 0, toDate = 0;
-    [NVDateRange getCurrentFromDate:&fromDate toDate:&toDate];
-    CRAPI.sharedInstance.fromDate = fromDate;
-    CRAPI.sharedInstance.toDate = toDate;
-    
     UIUserNotificationType nTypes =
     UIUserNotificationTypeBadge|UIUserNotificationTypeSound|UIUserNotificationTypeAlert;
     
