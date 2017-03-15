@@ -416,31 +416,52 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                 CRAPI.sharedInstance.parcelTextOption = 1;
             first = FALSE;
             break;
-        
         case HCConfigSewers:
         case HCConfigAlleyWalls:
         case HCConfigAlleyWallStatus:
         case HCConfigCrimes:
-            CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
+        {
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)[UserDefaults.defaults integerForKey:@"CurrentOverallBoundaryRefno"];
             CRAPI.sharedInstance.parcelTextOption = 2;
-            CRAPI.sharedInstance.currentOverallBoundaryName = @"Minneapolis";
-            CRAPI.sharedInstance.currentOverallBoundaryType = @"City";
-            break;
             
+            if (CRAPI.sharedInstance.currentOverallBoundaryRefno)
+            {
+                CRAPI.sharedInstance.currentOverallBoundaryName = [UserDefaults.defaults stringForKey:@"CurrentOverallBoundaryName"];
+                CRAPI.sharedInstance.currentOverallBoundaryType = [UserDefaults.defaults stringForKey:@"CurrentOverallBoundaryType"];
+            }
+            
+            else
+            {
+                CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
+                [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.currentOverallBoundaryRefno forKey:@"CurrentOverallBoundaryRefno"];
+                CRAPI.sharedInstance.currentOverallBoundaryName = @"Minneapolis";
+                [UserDefaults.defaults saveString:CRAPI.sharedInstance.currentOverallBoundaryName forKey:@"CurrentOverallBoundaryName"];
+                CRAPI.sharedInstance.currentOverallBoundaryType = @"City";
+                [UserDefaults.defaults saveString:CRAPI.sharedInstance.currentOverallBoundaryType forKey:@"CurrentOverallBoundaryType"];
+            }
+            
+            _wantAllCrimes = [UserDefaults.defaults boolForKey:@"WantAllCrimes"];
+            _adjustCrimeOption = (AdjustCrimeOptions)[UserDefaults.defaults integerForKey:@"AdjustCrimeOption"];
+            
+            NSString *defaultAdjustCrimeArea = [UserDefaults.defaults stringForKey:@"AdjustCrimeArea"];
+            
+            if (defaultAdjustCrimeArea && defaultAdjustCrimeArea.length)
+                _adjustCrimeArea = defaultAdjustCrimeArea;
+            break;
+        }
         case HCConfigMapleGrove:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
             CRAPI.sharedInstance.parcelTextOption = 1;
             configLayerZoom[HCConfigMapleGrove][HCLayerSewers][0] = 12;
             break;
-            
         default:
             CRAPI.sharedInstance.parcelTextOption = 0;
             break;
     }
+    
     if (_currentApp == HCConfigAlleyWalls || _currentApp == HCConfigAlleyWallStatus || _currentApp == HCConfigCurbRamps)
     {
         NSString *places = [CRAPI.sharedInstance getPlacesStringFromFile];
-        
         [CRAPI.sharedInstance savePlacesString:places];
         [CRAPI.sharedInstance processPlaces];
         [CRAPI.sharedInstance setGeoIDForCurrentApp];

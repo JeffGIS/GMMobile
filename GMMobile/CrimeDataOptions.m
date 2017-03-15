@@ -76,10 +76,38 @@
     
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
-    _selectedLegend = _legends[0];
-    _selectedMode = _modes[0][0];
-    _selectedMultipleOffenseOption = _multipleOffenseOptions[0];
-    _selectedAdjustmentOption = _adjustmentOptions[0];
+    
+    NSString *defaultSelectedLegend = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
+    
+    if (defaultSelectedLegend && defaultSelectedLegend.length)
+        _selectedLegend = defaultSelectedLegend;
+    
+    else
+        _selectedLegend = _legends[0];
+    
+    NSString *defaultSelectedMode = [UserDefaults.defaults stringForKey:@"SelectedMode"];
+    
+    if (defaultSelectedMode && defaultSelectedMode.length)
+        _selectedMode = defaultSelectedMode;
+    
+    else
+        _selectedMode = _selectedMode = _modes[0][0];
+    
+    NSString *defaultSelectedMultipleOffenseOption = [UserDefaults.defaults stringForKey:@"SelectedMultipleOffenseOption"];
+    
+    if (defaultSelectedMultipleOffenseOption && defaultSelectedMultipleOffenseOption.length)
+        _selectedMultipleOffenseOption = defaultSelectedMultipleOffenseOption;
+    
+    else
+        _selectedMultipleOffenseOption = _multipleOffenseOptions[0];
+    
+    NSString *defaultSelectedAdjustmentOption = [UserDefaults.defaults stringForKey:@"SelectedAdjustmentOption"];
+    
+    if (defaultSelectedAdjustmentOption && defaultSelectedAdjustmentOption.length)
+        _selectedAdjustmentOption = defaultSelectedAdjustmentOption;
+    
+    else
+        _selectedAdjustmentOption = _adjustmentOptions[0];
     
     _modeButton.selected = YES;
     _areaTypeButton.selected = NO;
@@ -145,24 +173,16 @@
 {
     [self updateButton:button];
     
-    [button setTitleColor:UIColor.whiteColor
-                 forState:UIControlStateNormal];
-    
-    [button setTitleColor:UIColor.grayColor
-                 forState:(UIControlStateHighlighted|UIControlStateSelected)];
-    
-    [button setTitleColor:UIColor.grayColor
-                 forState:UIControlStateHighlighted];
-    
-    [button setTitleColor:UIColor.blackColor
-                 forState:UIControlStateSelected];
-    
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         button.titleLabel.font = [UIFont boldSystemFontOfSize:22.0];
     
     else
         button.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
     
+    [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [button setTitleColor:UIColor.grayColor forState:(UIControlStateHighlighted|UIControlStateSelected)];
+    [button setTitleColor:UIColor.grayColor forState:UIControlStateHighlighted];
+    [button setTitleColor:UIColor.blackColor forState:UIControlStateSelected];
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     button.layer.cornerRadius = _cornerRadius;
@@ -420,6 +440,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if (_currentArray == _legends)
     {
         _selectedLegend = _legends[indexPath.row];
+        [UserDefaults.defaults saveString:_selectedLegend forKey:@"SelectedLegend"];
         
         [_legendButton setTitle:[NSString stringWithFormat:@"Legend:%@", _selectedLegend]
                        forState:UIControlStateNormal];
@@ -431,7 +452,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _selectedModeType = (NVMapModeType)indexPath.row;
         
         if (![_modes[_selectedModeType] containsObject:_selectedMode])
+        {
             _selectedMode = _modes[_selectedModeType][0];
+            [UserDefaults.defaults saveString:_selectedMode forKey:@"SelectedMode"];
+        }
         
         [self updateModes];
     }
@@ -439,31 +463,37 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if (_currentArray == _multipleOffenseOptions)
     {
         _selectedMultipleOffenseOption = _multipleOffenseOptions[indexPath.row];
+        [UserDefaults.defaults saveString:_selectedMultipleOffenseOption forKey:@"SelectedMultipleOffenseOptions"];
         
         [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                                 forState:UIControlStateNormal];
         
         ConfigurationControl.sharedInstance.wantAllCrimes = [_selectedMultipleOffenseOption isEqualToString:@"All Offenses"];
+        [UserDefaults.defaults saveBool:ConfigurationControl.sharedInstance.wantAllCrimes forKey:@"WantAllCrimes"];
     }
     
     else if (_currentArray == _adjustmentOptions)
     {
         _selectedAdjustmentOption = _adjustmentOptions[indexPath.row];
+        [UserDefaults.defaults saveString:_selectedAdjustmentOption forKey:@"SelectedAdjustmentOption"];
         
         [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
                               forState:UIControlStateNormal];
         
         ConfigurationControl.sharedInstance.adjustCrimeOption = (int)indexPath.row;
+        [UserDefaults.defaults saveInteger:ConfigurationControl.sharedInstance.adjustCrimeOption forKey:@"AdjustCrimeOption"];
         ConfigurationControl.sharedInstance.adjustCrimeArea = @"BLOCK";
+        [UserDefaults.defaults saveString:ConfigurationControl.sharedInstance.adjustCrimeArea forKey:@"AdjustCrimeArea"];
     }
     
     else
     {
         _selectedMode = _modes[_selectedModeType][indexPath.row];
+        [UserDefaults.defaults saveString:_selectedMode forKey:@"SelectedMode"];
         [self updateModes];
         _currentArray = _modeTypes;
     }
-    
+
     [_tableView reloadData];
 }
 
@@ -478,36 +508,43 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ([uppercaseMode containsString:@"PIN"])
         CRAPI.sharedInstance.crimeMode = PINMAP;
     
-    if ([uppercaseMode containsString:@"CHOROPLETH"])
+    else if ([uppercaseMode containsString:@"CHOROPLETH"])
         CRAPI.sharedInstance.crimeMode = CHOROPLETH;
     
-    if ([uppercaseMode containsString:@"HOTSPOT"])
+    else if ([uppercaseMode containsString:@"HOTSPOT"])
         CRAPI.sharedInstance.crimeMode = HOTSPOT;
+    
+    [UserDefaults.defaults saveNSInteger:CRAPI.sharedInstance.crimeMode forKey:@"CrimeMode"];
     
     if ([uppercaseMode containsString:@"PRECINCTS"])
         CRAPI.sharedInstance.crimeTarget = @"Minneapolis Precincts";
     
-    if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
+    else if ([uppercaseMode containsString:@"NEIGHBORHOODS"])
         CRAPI.sharedInstance.crimeTarget = @"Minneapolis Neighborhoods";
     
-    if ([uppercaseMode containsString:@"WARDS"])
+    else if ([uppercaseMode containsString:@"WARDS"])
         CRAPI.sharedInstance.crimeTarget = @"Minneapolis Wards";
     
-    if ([uppercaseMode containsString:@"SECTORS"])
+    else if ([uppercaseMode containsString:@"SECTORS"])
         CRAPI.sharedInstance.crimeTarget = @"Minneapolis Sectors";
     
-    if ([uppercaseMode containsString:@"BLOCK GROUPS"])
+    else if ([uppercaseMode containsString:@"BLOCK GROUPS"])
         CRAPI.sharedInstance.crimeTarget = @"BLOCKGROUP";
+    
     else if ([uppercaseMode containsString:@"BLOCK"])
         CRAPI.sharedInstance.crimeTarget = @"BLOCK";
     
-    if ([uppercaseMode containsString:@"CENSUS TRACT"])
+    else if ([uppercaseMode containsString:@"CENSUS TRACT"])
         CRAPI.sharedInstance.crimeTarget = @"TRACT";
+    
+    [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeTarget forKey:@"CrimeTarget"];
     
     if ([uppercaseMode containsString:@"HOUSING UNIT"])
     {
         CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";
         CRAPI.sharedInstance.crimeAdjustValueArea = @"TRACT";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeAdjustValue forKey:@"CrimeAdjustValue"];
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeAdjustValueArea forKey:@"CrimeAdjustValueArea"];
     }
     
     [_modeButton setTitle:[NSString stringWithFormat:@"Mode:%@", _selectedMode]
@@ -554,9 +591,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     if (bounds && ![bounds isEqualToString:@""])
     {
-        CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
-        CRAPI.sharedInstance.currentOverallBoundaryType = type;
         CRAPI.sharedInstance.currentOverallBoundaryRefno = refno;
+        [UserDefaults.defaults saveInteger:refno forKey:@"CurrentOverallBoundaryRefno"];
+        CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
+        [UserDefaults.defaults saveString:bounds forKey:@"CurrentOverallBoundaryName"];
+        CRAPI.sharedInstance.currentOverallBoundaryType = type;
+        [UserDefaults.defaults saveString:bounds forKey:@"CurrentOverallBoundaryType"];
         
         [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
                                    CRAPI.sharedInstance.currentOverallBoundaryName,
