@@ -9,7 +9,7 @@
 #import "CCodeLibrary/NVDateRange.h"
 @import Charts;
 
-@interface ChartsViewController ()
+@interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
 
 @property (nonatomic) UIButton *returnButton;
 @property int currentSaleVal;
@@ -381,48 +381,70 @@
                                _toDestination.latitude, _toDestination.longitude,
                                departureTime, GOOGLE_API_KEY];
         
-        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-        urlRequest.timeoutInterval = 15;
+        NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+        config.timeoutIntervalForRequest = 5.0;
         
-        NSURLResponse *response = nil;
-        NSError *error = nil;
+        NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:config
+                                                                 delegate:self
+                                                            delegateQueue:NSOperationQueue.currentQueue];
         
-        NSData *urlData = [NSURLConnection sendSynchronousRequest:urlRequest
-                                                returningResponse:&response
-                                                            error:&error];
-        
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:urlData
-                                                             options:NSJSONReadingMutableContainers
-                                                               error:&error];
-        
-        NSString *status = json[@"status"];
-        NSString *message = @"";
-        
-        if (error)
-            message = [NSString stringWithFormat:@"JSON error:%@", error.localizedDescription];
-        
-        else if (![status isEqualToString:@"OK"])
-            message = [NSString stringWithFormat:@"JSON error:%@", status];
-        
-        if (message.length)
-        {
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                              delegate:CRAPI.sharedInstance
-                                                                 title:message
-                                                       buttonTextArray:@[@"OK"]
-                                                      destructiveIndex:0];
-#pragma unused(alert)
-        }
-        
-        else
-        {
-            NSDictionary *leg = json[@"routes"][0][@"legs"][0];
-            NSString *durationInTraffic = leg[@"duration_in_traffic"][@"value"];
-            NSDate *thisDate = [NSDate dateWithTimeIntervalSince1970:departureTime];
-            NSLog(@"TIME:%@, DURATION:%@ seconds", thisDate.description, durationInTraffic);
-        }
-        
+        NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
+        NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:url];
+        dataTask.taskDescription = [NSString stringWithFormat:@"%i", i];
+        [dataTask resume];
         departureTime += SECONDS_PER_HOUR;
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session
+          dataTask:(NSURLSessionDataTask *)dataTask
+    didReceiveData:(NSData *)data
+{
+    NSInteger index = dataTask.taskDescription.integerValue;
+    NSError *error = nil;
+    
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:&error];
+    
+    NSString *status = json[@"status"];
+    
+    if (error)
+    {
+        NSLog(@"JSON error (%li)...trying again.", (long)index);
+        NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+        config.timeoutIntervalForRequest = 5.0;
+        
+        NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:config
+                                                                 delegate:self
+                                                            delegateQueue:NSOperationQueue.currentQueue];
+        
+        NSURLSessionDataTask *theDataTask = [urlSession dataTaskWithURL:dataTask.currentRequest.URL.copy];
+        theDataTask.taskDescription = [NSString stringWithFormat:@"%i", (int)index];
+        [session finishTasksAndInvalidate];
+        [theDataTask resume];
+    }
+    
+    else if (![status isEqualToString:@"OK"])
+        NSLog(@"JSON error (%li):%@", (long)index, status);
+    
+    else
+    {
+        NSDictionary *leg = json[@"routes"][0][@"legs"][0];
+        NSString *durationInTraffic = leg[@"duration_in_traffic"][@"value"];
+        NSLog(@"TIME:%li, DURATION:%@ seconds", (long)index, durationInTraffic);
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+didCompleteWithError:(NSError *)error
+{
+    if (error)
+    {
+        [session finishTasksAndInvalidate];
+        NSUInteger index = task.taskDescription.integerValue;
+        NSLog(@"NSURL error (%li):%@", (long)index, error.localizedDescription);
     }
 }
 
