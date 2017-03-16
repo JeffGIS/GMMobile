@@ -4,7 +4,6 @@
 #import "ChartsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CensusData.h"
-#import "CCodeLibrary/NVColor.h"
 #import "PropertyData.h"
 #import "CCodeLibrary/NVDateRange.h"
 @import Charts;
@@ -13,9 +12,10 @@
 
 @property (nonatomic) UIButton *returnButton;
 @property int currentSaleVal, numDurations, durationCount;
-@property CLLocationCoordinate2D toDestination, fromDestination;
 @property ChartsViewType type;
 @property NSMutableArray *durationArray;
+@property BarChartView *routingBarChart;
+@property NVColor *color;
 
 @end
 
@@ -31,12 +31,14 @@
 
 + (instancetype)routingChartFromDestination:(CLLocationCoordinate2D)fromDestination
                               toDestination:(CLLocationCoordinate2D)toDestination
+                                      color:(NVColor *)color
 {
     ChartsViewController *chartsVC = ChartsViewController.new;
     chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     chartsVC.fromDestination = fromDestination;
     chartsVC.toDestination = toDestination;
     chartsVC.type = ChartsViewTypeRouting;
+    chartsVC.color = color;
     return chartsVC;
 }
 
@@ -367,6 +369,31 @@
 
 - (void)setupRouting
 {
+    _routingBarChart = BarChartView.new;
+    _routingBarChart.translatesAutoresizingMaskIntoConstraints = NO;
+    _routingBarChart.backgroundColor = UIColor.whiteColor;
+    _routingBarChart.legend.font = [UIFont systemFontOfSize:16.0];
+    _routingBarChart.hidden = YES;
+    _routingBarChart.pinchZoomEnabled = NO;
+    _routingBarChart.dragEnabled = NO;
+    _routingBarChart.scaleXEnabled = NO;
+    _routingBarChart.scaleYEnabled = NO;
+    
+    [self.view addSubview:_routingBarChart];
+    [_routingBarChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [_routingBarChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [_routingBarChart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [_routingBarChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    
+    NSNumberFormatter *numFormatter = NSNumberFormatter.new;
+    numFormatter.minimumIntegerDigits = 4;
+    ChartDefaultAxisValueFormatter *chartFormatter = ChartDefaultAxisValueFormatter.new;
+    chartFormatter.formatter = numFormatter;
+    _routingBarChart.xAxis.valueFormatter = chartFormatter;
+    _routingBarChart.xAxis.axisMinimum = -50.0;
+    _routingBarChart.xAxis.axisMaximum = 2350.0;
+    _routingBarChart.leftAxis.axisMinimum = _routingBarChart.rightAxis.axisMinimum = 0.0;
+    
     NVDateRange *nvdr = NVDateRange.new;
     NSDate *startOfToday = [nvdr startOfDayDateForDate:NSDate.date];
     int departureTime = (startOfToday.timeIntervalSince1970 + SECONDS_PER_DAY);
@@ -412,10 +439,9 @@
     
     NSString *status = json[@"status"];
     
-    if (error)
+    if (error || ![status isEqualToString:@"OK"])
     {
         [session invalidateAndCancel];
-        NSLog(@"JSON error (%li)...trying again.", (long)index);
         NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
         config.timeoutIntervalForRequest = 5.0;
         
@@ -428,15 +454,12 @@
         [theDataTask resume];
     }
     
-    else if (![status isEqualToString:@"OK"])
-        NSLog(@"JSON error (%li):%@", (long)index, status);
-    
     else
     {
+        [session finishTasksAndInvalidate];
         _durationCount++;
         NSDictionary *leg = json[@"routes"][0][@"legs"][0];
         NSString *duration = leg[@"duration_in_traffic"][@"value"];
-        NSLog(@"TIME:%li, DURATION:%@ seconds", (long)index, duration);
         BarChartDataEntry *entry = [[BarChartDataEntry alloc] initWithX:(index * 100.0) y:(duration.doubleValue / 60.0)];
         [_durationArray addObject:entry];
         
@@ -450,39 +473,17 @@
 didCompleteWithError:(NSError *)error
 {
     if (error)
-    {
         [session finishTasksAndInvalidate];
-        NSUInteger index = task.taskDescription.integerValue;
-        NSLog(@"NSURL error (%li):%@", (long)index, error.localizedDescription);
-    }
 }
 
 - (void)createDurationChart
 {
-    BarChartView *barChart = BarChartView.new;
-    barChart.translatesAutoresizingMaskIntoConstraints = NO;
-    barChart.backgroundColor = UIColor.whiteColor;
-    barChart.legend.font = [UIFont systemFontOfSize:16.0];
-    
-    [self.view addSubview:barChart];
-    [barChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [barChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
-    [barChart constrainTopToAnchor:_returnButton.bottomAnchor];
-    [barChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
-    
-    NSNumberFormatter *numFormatter = NSNumberFormatter.new;
-    numFormatter.minimumIntegerDigits = 4;
-    ChartDefaultAxisValueFormatter *chartFormatter = ChartDefaultAxisValueFormatter.new;
-    chartFormatter.formatter = numFormatter;
-    barChart.xAxis.valueFormatter = chartFormatter;
-    barChart.xAxis.axisMinimum = -50.0;
-    barChart.xAxis.axisMaximum = 2350.0;
-    
     BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
-    durationSet.color = NVColor.blueColor;
+    durationSet.color = _color;
     BarChartData *barData = [[BarChartData alloc] initWithDataSets:@[(durationSet)]];
     barData.barWidth = 70.0;
-    barChart.data = barData;
+    _routingBarChart.data = barData;
+    _routingBarChart.hidden = NO;
 }
 
 @end

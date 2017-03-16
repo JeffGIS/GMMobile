@@ -4622,10 +4622,29 @@ didCompleteWithError:(NSError *)error
 
 - (void)tripTimeProfile
 {
-    ChartsViewController *chartsVC = [ChartsViewController routingChartFromDestination:_selectedPIDCoords
-                                                                         toDestination:CLLocationCoordinate2DMake(44.97916, -93.26602)];
+    if (hasNetwork())
+    {
+        ChartsViewController *outboundTrip = [ChartsViewController routingChartFromDestination:_selectedPIDCoords
+                                                                                 toDestination:CLLocationCoordinate2DMake(44.97916, -93.26602)
+                                                                                         color:NVColor.dodgerBlueColor];
+        
+        ChartsViewController *returnTrip = [ChartsViewController routingChartFromDestination:outboundTrip.toDestination
+                                                                               toDestination:outboundTrip.fromDestination
+                                                                                       color:NVColor.mediumSeaGreenColor];
+        
+        NVPager *pager = [NVPager pagerWithViewControllers:@[(outboundTrip), (returnTrip)]];
+        [self presentViewController:pager animated:YES completion:nil];
+    }
     
-    [self presentViewController:chartsVC animated:YES completion:nil];
+    else
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:CRAPI.sharedInstance
+                                                             title:@"Network Required for Trip Time Profile"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
+    }
 }
 
 - (void)showPipeAttributes
