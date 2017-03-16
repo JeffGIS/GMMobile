@@ -12,9 +12,10 @@
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
 
 @property (nonatomic) UIButton *returnButton;
-@property int currentSaleVal;
+@property int currentSaleVal, numDurations, durationCount;
 @property CLLocationCoordinate2D toDestination, fromDestination;
 @property ChartsViewType type;
+@property NSMutableArray *durationArray;
 
 @end
 
@@ -369,8 +370,10 @@
     NVDateRange *nvdr = NVDateRange.new;
     NSDate *startOfToday = [nvdr startOfDayDateForDate:NSDate.date];
     int departureTime = (startOfToday.timeIntervalSince1970 + SECONDS_PER_DAY);
+    _durationArray = NSMutableArray.array;
+    _numDurations = 24, _durationCount = 0;
     
-    for (int i = 0; i < 24; i++)
+    for (int i = 0; i < _numDurations; i++)
     {
         NSString *urlString = [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?"
                                "origin=%f,%f"
@@ -411,6 +414,7 @@
     
     if (error)
     {
+        [session invalidateAndCancel];
         NSLog(@"JSON error (%li)...trying again.", (long)index);
         NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
         config.timeoutIntervalForRequest = 5.0;
@@ -421,7 +425,6 @@
         
         NSURLSessionDataTask *theDataTask = [urlSession dataTaskWithURL:dataTask.currentRequest.URL.copy];
         theDataTask.taskDescription = [NSString stringWithFormat:@"%i", (int)index];
-        [session finishTasksAndInvalidate];
         [theDataTask resume];
     }
     
@@ -430,9 +433,15 @@
     
     else
     {
+        _durationCount++;
         NSDictionary *leg = json[@"routes"][0][@"legs"][0];
-        NSString *durationInTraffic = leg[@"duration_in_traffic"][@"value"];
-        NSLog(@"TIME:%li, DURATION:%@ seconds", (long)index, durationInTraffic);
+        NSString *duration = leg[@"duration_in_traffic"][@"value"];
+        NSLog(@"TIME:%li, DURATION:%@ seconds", (long)index, duration);
+        BarChartDataEntry *entry = [[BarChartDataEntry alloc] initWithX:(index * 100.0) y:(duration.doubleValue / 60.0)];
+        [_durationArray addObject:entry];
+        
+        if (_durationCount >= _numDurations)
+            [self createDurationChart];
     }
 }
 
@@ -446,6 +455,34 @@ didCompleteWithError:(NSError *)error
         NSUInteger index = task.taskDescription.integerValue;
         NSLog(@"NSURL error (%li):%@", (long)index, error.localizedDescription);
     }
+}
+
+- (void)createDurationChart
+{
+    BarChartView *barChart = BarChartView.new;
+    barChart.translatesAutoresizingMaskIntoConstraints = NO;
+    barChart.backgroundColor = UIColor.whiteColor;
+    barChart.legend.font = [UIFont systemFontOfSize:16.0];
+    
+    [self.view addSubview:barChart];
+    [barChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [barChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [barChart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [barChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    
+    NSNumberFormatter *numFormatter = NSNumberFormatter.new;
+    numFormatter.minimumIntegerDigits = 4;
+    ChartDefaultAxisValueFormatter *chartFormatter = ChartDefaultAxisValueFormatter.new;
+    chartFormatter.formatter = numFormatter;
+    barChart.xAxis.valueFormatter = chartFormatter;
+    barChart.xAxis.axisMinimum = -50.0;
+    barChart.xAxis.axisMaximum = 2350.0;
+    
+    BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
+    durationSet.color = NVColor.blueColor;
+    BarChartData *barData = [[BarChartData alloc] initWithDataSets:@[(durationSet)]];
+    barData.barWidth = 70.0;
+    barChart.data = barData;
 }
 
 @end
