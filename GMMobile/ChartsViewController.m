@@ -16,6 +16,7 @@
 @property NSMutableArray *durationArray;
 @property BarChartView *routingBarChart;
 @property NVColor *color;
+@property NSMutableDictionary *queryCounter;
 
 @end
 
@@ -398,6 +399,7 @@
     NSDate *startOfToday = [nvdr startOfDayDateForDate:NSDate.date];
     int departureTime = (startOfToday.timeIntervalSince1970 + SECONDS_PER_DAY);
     _durationArray = NSMutableArray.array;
+    _queryCounter = NSMutableDictionary.dictionary;
     _numDurations = 24, _durationCount = 0;
     
     for (int i = 0; i < _numDurations; i++)
@@ -430,60 +432,75 @@
           dataTask:(NSURLSessionDataTask *)dataTask
     didReceiveData:(NSData *)data
 {
+    [session invalidateAndCancel];
     NSInteger index = dataTask.taskDescription.integerValue;
-    NSError *error = nil;
+    BOOL isValid = NO;
     
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data
-                                                         options:NSJSONReadingMutableContainers
-                                                           error:&error];
-    
-    NSString *status = json[@"status"];
-    
-    if (error || ![status isEqualToString:@"OK"])
+    if (data && data.length)
     {
-        [session invalidateAndCancel];
-        NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
-        config.timeoutIntervalForRequest = 5.0;
+        NSString *dataString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSString *searchString = @"duration_in_traffic";
         
-        NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:config
-                                                                 delegate:self
-                                                            delegateQueue:NSOperationQueue.currentQueue];
-        
-        NSURLSessionDataTask *theDataTask = [urlSession dataTaskWithURL:dataTask.currentRequest.URL.copy];
-        theDataTask.taskDescription = [NSString stringWithFormat:@"%i", (int)index];
-        [theDataTask resume];
+        if (dataString && dataString.length && [dataString containsString:searchString])
+        {
+            dataString = textAfter(dataString, searchString);
+            dataString = textBefore(dataString, @"}");
+            dataString = textAfter(dataString, @"value\" : ");
+            
+            if (dataString.length)
+            {
+                double durationInSeconds;
+                
+                if ([[NSScanner scannerWithString:dataString] scanDouble:&durationInSeconds])
+                {
+                    BarChartDataEntry *entry = [[BarChartDataEntry alloc] initWithX:(index * 100.0) y:(durationInSeconds / 60.0)];
+                    [_durationArray addObject:entry];
+                    isValid = YES;
+                    _durationCount++;
+                    
+                    if (_durationCount >= _numDurations)
+                    {
+                        BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
+                        durationSet.color = _color;
+                        BarChartData *barData = [[BarChartData alloc] initWithDataSets:@[(durationSet)]];
+                        barData.barWidth = 70.0;
+                        _routingBarChart.data = barData;
+                        _routingBarChart.hidden = NO;
+                    }
+                }
+            }
+        }
     }
     
-    else
+    if (!isValid)
     {
-        [session finishTasksAndInvalidate];
-        _durationCount++;
-        NSDictionary *leg = json[@"routes"][0][@"legs"][0];
-        NSString *duration = leg[@"duration_in_traffic"][@"value"];
-        BarChartDataEntry *entry = [[BarChartDataEntry alloc] initWithX:(index * 100.0) y:(duration.doubleValue / 60.0)];
-        [_durationArray addObject:entry];
+        int iCount = 0;
         
-        if (_durationCount >= _numDurations)
-            [self createDurationChart];
+        if ([_queryCounter.allKeys containsObject:dataTask.taskDescription])
+        {
+            NSNumber *count = (NSNumber *)[_queryCounter objectForKey:dataTask.taskDescription];
+            iCount = (count.intValue + 1);
+        }
+        
+        else
+            iCount = 1;
+        
+        [_queryCounter setObject:[NSNumber numberWithInt:iCount] forKey:dataTask.taskDescription];
+        
+        if (iCount < 4)
+        {
+            NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+            config.timeoutIntervalForRequest = 5.0;
+            
+            NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:config
+                                                                     delegate:self
+                                                                delegateQueue:NSOperationQueue.currentQueue];
+            
+            NSURLSessionDataTask *theDataTask = [urlSession dataTaskWithURL:dataTask.currentRequest.URL.copy];
+            theDataTask.taskDescription = [NSString stringWithFormat:@"%i", (int)index];
+            [theDataTask resume];
+        }
     }
-}
-
-- (void)URLSession:(NSURLSession *)session
-              task:(NSURLSessionTask *)task
-didCompleteWithError:(NSError *)error
-{
-    if (error)
-        [session finishTasksAndInvalidate];
-}
-
-- (void)createDurationChart
-{
-    BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
-    durationSet.color = _color;
-    BarChartData *barData = [[BarChartData alloc] initWithDataSets:@[(durationSet)]];
-    barData.barWidth = 70.0;
-    _routingBarChart.data = barData;
-    _routingBarChart.hidden = NO;
 }
 
 @end
