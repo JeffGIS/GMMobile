@@ -510,7 +510,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         {
             _cd = [CrimeData new];
             [_cd update:self.view
-                   auto:NO];
+                   auto:NO
+             delegate:nil];
         }
     }
     

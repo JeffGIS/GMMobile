@@ -67,7 +67,9 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
     TXTAdjustDollarsPerAcre,
     TXTAdjustAcres,
     TXTAdjustDate,
-    TXTAdjustCount
+    TXTAdjustCount,
+    TXTAdjustCountPerHundred,
+    TXTAdjustCountPerThousand
 };
 
 typedef NS_ENUM(NSInteger, AreaOutlineTypes)
@@ -85,6 +87,7 @@ typedef NS_ENUM(NSInteger, AreaOutlineTypes)
 @property int numTextFields;
 @property (nonatomic)NSString* fields;
 @property NSArray *formats;
+NSString * formatText (LPSTR text,NSNumber * format,double acres);
 
 @end
 

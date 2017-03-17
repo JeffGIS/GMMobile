@@ -338,19 +338,17 @@ NextPass:
         to.numTextFields = 1;
         to.desc = @"Boundary Name";
         to.fields = @"NAME";
-        to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustNone], nil];
-/*        to.numDecimals = 0;
-        to.adjustCount = 1;
         if (_choroplethAdjustValue == HousingUnits)
         {
-            to.numDecimals = 1;
-            to.adjustCount = 100;
+            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountPerHundred], nil];
         }
-        if (_choroplethAdjustValue == Population)
+        else if (_choroplethAdjustValue == Population)
         {
-            to.numDecimals = 1;
-            to.adjustCount = 1000;
-        }*/
+            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountPerThousand], nil];
+        }
+        else
+            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCount], nil];
+
         [bd displayText:context
                    from:TFOSelectBoundary
                areaType:_choroplethTarget

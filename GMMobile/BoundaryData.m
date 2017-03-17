@@ -6,8 +6,6 @@
 #import "BoundaryData.h"
 #import "PropertyData.h"
 #import "CCodeLibrary/CensusData.h"
-#import "CCodeLibrary/NVTextDrawing.h"
-#import "CCodeLibrary/NVColor.h"
 #import "ConfigurationControl.h"
 
 @implementation BoundaryAreaData
@@ -1854,9 +1852,10 @@ NextPass:
             count = 1;
             if (pias)
             {
-//                count = [pias countForArea:keyval] * to.adjustCount;
-//            NSString *fmt = [NSString stringWithFormat:@"%%.%ilf",to.numDecimals];
-//                text = [NSString stringWithFormat:fmt,count];
+                count = [pias countForArea:keyval];// * to.adjustCount;
+                char countstr[32];
+                sprintf (countstr,"%f",count);
+                text = formatText(countstr, to.formats[0], 1);
             }
             else if (from == TFONVMetroDisplay)
             {
@@ -1922,39 +1921,6 @@ NextPass:
     
     return nLoaded;
     
-}
-NSString * formatText (LPSTR text,NSNumber * format,double acres)
-{
-    NSString * rtn;
-    TXTAdjustment option = format.integerValue;
-    switch (option)
-    {
-        case TXTAdjustAcres:
-            rtn = [CRAPI.sharedInstance acreFormat:atof(text)];
-            break;
-        case TXTAdjustDollars:
-            rtn = [CRAPI.sharedInstance dollarsFormat:atof(text)];
-            break;
-        case TXTAdjustDollarsPerAcre:
-        {
-            double value = atof(text);
-            if (acres)
-                value /= acres;
-            rtn = [CRAPI.sharedInstance dollarsFormat:value];
-        }
-            break;
-        case TXTAdjustDate:
-            if (strlen (text) == 8)
-                rtn = [NSString stringWithFormat:@"%c%c%c%c-%c%c-%c%c",text[0],text[1],text[2],text[3],text[4],text[5],text[6],text[7]];
-            else
-                rtn = [NSString stringWithUTF8String:text];
-            break;
-        default:
-            rtn = [NSString stringWithUTF8String:text];
-            break;
-    }
-    
-    return rtn;
 }
 - (MNMXCORD) selectBoundaryFromMapInit:(NSString*)type
 {
