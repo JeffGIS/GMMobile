@@ -93,6 +93,7 @@
 @property (nonatomic) ReaderViewController *readerVC;
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
+@property (nonatomic) CrimeData *cdUpdate;
 @property (nonatomic) NSMutableString *dataString;
 @property BOOL splitPlatView, legendMinimized;
 @property int splitPlatDirection;
@@ -2855,11 +2856,15 @@ haveVV:
         [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
         ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
-        _cd = [CrimeData new];
-        if ([_cd update:self.view
+        if (_cdUpdate)
+            return;
+        _cdUpdate = [CrimeData new];
+        if ([_cdUpdate update:self.view
                    auto:YES
                delegate:self])
             return;
+        else
+            _cdUpdate = nil;
     }
     _vectorView = [[VectorView alloc] init];
     _vectorView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -2873,7 +2878,8 @@ haveVV:
 
 - (void) CrimeDataUpdateDidComplete:(long)status
 {
-    [self allocateVectorView];
+    _cdUpdate = nil;
+   [self allocateVectorView];
 }
 
 - (void)clearVectorView
