@@ -93,6 +93,7 @@
 @property (nonatomic) ReaderViewController *readerVC;
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
+@property (nonatomic) CrimeData *cdUpdate;
 @property (nonatomic) NSMutableString *dataString;
 @property BOOL splitPlatView, legendMinimized;
 @property int splitPlatDirection;
@@ -2851,6 +2852,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return;
     
 haveVV:
+    if (CRAPI.sharedInstance.becameActive &&
+        [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+    {
+        if (_cdUpdate)
+            return;
+        _cdUpdate = [CrimeData new];
+        if ([_cdUpdate update:self.view
+                   auto:YES
+               delegate:self])
+            return;
+        else
+            _cdUpdate = nil;
+    }
     _vectorView = [[VectorView alloc] init];
     _vectorView.translatesAutoresizingMaskIntoConstraints = NO;
     vectorViews[ivv] = _vectorView;
@@ -2859,6 +2874,12 @@ haveVV:
     _vectorView.delegate = self;
     [self.view addSubview:_vectorView];
     [_vectorView constrainToView:_mapView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+}
+
+- (void) CrimeDataUpdateDidComplete:(long)status
+{
+    _cdUpdate = nil;
+   [self allocateVectorView];
 }
 
 - (void)clearVectorView
@@ -3102,16 +3123,6 @@ haveVV:
                            }
                        }
                        
-                       if (CRAPI.sharedInstance.becameActive &&
-                           [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
-                           ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
-                       {
-                           [self clearVectorView];
-                           _cd = [CrimeData new];
-                           [_cd update:self.view
-                                  auto:YES];
-                           CRAPI.sharedInstance.becameActive = NO;
-                       }
                        if (first)
                            [self extentZoom];
                        first = FALSE;

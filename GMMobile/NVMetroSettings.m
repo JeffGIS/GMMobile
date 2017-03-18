@@ -6,6 +6,7 @@
 //  Copyright © 2016 GSSi. All rights reserved.
 //
 
+#import "CCodeLibrary/CCodeLibrary.h"
 #import "NVMetroSettings.h"
 
 static int currentTextValues[CPFeaturesCount]={0};
@@ -27,6 +28,58 @@ static int parcelsWanted[CPFeaturesCount];
     else
         return _fields;
 }
+NSString * formatText (LPSTR text,NSNumber * format,double acres)
+{
+    NSString * rtn;
+    TXTAdjustment option = format.integerValue;
+    switch (option)
+    {
+        case TXTAdjustAcres:
+            rtn = [CRAPI.sharedInstance acreFormat:atof(text)];
+            break;
+        case TXTAdjustDollars:
+            rtn = [CRAPI.sharedInstance dollarsFormat:atof(text)];
+            break;
+        case TXTAdjustDollarsPerAcre:
+        {
+            double value = atof(text);
+            if (acres)
+                value /= acres;
+            rtn = [CRAPI.sharedInstance dollarsFormat:value];
+        }
+            break;
+        case TXTAdjustDate:
+            if (strlen (text) == 8)
+                rtn = [NSString stringWithFormat:@"%c%c%c%c-%c%c-%c%c",text[0],text[1],text[2],text[3],text[4],text[5],text[6],text[7]];
+            else
+                rtn = [NSString stringWithUTF8String:text];
+            break;
+        case TXTAdjustCount:
+        {
+            int ival = IDNINT (atof (text));
+            rtn = [NSString stringWithFormat:@"%i",ival];
+        }
+            break;
+        case TXTAdjustCountPerHundred:
+        {
+            double ival = atof (text)*100;
+            rtn = [NSString stringWithFormat:@"%.1f",ival];
+        }
+            break;
+        case TXTAdjustCountPerThousand:
+        {
+            double ival = atof (text)*1000;
+            rtn = [NSString stringWithFormat:@"%.1f",ival];
+        }
+            break;
+        default:
+            rtn = [NSString stringWithUTF8String:text];
+            break;
+    }
+    
+    return rtn;
+}
+
 @end
 
 CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
