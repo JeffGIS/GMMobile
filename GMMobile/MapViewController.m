@@ -4626,10 +4626,18 @@ didCompleteWithError:(NSError *)error
     {
         ChartsViewController *outboundTrip = [ChartsViewController routingChartFromDestination:_selectedPIDCoords
                                                                                  toDestination:CLLocationCoordinate2DMake(44.97916, -93.26602)
+                                                                                     startTime:800
+                                                                                       endTime:1600
+                                                                                          span:TimeArraySpanNextWorkWeek
+                                                                                      interval:60
                                                                                          color:NVColor.dodgerBlueColor];
         
         ChartsViewController *returnTrip = [ChartsViewController routingChartFromDestination:outboundTrip.toDestination
                                                                                toDestination:outboundTrip.fromDestination
+                                                                                   startTime:outboundTrip.startTime
+                                                                                     endTime:outboundTrip.endTime
+                                                                                        span:outboundTrip.span
+                                                                                    interval:outboundTrip.interval
                                                                                        color:NVColor.mediumSeaGreenColor];
         
         NVPager *pager = [NVPager pagerWithViewControllers:@[(outboundTrip), (returnTrip)]];

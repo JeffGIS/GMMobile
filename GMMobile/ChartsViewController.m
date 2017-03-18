@@ -5,18 +5,18 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CensusData.h"
 #import "PropertyData.h"
-#import "CCodeLibrary/NVDateRange.h"
 @import Charts;
 
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
 
 @property (nonatomic) UIButton *returnButton;
-@property int currentSaleVal, numDurations, durationCount;
+@property (nonatomic) NSMutableArray *durationArray;
+@property (nonatomic) NSMutableDictionary *queryCounter;
+@property (nonatomic) BarChartView *routingBarChart;
+@property (nonatomic) NVColor *color;
+@property (nonatomic, copy) NSArray <NSNumber *> *timeArray;
+@property int currentSaleVal, durationCount;
 @property ChartsViewType type;
-@property NSMutableArray *durationArray;
-@property BarChartView *routingBarChart;
-@property NVColor *color;
-@property NSMutableDictionary *queryCounter;
 
 @end
 
@@ -32,12 +32,20 @@
 
 + (instancetype)routingChartFromDestination:(CLLocationCoordinate2D)fromDestination
                               toDestination:(CLLocationCoordinate2D)toDestination
+                                  startTime:(int)startTime
+                                    endTime:(int)endTime
+                                       span:(TimeArraySpan)span
+                                   interval:(int)interval
                                       color:(NVColor *)color
 {
     ChartsViewController *chartsVC = ChartsViewController.new;
     chartsVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     chartsVC.fromDestination = fromDestination;
     chartsVC.toDestination = toDestination;
+    chartsVC.startTime = startTime;
+    chartsVC.endTime = endTime;
+    chartsVC.span = span;
+    chartsVC.interval = interval;
     chartsVC.type = ChartsViewTypeRouting;
     chartsVC.color = color;
     return chartsVC;
@@ -392,17 +400,19 @@
     chartFormatter.formatter = numFormatter;
     _routingBarChart.xAxis.valueFormatter = chartFormatter;
     _routingBarChart.xAxis.axisMinimum = -50.0;
-    _routingBarChart.xAxis.axisMaximum = 2350.0;
     _routingBarChart.leftAxis.axisMinimum = _routingBarChart.rightAxis.axisMinimum = 0.0;
     
-    NVDateRange *nvdr = NVDateRange.new;
-    NSDate *startOfToday = [nvdr startOfDayDateForDate:NSDate.date];
-    int departureTime = (startOfToday.timeIntervalSince1970 + SECONDS_PER_DAY);
+    _timeArray = [NVDateRange getArrayOfTimesWithStartTime:_startTime
+                                                   endTime:_endTime
+                                                      span:_span
+                                                  interval:_interval];
+    
+     _routingBarChart.xAxis.axisMaximum = ((_timeArray.count * 100) - 50.0);
     _durationArray = NSMutableArray.array;
     _queryCounter = NSMutableDictionary.dictionary;
-    _numDurations = 24, _durationCount = 0;
+    _durationCount = 0;
     
-    for (int i = 0; i < _numDurations; i++)
+    for (int i = 0; i < _timeArray.count; i++)
     {
         NSString *urlString = [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?"
                                "origin=%f,%f"
@@ -411,7 +421,7 @@
                                "&key=%@",
                                _fromDestination.latitude, _fromDestination.longitude,
                                _toDestination.latitude, _toDestination.longitude,
-                               departureTime, GOOGLE_API_KEY];
+                               _timeArray[i].intValue, GOOGLE_API_KEY];
         
         NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
         config.timeoutIntervalForRequest = 5.0;
@@ -424,7 +434,6 @@
         NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:url];
         dataTask.taskDescription = [NSString stringWithFormat:@"%i", i];
         [dataTask resume];
-        departureTime += SECONDS_PER_HOUR;
     }
 }
 
@@ -458,7 +467,7 @@
                     isValid = YES;
                     _durationCount++;
                     
-                    if (_durationCount >= _numDurations)
+                    if (_durationCount >= _timeArray.count)
                     {
                         BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
                         durationSet.color = _color;
