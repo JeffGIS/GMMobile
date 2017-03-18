@@ -5,6 +5,8 @@
 #import "CCodeLibrary/NVColor.h"
 #import "CCodeLibrary/NVDateRange.h"
 
+#define MAX_QUERIES 50
+
 typedef NS_ENUM(NSInteger, ChartsViewType)
 {
     ChartsViewTypeDefault,

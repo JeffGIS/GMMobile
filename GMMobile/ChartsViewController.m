@@ -15,7 +15,7 @@
 @property (nonatomic) BarChartView *routingBarChart;
 @property (nonatomic) NVColor *color;
 @property (nonatomic, copy) NSArray <NSNumber *> *timeArray;
-@property int currentSaleVal, durationCount;
+@property int currentSaleVal, durationCount, queryCount;
 @property ChartsViewType type;
 
 @end
@@ -407,34 +407,46 @@
                                                       span:_span
                                                   interval:_interval];
     
-     _routingBarChart.xAxis.axisMaximum = ((_timeArray.count * 100) - 50.0);
+    _routingBarChart.xAxis.axisMaximum = ((_timeArray.count * 100) - 50.0);
     _durationArray = NSMutableArray.array;
     _queryCounter = NSMutableDictionary.dictionary;
-    _durationCount = 0;
+    _durationCount = _queryCount = 0;
+    int initialQueries = MIN((int)_timeArray.count, MAX_QUERIES);
     
-    for (int i = 0; i < _timeArray.count; i++)
+    for (int i = 0; i < initialQueries; i++)
     {
-        NSString *urlString = [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?"
-                               "origin=%f,%f"
-                               "&destination=%f,%f"
-                               "&departure_time=%i"
-                               "&key=%@",
-                               _fromDestination.latitude, _fromDestination.longitude,
-                               _toDestination.latitude, _toDestination.longitude,
-                               _timeArray[i].intValue, GOOGLE_API_KEY];
-        
-        NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
-        config.timeoutIntervalForRequest = 5.0;
-        
-        NSURLSession *urlSession = [NSURLSession sessionWithConfiguration:config
-                                                                 delegate:self
-                                                            delegateQueue:NSOperationQueue.currentQueue];
-        
-        NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet]];
+        NSURLSession *urlSession = self.defaultSession;
+        NSURL *url = [self durationQueryURLWithTime:_timeArray[_queryCount].intValue];
         NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:url];
-        dataTask.taskDescription = [NSString stringWithFormat:@"%i", i];
+        dataTask.taskDescription = [NSString stringWithFormat:@"%i", _queryCount];
         [dataTask resume];
+        _queryCount++;
     }
+}
+
+- (NSURL *)durationQueryURLWithTime:(int)time
+{
+    NSString *urlString = [NSString stringWithFormat:@"https://maps.google.com/maps/api/directions/json?"
+                           "origin=%f,%f"
+                           "&destination=%f,%f"
+                           "&departure_time=%i"
+                           "&key=%@",
+                           _fromDestination.latitude, _fromDestination.longitude,
+                           _toDestination.latitude, _toDestination.longitude,
+                           time, GOOGLE_API_KEY];
+    
+    return [NSURL URLWithString:[urlString stringByAddingPercentEncodingWithAllowedCharacters:
+                                 NSCharacterSet.URLQueryAllowedCharacterSet]];
+}
+
+- (NSURLSession *)defaultSession
+{
+    NSURLSessionConfiguration *config = NSURLSessionConfiguration.defaultSessionConfiguration;
+    config.timeoutIntervalForRequest = 5.0;
+    
+    return [NSURLSession sessionWithConfiguration:config
+                                         delegate:self
+                                    delegateQueue:NSOperationQueue.currentQueue];
 }
 
 - (void)URLSession:(NSURLSession *)session
@@ -467,7 +479,17 @@
                     isValid = YES;
                     _durationCount++;
                     
-                    if (_durationCount >= _timeArray.count)
+                    if (_queryCount < _timeArray.count)
+                    {
+                        NSURLSession *urlSession = self.defaultSession;
+                        NSURL *url = [self durationQueryURLWithTime:_timeArray[_queryCount].intValue];
+                        NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:url];
+                        dataTask.taskDescription = [NSString stringWithFormat:@"%i", _queryCount];
+                        [dataTask resume];
+                        _queryCount++;
+                    }
+                    
+                    else if (_durationCount >= _timeArray.count)
                     {
                         BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
                         durationSet.color = _color;

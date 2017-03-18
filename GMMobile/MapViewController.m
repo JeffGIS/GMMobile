@@ -4637,10 +4637,10 @@ didCompleteWithError:(NSError *)error
     {
         ChartsViewController *outboundTrip = [ChartsViewController routingChartFromDestination:_selectedPIDCoords
                                                                                  toDestination:CLLocationCoordinate2DMake(44.97916, -93.26602)
-                                                                                     startTime:800
-                                                                                       endTime:1600
+                                                                                     startTime:600
+                                                                                       endTime:2000
                                                                                           span:TimeArraySpanNextWorkWeek
-                                                                                      interval:60
+                                                                                      interval:15
                                                                                          color:NVColor.dodgerBlueColor];
         
         ChartsViewController *returnTrip = [ChartsViewController routingChartFromDestination:outboundTrip.toDestination
