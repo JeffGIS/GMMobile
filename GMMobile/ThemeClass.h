@@ -9,7 +9,7 @@
 @property NSString *title;
 @property double count;
 @property long long numItems;
-@property int status;
+@property (nonatomic) int status;
 @property NSArray * values;
 @property float pctOfTotal;
 @property float symbolWidth;

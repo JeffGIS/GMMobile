@@ -294,10 +294,10 @@
         case UIGestureRecognizerStateEnded:
         {
             _dragSelectActive = NO;
-            
-            for (NSIndexPath *indexPaths in _dragSelectedCells)
+             for (NSIndexPath *indexPaths in _dragSelectedCells)
             {
                 UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
+                int iclass = (int)indexPaths.row;
                 cell.backgroundColor = UIColor.whiteColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 
@@ -314,6 +314,7 @@
                 }
                 
                 cell.selected = !cell.selected;
+                [self setThemeLegendCellStatusTo:cell.selected forClass:iclass++ andThemeWithTag:tv.tag];
             }
             
             _mapVC.fromIndex = self.tabBarController.selectedIndex;
@@ -825,14 +826,21 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
+- (void)setThemeLegendCellStatusTo:(int)status
+                          forClass:(NSInteger)class
+                   andThemeWithTag:(NSInteger)tag
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[((tag - 1) + _startingIndex)];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[class];
+    tlc.status = status;
+}
+
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!_dragSelectActive)
     {
-        ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
-        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-        tlc.status = YES;
+        [self setThemeLegendCellStatusTo:YES forClass:indexPath.row andThemeWithTag:tableView.tag];
         
         if (!_preventRefresh)
         {
@@ -848,9 +856,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!_dragSelectActive)
     {
-        ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
-        ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-        tlc.status = NO;
+        [self setThemeLegendCellStatusTo:NO forClass:indexPath.row andThemeWithTag:tableView.tag];
         
         if (!_preventRefresh)
         {

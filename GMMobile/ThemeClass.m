@@ -18,12 +18,12 @@
     return class;
 }
 
-/*- (void)setStatus:(int)status
+- (void)setStatus:(int)status
 {
     int ii;
     _status = status;
-    if ([_title containsString:@"Homicide"] && status)
-        ii=1;
-}*/
+    if ([_title containsString:@"Burglary"])
+        ii=status;
+}
 
 @end
