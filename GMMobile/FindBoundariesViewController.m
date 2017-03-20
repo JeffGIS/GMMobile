@@ -546,12 +546,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         if ([_selectedType isEqualToString:@"Entire City"])
         {
-            CRAPI.sharedInstance.currentOverallBoundaryRefno = 51144;
-            CRAPI.sharedInstance.parcelTextOption = 2;
-            CRAPI.sharedInstance.currentOverallBoundaryName = @"Minneapolis";
-            CRAPI.sharedInstance.currentOverallBoundaryType = @"City";
-            CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-            self.tabBarController.selectedIndex = 0;
+            [_delegate findBoundsViewController:self
+                                didSelectBounds:@"Minneapolis"
+                                           type:@"City"
+                                          refno:51144];
             return;
         }
         
@@ -583,7 +581,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _selectFromMapButton.alpha = 1.0;
     }
     
-    else if (_delegate)
+    else
     {
         NSString *boundsName = @"";
         int refno = 0;

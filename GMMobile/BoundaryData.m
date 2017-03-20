@@ -401,7 +401,6 @@
         [types addObject:@"Minneapolis Wards"];
         [types addObject:@"Minneapolis Neighborhoods"];
         [types addObject:@"Minneapolis Sectors"];
-        [types addObject:@"Other"];
     }
     else
     {

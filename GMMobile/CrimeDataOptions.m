@@ -596,7 +596,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.currentOverallBoundaryName = bounds;
         [UserDefaults.defaults saveString:bounds forKey:@"CurrentOverallBoundaryName"];
         CRAPI.sharedInstance.currentOverallBoundaryType = type;
-        [UserDefaults.defaults saveString:bounds forKey:@"CurrentOverallBoundaryType"];
+        [UserDefaults.defaults saveString:type forKey:@"CurrentOverallBoundaryType"];
         
         [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
                                    CRAPI.sharedInstance.currentOverallBoundaryName,
