@@ -12,13 +12,13 @@
     return class;
 }
 
-/*- (void)setStatus:(BOOL)status
+- (void)setStatus:(BOOL)status
 {
     int ii;
     _status = status;
-    if ([_label containsString:@"Homicide"] && !status)
-        ii=1;
-}*/
+    if ([_label containsString:@"Burglary"])
+        ii=status;
+}
 
 - (id)copyWithZone:(NSZone *)zone
 {

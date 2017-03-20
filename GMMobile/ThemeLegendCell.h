@@ -10,7 +10,7 @@
 @property float symbolWidth;
 @property (nonatomic) UIColor *symbolColor;
 @property NSString *label;
-@property BOOL status;
+@property (nonatomic) BOOL status;
 
 + (ThemeLegendCell *)createWithLabel:(NSString *)label;
 
