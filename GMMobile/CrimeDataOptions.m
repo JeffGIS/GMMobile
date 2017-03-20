@@ -69,7 +69,7 @@
     
     _choroplethModes = @[@"Choropleth Map for Precincts", @"Choropleth Map for Wards",
                          @"Basic Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
-                        @"Choropleth Map for Block Groups",@"Choropleth Map For Census Tracts"];
+                        @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
     _adjustmentOptions = @[@"None", @"Population", @"Housing Units"];
