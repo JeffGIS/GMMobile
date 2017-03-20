@@ -190,6 +190,7 @@
             for (NSIndexPath *indexPaths in _dragSelectedCells)
             {
                 UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
+                int iclass = (int)indexPaths.row;
                 cell.backgroundColor = UIColor.whiteColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 
@@ -199,7 +200,13 @@
                 else
                     [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
                 
-                cell.selected = !cell.selected;
+                if (_dragSelectedCells.count == 1)
+                    [self turnOnJustThisRow:iclass inTableView:tv];
+                else
+                {
+                    cell.selected = !cell.selected;
+                    [self setThemeLegendCellStatusTo:cell.selected forClass:iclass++ andThemeWithTag:tv.tag];
+                }
             }
             
             _preventRefresh = NO;
@@ -266,6 +273,24 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
+}
+- (void)setThemeLegendCellStatusTo:(int)status
+                          forClass:(NSInteger)class
+                   andThemeWithTag:(NSInteger)tag
+{
+    ThemeLegend *tl = _legend;
+    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[class];
+    tlc.status = status;
+}
+
+- (void) turnOnJustThisRow:(NSInteger)row
+               inTableView:(UITableView*) tableView
+{
+    ThemeLegend *tl = _legend;
+    for (int irow = 0;irow < tl.numCells;irow++)
+        [self setThemeLegendCellStatusTo:YES forClass:irow andThemeWithTag:tableView.tag];
+    [self setThemeLegendCellStatusTo:NO forClass:row andThemeWithTag:tableView.tag];
+    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
