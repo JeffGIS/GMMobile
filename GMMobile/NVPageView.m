@@ -312,9 +312,13 @@
                     [self tableView:tv
             didSelectRowAtIndexPath:indexPaths];
                 }
-                
-                cell.selected = !cell.selected;
-                [self setThemeLegendCellStatusTo:cell.selected forClass:iclass++ andThemeWithTag:tv.tag];
+                if (_dragSelectedCells.count == 1)
+                    [self turnOnJustThisRow:iclass inTableView:tv];
+                else
+                {
+                    cell.selected = !cell.selected;
+                    [self setThemeLegendCellStatusTo:cell.selected forClass:iclass++ andThemeWithTag:tv.tag];
+                }
             }
             
             _mapVC.fromIndex = self.tabBarController.selectedIndex;
@@ -835,6 +839,15 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     tlc.status = status;
 }
 
+- (void) turnOnJustThisRow:(NSInteger)row
+               inTableView:(UITableView*) tableView
+{
+    ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
+    for (int irow = 0;irow < tl.numCells;irow++)
+        [self setThemeLegendCellStatusTo:YES forClass:irow andThemeWithTag:tableView.tag];
+    [self setThemeLegendCellStatusTo:NO forClass:row andThemeWithTag:tableView.tag];
+    
+}
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
