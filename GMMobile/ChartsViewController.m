@@ -10,12 +10,12 @@
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
 
 @property (nonatomic) UIButton *returnButton;
-@property (nonatomic) NSMutableArray *durationArray;
+@property (nonatomic) NSMutableArray <CandleChartDataEntry *> *candleDataArray;
 @property (nonatomic) NSMutableDictionary *queryCounter;
-@property (nonatomic) BarChartView *routingBarChart;
+@property (nonatomic) CandleStickChartView *routingCandleStickChart;
 @property (nonatomic) NVColor *color;
 @property (nonatomic, copy) NSArray <NSNumber *> *timeArray;
-@property int currentSaleVal, durationCount, queryCount;
+@property int currentSaleVal, durationCount, queryCount, numDays, numEntries;
 @property ChartsViewType type;
 
 @end
@@ -378,37 +378,57 @@
 
 - (void)setupRouting
 {
-    _routingBarChart = BarChartView.new;
-    _routingBarChart.translatesAutoresizingMaskIntoConstraints = NO;
-    _routingBarChart.backgroundColor = UIColor.whiteColor;
-    _routingBarChart.legend.font = [UIFont systemFontOfSize:16.0];
-    _routingBarChart.hidden = YES;
-    _routingBarChart.pinchZoomEnabled = NO;
-    _routingBarChart.dragEnabled = NO;
-    _routingBarChart.scaleXEnabled = NO;
-    _routingBarChart.scaleYEnabled = NO;
+    _routingCandleStickChart = CandleStickChartView.new;
+    _routingCandleStickChart.translatesAutoresizingMaskIntoConstraints = NO;
+    _routingCandleStickChart.backgroundColor = UIColor.whiteColor;
+    _routingCandleStickChart.legend.font = [UIFont systemFontOfSize:16.0];
+    _routingCandleStickChart.hidden = YES;
+    _routingCandleStickChart.pinchZoomEnabled = NO;
+    _routingCandleStickChart.dragEnabled = NO;
+    _routingCandleStickChart.scaleXEnabled = NO;
+    _routingCandleStickChart.scaleYEnabled = NO;
+    _routingCandleStickChart.chartDescription.text = @"";
     
-    [self.view addSubview:_routingBarChart];
-    [_routingBarChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [_routingBarChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
-    [_routingBarChart constrainTopToAnchor:_returnButton.bottomAnchor];
-    [_routingBarChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    [self.view addSubview:_routingCandleStickChart];
+    [_routingCandleStickChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [_routingCandleStickChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [_routingCandleStickChart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [_routingCandleStickChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
-    NSNumberFormatter *numFormatter = NSNumberFormatter.new;
-    numFormatter.minimumIntegerDigits = 4;
-    ChartDefaultAxisValueFormatter *chartFormatter = ChartDefaultAxisValueFormatter.new;
-    chartFormatter.formatter = numFormatter;
-    _routingBarChart.xAxis.valueFormatter = chartFormatter;
-    _routingBarChart.xAxis.axisMinimum = -50.0;
-    _routingBarChart.leftAxis.axisMinimum = _routingBarChart.rightAxis.axisMinimum = 0.0;
+    _routingCandleStickChart.xAxis.axisMinimum = -0.5;
+    _routingCandleStickChart.leftAxis.axisMinimum = _routingCandleStickChart.rightAxis.axisMinimum = 0.0;
     
     _timeArray = [NVDateRange getArrayOfTimesWithStartTime:_startTime
                                                    endTime:_endTime
                                                       span:_span
                                                   interval:_interval];
     
-    _routingBarChart.xAxis.axisMaximum = ((_timeArray.count * 100) - 50.0);
-    _durationArray = NSMutableArray.array;
+    switch (_span)
+    {
+        case TimeArraySpanNextDay:
+        case TimeArraySpanNextWorkWeekDay:
+            _numDays = 1;
+            break;
+        case TimeArraySpanNextWorkWeek:
+            _numDays = 5;
+            break;
+        case TimeArraySpanNextWeek:
+            _numDays = 7;
+            break;
+        default:
+            break;
+    }
+    
+    _numEntries = ((int)_timeArray.count / _numDays);
+    _routingCandleStickChart.xAxis.axisMaximum = (_numEntries - 0.5);
+    _candleDataArray = [NSMutableArray arrayWithCapacity:_numEntries];
+    
+    for (int i = 0; i < _numEntries; i++)
+    {
+        CandleChartDataEntry *zero = [[CandleChartDataEntry alloc] initWithX:i shadowH:0.0 shadowL:0.0 open:0.0 close:9999.0];
+        [_candleDataArray addObject:zero];
+    }
+    
     _queryCounter = NSMutableDictionary.dictionary;
     _durationCount = _queryCount = 0;
     int initialQueries = MIN((int)_timeArray.count, MAX_QUERIES);
@@ -474,29 +494,40 @@
                 
                 if ([[NSScanner scannerWithString:dataString] scanDouble:&durationInSeconds])
                 {
-                    BarChartDataEntry *entry = [[BarChartDataEntry alloc] initWithX:(index * 100.0) y:(durationInSeconds / 60.0)];
-                    [_durationArray addObject:entry];
-                    isValid = YES;
-                    _durationCount++;
+                    CandleChartDataEntry *entry = _candleDataArray[index % _numEntries];
+                    double duration = (durationInSeconds / 60.0);
                     
-                    if (_queryCount < _timeArray.count)
+                    if (duration > 0.0)
                     {
-                        NSURLSession *urlSession = self.defaultSession;
-                        NSURL *url = [self durationQueryURLWithTime:_timeArray[_queryCount].intValue];
-                        NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:url];
-                        dataTask.taskDescription = [NSString stringWithFormat:@"%i", _queryCount];
-                        [dataTask resume];
-                        _queryCount++;
-                    }
-                    
-                    else if (_durationCount >= _timeArray.count)
-                    {
-                        BarChartDataSet *durationSet = [[BarChartDataSet alloc] initWithValues:_durationArray.copy label:@"Driving Time (in minutes)"];
-                        durationSet.color = _color;
-                        BarChartData *barData = [[BarChartData alloc] initWithDataSets:@[(durationSet)]];
-                        barData.barWidth = 70.0;
-                        _routingBarChart.data = barData;
-                        _routingBarChart.hidden = NO;
+                        entry.close = MIN(entry.close, duration);
+                        entry.open = MAX(entry.open, duration);
+                        entry.high = entry.open;
+                        isValid = YES;
+                        _durationCount++;
+                        
+                        if (_queryCount < _timeArray.count)
+                        {
+                            NSURLSession *urlSession = self.defaultSession;
+                            NSURL *url = [self durationQueryURLWithTime:_timeArray[_queryCount].intValue];
+                            NSURLSessionDataTask *dataTask = [urlSession dataTaskWithURL:url];
+                            dataTask.taskDescription = [NSString stringWithFormat:@"%i", _queryCount];
+                            [dataTask resume];
+                            _queryCount++;
+                        }
+                        
+                        else if (_durationCount >= _timeArray.count)
+                        {
+                            CandleChartDataSet *durationSet = [[CandleChartDataSet alloc] initWithValues:_candleDataArray.copy
+                                                                                                   label:@"Driving Time (in minutes)"];
+                            
+                            durationSet.color = _color;
+                            durationSet.shadowColor = UIColor.blackColor;
+                            durationSet.shadowWidth = 5.0;
+                            durationSet.drawValuesEnabled = NO;
+                            CandleChartData *durationData = [[CandleChartData alloc] initWithDataSets:@[(durationSet)]];
+                            _routingCandleStickChart.data = durationData;
+                            _routingCandleStickChart.hidden = NO;
+                        }
                     }
                 }
             }

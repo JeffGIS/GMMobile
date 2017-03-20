@@ -4640,7 +4640,7 @@ didCompleteWithError:(NSError *)error
                                                                                      startTime:600
                                                                                        endTime:2000
                                                                                           span:TimeArraySpanNextWorkWeek
-                                                                                      interval:15
+                                                                                      interval:60
                                                                                          color:NVColor.dodgerBlueColor];
         
         ChartsViewController *returnTrip = [ChartsViewController routingChartFromDestination:outboundTrip.toDestination
