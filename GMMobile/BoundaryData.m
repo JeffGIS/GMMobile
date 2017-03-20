@@ -16,7 +16,6 @@
 
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
 @property double acres;
-@property INT64 totRecords;
 @property INT64 currentRec;
 @property int iPass;
 
@@ -1670,7 +1669,7 @@ NextPass:
             color = [NVColor randomColorFromArray:NVColor.pastelColors
                                         forString:keyval].CGColor;
         }
-
+        nLoaded++;
         [self fillUseCode:context
                   nPoints:numPoints
                    points:llpoints

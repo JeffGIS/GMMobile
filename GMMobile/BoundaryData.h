@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 @property int zoom;
 @property ItemProcessingPassTypes pass;
 @property int numPass;
+@property INT64 totRecords;
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;

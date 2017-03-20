@@ -138,6 +138,8 @@
     }
     else if (_mode == CHOROPLETH)
     {
+        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+
         pias = [[PointInAreas alloc]init];
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
@@ -150,6 +152,8 @@ boundsPointInAreas:nil
          llCorners:latlonCornerPoints
           LLBounds:platlonBounds
         viewBounds:pvbounds];
+        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+
     }
     
     if (![self continue])
@@ -325,14 +329,17 @@ NextPass:
         }
         else
             [pias createDisplayColors:nil mask:pia];
-        
-        [bd display:context
+
+        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+        bd.totRecords = [bd display:context
            areaType:_choroplethTarget
             pointInAreas:pias
           llCorners:latlonCornerPoints
            LLBounds:platlonBounds
          viewBounds:pvbounds];
-        
+
+        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+
         NVMetroTextOptions *to = [[NVMetroTextOptions alloc]init];
         
         to.numTextFields = 1;
@@ -348,6 +355,10 @@ NextPass:
         }
         else
             to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCount], nil];
+        [CRAPI.sharedInstance updateProgress:-1
+                                     current:0
+                                       range:1
+                                   numRanges:1];
 
         [bd displayText:context
                    from:TFOSelectBoundary
