@@ -811,10 +811,10 @@
     }
     
     legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
-    
+    NSArray* dispPoints = NSArray.new;//DispersePoint.getDispersedPoints;
     NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
                                      legendsView:legendsView
-                                     pickedItems:DispersePoint.getDispersedPoints];
+                                     pickedItems:dispPoints];
 /*    int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:CRAPI.sharedInstance.extractFile
                                                                error:nil].fileSize;
     
