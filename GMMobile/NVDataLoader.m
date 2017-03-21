@@ -187,7 +187,7 @@ Top:
         {
             CrimeData *cd = [[CrimeData alloc] init];
             
-            if (cd.datasetVersion >= 0)
+            if (cd.datasetVersion >= 2)
                 rtn = YES;
         }
             break;

@@ -154,6 +154,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    toDirectory = CRAPI.sharedInstance.sharedFilePath;
                                    if (dataType == GetDatabaseSettingMapleGrove)
                                        toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
+                                   if (dataType == GetDatabaseSettingCrimes)
+                                   {
+                                       CrimeData * cd = [[CrimeData alloc] init];
+                                       [cd clear];
+                                       toDirectory = cd.documentsDirectory;
+                                   }
                                    NSString *file=nil;
                                    NSString *newTitle = @"Load Data";
                                    CompressDecompress *cdc = [[CompressDecompress alloc]init];
