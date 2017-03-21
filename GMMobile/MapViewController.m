@@ -829,7 +829,7 @@
         [composer setMessageBody:@"The PDF attached to this email was rendered by NVMobile."
                           isHTML:NO];
         
-        [composer setToRecipients:[NSArray arrayWithObjects:@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
+        [composer setToRecipients:[NSArray arrayWithObjects:@"",nil]];//@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
         
         [composer addAttachmentData:pdf
                            mimeType:@"application/pdf"
