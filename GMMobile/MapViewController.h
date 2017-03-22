@@ -18,11 +18,10 @@
 #import "PropertyList.h"
 #import "Destinations.h"
 #import "NVDataLoader.h"
-@import MessageUI;
 #import "CCodeLibrary/NVAlertView.h"
 #import "ThemeLegendMapOverlay.h"
 
-@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,MFMailComposeViewControllerDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,CrimeDataDelegate>
+@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,CrimeDataDelegate>
 
 typedef NS_ENUM(NSInteger, NVMarkerStyle)
 {

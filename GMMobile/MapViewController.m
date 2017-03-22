@@ -24,6 +24,7 @@
 #import "NVSpreadsheetDelegate.h"
 #import "NVMetroSettingsVC.h"
 #import "CCodeLibrary/NVPager.h"
+#import "CCodeLibrary/NVSendEmail.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -783,7 +784,7 @@
     {
         ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tls
                                                                 withTag:0
-                                                               delegate:nil
+                                                               delegate:self
                                                                  inView:legendsView
                                                                atOrigin:CGPointMake(xPos, yPos)
                                                             hideButtons:YES];
@@ -811,47 +812,15 @@
     }
     
     legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
-    NSArray* dispPoints = NSArray.new;//DispersePoint.getDispersedPoints;
-    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray
-                                     legendsView:legendsView
-                                     pickedItems:dispPoints];
-/*    int fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:CRAPI.sharedInstance.extractFile
-                                                               error:nil].fileSize;
+    NSArray *dispPoints = NSArray.array;
+    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray legendsView:legendsView pickedItems:dispPoints];
     
-    NSData *pdf = [NSData dataWithContentsOfFile:CRAPI.sharedInstance.extractFile];*/
-    
-    if (MFMailComposeViewController.canSendMail)
-    {
-        MFMailComposeViewController *composer = [[MFMailComposeViewController alloc] init];
-        composer.mailComposeDelegate = self;
-        composer.subject = @"PDF from NVMobile";
-        
-        [composer setMessageBody:@"The PDF attached to this email was rendered by NVMobile."
-                          isHTML:NO];
-        
-        [composer setToRecipients:[NSArray arrayWithObjects:@"",nil]];//@"jeffgis@aol.com", @"wildbillmunson@gmail.com", nil]];
-        
-        [composer addAttachmentData:pdf
-                           mimeType:@"application/pdf"
-                           fileName:@"testPDF.pdf"];
-       /* [composer addAttachmentData:pdf
-                           mimeType:@"application/bmp"
-                           fileName:@"testPDF.bmp"];*/
-        
-        [self presentViewController:composer
-                           animated:YES
-                         completion:nil];
-    }
-    
-    else
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:@"ERROR: No mail account setup on device."
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-#pragma unused(alert)
-    }
+    [NVSendEmail sendEmailWithSubject:@"PDF from NVMobile"
+                              message:@"The PDF attached to this email was rendered by NVMobile."
+                       attachmentData:pdf
+                             mimeType:@"application/pdf"
+                             fileName:@"testPDF.pdf"
+                           controller:self];
     
     for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
     {
@@ -868,32 +837,6 @@
             [self.view addSubview:nvpvs];
         }
     }
-}
-
-- (void)mailComposeController:(MFMailComposeViewController *)controller
-          didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError *)error
-{
-    switch (result)
-    {
-        case MFMailComposeResultCancelled:
-            NSLog(@"Mail cancelled");
-            break;
-        case MFMailComposeResultSaved:
-            NSLog(@"Mail saved");
-            break;
-        case MFMailComposeResultSent:
-            NSLog(@"Mail sent");
-            break;
-        case MFMailComposeResultFailed:
-            NSLog(@"Mail sent failure:%@", error.localizedDescription);
-            break;
-        default:
-            break;
-    }
-    
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
