@@ -38,7 +38,7 @@
     _fromDataLoader = YES;
     CRAPI.sharedInstance.InDataUpdate = YES;
     _popover = popover;
-    _keepGoing = NO;
+    _keepGoing = YES;
     _saveDelegate = popover.delegate;
     _popover.delegate = self;
 }
@@ -151,6 +151,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
                 dispatch_async(overallQueue,
                                ^{
+                                   int status = 0;
+                                   
                                    NSString *toDirectory = path.stringByDeletingLastPathComponent;
                                    toDirectory = CRAPI.sharedInstance.sharedFilePath;
                                    if (dataType == GetDatabaseSettingMapleGrove)
@@ -277,7 +279,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                break;
                                        }
                                        
-                                       int status = 0;
                                        if (dataType != GetDatabaseSettingMapleGrove)
                                        {
                                        FILE *fid = fopen(file.UTF8String, "rb");
@@ -501,6 +502,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                           });
                                        }
                                    }
+                                   Exit:
                                        if (_fromDataLoader)
                                        {
                                            if (!_keepGoing)
@@ -519,7 +521,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                            
                                        }
                                    }
-                               Exit:;
+                               ;
                                });
             }
                 break;
@@ -569,7 +571,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
     }
-Exit:
+
     return;
 }
 
