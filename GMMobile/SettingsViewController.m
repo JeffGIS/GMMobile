@@ -36,6 +36,7 @@
 - (void) initFromDataLoader:(GSSiPopoverView*)popover
 {
     _fromDataLoader = YES;
+    CRAPI.sharedInstance.InDataUpdate = YES;
     _popover = popover;
     _keepGoing = NO;
     _saveDelegate = popover.delegate;
@@ -504,7 +505,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                        {
                                            if (!_keepGoing)
                                                status = DLSTATUS_USER_CANCELLED;
-                                           
+                                           CRAPI.sharedInstance.inDataUpdate = NO;
+
                                            if (_delegate)
                                            {
                                                if (!status)

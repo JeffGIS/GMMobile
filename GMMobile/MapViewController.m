@@ -2796,6 +2796,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
 haveVV:
     if (CRAPI.sharedInstance.becameActive &&
+        !CRAPI.sharedInstance.inDataUpdate &&
         [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
         ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
