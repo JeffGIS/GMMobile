@@ -36,7 +36,7 @@
 - (void) initFromDataLoader:(GSSiPopoverView*)popover
 {
     _fromDataLoader = YES;
-    CRAPI.sharedInstance.InDataUpdate = YES;
+    CRAPI.sharedInstance.inDataUpdate = YES;
     _popover = popover;
     _keepGoing = YES;
     _saveDelegate = popover.delegate;
