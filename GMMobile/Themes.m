@@ -36,7 +36,12 @@
         }
             break;
         case HCConfigCrimes:
-            thm = [Theme createTheme:Part1Theme];
+        {
+            NSString *crimeLegend = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
+            
+            thm = [Theme createTheme:Part2Theme];
+            if ([crimeLegend isEqualToString:@"Part 2 Offenses"])
+                thm = [Theme createTheme:Part2Theme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:DepartmentTheme];
             [_themeList addObject:thm];
@@ -51,6 +56,7 @@
             [_themeList addObject:thm];
             thm = [Theme createTheme:HourTheme];
             [_themeList addObject:thm];
+        }
             break;
         case HCConfigCurbRamps:
             thm = [Theme createTheme:CurbRampIntersectionTheme];
@@ -292,6 +298,23 @@
                 }
             }
                 break;
+            case Part2Theme:
+            {
+                int lastUCR = -1;
+                for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
+                {
+                    int iclass = [thm classFromUCR:ucr];
+                    if (![thm classIsSelected:iclass])
+                        iclass = -1;
+                    if (iclass > -1 && ucr - lastUCR > 1)
+                    {
+                        nRange++;
+                    }
+                    if (iclass > -1)
+                        lastUCR = ucr;
+                }
+            }
+                break;
             default:
                 break;
         }
@@ -309,6 +332,7 @@
         switch (thm.type)
         {
             case Part1Theme:
+            case Part2Theme:
             {
                 int lastUCR = -1;
                 for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)

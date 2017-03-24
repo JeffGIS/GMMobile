@@ -210,6 +210,16 @@
 		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
 		BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13931D6F78B10072957F /* SANPTID.txt */; };
 		BB7592B81E0CFCCA001871EB /* NVMetroSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */; };
+		BB8B96961E8568CA00B6A9F7 /* BurglaryOfDwelling.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B968C1E8568CA00B6A9F7 /* BurglaryOfDwelling.png */; };
+		BB8B96971E8568CA00B6A9F7 /* Narcotics.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B968D1E8568CA00B6A9F7 /* Narcotics.png */; };
+		BB8B96981E8568CA00B6A9F7 /* MotorVehicleTheft.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B968E1E8568CA00B6A9F7 /* MotorVehicleTheft.png */; };
+		BB8B96991E8568CA00B6A9F7 /* Assault.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B968F1E8568CA00B6A9F7 /* Assault.png */; };
+		BB8B969A1E8568CA00B6A9F7 /* Robbery.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96901E8568CA00B6A9F7 /* Robbery.png */; };
+		BB8B969B1E8568CA00B6A9F7 /* Burglary.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96911E8568CA00B6A9F7 /* Burglary.png */; };
+		BB8B969C1E8568CA00B6A9F7 /* Part2-2.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96921E8568CA00B6A9F7 /* Part2-2.png */; };
+		BB8B969D1E8568CA00B6A9F7 /* Part2-1.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96931E8568CA00B6A9F7 /* Part2-1.png */; };
+		BB8B969E1E8568CA00B6A9F7 /* areas.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96941E8568CA00B6A9F7 /* areas.png */; };
+		BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96951E8568CA00B6A9F7 /* Legends.png */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -546,6 +556,16 @@
 		BB2B13931D6F78B10072957F /* SANPTID.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SANPTID.txt; sourceTree = "<group>"; };
 		BB7592B61E0CFCCA001871EB /* NVMetroSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettings.h; sourceTree = "<group>"; };
 		BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettings.m; sourceTree = "<group>"; };
+		BB8B968C1E8568CA00B6A9F7 /* BurglaryOfDwelling.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BurglaryOfDwelling.png; sourceTree = "<group>"; };
+		BB8B968D1E8568CA00B6A9F7 /* Narcotics.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Narcotics.png; sourceTree = "<group>"; };
+		BB8B968E1E8568CA00B6A9F7 /* MotorVehicleTheft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MotorVehicleTheft.png; sourceTree = "<group>"; };
+		BB8B968F1E8568CA00B6A9F7 /* Assault.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Assault.png; sourceTree = "<group>"; };
+		BB8B96901E8568CA00B6A9F7 /* Robbery.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Robbery.png; sourceTree = "<group>"; };
+		BB8B96911E8568CA00B6A9F7 /* Burglary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Burglary.png; sourceTree = "<group>"; };
+		BB8B96921E8568CA00B6A9F7 /* Part2-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Part2-2.png"; sourceTree = "<group>"; };
+		BB8B96931E8568CA00B6A9F7 /* Part2-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Part2-1.png"; sourceTree = "<group>"; };
+		BB8B96941E8568CA00B6A9F7 /* areas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = areas.png; sourceTree = "<group>"; };
+		BB8B96951E8568CA00B6A9F7 /* Legends.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Legends.png; sourceTree = "<group>"; };
 		BBCDF7EB1E513B2800156827 /* areapoly.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = areapoly.slt; sourceTree = "<group>"; };
 		BBCDF7EC1E513B2800156827 /* censusdata.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = censusdata.slt; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
@@ -1033,6 +1053,23 @@
 			name = Controller;
 			sourceTree = "<group>";
 		};
+		BB8B96891E85684D00B6A9F7 /* MPD */ = {
+			isa = PBXGroup;
+			children = (
+				BB8B968C1E8568CA00B6A9F7 /* BurglaryOfDwelling.png */,
+				BB8B968D1E8568CA00B6A9F7 /* Narcotics.png */,
+				BB8B968E1E8568CA00B6A9F7 /* MotorVehicleTheft.png */,
+				BB8B968F1E8568CA00B6A9F7 /* Assault.png */,
+				BB8B96901E8568CA00B6A9F7 /* Robbery.png */,
+				BB8B96911E8568CA00B6A9F7 /* Burglary.png */,
+				BB8B96921E8568CA00B6A9F7 /* Part2-2.png */,
+				BB8B96931E8568CA00B6A9F7 /* Part2-1.png */,
+				BB8B96941E8568CA00B6A9F7 /* areas.png */,
+				BB8B96951E8568CA00B6A9F7 /* Legends.png */,
+			);
+			name = MPD;
+			sourceTree = "<group>";
+		};
 		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
 			isa = PBXGroup;
 			children = (
@@ -1078,6 +1115,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
 				BB2B13931D6F78B10072957F /* SANPTID.txt */,
@@ -1280,6 +1318,7 @@
 				69BCD6021DF63C9E002E0384 /* AppIcon-152.png in Resources */,
 				69BCD6001DF63C9E002E0384 /* AppIcon-076.png in Resources */,
 				A9CBF20E1A81558C006AC88E /* arrow.png in Resources */,
+				BB8B969A1E8568CA00B6A9F7 /* Robbery.png in Resources */,
 				69BCD60E1DF63C9E002E0384 /* Reader-Export.png in Resources */,
 				692D9CF81CA2FCAA00AFCA9A /* whitePlus.png in Resources */,
 				69BCD60D1DF63C9E002E0384 /* Reader-Email@3x.png in Resources */,
@@ -1299,9 +1338,12 @@
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				69BCD6101DF63C9E002E0384 /* Reader-Export@3x.png in Resources */,
 				69352E511C1A7D57009A486B /* grayscale.png in Resources */,
+				BB8B969D1E8568CA00B6A9F7 /* Part2-1.png in Resources */,
 				69BCD6141DF63C9E002E0384 /* Reader-Mark-Y.png in Resources */,
 				A9D269E31AE4C77C00A5C38E /* plusSign.png in Resources */,
+				BB8B96961E8568CA00B6A9F7 /* BurglaryOfDwelling.png in Resources */,
 				69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */,
+				BB8B969E1E8568CA00B6A9F7 /* areas.png in Resources */,
 				69BCD6031DF63C9E002E0384 /* AppIcon-167.png in Resources */,
 				6938F39B1CB2DEE400DD975D /* whiteHouse.png in Resources */,
 				A9C78BC21A7A8D9C0094562B /* userLocation.png in Resources */,
@@ -1315,6 +1357,7 @@
 				69BCD6171DF63C9E002E0384 /* Reader-Print.png in Resources */,
 				A95EC7E41B224BFC0031B903 /* uploadCloud.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
+				BB8B96971E8568CA00B6A9F7 /* Narcotics.png in Resources */,
 				69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */,
 				695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */,
 				EB5521DD1A61B6A8008CE2D1 /* Images.xcassets in Resources */,
@@ -1329,6 +1372,7 @@
 				A95EC7E01B21FC280031B903 /* greenPlusSign.png in Resources */,
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
+				BB8B96981E8568CA00B6A9F7 /* MotorVehicleTheft.png in Resources */,
 				69BCD6151DF63C9E002E0384 /* Reader-Mark-Y@2x.png in Resources */,
 				69BCD6061DF63C9E002E0384 /* Reader-Button-H@2x.png in Resources */,
 				69BCD6091DF63C9E002E0384 /* Reader-Button-N@2x.png in Resources */,
@@ -1355,6 +1399,7 @@
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */,
 				69BCD6081DF63C9E002E0384 /* Reader-Button-N.png in Resources */,
+				BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */,
@@ -1377,6 +1422,7 @@
 				697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */,
 				69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */,
 				69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */,
+				BB8B96991E8568CA00B6A9F7 /* Assault.png in Resources */,
 				A94656221A85E04A00163525 /* split.png in Resources */,
 				69055D701C87835E00B87524 /* GMMobileIconAppStore.jpg in Resources */,
 				69BCD6191DF63C9E002E0384 /* Reader-Print@3x.png in Resources */,
@@ -1396,6 +1442,8 @@
 				69BCD6131DF63C9E002E0384 /* Reader-Mark-N@3x.png in Resources */,
 				69BCD6071DF63C9E002E0384 /* Reader-Button-H@3x.png in Resources */,
 				694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */,
+				BB8B969C1E8568CA00B6A9F7 /* Part2-2.png in Resources */,
+				BB8B969B1E8568CA00B6A9F7 /* Burglary.png in Resources */,
 				1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 				A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */,

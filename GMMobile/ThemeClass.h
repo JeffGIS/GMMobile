@@ -17,6 +17,7 @@
 @property float size;
 @property PointSymbols symbol;
 @property double minValue, maxValue, aveValue;
+@property int UCR;
 
 + (ThemeClass *) createWithTitle:(NSString *)title;
 

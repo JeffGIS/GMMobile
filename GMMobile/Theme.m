@@ -383,45 +383,94 @@
             [thm.classes addObject:class];
             break;
         case Part2Theme:
-            thm.minUCR = 1;
-            thm.maxUCR = 10;
-            thm.legend.title = @"Part 1 Crimes";
+            thm.minUCR = 9;
+            thm.maxUCR = 43;
+            thm.legend.title = @"Part 2 Crimes";
             [thm.titles addObject:thm.legend.title];
             thm.setSymbol = YES;
             thm.legend.usePointSymbols = YES;
-            thm.numDesiredClasses = 8;
-            class = [ThemeClass createWithTitle:@"UCR 01-02: Homicide"];
+            thm.numDesiredClasses = 19;
+            class = [ThemeClass createWithTitle:@"UCR 09: Simple Assault       "];
             class.color = [UIColor greenColor];
             class.symbol = CrossSym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 03: Rape       "];
+            class = [ThemeClass createWithTitle:@"UCR 11: Forgery/Counterfeit  "];
             class.color = [UIColor greenColor];
             class.symbol = DiamondSym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 04: Robbery    "];
+            class = [ThemeClass createWithTitle:@"UCR 12: Fraud                "];
             class.color = [UIColor greenColor];
             class.symbol = TriangleSym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 05: Agg Assault"];
+            class = [ThemeClass createWithTitle:@"UCR 13: Embezzlement         "];
             class.color = [UIColor greenColor];
             class.symbol = SquareSym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 06: Burglary   "];
+            class = [ThemeClass createWithTitle:@"UCR 14: Stolen Property      "];
             class.color = [UIColor greenColor];
             class.symbol = Star1Sym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 07: Larceny    "];
+            class = [ThemeClass createWithTitle:@"UCR 15: Vancelism            "];
+            class.color = [UIColor greenColor];
+            class.symbol = Star1Sym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 16: Weapon Offenses      "];
             class.color = [UIColor greenColor];
             class.symbol = Star2Sym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 08: Auto Theft "];
+            class = [ThemeClass createWithTitle:@"UCR 17: Prostitution/ComVice "];
             class.color = [UIColor greenColor];
             class.symbol = CircleSym;
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"UCR 10: Arson      "];
+            class = [ThemeClass createWithTitle:@"UCR 18: Other Sex Offenses   "];
             class.color = [UIColor greenColor];
             class.symbol = ArsonSym;
             [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 28: Narcotics            "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 33: Gambling Offenses    "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 34: Against Fam/Children "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 35: Drive Under Influence"];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 36: Liquor Laws          "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 38: Dissorderly Conduct  "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 39: Vagrancy             "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 40: All Other not Traffic"];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 42: Curfew/Loitering     "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 43: Run-Aways            "];
+            class.color = [UIColor greenColor];
+            class.symbol = ArsonSym;
+            [thm.classes addObject:class];
+            for (ThemeClass *tc in thm.classes)
+            {
+                int ucr = atoi(&tc.title.UTF8String[4]);
+                tc.UCR = ucr;
+            }
             break;
         case AssaultTheme:
             thm.minUCR = 1;
@@ -977,6 +1026,17 @@ int getThemeOpt(ThemeTypes type)
             else
                 iclass = ucr - 2;
             break;
+        case Part2Theme:
+        {
+            int jclass = 0;
+            for (ThemeClass *tc in _classes)
+            {
+                if (ucr == tc.UCR)
+                    return jclass;
+                jclass++;
+            }
+        }
+            break;
         default:
             break;
     }
@@ -1108,6 +1168,16 @@ int getThemeOpt(ThemeTypes type)
                     val = 7;
                 else
                     val = dc.UCR - 2;
+                if ([self incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:test])
+                {
+                    rtn = DISPLAY_ITEM;
+                }
+                break;
+            case Part2Theme:
+                val = [self classFromUCR:dc.UCR];
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
