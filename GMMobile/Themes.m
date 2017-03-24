@@ -39,9 +39,23 @@
         {
             NSString *crimeLegend = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
             
-            thm = [Theme createTheme:Part2Theme];
+            thm = [Theme createTheme:Part1Theme];
             if ([crimeLegend isEqualToString:@"Part 2 Offenses"])
                 thm = [Theme createTheme:Part2Theme];
+            if ([crimeLegend isEqualToString:@"Assault"])
+                thm = [Theme createTheme:AssaultTheme];
+            if ([crimeLegend isEqualToString:@"Burglary"])
+                thm = [Theme createTheme:BurglaryTheme];
+            if ([crimeLegend isEqualToString:@"Robbery"])
+                thm = [Theme createTheme:RobberyTheme];
+            if ([crimeLegend isEqualToString:@"Narcotics"])
+                thm = [Theme createTheme:NarcoticsTheme];
+            if ([crimeLegend isEqualToString:@"Motor Vehicle Theft"])
+                thm = [Theme createTheme:MotorVehicleTheftTheme];
+            if ([crimeLegend isEqualToString:@"Selected Theft"])
+                thm = [Theme createTheme:SelectedTheftTheme];
+            if ([crimeLegend isEqualToString:@"Theft From Auto"])
+                thm = [Theme createTheme:TheftFromAutoTheme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:DepartmentTheme];
             [_themeList addObject:thm];

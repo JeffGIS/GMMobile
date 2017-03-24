@@ -220,6 +220,8 @@
 		BB8B969D1E8568CA00B6A9F7 /* Part2-1.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96931E8568CA00B6A9F7 /* Part2-1.png */; };
 		BB8B969E1E8568CA00B6A9F7 /* areas.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96941E8568CA00B6A9F7 /* areas.png */; };
 		BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96951E8568CA00B6A9F7 /* Legends.png */; };
+		BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96A01E85933100B6A9F7 /* TheftFromAuto.png */; };
+		BB8B96A31E85933100B6A9F7 /* SelectedTheft.png in Resources */ = {isa = PBXBuildFile; fileRef = BB8B96A11E85933100B6A9F7 /* SelectedTheft.png */; };
 		BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = BBEC48141D2D466100DD74A0 /* UploadDirectory.m */; };
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
@@ -566,6 +568,8 @@
 		BB8B96931E8568CA00B6A9F7 /* Part2-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Part2-1.png"; sourceTree = "<group>"; };
 		BB8B96941E8568CA00B6A9F7 /* areas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = areas.png; sourceTree = "<group>"; };
 		BB8B96951E8568CA00B6A9F7 /* Legends.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Legends.png; sourceTree = "<group>"; };
+		BB8B96A01E85933100B6A9F7 /* TheftFromAuto.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TheftFromAuto.png; sourceTree = "<group>"; };
+		BB8B96A11E85933100B6A9F7 /* SelectedTheft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SelectedTheft.png; sourceTree = "<group>"; };
 		BBCDF7EB1E513B2800156827 /* areapoly.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = areapoly.slt; sourceTree = "<group>"; };
 		BBCDF7EC1E513B2800156827 /* censusdata.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = censusdata.slt; sourceTree = "<group>"; };
 		BBEC48131D2D466100DD74A0 /* UploadDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadDirectory.h; sourceTree = "<group>"; };
@@ -1056,6 +1060,8 @@
 		BB8B96891E85684D00B6A9F7 /* MPD */ = {
 			isa = PBXGroup;
 			children = (
+				BB8B96A01E85933100B6A9F7 /* TheftFromAuto.png */,
+				BB8B96A11E85933100B6A9F7 /* SelectedTheft.png */,
 				BB8B968C1E8568CA00B6A9F7 /* BurglaryOfDwelling.png */,
 				BB8B968D1E8568CA00B6A9F7 /* Narcotics.png */,
 				BB8B968E1E8568CA00B6A9F7 /* MotorVehicleTheft.png */,
@@ -1307,6 +1313,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */,
 				691B5DCC1E520E3300C90383 /* landuse.slt in Resources */,
 				691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */,
 				691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */,
@@ -1430,6 +1437,7 @@
 				A90D1FAD1AE5E2DF00CBFEE7 /* backArrowHighlighted.png in Resources */,
 				69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */,
 				A91F36981AE97A2D00602BCE /* metalSliderRight.png in Resources */,
+				BB8B96A31E85933100B6A9F7 /* SelectedTheft.png in Resources */,
 				695577D31D83714100A34C24 /* checkedBox.png in Resources */,
 				692D9CF31CA2FB6C00AFCA9A /* whiteUpload.png in Resources */,
 				69BCD6181DF63C9E002E0384 /* Reader-Print@2x.png in Resources */,

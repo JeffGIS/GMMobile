@@ -1027,6 +1027,9 @@ int getThemeOpt(ThemeTypes type)
                 iclass = ucr - 2;
             break;
         case Part2Theme:
+        case AssaultTheme:
+        case RobberyTheme:
+        case BurglaryTheme:
         {
             int jclass = 0;
             for (ThemeClass *tc in _classes)
@@ -1177,6 +1180,9 @@ int getThemeOpt(ThemeTypes type)
                 }
                 break;
             case Part2Theme:
+            case AssaultTheme:
+            case RobberyTheme:
+            case BurglaryTheme:
                 val = [self classFromUCR:dc.UCR];
                 if ([self incrementCount:val
                                       by:1
