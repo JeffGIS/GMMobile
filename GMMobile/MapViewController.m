@@ -843,7 +843,13 @@
 {
     [super viewDidAppear:animated];
     
-    if (!_fromSpreadsheet)
+    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    {
+        if (_firstTimeAppear)
+            [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
+    }
+    
+    else if (!_fromSpreadsheet)
     {
         HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
         
@@ -854,11 +860,10 @@
             self.tabBarController.selectedIndex = 3;
         
         if (_firstTimeAppear)
-        {
             [self extentZoom];
-            _firstTimeAppear = NO;
-        }
     }
+    
+    _firstTimeAppear = NO;
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
@@ -1063,6 +1068,8 @@
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:crimeOptionsVC
                                atIndex:2];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
     }
     
     else
