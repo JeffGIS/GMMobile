@@ -383,6 +383,28 @@
 {
     [super viewWillAppear:animated];
     
+    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    {
+        if (_firstTimeAppear)
+            [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
+    }
+    
+    else if (!_fromSpreadsheet)
+    {
+        HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
+        
+        if (config)
+            [ConfigurationControl.sharedInstance setApp:(config - 1)];
+        
+        else
+            self.tabBarController.selectedIndex = 3;
+        
+        if (_firstTimeAppear)
+            [self extentZoom];
+    }
+    
+    _firstTimeAppear = NO;
+    
     if (CRAPI.sharedInstance.appChanged)
     {
         [self themeLegendWasDraggedOffLeftSide];
@@ -831,28 +853,6 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
-    {
-        if (_firstTimeAppear)
-            [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
-    }
-    
-    else if (!_fromSpreadsheet)
-    {
-        HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
-        
-        if (config)
-            [ConfigurationControl.sharedInstance setApp:(config - 1)];
-        
-        else
-            self.tabBarController.selectedIndex = 3;
-        
-        if (_firstTimeAppear)
-            [self extentZoom];
-    }
-    
-    _firstTimeAppear = NO;
     
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
