@@ -383,17 +383,6 @@
 {
     [super viewWillAppear:animated];
     
-    if (!_fromSpreadsheet)
-    {
-        HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
-        
-        if (config)
-            [ConfigurationControl.sharedInstance setApp:(config - 1)];
-        
-        else
-            self.tabBarController.selectedIndex = 3;
-        
-    }
     if (CRAPI.sharedInstance.appChanged)
     {
         [self themeLegendWasDraggedOffLeftSide];
