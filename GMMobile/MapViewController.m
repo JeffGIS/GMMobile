@@ -1058,7 +1058,8 @@
                   insertViewController:crimeOptionsVC
                                atIndex:2];
         
-        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
+        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+            [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
     }
     
     else
