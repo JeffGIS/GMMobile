@@ -2795,21 +2795,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return;
     
 haveVV:
-    if (CRAPI.sharedInstance.becameActive &&
-        !CRAPI.sharedInstance.inDataUpdate &&
-        [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
-        ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
-    {
-        if (_cdUpdate)
-            return;
-        _cdUpdate = [CrimeData new];
-        if ([_cdUpdate update:self.view
-                   auto:YES
-               delegate:self])
-            return;
-        else
-            _cdUpdate = nil;
-    }
     _vectorView = [[VectorView alloc] init];
     _vectorView.translatesAutoresizingMaskIntoConstraints = NO;
     vectorViews[ivv] = _vectorView;
@@ -2823,11 +2808,13 @@ haveVV:
 - (void) CrimeDataUpdateDidComplete:(long)status
 {
     _cdUpdate = nil;
-   [self allocateVectorView];
+    [self startVectorView:nil];
 }
 
 - (void)clearVectorView
 {
+    if (CRAPI.sharedInstance.inDataUpdate)
+        return;
     if (!_showsPanorama)
     {
         [_vectorViewTimer invalidate];
@@ -2864,6 +2851,21 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
+    if (CRAPI.sharedInstance.becameActive &&
+        !CRAPI.sharedInstance.inDataUpdate &&
+        [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
+        ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+    {
+        if (_cdUpdate)
+            return;
+        _cdUpdate = [CrimeData new];
+        if ([_cdUpdate update:self.view
+                         auto:YES
+                     delegate:self])
+            return;
+        else
+            _cdUpdate = nil;
+    }
     [self allocateVectorView];
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     

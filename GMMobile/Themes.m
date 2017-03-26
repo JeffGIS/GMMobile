@@ -313,6 +313,7 @@
             }
                 break;
             case Part2Theme:
+            case AssaultTheme:
             {
                 int lastUCR = -1;
                 for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
@@ -347,6 +348,7 @@
         {
             case Part1Theme:
             case Part2Theme:
+            case AssaultTheme:
             {
                 int lastUCR = -1;
                 for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
