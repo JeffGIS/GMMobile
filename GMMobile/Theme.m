@@ -933,6 +933,8 @@
             class.size = 1;
             [thm.classes addObject:class];
             break;
+        default:
+            break;
     }
     if (thm.type != ColorByRefnoTheme)
     {

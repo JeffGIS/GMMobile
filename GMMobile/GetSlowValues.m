@@ -409,7 +409,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                    pointInArea:pia];
         }
             break;
-            
+        default:
+            break;
     }
 }
 

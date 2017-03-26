@@ -383,7 +383,13 @@
 {
     [super viewWillAppear:animated];
     
-    if (!_fromSpreadsheet)
+    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    {
+        if (_firstTimeAppear)
+            [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
+    }
+    
+    else if (!_fromSpreadsheet)
     {
         HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
         
@@ -393,7 +399,12 @@
         else
             self.tabBarController.selectedIndex = 3;
         
+        if (_firstTimeAppear)
+            [self extentZoom];
     }
+    
+    _firstTimeAppear = NO;
+    
     if (CRAPI.sharedInstance.appChanged)
     {
         [self themeLegendWasDraggedOffLeftSide];
@@ -843,23 +854,6 @@
 {
     [super viewDidAppear:animated];
     
-    if (!_fromSpreadsheet)
-    {
-        HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
-        
-        if (config)
-            [ConfigurationControl.sharedInstance setApp:(config - 1)];
-        
-        else
-            self.tabBarController.selectedIndex = 3;
-        
-        if (_firstTimeAppear)
-        {
-            [self extentZoom];
-            _firstTimeAppear = NO;
-        }
-    }
-    
     [self refreshVectorView:_mapView.projection.visibleRegion
                      atZoom:_mapView.camera.zoom];
     
@@ -1063,6 +1057,9 @@
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:crimeOptionsVC
                                atIndex:2];
+        
+        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+            [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
     }
     
     else
