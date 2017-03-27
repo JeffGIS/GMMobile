@@ -523,6 +523,89 @@
             class.values = @[@"DASLT5"];
             [thm.classes addObject:class];
             break;
+        case RobberyTheme:
+            thm.minUCR = 4;
+            thm.maxUCR = 4;
+            thm.legend.title = @"Robbery";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 3;
+            class = [ThemeClass createWithTitle:@"Of Person            "];
+            class.color = [UIColor greenColor];
+            class.symbol = CrossSym;
+            class.UCR = 4;
+            class.values = @[@"ROBPER"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Of Person Aggravated  "];
+            class.color = [UIColor greenColor];
+            class.symbol = DiamondSym;
+            class.UCR = 4;
+            class.values = @[@"ROBPAG"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Of Business           "];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            class.UCR = 4;
+            class.values = @[@"ROBBIZ"];
+            [thm.classes addObject:class];
+            break;
+        case BurglaryTheme:
+            thm.minUCR = 6;
+            thm.maxUCR = 6;
+            thm.legend.title = @"Burglary";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 3;
+            class = [ThemeClass createWithTitle:@"Of Business"];
+            class.color = [UIColor greenColor];
+            class.symbol = CrossSym;
+            class.UCR = 6;
+            class.values = @[@"BURGB"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Of Dwelling"];
+            class.color = [UIColor greenColor];
+            class.symbol = DiamondSym;
+            class.UCR = 6;
+            class.values = @[@"BURGD"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Looting    "];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            class.UCR = 6;
+            class.values = @[@"LOOT"];
+            [thm.classes addObject:class];
+            break;
+        case MotorVehicleTheftTheme:
+        case TheftFromAutoTheme:
+        case SelectedTheftTheme:
+            thm.minUCR = 6;
+            thm.maxUCR = 6;
+            thm.legend.title = @"Motor Vehicle Theft";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 3;
+            class = [ThemeClass createWithTitle:@"Of Business"];
+            class.color = [UIColor greenColor];
+            class.symbol = CrossSym;
+            class.UCR = 6;
+            class.values = @[@"BURGB"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Of Dwelling"];
+            class.color = [UIColor greenColor];
+            class.symbol = DiamondSym;
+            class.UCR = 6;
+            class.values = @[@"BURGD"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Looting    "];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            class.UCR = 6;
+            class.values = @[@"LOOT"];
+            [thm.classes addObject:class];
+            break;
         case DepartmentTheme:
             thm.legend.title = @"Department";
             [thm.titles addObject:thm.legend.title];
@@ -538,6 +621,7 @@
             [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"MT"];
             class.color = [UIColor greenColor];
+            class.status = 1;
             [thm.classes addObject:class];
             break;
         case DayNightTheme:
@@ -1064,6 +1148,8 @@ int getThemeOpt(ThemeTypes type)
     switch (self.type)
     {
         case AssaultTheme:
+        case RobberyTheme:
+        case BurglaryTheme:
         {
             int jclass = 0;
             for (ThemeClass *tc in _classes)
@@ -1217,8 +1303,6 @@ int getThemeOpt(ThemeTypes type)
                 }
                 break;
             case Part2Theme:
-            case RobberyTheme:
-            case BurglaryTheme:
                 val = [self classFromUCR:dc.UCR];
                 if ([self incrementCount:val
                                       by:1
@@ -1229,6 +1313,8 @@ int getThemeOpt(ThemeTypes type)
                 }
                 break;
             case AssaultTheme:
+            case RobberyTheme:
+            case BurglaryTheme:
                 if ([self classFromUCR:dc.UCR] < 0)
                     break;
                 val = [self classFromCode:dc.string1];

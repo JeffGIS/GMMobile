@@ -55,7 +55,8 @@
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
     
-    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery", @"Narcotics", @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto"];
+//    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery", @"Narcotics", @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto"];
+    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery",@"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto"];
     
     _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Choropleth Map"];
     _pinModes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals"];
