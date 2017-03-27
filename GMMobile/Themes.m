@@ -316,6 +316,9 @@
             case AssaultTheme:
             case RobberyTheme:
             case BurglaryTheme:
+            case SelectedTheftTheme:
+            case MotorVehicleTheftTheme:
+            case TheftFromAutoTheme:
             {
                 int lastUCR = -1;
                 for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
@@ -353,6 +356,9 @@
             case AssaultTheme:
             case RobberyTheme:
             case BurglaryTheme:
+            case SelectedTheftTheme:
+            case MotorVehicleTheftTheme:
+            case TheftFromAutoTheme:
             {
                 int lastUCR = -1;
                 for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)

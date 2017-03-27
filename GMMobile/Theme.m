@@ -578,32 +578,96 @@
             [thm.classes addObject:class];
             break;
         case MotorVehicleTheftTheme:
-        case TheftFromAutoTheme:
-        case SelectedTheftTheme:
-            thm.minUCR = 6;
-            thm.maxUCR = 6;
+            thm.minUCR = 7;
+            thm.maxUCR = 99;
             thm.legend.title = @"Motor Vehicle Theft";
             [thm.titles addObject:thm.legend.title];
             thm.setSymbol = YES;
             thm.legend.usePointSymbols = YES;
-            thm.numDesiredClasses = 3;
-            class = [ThemeClass createWithTitle:@"Of Business"];
+            thm.numDesiredClasses = 4;
+            class = [ThemeClass createWithTitle:@"Motor Vehicle Theft     "];
             class.color = [UIColor greenColor];
             class.symbol = CrossSym;
-            class.UCR = 6;
-            class.values = @[@"BURGB"];
+            class.UCR = 8;
+            class.values = @[@"AUTOTH"];
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"Of Dwelling"];
+            class = [ThemeClass createWithTitle:@"Other Vehicle Theft     "];
             class.color = [UIColor greenColor];
             class.symbol = DiamondSym;
-            class.UCR = 6;
-            class.values = @[@"BURGD"];
+            class.UCR = 8;
+            class.values = @[@"MVTHFT"];
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"Looting    "];
+            class = [ThemeClass createWithTitle:@"Recovered Vehicle       "];
             class.color = [UIColor greenColor];
             class.symbol = TriangleSym;
-            class.UCR = 6;
-            class.values = @[@"LOOT"];
+            class.UCR = 99;
+            class.values = @[@"RECVEH"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Theft From Motor Vehicle"];
+            class.color = [UIColor greenColor];
+            class.symbol = SquareSym;
+            class.UCR = 7;
+            class.values = @[@"TFMV"];
+            [thm.classes addObject:class];
+            break;
+        case TheftFromAutoTheme:
+            thm.minUCR = 7;
+            thm.maxUCR = 7;
+            thm.legend.title = @"Theft From Auto";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 2;
+            class = [ThemeClass createWithTitle:@"Auto Parts     "];
+            class.color = [UIColor greenColor];
+            class.symbol = CircleSym;
+            class.UCR = 7;
+            class.values = @[@"TMVP"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Theft from Auto"];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            class.UCR = 7;
+            class.values = @[@"TFMV"];
+            [thm.classes addObject:class];
+            break;
+        case SelectedTheftTheme:
+            thm.minUCR = 7;
+            thm.maxUCR = 7;
+            thm.legend.title = @"Selected Theft";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 5;
+            class = [ThemeClass createWithTitle:@"From Building"];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            class.UCR = 7;
+            class.values = @[@"TBLDG"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"From Person  "];
+            class.color = [UIColor greenColor];
+            class.symbol = DiamondSym;
+            class.UCR = 7;
+            class.values = @[@"TFPER"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Petty Theft  "];
+            class.color = [UIColor greenColor];
+            class.symbol = SquareSym;
+            class.UCR = 7;
+            class.values = @[@"PETIT"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Pickpocket   "];
+            class.color = [UIColor greenColor];
+            class.symbol = Star1Sym;
+            class.UCR = 7;
+            class.values = @[@"POCKET"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Theft        "];
+            class.color = [UIColor greenColor];
+            class.symbol = CircleSym;
+            class.UCR = 7;
+            class.values = @[@"THEFT"];
             [thm.classes addObject:class];
             break;
         case DepartmentTheme:
@@ -1126,6 +1190,9 @@ int getThemeOpt(ThemeTypes type)
         case AssaultTheme:
         case RobberyTheme:
         case BurglaryTheme:
+        case SelectedTheftTheme:
+        case MotorVehicleTheftTheme:
+        case TheftFromAutoTheme:
         {
             int jclass = 0;
             for (ThemeClass *tc in _classes)
@@ -1150,6 +1217,9 @@ int getThemeOpt(ThemeTypes type)
         case AssaultTheme:
         case RobberyTheme:
         case BurglaryTheme:
+        case SelectedTheftTheme:
+        case MotorVehicleTheftTheme:
+        case TheftFromAutoTheme:
         {
             int jclass = 0;
             for (ThemeClass *tc in _classes)
@@ -1315,6 +1385,9 @@ int getThemeOpt(ThemeTypes type)
             case AssaultTheme:
             case RobberyTheme:
             case BurglaryTheme:
+            case SelectedTheftTheme:
+            case MotorVehicleTheftTheme:
+            case TheftFromAutoTheme:
                 if ([self classFromUCR:dc.UCR] < 0)
                     break;
                 val = [self classFromCode:dc.string1];
