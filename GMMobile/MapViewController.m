@@ -96,7 +96,7 @@
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) CrimeData *cdUpdate;
 @property (nonatomic) NSMutableString *dataString;
-@property BOOL splitPlatView, legendMinimized;
+@property BOOL splitPlatView, legendMinimized, keepZoomExtents, grayscaleMode;
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) GMSPanoramaView *panView;
@@ -116,7 +116,6 @@
     [super viewDidLoad];
     
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
-    _firstMove = TRUE;
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
@@ -137,9 +136,9 @@
     CGFloat tabBarTop = self.tabBarController.tabBar.frame.origin.y;
     
     _nVectorViews = _currentLegendTag = _pdfCount = 0,
-    _animateToLocation = _usePlatView = YES;
+    _animateToLocation = _usePlatView = _keepZoomExtents = YES;
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
-    _showsPanorama = _splitPlatView = _legendMinimized = NO;
+    _showsPanorama = _splitPlatView = _legendMinimized = _grayscaleMode = NO;
     _routeMode = @"driving";
     self.tabBarController.delegate = self;
     
@@ -288,10 +287,8 @@
     _firstView.backgroundColor = [UIColor colorWithRed:0.8 green:0.9 blue:1.0 alpha:1.0];
     _secondView.backgroundColor = [UIColor colorWithRed:0.9 green:1.0 blue:0.8 alpha:1.0];
     _firstView.layer.borderWidth = _secondView.layer.borderWidth = _splitScreenBorderWidth;
-    
     [self.view addSubview:_firstView];
     [self.view addSubview:_secondView];
-    
     [self setupTableView];
     
     CGPoint mapToolbarCenter = CGPointMake((self.view.frame.size.width / 2.0),
@@ -398,12 +395,7 @@
         
         else
             self.tabBarController.selectedIndex = 3;
-        
-        if (_firstTimeAppear)
-            [self extentZoom];
     }
-    
-    _firstTimeAppear = NO;
     
     if (CRAPI.sharedInstance.appChanged)
     {
@@ -590,14 +582,7 @@
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
     }
     
-    else if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries)
-    {
-        [self extentZoom];
-        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
-    }
-    
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
-    
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     
     if (_fromSpreadsheet)
@@ -607,11 +592,8 @@
         self.tabBarController.tabBar.hidden = YES;
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
         _mapView.userInteractionEnabled = NO;
-
-        [self extentZoom];
         [self setMapType];
         _compass.hidden = YES;
-        
         [self hideMarkersAndInfoWindows:NO];
     }
     
@@ -1145,10 +1127,7 @@
     }
     
     [_mapToolbar configure:_screenSetting];
-    
-    [_mapToolbar didRotateWithTabBarHeight:_tabBarHeight
-                           statusBarHeight:statusBarHeight];
-    
+    [_mapToolbar didRotateWithTabBarHeight:_tabBarHeight statusBarHeight:statusBarHeight];
     _mapToolbar.hidden = NO;
     [self updateCompassPosition:NO];
     
@@ -1157,6 +1136,14 @@
     _zoomExtentsGesture.numberOfTouchesRequired = 2;
     _zoomExtentsGesture.numberOfTapsRequired = 2;
     [self.view addGestureRecognizer:_zoomExtentsGesture];
+    
+    if (CRAPI.sharedInstance.GMMSetting == GMMSettingBoundaries || _fromSpreadsheet || _firstTimeAppear || _keepZoomExtents)
+    {
+        [self extentZoom];
+        CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
+    }
+    
+    _firstTimeAppear = NO;
 }
 
 #pragma mark - EndOfViewDidAppear
@@ -1260,6 +1247,7 @@
     int boundaryRefno = 0;
     NSString *boundaryType = @"BOUNDARY";
     CGFloat mapAdj = 0.0;
+    _keepZoomExtents = YES;
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
@@ -1319,6 +1307,9 @@
                 if (!subviews.hidden)
                     [subviewsArray addObject:subviews];
             }
+            
+            else if (subviews == _legendScrollView && _legendsAreOffMap && !_firstTimeAppear)
+                [subviewsArray addObject:_legendScrollView];
         }
         
         [[self.view viewWithTag:999] removeFromSuperview];
@@ -1895,7 +1886,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)mapViewLongPressed:(UILongPressGestureRecognizer *)gesture
 {
-    if (CRAPI.sharedInstance.currentApp ==  HCConfigMetroProp)
+    if (CRAPI.sharedInstance.currentApp ==  HCConfigMetroProp || CRAPI.sharedInstance.currentApp == HCConfigCrimes)
     {
         if (gesture.state == UIGestureRecognizerStateBegan)
             _vectorView.alpha = 0.0;
@@ -2252,11 +2243,6 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     if (_screenSetting == MapViewScreenSettingPlatView)
         return;
     
-//    if (_firstMove)
-//        CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
-    
-    _firstMove = NO;
-    
     if (position.bearing != 0.0)
     {
         [self showCompass];
@@ -2264,6 +2250,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
     }
     
     [self updateMarkerPosition];
+    _keepZoomExtents = NO;
     
     for (NVPhotoView *nvpvs in _insetPixArray)
         [nvpvs updatePosition];
@@ -2494,6 +2481,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self performSelector:@selector(resetPlatProfileViewsAfterRotation)
                withObject:nil
                afterDelay:0.1];
+    
+    if (_keepZoomExtents)
+        [self extentZoom];
 }
 
 - (void)resetPlatProfileViewsAfterRotation
@@ -3066,9 +3056,8 @@ haveVV:
                            }
                        }
                        
-                       if (first)
-                           [self extentZoom];
-                       first = FALSE;
+                       if (_grayscaleMode)
+                           [self createGrayscale];
                    });
 }
 
@@ -3328,13 +3317,10 @@ haveVV:
         _legendScrollView.alpha = 1.0;
         _vectorView.hidden = _legendsAreOffMap = _mapToolbar.isOffset = YES;
         [self updateLegendPositions];
-        
         [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
         [_mapToolbar adjustFrameToScrollView];
         [self updateCompassPosition:YES];
-        
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                                              atZoom:_mapView.camera.zoom];
+        [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
     }
 }
 
@@ -3343,18 +3329,14 @@ haveVV:
     if (_legendsAreOffMap)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        
         _vectorView.hidden = YES;
         _legendScrollView.alpha = 0.0;
         _legendsAreOffMap = _mapToolbar.isOffset = NO;
         [self updateLegendPositions];
-        
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
         [_mapToolbar adjustFrameToScrollView];
         [self updateCompassPosition:YES];
-        
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
+        [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
     }
 }
 
@@ -5512,6 +5494,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectGrayscale
 {
+    _grayscaleMode = !_grayscaleMode;
+    
+    if (_grayscaleMode)
+        [self createGrayscale];
+    
+    else for (UIView *views in self.view.subviews)
+    {
+        if (views.tag == 77777)
+            [views removeFromSuperview];
+    }
+}
+
+- (void)createGrayscale
+{
     if (![self.view.subviews containsObject:[self.view viewWithTag:77777]])
     {
         UIView *grayscaleMapView = [[UIView alloc] initWithFrame:_mapView.frame];
@@ -5528,7 +5524,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         grayscaleView.alpha = 0.6;
         grayscaleView.image = grayscaleImage(mapImage);
         [grayscaleMapView addSubview:grayscaleView];
-
+        
         [self.view addSubview:grayscaleMapView];
         
         if ([self.view.subviews containsObject:_vectorView])
