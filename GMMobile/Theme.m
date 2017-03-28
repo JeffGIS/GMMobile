@@ -381,6 +381,11 @@
             class.color = [UIColor greenColor];
             class.symbol = ArsonSym;
             [thm.classes addObject:class];
+            for (ThemeClass *tc in thm.classes)
+            {
+                int ucr = atoi(&tc.title.UTF8String[4]);
+                tc.UCR = ucr;
+            }
             break;
         case Part2Theme:
             thm.minUCR = 9;

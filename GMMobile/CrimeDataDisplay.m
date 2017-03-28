@@ -277,6 +277,7 @@ NextPass:
     {
         query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,DispersedX,DispersedY,Sequence,Symbol,Size,Color FROM DISPERSE"];
         SQLOK(0,sqlite3_prepare_v2(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
+        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
         
         while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -303,6 +304,7 @@ NextPass:
                          andSize:size
                        dispersed:seq > 1];
         }
+        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
         if ([self continue])
             [dp commitTransaction];
         SQLOK(0,sqlite3_finalize(statement), dp.database);

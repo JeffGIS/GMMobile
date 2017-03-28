@@ -300,19 +300,6 @@
         switch (thm.type)
         {
             case Part1Theme:
-            {
-                UCRRange *range = UCRRange.new;
-                range.rangeBegin = [NSNumber numberWithInteger:1];
-                range.rangeEnd = [NSNumber numberWithInteger:8];
-                [array  addObject:range];
-                range = UCRRange.new;
-                range.rangeBegin = [NSNumber numberWithInteger:10];
-                range.rangeEnd = [NSNumber numberWithInteger:10];
-                [array  addObject:range];
-                
-                goto Exit;
-            }
-                break;
             case Part2Theme:
             case AssaultTheme:
             case RobberyTheme:
@@ -323,6 +310,8 @@
             {
                 int minUCR = [thm getFirstUCRGreaterThan:-1];
                 int lastUCR = minUCR;
+                if (thm.type == Part1Theme && lastUCR == 1)
+                    lastUCR = 2;
                 int nextUCR = [thm getFirstUCRGreaterThan:lastUCR];
                 
                 while (nextUCR > -1)
