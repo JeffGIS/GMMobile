@@ -43,5 +43,6 @@
 - (void) beginDisplay:(int)displayID;
 - (void) endDisplay:(int)displayID;
 - (ThemeLegend *)copyLegend;
+- (int) getFirstUCRGreaterThan:(int)ucr;
 
 @end

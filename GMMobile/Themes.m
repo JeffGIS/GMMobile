@@ -10,6 +10,9 @@
 #import "Themes.h"
 #import "NVMetroSettings.h"
 
+@implementation UCRRange
+@end
+
 @implementation Themes
 
 - (void)setAppThemes
@@ -288,28 +291,26 @@
     return display;
 }
 
-- (int) getNumUCRRanges
+- (NSArray *) getUCRRanges
 {
-    int nRange = 0;
+    NSMutableArray * array = NSMutableArray.new;
+    
     for (Theme *thm in _themeList)
     {
         switch (thm.type)
         {
             case Part1Theme:
             {
-                int lastUCR = -1;
-                for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
-                {
-                    int iclass = [thm classFromUCR:ucr];
-                    if (![thm classIsSelected:iclass])
-                        iclass = -1;
-                    if (iclass > -1 && ucr - lastUCR > 1)
-                    {
-                        nRange++;
-                    }
-                    if (iclass > -1)
-                        lastUCR = ucr;
-                }
+                UCRRange *range = UCRRange.new;
+                range.rangeBegin = [NSNumber numberWithInteger:1];
+                range.rangeEnd = [NSNumber numberWithInteger:8];
+                [array  addObject:range];
+                range = UCRRange.new;
+                range.rangeBegin = [NSNumber numberWithInteger:10];
+                range.rangeEnd = [NSNumber numberWithInteger:10];
+                [array  addObject:range];
+                
+                goto Exit;
             }
                 break;
             case Part2Theme:
@@ -320,73 +321,54 @@
             case MotorVehicleTheftTheme:
             case TheftFromAutoTheme:
             {
-                int lastUCR = -1;
-                for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
+                int minUCR = [thm getFirstUCRGreaterThan:-1];
+                int lastUCR = minUCR;
+                int nextUCR = [thm getFirstUCRGreaterThan:lastUCR];
+                
+                while (nextUCR > -1)
                 {
-                    int iclass = [thm classFromUCR:ucr];
-                    if (![thm classIsSelected:iclass])
-                        iclass = -1;
-                    if (iclass > -1 && ucr - lastUCR > 1)
+                    if (nextUCR - lastUCR > 1)
                     {
-                        nRange++;
+                        UCRRange *range = UCRRange.new;
+                        range.rangeBegin = [NSNumber numberWithInteger:minUCR];
+                        range.rangeEnd = [NSNumber numberWithInteger:lastUCR];
+                        [array addObject:range];
+                        minUCR = nextUCR;
+                        lastUCR = minUCR;
                     }
-                    if (iclass > -1)
-                        lastUCR = ucr;
+                    else
+                        lastUCR = nextUCR;
+                    nextUCR = [thm getFirstUCRGreaterThan:lastUCR];
                 }
+                UCRRange *range = UCRRange.new;
+                range.rangeBegin = [NSNumber numberWithInteger:minUCR];
+                range.rangeEnd = [NSNumber numberWithInteger:lastUCR];
+                [array addObject:range];
+                goto Exit;
             }
-                break;
             default:
                 break;
         }
     }
-    
-    return nRange;
+Exit:
+    return array;
 }
-- (void) getMinMaxUCR:(int)range min:(int *)minUCR max:(int *)maxUCR
+
+- (int) getNumUCRRanges
 {
-    int nRange = 0;
+    _UCRRanges = [self getUCRRanges];
+    return (int)_UCRRanges.count;
+}
+
+- (void) getMinMaxUCR:(int)irange min:(int *)minUCR max:(int *)maxUCR
+{
     *minUCR = 1;
     *maxUCR = 99;
-    for (Theme *thm in _themeList)
+    if (irange <= _UCRRanges.count)
     {
-        switch (thm.type)
-        {
-            case Part1Theme:
-            case Part2Theme:
-            case AssaultTheme:
-            case RobberyTheme:
-            case BurglaryTheme:
-            case SelectedTheftTheme:
-            case MotorVehicleTheftTheme:
-            case TheftFromAutoTheme:
-            {
-                int lastUCR = -1;
-                for (int ucr = thm.minUCR; ucr <= thm.maxUCR; ucr++)
-                {
-                    int iclass = [thm classFromUCR:ucr];
-                    if (![thm classIsSelected:iclass])
-                        iclass = -1;
-                    if (iclass > -1 && ucr - lastUCR > 1)
-                    {
-                        if (nRange == range)
-                        {
-                            *minUCR = ucr;
-                            *maxUCR = ucr;
-                        }
-                        nRange++;
-                    }
-                    if (iclass > -1)
-                    {
-                        lastUCR = ucr;
-                        if (nRange == range+1)
-                            *maxUCR = ucr;
-                    }
-                }
-            }
-                break;
-            default:
-                break;
-        }
+        UCRRange *range = _UCRRanges[irange];
+        *minUCR = (int)range.rangeBegin.integerValue;
+        *maxUCR = (int)range.rangeEnd.integerValue;
     }
     
 }

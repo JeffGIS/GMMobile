@@ -1656,4 +1656,16 @@ DisplayExit:
     ThemeLegend * copy = [_legend copy];
     return copy;
 }
+
+- (int) getFirstUCRGreaterThan:(int)ucr
+{
+    for (ThemeClass * cls in _classes)
+    {
+        if (!cls.status && cls.UCR > ucr)
+            return cls.UCR;
+    }
+    return -1;
+}
+         
+
 @end
