@@ -365,7 +365,7 @@ EAGLContext *CreateBestEAGLContext()
     //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location",
-                  @"Test Keyboard"];
+                  @"Test Keyboard", @"Watch TestDrive Training Video"];
     
     [_tableView reloadData];
 }
@@ -551,6 +551,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NVKeyboard *keyboard = [NVKeyboard showKeyboardInView:self.view
                                                      delegate:self];
 #pragma unused(keyboard)
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Watch TestDrive Training Video"])
+    {
+        NVWebView *webView = [NVWebView showWebViewInView:self.view urlString:@"gssiserver3.com/testdrivevideo"];
+#pragma unused(webView)
     }
 }
 
