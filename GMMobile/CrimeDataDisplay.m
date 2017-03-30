@@ -162,11 +162,23 @@ boundsPointInAreas:nil
 NextPass:
     if (_mode == HOTSPOT)
     {
-        hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
-                             Height:MNMXCORDHeight(pvbounds)
-                           NumGrids:1
-                          PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
-                               tran:_pTranLLtoView];
+        if ([CRAPI.sharedInstance.crimeCompare isEqualToString:@"Month With Yearly Compare"])
+        {
+            hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
+                                 Height:MNMXCORDHeight(pvbounds)
+                               NumGrids:13
+                              PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
+                                   tran:_pTranLLtoView];
+            
+        }
+        else
+        {
+            hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
+                                 Height:MNMXCORDHeight(pvbounds)
+                               NumGrids:1
+                              PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
+                                   tran:_pTranLLtoView];
+        }
     }
    
     numUCRRanges  = [themes getNumUCRRanges];

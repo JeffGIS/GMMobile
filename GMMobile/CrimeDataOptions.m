@@ -536,6 +536,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeTarget forKey:@"CrimeTarget"];
     
+    if ([uppercaseMode containsString:@"MONTH WITH YEARLY COMPARE"])
+    {
+        CRAPI.sharedInstance.crimeCompare = @"Month With Yearly Compare";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];
+    }
     if ([uppercaseMode containsString:@"HOUSING UNIT"])
     {
         CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";
