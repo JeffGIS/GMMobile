@@ -42,6 +42,8 @@
         {
             NSString *crimeLegend = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
             
+            NSString *crimeCompare = [UserDefaults.defaults stringForKey:@"CrimeCompareValue"];
+            
             thm = [Theme createTheme:Part1Theme];
             if ([crimeLegend isEqualToString:@"Part 2 Offenses"])
                 thm = [Theme createTheme:Part2Theme];
@@ -67,7 +69,10 @@
             
             thm = [Theme createTheme:YearTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:MonthTheme];
+            if ([crimeCompare isEqualToString:@"Month With Monthly Compare"])
+                thm = [Theme createTheme:ThirteenMonthTheme];
+            else
+                thm = [Theme createTheme:MonthTheme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:DayofWeekTheme];
             [_themeList addObject:thm];

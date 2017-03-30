@@ -541,6 +541,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.crimeCompare = @"Month With Yearly Compare";
         [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];
     }
+    else if ([uppercaseMode containsString:@"MONTH WITH MONTHLY COMPARE"])
+    {
+        CRAPI.sharedInstance.crimeCompare = @"Month With Monthly Compare";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];
+    }
+    else
+    {
+        CRAPI.sharedInstance.crimeCompare = @"";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];        
+    }
     if ([uppercaseMode containsString:@"HOUSING UNIT"])
     {
         CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";

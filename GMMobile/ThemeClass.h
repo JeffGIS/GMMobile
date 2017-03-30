@@ -18,6 +18,7 @@
 @property PointSymbols symbol;
 @property double minValue, maxValue, aveValue;
 @property int UCR;
+@property int beginTime, endTime;
 
 + (ThemeClass *) createWithTitle:(NSString *)title;
 

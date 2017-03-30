@@ -17,6 +17,7 @@
 
 @property CrimeMapMode mode;
 @property int numPass;
+@property int saveFromDate;
 @property NSString * choroplethTarget;
 @property AdjustCrimeOptions choroplethAdjustValue;
 @property NSString * choroplethAdjustArea;

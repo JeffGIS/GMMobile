@@ -38,6 +38,8 @@
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
     [_cd close:YES];
+    if (_saveFromDate)
+        CRAPI.sharedInstance.fromDate = _saveFromDate;
     NSLog(@"Crime Database dealloc");
 }
 
@@ -164,9 +166,13 @@ NextPass:
     {
         if ([CRAPI.sharedInstance.crimeCompare isEqualToString:@"Month With Yearly Compare"])
         {
+            NSArray <NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate];
+            _saveFromDate = (int)CRAPI.sharedInstance.fromDate;
+            CRAPI.sharedInstance.fromDate = times[0].integerValue;
             hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                                  Height:MNMXCORDHeight(pvbounds)
                                NumGrids:13
+                              timeArray:times
                               PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                    tran:_pTranLLtoView];
             
@@ -176,6 +182,7 @@ NextPass:
             hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                                  Height:MNMXCORDHeight(pvbounds)
                                NumGrids:1
+                              timeArray:nil
                               PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                    tran:_pTranLLtoView];
         }
@@ -268,7 +275,7 @@ NextPass:
                     }
                     else if (_mode == HOTSPOT)
                     {
-                        [hs addPointAtX:llpoint.x andY:llpoint.y];
+                        [hs addPointAtX:llpoint.x andY:llpoint.y andTime:dc.itemBeginTime];
                     }
                     else
                     {

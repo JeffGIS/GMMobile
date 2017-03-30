@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     DayNightTheme,
     YearTheme,
     MonthTheme,
+    ThirteenMonthTheme,
     DayofWeekTheme,
     HourTheme,
     CurbRampIntersectionTheme,

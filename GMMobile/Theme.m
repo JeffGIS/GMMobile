@@ -765,6 +765,23 @@
             class.color = [UIColor greenColor];
             [thm.classes addObject:class];
             break;
+        case ThirteenMonthTheme:
+        {
+            NSArray <NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate];
+            thm.legend.title = @"Month";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 13;
+            for (int i = 0;i<13;i++)
+            {
+                
+                class = [ThemeClass createWithTitle:@"Jan"];
+                class.color = [UIColor greenColor];
+                class.beginTime = (int)times[i].integerValue;
+                class.endTime = (int)times[i+1].integerValue;
+                [thm.classes addObject:class];
+            }
+        }
+            break;
         case DayofWeekTheme:
             thm.legend.title = @"Day";
             [thm.titles addObject:thm.legend.title];
@@ -1114,6 +1131,11 @@
     return thm;
 }
 
+- (int) classFromTime:(int)time
+{
+    return -1;
+}
+
 int getThemeOpt(ThemeTypes type)
 {
     int opt = 1;
@@ -1452,6 +1474,15 @@ int getThemeOpt(ThemeTypes type)
                 break;
             case MonthTheme:
                 val = tmtime.tm_mon;
+                if ([self incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:test])
+                    rtn = DISPLAY_ITEM;
+                
+            case ThirteenMonthTheme:
+                val = [self classFromTime:dc.itemBeginTime];
+                
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
