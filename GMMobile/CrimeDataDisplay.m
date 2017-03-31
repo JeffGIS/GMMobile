@@ -379,7 +379,7 @@ NextPass:
             to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountPerThousand], nil];
         }
         else
-            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCount], nil];
+            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountNoZero], nil];
         [CRAPI.sharedInstance updateProgress:-1
                                      current:0
                                        range:1

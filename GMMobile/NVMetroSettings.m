@@ -60,6 +60,13 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
             rtn = [NSString stringWithFormat:@"%i",ival];
         }
             break;
+        case TXTAdjustCountNoZero:
+        {
+            int ival = IDNINT (atof (text));
+            if (ival)
+                rtn = [NSString stringWithFormat:@"%i",ival];
+        }
+            break;
         case TXTAdjustCountPerHundred:
         {
             double ival = atof (text)*100;

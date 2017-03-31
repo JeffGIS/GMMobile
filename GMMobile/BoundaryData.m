@@ -1873,7 +1873,7 @@ NextPass:
             {
                 text = keyval;
             }
-            if (count >= 0)
+            if (text.length)
             {
                 UIColor *textColor = UIColor.redColor;
                 CGFloat minFontSize = fontSize / 3;
