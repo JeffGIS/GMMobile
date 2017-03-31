@@ -1232,6 +1232,7 @@
 					EB5521C81A61B6A8008CE2D1 = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = J86LL8KXJL;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;

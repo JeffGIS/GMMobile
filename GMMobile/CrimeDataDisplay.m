@@ -220,6 +220,7 @@ NextPass:
                      platlonBounds->ymn,
                      platlonBounds->ymx];
             tot = toTime - fromTime;
+            CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
             SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
@@ -286,7 +287,8 @@ NextPass:
             }
             iRange++;
             SQLOK(0,sqlite3_finalize(statement), _cd.database);
-        }
+            CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+       }
     }
     if (_mode == HOTSPOT && iPass++ < _numPass)
         goto NextPass;
