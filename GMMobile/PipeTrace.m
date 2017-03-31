@@ -657,6 +657,8 @@ $RETURN(1);
 
 - (BOOL) continue
 {
+    if (!self.processingID)
+        return YES;
     if (self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     return NO;

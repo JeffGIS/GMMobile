@@ -778,6 +778,50 @@
                 class.color = [UIColor greenColor];
                 class.beginTime = (int)times[i].integerValue;
                 class.endTime = (int)times[i+1].integerValue;
+                time_t  iTime = ((long)class.beginTime + (long)class.endTime)/2;
+                struct tm tmtime = *localtime (&iTime);
+                int iMonth = tmtime.tm_mon;
+                NSString * month = @"";
+                switch (iMonth)
+                {
+                    case 0:
+                        month = @"Jan";
+                        break;
+                    case 1:
+                        month = @"Feb";
+                        break;
+                    case 2:
+                        month = @"Mar";
+                        break;
+                    case 3:
+                        month = @"Apr";
+                        break;
+                    case 4:
+                        month = @"May";
+                        break;
+                    case 5:
+                        month = @"Jun";
+                        break;
+                    case 6:
+                        month = @"Jul";
+                        break;
+                    case 7:
+                        month = @"Aug";
+                        break;
+                    case 8:
+                        month = @"Sep";
+                        break;
+                    case 9:
+                        month = @"Oct";
+                        break;
+                    case 10:
+                        month = @"Nov";
+                        break;
+                    case 11:
+                        month = @"Dec";
+                        break;
+                }
+                class.title = [NSString stringWithFormat:@"%@ %.2i",month,tmtime.tm_year+1900];
                 [thm.classes addObject:class];
             }
         }
@@ -1133,6 +1177,13 @@
 
 - (int) classFromTime:(int)time
 {
+    int iclass = 0;
+    for (ThemeClass *cls in _classes)
+    {
+        if (time >= cls.beginTime && time <= cls.endTime)
+            return iclass;
+        iclass++;
+    }
     return -1;
 }
 
