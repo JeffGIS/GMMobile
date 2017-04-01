@@ -1021,7 +1021,8 @@
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
         NSArray *pvaArray = [NSArray arrayWithObjects:[NSNumber numberWithInteger:NVPageViewArrangementFit2],
-                             [NSNumber numberWithInteger:NVPageViewArrangementFit5Columns2], nil];
+                             [NSNumber numberWithInteger:NVPageViewArrangementFit5Columns2],
+                             [NSNumber numberWithInteger:NVPageViewArrangementFit2], nil];
         
         NVPageController *nvpc = [NVPageController pageControllerWithArrangementArray:pvaArray];
         nvpc.restorationIdentifier = @"NVPageController";
@@ -3877,8 +3878,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypePID forKey:@"FlyOverType"];
             int numPoints = 0, numLoops = 0, *polyPartLen = 0;
             CLLocationCoordinate2D centerCoord = _selectedPIDCoords;
-            MNMXCORD bounds;
-            LPDPOINT llpoints;
+            MNMXCORD bounds = {0};
+            LPDPOINT llpoints = {0};
             
             if (_infoWindow.marker.type == MarkerInfoWindowTypePID)
             {

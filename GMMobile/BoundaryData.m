@@ -2160,10 +2160,10 @@ NextPass:
 - (MNMXCORD)getBoundsForBoundaryType:(NSString *)areaType
                                 refno:(long)refno
 {
-    MNMXCORD bounds;
+    MNMXCORD bounds = {0};
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",areaType];
     BOOL opened = [self open];
-    NSString *query;
+    NSString *query = @"";
     sqlite3_stmt *statement = NULL;
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||

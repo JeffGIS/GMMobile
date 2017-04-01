@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
-#import "NVShapeFileLibrary/shapefil.h"
+#import "NVShapefileLibrary/shapefil.h"
 #import "CCodeLibrary/SymbolDictionary.h"
 #import "CCodeLibrary/NVColor.h"
 #import "Themes.h"

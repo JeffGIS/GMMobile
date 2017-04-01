@@ -60,35 +60,25 @@
 
 - (void)setupPages
 {
+    _pages = NSMutableArray.array;
     _legends = ConfigurationControl.sharedInstance.legendList;
     int index = 0;
     
-    if (!_pages.count)
-        _pages = NSMutableArray.array;
-    
-    NVPageViewArrangement rootPVArr = [(NSNumber *)_pageViewArrangementArray[0] integerValue];
-    NSUInteger numLegends = [self numPagesFromArrangement:rootPVArr];
-    
-    NVPageView *rootPV = [NVPageView pageViewWithNumLegends:numLegends
-                                              startingIndex:0
-                                            pageArrangement:rootPVArr
-                                                 controller:self];
-    
-    index += numLegends;
-    
-    [_pages addObject:rootPV];
-    
-    for (int i = 1; i < _pageViewArrangementArray.count; i++)
+    for (int i = 0; i < _pageViewArrangementArray.count; i++)
     {
         NVPageViewArrangement pvArr = [(NSNumber *)_pageViewArrangementArray[i] integerValue];
         NSUInteger numLegends = [self numPagesFromArrangement:pvArr];
         
-        NVPageView *pv = [NVPageView pageViewWithNumLegends:numLegends
-                                              startingIndex:index
-                                            pageArrangement:pvArr
-                                                 controller:self];
-        
-        [_pages addObject:pv];
+        if ((index + numLegends) <= _legends.count)
+        {
+            NVPageView *pv = [NVPageView pageViewWithNumLegends:numLegends
+                                                  startingIndex:index
+                                                pageArrangement:pvArr
+                                                     controller:self];
+            
+            [_pages addObject:pv];
+            //index += numLegends;
+        }
     }
     
     _pageControl = UIPageControl.new;
@@ -164,25 +154,21 @@
         case NVPageViewArrangementFit1:
             numPages = 1;
             break;
-            
         case NVPageViewArrangementFit2:
         case NVPageViewArrangementFit2Columns2:
             numPages = 2;
             break;
-            
         case NVPageViewArrangementFit3:
         case NVPageViewArrangementFit3Columns2:
         case NVPageViewArrangementFit3Columns3:
             numPages = 3;
             break;
-            
         case NVPageViewArrangementFit4:
         case NVPageViewArrangementFit4Columns2:
         case NVPageViewArrangementFit4Columns3:
         case NVPageViewArrangementFit4Columns4:
             numPages = 4;
             break;
-            
         case NVPageViewArrangementFit5:
         case NVPageViewArrangementFit5Columns2:
         case NVPageViewArrangementFit5Columns3:
@@ -190,7 +176,6 @@
         case NVPageViewArrangementFit5Columns5:
             numPages = 5;
             break;
-            
         case NVPageViewArrangementFit6:
         case NVPageViewArrangementFit6Columns2:
         case NVPageViewArrangementFit6Columns3:
@@ -199,7 +184,6 @@
         case NVPageViewArrangementFit6Columns6:
             numPages = 6;
             break;
-            
         default:
             break;
     }

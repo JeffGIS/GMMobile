@@ -260,7 +260,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     BOOL rtn = NO;
     sqlite3_stmt *statement = NULL;
-    NSString *query = [[NSString alloc] init];
+    NSString *query = @"";
     NSString *outString = @"Distinct Use Codes";
     
     BOOL opened = [self open];
@@ -296,7 +296,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
     LLPOINT pt = {0};
     sqlite3_stmt *statement = NULL;
-    NSString *query = [[NSString alloc] init];
+    NSString *query = @"";
     
     BOOL opened = [self open];
     
@@ -329,10 +329,9 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 
 - (MNMXCORD)getBoundsForPID:(NSString *)PID
 {
-    MNMXCORD bounds;
-    
+    MNMXCORD bounds = {0};
     sqlite3_stmt *statement = NULL;
-    NSString *query = [[NSString alloc] init];
+    NSString *query = @"";
     
     BOOL opened = [self open];
     
@@ -367,7 +366,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 
 - (NSMutableArray *)getPIDsMatchingString:(NSString *)matchChar
 {
-    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSMutableArray *array = NSMutableArray.array;
     
     BOOL opened = [self open];
     
@@ -394,7 +393,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 - (NSMutableArray *)getPIDsWithOwnerMatchingString:(NSString *)matchChar
                                            limitOf:(int)lim
 {
-    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSMutableArray *array = NSMutableArray.array;
     int n = 0;
     
     BOOL opened = [self open];
@@ -427,7 +426,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 - (NSMutableArray *)getPIDsMatchingAddress:(int)houseNumber
                                 streetName:(NSString *)matchChar
 {
-    NSMutableArray *array = [[NSMutableArray alloc] init];
+    NSMutableArray *array = NSMutableArray.array;
     NSString *query = @"";
     NSString *lastName = [NSString stringWithFormat:@"%@%@", matchChar, @"Z"];
     BOOL opened = [self open];
@@ -478,7 +477,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                             andPass:PickPass])
         return 0;
     
-    NSString *minPID = [[NSString alloc] init];
+    NSString *minPID = @"";
     CGFloat d, mind = DBL_MAX;
     DPOINT p1, p2, minpt;
     int minref = 0;
@@ -536,7 +535,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 }
 - (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt
 {
-    NSString *minPID = [[NSString alloc] init];
+    NSString *minPID = @"";
     CGFloat d, mind = DBL_MAX;
     DPOINT p1, p2, minpt;
     int npicked = 0;
@@ -585,7 +584,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 
 + (NSString *)getCensusBlockForPID:(NSString *)PID
 {
-    NSString * block = @"";
+    NSString *block = @"";
     PropertyData *pd = [[PropertyData alloc]init];
     BOOL opened = [pd open];
     NSString *query = [NSString stringWithFormat:@"SELECT [CENBLOCK] FROM PROPINFO Where PIN = '%@'",
