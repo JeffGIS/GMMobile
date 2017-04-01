@@ -1033,16 +1033,22 @@
         
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:nvpc
-                               atIndex:1];
+                               atIndex:2];
         
         UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
                   insertViewController:crimeOptionsVC
-                               atIndex:2];
+                               atIndex:1];
         
         if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
             [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
+        
+        _nvssvc.tabBarItem.title = @"Crime Lists";
+        
+        [NVTabBarEdit tabBarController:self.tabBarController
+                  insertViewController:_nvssvc
+                               atIndex:4];
     }
     
     else
