@@ -59,10 +59,7 @@
         _headerHeight = 26.0;
         _cornerRadius = _innerMargin = _outerMargin = 4.0;
         _pageControlMargin = 12.0;
-        
-        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:14.0];
-        
+        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT" size:14.0];
         _headerFont = [UIFont boldSystemFontOfSize:14.0];
     }
     
@@ -72,10 +69,7 @@
         _cornerRadius = _innerMargin = 10.0;
         _outerMargin = 20.0;
         _pageControlMargin = 30.0;
-        
-        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT"
-                                size:24.0];
-        
+        _font = [UIFont fontWithName:@"CourierNewPS-BoldMT" size:24.0];
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
     
@@ -83,11 +77,14 @@
     {
         UITableView *tv = UITableView.new;
         tv.translatesAutoresizingMaskIntoConstraints = NO;
-        
-        [self setupTableView:tv
-                         tag:(i + 1)];
-        
+        [self setupTableView:tv tag:(i + 1)];
         [self.view addSubview:tv];
+        UITapGestureRecognizer *tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(legendTapped:)];
+        tap1.numberOfTouchesRequired = 1;
+        [tv addGestureRecognizer:tap1];
+        UITapGestureRecognizer *tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(legendTapped:)];
+        tap2.numberOfTouchesRequired = 2;
+        [tv addGestureRecognizer:tap2];
     }
     
     switch (_pageArrangement)
@@ -103,7 +100,6 @@
         {
             CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
             CGFloat numCells2 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 1] numCells];
-            
             CGFloat multiplier = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             
             if (isnan(multiplier))
@@ -276,9 +272,9 @@
     tableView.separatorInset = UIEdgeInsetsZero;
     tableView.tag = tag;
     
-    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
-                                          initWithTarget:self
-                                          action:@selector(tlmoLongPressed:)];
+    UILongPressGestureRecognizer *lpgr =
+    [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                  action:@selector(tlmoLongPressed:)];
     
     lpgr.minimumPressDuration = 1.0;
     lpgr.delegate = self;
@@ -294,30 +290,24 @@
         case UIGestureRecognizerStateEnded:
         {
             _dragSelectActive = NO;
-             for (NSIndexPath *indexPaths in _dragSelectedCells)
+            
+            for (NSIndexPath *indexPaths in _dragSelectedCells)
             {
                 UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
-                int iclass = (int)indexPaths.row;
                 cell.backgroundColor = UIColor.whiteColor;
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                NSInteger row = indexPaths.row;
                 
-                if (cell.selected)
-                {
-                    [self tableView:tv
-          didDeselectRowAtIndexPath:indexPaths];
-                }
-                
-                else
-                {
-                    [self tableView:tv
-            didSelectRowAtIndexPath:indexPaths];
-                }
                 if (_dragSelectedCells.count == 1)
-                    [self turnOnJustThisRow:iclass inTableView:tv];
+                    [self turnOnJustThisRow:row inTableView:tv];
+                
                 else
                 {
-                    cell.selected = !cell.selected;
-                    [self setThemeLegendCellStatusTo:cell.selected forClass:iclass++ andThemeWithTag:tv.tag];
+                    if (cell.selected)
+                        [self setStatus:0 forRow:row forTVWithTag:tv.tag];
+                    
+                    else
+                        [self setStatus:1 forRow:row forTVWithTag:tv.tag];
                 }
             }
             
@@ -351,9 +341,7 @@
                 }
                 
                 else if (row != _currentRow)
-                {
                     _currentRow = row;
-                }
                 
                 else
                     return;
@@ -703,7 +691,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
     ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-    
     NSMutableString *text = tlc.label.mutableCopy;
     
     if (tl.appendClassCount)
@@ -711,30 +698,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         NSMutableString *countString = NSMutableString.string;
         
         if (tlc.status)
-        {
-            [countString insertString:@"X"
-                              atIndex:0];
-        }
+            [countString insertString:@"X" atIndex:0];
         
         else
-        {
-            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count]
-                              atIndex:0];
-        }
+            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count] atIndex:0];
         
         while (countString.length < [_countLengths[(tableView.tag - 1)] integerValue])
         {
             if (tlc.status)
-            {
-                [countString insertString:@"X"
-                                  atIndex:0];
-            }
+                [countString insertString:@"X" atIndex:0];
             
             else
-            {
-                [countString insertString:@" "
-                                  atIndex:0];
-            }
+                [countString insertString:@" " atIndex:0];
         }
         
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
@@ -839,8 +814,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     tlc.status = status;
 }
 
-- (void) turnOnJustThisRow:(NSInteger)row
-               inTableView:(UITableView*) tableView
+- (void)turnOnJustThisRow:(NSInteger)row
+              inTableView:(UITableView *)tableView
 {
     ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
     for (int irow = 0;irow < tl.numCells;irow++)
@@ -848,35 +823,32 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     [self setThemeLegendCellStatusTo:NO forClass:row andThemeWithTag:tableView.tag];
     
 }
-- (void)tableView:(UITableView *)tableView
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+
+- (void)legendTapped:(UITapGestureRecognizer *)gesture
 {
-    if (!_dragSelectActive)
-    {
-        [self setThemeLegendCellStatusTo:YES forClass:indexPath.row andThemeWithTag:tableView.tag];
-        
-        if (!_preventRefresh)
-        {
-            _mapVC.fromIndex = self.tabBarController.selectedIndex;
-            _mapVC.fromLegends = YES;
-            self.tabBarController.selectedIndex = 0;
-        }
-    }
+    UITableView *tv = (UITableView *)gesture.view;
+    CGPoint point = [gesture locationInView:tv];
+    NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
+    BOOL hasStatus = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]].selected;
+    
+    if (hasStatus)
+        [self setStatus:0 forRow:row forTVWithTag:tv.tag];
+    
+    else
+        [self setStatus:gesture.numberOfTouches forRow:row forTVWithTag:tv.tag];
 }
 
-- (void)tableView:(UITableView *)tableView
-didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)setStatus:(NSInteger)status
+           forRow:(NSInteger)row
+     forTVWithTag:(NSInteger)tag
 {
-    if (!_dragSelectActive)
+    [self setThemeLegendCellStatusTo:(int)status forClass:row andThemeWithTag:tag];
+    
+    if (!_preventRefresh)
     {
-        [self setThemeLegendCellStatusTo:NO forClass:indexPath.row andThemeWithTag:tableView.tag];
-        
-        if (!_preventRefresh)
-        {
-            _mapVC.fromIndex = self.tabBarController.selectedIndex;
-            _mapVC.fromLegends = YES;
-            self.tabBarController.selectedIndex = 0;
-        }
+        _mapVC.fromIndex = self.tabBarController.selectedIndex;
+        _mapVC.fromLegends = YES;
+        self.tabBarController.selectedIndex = 0;
     }
 }
 
