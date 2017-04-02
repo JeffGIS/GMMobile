@@ -39,7 +39,8 @@
 - (int) classFromUCR:(int)ucr;
 - (int) processTheme:(DisplayCharacteristics *)dc
            displayID:(int)displayID
-            testPass:(BOOL)test;
+            testPass:(BOOL)test
+        compareClass:(int*) cclass;
 - (void) beginDisplay:(int)displayID;
 - (void) endDisplay:(int)displayID;
 - (ThemeLegend *)copyLegend;

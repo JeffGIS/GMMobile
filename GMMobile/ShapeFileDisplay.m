@@ -254,7 +254,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             break;
                     }
                     if ([themes setDisplayCharacteristics:_dc
-                                                displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                                displayID:_processingID
+                                             compareClass:nil] != DO_NOT_DISPLAY_ITEM)
                     {
                         if (hlist)
                         {
@@ -415,7 +416,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     }
                     
                     if ([themes setDisplayCharacteristics:_dc
-                                                displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                                displayID:_processingID
+                                             compareClass:nil] != DO_NOT_DISPLAY_ITEM)
                     {
                         if (_dc.elementType == PDFBounds)
                         {

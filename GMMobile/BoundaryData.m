@@ -702,7 +702,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 np++;
         }
         if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                    displayID:_processingID
+                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
         {
             
             [self fillUseCode:context
@@ -1372,7 +1373,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             if ([themes containsColorByRefTheme])
             {
                 [themes setDisplayCharacteristics:dc
-                                        displayID:_processingID];
+                                        displayID:_processingID
+                                     compareClass:nil];
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
@@ -1389,7 +1391,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                         withColor:UIColor.redColor.CGColor
                          andWidth:3];
             else if ([themes setDisplayCharacteristics:dc
-                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                             displayID:_processingID
+                                          compareClass:nil] != DO_NOT_DISPLAY_ITEM)
             {
                 float lineWidth = 0;
                 float alpha = 1;
@@ -1565,7 +1568,12 @@ NextPass:
         {
             if (!pass)
                 nLoaded++;
-            [pias loadArea:keyval numPoints:numPoints numLoops:numLoops polyPartLen:polyPartLen points:llpoints];
+            [pias loadArea:keyval
+                 numPoints:numPoints
+                  numLoops:numLoops
+               polyPartLen:polyPartLen
+                    points:llpoints
+                   nCounts:1];
         }
         free (llpoints);
     }
@@ -1850,7 +1858,8 @@ NextPass:
             count = 1;
             if (pias)
             {
-                count = [pias countForArea:keyval];// * to.adjustCount;
+                count = [pias countForArea:keyval
+                         whichCount:0];// * to.adjustCount;
                 char countstr[32];
                 sprintf (countstr,"%f",count);
                 text = formatText(countstr, to.formats[0], 1);

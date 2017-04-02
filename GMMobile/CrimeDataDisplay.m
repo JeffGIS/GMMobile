@@ -256,9 +256,11 @@ NextPass:
                 if (!attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == OnlyAttempts)
                     continue;
 */
+                int compareClass = 0;
                 if ((!pia || [pia DPointInArea:BasePt]) &&
                     [themes setDisplayCharacteristics:dc
-                                            displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                            displayID:_processingID
+                                         compareClass:&compareClass] != DO_NOT_DISPLAY_ITEM)
                 {
                     DPOINT llpoint = TranDPOINT(BasePt, _pTranLLtoView);
                     if (_mode == PINMAP)
@@ -274,7 +276,8 @@ NextPass:
                     }
                     else if (_mode == CHOROPLETH)
                     {
-                        [pias DPointInArea:&llpoint];
+                        [pias DPointInArea:&llpoint
+                                whichCount:compareClass];
                     }
                     else if (_mode == HOTSPOT)
                     {

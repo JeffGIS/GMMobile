@@ -898,7 +898,8 @@ static float wallPtSize=0;
             dc.string1 = [NSString stringWithFormat:@"%i",intID];
             dc.string2 = [NSString stringWithFormat:@"%i",status];
             if ([themes setDisplayCharacteristics:dc
-                                        displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                        displayID:_processingID
+                                     compareClass:nil] != DO_NOT_DISPLAY_ITEM)
             {
                 DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
                 NSString *text = [NSString stringWithFormat:@"%i",intID];
@@ -995,7 +996,8 @@ static float wallPtSize=0;
         dc.string1 = [NSString stringWithFormat:@"%i",rampNum];
         dc.string2 = [NSString stringWithFormat:@"%i",rampType];
         if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                    displayID:_processingID
+                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
         {
             LatLongToPixelXYd(pIntPt->y, pIntPt->x, 21, &rampPt.x, &rampPt.y);
             if (rampPt.x < 520 && rampPt.y < 520)

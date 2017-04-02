@@ -257,6 +257,7 @@
 
 - (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
                         displayID:(int)displayID
+                     compareClass:(int*)cclass;
 {
     int rtn = DISPLAY_ITEM;
     
@@ -267,7 +268,8 @@
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
                       displayID:displayID
-                       testPass:YES];
+                       testPass:YES
+                   compareClass:nil];
         if (rtn == DO_NOT_DISPLAY_ITEM)
             return rtn;
     }
@@ -278,7 +280,8 @@
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
                       displayID:displayID
-                       testPass:NO];
+                       testPass:NO
+               compareClass:cclass];
         if (rtn == DO_NOT_DISPLAY_ITEM)
             return rtn;
     }

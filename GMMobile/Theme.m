@@ -1330,6 +1330,7 @@ int getThemeOpt(ThemeTypes type)
 - (int) processTheme:(DisplayCharacteristics *)dc
            displayID:(int)displayID
             testPass:(BOOL)test
+        compareClass:(int*) cclass
 {
     int rtn = DO_NOT_DISPLAY_ITEM;
     if (!displayID || displayID == _displayID)
@@ -1517,6 +1518,8 @@ int getThemeOpt(ThemeTypes type)
             case YearTheme:
                 val = tmtime.tm_year + 1900;
                 val -= self.minYear;
+                if (cclass && !test && val < 2)
+                    *cclass = val;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
