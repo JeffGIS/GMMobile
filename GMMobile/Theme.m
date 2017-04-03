@@ -690,7 +690,7 @@
             [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"MT"];
             class.color = [UIColor greenColor];
-            class.status = 1;
+            class.status = 0;
             [thm.classes addObject:class];
             break;
         case DayNightTheme:
@@ -1212,7 +1212,7 @@ int getThemeOpt(ThemeTypes type)
     {
         ThemeClass *cls =  _classes[class];
         
-        if (!cls.status)
+        if (cls.status)
         {
             if (!test)
             {
@@ -1237,14 +1237,14 @@ int getThemeOpt(ThemeTypes type)
     return rtn;
 }
 
-- (BOOL) classIsSelected:(int)iclass
+- (BOOL)classIsSelected:(int)iclass
 {
     BOOL rtn = FALSE;
     
     if (iclass >= 0 && iclass < self.numClasses)
     {
         ThemeClass * tc = self.classes[iclass];
-        rtn = !tc.status;
+        rtn = tc.status;
     }
     return rtn;
 }
@@ -1703,10 +1703,10 @@ DisplayExit:
 {
     double maxPct = 0;
     
-    if (_type == ColorByRefnoTheme)
+    /*if (_type == ColorByRefnoTheme)
     {
         int ii = _totNumItems;
-    }
+    }*/
     if (displayID == _displayID)
     {
         _legend.useClassColors = _setColor;
@@ -1744,13 +1744,14 @@ DisplayExit:
     return copy;
 }
 
-- (int) getFirstUCRGreaterThan:(int)ucr
+- (int)getFirstUCRGreaterThan:(int)ucr
 {
     for (ThemeClass * cls in _classes)
     {
-        if (!cls.status && cls.UCR > ucr)
+        if (cls.status && cls.UCR > ucr)
             return cls.UCR;
     }
+    
     return -1;
 }
          

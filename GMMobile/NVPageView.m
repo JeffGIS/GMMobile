@@ -692,28 +692,39 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         NSMutableString *countString = NSMutableString.string;
         
         if (tlc.status)
-            [countString insertString:@"X" atIndex:0];
+            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count] atIndex:0];
         
         else
-            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count] atIndex:0];
+            [countString insertString:@"X" atIndex:0];
         
         while (countString.length < [_countLengths[(tableView.tag - 1)] integerValue])
         {
             if (tlc.status)
-                [countString insertString:@"X" atIndex:0];
+                [countString insertString:@" " atIndex:0];
             
             else
-                [countString insertString:@" " atIndex:0];
+                [countString insertString:@"X" atIndex:0];
         }
         
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
     }
     
+    cell.layer.borderColor = UIColor.blackColor.CGColor;
+    cell.layer.borderWidth = 0.5;
+    
     if (tlc.status)
-        cell.backgroundColor = UIColor.lightGrayColor;
+    {
+        cell.backgroundColor = UIColor.whiteColor;
+        
+        if (tlc.status == 2)
+        {
+            cell.layer.borderColor = tl.symbolDefaultColor.CGColor;
+            cell.layer.borderWidth = 6.0;
+        }
+    }
     
     else
-        cell.backgroundColor = UIColor.whiteColor;
+        cell.backgroundColor = UIColor.lightGrayColor;
     
     UILabel *textLabel = UILabel.new;
     textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -729,8 +740,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [textLabel constrainTopToAnchor:cell.contentView.topAnchor];
     [textLabel constrainBottomToAnchor:cell.contentView.bottomAnchor];
     
-    cell.layer.borderColor = UIColor.blackColor.CGColor;
-    cell.layer.borderWidth = 0.5;
     cell.contentView.backgroundColor = UIColor.clearColor;
     cell.textLabel.backgroundColor = UIColor.clearColor;
     
@@ -767,7 +776,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     else
     {
         [textLabel constrainLeadingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - 10.0)];
-        
         CGFloat barMargin = 10.0;
         CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 3.0)) * tlc.symbolWidth);
         
@@ -805,10 +813,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
     
     for (int irow = 0; irow < tl.numCells; irow++)
-        [self setThemeLegendCellStatusTo:YES forClass:irow andThemeWithTag:tableView.tag];
+        [self setThemeLegendCellStatusTo:0 forClass:irow andThemeWithTag:tableView.tag];
     
-    [self setThemeLegendCellStatusTo:NO forClass:row andThemeWithTag:tableView.tag];
-    
+    [self setThemeLegendCellStatusTo:1 forClass:row andThemeWithTag:tableView.tag];
 }
 
 - (void)legendTapped:(UITapGestureRecognizer *)gesture
@@ -822,8 +829,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         ThemeLegend *tl = (ThemeLegend *)_legends[((tv.tag - 1) + _startingIndex)];
         ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[row];
         
-        if (tlc.status)
-            [self setThemeLegendCellStatusTo:0 forClass:row andThemeWithTag:tv.tag];
+        if (tlc.status == 2)
+        {
+            if (gesture.numberOfTouches == 2)
+                [self setThemeLegendCellStatusTo:1 forClass:row andThemeWithTag:tv.tag];
+            
+            else
+                [self setThemeLegendCellStatusTo:0 forClass:row andThemeWithTag:tv.tag];
+        }
+        
+        else if (tlc.status == 1)
+        {
+            if (gesture.numberOfTouches == 2)
+                [self setThemeLegendCellStatusTo:2 forClass:row andThemeWithTag:tv.tag];
+            
+            else
+                [self setThemeLegendCellStatusTo:0 forClass:row andThemeWithTag:tv.tag];
+        }
         
         else
             [self setThemeLegendCellStatusTo:(int)gesture.numberOfTouches forClass:row andThemeWithTag:tv.tag];
