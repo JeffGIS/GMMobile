@@ -10,7 +10,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "NVPageController.h"
 
-@interface NVPageView () <UITableViewDataSource, UITableViewDelegate,UIGestureRecognizerDelegate>
+@interface NVPageView () <UITableViewDataSource, UITableViewDelegate>
 
 @property NSUInteger numLegends, startingIndex, currentRow, currentColorPalette;
 @property (nonatomic, copy) NSArray *legends;
@@ -272,11 +272,9 @@
     tableView.separatorInset = UIEdgeInsetsZero;
     tableView.tag = tag;
     
-    UILongPressGestureRecognizer *lpgr =
-    [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                  action:@selector(tlmoLongPressed:)];
+    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                       action:@selector(tlmoLongPressed:)];
     
-    lpgr.delegate = self;
     [tableView addGestureRecognizer:lpgr];
 }
 
