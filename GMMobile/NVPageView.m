@@ -719,7 +719,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (tlc.status == 2)
         {
             cell.layer.borderColor = tl.symbolDefaultColor.CGColor;
-            cell.layer.borderWidth = 6.0;
+            cell.layer.borderWidth = (cell.frame.size.height / 12);
         }
     }
     
