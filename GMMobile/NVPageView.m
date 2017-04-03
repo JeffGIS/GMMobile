@@ -289,32 +289,34 @@
     {
         case UIGestureRecognizerStateEnded:
         {
-            _dragSelectActive = NO;
-            
-            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            if (_dragSelectedCells.count)
             {
-                UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
-                cell.backgroundColor = UIColor.whiteColor;
-                cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                NSInteger row = indexPaths.row;
-                
-                if (_dragSelectedCells.count == 1)
-                    [self turnOnJustThisRow:row inTableView:tv];
-                
-                else
+                for (NSIndexPath *indexPaths in _dragSelectedCells)
                 {
-                    if (cell.selected)
-                        [self setStatus:0 forRow:row forTVWithTag:tv.tag];
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    cell.selectionStyle = UITableViewCellSelectionStyleGray;
+                    NSInteger row = indexPaths.row;
+                    
+                    if (_dragSelectedCells.count == 1)
+                        [self turnOnJustThisRow:row inTableView:tv];
                     
                     else
-                        [self setStatus:1 forRow:row forTVWithTag:tv.tag];
+                    {
+                        if (cell.selected)
+                            [self setStatus:0 forRow:row forTVWithTag:tv.tag];
+                        
+                        else
+                            [self setStatus:1 forRow:row forTVWithTag:tv.tag];
+                    }
                 }
+                
+                _mapVC.fromIndex = self.tabBarController.selectedIndex;
+                _mapVC.fromLegends = YES;
+                self.tabBarController.selectedIndex = 0;
             }
             
-            _mapVC.fromIndex = self.tabBarController.selectedIndex;
-            _mapVC.fromLegends = YES;
-            self.tabBarController.selectedIndex = 0;
-            _preventRefresh = NO;
+            _dragSelectActive = _preventRefresh = NO;
         }
             break;
             
@@ -330,7 +332,7 @@
             CGPoint point = [gesture locationInView:tv];
             CGPoint superpoint = [gesture locationInView:self.view];
             
-            if (CGRectContainsPoint(tv.frame, superpoint))
+            if (CGRectContainsPoint(tv.frame, superpoint) && point.y > _headerHeight)
             {
                 NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
                 
@@ -818,8 +820,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
               inTableView:(UITableView *)tableView
 {
     ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
-    for (int irow = 0;irow < tl.numCells;irow++)
+    
+    for (int irow = 0; irow < tl.numCells; irow++)
         [self setThemeLegendCellStatusTo:YES forClass:irow andThemeWithTag:tableView.tag];
+    
     [self setThemeLegendCellStatusTo:NO forClass:row andThemeWithTag:tableView.tag];
     
 }
@@ -828,14 +832,18 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableView *tv = (UITableView *)gesture.view;
     CGPoint point = [gesture locationInView:tv];
-    NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
-    BOOL hasStatus = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]].selected;
     
-    if (hasStatus)
-        [self setStatus:0 forRow:row forTVWithTag:tv.tag];
-    
-    else
-        [self setStatus:gesture.numberOfTouches forRow:row forTVWithTag:tv.tag];
+    if (point.y > _headerHeight)
+    {
+        NSUInteger row = (NSUInteger)((point.y - _headerHeight) / tv.rowHeight);
+        BOOL hasStatus = [tv cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]].selected;
+        
+        if (hasStatus)
+            [self setStatus:0 forRow:row forTVWithTag:tv.tag];
+        
+        else
+            [self setStatus:gesture.numberOfTouches forRow:row forTVWithTag:tv.tag];
+    }
 }
 
 - (void)setStatus:(NSInteger)status
