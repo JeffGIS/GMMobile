@@ -1854,15 +1854,41 @@ NextPass:
         {
             NSString * text=@"";
             double count;
+            if (pias)
+            {
+                if (pias.nCounts)
+                    nTextFields = 2;
+                else
+                    nTextFields = 1;
+            }
         TryLessText:
             count = 1;
             if (pias)
             {
-                count = [pias countForArea:keyval
-                         whichCount:0];// * to.adjustCount;
-                char countstr[32];
-                sprintf (countstr,"%f",count);
-                text = formatText(countstr, to.formats[0], 1);
+                if (pias.nCounts && nTextFields > 1)
+                {
+                    count = [pias countForArea:keyval
+                                    whichCount:0];
+                    double count1 = [pias countForArea:keyval
+                                         whichCount:1];
+                    double count2 = [pias countForArea:keyval
+                                         whichCount:2];
+                    char countstr[32];
+                    if (count1)
+                        sprintf (countstr,"%.0f\n%.0f%%\nFrom %.0f to %.0f",count,100*count/count1,count1,count2);
+                    else
+                        sprintf (countstr,"%.0f\nFrom %.0f to %.0f",count,count1,count2);
+                    text = [NSString stringWithUTF8String:countstr];
+                    
+                }
+                else
+                {
+                    count = [pias countForArea:keyval
+                                    whichCount:0];
+                    char countstr[32];
+                    sprintf (countstr,"%f",count);
+                    text = formatText(countstr, to.formats[0], 1);
+                }
             }
             else if (from == TFONVMetroDisplay)
             {
