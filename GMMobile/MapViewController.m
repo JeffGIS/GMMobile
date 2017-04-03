@@ -2925,7 +2925,7 @@ haveVV:
 
 - (void)vectorViewDidComplete:(VectorView *)vectorView
 {
-    static BOOL first = TRUE;
+    //static BOOL first = TRUE;
    _waitForVectorViewRefresh = NO;
     
     if (vectorView.displayID != CRAPI.sharedInstance.keepProcessing)
