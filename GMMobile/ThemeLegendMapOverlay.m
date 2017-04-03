@@ -158,7 +158,8 @@
     tlmo.tableView.layer.borderColor = UIColor.blackColor.CGColor;
     tlmo.tableView.layer.borderWidth = 2.0;
     tlmo.tableView.delaysContentTouches = NO;
-    tlmo.tableView.allowsMultipleSelection = YES;
+    tlmo.tableView.delaysContentTouches = NO;
+    tlmo.tableView.allowsSelection = NO;
     tlmo.tableView.separatorColor = UIColor.clearColor;
     tlmo.tableView.separatorInset = UIEdgeInsetsZero;
     tlmo.tableView.layoutMargins = UIEdgeInsetsZero;
@@ -171,6 +172,14 @@
     
     [tlmo.tableView addGestureRecognizer:lpgr];
     [tlmo addGestureRecognizer:pgr];
+    
+    UITapGestureRecognizer *tap1 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
+    tap1.numberOfTouchesRequired = 1;
+    [tlmo.tableView addGestureRecognizer:tap1];
+    UITapGestureRecognizer *tap2 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
+    tap2.numberOfTouchesRequired = 2;
+    [tlmo.tableView addGestureRecognizer:tap2];
+    
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [view addSubview:tlmo];
@@ -187,25 +196,26 @@
     {
         case UIGestureRecognizerStateEnded:
         {
-            for (NSIndexPath *indexPaths in _dragSelectedCells)
+            if (_dragSelectedCells.count)
             {
-                UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPaths];
-                int iclass = (int)indexPaths.row;
-                cell.backgroundColor = UIColor.whiteColor;
-                cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                
-                if (cell.selected)
-                    [self tableView:_tableView didDeselectRowAtIndexPath:indexPaths];
-                
-                else
-                    [self tableView:_tableView didSelectRowAtIndexPath:indexPaths];
-                
-                if (_dragSelectedCells.count == 1)
-                    [self turnOnJustThisRow:iclass inTableView:tv];
-                else
+                for (NSIndexPath *indexPaths in _dragSelectedCells)
                 {
-                    cell.selected = !cell.selected;
-                    [self setThemeLegendCellStatusTo:cell.selected forClass:iclass++ andThemeWithTag:tv.tag];
+                    UITableViewCell *cell = [tv cellForRowAtIndexPath:indexPaths];
+                    cell.backgroundColor = UIColor.whiteColor;
+                    NSInteger row = indexPaths.row;
+                    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[row];
+                    
+                    if (_dragSelectedCells.count == 1)
+                        [self turnOnJustThisRow:row inTableView:tv];
+                    
+                    else
+                    {
+                        if (tlc.status)
+                            [self setThemeLegendCellStatusTo:0 forClass:row andThemeWithTag:tv.tag];
+                        
+                        else
+                            [self setThemeLegendCellStatusTo:1 forClass:row andThemeWithTag:tv.tag];
+                    }
                 }
             }
             
@@ -273,24 +283,6 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
-}
-- (void)setThemeLegendCellStatusTo:(int)status
-                          forClass:(NSInteger)class
-                   andThemeWithTag:(NSInteger)tag
-{
-    ThemeLegend *tl = _legend;
-    ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[class];
-    tlc.status = status;
-}
-
-- (void) turnOnJustThisRow:(NSInteger)row
-               inTableView:(UITableView*) tableView
-{
-    ThemeLegend *tl = _legend;
-    for (int irow = 0;irow < tl.numCells;irow++)
-        [self setThemeLegendCellStatusTo:YES forClass:irow andThemeWithTag:tableView.tag];
-    [self setThemeLegendCellStatusTo:NO forClass:row andThemeWithTag:tableView.tag];
-    
 }
 
 - (NSInteger)tableView:(UITableView *)tableView
@@ -896,34 +888,39 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         NSMutableString *countString = NSMutableString.string;
         
         if (tlc.status)
-        {
-            [countString insertString:@"X"
-                              atIndex:0];
-        }
+            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count] atIndex:0];
         
         else
-        {
-            [countString insertString:[NSString stringWithFormat:@"%i", tlc.count]
-                              atIndex:0];
-        }
+            [countString insertString:@"X" atIndex:0];
         
         while (countString.length < _countLength)
         {
             if (tlc.status)
-            {
-                [countString insertString:@"X"
-                                  atIndex:0];
-            }
+                [countString insertString:@" " atIndex:0];
             
             else
-            {
-                [countString insertString:@" "
-                                  atIndex:0];
-            }
+                [countString insertString:@"X" atIndex:0];
         }
         
         [text appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
     }
+    
+    cell.layer.borderColor = UIColor.blackColor.CGColor;
+    cell.layer.borderWidth = 0.5;
+    
+    if (tlc.status)
+    {
+        cell.backgroundColor = UIColor.whiteColor;
+        
+        if (tlc.status == 2)
+        {
+            cell.layer.borderColor = _legend.symbolDefaultColor.CGColor;
+            cell.layer.borderWidth = (cell.frame.size.height / 12);
+        }
+    }
+    
+    else
+        cell.backgroundColor = UIColor.lightGrayColor;
     
     UILabel *textLabel = UILabel.new;
     textLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -942,8 +939,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     textLabel.numberOfLines = 1;
     textLabel.tag = 888;
     
-    cell.layer.borderColor = UIColor.blackColor.CGColor;
-    cell.layer.borderWidth = 1.0;
     cell.textLabel.backgroundColor = UIColor.clearColor;
     cell.contentView.backgroundColor = UIColor.clearColor;
     cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1015,48 +1010,57 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView
-  willDisplayCell:(UITableViewCell *)cell
-forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)setThemeLegendCellStatusTo:(int)status
+                          forClass:(NSInteger)class
+                   andThemeWithTag:(NSInteger)tag
 {
-    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
+    ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[class];
+    tlc.status = status;
+}
+
+- (void)turnOnJustThisRow:(NSInteger)row
+              inTableView:(UITableView *)tableView
+{
+    for (int irow = 0; irow < _legend.numCells; irow++)
+        [self setThemeLegendCellStatusTo:0 forClass:irow andThemeWithTag:tableView.tag];
     
-    if (tlc.status)
-    {
-        [tableView selectRowAtIndexPath:indexPath
-                               animated:NO
-                         scrollPosition:UITableViewScrollPositionNone];
-    }
+    [self setThemeLegendCellStatusTo:1 forClass:row andThemeWithTag:tableView.tag];
 }
 
-- (void)tableView:(UITableView *)tableView
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)legendTapped:(UITapGestureRecognizer *)gesture
 {
-    if (!_dragSelectActive)
+    UITableView *tv = (UITableView *)gesture.view;
+    CGPoint point = [gesture locationInView:tv];
+    
+    if (point.y > _headerHeight)
     {
-        NSInteger irow = indexPath.row;
-        if (irow >= 0 && irow < _legend.cells.count)
-        {
-            ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[irow];
-            tlc.status = YES;
-            
-            if (!_preventRefresh && _delegate)
-                [_delegate themeLegendDidChangeStatus:YES];
-        }
-    }
-}
-
-- (void)tableView:(UITableView *)tableView
-didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (!_dragSelectActive)
-    {
-        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[indexPath.row];
-        tlc.status = NO;
+        NSInteger row = (NSInteger)((point.y - _headerHeight) / tv.rowHeight);
+        ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[row];
         
-        if (!_preventRefresh && _delegate)
-            [_delegate themeLegendDidChangeStatus:YES];
+        if (tlc.status == 2)
+        {
+            if (gesture.numberOfTouches == 2)
+                tlc.status = 1;
+            
+            else
+                tlc.status = 0;
+        }
+        
+        else if (tlc.status == 1)
+        {
+            if (gesture.numberOfTouches == 2)
+                tlc.status = 2;
+            
+            else
+                tlc.status = 0;
+        }
+        
+        else
+            tlc.status = (int)gesture.numberOfTouches;
     }
+    
+    if (!_preventRefresh && _delegate)
+        [_delegate themeLegendDidChangeStatus:YES];
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation
