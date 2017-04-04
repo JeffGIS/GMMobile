@@ -36,6 +36,7 @@
 @property (nonatomic) int len, totalPages, numElements, currentElement;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NVTextAlert *textAlert;
+@property (nonatomic) NVKeyboard *keyboard;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;
@@ -362,10 +363,10 @@ EAGLContext *CreateBestEAGLContext()
 {
     [super viewWillAppear:animated];
     
-    //removed: @"Access Contacts", @"Test Calendar Interface", @"Draw hotspottest.bin", @"Compute PDF Pages"
+    //removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages"
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location",
-                  @"Test Keyboard", @"Watch TestDrive Training Video"];
+                  @"Test Keyboard", @"Test Calendar Interface", @"Watch TestDrive Training Video"];
     
     [_tableView reloadData];
 }
@@ -548,9 +549,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Test Keyboard"])
     {
-        NVKeyboard *keyboard = [NVKeyboard showKeyboardInView:self.view
-                                                     delegate:self];
-#pragma unused(keyboard)
+        if (![self.view.subviews containsObject:_keyboard])
+            _keyboard = [NVKeyboard showKeyboardInView:self.view delegate:self];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -563,11 +563,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)testCalendar
 {
-    NVCalendarVC *calendarVC = [[NVCalendarVC alloc] init];
-    
-    [self presentViewController:calendarVC
-                       animated:YES
-                     completion:nil];
+    NVCalendarVC *calendarVC = NVCalendarVC.new;
+    [self presentViewController:calendarVC animated:YES completion:nil];
 }
 
 - (void)computePDFPages

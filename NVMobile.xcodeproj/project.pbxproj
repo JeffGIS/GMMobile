@@ -55,6 +55,8 @@
 		697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */; };
 		697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */; };
 		6976D00E1D4FD457006098FA /* NVCRISHelp_Calibration.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */; };
+		697EEE651E93FF110057CAC0 /* SampleCurbRamp1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 697EEE641E93FF110057CAC0 /* SampleCurbRamp1.jpg */; };
+		697EEE691E93FF1B0057CAC0 /* SampleCurbRamp2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */; };
 		6986AF8F1C7CCFC60059DD1B /* newCrosshairs.png in Resources */ = {isa = PBXBuildFile; fileRef = 6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */; };
 		698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */ = {isa = PBXBuildFile; fileRef = 698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */; };
 		698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */; };
@@ -357,6 +359,8 @@
 		697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenInfoMarker.png; sourceTree = "<group>"; };
 		697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeInfoMarker.png; sourceTree = "<group>"; };
 		6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_Calibration.pdf; sourceTree = "<group>"; };
+		697EEE641E93FF110057CAC0 /* SampleCurbRamp1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SampleCurbRamp1.jpg; sourceTree = "<group>"; };
+		697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SampleCurbRamp2.jpg; sourceTree = "<group>"; };
 		698664EE1CC2A0AD001E848F /* NVMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = NVMobile.entitlements; path = ../NVMobile.entitlements; sourceTree = "<group>"; };
 		6986AF8E1C7CCFC60059DD1B /* newCrosshairs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newCrosshairs.png; sourceTree = "<group>"; };
 		6988DBF51BD6691E00649098 /* GMMobile-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GMMobile-Prefix.pch"; sourceTree = "<group>"; };
@@ -812,6 +816,8 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */,
+				697EEE641E93FF110057CAC0 /* SampleCurbRamp1.jpg */,
 				69CB89DF1DCD558700D408E9 /* backspace.png */,
 				69CB89DB1DCD4BBE00D408E9 /* upArrow.png */,
 				698C20CA1DCBC46B00F800C3 /* dismissKeyboard.png */,
@@ -1363,6 +1369,7 @@
 				A95EC7E31B224BFC0031B903 /* downloadCloud.png in Resources */,
 				69B46EFE1BC215F100BB7724 /* destinations.png in Resources */,
 				69BCD6171DF63C9E002E0384 /* Reader-Print.png in Resources */,
+				697EEE651E93FF110057CAC0 /* SampleCurbRamp1.jpg in Resources */,
 				A95EC7E41B224BFC0031B903 /* uploadCloud.png in Resources */,
 				A9128A5B1AC0C95600F4242F /* redTarget.png in Resources */,
 				BB8B96971E8568CA00B6A9F7 /* Narcotics.png in Resources */,
@@ -1381,6 +1388,7 @@
 				A9C086751AE173A900E79B3E /* applications.png in Resources */,
 				A9D281881B045BAD00523B29 /* autoUpload.png in Resources */,
 				BB8B96981E8568CA00B6A9F7 /* MotorVehicleTheft.png in Resources */,
+				697EEE691E93FF1B0057CAC0 /* SampleCurbRamp2.jpg in Resources */,
 				69BCD6151DF63C9E002E0384 /* Reader-Mark-Y@2x.png in Resources */,
 				69BCD6061DF63C9E002E0384 /* Reader-Button-H@2x.png in Resources */,
 				69BCD6091DF63C9E002E0384 /* Reader-Button-N@2x.png in Resources */,

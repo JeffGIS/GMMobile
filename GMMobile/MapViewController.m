@@ -4711,33 +4711,22 @@ didCompleteWithError:(NSError *)error
 
 - (void)editWallAttributes
 {
-    [SharedDefaults.defaults saveString:_selectedAlleyWall
-                                 forKey:@"AlleyWallEditAttributes"];
-    
+    [SharedDefaults.defaults saveString:_selectedAlleyWall forKey:@"AlleyWallEditAttributes"];
     [self dismissTableView];
-    
-    [self performSelector:@selector(launchAlleyWallApp)
-               withObject:nil
-               afterDelay:0.3];
+    [self performSelector:@selector(launchAlleyWallApp) withObject:nil afterDelay:0.3];
 }
 
 - (void)viewWallPhotos
 {
     NSString *title = [NSString stringWithFormat:@"Photos for AlleyWall %@", _selectedAlleyWall];
-    
-    NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1"
-                                               key:@"Key1"];
-    
-    NVPhoto *photo2 = [NVPhoto photoWithIdentifier:@"Sample Photo 2"
-                                               key:@"Key2"];
+    NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1" key:@"Key1"];
+    NVPhoto *photo2 = [NVPhoto photoWithIdentifier:@"Sample Photo 2" key:@"Key2"];
     
     NVPhotoController *nvpc = [NVPhotoController photoControllerWithNVPhotosArray:@[(photo1), (photo2)]
                                                                          delegate:self
                                                                             title:title];
     
-    [self presentViewController:nvpc
-                       animated:YES
-                     completion:nil];
+    [self presentViewController:nvpc animated:YES completion:nil];
 }
 
 - (NSString *)imageForKey:(NSString *)key
@@ -4745,16 +4734,10 @@ didCompleteWithError:(NSError *)error
     NSString *rtn = @"";
     
     if ([key isEqualToString:@"Key1"])
-    {
-        rtn = [NSBundle.mainBundle pathForResource:@"SampleCurbRamp1"
-                                            ofType:@"jpg"];
-    }
+        rtn = [NSBundle.mainBundle pathForResource:@"SampleCurbRamp1" ofType:@"jpg"];
     
     else if ([key isEqualToString:@"Key2"])
-    {
-        rtn = [NSBundle.mainBundle pathForResource:@"SampleCurbRamp2"
-                                            ofType:@"jpg"];
-    }
+        rtn = [NSBundle.mainBundle pathForResource:@"SampleCurbRamp2" ofType:@"jpg"];
     
     return rtn;
 }
@@ -4767,11 +4750,8 @@ didCompleteWithError:(NSError *)error
 
 - (void)viewInsetWallPhotos
 {
-    NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1"
-                                               key:@"Key1"];
-    
-    NVPhoto *photo2 = [NVPhoto photoWithIdentifier:@"Sample Photo 2"
-                                               key:@"Key2"];
+    NVPhoto *photo1 = [NVPhoto photoWithIdentifier:@"Sample Photo 1" key:@"Key1"];
+    NVPhoto *photo2 = [NVPhoto photoWithIdentifier:@"Sample Photo 2" key:@"Key2"];
     
     NVPhotoView *nvpv = [NVPhotoView showPhotoViewWithNVPhotosArray:@[(photo1), (photo2)]
                                                              inView:self.view
