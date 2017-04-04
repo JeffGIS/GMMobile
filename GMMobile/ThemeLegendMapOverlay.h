@@ -58,5 +58,8 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
                           hideButtons:(BOOL)hideButtons;
 
 - (void)displayRandomColorAlertInView:(UIView *)view;
+- (void)disableSelect;
+- (void)disableMultipleSelect;
+- (void)disableFlag;
 
 @end

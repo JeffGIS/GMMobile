@@ -3294,6 +3294,9 @@ haveVV:
                                                                        atOrigin:mapOrigin
                                                                     hideButtons:NO];
                 
+                if (CRAPI.sharedInstance.currentApp != HCConfigCrimes)
+                    [tlmo disableSelect];
+                
                 if (tlmo)
                 {
                     yOriginPortrait += (tlmo.frame.size.height + yFactor);

@@ -19,6 +19,8 @@
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat buttonMargin;
 @property (nonatomic) CGPoint previousContentOffset;
+@property (nonatomic) UILongPressGestureRecognizer *longPress;
+@property (nonatomic) UITapGestureRecognizer *tap1, *tap2;
 
 @end
 
@@ -125,8 +127,7 @@
     tlmo.legend = legend;
     tlmo.backgroundColor = UIColor.clearColor;
     tlmo.tag = tag;
-    tlmo.isExpanded = tlmo.dragSelectActive = NO;
-    tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
+    tlmo.isExpanded = tlmo.dragSelectActive = tlmo.preventRefresh = tlmo.firstTimeDrag = NO;
     tlmo.hideButtons = hideButtons;
     tlmo.delegate = delegate;
     tlmo.tabBar = view.parentViewController.tabBarController.tabBar;
@@ -164,21 +165,20 @@
     tlmo.tableView.separatorInset = UIEdgeInsetsZero;
     tlmo.tableView.layoutMargins = UIEdgeInsetsZero;
     
-    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:tlmo
-                                                                                       action:@selector(tlmoLongPressed:)];
+    tlmo.longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:tlmo
+                                                                   action:@selector(tlmoLongPressed:)];
+    [tlmo.tableView addGestureRecognizer:tlmo.longPress];
     
     UIPinchGestureRecognizer *pgr = [[UIPinchGestureRecognizer alloc] initWithTarget:tlmo
                                                                               action:@selector(tlmoPinched:)];
-    
-    [tlmo.tableView addGestureRecognizer:lpgr];
     [tlmo addGestureRecognizer:pgr];
     
-    UITapGestureRecognizer *tap1 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
-    tap1.numberOfTouchesRequired = 1;
-    [tlmo.tableView addGestureRecognizer:tap1];
-    UITapGestureRecognizer *tap2 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
-    tap2.numberOfTouchesRequired = 2;
-    [tlmo.tableView addGestureRecognizer:tap2];
+    tlmo.tap1 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
+    tlmo.tap1.numberOfTouchesRequired = 1;
+    [tlmo.tableView addGestureRecognizer:tlmo.tap1];
+    tlmo.tap2 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
+    tlmo.tap2.numberOfTouchesRequired = 2;
+    [tlmo.tableView addGestureRecognizer:tlmo.tap2];
     
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
@@ -1078,6 +1078,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     if (gesture.state == UIGestureRecognizerStateEnded)
         [self expandLegend];
+}
+
+- (void)disableSelect
+{
+    [self disableMultipleSelect];
+    [self disableFlag];
+    [_tableView removeGestureRecognizer:_tap1];
+}
+
+- (void)disableMultipleSelect
+{
+    [_tableView removeGestureRecognizer:_longPress];
+}
+
+- (void)disableFlag
+{
+    [_tableView removeGestureRecognizer:_tap2];
 }
 
 @end
