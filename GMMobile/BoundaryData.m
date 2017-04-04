@@ -1486,6 +1486,7 @@ boundsPointInAreas:(PointInAreas*)bpias
          llCorners:(CORNERPOINTS *) latlonCornerPoints
           LLBounds:(MNMXCORD *)platlonBounds
         viewBounds:(MNMXCORD *)pvbounds
+  haveCompareTheme:(int)haveCompareTheme
 {
     //PointInAreas (pias) will be in screen coord while PointInArea(pia) will be in lat/lon
     int nLoaded = 0;
@@ -1573,7 +1574,7 @@ NextPass:
                   numLoops:numLoops
                polyPartLen:polyPartLen
                     points:llpoints
-                   nCounts:1];
+                   nCounts:haveCompareTheme];
         }
         free (llpoints);
     }

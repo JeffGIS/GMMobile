@@ -261,6 +261,8 @@
 {
     int rtn = DISPLAY_ITEM;
     
+    if (cclass)
+        *cclass = 0;
     //test pass
     for (Theme *thm in _themeList)
     {
@@ -388,4 +390,19 @@ Exit:
     return rtn;
 
 }
+- (int) haveCompareTheme
+{
+    int rtn = 0;
+    
+    for (Theme *thm in _themeList)
+    {
+        for (ThemeClass *tc in thm.classes)
+        {
+            if (tc.status == 2)
+                rtn = 1;
+        }
+    }
+    return rtn;
+}
+
 @end

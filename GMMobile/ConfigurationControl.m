@@ -760,4 +760,16 @@ visibleAtZoom:(CGFloat)zoom
     return rtn;
 }
 
+- (void) clearLegendCompareFlags:(ThemeTypes)type
+{
+    for (ThemeLegend *tl in _legendList)
+    {
+        if (tl.type != type)
+        for (ThemeLegendCell *tlc in tl.cells)
+        {
+            if (tlc.status == 2)
+                tlc.status = 0;
+        }
+    }
+}
 @end

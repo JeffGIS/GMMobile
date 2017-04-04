@@ -155,7 +155,8 @@ boundsPointInAreas:nil
   usingPointInArea:pia
          llCorners:latlonCornerPoints
           LLBounds:platlonBounds
-        viewBounds:pvbounds];
+        viewBounds:pvbounds
+         haveCompareTheme:[themes haveCompareTheme]];
         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
 
     }
@@ -352,7 +353,8 @@ NextPass:
                 usingPointInArea:pia
                        llCorners:latlonCornerPoints
                         LLBounds:platlonBounds
-                      viewBounds:pvbounds];
+                      viewBounds:pvbounds
+                haveCompareTheme:0];
             [pias createDisplayColors:piasAdjust mask:pia];
         }
         else

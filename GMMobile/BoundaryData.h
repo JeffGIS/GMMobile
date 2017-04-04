@@ -92,7 +92,8 @@ boundsPointInAreas:(PointInAreas*)pias
   usingPointInArea:(PointInArea*)pia
          llCorners:(CORNERPOINTS *) latlonCornerPoints
           LLBounds:(MNMXCORD *)platlonBounds
-        viewBounds:(MNMXCORD *)pvbounds;
+        viewBounds:(MNMXCORD *)pvbounds
+  haveCompareTheme:(int)haveCompareTheme;
 
 - (int) display:(CGContextRef)context
        areaType:(NSString*)areaType

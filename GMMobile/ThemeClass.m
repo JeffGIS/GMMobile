@@ -25,6 +25,8 @@
     _status = status;
     if ([_title containsString:@"Burglary"])
         ii=status;
+    if (status == 2)
+        ii=status;
 }
 
 @end

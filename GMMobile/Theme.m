@@ -1317,6 +1317,15 @@ int getThemeOpt(ThemeTypes type)
     return iclass;
 }
 
+- (void) setCompareClass:(int*)cclass
+               fromClass:(int)iclass
+{
+    ThemeClass * tc = _classes[iclass];
+    
+    if (tc.status == 2)
+        *cclass = 1;
+}
+
 - (BOOL) classValues:(NSArray*)values
       containInteger:(long long)ival
 {
@@ -1449,6 +1458,9 @@ int getThemeOpt(ThemeTypes type)
                                 testPass:test])
                 {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                fromClass:val];
                 }
                 break;
             case Part2Theme:
@@ -1459,6 +1471,9 @@ int getThemeOpt(ThemeTypes type)
                                 testPass:test])
                 {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
                 }
                 break;
             case AssaultTheme:
@@ -1476,6 +1491,9 @@ int getThemeOpt(ThemeTypes type)
                                 testPass:test])
                 {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
                 }
                 break;
             case DepartmentTheme:
@@ -1493,6 +1511,9 @@ int getThemeOpt(ThemeTypes type)
                                               dc:dc
                                         testPass:test])
                             rtn = DISPLAY_ITEM;
+                        if (!test)
+                            [self setCompareClass:cclass
+                                        fromClass:val];
                         break;
                     }
                     val++;
@@ -1512,19 +1533,27 @@ int getThemeOpt(ThemeTypes type)
                                       by:1
                                       dc:dc
                                 testPass:test])
-                rtn = DISPLAY_ITEM;
+                {
+                    rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
             }
                 break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
                 val -= self.minYear;
-                if (cclass && !test && val < 2)
-                    *cclass = val;
                 if ([self incrementCount:val
                                       by:1
                                       dc:dc
                                 testPass:test])
+                {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
                 break;
             case MonthTheme:
                 val = tmtime.tm_mon;
@@ -1532,7 +1561,12 @@ int getThemeOpt(ThemeTypes type)
                                       by:1
                                       dc:dc
                                 testPass:test])
+                {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
                 
             case ThirteenMonthTheme:
                 val = [self classFromTime:dc.itemBeginTime];
@@ -1541,7 +1575,12 @@ int getThemeOpt(ThemeTypes type)
                                       by:1
                                       dc:dc
                                 testPass:test])
+                {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
                 
                 break;
             case DayofWeekTheme:
@@ -1550,7 +1589,12 @@ int getThemeOpt(ThemeTypes type)
                                       by:1
                                       dc:dc
                                 testPass:test])
+                {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
                 break;
             case HourTheme:
                 val = tmtime.tm_hour/2;
@@ -1558,7 +1602,12 @@ int getThemeOpt(ThemeTypes type)
                                       by:1
                                       dc:dc
                                 testPass:test])
+                {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
                 break;
             case CurbRampIntersectionTheme:
                 if (dc.elementType != StreetIntersection)
