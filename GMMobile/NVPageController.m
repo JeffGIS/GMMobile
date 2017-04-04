@@ -18,7 +18,10 @@
 + (instancetype)pageControllerWithArrangementArray:(NSArray *)arrangementArray
 {
     if (!arrangementArray)
+    {
+        NSLog(@"NVPageController ERROR:Cannot set arrangment array to empty or nil");
         return nil;
+    }
     
     NVPageController *nvpc = NVPageController.new;
     nvpc.pageViewArrangementArray = arrangementArray;
@@ -56,6 +59,9 @@
                    direction:UIPageViewControllerNavigationDirectionForward
                     animated:YES
                   completion:nil];
+    
+    if (_pages.count < 2)
+        [self disablePaging];
 }
 
 - (void)setupPages

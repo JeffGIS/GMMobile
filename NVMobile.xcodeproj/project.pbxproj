@@ -119,7 +119,6 @@
 		69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
 		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
-		69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 69C8DB561C515DC90062AE84 /* MGThemesVC.m */; };
 		69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */; };
 		69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DB1DCD4BBE00D408E9 /* upArrow.png */; };
 		69CB89E01DCD558700D408E9 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DF1DCD558700D408E9 /* backspace.png */; };
@@ -447,8 +446,6 @@
 		69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_SlopeVC.pdf; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
 		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .gitignore; path = GMMobile/.gitignore; sourceTree = "<group>"; };
-		69C8DB551C515DC90062AE84 /* MGThemesVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGThemesVC.h; sourceTree = "<group>"; };
-		69C8DB561C515DC90062AE84 /* MGThemesVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGThemesVC.m; sourceTree = "<group>"; };
 		69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIconHighlighted.png; sourceTree = "<group>"; };
 		69CB89DB1DCD4BBE00D408E9 /* upArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = upArrow.png; sourceTree = "<group>"; };
 		69CB89DF1DCD558700D408E9 /* backspace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backspace.png; sourceTree = "<group>"; };
@@ -1040,8 +1037,6 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
-				69C8DB551C515DC90062AE84 /* MGThemesVC.h */,
-				69C8DB561C515DC90062AE84 /* MGThemesVC.m */,
 				698ED6371DF8E8C00032FEA5 /* NVMetroSettingsVC.h */,
 				698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */,
 				69366E011C542A6700E79AA7 /* NVPageController.h */,
@@ -1549,7 +1544,6 @@
 				69BCD5D11DF63C7E002E0384 /* ReaderContentPage.m in Sources */,
 				69366E001C542A4B00E79AA7 /* NVPageView.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,
-				69C8DB571C515DC90062AE84 /* MGThemesVC.m in Sources */,
 				69BCD5E11DF63C7E002E0384 /* ThumbsViewController.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);

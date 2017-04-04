@@ -119,7 +119,6 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
-    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"MGThemesVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
     
     [NSNotificationCenter.defaultCenter addObserver:self
@@ -978,11 +977,7 @@
     {
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVSpreadsheet"];
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:lvc
-                               atIndex:1];
-        
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:lvc atIndex:1];
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVWebKitVC"];
         UIViewController *svc = [storyboard instantiateViewControllerWithIdentifier:@"SettingsVC"];
         
@@ -994,25 +989,23 @@
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps)
     {
         UIViewController *cdvc = [storyboard instantiateViewControllerWithIdentifier:@"CurbRampDataOptionsVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:cdvc
-                               atIndex:1];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:cdvc atIndex:1];
     }
     
     else
-    {
-        [NVTabBarEdit tabBarController:self.tabBarController
-            removeViewControllerWithID:@"CurbRampDataOptionsVC"];
-    }
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
     {
-        UIViewController *mgtvc = [storyboard instantiateViewControllerWithIdentifier:@"MGThemesVC"];
+        NSArray *pvaArray = [NSArray arrayWithObjects:[NSNumber numberWithInteger:NVPageViewArrangementFit4Columns2], nil];
+        NVPageController *nvpc = [NVPageController pageControllerWithArrangementArray:pvaArray];
+        nvpc.restorationIdentifier = @"MGThemesVC";
+        nvpc.tabBarItem.title = @"Themes";
         
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:mgtvc
-                               atIndex:1];
+        nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"fieldOptions"
+                                                                                               ofType:@"png"]];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:nvpc atIndex:1];
     }
     
     else
@@ -1031,24 +1024,15 @@
         nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"fieldOptions"
                                                                                                ofType:@"png"]];
         
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:nvpc
-                               atIndex:2];
-        
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:nvpc atIndex:2];
         UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:crimeOptionsVC
-                               atIndex:1];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:crimeOptionsVC atIndex:1];
         
         if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
             [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
         
         _nvssvc.tabBarItem.title = @"Crime Lists";
-        
-        [NVTabBarEdit tabBarController:self.tabBarController
-                  insertViewController:_nvssvc
-                               atIndex:4];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:_nvssvc atIndex:4];
     }
     
     else

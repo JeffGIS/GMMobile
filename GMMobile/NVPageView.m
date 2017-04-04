@@ -95,7 +95,6 @@
             [[self.view viewWithTag:1] constrainTopToAnchor:self.view.topAnchor constant:_outerMargin];
             [[self.view viewWithTag:1] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
             break;
-            
         case NVPageViewArrangementFit2:
         {
             CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
@@ -115,7 +114,6 @@
             [[self.view viewWithTag:2] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
         }
             break;
-            
         case NVPageViewArrangementFit3:
         {
             CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
@@ -142,7 +140,38 @@
             [[self.view viewWithTag:3] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
         }
             break;
+        case NVPageViewArrangementFit4Columns2:
+        {
+            CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
+            CGFloat numCells2 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 1] numCells];
+            CGFloat numCells3 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 2] numCells];
+            CGFloat numCells4 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 3] numCells];
             
+            CGFloat multiplier1 = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
+            CGFloat multiplier2 = ((numCells3 + (1.5 / numCells3)) / (numCells4 + (1.5 / numCells4)));
+            
+            if (isnan(multiplier1) || isnan(multiplier2))
+                return;
+            
+            [[self.view viewWithTag:1] constrainTopToAnchor:self.view.topAnchor constant:_outerMargin];
+            [[self.view viewWithTag:1] constrainLeadingToAnchor:self.view.leadingAnchor constant:_outerMargin];
+            [[self.view viewWithTag:2] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
+            [[self.view viewWithTag:1] constrainHeightToAnchor:[self.view viewWithTag:2].heightAnchor multiplier:multiplier1];
+            [[self.view viewWithTag:1] constrainBottomToAnchor:[self.view viewWithTag:2].topAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:2] constrainBottomToAnchor:self.view.bottomAnchor constant:-_pageControlMargin];
+            [[self.view viewWithTag:1] constrainWidthToAnchor:[self.view viewWithTag:2].widthAnchor];
+            [[self.view viewWithTag:2] constrainWidthToAnchor:[self.view viewWithTag:3].widthAnchor];
+            [[self.view viewWithTag:3] constrainWidthToAnchor:[self.view viewWithTag:4].widthAnchor];
+            [[self.view viewWithTag:3] constrainTopToAnchor:[self.view viewWithTag:1].topAnchor];
+            [[self.view viewWithTag:3] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_outerMargin];
+            [[self.view viewWithTag:4] constrainTrailingToAnchor:[self.view viewWithTag:3].trailingAnchor];
+            [[self.view viewWithTag:4] constrainBottomToAnchor:[self.view viewWithTag:2].bottomAnchor];
+            [[self.view viewWithTag:3] constrainHeightToAnchor:[self.view viewWithTag:4].heightAnchor multiplier:multiplier2];
+            [[self.view viewWithTag:3] constrainBottomToAnchor:[self.view viewWithTag:4].topAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:1] constrainTrailingToAnchor:[self.view viewWithTag:3].leadingAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:2] constrainTrailingToAnchor:[self.view viewWithTag:4].leadingAnchor constant:-_innerMargin];
+        }
+            break;
         case NVPageViewArrangementFit5Columns2:
         {
             CGFloat numCells1 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex] numCells];
