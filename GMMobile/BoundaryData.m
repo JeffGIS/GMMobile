@@ -702,7 +702,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                 np++;
         }
         if ([themes setDisplayCharacteristics:dc
-                                    displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                    displayID:_processingID
+                                 compareClass:nil] != DO_NOT_DISPLAY_ITEM)
         {
             
             [self fillUseCode:context
@@ -1372,7 +1373,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             if ([themes containsColorByRefTheme])
             {
                 [themes setDisplayCharacteristics:dc
-                                        displayID:_processingID];
+                                        displayID:_processingID
+                                     compareClass:nil];
                 [self fillUseCode:context
                           nPoints:numPoints
                            points:llpoints
@@ -1389,7 +1391,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                         withColor:UIColor.redColor.CGColor
                          andWidth:3];
             else if ([themes setDisplayCharacteristics:dc
-                                             displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                             displayID:_processingID
+                                          compareClass:nil] != DO_NOT_DISPLAY_ITEM)
             {
                 float lineWidth = 0;
                 float alpha = 1;
@@ -1483,6 +1486,7 @@ boundsPointInAreas:(PointInAreas*)bpias
          llCorners:(CORNERPOINTS *) latlonCornerPoints
           LLBounds:(MNMXCORD *)platlonBounds
         viewBounds:(MNMXCORD *)pvbounds
+  haveCompareTheme:(int)haveCompareTheme
 {
     //PointInAreas (pias) will be in screen coord while PointInArea(pia) will be in lat/lon
     int nLoaded = 0;
@@ -1565,7 +1569,12 @@ NextPass:
         {
             if (!pass)
                 nLoaded++;
-            [pias loadArea:keyval numPoints:numPoints numLoops:numLoops polyPartLen:polyPartLen points:llpoints];
+            [pias loadArea:keyval
+                 numPoints:numPoints
+                  numLoops:numLoops
+               polyPartLen:polyPartLen
+                    points:llpoints
+                   nCounts:haveCompareTheme];
         }
         free (llpoints);
     }
@@ -1846,14 +1855,41 @@ NextPass:
         {
             NSString * text=@"";
             double count;
+            if (pias)
+            {
+                if (pias.nCounts)
+                    nTextFields = 2;
+                else
+                    nTextFields = 1;
+            }
         TryLessText:
             count = 1;
             if (pias)
             {
-                count = [pias countForArea:keyval];// * to.adjustCount;
-                char countstr[32];
-                sprintf (countstr,"%f",count);
-                text = formatText(countstr, to.formats[0], 1);
+                if (pias.nCounts && nTextFields > 1)
+                {
+                    count = [pias countForArea:keyval
+                                    whichCount:0];
+                    double count1 = [pias countForArea:keyval
+                                         whichCount:1];
+                    double count2 = [pias countForArea:keyval
+                                         whichCount:2];
+                    char countstr[32];
+                    if (count1)
+                        sprintf (countstr,"%.0f\n%.0f%%\nFrom %.0f to %.0f",count,100*count/count1,count1,count2);
+                    else
+                        sprintf (countstr,"%.0f\nFrom %.0f to %.0f",count,count1,count2);
+                    text = [NSString stringWithUTF8String:countstr];
+                    
+                }
+                else
+                {
+                    count = [pias countForArea:keyval
+                                    whichCount:0];
+                    char countstr[32];
+                    sprintf (countstr,"%f",count);
+                    text = formatText(countstr, to.formats[0], 1);
+                }
             }
             else if (from == TFONVMetroDisplay)
             {

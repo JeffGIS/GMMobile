@@ -23,7 +23,8 @@
 - (void) themesEndDisplayPass:(int)displayID;
 
 - (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
-                        displayID:(int)displayID;
+                        displayID:(int)displayID
+                     compareClass:(int*)cclass;
 
 - (void) getMinMaxUCR:(int)range
                   min:(int *)minUCR
@@ -36,5 +37,6 @@
 - (int) getNumUCRRanges;
 - (int) getNumTimeRanges;
 - (BOOL) containsColorByRefTheme;
+- (int) haveCompareTheme;
 
 @end

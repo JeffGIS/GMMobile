@@ -9,7 +9,8 @@
 @property float symbolWidth;
 @property (nonatomic) UIColor *symbolColor;
 @property (nonatomic) NSString *label;
-@property int count, status;
+@property int count;
+@property (nonatomic) int status;
 
 + (ThemeLegendCell *)createWithLabel:(NSString *)label;
 

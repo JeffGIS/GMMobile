@@ -23,5 +23,12 @@
     another.label = [NSString stringWithString:_label];
     return another;
 }
+- (void)setStatus:(int)status
+{
+    int ii;
+    _status = status;
+    if (status == 2)
+        ii=status;
+}
 
 @end

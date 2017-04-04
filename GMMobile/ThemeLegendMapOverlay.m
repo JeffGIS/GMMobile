@@ -1049,8 +1049,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else if (tlc.status == 1)
         {
             if (gesture.numberOfTouches == 2)
+            {
                 tlc.status = 2;
-            
+                [ConfigurationControl.sharedInstance clearLegendCompareFlags:_legend.type];
+            }
             else
                 tlc.status = 0;
         }

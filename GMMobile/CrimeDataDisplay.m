@@ -155,7 +155,8 @@ boundsPointInAreas:nil
   usingPointInArea:pia
          llCorners:latlonCornerPoints
           LLBounds:platlonBounds
-        viewBounds:pvbounds];
+        viewBounds:pvbounds
+         haveCompareTheme:[themes haveCompareTheme]];
         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
 
     }
@@ -256,9 +257,11 @@ NextPass:
                 if (!attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == OnlyAttempts)
                     continue;
 */
+                int compareClass = 0;
                 if ((!pia || [pia DPointInArea:BasePt]) &&
                     [themes setDisplayCharacteristics:dc
-                                            displayID:_processingID] != DO_NOT_DISPLAY_ITEM)
+                                            displayID:_processingID
+                                         compareClass:&compareClass] != DO_NOT_DISPLAY_ITEM)
                 {
                     DPOINT llpoint = TranDPOINT(BasePt, _pTranLLtoView);
                     if (_mode == PINMAP)
@@ -274,7 +277,8 @@ NextPass:
                     }
                     else if (_mode == CHOROPLETH)
                     {
-                        [pias DPointInArea:&llpoint];
+                        [pias DPointInArea:&llpoint
+                                whichCount:compareClass];
                     }
                     else if (_mode == HOTSPOT)
                     {
@@ -349,7 +353,8 @@ NextPass:
                 usingPointInArea:pia
                        llCorners:latlonCornerPoints
                         LLBounds:platlonBounds
-                      viewBounds:pvbounds];
+                      viewBounds:pvbounds
+                haveCompareTheme:0];
             [pias createDisplayColors:piasAdjust mask:pia];
         }
         else

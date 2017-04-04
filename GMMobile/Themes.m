@@ -257,9 +257,12 @@
 
 - (int) setDisplayCharacteristics:(DisplayCharacteristics *)dc
                         displayID:(int)displayID
+                     compareClass:(int*)cclass;
 {
     int rtn = DISPLAY_ITEM;
     
+    if (cclass)
+        *cclass = 0;
     //test pass
     for (Theme *thm in _themeList)
     {
@@ -267,7 +270,8 @@
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
                       displayID:displayID
-                       testPass:YES];
+                       testPass:YES
+                   compareClass:nil];
         if (rtn == DO_NOT_DISPLAY_ITEM)
             return rtn;
     }
@@ -278,7 +282,8 @@
             return DO_NOT_DISPLAY_ITEM;
         rtn = [thm processTheme:dc
                       displayID:displayID
-                       testPass:NO];
+                       testPass:NO
+               compareClass:cclass];
         if (rtn == DO_NOT_DISPLAY_ITEM)
             return rtn;
     }
@@ -385,4 +390,19 @@ Exit:
     return rtn;
 
 }
+- (int) haveCompareTheme
+{
+    int rtn = 0;
+    
+    for (Theme *thm in _themeList)
+    {
+        for (ThemeClass *tc in thm.classes)
+        {
+            if (tc.status == 2)
+                rtn = 1;
+        }
+    }
+    return rtn;
+}
+
 @end
