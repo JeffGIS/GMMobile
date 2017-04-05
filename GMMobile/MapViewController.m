@@ -22,6 +22,7 @@
 #import "CCodeLibrary/NVPopoverTableView.h"
 #import "ChartsViewController.h"
 #import "NVSpreadsheetDelegate.h"
+#import "NVCrimeListDelegate.h"
 #import "NVMetroSettingsVC.h"
 #import "CCodeLibrary/NVPager.h"
 #import "CCodeLibrary/NVSendEmail.h"
@@ -141,14 +142,6 @@
     _routeMode = @"driving";
     self.tabBarController.delegate = self;
     
-    _nvssvc = NVSpreadsheetVC.new;
-    _ssDelegate = NVSpreadsheetDelegate.new;
-    _nvssvc.delegate = _ssDelegate;
-    _nvssvc.restorationIdentifier = @"NVSpreadsheet";
-    _nvssvc.tabBarItem.title = @"Property List";
-    
-    _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
-                                                                                              ofType:@"png"]];
 
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
@@ -407,6 +400,32 @@
         }
         
         CRAPI.sharedInstance.appChanged = NO;
+        switch (ConfigurationControl.sharedInstance.currentApp)
+        {
+            case HCConfigMetroProp:
+                _nvssvc = NVSpreadsheetVC.new;
+                _ssDelegate = NVSpreadsheetDelegate.new;
+                _nvssvc.delegate = _ssDelegate;
+                _nvssvc.restorationIdentifier = @"NVSpreadsheet";
+                _nvssvc.tabBarItem.title = @"Property List";
+                
+                _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
+                                                                                                          ofType:@"png"]];
+                break;
+            case HCConfigCrimes:
+                _nvssvc = NVSpreadsheetVC.new;
+                _ssDelegate = (NVSpreadsheetDelegate*)NVCrimeListDelegate.new;
+                _nvssvc.delegate = _ssDelegate;
+                _nvssvc.restorationIdentifier = @"NVSpreadsheet";
+                _nvssvc.tabBarItem.title = @"Crime List";
+                
+                _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
+                                                                                                          ofType:@"png"]];
+                break;
+            default:
+                break;
+        }
+
     }
     
     if (_fromLegends)

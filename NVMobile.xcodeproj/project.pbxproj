@@ -208,6 +208,8 @@
 		A9E49B441A7ECADF002B2BA2 /* FindAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */; };
 		A9EC20601AB738EE004D38FA /* marker.png in Resources */ = {isa = PBXBuildFile; fileRef = A9EC205F1AB738EE004D38FA /* marker.png */; };
 		A9F3933C1AEA961400DF9574 /* coolArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = A9F3933B1AEA961400DF9574 /* coolArrow.png */; };
+		BB12E2341E9565130063FE4A /* NVCrimeListDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BB12E2331E9565130063FE4A /* NVCrimeListDelegate.m */; };
+		BB12E2391E9567F40063FE4A /* CrimeList.m in Sources */ = {isa = PBXBuildFile; fileRef = BB12E2381E9567F40063FE4A /* CrimeList.m */; };
 		BB2B13941D6F78B10072957F /* upperlower.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13921D6F78B10072957F /* upperlower.txt */; };
 		BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */ = {isa = PBXBuildFile; fileRef = BB2B13931D6F78B10072957F /* SANPTID.txt */; };
 		BB7592B81E0CFCCA001871EB /* NVMetroSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */; };
@@ -555,6 +557,10 @@
 		A9E49B431A7ECADF002B2BA2 /* FindAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindAddressViewController.m; sourceTree = "<group>"; };
 		A9EC205F1AB738EE004D38FA /* marker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker.png; sourceTree = "<group>"; };
 		A9F3933B1AEA961400DF9574 /* coolArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = coolArrow.png; sourceTree = "<group>"; };
+		BB12E2321E9565130063FE4A /* NVCrimeListDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVCrimeListDelegate.h; sourceTree = "<group>"; };
+		BB12E2331E9565130063FE4A /* NVCrimeListDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVCrimeListDelegate.m; sourceTree = "<group>"; };
+		BB12E2371E9567F40063FE4A /* CrimeList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeList.h; sourceTree = "<group>"; };
+		BB12E2381E9567F40063FE4A /* CrimeList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeList.m; sourceTree = "<group>"; };
 		BB2B13921D6F78B10072957F /* upperlower.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = upperlower.txt; sourceTree = "<group>"; };
 		BB2B13931D6F78B10072957F /* SANPTID.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SANPTID.txt; sourceTree = "<group>"; };
 		BB7592B61E0CFCCA001871EB /* NVMetroSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVMetroSettings.h; sourceTree = "<group>"; };
@@ -992,6 +998,8 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
+				BB12E2371E9567F40063FE4A /* CrimeList.h */,
+				BB12E2381E9567F40063FE4A /* CrimeList.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1037,6 +1045,8 @@
 				EB5521D71A61B6A8008CE2D1 /* LayersViewController.m */,
 				EB5521D31A61B6A8008CE2D1 /* MapViewController.h */,
 				EB5521D41A61B6A8008CE2D1 /* MapViewController.m */,
+				BB12E2321E9565130063FE4A /* NVCrimeListDelegate.h */,
+				BB12E2331E9565130063FE4A /* NVCrimeListDelegate.m */,
 				698ED6371DF8E8C00032FEA5 /* NVMetroSettingsVC.h */,
 				698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */,
 				69366E011C542A6700E79AA7 /* NVPageController.h */,
@@ -1484,6 +1494,7 @@
 				69BCD5DF1DF63C7E002E0384 /* ReaderViewController.m in Sources */,
 				EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
+				BB12E2341E9565130063FE4A /* NVCrimeListDelegate.m in Sources */,
 				69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */,
 				EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
@@ -1538,6 +1549,7 @@
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
 				BBEC48151D2D466100DD74A0 /* UploadDirectory.m in Sources */,
 				EBFC2A211BE791C400E0C1B3 /* Theme.m in Sources */,
+				BB12E2391E9567F40063FE4A /* CrimeList.m in Sources */,
 				69366E031C542A6700E79AA7 /* NVPageController.m in Sources */,
 				EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
