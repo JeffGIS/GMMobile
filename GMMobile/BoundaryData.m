@@ -74,8 +74,8 @@
             st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_landusePath
                                                                                   error:nil].fileSize;
-            st = attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
-            [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
+            st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
 
         }
         _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
