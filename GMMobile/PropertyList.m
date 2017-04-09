@@ -12,14 +12,13 @@
 
 //#define CURRENT_VERSION 28
 
-int dbIsOpen = 0;
-
 @interface PropertyList ()
 
 @property NSString *fileName, *path;
 @property sqlite3 *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
+@property int dbIsOpen;
 @end
 
 @implementation PropertyList
@@ -54,16 +53,6 @@ NSString * GetPropListDirectory (void)
         [array addObject:leafName];
     }
     return array;
-}
-
-BOOL nameInList (NSString* name,NSArray* list)
-{
-    for (NSString * curName in list)
-    {
-        if ([name isEqualToString:[curName lastPathComponent]])
-             return TRUE;
-    }
-    return FALSE;
 }
 
 + (void) createNewPropertyList
@@ -206,9 +195,9 @@ BOOL nameInList (NSString* name,NSArray* list)
     
     if (!_isOpen)
     {
-        if (dbIsOpen)
+        if (_dbIsOpen)
             NSLog(@"PropertyList already open");
-        dbIsOpen++;
+        _dbIsOpen++;
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
 
@@ -229,7 +218,7 @@ BOOL nameInList (NSString* name,NSArray* list)
         NSLog(@"PropertyList Database close");
         SQLOK(0,sqlite3_close(_database),_database);
         _isOpen = NO;
-        dbIsOpen--;
+        _dbIsOpen--;
     }
 }
 
@@ -1019,24 +1008,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     [self close:opened];
 }
-LLPOINT LLPOINTFromString (NSString* string)
-{
-    if (!string)
-        string = @"";
-    
-    LLPOINT pt;
-    LPSTR str = malloc (string.length+4);
-    strcpy (str,string.UTF8String);
-    LPSTR space = strchr (str,' ');
-    if (space)
-        *space++ = 0;
-    else
-        space = str;
-    pt.lat = atof (str);
-    pt.lon = atof (space);
-    free (str);
-    return pt;
-}
+
 - (LLPOINT)getPropertyLatLon:(NSInteger)propNum
 {
     LLPOINT pt;

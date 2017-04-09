@@ -13,14 +13,13 @@
 
 //#define CURRENT_VERSION 28
 
-int dbIsOpen = 0;
-
 @interface CrimeList ()
 
 @property NSString *fileName, *path;
 @property sqlite3 *database;
 @property BOOL isOpen;
 @property unsigned long long fileSize;
+@property int dbIsOpen;
 @end
 
 @implementation CrimeList
@@ -55,16 +54,6 @@ NSString * GetCrimeListDirectory (void)
         [array addObject:leafName];
     }
     return array;
-}
-
-BOOL nameInList (NSString* name,NSArray* list)
-{
-    for (NSString * curName in list)
-    {
-        if ([name isEqualToString:[curName lastPathComponent]])
-            return TRUE;
-    }
-    return FALSE;
 }
 
 + (void) createNewCrimeList
@@ -200,9 +189,9 @@ BOOL nameInList (NSString* name,NSArray* list)
     
     if (!_isOpen)
     {
-        if (dbIsOpen)
+        if (_dbIsOpen)
             NSLog(@"CrimeList already open");
-        dbIsOpen++;
+        _dbIsOpen++;
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentCrimeList"];
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _crimeListDir, _fileName];
         
@@ -223,7 +212,7 @@ BOOL nameInList (NSString* name,NSArray* list)
         NSLog(@"CrimeList Database close");
         SQLOK(0,sqlite3_close(_database),_database);
         _isOpen = NO;
-        dbIsOpen--;
+        _dbIsOpen--;
     }
 }
 
@@ -558,24 +547,6 @@ BOOL nameInList (NSString* name,NSArray* list)
     return blob;
 }
 
-LLPOINT LLPOINTFromString (NSString* string)
-{
-    if (!string)
-        string = @"";
-    
-    LLPOINT pt;
-    LPSTR str = malloc (string.length+4);
-    strcpy (str,string.UTF8String);
-    LPSTR space = strchr (str,' ');
-    if (space)
-        *space++ = 0;
-    else
-        space = str;
-    pt.lat = atof (str);
-    pt.lon = atof (space);
-    free (str);
-    return pt;
-}
 - (LLPOINT)getCrimeLatLon:(NSInteger)controlNum
 {
     LLPOINT pt;
