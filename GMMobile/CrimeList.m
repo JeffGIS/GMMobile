@@ -56,7 +56,7 @@ NSString * GetCrimeListDirectory (void)
     return array;
 }
 
-+ (void) createNewCrimeList
++ (NSString *) createNewCrimeList
 {
     NSString *baseName = @"CrimeList";
     
@@ -73,11 +73,14 @@ NSString * GetCrimeListDirectory (void)
     
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentCrimeList"];
+    return newName;
 }
 
 + (NSString*) getCurrentCrimeListName
 {
     NSString *name = [UserDefaults.defaults stringForKey:@"CurrentCrimeList"];
+    if (!name)
+        name = [CrimeList createNewCrimeList];
     return name;
 }
 
@@ -143,15 +146,8 @@ NSString * GetCrimeListDirectory (void)
     if (self)
     {
         _crimeListDir = GetCrimeListDirectory ();
-        _fileName = [UserDefaults.defaults stringForKey:@"CurrentCrimeList"];
+        _fileName = [CrimeList getCurrentCrimeListName];
         
-        if (!_fileName)
-        {
-            _fileName = @"CrimeList1";
-            
-            [UserDefaults.defaults saveString:_fileName
-                                       forKey:@"CurrentCrimeList"];
-        }
         
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _crimeListDir, _fileName];
         

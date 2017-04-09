@@ -15,7 +15,7 @@
 
 @implementation NVSpreadsheetDelegate
 
-- (BOOL) openPropertyList
+- (BOOL) openList
 {
     BOOL rtn = FALSE;
     
@@ -28,7 +28,7 @@
     return rtn;
 }
 
-- (void) closePropertyList
+- (void) closeList
 {
     [_propList close:TRUE];
     _propList = nil;

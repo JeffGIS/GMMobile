@@ -46,7 +46,7 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 + (BOOL) renameCurrentCrimeList:(NSString *)newName;
 + (BOOL) deleteCurrentCrimeList;
 + (BOOL) setCurrentCrimeList:(NSString *)crimeList;
-+ (void) createNewCrimeList;
++ (NSString *) createNewCrimeList;
 
 - (BOOL)open;
 - (void)close:(BOOL)opened;

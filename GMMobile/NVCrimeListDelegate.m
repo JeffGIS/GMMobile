@@ -19,7 +19,7 @@
 
 @implementation NVCrimeListDelegate
 
-- (BOOL) openCrimeList
+- (BOOL) openList
 {
     BOOL rtn = FALSE;
     
@@ -32,7 +32,7 @@
     return rtn;
 }
 
-- (void) closeCrimeList
+- (void) closeList
 {
     [_crimeList close:TRUE];
     _crimeList = nil;
