@@ -962,6 +962,8 @@
 				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
 				EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */,
 				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
+				BB12E2371E9567F40063FE4A /* CrimeList.h */,
+				BB12E2381E9567F40063FE4A /* CrimeList.m */,
 				EBD6B8A91BC1CE1200BACC89 /* Destinations.h */,
 				EBD6B8AA1BC1CE1200BACC89 /* Destinations.m */,
 				EB95A1A91CB1D1F700158B40 /* GetSlowValues.h */,
@@ -995,8 +997,6 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
-				BB12E2371E9567F40063FE4A /* CrimeList.h */,
-				BB12E2381E9567F40063FE4A /* CrimeList.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";

@@ -18,6 +18,7 @@
 @end
 
 @implementation NVCrimeListDelegate
+
 - (BOOL) openCrimeList
 {
     BOOL rtn = FALSE;
@@ -43,7 +44,7 @@
 
 - (NSInteger)numColumnsInSpreadsheet
 {
-    return _crimeList.getCrimeNumbers.count;
+    return _crimeList.getControlNumbers.count;
 }
 
 - (NSString *)headerTextForRow:(NSUInteger)row
@@ -67,7 +68,7 @@
 - (NSString *)headerTextForColumn:(NSUInteger)column
 {
     CrimeList *proplist = _crimeList;
-    NSArray *list = proplist.getCrimeNumbers;
+    NSArray *list = proplist.getControlNumbers;
     
     if (column <= list.count)
     {
@@ -97,7 +98,7 @@
                         row:(NSUInteger)row
 {
     CrimeList *proplist = _crimeList;
-    NSArray *list = proplist.getCrimeNumbers;
+    NSArray *list = proplist.getControlNumbers;
     PropFieldType type = (PFT_PIN + row - 1);
     
     if (column <= list.count && row < proplist.availableCrimeFields.count)
@@ -127,8 +128,6 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
-    [_crimeList updateCrimeUserID:(index + 1)
-                             userID:text];
 }
 
 - (NSArray *)spreadsheetDidGetLists

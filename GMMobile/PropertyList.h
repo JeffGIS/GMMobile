@@ -5,13 +5,6 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "GetSlowValues.h"
 
-typedef NS_ENUM(NSInteger, ValueTypes)
-{
-    VTInteger,
-    VTDouble,
-    VTLLPoint,
-    VTString,
-};
 typedef NS_ENUM(NSInteger, PropFieldType)
 {
     PFT_LatLon,

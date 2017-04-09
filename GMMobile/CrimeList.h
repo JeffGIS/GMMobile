@@ -11,17 +11,24 @@
 
 typedef NS_ENUM(NSInteger, CrimeFieldType)
 {
+    CFT_ControlNum,
     CFT_LatLon,
-    CFT_UserID,
+    CFT_UCR,
+    CFT_CASENO,
+    CFT_OFFENSECODE,
+    CFT_Address,
+    CFT_HEIGHT,
+    CFT_SCORE,
+    CFT_END
 };
 
 @class CrimeList;
 
 @protocol CrimeListDelegate <NSObject>
 
-- (void)CrimeList:(CrimeList *)propList
+- (void)CrimeList:(CrimeList *)crimeList
         returnsValue:(NSString *)value
-   forCrimeNumber:(NSInteger)propNum
+   forControlNumber:(NSInteger)controlNum
         andFieldType:(CrimeFieldType)type
           withStatus:(long)status;
 
@@ -38,7 +45,7 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 + (NSString*) getCurrentCrimeListName;
 + (BOOL) renameCurrentCrimeList:(NSString *)newName;
 + (BOOL) deleteCurrentCrimeList;
-+ (BOOL) setCurrentCrimeList:(NSString *)propList;
++ (BOOL) setCurrentCrimeList:(NSString *)crimeList;
 + (void) createNewCrimeList;
 
 - (BOOL)open;
@@ -46,22 +53,19 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 - (void)startTransaction;
 - (void)commitTransaction;
 
-- (NSArray *)getCrimeNumbers;
+- (NSArray *)getControlNumbers;
 - (NSArray *)availableCrimeFields;
 - (NSString *)crimeFieldName:(CrimeFieldType)fieldType;
 
 - (void) getCrimeFieldValueOfType:(CrimeFieldType)type
-                   forCrimeNumber:(NSInteger)propNum;
+                   forControlNumber:(NSInteger)controlNum;
 
-- (void)updateCrimeUserID:(NSInteger)propNum
-                      userID:(NSString *)userID;
+- (LLPOINT)getCrimeLatLon:(NSInteger)controlNum;
 
-- (LLPOINT)getCrimeLatLon:(NSInteger)propNum;
-
-- (NSString *) getFieldValue:(NSInteger)propNum
+- (NSString *) getFieldValue:(NSInteger)controlNum
                         type:(CrimeFieldType)fieldType;
-- (void)setZoomValues:(NSInteger)crimeNum forRow:(NSInteger)row;
-+ (void) deleteCrime:(NSInteger)propNum;
+- (void)setZoomValues:(NSInteger)controlNum forRow:(NSInteger)row;
++ (void) deleteControlNum:(NSInteger)controlNum;
 NSString* CrimeListFieldDescription (NSInteger fieldNumber);
 
 @end
