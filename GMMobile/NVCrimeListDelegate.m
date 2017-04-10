@@ -128,6 +128,23 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
+    
+}
+
+- (void)spreadsheetDidEditRowHeaderText:(NSString *)text
+                                atIndex:(NSInteger)index
+{
+    
+}
+
+- (BOOL)spreadsheetCanEditRowHeaderTextAtIndex:(NSInteger)index
+{
+    return YES;
+}
+
+- (BOOL)spreadsheetCanEditColumnHeaderTextAtIndex:(NSInteger)index
+{
+    return YES;
 }
 
 - (NSArray *)spreadsheetDidGetLists
