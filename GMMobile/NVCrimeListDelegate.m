@@ -141,6 +141,11 @@
 {
     return YES;
 }
+- (NSString *)spreadsheetRowHeaderTextPrefix:(NSInteger)index
+{
+    NSString * prfx = @"SEARCH:";
+    return prfx;
+}
 
 - (BOOL)spreadsheetCanEditColumnHeaderTextAtIndex:(NSInteger)index
 {
@@ -229,10 +234,6 @@
         }
     }
     return rtn;
-}
--(void) spreadsheetDidEditRowHeaderText:(NSString *)text atIndex:(NSInteger)row
-{
-    
 }
 - (BOOL)spreadsheetSortOnRow:(NSInteger)row
 {
