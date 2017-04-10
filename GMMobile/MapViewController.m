@@ -4297,10 +4297,32 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)addToCrimeList:(BOOL)newList
               fromList:(NSArray *)cnumArray
 {
+
     CrimeList * cl = CrimeList.new;
+    [_popover showAfter:0
+              withTitle:@"Adding Crimes to List"
+              andButton:nil];
+    _popover.progressView.hidden=NO;
+    [_popover updateProgress:0];
     if (newList)
         [CrimeList createNewCrimeList];
-    [cl addIncidentToCrimeList:(int)_selectedCrime];
+    dispatch_queue_t addQueue = dispatch_queue_create("addQueue",NULL);
+    
+    dispatch_async(addQueue,
+                   ^{
+                       int count = 1;
+                       for (NSNumber * num in cnumArray)
+                       {
+                           [cl addIncidentToCrimeList:(int)num.integerValue];
+                           dispatch_async(dispatch_get_main_queue(),
+                                          ^{
+                                              [_popover updateProgress:(double)count/cnumArray.count];
+                                          });
+                           count++;
+                           
+                       }
+                       [_popover hide];
+                   });
     
 }
 

@@ -73,6 +73,7 @@ NSString * GetCrimeListDirectory (void)
     
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentCrimeList"];
+    CrimeList * cl = CrimeList.new;
     return newName;
 }
 
@@ -588,14 +589,16 @@ NSString * GetCrimeListDirectory (void)
         timeBlob = intToBlob (found);
         cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_SearchString2,crimeVersion,timeBlob];
         [self executeCmd:(LPSTR)cmd.UTF8String];
-        
+        int nSuspect = numberOfOccurencesOfStringInString(report, @" S- ");
+        NSString *nsBlob = intToBlob (nSuspect);
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_NumSuspects,crimeVersion,nsBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
         rtn = YES;
     }
 
     [self close:opened];
     return rtn;
 }
-
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     

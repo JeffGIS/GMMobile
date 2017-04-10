@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
     CFT_FromTime,
     CFT_ToTime,
     CFT_Address,
+    CFT_NumSuspects,
     CFT_SearchString1,
     CFT_SearchString2,
     CFT_HEIGHT,
