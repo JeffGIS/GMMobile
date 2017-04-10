@@ -4095,6 +4095,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self displayCrimeReport];
     }
     
+    else if ([text isEqualToString:@"Add to Current Crime List"])
+    {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
+        [self addToCrimeList:NO];
+    }
+    
+    else if ([text isEqualToString:@"Add to New Crime List"])
+    {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
+        [self addToCrimeList:NO];
+    }
+    
     else if ([text isEqualToString:@"Display Census Data Chart"])
     {
         [self displayCensusDataChart];
@@ -4257,6 +4269,15 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     NSString *reportText = [CrimeData reportForControlNumber:_selectedCrime];
     NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText fontSize:16.0];
     [self presentViewController:textVC animated:YES completion:nil];
+}
+
+- (void)addToCrimeList:(BOOL)newList
+{
+    CrimeList * cl = CrimeList.new;
+    if (newList)
+        [CrimeList createNewCrimeList];
+    [cl addIncidentToCrimeList:(int)_selectedCrime];
+    
 }
 
 - (void)displayCensusDataChart
@@ -6267,7 +6288,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCrime:
         {
             _selectedCrime = refno;
-            _options = @[@"", @"Display Report", @"Perform 3D Fly Around", @"Display Google Street View"];
+            _options = @[@"", @"Display Report", @"Add to Current Crime List", @"Add to New Crime List", @"Perform 3D Fly Around", @"Display Google Street View"];
         }
             break;
             
@@ -6501,6 +6522,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 case CrimePointSettingDisplayReport:
                     [self displayCrimeReport];
+                    break;
+                case CrimePointSettingAddToCurrentList:
+                    [self addToCrimeList:NO];
+                    break;
+                case CrimePointSettingAddToNewList:
+                    [self addToCrimeList:YES];
                     break;
                 case CrimePointSettingDisplayStreetView:
                     [self showStreetView];

@@ -89,6 +89,8 @@ typedef NS_ENUM(NSInteger, CrimePointSetting)
 {
     CrimePointSettingDefault,
     CrimePointSettingDisplayReport,
+    CrimePointSettingAddToCurrentList,
+    CrimePointSettingAddToNewList,
     CrimePointSettingPerformFlyAround,
     CrimePointSettingDisplayStreetView,
 };

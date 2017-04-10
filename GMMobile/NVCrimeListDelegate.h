@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/NVSpreadsheetVC.h"
 
-@interface NVCrimeListDelegate : NSObject
+@interface NVCrimeListDelegate : NSObject<NVSpreadsheetVCDelegate>
 
 @end

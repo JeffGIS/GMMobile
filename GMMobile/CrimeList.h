@@ -67,5 +67,6 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 - (void)setZoomValues:(NSInteger)controlNum forRow:(NSInteger)row;
 + (void) deleteControlNum:(NSInteger)controlNum;
 NSString* CrimeListFieldDescription (NSInteger fieldNumber);
+- (BOOL)addIncidentToCrimeList:(int)controlNum;
 
 @end

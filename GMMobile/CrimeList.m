@@ -595,12 +595,10 @@ NSString * GetCrimeListDirectory (void)
 }
 
 - (BOOL)addIncidentToCrimeList:(int)controlNum
-                        popover:(GSSiPopoverView *)popover
 {
     BOOL rtn = NO;
     BOOL opened = [self open];
     
-    _popover = popover;
     CrimeData *crimeData = [[CrimeData alloc] init];
 /*    LLPOINT pidPoint = [propData getPointForPID:PID];
     
