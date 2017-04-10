@@ -4104,7 +4104,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Add to New Crime List"])
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
-        [self addToCrimeList:NO];
+        [self addToCrimeList:YES];
+    }
+    
+    else if ([text isEqualToString:@"Add All to Current Crime List"])
+    {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
+        [self addToCrimeList:NO
+                    fromList:[DispersePoint getDispersedControlNum]];
+    }
+    
+    else if ([text isEqualToString:@"Add All to New Crime List"])
+    {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
+        [self addToCrimeList:YES
+                    fromList:[DispersePoint getDispersedControlNum]];
     }
     
     else if ([text isEqualToString:@"Display Census Data Chart"])
@@ -4272,6 +4286,16 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 }
 
 - (void)addToCrimeList:(BOOL)newList
+{
+    CrimeList * cl = CrimeList.new;
+    if (newList)
+        [CrimeList createNewCrimeList];
+    [cl addIncidentToCrimeList:(int)_selectedCrime];
+    
+}
+
+- (void)addToCrimeList:(BOOL)newList
+              fromList:(NSArray *)cnumArray
 {
     CrimeList * cl = CrimeList.new;
     if (newList)
@@ -6288,7 +6312,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCrime:
         {
             _selectedCrime = refno;
-            _options = @[@"", @"Display Report", @"Add to Current Crime List", @"Add to New Crime List", @"Perform 3D Fly Around", @"Display Google Street View"];
+            _options = @[@"", @"Display Report", @"Add to Current Crime List", @"Add to New Crime List",@"Add All to Current Crime List", @"Add All to New Crime List", @"Perform 3D Fly Around", @"Display Google Street View"];
         }
             break;
             

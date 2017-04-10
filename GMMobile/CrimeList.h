@@ -12,13 +12,17 @@
 typedef NS_ENUM(NSInteger, CrimeFieldType)
 {
     CFT_ControlNum,
-    CFT_LatLon,
-    CFT_UCR,
     CFT_CASENO,
-    CFT_OFFENSECODE,
+    CFT_UCR,
+    CFT_OffenseCodes,
+    CFT_FromTime,
+    CFT_ToTime,
     CFT_Address,
+    CFT_SearchString1,
+    CFT_SearchString2,
     CFT_HEIGHT,
     CFT_SCORE,
+    CFT_LatLon,
     CFT_END
 };
 

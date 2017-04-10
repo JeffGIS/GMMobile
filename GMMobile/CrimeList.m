@@ -266,8 +266,20 @@ NSString * GetCrimeListDirectory (void)
         case CFT_CASENO:
             name = @"Case Number";
             break;
-        case CFT_OFFENSECODE:
-            name = @"Offense Code";
+        case CFT_OffenseCodes:
+            name = @"Offense Codes";
+            break;
+        case CFT_FromTime:
+            name = @"From Time";
+            break;
+        case CFT_ToTime:
+            name = @"To Time";
+            break;
+        case CFT_SearchString1:
+            name = @"Search:";
+            break;
+        case CFT_SearchString2:
+            name = @"Search:";
             break;
         default:
             break;
@@ -285,7 +297,7 @@ NSString * GetCrimeListDirectory (void)
             rtn = VTLLPoint;
             break;
         case CFT_CASENO:
-        case CFT_OFFENSECODE:
+        case CFT_OffenseCodes:
         case CFT_Address:
             rtn = VTString;
             break;
@@ -375,6 +387,8 @@ NSString * GetCrimeListDirectory (void)
             }
                 break;
             case CFT_Address:
+            case CFT_OffenseCodes:
+            case CFT_CASENO:
                 val = (LPSTR)sqlite3_column_blob(statement, 0);
                 if (val)
                     value = [NSString stringWithFormat:@"%s",val];
@@ -388,6 +402,12 @@ NSString * GetCrimeListDirectory (void)
                 dval = *(double*)sqlite3_column_blob(statement, 0);
                 num = [[NSNumber alloc] initWithDouble:dval];
                 value = [CRAPI.sharedInstance.acreFmt stringFromNumber:num];
+                break;
+            case CFT_SearchString1:
+            case CFT_SearchString2:
+                ival = *(int*)sqlite3_column_blob(statement, 0);
+                if (ival)
+                    value = @"YES";
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
@@ -441,106 +461,6 @@ NSString * GetCrimeListDirectory (void)
     SQLOK(0,sqlite3_finalize(statement), _database);
     
     return rtn;
-}
-
--(NSString *) stringToBlob:(NSString*)str
-{
-    if (!str)
-        str = @"";
-    NSString * blob=@"";
-    NSInteger sln = str.length;
-    NSInteger lblb = 0;
-    if (sln)
-    {
-        LPSTR blb = malloc (sln*2+4);
-        LPSTR cstr = (LPSTR)str.UTF8String;
-        for (NSInteger i = 0;i<sln;i++)
-        {
-            sprintf (&blb[lblb],"%2.2x",cstr[i]);
-            lblb += 2;
-        }
-        blb[lblb] = 0;
-        blob = [NSString stringWithUTF8String:blb];
-        free (blb);
-    }
-    return blob;
-}
-
--(NSString *) llpointsToBlob:(LLPOINT*)pPoints
-                   numPoints:(NSInteger)nPnts
-{
-    NSString * blob=@"";
-    NSInteger lBlob = 0;
-    LPSTR pBlob = malloc(nPnts * sizeof(DPOINT)*2 +4);
-    for (NSInteger i = 0; i < nPnts; i++)
-    {
-        NSInteger  j;
-        LPBYTE pInts = (LPBYTE)&pPoints[i];
-        //unsigned char c;
-        for (j = 0; j < sizeof(DPOINT); j++, pInts++, lBlob += 2)
-        {
-            //c = *pInts;
-            sprintf(&pBlob[lBlob], "%2.2x", *pInts);
-        }
-    }
-    pBlob[lBlob] = 0;
-    blob = [NSString stringWithUTF8String:pBlob];
-    free (pBlob);
-    return blob;
-}
--(NSString *) doubleToBlob:(double)val
-{
-    NSString * blob=@"";
-    NSInteger lBlob = 0;
-    LPSTR pBlob = malloc(sizeof(double)*2+4);
-    NSInteger  j;
-    LPBYTE pInts = (LPBYTE)&val;
-    //unsigned char c;
-    for (j = 0; j < sizeof(double); j++, pInts++, lBlob += 2)
-    {
-        //c = *pInts;
-        sprintf(&pBlob[lBlob], "%2.2x", *pInts);
-    }
-    pBlob[lBlob] = 0;
-    blob = [NSString stringWithUTF8String:pBlob];
-    free (pBlob);
-    return blob;
-}
--(NSString *) floatToBlob:(float)val
-{
-    NSString * blob=@"";
-    NSInteger lBlob = 0;
-    LPSTR pBlob = malloc(sizeof(float)*2+4);
-    NSInteger  j;
-    LPBYTE pInts = (LPBYTE)&val;
-    //unsigned char c;
-    for (j = 0; j < sizeof(float); j++, pInts++, lBlob += 2)
-    {
-        //c = *pInts;
-        sprintf(&pBlob[lBlob], "%2.2x", *pInts);
-    }
-    pBlob[lBlob] = 0;
-    blob = [NSString stringWithUTF8String:pBlob];
-    free (pBlob);
-    return blob;
-}
--(NSString *) intToBlob:(int)val
-{
-    NSString * blob=@"";
-    NSInteger lBlob = 0;
-    LPSTR pBlob = malloc(sizeof(int)*2+4);
-    NSInteger  j;
-    LPBYTE pInts = (LPBYTE)&val;
-    //unsigned char c;
-    for (j = 0; j < sizeof(int); j++, pInts++, lBlob += 2)
-    {
-        //c = *pInts;
-        sprintf(&pBlob[lBlob], "%2.2x", *pInts);
-    }
-    pBlob[lBlob] = 0;
-    blob = [NSString stringWithUTF8String:pBlob];
-    free (pBlob);
-    return blob;
 }
 
 - (LLPOINT)getCrimeLatLon:(NSInteger)controlNum
@@ -598,170 +518,80 @@ NSString * GetCrimeListDirectory (void)
 {
     BOOL rtn = NO;
     BOOL opened = [self open];
+    int dbid = [self next_id];
     
     CrimeData *crimeData = [[CrimeData alloc] init];
-/*    LLPOINT pidPoint = [propData getPointForPID:PID];
+    BOOL openedCd = [crimeData open];
+    int crimeVersion = [crimeData datasetVersion];
+    sqlite3_stmt *statement = NULL;
+    LLPOINT BasePt;
+    int UCR = 0;
+    int fromTime=0, toTime=0;
+    LPSTR offense;
+    LPSTR dept, year, cno;
+    char allOffense[4096]={0};
+    NSString * caseNum=@"";
+    BOOL first = TRUE;
     
-    //add address to Proplist
-    NSString *houseAndUnit = @"";
-    NSString *streetName = @"";
-    NSString *city = @"";
-    NSString *cenblock = @"";
-    NSString *usedesc = @"";
-    NSString *owner = @"";
-    NSString *taxpayer = @"";
-    double totEMV = 0;
-    double landEMV = 0;
-    double bldgEMV = 0;
-    double totTax = 0;
-    double specAssmt = 0;
-    double acres = 0;
+    NSString * query = [NSString stringWithFormat:@"SELECT X,Y,Offense,UCR,FromDate,ToDate, CityCode, CaseYear, CaseNbr FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];
+    SQLOK(0,sqlite3_prepare_v2(crimeData.database, query.UTF8String, -1, &statement, 0), crimeData.database);
     
-    [propData getAddressForPID:PID
-               houseNumAndUnit:&houseAndUnit
-                    streetName:&streetName
-                          city:&city
-                     ownerName:&owner
-                  taxpayerName:&taxpayer
-                   censusBlock:&cenblock
-                       useDesc:&usedesc
-                        totEMV:&totEMV
-                       landEMV:&landEMV
-                       bldgEMV:&bldgEMV
-                        totTAX:&totTax
-                       specAss:&specAssmt
-                         acres:&acres];
-    
-    char cenBlock[20];
-    strcpy (cenBlock, cenblock.UTF8String);
-    cenBlock[12] = 0;
-    DATA_FROM_TABLES values_blockgroup;
-    
-    [propData computeValuesFromTables:&values_blockgroup
-                         inCensusArea:(LPSTR)cenBlock
-                               totEMV:(int)totEMV
-                              useDesc:(LPSTR)usedesc.UTF8String];
-    
-    DATA_FROM_TABLES values_block;
-    
-    [propData computeValuesFromTables:&values_block
-                         inCensusArea:(LPSTR)cenblock.UTF8String
-                               totEMV:(int)totEMV
-                              useDesc:(LPSTR)usedesc.UTF8String];
-    
-    int dbid = [self next_id];
-    int PropNum = [self nextPropNum];
-    int propVersion = [propData propertyDatasetVersion];
-    NSString *dataBlob;
-    
-    //add PID to Proplist
-    NSString *PIDBlob = [self stringToBlob:PID];
-    NSString *pointBlob = [self llpointsToBlob:&pidPoint
-                                     numPoints:1];
-    NSString * cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PIN,propVersion,PIDBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_UserID,propVersion,PIDBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    
-    //add LatLon to Proplist
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_LatLon,propVersion,pointBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    
-    NSString *address = [NSString stringWithFormat:@"%@ %@\n%@",houseAndUnit,streetName,city];
-    NSString *addressBlob = [self stringToBlob:address];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Address,propVersion,addressBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    
-    dataBlob = [self doubleToBlob:totEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_TOTAL,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:landEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_LAND,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:bldgEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_BUILDING,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:totTax];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_TOTAL_TAX,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:specAssmt];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_SPEC_ASSESSMENT,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self doubleToBlob:acres];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_ACRES,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    if (acres > 0)
+    while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        double landPerAcre = landEMV/acres;
-        dataBlob = [self doubleToBlob:landPerAcre];
-        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_EMV_LAND_PER_ACRE,propVersion,dataBlob];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+        first = FALSE;
+        offense = (LPSTR)sqlite3_column_text(statement,2);
+        if (*allOffense)
+            sprintf (strchr(allOffense,0),",%s",offense);
+        else
+        {
+            strcpy (allOffense,offense);
+            BasePt.lon = sqlite3_column_double(statement,0);
+            BasePt.lat = sqlite3_column_double(statement,1);
+            UCR = sqlite3_column_int(statement,3);
+            fromTime = sqlite3_column_int(statement,4);
+            toTime = sqlite3_column_int(statement,5);
+            dept = (LPSTR)sqlite3_column_text(statement,6);
+            year = (LPSTR)sqlite3_column_text(statement,7);
+            cno = (LPSTR)sqlite3_column_text(statement,8);
+            caseNum  = [NSString stringWithFormat:@"%s%s%s",dept,year,cno];
+        }
     }
-    dataBlob = [self stringToBlob:owner];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Owner,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self stringToBlob:taxpayer];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_TaxPayer,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    //add values from tables to Proplist
-    dataBlob = [self intToBlob:values_block.rankTotEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.pctHomestead];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.homeOwnPct];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.medianBuiltYear];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.medianAgePop];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.pctChildren];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.pctSenior];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    
-    dataBlob = [self intToBlob:values_block.stability5yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_block.stability15yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_block,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    
-    dataBlob = [self intToBlob:values_blockgroup.rankTotEMV];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_RankEMV_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.pctHomestead];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomestead_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.homeOwnPct];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctHomeOwn_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.medianBuiltYear];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianBuiltYear_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.medianAgePop];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_MedianAgePop_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.pctChildren];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctChildren_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.pctSenior];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_PctSenior_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.stability5yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability5yr_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    dataBlob = [self intToBlob:values_blockgroup.stability15yr];
-    cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,PropNum,(int)PFT_Stability15yr_blockgroup,propVersion,dataBlob];
-    [self executeCmd:(LPSTR)cmd.UTF8String];
-    rtn = YES;
-    */
+    SQLOK(0,sqlite3_finalize(statement), crimeData.database);
+    [crimeData close:openedCd];
+    if (!first)
+    {
+        NSString *caseBlob = stringToBlob(caseNum);
+        NSString *pointBlob = llpointsToBlob(&BasePt,1);
+        NSString *ucrBlob = intToBlob(UCR);
+        NSString *offenseBlob = stringToBlob([NSString stringWithUTF8String:allOffense]);
+        NSString * cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_CASENO,crimeVersion,caseBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_UCR,crimeVersion,ucrBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_LatLon,crimeVersion,pointBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_OffenseCodes,crimeVersion,offenseBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        NSString * timeBlob = intToBlob (fromTime);
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_FromTime,crimeVersion,timeBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        timeBlob = intToBlob (toTime);
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_ToTime,crimeVersion,timeBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        
+        NSString * report = [CrimeData reportForControlNumber:controlNum];
+        BOOL found = stringContainsCaseInsenitiveString (report,@"dread");
+        timeBlob = intToBlob (found);
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_SearchString1,crimeVersion,timeBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        found = stringContainsCaseInsenitiveString (report,@"knife");
+        timeBlob = intToBlob (found);
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_SearchString2,crimeVersion,timeBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        
+        rtn = YES;
+    }
+
     [self close:opened];
     return rtn;
 }

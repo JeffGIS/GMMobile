@@ -49,13 +49,13 @@
 
 - (NSString *)headerTextForRow:(NSUInteger)row
 {
-    CrimeList *proplist = _crimeList;
-    NSArray *list = proplist.availableCrimeFields;
+    CrimeList *crimelist = _crimeList;
+    NSArray *list = crimelist.availableCrimeFields;
     
     if (row < list.count)
     {
         CrimeFieldType ifield = [list[row] integerValue];
-        NSString *fieldName = [proplist crimeFieldName:ifield];
+        NSString *fieldName = [crimelist crimeFieldName:ifield];
         
         return [fieldName stringByReplacingOccurrencesOfString:@" ("
                                                     withString:@"\n("];
@@ -189,6 +189,55 @@
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {
     return CrimeListFieldDescription(row);
+}
+
+- (BOOL)spreadsheetCanEditRowHeaderText:(NSInteger)row
+{
+    BOOL rtn = NO;
+    NSArray *list = _crimeList.availableCrimeFields;
+    
+    if (row < list.count)
+    {
+        CrimeFieldType ifield = [list[row] integerValue];
+    
+        switch (ifield)
+        {
+            case CFT_SearchString1:
+            case CFT_SearchString2:
+                rtn = YES;
+                break;
+            default:
+                break;
+                
+        }
+    }
+    return rtn;
+}
+-(void) spreadsheetDidEditRowHeaderText:(NSString *)text atIndex:(NSInteger)row
+{
+    
+}
+- (BOOL)spreadsheetSortOnRow:(NSInteger)row
+{
+    BOOL rtn = YES;
+    NSArray *list = _crimeList.availableCrimeFields;
+    
+    if (row < list.count)
+    {
+        CrimeFieldType ifield = [list[row] integerValue];
+        
+        switch (ifield)
+        {
+            case CFT_SearchString1:
+            case CFT_SearchString2:
+                rtn = NO;
+                break;
+            default:
+                break;
+                
+        }
+    }
+    return rtn;
 }
 
 @end
