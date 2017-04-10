@@ -151,8 +151,23 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
-    [_propList updatePropertyUserID:(index + 1)
-                                    userID:text];
+    [_propList updatePropertyUserID:(index + 1) userID:text];
+}
+
+- (void)spreadsheetDidEditRowHeaderText:(NSString *)text
+                                atIndex:(NSInteger)row
+{
+    
+}
+
+- (BOOL)spreadsheetCanEditRowHeaderTextAtIndex:(NSInteger)index
+{
+    return YES;
+}
+
+- (BOOL)spreadsheetCanEditColumnHeaderTextAtIndex:(NSInteger)index
+{
+    return YES;
 }
 
 - (NSArray *)spreadsheetDidGetLists
