@@ -4305,6 +4305,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     CrimeList *cl = CrimeList.new;
     [_popover showAfter:0 withTitle:@"Adding Crimes to List"];
     _popover.progressView.hidden = NO;
+    _popover.delegate = self;
     [self.view bringSubviewToFront:_popover];
     [_popover updateProgress:0];
     _tableView.hidden = YES;
