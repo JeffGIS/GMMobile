@@ -15,6 +15,11 @@
 
 @implementation NVSpreadsheetDelegate
 
+- (SpreadsheetTypes) getSpreadSheetType
+{
+    return SST_PropertyList;
+}
+
 - (BOOL) openList
 {
     BOOL rtn = FALSE;

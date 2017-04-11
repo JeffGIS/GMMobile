@@ -19,6 +19,11 @@
 
 @implementation NVCrimeListDelegate
 
+- (SpreadsheetTypes) getSpreadSheetType
+{
+    return SST_CrimeList;
+}
+
 - (BOOL) openList
 {
     BOOL rtn = FALSE;
@@ -99,7 +104,7 @@
 {
     CrimeList *crimelist = _crimeList;
     NSArray *list = crimelist.getControlNumbers;
-    PropFieldType type = (PFT_PIN + row - 1);
+    CrimeFieldType type = (CFT_ControlNum + row - 1);
     
     if (column <= list.count && row < crimelist.availableCrimeFields.count)
     {
@@ -186,12 +191,28 @@
     [_crimeList open];
 }
 
-- (void)spreadsheetDidMapItForRow:(NSInteger)row
-                           column:(NSInteger)column
-                 tabBarController:(UITabBarController *)tabBarController
+- (NSString *)spreadsheetGetReportForRow:(NSInteger)row
+                            column:(NSInteger)column
 {
+    NSString * report = nil;
     CrimeList *crimelist = [[CrimeList alloc] init];
+    NSArray *list = crimelist.getControlNumbers;
+    CrimeFieldType type = (CFT_ControlNum + row - 1);
     
+    if (column <= list.count && row < crimelist.availableCrimeFields.count)
+    {
+        NSInteger controlNum = [list[column - 1] integerValue];
+        report = [CrimeData reportForControlNumber:controlNum];
+
+    }
+    return report;
+}
+/*- (void)spreadsheetDidMapItForRow:(NSInteger)row
+column:(NSInteger)column
+tabBarController:(UITabBarController *)tabBarController
+    {
+        CrimeList *crimelist = [[CrimeList alloc] init];
+        
     LLPOINT llpoint = [crimelist getCrimeLatLon:column];
     
     [crimelist setZoomValues:column
@@ -211,7 +232,7 @@
     }
     
     tabBarController.selectedIndex = index;
-}
+}*/
 
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {
