@@ -24,6 +24,10 @@
     return SST_CrimeList;
 }
 
+- (NSString *) currentListName
+{
+    return [CrimeList getCurrentCrimeListName];
+}
 - (BOOL) openList
 {
     BOOL rtn = FALSE;

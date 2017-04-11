@@ -32,7 +32,10 @@
     }
     return rtn;
 }
-
+- (NSString*) currentListName
+{
+    return [PropertyList getCurrentPropertyListName];
+}
 - (void) closeList
 {
     [_propList close:TRUE];

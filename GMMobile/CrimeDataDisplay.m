@@ -8,6 +8,7 @@
 
 #import "CrimeDataDisplay.h"
 #import "BoundaryData.h"
+#import "CrimeList.h"
 
 @implementation CrimeDataDisplay
 {
@@ -106,7 +107,7 @@
     //int UCR;
     int controlNbr = 0;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
-    int numUCRRanges, numTimeRanges;
+    int numUCRRanges=1, numTimeRanges=1;
     LPSTR offense;
     LPSTR dept;
     CGFloat size;
@@ -191,37 +192,51 @@ NextPass:
         }
     }
    
-    numUCRRanges  = [themes getNumUCRRanges];
-    numTimeRanges = [themes getNumTimeRanges];
+    if (!CRAPI.sharedInstance.mapCrimeList)
+    {
+        numUCRRanges  = [themes getNumUCRRanges];
+        numTimeRanges = [themes getNumTimeRanges];
+    }
     int totRanges = numTimeRanges * numUCRRanges;
     int iRange = 0;
     for (int ucrRange = 0; ucrRange < numUCRRanges; ucrRange++)
     {
         if (![self continue]) break;
-        [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
+        if (!CRAPI.sharedInstance.mapCrimeList)
+            [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
             if (![self continue]) break;
-            BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
-            query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE, Attempt FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
-                     OFFENSEXY_index.minTime >=%f AND\
-                     OFFENSEXY_index.maxTime <=%f AND\
-                     OFFENSEXY_index.MinUCR  >=%f AND\
-                     OFFENSEXY_index.MaxUCR  <=%f AND\
-                     OFFENSEXY_index.maxX    >=%f AND\
-                     OFFENSEXY_index.minX    <=%f AND\
-                     OFFENSEXY_index.maxY    >=%f AND\
-                     OFFENSEXY_index.minY    <=%f",
-                     fromTime/1000.0-1,
-                     toTime/1000.0+1,
-                     _minUCR*10.0-1,
-                     _maxUCR*10.0+1,
-                     platlonBounds->xmn,
-                     platlonBounds->xmx,
-                     platlonBounds->ymn,
-                     platlonBounds->ymx];
-            tot = toTime - fromTime;
-            CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+            if (!CRAPI.sharedInstance.mapCrimeList)
+            {
+                BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
+                query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE, Attempt FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
+                         OFFENSEXY_index.minTime >=%f AND\
+                         OFFENSEXY_index.maxTime <=%f AND\
+                         OFFENSEXY_index.MinUCR  >=%f AND\
+                         OFFENSEXY_index.MaxUCR  <=%f AND\
+                         OFFENSEXY_index.maxX    >=%f AND\
+                         OFFENSEXY_index.minX    <=%f AND\
+                         OFFENSEXY_index.maxY    >=%f AND\
+                         OFFENSEXY_index.minY    <=%f",
+                         fromTime/1000.0-1,
+                         toTime/1000.0+1,
+                         _minUCR*10.0-1,
+                         _maxUCR*10.0+1,
+                         platlonBounds->xmn,
+                         platlonBounds->xmx,
+                         platlonBounds->ymn,
+                         platlonBounds->ymx];
+                tot = toTime - fromTime;
+                CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+            }
+            else
+            {
+                NSString * controlNumberList = [CrimeList getControlNumberList:CRAPI.sharedInstance.mapCrimeList];
+                query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE, Attempt FROM OFFENSEXY WHERE OFFENSEXY.ControlNbr IN (%@)",
+                         controlNumberList];
+                
+            }
             SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)

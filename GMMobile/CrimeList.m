@@ -77,6 +77,23 @@ NSString * GetCrimeListDirectory (void)
     return newName;
 }
 
++ (NSString*) getControlNumberList:(NSString *)listName
+{
+    NSString * list = @"";
+    [CrimeList setCurrentCrimeList:listName];
+    CrimeList * cl = CrimeList.new;
+    BOOL opened = [cl open];
+    NSArray *controlNumbers = [cl getControlNumbers];
+    char delim = 0;
+    for (NSNumber *cnum in controlNumbers)
+    {
+        list = [list stringByAppendingString:[NSString stringWithFormat:@"%c%i",delim,(int)cnum.integerValue]];
+        delim = ',';
+    }
+    [cl close:opened];
+    return list;
+}
+
 + (NSString*) getCurrentCrimeListName
 {
     NSString *name = [UserDefaults.defaults stringForKey:@"CurrentCrimeList"];
