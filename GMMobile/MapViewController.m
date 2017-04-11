@@ -4099,26 +4099,28 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
         [self addToCrimeList:NO];
+        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Add to New Crime List"])
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
         [self addToCrimeList:YES];
+        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Add All to Current Crime List"])
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
-        [self addToCrimeList:NO
-                    fromList:[DispersePoint getDispersedControlNum]];
+        [self addToCrimeList:NO fromList:[DispersePoint getDispersedControlNum]];
+        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Add All to New Crime List"])
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
-        [self addToCrimeList:YES
-                    fromList:[DispersePoint getDispersedControlNum]];
+        [self addToCrimeList:YES fromList:[DispersePoint getDispersedControlNum]];
+        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Display Census Data Chart"])
@@ -4287,25 +4289,27 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)addToCrimeList:(BOOL)newList
 {
-    CrimeList * cl = CrimeList.new;
+    CrimeList *cl = CrimeList.new;
+    
     if (newList)
         [CrimeList createNewCrimeList];
-    [cl addIncidentToCrimeList:(int)_selectedCrime];
     
+    [cl addIncidentToCrimeList:(int)_selectedCrime];
 }
 
 - (void)addToCrimeList:(BOOL)newList
               fromList:(NSArray *)cnumArray
 {
-
-    CrimeList * cl = CrimeList.new;
-    [_popover showAfter:0
-              withTitle:@"Adding Crimes to List"
-              andButton:nil];
-    _popover.progressView.hidden=NO;
+    CrimeList *cl = CrimeList.new;
+    [_popover showAfter:0 withTitle:@"Adding Crimes to List" andButton:nil];
+    _popover.progressView.hidden = NO;
+    [self.view bringSubviewToFront:_popover];
     [_popover updateProgress:0];
+    _tableView.hidden = YES;
+    
     if (newList)
         [CrimeList createNewCrimeList];
+    
     dispatch_queue_t addQueue = dispatch_queue_create("addQueue",NULL);
     
     dispatch_async(addQueue,
@@ -4328,9 +4332,9 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
                                           [_popover hide];
+                                          _tableView.hidden = NO;
                                       });
                    });
-    
 }
 
 - (void)displayCensusDataChart
