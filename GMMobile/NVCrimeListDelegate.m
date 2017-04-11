@@ -145,9 +145,10 @@
 {
     return YES;
 }
-- (NSString *)spreadsheetRowHeaderTextPrefix:(NSInteger)index
+
+- (NSString *)spreadsheetRowHeaderTextPrefixAtIndex:(NSInteger)index
 {
-    NSString * prfx = @"SEARCH:";
+    NSString *prfx = @"SEARCH:";
     return prfx;
 }
 
