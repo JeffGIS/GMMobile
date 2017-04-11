@@ -148,7 +148,25 @@
 
 - (BOOL)spreadsheetCanEditRowHeaderTextAtIndex:(NSInteger)index
 {
-    return YES;
+    BOOL rtn = NO;
+    NSArray *list = _crimeList.availableCrimeFields;
+    
+    if (index < list.count)
+    {
+        CrimeFieldType ifield = [list[index] integerValue];
+        
+        switch (ifield)
+        {
+            case CFT_SearchString1:
+            case CFT_SearchString2:
+                rtn = YES;
+                break;
+            default:
+                break;
+        }
+    }
+    
+    return rtn;
 }
 
 - (NSString *)spreadsheetRowHeaderTextPrefixAtIndex:(NSInteger)index
@@ -239,28 +257,6 @@ tabBarController:(UITabBarController *)tabBarController
     return CrimeListFieldDescription(row);
 }
 
-- (BOOL)spreadsheetCanEditRowHeaderText:(NSInteger)row
-{
-    BOOL rtn = NO;
-    NSArray *list = _crimeList.availableCrimeFields;
-    
-    if (row < list.count)
-    {
-        CrimeFieldType ifield = [list[row] integerValue];
-    
-        switch (ifield)
-        {
-            case CFT_SearchString1:
-            case CFT_SearchString2:
-                rtn = YES;
-                break;
-            default:
-                break;
-                
-        }
-    }
-    return rtn;
-}
 - (BOOL)spreadsheetSortOnRow:(NSInteger)row
 {
     BOOL rtn = YES;
