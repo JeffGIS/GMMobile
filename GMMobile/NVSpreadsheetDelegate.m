@@ -45,7 +45,7 @@
 
 - (NSInteger)numColumnsInSpreadsheet
 {
-    return _propList.getPropertyNumbers.count;
+    return _propList.getPropertyNumbers.count + 4;
 }
 
 - (NSString *)headerTextForRow:(NSUInteger)row

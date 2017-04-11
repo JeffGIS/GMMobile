@@ -77,10 +77,10 @@
     
     if (column <= list.count)
     {
-        NSInteger propNum = [list[column - 1] integerValue];
+        NSInteger controlNum = [list[column - 1] integerValue];
         
-        return [crimelist getFieldValue:propNum
-                                  type:PFT_UserID];
+        return [crimelist getFieldValue:controlNum
+                                  type:CFT_CASENO];
     }
     
     else if (column == (list.count + 1))
@@ -104,7 +104,7 @@
 {
     CrimeList *crimelist = _crimeList;
     NSArray *list = crimelist.getControlNumbers;
-    CrimeFieldType type = (CFT_ControlNum + row - 1);
+    CrimeFieldType type = (CFT_UCR + row - 1);
     
     if (column <= list.count && row < crimelist.availableCrimeFields.count)
     {
@@ -215,7 +215,6 @@
     NSString * report = nil;
     CrimeList *crimelist = [[CrimeList alloc] init];
     NSArray *list = crimelist.getControlNumbers;
-    CrimeFieldType type = (CFT_ControlNum + row - 1);
     
     if (column <= list.count && row < crimelist.availableCrimeFields.count)
     {
@@ -225,7 +224,7 @@
     }
     return report;
 }
-/*- (void)spreadsheetDidMapItForRow:(NSInteger)row
+- (void)spreadsheetDidMapItForRow:(NSInteger)row
 column:(NSInteger)column
 tabBarController:(UITabBarController *)tabBarController
     {
@@ -250,7 +249,7 @@ tabBarController:(UITabBarController *)tabBarController
     }
     
     tabBarController.selectedIndex = index;
-}*/
+}
 
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {

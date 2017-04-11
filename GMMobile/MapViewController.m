@@ -104,6 +104,7 @@
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
+@property BOOL continueLoad;
 
 @end
 
@@ -256,6 +257,7 @@
     
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.hideAtCancel = NO;
+    _popover.delegate = self;
     
     _tableViewBackgroundColor = [UIColor colorWithRed:0.0 green:0.0  blue:0.3 alpha:1.0];
     
@@ -4301,11 +4303,12 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
               fromList:(NSArray *)cnumArray
 {
     CrimeList *cl = CrimeList.new;
-    [_popover showAfter:0 withTitle:@"Adding Crimes to List" andButton:nil];
+    [_popover showAfter:0 withTitle:@"Adding Crimes to List"];
     _popover.progressView.hidden = NO;
     [self.view bringSubviewToFront:_popover];
     [_popover updateProgress:0];
     _tableView.hidden = YES;
+    _continueLoad = YES;
     
     if (newList)
         [CrimeList createNewCrimeList];
@@ -4319,6 +4322,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                        [cl startTransaction];
                        for (NSNumber * num in cnumArray)
                        {
+                           if (!_continueLoad)
+                               break;
                            [cl addIncidentToCrimeList:(int)num.integerValue];
                            dispatch_async(dispatch_get_main_queue(),
                                           ^{
@@ -4327,7 +4332,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                            count++;
                            
                        }
-                       [cl commitTransaction];
+                       if (_continueLoad)
+                           [cl commitTransaction];
                        [cl close:opened];
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
@@ -4336,7 +4342,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                                       });
                    });
 }
-
+- (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    _continueLoad = NO;
+}
 - (void)displayCensusDataChart
 {
     ChartsViewController *pieChartVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusDataPie];

@@ -285,6 +285,9 @@ NSString * GetCrimeListDirectory (void)
         case CFT_NumSuspects:
             name = @"Suspects";
             break;
+        case CFT_Location:
+            name = @"Location";
+            break;
         default:
             break;
     }
@@ -302,7 +305,7 @@ NSString * GetCrimeListDirectory (void)
             break;
         case CFT_CASENO:
         case CFT_OffenseCodes:
-        case CFT_Address:
+        case CFT_Location:
             rtn = VTString;
             break;
         case CFT_HEIGHT:
@@ -390,7 +393,7 @@ NSString * GetCrimeListDirectory (void)
                 value = [NSString stringWithFormat:@"%f %f",pt.lat,pt.lon];
             }
                 break;
-            case CFT_Address:
+            case CFT_Location:
             case CFT_OffenseCodes:
             case CFT_CASENO:
                 val = (LPSTR)sqlite3_column_blob(statement, 0);
@@ -543,32 +546,56 @@ NSString * GetCrimeListDirectory (void)
     int fromTime=0, toTime=0;
     LPSTR offense;
     LPSTR dept, year, cno;
-    char allOffense[4096]={0};
+    char allOffense[1024]={0};
+    char address[1024];
     NSString * caseNum=@"";
+    NSString * location = @"";
     BOOL first = TRUE;
     
-    NSString * query = [NSString stringWithFormat:@"SELECT X,Y,Offense,UCR,FromDate,ToDate, CityCode, CaseYear, CaseNbr FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];
+    /*    NSString * query = [NSString stringWithFormat:@"SELECT X,Y,Offense,UCR,FromDate,ToDate, CityCode, CaseYear, CaseNbr, HouseNbr, HouseModifier,StreetName,StreetType,StreetDirection,IntersectionStreetName,IntersectionStreetType,IntersectionStreetDirection,Apartment FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];*/
+        NSString * query = [NSString stringWithFormat:@"SELECT X,Y,Offense,UCR,FromDate,ToDate, CityCode, CaseYear, CaseNbr, Location FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];
+    //NSString * query = [NSString stringWithFormat:@"SELECT * FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];
     SQLOK(0,sqlite3_prepare_v2(crimeData.database, query.UTF8String, -1, &statement, 0), crimeData.database);
-    
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-        first = FALSE;
+/*        int i=0;
+        while (i < sqlite3_column_count(statement))
+        {
+            LPSTR name = sqlite3_column_name(statement, i);
+            i++;
+        }*/
         offense = (LPSTR)sqlite3_column_text(statement,2);
-        if (*allOffense)
+        if (!first)
             sprintf (strchr(allOffense,0),",%s",offense);
         else
         {
+            int i = 3;
             strcpy (allOffense,offense);
             BasePt.lon = sqlite3_column_double(statement,0);
             BasePt.lat = sqlite3_column_double(statement,1);
-            UCR = sqlite3_column_int(statement,3);
-            fromTime = sqlite3_column_int(statement,4);
-            toTime = sqlite3_column_int(statement,5);
-            dept = (LPSTR)sqlite3_column_text(statement,6);
-            year = (LPSTR)sqlite3_column_text(statement,7);
-            cno = (LPSTR)sqlite3_column_text(statement,8);
+            UCR = sqlite3_column_int(statement,i++);
+            fromTime = sqlite3_column_int(statement,i++);
+            toTime = sqlite3_column_int(statement,i++);
+            dept = (LPSTR)sqlite3_column_text(statement,i++);
+            year = (LPSTR)sqlite3_column_text(statement,i++);
+            cno = (LPSTR)sqlite3_column_text(statement,i++);
             caseNum  = [NSString stringWithFormat:@"%s%s%s",dept,year,cno];
+            LPSTR loc = (LPSTR)sqlite3_column_text(statement,i++);
+            location = [NSString stringWithUTF8String:loc];
+           /* LPSTR house = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR houseMod = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR streetName = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR streetType = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR streetDir = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR intStreetName = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR intStreetType = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR intStreetDir = (LPSTR)sqlite3_column_text(statement,i++);
+            LPSTR appt = (LPSTR)sqlite3_column_text(statement,i++);
+            sprintf (address,"%s %s %s %s %s %s %s %s %s",house,houseMod,streetName,streetType,streetDir,intStreetName,intStreetType,intStreetDir,appt);
+            OneSpace(address);*/
+            i++;
         }
+        first = FALSE;
     }
     SQLOK(0,sqlite3_finalize(statement), crimeData.database);
     [crimeData close:openedCd];
@@ -591,6 +618,9 @@ NSString * GetCrimeListDirectory (void)
         [self executeCmd:(LPSTR)cmd.UTF8String];
         timeBlob = intToBlob (toTime);
         cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_ToTime,crimeVersion,timeBlob];
+        [self executeCmd:(LPSTR)cmd.UTF8String];
+        NSString * locationBlob = stringToBlob (location);
+        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_Location,crimeVersion,locationBlob];
         [self executeCmd:(LPSTR)cmd.UTF8String];
         
         NSString * report = [CrimeData reportForControlNumber:controlNum];
