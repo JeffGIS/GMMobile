@@ -4311,6 +4311,8 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     dispatch_async(addQueue,
                    ^{
                        int count = 1;
+                       BOOL opened = [cl open];
+                       [cl startTransaction];
                        for (NSNumber * num in cnumArray)
                        {
                            [cl addIncidentToCrimeList:(int)num.integerValue];
@@ -4321,7 +4323,12 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                            count++;
                            
                        }
-                       [_popover hide];
+                       [cl commitTransaction];
+                       [cl close:opened];
+                       dispatch_async(dispatch_get_main_queue(),
+                                      ^{
+                                          [_popover hide];
+                                      });
                    });
     
 }

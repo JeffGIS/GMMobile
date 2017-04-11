@@ -87,11 +87,11 @@ NSString * GetCrimeListDirectory (void)
 
 + (BOOL) renameCurrentCrimeList:(NSString *)newName
 {
-    CrimeList *pl = [[CrimeList alloc]init];
-    NSString *currentFile = pl.path;
-    NSString *newFile = [NSString stringWithFormat:@"%@/%@.sqlite", pl.crimeListDir, newName];
+    CrimeList *cl = [[CrimeList alloc]init];
+    NSString *currentFile = cl.path;
+    NSString *newFile = [NSString stringWithFormat:@"%@/%@.sqlite", cl.crimeListDir, newName];
     
-    [pl close:YES];
+    [cl close:YES];
     NSError * err = NULL;
     BOOL result = [NSFileManager.defaultManager  moveItemAtPath:currentFile
                                                          toPath:newFile
@@ -170,7 +170,7 @@ NSString * GetCrimeListDirectory (void)
         [self createTables];
         
     }
-    NSLog(@"Init crimeerty list %@", _fileName);
+    NSLog(@"Init crime list %@", _fileName);
     
     return self;
 }
@@ -277,10 +277,13 @@ NSString * GetCrimeListDirectory (void)
             name = @"To Time";
             break;
         case CFT_SearchString1:
-            name = @"Search:";
+            name = @"Search:dread";
             break;
         case CFT_SearchString2:
-            name = @"Search:";
+            name = @"Search:knife";
+            break;
+        case CFT_NumSuspects:
+            name = @"Suspects";
             break;
         default:
             break;
@@ -409,6 +412,16 @@ NSString * GetCrimeListDirectory (void)
                 ival = *(int*)sqlite3_column_blob(statement, 0);
                 if (ival)
                     value = @"YES";
+                break;
+            case CFT_FromTime:
+            case CFT_ToTime:
+            {
+                ival = *(int*)sqlite3_column_blob(statement, 0);
+                NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                value = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:ival]];
+
+            }
                 break;
             default:
                 ival = *(int*)sqlite3_column_blob(statement, 0);

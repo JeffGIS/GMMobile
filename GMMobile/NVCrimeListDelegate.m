@@ -67,14 +67,14 @@
 
 - (NSString *)headerTextForColumn:(NSUInteger)column
 {
-    CrimeList *proplist = _crimeList;
-    NSArray *list = proplist.getControlNumbers;
+    CrimeList *crimelist = _crimeList;
+    NSArray *list = crimelist.getControlNumbers;
     
     if (column <= list.count)
     {
         NSInteger propNum = [list[column - 1] integerValue];
         
-        return [proplist getFieldValue:propNum
+        return [crimelist getFieldValue:propNum
                                   type:PFT_UserID];
     }
     
@@ -97,16 +97,16 @@
 - (NSString *)textForColumn:(NSUInteger)column
                         row:(NSUInteger)row
 {
-    CrimeList *proplist = _crimeList;
-    NSArray *list = proplist.getControlNumbers;
+    CrimeList *crimelist = _crimeList;
+    NSArray *list = crimelist.getControlNumbers;
     PropFieldType type = (PFT_PIN + row - 1);
     
-    if (column <= list.count && row < proplist.availableCrimeFields.count)
+    if (column <= list.count && row < crimelist.availableCrimeFields.count)
     {
         NSInteger propNum = [list[column - 1] integerValue];
         
         
-        return [proplist getFieldValue:propNum
+        return [crimelist getFieldValue:propNum
                                   type:type];
     }
    else
@@ -122,7 +122,11 @@
 - (void)spreadsheetDidEditTitleText:(NSString *)titleText
 {
     if (![titleText isEqualToString:CrimeList.getCurrentCrimeListName])
+    {
+        [self closeList];
         [CrimeList renameCurrentCrimeList:titleText];
+        [self openList];
+    }
 }
 
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
@@ -185,11 +189,11 @@
                            column:(NSInteger)column
                  tabBarController:(UITabBarController *)tabBarController
 {
-    CrimeList *proplist = [[CrimeList alloc] init];
+    CrimeList *crimelist = [[CrimeList alloc] init];
     
-    LLPOINT llpoint = [proplist getCrimeLatLon:column];
+    LLPOINT llpoint = [crimelist getCrimeLatLon:column];
     
-    [proplist setZoomValues:column
+    [crimelist setZoomValues:column
                      forRow:row];
     
     CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
