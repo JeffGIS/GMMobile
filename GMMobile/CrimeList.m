@@ -362,7 +362,9 @@ NSString * GetCrimeListDirectory (void)
 {
     NSString *value = @"";
     
-    value = [self getFieldValue:controlNum type:type];
+    value = [self getFieldValue:controlNum
+                           type:type
+                            raw:NO];
     
     if (value)
     {
@@ -379,6 +381,7 @@ NSString * GetCrimeListDirectory (void)
 
 - (NSString *) getFieldValue:(NSInteger)controlNum
                         type:(CrimeFieldType)fieldType
+                         raw:(BOOL)raw
 {
     NSString *value = @"";
     NSNumber *num;
@@ -432,10 +435,17 @@ NSString * GetCrimeListDirectory (void)
             case CFT_ToTime:
             {
                 ival = *(int*)sqlite3_column_blob(statement, 0);
-                NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
-                [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-                value = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:ival]];
-
+                if (raw)
+                {
+                    value = [NSString stringWithFormat:@"%i",ival];
+                }
+                else
+                {
+                    NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+                    value = [dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:ival]];
+                }
+                
             }
                 break;
             default:
@@ -506,7 +516,8 @@ NSString * GetCrimeListDirectory (void)
     LLPOINT pt;
     BOOL opened = [self open];
     NSString * value = [self getFieldValue:controlNum
-                                      type:CFT_LatLon];
+                                      type:CFT_LatLon
+                                       raw:NO];
     
     pt = LLPOINTFromString (value);
     [self close:opened];

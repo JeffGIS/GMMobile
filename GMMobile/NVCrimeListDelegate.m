@@ -84,7 +84,8 @@
         NSInteger controlNum = [list[column - 1] integerValue];
         
         return [crimelist getFieldValue:controlNum
-                                  type:CFT_CASENO];
+                                    type:CFT_CASENO
+                                     raw:NO];
     }
     
     else if (column == (list.count + 1))
@@ -135,7 +136,8 @@
         
         
         return [crimelist getFieldValue:propNum
-                                  type:type];
+                                  type:type
+                                    raw:NO];
     }
    else
         return @"";
@@ -300,6 +302,31 @@ tabBarController:(UITabBarController *)tabBarController
         }
     }
     return rtn;
+}
+- (NSArray *) getTimeLine
+{
+    NSMutableArray * array = NSMutableArray.new;
+    CrimeList *crimelist = _crimeList;
+    BOOL opened = [crimelist open];
+    NSArray *list = crimelist.getControlNumbers;
+    
+    for (NSNumber *num in list)
+    {
+        int cnum = (int)num.integerValue;
+        
+        NSString * time = [crimelist getFieldValue:cnum
+                                              type:CFT_FromTime
+                                               raw:YES];
+        NSString * nsus = [crimelist getFieldValue:cnum
+                                              type:CFT_NumSuspects
+                                               raw:YES];
+        TimeLine *tl = TimeLine.new;
+        tl.time = (int)time.integerValue;
+        tl.value = nsus.integerValue;
+        [array addObject:tl];
+    }
+    [crimelist close:opened];
+    return array;
 }
 
 @end
