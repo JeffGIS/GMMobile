@@ -51,6 +51,11 @@
     return _propList.getPropertyNumbers.count + 4;
 }
 
+- (void) deleteRows:(NSArray *)arrayOfRows
+{
+    
+}
+
 - (NSString *)headerTextForRow:(NSUInteger)row
 {
     PropertyList *proplist = _propList;

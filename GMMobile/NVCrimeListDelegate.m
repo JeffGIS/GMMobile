@@ -102,6 +102,10 @@
     else
         return @"";
 }
+- (void)deleteRows:(NSArray *)arrayOfRows
+{
+    
+}
 
 - (NSString *)textForColumn:(NSUInteger)column
                         row:(NSUInteger)row
