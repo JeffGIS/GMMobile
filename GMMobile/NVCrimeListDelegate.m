@@ -102,9 +102,24 @@
     else
         return @"";
 }
+
 - (void)deleteRows:(NSArray *)arrayOfRows
 {
-    
+    CrimeList *crimelist = _crimeList;
+    NSArray *list = crimelist.getControlNumbers;
+    BOOL opened = [crimelist open];
+    [crimelist startTransaction];
+    for (NSNumber * rownum in arrayOfRows)
+    {
+        int row = (int)rownum.integerValue;
+        if (row < list.count)
+        {
+            NSNumber *cnum = list[row];
+            [crimelist deleteControlNumber:(int)cnum.integerValue];
+        }
+    }
+    [crimelist commitTransaction];
+    [crimelist close:opened];
 }
 
 - (NSString *)textForColumn:(NSUInteger)column

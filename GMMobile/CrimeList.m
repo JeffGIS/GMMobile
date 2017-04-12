@@ -357,11 +357,6 @@ NSString * GetCrimeListDirectory (void)
     return controlNums.copy;
 }
 
-+ (void) deleteControlNum:(NSInteger)controlNum
-{
-    
-}
-
 - (void) getCrimeFieldValueOfType:(CrimeFieldType)type
                    forControlNumber:(NSInteger)controlNum;
 {
@@ -456,6 +451,15 @@ NSString * GetCrimeListDirectory (void)
     return value;
 }
 
+- (void) deleteControlNumber:(int)controlNum
+{
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"DELETE FROM CrimeList WHERE ControlNum = %i",controlNum];
+    
+    [self executeCmd:(LPSTR)query.UTF8String];
+    
+    [self close:opened];
+}
 
 - (int)nextCrimeNum
 {
