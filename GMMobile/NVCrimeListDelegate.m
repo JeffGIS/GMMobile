@@ -117,7 +117,8 @@
         }
     }
     [crimelist commitTransaction];
-    [crimelist close:opened];
+    [crimelist close:YES];
+    [crimelist open];
 }
 
 - (NSString *)textForColumn:(NSUInteger)column
@@ -291,9 +292,11 @@
         {
             case CFT_SearchString1:
             case CFT_SearchString2:
+            case CFT_LatLon:
                 rtn = NO;
                 break;
             default:
+                [_crimeList sortOn:ifield];
                 break;
                 
         }
