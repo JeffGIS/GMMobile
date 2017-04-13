@@ -313,6 +313,8 @@ NSString * GetCrimeListDirectory (void)
         case CFT_CASENO:
         case CFT_OffenseCodes:
         case CFT_Location:
+        case CFT_SearchString1:
+        case CFT_SearchString2:
             rtn = VTString;
             break;
         case CFT_HEIGHT:
@@ -345,11 +347,13 @@ NSString * GetCrimeListDirectory (void)
 }
 
 - (BOOL) sortOn:(CrimeFieldType)field
+      direction:(int)ascdesc
 {
     BOOL opened = [self open];
-    int ascending = 1;
+    int ascending = ascdesc;
+    _controlNumberList = nil;
     
-    NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER));INSERT INTO SortOn VALUES (%li,%i)",(long)field,ascending];
+    NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER);INSERT INTO SortOn VALUES (%li,%i)",(long)field,ascending];
     BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
@@ -369,9 +373,14 @@ NSString * GetCrimeListDirectory (void)
     {
         ValueTypes vt = [self getFieldValueType:sortField];
         NSString * type = @"INTEGER";
-        cmd =  [NSString stringWithFormat:@"CREATE TABLE SortedList (Value %@ PRIMARY KEY,ControlNum INTEGER;",type];
+        if (vt == VTString)
+            type = @"CHAR";
+        else if (vt == VTDouble)
+            type = @"DOUBLE";
+        cmd =  [NSString stringWithFormat:@"CREATE TABLE SortedList (Value %@,ControlNum INTEGER);",type];
         rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
         NSArray * cnumList = [self createControlNumbers:NO];
+        [self startTransaction];
         for (NSNumber * num in cnumList)
         {
             int controlNum = (int)num.integerValue;
@@ -379,12 +388,16 @@ NSString * GetCrimeListDirectory (void)
                                               type:sortField
                                                raw:YES];
             if (vt == VTString)
+            {
+                value = [value stringByReplacingOccurrencesOfString:@"'" withString:@""];
                 cmd = [NSString stringWithFormat:@"INSERT INTO SortedList VALUES ('%@',%i);",value,controlNum];
+            }
             else
                 cmd = [NSString stringWithFormat:@"INSERT INTO SortedList VALUES (%@,%i);",value,controlNum];
 
             rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
         }
+        [self commitTransaction];
     }
     [self close:opened];
 }
@@ -392,6 +405,22 @@ NSString * GetCrimeListDirectory (void)
 {
     CrimeFieldType  rtn = CFT_END;
     int asc = 1;
+
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldType, Ascending FROM SortOn"];
+    sqlite3_stmt *statement = NULL;
+    
+    if (sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
+    {
+        
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            rtn = sqlite3_column_int(statement, 0);
+            asc = sqlite3_column_int(statement, 1);
+        }
+        SQLOK(0,sqlite3_finalize(statement), _database);
+    }
+    [self close:opened];
     
     if (ascending)
         *ascending = asc;
@@ -406,6 +435,10 @@ NSString * GetCrimeListDirectory (void)
     CrimeFieldType sortField = [self getSortField:&ascending];
     if (useSort && sortField != CFT_END)
     {
+        if (!doesSQLiteTableExist("SortList",_database))
+        {
+            [self createSortedList];
+        }
         NSString * ascdesc = @"ASC";
         if (!ascending)
             ascdesc = @"DESC";

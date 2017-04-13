@@ -283,20 +283,23 @@
 {
     BOOL rtn = YES;
     NSArray *list = _crimeList.availableCrimeFields;
-    
+    int ascdesc = 1;
+    int asc;
+    CrimeFieldType currentSortField = [_crimeList getSortField:&asc];
+
     if (row < list.count)
     {
         CrimeFieldType ifield = [list[row] integerValue];
-        
+        if (ifield == currentSortField)
+            ascdesc =  !asc;
         switch (ifield)
         {
-            case CFT_SearchString1:
-            case CFT_SearchString2:
             case CFT_LatLon:
                 rtn = NO;
                 break;
             default:
-                [_crimeList sortOn:ifield];
+                [_crimeList sortOn:ifield
+                         direction:ascdesc];
                 break;
                 
         }
