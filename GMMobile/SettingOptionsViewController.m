@@ -454,7 +454,7 @@ EAGLContext *CreateBestEAGLContext()
             if ([cell.textLabel.text isEqualToString:@"Auto Update"])
             {
                 cellSwitch.tag = 777;
-                cellSwitch.on = [UserDefaults.defaults boolForKey:@"AutoUpdate"];
+                cellSwitch.on = ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"];
             }
             
             else
@@ -741,7 +741,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     switch (aSwitch.tag)
     {
         case 777://Auto upload
-            [UserDefaults.defaults saveBool:aSwitch.on forKey:@"AutoUpdate"];
+            [UserDefaults.defaults saveBool:!aSwitch.on forKey:@"NoAutoUpdate"];
             break;
             
         case 888://Track location
