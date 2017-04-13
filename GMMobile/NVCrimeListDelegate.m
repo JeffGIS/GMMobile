@@ -295,9 +295,11 @@ tabBarController:(UITabBarController *)tabBarController
         {
             case CFT_SearchString1:
             case CFT_SearchString2:
+            case CFT_LatLon:
                 rtn = NO;
                 break;
             default:
+                [_crimeList sortOn:ifield];
                 break;
                 
         }

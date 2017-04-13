@@ -63,6 +63,7 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 - (NSArray *)availableCrimeFields;
 - (NSString *)crimeFieldName:(CrimeFieldType)fieldType;
 - (void) deleteControlNumber:(int)controlNum;
+- (BOOL) sortOn:(CrimeFieldType)field;
 
 - (void) getCrimeFieldValueOfType:(CrimeFieldType)type
                    forControlNumber:(NSInteger)controlNum;

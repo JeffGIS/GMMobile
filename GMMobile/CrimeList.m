@@ -232,18 +232,6 @@ NSString * GetCrimeListDirectory (void)
     }
 }
 
-- (BOOL) createTables
-{
-    BOOL opened = [self open];
-    
-    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS CrimeList (id INTEGER PRIMARY KEY,ControlNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
-    CREATE INDEX IF NOT EXISTS CrimeList_index ON CrimeList (ControlNum ASC);";
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
-    
-    [self close:opened];
-    return rtn;
-}
-
 - (BOOL)executeCmd:(char *)cmd
 {
     BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
@@ -344,12 +332,65 @@ NSString * GetCrimeListDirectory (void)
     return _controlNumberList;
 }
 
+- (BOOL) createTables
+{
+    BOOL opened = [self open];
+    
+    NSString *cmd =  @"CREATE TABLE IF NOT EXISTS CrimeList (id INTEGER PRIMARY KEY,ControlNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
+    CREATE INDEX IF NOT EXISTS CrimeList_index ON CrimeList (ControlNum ASC);";
+    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    [self close:opened];
+    return rtn;
+}
+
+- (BOOL) sortOn:(CrimeFieldType)field
+{
+    BOOL opened = [self open];
+    int ascending = 1;
+    
+    NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER));INSERT INTO SortOn VALUES (%i,%i)",field,ascending];
+    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    [self close:opened];
+    return rtn;
+}
+- (void) createSortedList
+{
+    int ascending;
+    CrimeFieldType sortField = [self getSortField:&ascending];
+    BOOL opened = [self open];
+    _controlNumberList = nil;
+   
+    NSString *cmd =  @"DROP TABLE IF EXISTS SortedList;";
+    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    
+    if (sortField != CFT_END)
+    {
+        NSString * type = @"INTEGER";
+        cmd =  [NSString stringWithFormat:@"CREATE TABLE SortedList (Value %@ PRIMARY KEY,ControlNum INTEGER;",type];
+        rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    }
+    [self close:opened];
+}
+-  (CrimeFieldType) getSortField:(int *)ascending
+{
+    CrimeFieldType  rtn = CFT_END;
+    int asc = 1;
+    
+    if (ascending)
+        *ascending = asc;
+    return rtn;
+}
 - (NSArray*) createControlNumbers
 {
     NSMutableArray * controlNums = [[NSMutableArray alloc]init];
     BOOL opened = [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT ControlNum FROM CrimeList"];
-    
+    CrimeFieldType sortField = [self getSortField:nil];
+    if (sortField != CFT_END)
+        query = [NSString stringWithFormat:@"SELECT DISTINCT ControlNum FROM SortedList"];
+
     sqlite3_stmt *statement = NULL;
     
     SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
