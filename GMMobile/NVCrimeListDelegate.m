@@ -120,7 +120,8 @@
         }
     }
     [crimelist commitTransaction];
-    [crimelist close:opened];
+    [crimelist close:YES];
+    [crimelist open];
 }
 
 - (NSString *)textForColumn:(NSUInteger)column

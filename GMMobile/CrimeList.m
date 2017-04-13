@@ -20,6 +20,7 @@
 @property BOOL isOpen;
 @property unsigned long long fileSize;
 @property int dbIsOpen;
+@property NSArray * controlNumberList;
 @end
 
 @implementation CrimeList
@@ -227,6 +228,7 @@ NSString * GetCrimeListDirectory (void)
         SQLOK(0,sqlite3_close(_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
+        _controlNumberList = nil;
     }
 }
 
@@ -336,6 +338,13 @@ NSString * GetCrimeListDirectory (void)
 }
 
 - (NSArray*) getControlNumbers
+{
+    if (!_controlNumberList)
+        _controlNumberList = [self createControlNumbers];
+    return _controlNumberList;
+}
+
+- (NSArray*) createControlNumbers
 {
     NSMutableArray * controlNums = [[NSMutableArray alloc]init];
     BOOL opened = [self open];
