@@ -2852,7 +2852,7 @@ haveVV:
 {
     if (CRAPI.sharedInstance.becameActive &&
         !CRAPI.sharedInstance.inDataUpdate &&
-        [UserDefaults.defaults boolForKey:@"AutoUpdate"] &&
+        ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"] &&
         ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
     {
         if (_cdUpdate)

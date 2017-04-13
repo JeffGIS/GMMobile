@@ -14,7 +14,7 @@
                                 PID:(NSString *)PID;
 
 - (void)findPropOwnerViewController:(FindPropertyOwnerViewController *)findPropOwner
-             didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps;
+             didSelectMultipleProps:(NSArray<PropertyRecord *> *)multipleProps;
 
 @end
 

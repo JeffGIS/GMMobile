@@ -337,7 +337,7 @@
                                               raw:YES];
         
         NSString *nsus = [crimelist getFieldValue:cnum
-                                             type:CFT_NumSuspects
+                                             type:CFT_UCR
                                               raw:YES];
         TimeLine *tl = TimeLine.new;
         tl.time = (int)time.integerValue;

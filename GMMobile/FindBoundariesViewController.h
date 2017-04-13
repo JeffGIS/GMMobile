@@ -16,7 +16,7 @@
 
 @optional
 - (void)findBoundsViewController:(FindBoundariesViewController *)findPropOwner
-          didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps;
+          didSelectMultipleProps:(NSArray<PropertyRecord *> *)multipleProps;
 
 @end
 

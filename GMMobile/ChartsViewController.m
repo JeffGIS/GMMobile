@@ -5,6 +5,7 @@
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CensusData.h"
 #import "PropertyData.h"
+#import "CCodeLibrary/NVDestinationOptions.h"
 @import Charts;
 
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
@@ -14,7 +15,7 @@
 @property (nonatomic) NSMutableDictionary *queryCounter;
 @property (nonatomic) CandleStickChartView *routingCandleStickChart;
 @property (nonatomic) NVColor *color;
-@property (nonatomic, copy) NSArray <NSNumber *> *timeArray;
+@property (nonatomic, copy) NSArray<NSNumber *> *timeArray;
 @property int currentSaleVal, durationCount, queryCount, numDays, numEntries;
 @property ChartsViewType type;
 
@@ -210,7 +211,7 @@
     totalTaxData.valueFormatter = chartFormatter;
     
     CombinedChartData *data = CombinedChartData.new;
-    data.lineData = [[LineChartData alloc] initWithDataSets:@[(emvTotalData), (emvBldgData), (emvLandData), (totalTaxData)]];
+    data.lineData = [[LineChartData alloc] initWithDataSets:@[emvTotalData, emvBldgData, emvLandData, totalTaxData]];
     data.barData = [[BarChartData alloc] initWithDataSet:saleValData];
     chart.data = data;
     chart.xAxis.axisMinimum = (chart.chartXMin - 0.5);
@@ -339,7 +340,7 @@
     
     ChartDataEntry *totalMean1 = [[ChartDataEntry alloc] initWithX:totalMean y:topOfChart];
     ChartDataEntry *totalMean2 = [[ChartDataEntry alloc] initWithX:totalMean y:0];
-    LineChartDataSet *totalMeanSet = [[LineChartDataSet alloc] initWithValues:@[(totalMean1), (totalMean2)] label:@""];
+    LineChartDataSet *totalMeanSet = [[LineChartDataSet alloc] initWithValues:@[totalMean1, totalMean2] label:@""];
     totalMeanSet.color = NVColor.darkGreenColor;
     totalMeanSet.lineWidth = 2.0;
     totalMeanSet.lineDashLengths = meanDashPattern;
@@ -347,7 +348,7 @@
     
     ChartDataEntry *malesMean1 = [[ChartDataEntry alloc] initWithX:malesMean y:topOfChart];
     ChartDataEntry *malesMean2 = [[ChartDataEntry alloc] initWithX:malesMean y:0];
-    LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(malesMean1), (malesMean2)] label:@""];
+    LineChartDataSet *malesMeanSet = [[LineChartDataSet alloc] initWithValues:@[malesMean1, malesMean2] label:@""];
     malesMeanSet.color = NVColor.blueColor;
     malesMeanSet.lineWidth = 2.0;
     malesMeanSet.lineDashLengths = meanDashPattern;
@@ -355,15 +356,15 @@
     
     ChartDataEntry *femalesMean1 = [[ChartDataEntry alloc] initWithX:femalesMean y:topOfChart];
     ChartDataEntry *femalesMean2 = [[ChartDataEntry alloc] initWithX:femalesMean y:0];
-    LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[(femalesMean1), (femalesMean2)] label:@""];
+    LineChartDataSet *femalesMeanSet = [[LineChartDataSet alloc] initWithValues:@[femalesMean1, femalesMean2] label:@""];
     femalesMeanSet.color = NVColor.deepPinkColor;
     femalesMeanSet.lineWidth = 2.0;
     femalesMeanSet.lineDashLengths = meanDashPattern;
     femalesMeanSet.drawCirclesEnabled = NO;
     
     CombinedChartData *data = CombinedChartData.new;
-    data.lineData = [[LineChartData alloc] initWithDataSets:@[(totalMeanSet), (malesMeanSet), (femalesMeanSet)]];
-    data.barData = [[BarChartData alloc] initWithDataSets:@[(totalSet), (maleSet), (femaleSet)]];
+    data.lineData = [[LineChartData alloc] initWithDataSets:@[totalMeanSet, malesMeanSet, femalesMeanSet]];
+    data.barData = [[BarChartData alloc] initWithDataSets:@[totalSet, maleSet, femaleSet]];
     data.barData.barWidth = barWidth;
     data.drawValues = NO;
     chart.drawOrder = @[([NSNumber numberWithInt:(CombinedChartDrawOrderLine)]), ([NSNumber numberWithInt:CombinedChartDrawOrderBar])];
@@ -527,7 +528,7 @@
                             durationSet.shadowColor = UIColor.blackColor;
                             durationSet.shadowWidth = 5.0;
                             durationSet.drawValuesEnabled = NO;
-                            CandleChartData *durationData = [[CandleChartData alloc] initWithDataSets:@[(durationSet)]];
+                            CandleChartData *durationData = [[CandleChartData alloc] initWithDataSet:durationSet];
                             _routingCandleStickChart.data = durationData;
                             _routingCandleStickChart.hidden = NO;
                         }
@@ -570,7 +571,85 @@
 
 - (void)setupTimeLine
 {
+    BarChartView *timeLineChart = BarChartView.new;
+    timeLineChart.translatesAutoresizingMaskIntoConstraints = NO;
+    timeLineChart.backgroundColor = UIColor.whiteColor;
+    timeLineChart.legend.font = [UIFont systemFontOfSize:16.0];
+    timeLineChart.chartDescription.text = @"";
     
+    
+    [self.view addSubview:timeLineChart];
+    [timeLineChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [timeLineChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [timeLineChart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [timeLineChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    
+    NSMutableArray<BarChartDataEntry *> *sunEntryArray = NSMutableArray.array;
+    NSMutableArray<BarChartDataEntry *> *monEntryArray = NSMutableArray.array;
+    NSMutableArray<BarChartDataEntry *> *tuesEntryArray = NSMutableArray.array;
+    NSMutableArray<BarChartDataEntry *> *wedEntryArray = NSMutableArray.array;
+    NSMutableArray<BarChartDataEntry *> *thursEntryArray = NSMutableArray.array;
+    NSMutableArray<BarChartDataEntry *> *friEntryArray = NSMutableArray.array;
+    NSMutableArray<BarChartDataEntry *> *satEntryArray = NSMutableArray.array;
+    
+    for (TimeLine *tl in _timeLineArray)
+    {
+        BarChartDataEntry *tlDataEntry = [[BarChartDataEntry alloc] initWithX:tl.time y:tl.value];
+        NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        calendar.locale = NSLocale.currentLocale;
+        calendar.timeZone = NSTimeZone.localTimeZone;
+        
+        NSDateComponents *components = [calendar components:NSCalendarUnitWeekday
+                                                   fromDate:[NSDate dateWithTimeIntervalSince1970:tl.time]];
+        
+        switch (components.weekday)
+        {
+            case WeekDaySunday:
+                [sunEntryArray addObject:tlDataEntry];
+                break;
+            case WeekDayMonday:
+                [monEntryArray addObject:tlDataEntry];
+                break;
+            case WeekDayTuesday:
+                [tuesEntryArray addObject:tlDataEntry];
+                break;
+            case WeekDayWednesday:
+                [wedEntryArray addObject:tlDataEntry];
+                break;
+            case WeekDayThursday:
+                [thursEntryArray addObject:tlDataEntry];
+                break;
+            case WeekDayFriday:
+                [friEntryArray addObject:tlDataEntry];
+                break;
+            case WeekDaySaturday:
+                [satEntryArray addObject:tlDataEntry];
+                break;
+            default:
+                break;
+        }
+    }
+    
+    BarChartDataSet *sunDataSet = [[BarChartDataSet alloc] initWithValues:sunEntryArray label:@"Sunday"];
+    sunDataSet.color = UIColor.blueColor;
+    BarChartDataSet *monDataSet = [[BarChartDataSet alloc] initWithValues:monEntryArray label:@"Monday"];
+    monDataSet.color = UIColor.redColor;
+    BarChartDataSet *tuesDataSet = [[BarChartDataSet alloc] initWithValues:tuesEntryArray label:@"Tuesday"];
+    tuesDataSet.color = UIColor.greenColor;
+    BarChartDataSet *wedDataSet = [[BarChartDataSet alloc] initWithValues:wedEntryArray label:@"Wednesday"];
+    wedDataSet.color = UIColor.orangeColor;
+    BarChartDataSet *thursDataSet = [[BarChartDataSet alloc] initWithValues:thursEntryArray label:@"Thursday"];
+    thursDataSet.color = UIColor.purpleColor;
+    BarChartDataSet *friDataSet = [[BarChartDataSet alloc] initWithValues:friEntryArray label:@"Friday"];
+    friDataSet.color = UIColor.yellowColor;
+    BarChartDataSet *satDataSet = [[BarChartDataSet alloc] initWithValues:satEntryArray label:@"Saturday"];
+    satDataSet.color = UIColor.brownColor;
+    
+    BarChartData *tlData = [[BarChartData alloc] initWithDataSets:@[sunDataSet, monDataSet, tuesDataSet,
+                                                                    wedDataSet, thursDataSet, friDataSet, satDataSet]];
+    
+    tlData.barWidth =  ((tlData.xMax - tlData.xMin) / 100.0);
+    timeLineChart.data = tlData;
 }
 
 @end
