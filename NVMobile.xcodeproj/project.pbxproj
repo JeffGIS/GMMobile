@@ -14,6 +14,7 @@
 		690E2DA61DAD3D86005FAE3A /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 690E2DA01DAD3CF6005FAE3A /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		690E829D1C11044700AB410E /* Assets.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 690E829B1C11042A00AB410E /* Assets.bundle */; };
 		690E829E1C11045600AB410E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521D41A61B6A8008CE2D1 /* MapViewController.m */; };
+		6918B2261E9F4D270091C434 /* clockIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6918B2251E9F4D270091C434 /* clockIcon.png */; };
 		691B5DCC1E520E3300C90383 /* landuse.slt in Resources */ = {isa = PBXBuildFile; fileRef = 69D2C7EF1E5209CC0040FCF9 /* landuse.slt */; settings = {ASSET_TAGS = (landuse, ); }; };
 		691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; };
 		691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; };
@@ -320,6 +321,7 @@
 		69055D6F1C87835E00B87524 /* GMMobileIconAppStore.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = GMMobileIconAppStore.jpg; sourceTree = "<group>"; };
 		690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
+		6918B2251E9F4D270091C434 /* clockIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clockIcon.png; sourceTree = "<group>"; };
 		6924B4351D37BDC8007C6C76 /* trackLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackLocation.png; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
@@ -816,6 +818,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6918B2251E9F4D270091C434 /* clockIcon.png */,
 				697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */,
 				697EEE641E93FF110057CAC0 /* SampleCurbRamp1.jpg */,
 				69CB89DF1DCD558700D408E9 /* backspace.png */,
@@ -1395,6 +1398,7 @@
 				697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */,
 				69F177481D7A0C6800741C68 /* GoogleMaps.bundle in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,
+				6918B2261E9F4D270091C434 /* clockIcon.png in Resources */,
 				692D9CF41CA2FB6C00AFCA9A /* whiteTrashCan.png in Resources */,
 				A92382AA1AD8840A0027659B /* blackOrangeCrosshairs.png in Resources */,
 				BB2B13951D6F78B10072957F /* SANPTID.txt in Resources */,

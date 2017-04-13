@@ -15,7 +15,7 @@
 
 @implementation NVSpreadsheetDelegate
 
-- (SpreadsheetTypes) getSpreadSheetType
+- (SpreadsheetTypes)getSpreadSheetType
 {
     return SST_PropertyList;
 }

@@ -97,6 +97,9 @@
         case ChartsViewTypeRouting:
             [self setupRouting];
             break;
+        case ChartsViewTypeTimeLine:
+            [self setupTimeLine];
+            break;
         default:
             break;
     }
@@ -563,6 +566,11 @@
             [theDataTask resume];
         }
     }
+}
+
+- (void)setupTimeLine
+{
+    
 }
 
 @end

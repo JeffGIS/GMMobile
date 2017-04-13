@@ -1,15 +1,11 @@
-//
 //  NVCrimeListDelegate.m
 //  NVMobile
-//
-//  Created by Jeff Smith on 4/5/17.
-//  Copyright © 2017 GSSi. All rights reserved.
-//
 
 #import "NVCrimeListDelegate.h"
 #import "CrimeList.h"
 #import "MapViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
+#import "ChartsViewController.h"
 
 @interface NVCrimeListDelegate ()
 
@@ -19,16 +15,17 @@
 
 @implementation NVCrimeListDelegate
 
-- (SpreadsheetTypes) getSpreadSheetType
+- (SpreadsheetTypes)getSpreadSheetType
 {
     return SST_CrimeList;
 }
 
-- (NSString *) currentListName
+- (NSString *)currentListName
 {
-    return [CrimeList getCurrentCrimeListName];
+    return CrimeList.getCurrentCrimeListName;
 }
-- (BOOL) openList
+
+- (BOOL)openList
 {
     BOOL rtn = FALSE;
     
@@ -250,8 +247,8 @@
     return report;
 }
 - (void)spreadsheetDidMapItForRow:(NSInteger)row
-column:(NSInteger)column
-tabBarController:(UITabBarController *)tabBarController
+                           column:(NSInteger)column
+                 tabBarController:(UITabBarController *)tabBarController
     {
         CrimeList *crimelist = [[CrimeList alloc] init];
         
@@ -303,9 +300,10 @@ tabBarController:(UITabBarController *)tabBarController
     }
     return rtn;
 }
-- (NSArray *) getTimeLine
+
+- (void)getTimeLine:(UIViewController *)parentController
 {
-    NSMutableArray * array = NSMutableArray.new;
+    NSMutableArray<TimeLine *> *array = NSMutableArray.array;
     CrimeList *crimelist = _crimeList;
     BOOL opened = [crimelist open];
     NSArray *list = crimelist.getControlNumbers;
@@ -314,19 +312,24 @@ tabBarController:(UITabBarController *)tabBarController
     {
         int cnum = (int)num.integerValue;
         
-        NSString * time = [crimelist getFieldValue:cnum
-                                              type:CFT_FromTime
-                                               raw:YES];
-        NSString * nsus = [crimelist getFieldValue:cnum
-                                              type:CFT_NumSuspects
-                                               raw:YES];
+        NSString *time = [crimelist getFieldValue:cnum
+                                             type:CFT_FromTime
+                                              raw:YES];
+        
+        NSString *nsus = [crimelist getFieldValue:cnum
+                                             type:CFT_NumSuspects
+                                              raw:YES];
         TimeLine *tl = TimeLine.new;
         tl.time = (int)time.integerValue;
         tl.value = nsus.integerValue;
         [array addObject:tl];
     }
+    
     [crimelist close:opened];
-    return array;
+    
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeTimeLine];
+    chartsVC.timeLineArray = array.copy;
+    [parentController presentViewController:chartsVC animated:YES completion:nil];
 }
 
 @end

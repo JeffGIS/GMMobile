@@ -4,6 +4,7 @@
 @import UIKit;
 #import "CCodeLibrary/NVColor.h"
 #import "CCodeLibrary/NVDateRange.h"
+#import "CCodeLibrary/NVSpreadsheetVC.h"
 
 #define MAX_QUERIES 50
 
@@ -15,6 +16,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
     ChartsViewTypeCensusDataBar,
     ChartsViewTypeCensusDataLine,
     ChartsViewTypeRouting,
+    ChartsViewTypeTimeLine,
 };
 
 @interface ChartsViewController : UIViewController
@@ -24,6 +26,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
 @property (nonatomic, copy) NSString *areaType, *geoid;
 @property int startTime, endTime, interval;
 @property TimeArraySpan span;
+@property (nonatomic, copy) NSArray <TimeLine *> *timeLineArray;
 
 /*
  * startTime & endTime are 24 hour format (hhmm)
