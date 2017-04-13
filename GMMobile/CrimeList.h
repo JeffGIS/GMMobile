@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
     CFT_NumSuspects,
     CFT_SearchString1,
     CFT_SearchString2,
+    CFT_SearchString3,
     CFT_HEIGHT,
     CFT_SCORE,
     CFT_LatLon,
@@ -66,6 +67,8 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 -  (CrimeFieldType) getSortField:(int *)ascending;
 - (BOOL) sortOn:(CrimeFieldType)field
       direction:(int)ascdesc;
+- (BOOL) changeTextForFieldHeader:(CrimeFieldType)field
+                          newText:(NSString *)text;
 
 - (void) getCrimeFieldValueOfType:(CrimeFieldType)type
                    forControlNumber:(NSInteger)controlNum;

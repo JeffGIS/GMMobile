@@ -160,13 +160,26 @@
 - (void)spreadsheetDidEditColumnHeaderText:(NSString *)text
                                    atIndex:(NSInteger)index
 {
+    NSArray *list = _crimeList.availableCrimeFields;
     
+    if (index < list.count)
+    {
+        CrimeFieldType ifield = [list[index] integerValue];
+        [_crimeList changeTextForFieldHeader:ifield
+                                     newText:text];
+    }
 }
 
 - (void)spreadsheetDidEditRowHeaderText:(NSString *)text
                                 atIndex:(NSInteger)index
 {
+    NSArray *list = _crimeList.availableCrimeFields;
     
+    if (index < list.count)
+    {
+        CrimeFieldType ifield = [list[index] integerValue];
+        [_crimeList changeTextForFieldHeader:ifield newText:text];
+    }
 }
 
 - (BOOL)spreadsheetCanEditRowHeaderTextAtIndex:(NSInteger)index
@@ -182,6 +195,7 @@
         {
             case CFT_SearchString1:
             case CFT_SearchString2:
+            case CFT_SearchString3:
                 rtn = YES;
                 break;
             default:

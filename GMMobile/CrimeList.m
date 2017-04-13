@@ -284,10 +284,9 @@ NSString * GetCrimeListDirectory (void)
             name = @"To Time";
             break;
         case CFT_SearchString1:
-            name = @"Search:dread";
-            break;
         case CFT_SearchString2:
-            name = @"Search:knife";
+        case CFT_SearchString3:
+            name = [NSString stringWithFormat:@"Search:%@",[self getSearchString:fieldType]];
             break;
         case CFT_NumSuspects:
             name = @"Suspects";
@@ -315,6 +314,7 @@ NSString * GetCrimeListDirectory (void)
         case CFT_Location:
         case CFT_SearchString1:
         case CFT_SearchString2:
+        case CFT_SearchString3:
             rtn = VTString;
             break;
         case CFT_HEIGHT:
@@ -339,10 +339,90 @@ NSString * GetCrimeListDirectory (void)
     BOOL opened = [self open];
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS CrimeList (id INTEGER PRIMARY KEY,ControlNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
-    CREATE INDEX IF NOT EXISTS CrimeList_index ON CrimeList (ControlNum ASC);";
+    CREATE INDEX IF NOT EXISTS CrimeList_index ON CrimeList (ControlNum ASC);\
+    CREATE TABLE IF NOT EXISTS SearchStrings (FieldType INTEGER PRIMARY KEY, SearchString CHAR);";
     BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
+    return rtn;
+}
+
+- (BOOL) changeTextForFieldHeader:(CrimeFieldType)field
+                          newText:(NSString *)text
+{
+    BOOL rtn = FALSE;
+    
+    switch (field)
+    {
+        default:
+            break;
+        case CFT_SearchString1:
+        case CFT_SearchString2:
+        case CFT_SearchString3:
+        {
+            text = textAfter(text,@":");
+            NSString * cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO SearchStrings VALUES(%li,'%@');",(long)field,text];
+            rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+            if (rtn)
+                [self reloadSearchValues];
+        }
+            break;
+    }
+    return rtn;
+}
+- (void) reloadSearchValues
+{
+    BOOL opened = [self open];
+    CrimeData *crimeData = [[CrimeData alloc] init];
+    BOOL openedCd = [crimeData open];
+    int crimeVersion = [crimeData datasetVersion];
+
+    NSArray * cnumList = [self createControlNumbers:NO];
+    [self startTransaction];
+    for (NSNumber * num in cnumList)
+    {
+        int controlNum = (int)num.integerValue;
+        NSString * report = [crimeData reportForControlNum:controlNum];
+        if (![report isEqualToString:@""])
+        {
+            for (CrimeFieldType ifield = CFT_SearchString1;ifield <= CFT_SearchString3;ifield++)
+            {
+                int found = 0;
+                NSString * searchString = [self getSearchString:ifield];
+                if (![searchString isEqualToString:@""])
+                {
+                    found = stringContainsCaseInsenitiveString (report,searchString);
+                }
+                NSString * searchBlob = intToBlob (found);
+                int dbid = [self getDBIDForField:ifield controlNum:controlNum];
+                NSString * cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid,controlNum,(int)ifield,crimeVersion,searchBlob];
+                [self executeCmd:(LPSTR)cmd.UTF8String];
+            }
+        }
+    }
+    [self commitTransaction];
+    [crimeData close:openedCd];
+    [self close:opened];
+   
+}
+- (NSString *) getSearchString:(CrimeFieldType)field
+{
+    NSString * rtn = @"";
+    BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT SearchString FROM SearchStrings WHERE FieldType = %li",(long)field];
+    sqlite3_stmt *statement = NULL;
+    
+    if (sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
+    {
+        if (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            LPSTR sstring = (LPSTR)sqlite3_column_text(statement, 0);
+            rtn = [NSString stringWithUTF8String:sstring];
+        }
+        SQLOK(0,sqlite3_finalize(statement), _database);
+    }
+    [self close:opened];
+    
     return rtn;
 }
 
@@ -483,6 +563,30 @@ NSString * GetCrimeListDirectory (void)
     return;
 }
 
+-(int) getDBIDForField:(CrimeFieldType)ifield
+            controlNum:(int)controlNum
+{
+    int rtn = -1;
+    NSString *query = [NSString stringWithFormat:@"SELECT id FROM CrimeList WHERE ControlNum = %li AND FieldType = %li",
+                       (long)controlNum, (long)ifield];
+    
+    BOOL opened = [self open];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        rtn = sqlite3_column_int(statement, 0);
+    }
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    if (rtn < 0)
+        rtn = [self next_id];
+    [self close:opened];
+   
+    return rtn;
+}
+
 - (NSString *) getFieldValue:(NSInteger)controlNum
                         type:(CrimeFieldType)fieldType
                          raw:(BOOL)raw
@@ -531,6 +635,7 @@ NSString * GetCrimeListDirectory (void)
                 break;
             case CFT_SearchString1:
             case CFT_SearchString2:
+            case CFT_SearchString3:
                 ival = *(int*)sqlite3_column_blob(statement, 0);
                 if (ival)
                     value = @"YES";
@@ -683,7 +788,7 @@ NSString * GetCrimeListDirectory (void)
     LPSTR offense;
     LPSTR dept, year, cno;
     char allOffense[1024]={0};
-    char address[1024];
+    //char address[1024];
     NSString * caseNum=@"";
     NSString * location = @"";
     BOOL first = TRUE;
@@ -760,14 +865,18 @@ NSString * GetCrimeListDirectory (void)
         [self executeCmd:(LPSTR)cmd.UTF8String];
         
         NSString * report = [CrimeData reportForControlNumber:controlNum];
-        BOOL found = stringContainsCaseInsenitiveString (report,@"dread");
-        timeBlob = intToBlob (found);
-        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_SearchString1,crimeVersion,timeBlob];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
-        found = stringContainsCaseInsenitiveString (report,@"knife");
-        timeBlob = intToBlob (found);
-        cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_SearchString2,crimeVersion,timeBlob];
-        [self executeCmd:(LPSTR)cmd.UTF8String];
+        for (CrimeFieldType ifield = CFT_SearchString1;ifield <= CFT_SearchString3;ifield++)
+        {
+            int found = 0;
+            NSString * searchString = [self getSearchString:ifield];
+            if (![searchString isEqualToString:@""])
+            {
+                found = stringContainsCaseInsenitiveString (report,searchString);
+            }
+            timeBlob = intToBlob (found);
+            cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)ifield,crimeVersion,timeBlob];
+            [self executeCmd:(LPSTR)cmd.UTF8String];
+        }
         int nSuspect = numberOfOccurencesOfStringInString(report, @" S- ");
         NSString *nsBlob = intToBlob (nSuspect);
         cmd = [NSString stringWithFormat:@"INSERT INTO CrimeList VALUES (%i,%i,%i,%i,X'%@');",dbid++,controlNum,(int)CFT_NumSuspects,crimeVersion,nsBlob];
