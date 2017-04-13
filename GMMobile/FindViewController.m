@@ -153,7 +153,7 @@
 }
 
 - (void)findBoundsViewController:(FindBoundariesViewController *)findBounds
-          didSelectMultipleProps:(NSArray <PropertyRecord *> *)multipleProps
+          didSelectMultipleProps:(NSArray<PropertyRecord *> *)multipleProps
 {
     MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
                                                                     inTabBarController:self.tabBarController];

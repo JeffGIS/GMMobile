@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
 @property (nonatomic, copy) NSString *areaType, *geoid;
 @property int startTime, endTime, interval;
 @property TimeArraySpan span;
-@property (nonatomic, copy) NSArray <TimeLine *> *timeLineArray;
+@property (nonatomic, copy) NSArray<TimeLine *> *timeLineArray;
 
 /*
  * startTime & endTime are 24 hour format (hhmm)

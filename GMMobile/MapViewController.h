@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 @property (nonatomic) CLLocationCoordinate2D spreadsheetCoords;
 @property (nonatomic) GMSMapView *mapView;
 @property NSUInteger fromIndex;
-@property (nonatomic) NSArray <PropertyRecord *> *propArray;
+@property (nonatomic) NSArray<PropertyRecord *> *propArray;
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;
