@@ -328,7 +328,7 @@ NSString * GetCrimeListDirectory (void)
 - (NSArray*) getControlNumbers
 {
     if (!_controlNumberList)
-        _controlNumberList = [self createControlNumbers];
+        _controlNumberList = [self createControlNumbers:YES];
     return _controlNumberList;
 }
 
@@ -349,7 +349,7 @@ NSString * GetCrimeListDirectory (void)
     BOOL opened = [self open];
     int ascending = 1;
     
-    NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER));INSERT INTO SortOn VALUES (%i,%i)",field,ascending];
+    NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER));INSERT INTO SortOn VALUES (%li,%i)",(long)field,ascending];
     BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
@@ -367,9 +367,24 @@ NSString * GetCrimeListDirectory (void)
     
     if (sortField != CFT_END)
     {
+        ValueTypes vt = [self getFieldValueType:sortField];
         NSString * type = @"INTEGER";
         cmd =  [NSString stringWithFormat:@"CREATE TABLE SortedList (Value %@ PRIMARY KEY,ControlNum INTEGER;",type];
         rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+        NSArray * cnumList = [self createControlNumbers:NO];
+        for (NSNumber * num in cnumList)
+        {
+            int controlNum = (int)num.integerValue;
+            NSString * value = [self getFieldValue:controlNum
+                                              type:sortField
+                                               raw:YES];
+            if (vt == VTString)
+                cmd = [NSString stringWithFormat:@"INSERT INTO SortedList VALUES ('%@',%i);",value,controlNum];
+            else
+                cmd = [NSString stringWithFormat:@"INSERT INTO SortedList VALUES (%@,%i);",value,controlNum];
+
+            rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+        }
     }
     [self close:opened];
 }
@@ -382,14 +397,20 @@ NSString * GetCrimeListDirectory (void)
         *ascending = asc;
     return rtn;
 }
-- (NSArray*) createControlNumbers
+- (NSArray*) createControlNumbers:(BOOL) useSort
 {
+    int ascending;
     NSMutableArray * controlNums = [[NSMutableArray alloc]init];
     BOOL opened = [self open];
     NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT ControlNum FROM CrimeList"];
-    CrimeFieldType sortField = [self getSortField:nil];
-    if (sortField != CFT_END)
-        query = [NSString stringWithFormat:@"SELECT DISTINCT ControlNum FROM SortedList"];
+    CrimeFieldType sortField = [self getSortField:&ascending];
+    if (useSort && sortField != CFT_END)
+    {
+        NSString * ascdesc = @"ASC";
+        if (!ascending)
+            ascdesc = @"DESC";
+        query = [NSString stringWithFormat:@"SELECT DISTINCT ControlNum FROM SortedList ORDER BY Value %@",ascdesc];
+    }
 
     sqlite3_stmt *statement = NULL;
     
