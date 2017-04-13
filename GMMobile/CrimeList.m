@@ -286,7 +286,7 @@ NSString * GetCrimeListDirectory (void)
         case CFT_SearchString1:
         case CFT_SearchString2:
         case CFT_SearchString3:
-            name = [NSString stringWithFormat:@"Search:%@",[self getSearchString:fieldType]];
+            name = [NSString stringWithFormat:@"SEARCH:%@",[self getSearchString:fieldType]];
             break;
         case CFT_NumSuspects:
             name = @"Suspects";
