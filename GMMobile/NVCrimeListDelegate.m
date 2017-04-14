@@ -135,40 +135,25 @@
             [cnumToCopyList addObject:cnum];
         }
     }
-/*    [crimelist open];
-    
+    crimelist = nil;
+    [self closeList];
     if (!listName)
         [CrimeList createNewCrimeList];
+    else
+        [CrimeList setCurrentCrimeList:listName];
+    [self openList];
     
-    dispatch_queue_t addQueue = dispatch_queue_create("addQueue",NULL);
     
-    dispatch_async(addQueue,
-                   ^{
-                       int count = 1;
-                       BOOL opened = [cl open];
-                       [cl startTransaction];
-                       for (NSNumber * num in cnumToCopyList)
-                       {
-                           if (!_continueLoad)
-                               break;
-                           [cl addIncidentToCrimeList:(int)num.integerValue];
-                           dispatch_async(dispatch_get_main_queue(),
-                                          ^{
-                                              [_popover updateProgress:(double)count/cnumArray.count];
-                                          });
-                           count++;
-                           
-                       }
-                       if (_continueLoad)
-                           [cl commitTransaction];
-                       [cl close:opened];
-                       dispatch_async(dispatch_get_main_queue(),
-                                      ^{
-                                          [_popover hide];
-                                          _tableView.hidden = NO;
-                                      });
-                   });
-*/
+    int count = 1;
+    BOOL opened = [_crimeList open];
+    [_crimeList startTransaction];
+    for (NSNumber * num in cnumToCopyList)
+    {
+        [_crimeList addIncidentToCrimeList:(int)num.integerValue];
+        count++;
+    }
+    [_crimeList commitTransaction];
+    [_crimeList close:opened];
 }
 
 
