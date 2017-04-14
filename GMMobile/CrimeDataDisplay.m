@@ -159,6 +159,8 @@ boundsPointInAreas:nil
         viewBounds:pvbounds
          haveCompareTheme:[themes haveCompareTheme]];
         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+        
+        [pias initTimeLine:_cd.database];
 
     }
     
@@ -293,6 +295,7 @@ NextPass:
                     else if (_mode == CHOROPLETH)
                     {
                         [pias DPointInArea:&llpoint
+                                    atTime:dc.itemBeginTime
                                 whichCount:compareClass];
                     }
                     else if (_mode == HOTSPOT)
@@ -370,10 +373,14 @@ NextPass:
                         LLBounds:platlonBounds
                       viewBounds:pvbounds
                 haveCompareTheme:0];
-            [pias createDisplayColors:piasAdjust mask:pia];
+            [pias createDisplayColors:piasAdjust
+                                 mask:pia
+                          wantOverdue:0];
         }
         else
-            [pias createDisplayColors:nil mask:pia];
+            [pias createDisplayColors:nil
+                                 mask:pia
+                          wantOverdue:1];
 
         CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
         bd.totRecords = [bd display:context
