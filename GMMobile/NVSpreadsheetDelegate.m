@@ -149,12 +149,6 @@
         return @"";
 }
 
-- (NSString *)titleTextForSpreadsheet
-{
-    return PropertyList.getCurrentPropertyListName;
-
-}
-
 - (void)spreadsheetDidEditTitleText:(NSString *)titleText
 {
     if (![titleText isEqualToString:PropertyList.getCurrentPropertyListName])

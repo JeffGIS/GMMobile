@@ -177,12 +177,6 @@
         return @"";
 }
 
-- (NSString *)titleTextForSpreadsheet
-{
-    return CrimeList.getCurrentCrimeListName;
-    
-}
-
 - (void)spreadsheetDidEditTitleText:(NSString *)titleText
 {
     if (![titleText isEqualToString:CrimeList.getCurrentCrimeListName])
@@ -373,7 +367,7 @@
                                               raw:YES];
         
         NSString *nsus = [crimelist getFieldValue:cnum
-                                             type:CFT_UCR
+                                             type:CFT_NumSuspects
                                               raw:YES];
         TimeLine *tl = TimeLine.new;
         tl.time = (int)time.integerValue;
