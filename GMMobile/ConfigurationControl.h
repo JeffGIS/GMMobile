@@ -17,13 +17,6 @@
 #define SANITARY_SYMBOLS    1
 #define STORM_SYMBOLS       2
 
-typedef NS_ENUM(NSInteger, AdjustCrimeOptions)
-{
-    None,
-    Population,
-    HousingUnits,
-};
-
 typedef NS_ENUM(NSInteger, HardCodedLayers)
 {
     HCLayerAerials,

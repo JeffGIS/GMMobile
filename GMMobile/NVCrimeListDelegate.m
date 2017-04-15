@@ -291,16 +291,29 @@
     }
     return report;
 }
+
+- (NSArray *) getSearchStrings
+{
+    NSMutableArray * array = NSMutableArray.new;
+    
+    for (CrimeFieldType ifield = CFT_SearchString1;ifield <= CFT_SearchString3;ifield++)
+    {
+        NSString * sstring = [_crimeList getSearchString:ifield];
+        [array addObject:sstring];
+    }
+    
+    return array;
+}
 - (void)spreadsheetDidMapItForRow:(NSInteger)row
                            column:(NSInteger)column
                  tabBarController:(UITabBarController *)tabBarController
-    {
-        CrimeList *crimelist = [[CrimeList alloc] init];
-        
+{
+    CrimeList *crimelist = [[CrimeList alloc] init];
+    
     LLPOINT llpoint = [crimelist getCrimeLatLon:column];
     
     [crimelist setZoomValues:column
-                     forRow:row];
+                      forRow:row];
     
     CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
     NSUInteger index = 0;
@@ -366,14 +379,19 @@
                                              type:CFT_FromTime
                                               raw:YES];
         
-        NSString *nsus = [crimelist getFieldValue:cnum
+/*        NSString *nsus = [crimelist getFieldValue:cnum
                                              type:CFT_NumSuspects
-                                              raw:YES];
+                                              raw:YES];*/
         TimeLine *tl = TimeLine.new;
         tl.time = (int)time.integerValue;
-        tl.value = nsus.integerValue;
+//        tl.value = nsus.integerValue;
+        tl.value = 1+[NSCalendar.currentCalendar component:NSCalendarUnitHour fromDate:[NSDate dateWithTimeIntervalSince1970:time.integerValue]];
         [array addObject:tl];
     }
+    TimeLine *tl = TimeLine.new;
+    tl.time = NSDate.date.timeIntervalSince1970;
+    tl.value = 0.1;
+    [array addObject:tl];
     
     [crimelist close:opened];
     

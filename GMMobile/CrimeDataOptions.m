@@ -69,7 +69,7 @@
                         @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
-    _adjustmentOptions = @[@"None", @"Population", @"Housing Units"];
+    _adjustmentOptions = @[@"None", @"Population", @"Housing Units",@"Overdue as Percent of Average Frequency",@"Overdue as Percent of STDV of Frequency"];
     
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
@@ -375,7 +375,7 @@ viewForHeaderInSection:(NSInteger)section
         headerLabel.text = @"Select Multiple Offense Option";
     
     else if (_currentArray == _adjustmentOptions)
-        headerLabel.text = @"Select Attempt Option";
+        headerLabel.text = @"Value Adjustment Options";
     
     else
         headerLabel.text = @"Select Mode";

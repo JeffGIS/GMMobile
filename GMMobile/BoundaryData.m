@@ -1882,6 +1882,11 @@ NextPass:
                     text = [NSString stringWithUTF8String:countstr];
                     
                 }
+                else if (pias.overdueOption)
+                {
+                    text = [pias overdueTextForArea:keyval];
+                    
+                }
                 else
                 {
                     count = [pias countForArea:keyval

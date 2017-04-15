@@ -65,6 +65,7 @@ typedef NS_ENUM(NSInteger, CrimeFieldType)
 - (NSString *)crimeFieldName:(CrimeFieldType)fieldType;
 - (void) deleteControlNumber:(int)controlNum;
 -  (CrimeFieldType) getSortField:(int *)ascending;
+- (NSString *) getSearchString:(CrimeFieldType)field;
 - (BOOL) sortOn:(CrimeFieldType)field
       direction:(int)ascdesc;
 - (BOOL) changeTextForFieldHeader:(CrimeFieldType)field

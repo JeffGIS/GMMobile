@@ -358,7 +358,7 @@ NextPass:
     {
         NSArray * textArray = [NSArray new];
         
-        if (_choroplethAdjustValue)
+        if (_choroplethAdjustValue && _choroplethAdjustValue < ACO_OverDueAverage)
         {
             PointInAreas *piasAdjust = [[PointInAreas alloc]init];
             piasAdjust.areaType = _choroplethAdjustArea;
@@ -378,9 +378,14 @@ NextPass:
                           wantOverdue:0];
         }
         else
+        {
+            AdjustCrimeOptions overDueOption = 0;
+            if (_choroplethAdjustValue == ACO_OverDueAverage || _choroplethAdjustValue == ACO_OverDueSTDV)
+                overDueOption = _choroplethAdjustValue;
             [pias createDisplayColors:nil
                                  mask:pia
-                          wantOverdue:1];
+                          wantOverdue:overDueOption];
+        }
 
         CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
         bd.totRecords = [bd display:context
@@ -397,11 +402,11 @@ NextPass:
         to.numTextFields = 1;
         to.desc = @"Boundary Name";
         to.fields = @"NAME";
-        if (_choroplethAdjustValue == HousingUnits)
+        if (_choroplethAdjustValue == ACO_HousingUnits)
         {
             to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountPerHundred], nil];
         }
-        else if (_choroplethAdjustValue == Population)
+        else if (_choroplethAdjustValue == ACO_Population)
         {
             to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountPerThousand], nil];
         }
