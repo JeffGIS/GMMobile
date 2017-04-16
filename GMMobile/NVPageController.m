@@ -83,7 +83,7 @@
                                                      controller:self];
             
             [_pages addObject:pv];
-            //index += numLegends;
+            index += numLegends;
         }
     }
     
