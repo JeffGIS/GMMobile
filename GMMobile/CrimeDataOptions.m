@@ -224,7 +224,8 @@
     NVDateRange *nvdr = [NVDateRange showDateRangeInView:self.view
                                                 delegate:self
                                                 fromDate:CRAPI.sharedInstance.fromDate
-                                                  toDate:CRAPI.sharedInstance.toDate];
+                                                  toDate:CRAPI.sharedInstance.toDate
+                                               lockRange:NO];
 #pragma unused(nvdr)
 }
 
