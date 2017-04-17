@@ -410,4 +410,9 @@
     return SSA_None;
 }
 
+- (NSString *)filePathForHelpFile
+{
+    return nil;
+}
+
 @end
