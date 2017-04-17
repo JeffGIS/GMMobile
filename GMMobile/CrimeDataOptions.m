@@ -225,21 +225,21 @@
                                                 delegate:self
                                                 fromDate:CRAPI.sharedInstance.fromDate
                                                   toDate:CRAPI.sharedInstance.toDate
-                                               lockRange:NO];
+                                               lockRange:NO
+                                             forAllYears:CRAPI.sharedInstance.forAllYears];
 #pragma unused(nvdr)
 }
 
 - (void)dateRange:(NVDateRange *)dateRange
 didReturnFromDate:(NSInteger)fromDate
            toDate:(NSInteger)toDate
+      forAllYears:(BOOL)forAllYears
 {
     [dateRange hideDateRange:YES];
-    
     CRAPI.sharedInstance.fromDate = fromDate;
     CRAPI.sharedInstance.toDate = toDate;
-    
-    [self setDateRangeButtonTextFromDate:fromDate
-                                  toDate:toDate];
+    CRAPI.sharedInstance.forAllYears = forAllYears;
+    [self setDateRangeButtonTextFromDate:fromDate toDate:toDate];
 }
 
 - (void)setDateRangeButtonTextFromDate:(NSInteger)fromDate
