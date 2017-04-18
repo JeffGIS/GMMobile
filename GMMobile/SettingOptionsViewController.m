@@ -15,10 +15,11 @@
 @import MediaPlayer;
 @import GLKit;
 #import "CCodeLibrary/NVKeyboard.h"
+#import "CCodeLibrary/NVTextViewAlert.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate>
+@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -363,10 +364,11 @@ EAGLContext *CreateBestEAGLContext()
 {
     [super viewWillAppear:animated];
     
-    //removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages"
+    /*removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages, @"Test Keyboard",
+     @"Test Calendar Interface", @"Watch TestDrive Training Video"*/
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"Track Location",
-                  @"Test Keyboard", @"Test Calendar Interface", @"Watch TestDrive Training Video"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
+                  @"Track Location", @"Set Default Email Recipients"];
     
     [_tableView reloadData];
 }
@@ -559,6 +561,49 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NVWebView *webView = [NVWebView showWebViewInView:self.view urlString:@"gssiserver3.com/testdrivevideo"];
 #pragma unused(webView)
     }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Set Default Email Recipients"])
+    {
+        NSArray *recipientsArray = [UserDefaults.defaults arrayForKey:@"DefaultRecipients"];
+        NSString *recipientsString = @"";
+        
+        if (recipientsArray.count)
+            recipientsString = [recipientsArray componentsJoinedByString:@","];
+        
+        NVTextViewAlert *nvtva = [NVTextViewAlert showTextViewAlertinView:self.view
+                                                                 delegate:self
+                                                                    title:@"Enter Email Addresses Separated by Commas"
+                                                                     text:recipientsString];
+#pragma unused(nvtva)
+    }
+}
+
+- (void)textViewAlert:(NVTextViewAlert *)textViewAlert
+        didReturnText:(NSString *)text
+{
+    if (text && text.length)
+    {
+        text = [text stringByReplacingOccurrencesOfString:@" " withString:@""];
+        text = [text stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
+        text = [text stringByTrimmingCharactersInSet:NSCharacterSet.symbolCharacterSet];
+        NSArray *textArray = nil;
+        
+        if ([text containsString:@","])
+            textArray = [text componentsSeparatedByString:@","];
+        
+        else
+            textArray = [NSArray arrayWithObject:text];
+        
+        [UserDefaults.defaults saveArray:textArray forKey:@"DefaultRecipients"];
+    }
+    
+     [textViewAlert hideTextViewAlert:YES];
+}
+
+- (void)textViewAlertDidCancel:(NVTextViewAlert *)textViewAlert
+{
+    [textViewAlert hideTextViewAlert:YES];
 }
 
 - (void)testCalendar
