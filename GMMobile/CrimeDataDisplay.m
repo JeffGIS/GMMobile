@@ -106,6 +106,7 @@
     DPOINT BasePt[2];
     //int UCR;
     int controlNbr = 0;
+    NSArray *timeRanges = [CRAPI.sharedInstance getTimeRanges];
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
     int numUCRRanges=1, numTimeRanges=1;
     LPSTR offense;
@@ -197,7 +198,7 @@ NextPass:
     if (!CRAPI.sharedInstance.mapCrimeList)
     {
         numUCRRanges  = [themes getNumUCRRanges];
-        numTimeRanges = [themes getNumTimeRanges];
+        numTimeRanges = (int)timeRanges.count;
     }
     int totRanges = numTimeRanges * numUCRRanges;
     int iRange = 0;
@@ -211,6 +212,9 @@ NextPass:
             if (![self continue]) break;
             if (!CRAPI.sharedInstance.mapCrimeList)
             {
+                TimeRange * tr = timeRanges[timeRange];
+                fromTime = tr.beginTime;
+                toTime = tr.endTime;
                 BOOL display = [themes getMinMaxTime:timeRange min:&fromTime max:&toTime];
                 query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,Offense,UCR,FromDate,ToDate, CityCode, SUNANGLE, Attempt FROM OFFENSEXY,OFFENSEXY_index WHERE OFFENSEXY.id=OFFENSEXY_index.id AND\
                          OFFENSEXY_index.minTime >=%f AND\

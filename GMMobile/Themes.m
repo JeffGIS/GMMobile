@@ -373,12 +373,6 @@ Exit:
 }
 
 
-- (int) getNumTimeRanges
-{
-    int n = 1;
-    
-    return n;
-}
 - (BOOL) containsColorByRefTheme
 {
     BOOL rtn = FALSE;

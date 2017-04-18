@@ -35,7 +35,6 @@
                    max:(int *)maxTime;
 
 - (int) getNumUCRRanges;
-- (int) getNumTimeRanges;
 - (BOOL) containsColorByRefTheme;
 - (int) haveCompareTheme;
 
