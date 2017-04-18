@@ -294,6 +294,7 @@
 - (BOOL) getMinMaxTime:(int)range min:(int *)minTime max:(int *)maxTime
 {
     BOOL display = TRUE;
+    return display;
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
     
     *minTime = fromTime;
