@@ -118,6 +118,7 @@
 		69BCD61A1DF63C9E002E0384 /* Reader-Thumbs.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BCD5FD1DF63C9E002E0384 /* Reader-Thumbs.png */; };
 		69BCD61B1DF63C9E002E0384 /* Reader-Thumbs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BCD5FE1DF63C9E002E0384 /* Reader-Thumbs@2x.png */; };
 		69BCD61C1DF63C9E002E0384 /* Reader-Thumbs@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BCD5FF1DF63C9E002E0384 /* Reader-Thumbs@3x.png */; };
+		69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */; };
 		69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
 		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
@@ -448,6 +449,7 @@
 		69BCD5FD1DF63C9E002E0384 /* Reader-Thumbs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Reader-Thumbs.png"; sourceTree = "<group>"; };
 		69BCD5FE1DF63C9E002E0384 /* Reader-Thumbs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Reader-Thumbs@2x.png"; sourceTree = "<group>"; };
 		69BCD5FF1DF63C9E002E0384 /* Reader-Thumbs@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Reader-Thumbs@3x.png"; sourceTree = "<group>"; };
+		69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteQuestionMark.png; sourceTree = "<group>"; };
 		69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_SlopeVC.pdf; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
 		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .gitignore; path = GMMobile/.gitignore; sourceTree = "<group>"; };
@@ -820,6 +822,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */,
 				695A9C201EA173F400F1B5D7 /* copyIcon.png */,
 				6918B2251E9F4D270091C434 /* clockIcon.png */,
 				697EEE681E93FF1B0057CAC0 /* SampleCurbRamp2.jpg */,
@@ -1386,6 +1389,7 @@
 				A934A73F1B72AFF0000EB9F9 /* update.png in Resources */,
 				69BCD60A1DF63C9E002E0384 /* Reader-Button-N@3x.png in Resources */,
 				69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */,
+				69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */,
 				69BCD6161DF63C9E002E0384 /* Reader-Mark-Y@3x.png in Resources */,
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,

@@ -400,4 +400,19 @@
     [parentController presentViewController:chartsVC animated:YES completion:nil];
 }
 
+- (SpreadsheetAction)actionForTapOnRowHeader
+{
+    return SSA_SortRows;
+}
+
+- (SpreadsheetAction)actionForTwoTouchLongPressOnRowHeader
+{
+    return SSA_None;
+}
+
+- (NSString *)filePathForHelpFile
+{
+    return nil;
+}
+
 @end

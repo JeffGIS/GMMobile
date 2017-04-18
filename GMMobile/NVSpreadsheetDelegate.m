@@ -238,4 +238,9 @@
     return propertyListFieldDescription(row);
 }
 
+- (NSString *)filePathForHelpFile
+{
+    return nil;
+}
+
 @end
