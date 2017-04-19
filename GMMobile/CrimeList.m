@@ -64,7 +64,7 @@ NSString * GetCrimeListDirectory (void)
     int n = 1;
     NSArray * lists = [CrimeList getCrimeLists];
     n = (int)lists.count + 1;
-    NSString *newName = [NSString stringWithFormat:@"%@%i", baseName, n];
+    NSString *newName = [NSString stringWithFormat:@"%@%2.2i", baseName, n];
     
     while (nameInList (newName,lists))
     {
@@ -142,7 +142,7 @@ NSString * GetCrimeListDirectory (void)
         [UserDefaults.defaults saveString:lists[0]
                                    forKey:@"CurrentCrimeList"];
     else
-        [UserDefaults.defaults saveString:@"CrimeList1"
+        [UserDefaults.defaults saveString:@"CrimeList01"
                                    forKey:@"CurrentCrimeList"];
     return TRUE;
 }

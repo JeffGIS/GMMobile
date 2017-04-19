@@ -109,7 +109,7 @@
     [crimelist startTransaction];
     for (NSNumber * rownum in arrayOfRows)
     {
-        int row = (int)rownum.integerValue;
+        int row = (int)rownum.integerValue - 1;
         if (row < list.count)
         {
             NSNumber *cnum = list[row];
@@ -128,7 +128,7 @@
     NSMutableArray *cnumToCopyList = NSMutableArray.new;
     for (NSNumber * rownum in arrayOfRows)
     {
-        int row = (int)rownum.integerValue;
+        int row = (int)rownum.integerValue - 1;
         if (row < list.count)
         {
             NSNumber *cnum = list[row];
