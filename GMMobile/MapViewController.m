@@ -2361,8 +2361,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                          statusBarHeight + margin, _compassSize, _compassSize);
     }
     
-    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
-    
     CGRect frame1 = CGRectMake(0.0, statusBarHeight + ((size.height - statusBarHeight) / 2.0),
                                size.width, ((size.height - statusBarHeight) / 2.0));
     
