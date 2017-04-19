@@ -18,8 +18,6 @@
                                      coords:(CLLocationCoordinate2D)coords
                                        type:(NSInteger)type;
 
-- (void)markerInfoWindowWasSwiped;
-
 @end
 
 @interface MarkerInfoWindow : UIView

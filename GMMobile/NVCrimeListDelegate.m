@@ -410,6 +410,16 @@
     return SSA_None;
 }
 
+- (SpreadsheetAction)actionForOneTouchLongPressOnColumnHeader
+{
+    return SSA_MultiSelect;
+}
+
+- (SpreadsheetAction)actionForTwoTouchLongPressOnColumnHeader
+{
+    return SSA_None;
+}
+
 - (NSString *)filePathForHelpFile
 {
     return nil;

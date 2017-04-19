@@ -593,10 +593,10 @@
             
             _infoWindow.marker = marker;
             _infoWindow.optionsTitle = marker.title;
-            _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
             _noneSelected = NO;
             [self.view addSubview:_infoWindow];
+            [self updateInfoWindowPosition];
         }
         
         CRAPI.sharedInstance.GMMSetting = GMMSettingDefault;
@@ -1639,13 +1639,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             
             [_markerArray addObject:marker];
             
-            _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.marker = marker;
             _infoWindow.optionsTitle = marker.title;
             _noneSelected = NO;
-            
             [self.view addSubview:_infoWindow];
+            [self updateInfoWindowPosition];
             
             if (_markerStyle != NVMarkerStyleMarkerOnly)
             {
@@ -1705,14 +1704,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         [_markerArray addObject:marker];
         
-        CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-        
-        _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
         _infoWindow.delegate = self;
         _infoWindow.marker = marker;
         _infoWindow.optionsTitle = marker.title;
         _noneSelected = NO;
         [self.view addSubview:_infoWindow];
+        [self updateInfoWindowPosition];
     }
 }
 
@@ -1770,13 +1767,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 [_markerArray addObject:marker];
                 
-                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
                 _infoWindow.delegate = self;
                 _infoWindow.marker = marker;
                 _infoWindow.optionsTitle = marker.title;
                 _noneSelected = NO;
-                
                 [self.view addSubview:_infoWindow];
+                [self updateInfoWindowPosition];
             }
                 break;
                 
@@ -1793,7 +1789,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                             (_digitizerTargetView.center.y -
                                              (marker.frame.size.height / 2.0)));
                 
-                _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+                [self updateInfoWindowPosition];
                 
                 [UIView animateWithDuration:0.25
                                  animations:^{
@@ -2172,16 +2168,13 @@ wasTappedAtPoint:(DPOINT)point
         
         if (marker)
         {
-            CGPoint target = [_mapView.projection pointForCoordinate:marker.position];
-            
             _infoWindow = MarkerInfoWindow.new;
-            _infoWindow.center = CGPointMake(target.x, (target.y - 42.0));
             _infoWindow.delegate = self;
             _infoWindow.marker = marker;
             _infoWindow.optionsTitle = marker.title;
              _noneSelected = NO;
-            
             [self.view addSubview:_infoWindow];
+            [self updateInfoWindowPosition];
         }
     }
 }
@@ -2277,8 +2270,7 @@ didChangeCameraPosition:(GMSCameraPosition *)position
         markers.center = CGPointMake(target.x, ((target.y + statusBarHeight) - (markers.frame.size.height / 2.0)));
     }
     
-    MarkerButton *marker = _markerArray.lastObject;
-    _infoWindow.center = CGPointMake(marker.center.x, (marker.center.y - 42.0));
+    [self updateInfoWindowPosition];
     
     if (!_myLocationMarker.hidden)
     {
@@ -2294,6 +2286,20 @@ didChangeCameraPosition:(GMSCameraPosition *)position
             nvmibs.center = CGPointMake(target.x, ((target.y + statusBarHeight) - (nvmibs.frame.size.height / 2.0)));
         }
     }
+}
+
+- (void)updateInfoWindowPosition
+{
+    MarkerButton *marker = _markerArray.lastObject;
+    CGFloat xPos = marker.center.x;
+    
+    if (CGRectContainsRect(_mapView.frame, marker.frame) || CGRectIntersectsRect(_mapView.frame, marker.frame))
+    {
+        xPos = MAX(xPos, (_infoWindow.frame.size.width / 2.0));
+        xPos = MIN(xPos, (_mapView.frame.size.width - (_infoWindow.frame.size.width / 2.0)));
+    }
+    
+    _infoWindow.center = CGPointMake(xPos, (marker.center.y - 42.0));
 }
 
 - (void)mapView:(GMSMapView *)mapView
