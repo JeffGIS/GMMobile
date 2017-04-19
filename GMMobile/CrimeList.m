@@ -816,10 +816,35 @@ NSString * GetCrimeListDirectory (void)
     [self close:opened];
 }
 
-- (BOOL)addIncidentToCrimeList:(int)controlNum
+- (BOOL) controlNumInList:(int)controlNum
 {
     BOOL rtn = NO;
     BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT ControlNum FROM CrimeList WHERE ControlNum = %i",controlNum];
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int controlid = sqlite3_column_int(statement, 0);
+        rtn = TRUE;
+    }
+    
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    
+    [self close:opened];
+    
+    return rtn;
+}
+
+- (BOOL)addIncidentToCrimeList:(int)controlNum
+{
+    BOOL rtn = NO;
+    if ([self controlNumInList:controlNum])
+        return NO;
+    BOOL opened = [self open];
+    
     int dbid = [self next_id];
     
     CrimeData *crimeData = [[CrimeData alloc] init];
