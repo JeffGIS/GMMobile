@@ -122,6 +122,7 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
+    self.tabBarController.moreNavigationController.navigationBar.hidden = YES;
     self.tabBarController.delegate = self;
     
     [NSNotificationCenter.defaultCenter addObserver:self
@@ -3641,10 +3642,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)prepareToRemoveMarker
 {
     [self dismissTableView];
-    
-    [self performSelector:@selector(removeMarker)
-               withObject:nil
-               afterDelay:0.3];
+    [self performSelector:@selector(removeMarker) withObject:nil  afterDelay:0.3];
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView
@@ -3659,12 +3657,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    _infoWindow.defaultEnabled = YES;
     NSString *text = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
     
     if ([text isEqualToString:@"Property Report"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyReport forKey:@"PIDOption"];
         [self showPropReport];
+        return;
     }
     
     else if ([text isEqualToString:@"Property History"])
@@ -3704,7 +3704,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([text isEqualToString:@"Display Bing Streetside"])
     {
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetside forKey:@"PIDOption"];
+        switch (_infoWindow.marker.type)
+        {
+            case MarkerInfoWindowTypePID:
+                [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetside forKey:@"PIDOption"];
+                break;
+            case MarkerInfoWindowTypeCrime:
+                [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetside forKey:@"CrimePointOption"];
+                break;
+            default:
+                break;
+        }
+        
         [self showStreetside];
     }
     
@@ -3895,7 +3906,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[text substringToIndex:min(text.length,19)] isEqualToString:@"Display Plat"])
     {
         _splitPlatView = NO;
-        [self dismissTableView];
         [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
@@ -3903,7 +3913,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _splitPlatView = YES;
         _splitPlatDirection = 0;
-        [self dismissTableView];
         [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
@@ -3911,7 +3920,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _splitPlatView = YES;
         _splitPlatDirection = 1;
-        [self dismissTableView];
         [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
@@ -3924,27 +3932,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Trace Pipe Upstream"])
     {
         [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceUp forKey:@"SewerOption"];
-        [self dismissTableView];
         [self performSelector:@selector(showPipeTraceUpstream) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Trace Pipe Downstream"])
     {
         [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown forKey:@"SewerOption"];
-        [self dismissTableView];
         [self performSelector:@selector(showPipeTraceDownstream) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Perform Downstream\n3D Fly Over"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer forKey:@"FlyOverType"];
-        [self dismissTableView];
         [self performSelector:@selector(performDownstreamFlyOver) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Remove Pipe Trace"])
     {
-        [self dismissTableView];
         [self performSelector:@selector(removePipeTrace) withObject:nil afterDelay:0.3];
     }
     
@@ -3975,7 +3979,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Move Wall Point"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingMoveWallPoint forKey:@"AlleyWallOption"];
-        [self dismissTableView];
         [self performSelector:@selector(moveWallPoint) withObject:nil afterDelay:0.3];
     }
     
@@ -4000,27 +4003,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"View Inset Wall Photos"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewInsetWallPhotos forKey:@"AlleyWallOption"];
-        [self dismissTableView];
         [self performSelector:@selector(viewInsetWallPhotos) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes forKey:@"AlleyLineOption"];
-        [self dismissTableView];
         [self performSelector:@selector(toggleCompletionStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Alley Centerline Status"])
     {
-        [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingCenterline;
         [self performSelector:@selector(alleyStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Alley Wall Status"])
     {
-        [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingWall;
         [self performSelector:@selector(alleyStatus) withObject:nil afterDelay:0.3];
     }
@@ -4055,18 +4054,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([text isEqualToString:@"Add All to Current Crime List"])
     {
-        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddAllToCurrentList forKey:@"CrimePointOption"];
         [self addToCrimeList:NO fromList:DispersePoint.getDispersedControlNum];
     }
     
     else if ([text isEqualToString:@"Add All to New Crime List"])
     {
-        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddAllToNewList forKey:@"CrimePointOption"];
         [self addToCrimeList:YES fromList:DispersePoint.getDispersedControlNum];
     }
     
     else if ([text isEqualToString:@"Delete from Current Crime List"])
     {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingDefault forKey:@"CrimePointOption"];
+        _infoWindow.defaultEnabled = NO;
         [self removeIncidentFromCrimeList];
     }
     
@@ -4076,6 +4077,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     [self deselectTableViewRow];
+    [self dismissTableView];
 }
 
 - (MGVPlatData *)loadMGVData:(NSString *)line
@@ -4264,7 +4266,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     _popover.delegate = self;
     [self.view bringSubviewToFront:_popover];
     [_popover updateProgress:0];
-    _tableView.hidden = YES;
     _continueLoad = YES;
     
     if (newList)
@@ -4295,7 +4296,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
                                           [_popover hide];
-                                          _tableView.hidden = NO;
                                       });
                    });
 }
@@ -4401,12 +4401,17 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
     dismissPan.backgroundColor = UIColor.clearColor;
     dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
-    dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+    
+    else
+        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+    
     dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
     dismissPan.titleLabel.layer.shadowOpacity = 1.0;
     dismissPan.titleLabel.layer.shadowRadius = 3.0;
     dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
-    
     [dismissPan setTitle:@"< Return" forState:UIControlStateNormal];
     [dismissPan setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [dismissPan setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
@@ -4414,10 +4419,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     [_panView addSubview:dismissPan];
     [dismissPan constrainLeadingToAnchor:_panView.leadingAnchor constant:20.0];
     [dismissPan constrainTopToAnchor:_panView.topAnchor constant:20.0];
-    
-    [dismissPan addTarget:self
-                   action:@selector(dismissPanTapped:)
-         forControlEvents:UIControlEventTouchUpInside];
+    [dismissPan addTarget:self action:@selector(dismissPanTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     [UIView animateWithDuration:0.25 animations:^{
         _panView.alpha = 1.0;
@@ -4514,21 +4516,18 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)setTargetParcel
 {
     CRAPI.sharedInstance.currentPID = _selectedPID;
-    [self dismissTableView];
 }
 
 - (void)addToPropList
 {
     PropertyList *pl = PropertyList.new;
     [pl addParcelToPropertyList:_selectedPID popover:_popover];
-    [self dismissTableView];
 }
 
 - (void)addToDestinations
 {
     Destinations *dests = Destinations.new;
     [dests addParcelToDestinations:_selectedPID];
-    [self dismissTableView];
 }
 
 - (void)traceRouteFromCurrentLocation
@@ -4748,7 +4747,6 @@ didCompleteWithError:(NSError *)error
 - (void)editWallAttributes
 {
     [SharedDefaults.defaults saveString:_selectedAlleyWall forKey:@"AlleyWallEditAttributes"];
-    [self dismissTableView];
     [self performSelector:@selector(launchAlleyWallApp) withObject:nil afterDelay:0.3];
 }
 
@@ -5010,7 +5008,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             
             [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
-            [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];
             [self vectorViewRefresh];
@@ -5024,15 +5021,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case CensusZoomSettingCancel:
                 break;
             case CensusZoomSettingBlock:
-                [self dismissTableView];
                 //implement zoom to block here
                 break;
             case CensusZoomSettingBlockGroup:
-                [self dismissTableView];
                 //implement zoom to block group here
                 break;
             case CensusZoomSettingTract:
-                [self dismissTableView];
                 //implement zoom to tract here
                 break;
             default:
@@ -5052,7 +5046,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelTextSettingEMVLandPerAcre:
             case ParcelTextSettingLastSale:
                 CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
-                [self dismissTableView];
                 [self vectorViewRefresh];
             default:
                 break;
@@ -5073,7 +5066,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelColorSettingBuildingEMV:
                 CRAPI.sharedInstance.parcelShadingOption = 0;
                 CRAPI.sharedInstance.parcelColorOption = (int)buttonIndex;
-                [self dismissTableView];
                 [self vectorViewRefresh];
                 break;
             case ParcelColorSettingHomestead:
@@ -5083,7 +5075,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelColorSettingTaxForfeit:
             case ParcelColorSettingLastSale:
                 CRAPI.sharedInstance.parcelShadingOption = ((int)buttonIndex - 4);
-                [self dismissTableView];
                 [self vectorViewRefresh];
                 break;
             default:
@@ -5102,7 +5093,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                            forIntersection:_selectedCRIntPt.intValue];
             
             [intDb commitTransaction];
-            [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];
             [self vectorViewRefresh];
@@ -5133,7 +5123,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         
         _animateToLocation = NO;
-        [self dismissTableView];
         [self startTrackingUserLocation];
     }
 }
@@ -5487,11 +5476,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectClearMarkers
 {
-    [self dismissTableView];
-    
-    [self performSelector:@selector(clearMapItems)
-               withObject:nil
-               afterDelay:0.3];
+    [self performSelector:@selector(clearMapItems) withObject:nil afterDelay:0.3];
 }
 
 - (void)clearMapItems
@@ -6275,8 +6260,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             _selectedCrime = refno;
             _options = @[@"", @"Display Report", @"Add to Current Crime List", @"Add to New Crime List",
-                         @"Add All to Current Crime List", @"Add All to New Crime List",
-                         @"Delete from Current Crime List", @"Perform 3D Fly Around", @"Display Google Street View"];
+                         @"Add All to Current Crime List", @"Add All to New Crime List", @"Delete from Current Crime List",
+                         @"Perform 3D Fly Around", @"Display Google Street View", @"Display Bing Streetside"];
         }
             break;
         case MarkerInfoWindowTypeMGVSanPoint:
@@ -6509,8 +6494,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case CrimePointSettingAddToNewList:
                     [self addToCrimeList:YES];
                     break;
+                case CrimePointSettingAddAllToCurrentList:
+                    [self addToCrimeList:NO fromList:DispersePoint.getDispersedControlNum];
+                    break;
+                case CrimePointSettingAddAllToNewList:
+                    [self addToCrimeList:YES fromList:DispersePoint.getDispersedControlNum];
+                    break;
                 case CrimePointSettingDisplayStreetView:
                     [self showStreetView];
+                    break;
+                case CrimePointSettingDisplayStreetside:
+                    [self showStreetside];
                     break;
                 default:
                     break;

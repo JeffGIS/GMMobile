@@ -8,7 +8,7 @@
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UIButton *optionsButton;
-@property (nonatomic) UIButton *propReportButton;
+@property (nonatomic) UIButton *defaultButton;
 
 @end
 
@@ -33,6 +33,7 @@
         self.layer.cornerRadius = 6.0;
         self.layer.borderColor = UIColor.lightGrayColor.CGColor;
         self.layer.borderWidth = 0.5;
+        _defaultEnabled = YES;
         
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake
                        (height, margin, (width - (height * 2.0)),
@@ -68,20 +69,17 @@
         
         [self addSubview:_optionsButton];
         
-        _propReportButton = [[UIButton alloc] initWithFrame:CGRectMake
-                             (((width - height) + margin), margin, (height - (margin * 2.0)),
-                              (height - (margin * 2.0)))];
+        _defaultButton = [[UIButton alloc] initWithFrame:CGRectMake
+                          (((width - height) + margin), margin, (height - (margin * 2.0)),
+                           (height - (margin * 2.0)))];
         
-        [_propReportButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"arrow"
-                                                                                                   ofType:@"png"]]
-                           forState:UIControlStateNormal];
+        [_defaultButton setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"arrow"
+                                                                                                ofType:@"png"]]
+                        forState:UIControlStateNormal];
         
-        [_propReportButton addTarget:self
-                              action:@selector(propReportSelected:)
-                    forControlEvents:UIControlEventTouchUpInside];
-        
-        _propReportButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
-        [self addSubview:_propReportButton];
+        [_defaultButton addTarget:self action:@selector(defaultSelected:) forControlEvents:UIControlEventTouchUpInside];
+        _defaultButton.imageEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+        [self addSubview:_defaultButton];
     }
     
     return self;
@@ -107,7 +105,7 @@
     }
 }
 
-- (void)propReportSelected:(UIButton *)button
+- (void)defaultSelected:(UIButton *)button
 {
     if (_delegate)
     {
@@ -122,9 +120,26 @@
 {
     CGPoint pointInSuperview = [self.superview convertPoint:point fromView:self];
     CGRect frame1 = [self.superview convertRect:_optionsButton.frame fromView:self];
-    CGRect frame2 = [self.superview convertRect:_propReportButton.frame fromView:self];
+    CGRect frame2 = [self.superview convertRect:_defaultButton.frame fromView:self];
     BOOL rtn = CGRectContainsPoint(frame1, pointInSuperview) || CGRectContainsPoint(frame2, pointInSuperview);
     return rtn;
+}
+
+- (void)setDefaultEnabled:(BOOL)defaultEnabled
+{
+    _defaultEnabled = defaultEnabled;
+    
+    if (defaultEnabled)
+    {
+        _defaultButton.userInteractionEnabled = YES;
+        _defaultButton.alpha = 1.0;
+    }
+    
+    else
+    {
+        _defaultButton.userInteractionEnabled = NO;
+        _defaultButton.alpha = 0.5;
+    }
 }
 
 @end

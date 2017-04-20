@@ -20,6 +20,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     _popover = [[GSSiPopoverView alloc] initWithView:self.view];
     _popover.delegate = self;
     _appList = ConfigurationControl.sharedInstance.appList;
@@ -59,6 +60,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     [self updateTableView];
     [_tableView reloadData];
 }
