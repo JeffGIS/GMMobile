@@ -172,28 +172,23 @@ NSString * GetCrimeListDirectory (void)
 
 + (BOOL)removeIncidentInCurrentCrimeList:(int)controlNum
 {
-    BOOL rtn = FALSE;
-    CrimeList * cl = CrimeList.new;
+    BOOL rtn = NO;
+    CrimeList *cl = CrimeList.new;
     BOOL opened = [cl open];
     NSString *query = [NSString stringWithFormat:@"DELETE FROM CrimeList WHERE ControlNum = %i",controlNum];
     sqlite3_stmt *statement = NULL;
-    
     SQLOK(0,sqlite3_prepare_v2(cl.database, query.UTF8String, -1, &statement, 0), cl.database);
     
-    if (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        rtn = TRUE;
-    }
+    if (sqlite3_step(statement) == SQLITE_DONE)
+        rtn = YES;
     
     SQLOK(0,sqlite3_finalize(statement), cl.database);
-    
     [cl close:opened];
- 
     return rtn;
 }
 
-+ (BOOL) setCurrentCrimeList:(NSString *)crimeList
 //returns false if crimelist does not exist
++ (BOOL)setCurrentCrimeList:(NSString *)crimeList
 {
     BOOL rtn = NO;
     
