@@ -122,6 +122,7 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
+    self.tabBarController.delegate = self;
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -141,9 +142,6 @@
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _splitPlatView = _legendMinimized = _grayscaleMode = NO;
     _routeMode = @"driving";
-    self.tabBarController.delegate = self;
-    
-
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
     _legendScrollView = UIScrollView.new;
@@ -325,9 +323,7 @@
     _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
     _compass.alpha = 0.0;
     _compass.hidden = YES;
-    
-    [_compass setImage:compassImage
-              forState:UIControlStateNormal];
+    [_compass setImage:compassImage forState:UIControlStateNormal];
     
     [_compass addTarget:self
                  action:@selector(compassTapped:)
@@ -343,7 +339,6 @@
                                                                                              ofType:@"png"]];
     
     [self.view addSubview:_myLocationMarker];
-    
     _markerStyle = [UserDefaults.defaults integerForKey:@"MarkerStyle"];
 }
 
@@ -351,9 +346,7 @@
 {
     if (CRAPI.sharedInstance.setToAlleyWalls)
     {
-        [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1)
-                                      forKey:@"CurrentConfig"];
-        
+        [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
         CRAPI.sharedInstance.setToAlleyWalls = NO;
     }
@@ -423,7 +416,6 @@
             default:
                 break;
         }
-
     }
     
     if (_fromLegends)
@@ -639,7 +631,6 @@
     [_digitizationToolbar constrainTrailingToAnchor:_mapView.trailingAnchor];
     [_digitizationToolbar constrainTopToAnchor:_mapView.topAnchor];
     [_digitizationToolbar constrainHeightToConstant:80.0];
-    
     [_cancelDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [_saveDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
@@ -711,6 +702,7 @@
         }
     }
 }
+
 
 - (void)setupTempButton:(UIButton *)button
 {
@@ -1149,6 +1141,7 @@
     }
     
     _firstTimeAppear = NO;
+    self.tabBarController.customizableViewControllers = @[];
 }
 
 #pragma mark - EndOfViewDidAppear

@@ -179,9 +179,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _selectedIndexPath = indexPath;
         _nvdl = [[NVDataLoader alloc] init];
         _nvdl.delegate = self;
-        
-        [_nvdl loadNVData:_selectedApp
-                  popover:_popover];
+        [_nvdl loadNVData:_selectedApp popover:_popover];
     }
 }
 
@@ -195,7 +193,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _nvdl.popover = nil;
     _nvdl.delegate = nil;
     _nvdl = nil;
-    
 }
 
 - (void)NVDataLoaderSuccess
@@ -208,10 +205,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     _nvdl.delegate = nil;
     _nvdl = nil;
     CRAPI.sharedInstance.GMMSetting = GMMSettingBoundaries;
-    
-    [self performSelector:@selector(selectMapVC)
-               withObject:nil
-               afterDelay:0.25];
+    [self performSelector:@selector(selectMapVC) withObject:nil afterDelay:0.25];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
@@ -225,7 +219,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 //    _nvdl.popover = nil;
 //    _nvdl.delegate = nil;
 //    _nvdl = nil;
-    
 }
 
 - (CGFloat)statusBarHeight:(UIInterfaceOrientation)orientation

@@ -89,11 +89,12 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     if (![self checkUnbundledFile:@"landuse"
                              type:@"slt"
                       inDirectory:UserDefaults.defaults.sharedFilePath])
-        
+    {
         [NVGetODR getResourcesWithTag:@"landuse"
                              type:@"slt"
                       toDirectory:UserDefaults.defaults.sharedFilePath
                          delegate:self];
+    }
     
     return YES;
 }
