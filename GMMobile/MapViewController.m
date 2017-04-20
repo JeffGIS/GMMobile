@@ -122,7 +122,6 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
-    self.tabBarController.moreNavigationController.navigationBar.hidden = YES;
     self.tabBarController.delegate = self;
     
     [NSNotificationCenter.defaultCenter addObserver:self
@@ -1142,6 +1141,7 @@
     }
     
     _firstTimeAppear = NO;
+    self.tabBarController.moreNavigationController.navigationBar.hidden = YES;
     self.tabBarController.customizableViewControllers = @[];
 }
 
