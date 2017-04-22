@@ -8,7 +8,7 @@
 #import "CCodeLibrary/NVDestinationOptions.h"
 @import Charts;
 
-@interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate>
+@interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate,ChartViewDelegate>
 
 @property (nonatomic) UIButton *returnButton;
 @property (nonatomic) NSMutableArray <CandleChartDataEntry *> *candleDataArray;
@@ -576,6 +576,7 @@
     timeLineChart.backgroundColor = UIColor.whiteColor;
     timeLineChart.legend.font = [UIFont systemFontOfSize:16.0];
     timeLineChart.chartDescription.text = @"";
+    timeLineChart.delegate = self;
     
     
     [self.view addSubview:timeLineChart];
@@ -650,6 +651,13 @@
     
     tlData.barWidth =  ((tlData.xMax - tlData.xMin) / 100.0);
     timeLineChart.data = tlData;
+}
+
+- (void)chartValueSelected:(ChartViewBase *)chartView
+                     entry:(ChartDataEntry *)entry
+                 highlight:(ChartHighlight *)highlight
+{
+    NSLog(@"Chart Tapped at x:%f, y:%f", entry.x, entry.y);
 }
 
 @end
