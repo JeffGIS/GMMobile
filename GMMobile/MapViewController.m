@@ -105,6 +105,7 @@
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 @property BOOL continueLoad;
+@property int vvpass;
 
 @end
 
@@ -2751,6 +2752,7 @@ haveVV:
     _vectorView.translatesAutoresizingMaskIntoConstraints = NO;
     vectorViews[ivv] = _vectorView;
     _vectorView.ivv = ivv;
+    _vectorView.pass = _vvpass;
     _vectorView.userInteractionEnabled = NO;
     _vectorView.delegate = self;
     [self.view addSubview:_vectorView];
@@ -2882,6 +2884,7 @@ haveVV:
 }
 
 - (void)vectorViewDidComplete:(VectorView *)vectorView
+                    reDisplay:(BOOL)reDisplay
 {
     //static BOOL first = TRUE;
    _waitForVectorViewRefresh = NO;
@@ -3023,6 +3026,14 @@ haveVV:
                        
                        if (_grayscaleMode)
                            [self createGrayscale];
+                       if (reDisplay)
+                       {
+                           _vvpass = 1;
+                           _vectorView.pass = 1;
+                           [_vectorView setNeedsDisplay];
+                           _vvpass = 0;
+                       }
+
                    });
 }
 

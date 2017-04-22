@@ -26,7 +26,6 @@
 @property (nonatomic) CGRect rect;
 @property BOOL haveVectorLayer;
 @property BoundaryData *bd;
-
 @end
 
 @implementation VectorView
@@ -41,14 +40,17 @@
         self.backgroundColor = UIColor.clearColor;
         _vectorQueue = dispatch_queue_create("vectorQueue", NULL);
     }
-    
+    NSLog (@"VectorView alloc");
     return self;
 }
 - (void)dealloc
 {
     if (_vectorLayer)
+    {
         CGLayerRelease(_vectorLayer);
-
+        NSLog (@"Vector layer released");
+    }
+    NSLog (@"Vector viewDealloc");
     //[self freeResources];
 }
 
@@ -180,7 +182,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         //CGLayerRelease(_vectorLayer);
         _haveVectorLayer = NO;
         if (self.delegate)
-            [self.delegate vectorViewDidComplete:self];
+            [self.delegate vectorViewDidComplete:self
+             reDisplay:_redisplay];
         return;
     }
     if (CRAPI.sharedInstance.keepProcessing > 0)
@@ -197,7 +200,16 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         
             CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
             if (_displayDataOption != DISPLAY_DATA_OPTION_HIGHLIGHT || !_vectorLayer)
+            {
+                if (_vectorLayer)
+                {
+                    CGLayerRelease(_vectorLayer);
+                    NSLog (@"Vector layer released");
+                }
                 _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
+                NSLog (@"Vector layer created");
+
+            }
             else
                 _context = CGLayerGetContext(_vectorLayer);
 
@@ -403,7 +415,12 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                                          LLBounds:&_latlonBounds
                                                                        viewBounds:&_viewBounds
                                                                            themes:themes
-                                                                      pointInArea:_pia];
+                                                                      pointInArea:_pia
+                                                                             pass:_pass];
+                                                           if (!_pass && [self keepGoing])
+                                                               _redisplay = YES;
+                                                           else
+                                                               _redisplay = NO;
                                                        }
                                                    }
                                                    if ([self keepGoing] &&
@@ -561,10 +578,12 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                else
                                {
                                    CGLayerRelease(_vectorLayer);
+                                   NSLog (@"Vector layer released");
                                    _vectorLayer = 0;
                                    _haveVectorLayer = NO;
                                    if (self.delegate)
-                                       [self.delegate vectorViewDidComplete:self];
+                                       [self.delegate vectorViewDidComplete:self
+                                                                  reDisplay:NO];
                                }
                                
                                //[self freeResources];
