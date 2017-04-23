@@ -41,14 +41,14 @@
         self.backgroundColor = UIColor.clearColor;
         _vectorQueue = dispatch_queue_create("vectorQueue", NULL);
     }
-    
+    NSLog (@"VectorView init");
     return self;
 }
 - (void)dealloc
 {
     if (_vectorLayer)
         CGLayerRelease(_vectorLayer);
-
+    NSLog (@"VectorView dealloc");
     //[self freeResources];
 }
 

@@ -178,7 +178,7 @@ NextPass:
             CRAPI.sharedInstance.fromDate = times[0].integerValue;
             hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                                  Height:MNMXCORDHeight(pvbounds)
-                               NumGrids:13
+                               NumGrids:[themes haveCompareTheme]+1
                               timeArray:times
                               PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                    tran:_pTranLLtoView];
@@ -188,7 +188,7 @@ NextPass:
         {
             hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                                  Height:MNMXCORDHeight(pvbounds)
-                               NumGrids:1
+                               NumGrids:[themes haveCompareTheme]+1
                               timeArray:nil
                               PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                    tran:_pTranLLtoView];
@@ -304,7 +304,9 @@ NextPass:
                     }
                     else if (_mode == HOTSPOT)
                     {
-                        [hs addPointAtX:llpoint.x andY:llpoint.y andTime:dc.itemBeginTime];
+                        [hs addPointAtX:llpoint.x andY:llpoint.y
+                                andTime:dc.itemBeginTime
+                              whichGrid:compareClass];
                     }
                     else
                     {
