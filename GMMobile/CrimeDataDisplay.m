@@ -100,6 +100,7 @@
                 viewBounds:(MNMXCORD *)pvbounds
                     themes:(Themes*)themes
                pointInArea:(PointInArea *)pia
+                      pass:(int)pass;
 {
     NSString *query;
     sqlite3_stmt *statement = NULL;
@@ -207,6 +208,11 @@ NextPass:
         if (![self continue]) break;
         if (!CRAPI.sharedInstance.mapCrimeList)
             [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
+        if (!pass)
+        {
+            _minUCR = 999;
+            _maxUCR = -999;
+        }
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
             if (![self continue]) break;
@@ -247,7 +253,7 @@ NextPass:
             
             while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
             {
-                BOOL attempted = FALSE;;
+                BOOL attempted = FALSE;
                 controlNbr = sqlite3_column_int(statement,0);
                 dc.UCR =sqlite3_column_int(statement,4);
                 if (!wantAll && [self alreadyHaveThisCNUM:controlNbr

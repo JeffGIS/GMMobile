@@ -105,6 +105,7 @@
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 @property BOOL continueLoad;
+@property int vvpass;
 
 @end
 
@@ -122,6 +123,7 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
+    self.tabBarController.delegate = self;
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -141,9 +143,6 @@
     _routeTraceExists = _fromSpreadsheet = _legendsAreOffMap = _displayRandomColorAlert = NO;
     _showsPanorama = _splitPlatView = _legendMinimized = _grayscaleMode = NO;
     _routeMode = @"driving";
-    self.tabBarController.delegate = self;
-    
-
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
     
     _legendScrollView = UIScrollView.new;
@@ -325,9 +324,7 @@
     _compass.layer.borderColor = UIColor.lightGrayColor.CGColor;
     _compass.alpha = 0.0;
     _compass.hidden = YES;
-    
-    [_compass setImage:compassImage
-              forState:UIControlStateNormal];
+    [_compass setImage:compassImage forState:UIControlStateNormal];
     
     [_compass addTarget:self
                  action:@selector(compassTapped:)
@@ -343,7 +340,6 @@
                                                                                              ofType:@"png"]];
     
     [self.view addSubview:_myLocationMarker];
-    
     _markerStyle = [UserDefaults.defaults integerForKey:@"MarkerStyle"];
 }
 
@@ -351,18 +347,12 @@
 {
     if (CRAPI.sharedInstance.setToAlleyWalls)
     {
-        [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1)
-                                      forKey:@"CurrentConfig"];
-        
+        [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
         CRAPI.sharedInstance.setToAlleyWalls = NO;
     }
     
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
-    
-    if (_tableView)
-        [self deselectTableViewRow];
+    [self vectorViewRefresh];
 }
 
 - (void)resignedActive:(id)selector
@@ -427,7 +417,6 @@
             default:
                 break;
         }
-
     }
     
     if (_fromLegends)
@@ -643,7 +632,6 @@
     [_digitizationToolbar constrainTrailingToAnchor:_mapView.trailingAnchor];
     [_digitizationToolbar constrainTopToAnchor:_mapView.topAnchor];
     [_digitizationToolbar constrainHeightToConstant:80.0];
-    
     [_cancelDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [_saveDigitizerButton constrainToView:_digitizationToolbar leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
@@ -715,6 +703,7 @@
         }
     }
 }
+
 
 - (void)setupTempButton:(UIButton *)button
 {
@@ -856,9 +845,7 @@
 {
     [super viewDidAppear:animated];
     
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
-    
+    [self vectorViewRefresh];
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
     
@@ -1155,6 +1142,8 @@
     }
     
     _firstTimeAppear = NO;
+    self.tabBarController.moreNavigationController.navigationBar.hidden = YES;
+    self.tabBarController.customizableViewControllers = @[];
 }
 
 #pragma mark - EndOfViewDidAppear
@@ -1571,7 +1560,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     marker.type = MarkerInfoWindowTypeCrime;
                 }
                     break;
-                    
                 case AlleyLine:
                     _selectedAlleySeg = pi.identifier;
                     marker.title = _selectedAlleySeg;
@@ -1775,12 +1763,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [self updateInfoWindowPosition];
             }
                 break;
-                
             case DigitizationModeAlleyWallMove:
             {
-                
-                [AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno
-                                               to:position];
+                [AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno to:position];
                 
                 MarkerButton *marker = _markerArray.lastObject;
                 marker.position = position;
@@ -1800,7 +1785,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [_vectorView setNeedsDisplay];
             }
                 break;
-                
             case DigitizationModeAlleyWallNew:
             {
                 _digitizerCount++;
@@ -1837,9 +1821,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                          withHouse:houseAndUnit
                          andStreet:streetName];
                 
-                [self refreshVectorView:_mapView.projection.visibleRegion
-                                 atZoom:_mapView.camera.zoom];
-                
+                [self vectorViewRefresh];
                 _noneSelected = NO;
                 
                 [UIView animateWithDuration:0.25
@@ -1849,21 +1831,15 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                  }];
             }
                 break;
-                
             case DigitizationModeCurbRamps:
             {
                 LLPOINT intPoint = {0};
                 intPoint.lat = position.latitude;
                 intPoint.lon = position.longitude;
-                
                 IntersectionsDatabase *intDB = [IntersectionsDatabase databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
+                [intDB addNewIntersectionAt:intPoint withName:@"Added in NVMobile"];
                 
-                [intDB addNewIntersectionAt:intPoint
-                                   withName:@"Added in NVMobile"];
-                
-                [self refreshVectorView:_mapView.projection.visibleRegion
-                                 atZoom:_mapView.camera.zoom];
-                
+                [self vectorViewRefresh];
                 _noneSelected = NO;
                 
                 [UIView animateWithDuration:0.25
@@ -1873,13 +1849,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                  }];
             }
                 break;
-                
             case DigitizationModeProperty:
                 break;
-                
             case DigitizationModeSewer:
                 break;
-                
             default:
                 break;
         }
@@ -1925,9 +1898,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [self clearVectorView];
             _selectedPlatRefno = 0;
             _waitForVectorViewRefresh = YES;
-            
-            [self refreshVectorView:_mapView.projection.visibleRegion
-                             atZoom:_mapView.camera.zoom];
+            [self vectorViewRefresh];
         }
         
         else if (!_waitForVectorViewRefresh)
@@ -1970,11 +1941,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     CRAPI.sharedInstance.showPlats = platRefno;
                 }
                 
-                [_platView setPlatID:_selectedPlatRefno
-                             andType:PLAT_TYPE_STORM];
-                
-               [self refreshVectorView:_mapView.projection.visibleRegion
-                                 atZoom:_mapView.camera.zoom];
+                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
+                [self vectorViewRefresh];
             }
         }
         
@@ -1986,10 +1954,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         }
         
         else if (_platView)
-        {
-            [_platView setPlatID:_selectedPlatRefno
-                         andType:PLAT_TYPE_STORM];
-        }
+            [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
     }
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
@@ -2022,8 +1987,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
         }
         
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
+        [self vectorViewRefresh];
     }
 }
 - (void)FTPdidComplete:(FTPDataType)dataType
@@ -2312,10 +2276,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     }
     
     if (!_firstTimeMap)
-    {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:position.zoom];
-    }
+        [self vectorViewRefresh];
     
     else
         _firstTimeMap = NO;
@@ -2361,8 +2322,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                          statusBarHeight + margin, _compassSize, _compassSize);
     }
     
-    [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
-    
     CGRect frame1 = CGRectMake(0.0, statusBarHeight + ((size.height - statusBarHeight) / 2.0),
                                size.width, ((size.height - statusBarHeight) / 2.0));
     
@@ -2379,7 +2338,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     {
         case MapViewScreenSettingFullscreen:
             break;
-            
         case MapViewScreenSettingSplitScreen:
         {
             [UIView animateWithDuration:duration
@@ -2401,7 +2359,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
-            
         case MapViewScreenSettingSplitPlatView:
         {
             [UIView animateWithDuration:duration
@@ -2417,7 +2374,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
-            
         case MapViewScreenSettingTriScreen:
         {
             [UIView animateWithDuration:duration
@@ -2452,7 +2408,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
-            
         case MapViewScreenSettingPlatView:
         {
             [UIView animateWithDuration:duration
@@ -2466,7 +2421,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                 (_firstView.frame.size.height / 2.0));
                              }];
         }
-            
         default:
             break;
     }
@@ -2613,7 +2567,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     {
         case MapViewScreenSettingFullscreen:
             break;
-            
         case MapViewScreenSettingSplitScreen:
         {
             [UIView animateWithDuration:duration
@@ -2635,7 +2588,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
-            
         case MapViewScreenSettingSplitPlatView:
         {
             [UIView animateWithDuration:duration
@@ -2651,7 +2603,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
-            
         case MapViewScreenSettingTriScreen:
         {
             [UIView animateWithDuration:duration
@@ -2686,7 +2637,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                              }];
         }
             break;
-            
         case MapViewScreenSettingPlatView:
         {
             [UIView animateWithDuration:duration
@@ -2700,7 +2650,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                 (_firstView.frame.size.height / 2.0));
                              }];
         }
-            
         default:
             break;
     }
@@ -2803,6 +2752,7 @@ haveVV:
     _vectorView.translatesAutoresizingMaskIntoConstraints = NO;
     vectorViews[ivv] = _vectorView;
     _vectorView.ivv = ivv;
+    _vectorView.pass = _vvpass;
     _vectorView.userInteractionEnabled = NO;
     _vectorView.delegate = self;
     [self.view addSubview:_vectorView];
@@ -2934,6 +2884,7 @@ haveVV:
 }
 
 - (void)vectorViewDidComplete:(VectorView *)vectorView
+                    reDisplay:(BOOL)reDisplay
 {
     //static BOOL first = TRUE;
    _waitForVectorViewRefresh = NO;
@@ -3075,6 +3026,14 @@ haveVV:
                        
                        if (_grayscaleMode)
                            [self createGrayscale];
+                       if (reDisplay)
+                       {
+                           _vvpass = 1;
+                           _vectorView.pass = 1;
+                           [_vectorView setNeedsDisplay];
+                           _vvpass = 0;
+                       }
+
                    });
 }
 
@@ -3320,10 +3279,7 @@ haveVV:
 - (void)themeLegendDidChangeStatus:(BOOL)refreshVectorView
 {
     if (refreshVectorView)
-    {
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
-    }
+        [self vectorViewRefresh];
     
     else
         [self updateLegendPositions];
@@ -3340,7 +3296,7 @@ haveVV:
         [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
         [_mapToolbar adjustFrameToScrollView];
         [self updateCompassPosition:YES];
-        [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+        [self vectorViewRefresh];
     }
 }
 
@@ -3356,7 +3312,7 @@ haveVV:
         [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
         [_mapToolbar adjustFrameToScrollView];
         [self updateCompassPosition:YES];
-        [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+        [self vectorViewRefresh];;
     }
 }
 
@@ -3604,7 +3560,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             cell.textLabel.text = _options[indexPath.row];
             cell.indentationWidth = 0.0;
             break;
-            
         case PropertyTableViewSettingPropertyReport:
         {
             cell.textLabel.font = [UIFont systemFontOfSize:MAX((_screenSize / 28.0), 18.0)];
@@ -3630,7 +3585,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             [cell.contentView addSubview:rowHeader];
             break;
         }
-            
         default:
             break;
     }
@@ -3699,10 +3653,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)prepareToRemoveMarker
 {
     [self dismissTableView];
-    
-    [self performSelector:@selector(removeMarker)
-               withObject:nil
-               afterDelay:0.3];
+    [self performSelector:@selector(removeMarker) withObject:nil  afterDelay:0.3];
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView
@@ -3717,19 +3668,20 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    _infoWindow.defaultEnabled = YES;
     NSString *text = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
     
     if ([text isEqualToString:@"Property Report"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyReport forKey:@"PIDOption"];
         [self showPropReport];
+        return;
     }
     
     else if ([text isEqualToString:@"Property History"])
     {
         [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingPropertyHistory forKey:@"PIDOption"];
         [self showPropHistory];
-        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Zillow Property Record"])
@@ -3763,9 +3715,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([text isEqualToString:@"Display Bing Streetside"])
     {
-        [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetside forKey:@"PIDOption"];
+        switch (_infoWindow.marker.type)
+        {
+            case MarkerInfoWindowTypePID:
+                [UserDefaults.defaults saveNSInteger:PropertyTableViewSettingStreetside forKey:@"PIDOption"];
+                break;
+            case MarkerInfoWindowTypeCrime:
+                [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetside forKey:@"CrimePointOption"];
+                break;
+            default:
+                break;
+        }
+        
         [self showStreetside];
-        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Zoom to Census Area"])
@@ -3813,7 +3775,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Trip Time Profile"])
     {
         [self tripTimeProfile];
-        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Perform 3D Route Flyover"])
@@ -3956,7 +3917,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[text substringToIndex:min(text.length,19)] isEqualToString:@"Display Plat"])
     {
         _splitPlatView = NO;
-        [self dismissTableView];
         [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
@@ -3964,7 +3924,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _splitPlatView = YES;
         _splitPlatDirection = 0;
-        [self dismissTableView];
         [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
@@ -3972,7 +3931,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         _splitPlatView = YES;
         _splitPlatDirection = 1;
-        [self dismissTableView];
         [self performSelector:@selector(loadPlat) withObject:nil afterDelay:0.3];
     }
     
@@ -3985,27 +3943,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Trace Pipe Upstream"])
     {
         [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceUp forKey:@"SewerOption"];
-        [self dismissTableView];
         [self performSelector:@selector(showPipeTraceUpstream) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Trace Pipe Downstream"])
     {
         [UserDefaults.defaults saveNSInteger:SewerPipeSettingTraceDown forKey:@"SewerOption"];
-        [self dismissTableView];
         [self performSelector:@selector(showPipeTraceDownstream) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Perform Downstream\n3D Fly Over"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer forKey:@"FlyOverType"];
-        [self dismissTableView];
         [self performSelector:@selector(performDownstreamFlyOver) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Remove Pipe Trace"])
     {
-        [self dismissTableView];
         [self performSelector:@selector(removePipeTrace) withObject:nil afterDelay:0.3];
     }
     
@@ -4036,7 +3990,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Move Wall Point"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingMoveWallPoint forKey:@"AlleyWallOption"];
-        [self dismissTableView];
         [self performSelector:@selector(moveWallPoint) withObject:nil afterDelay:0.3];
     }
     
@@ -4061,27 +4014,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"View Inset Wall Photos"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingViewInsetWallPhotos forKey:@"AlleyWallOption"];
-        [self dismissTableView];
         [self performSelector:@selector(viewInsetWallPhotos) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Toggle Alley Line\nCompletion Status"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingEditWallAttributes forKey:@"AlleyLineOption"];
-        [self dismissTableView];
         [self performSelector:@selector(toggleCompletionStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Alley Centerline Status"])
     {
-        [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingCenterline;
         [self performSelector:@selector(alleyStatus) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Alley Wall Status"])
     {
-        [self dismissTableView];
         _alleyStatusSetting = AlleyStatusSettingWall;
         [self performSelector:@selector(alleyStatus) withObject:nil afterDelay:0.3];
     }
@@ -4106,34 +4055,40 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
         [self addToCrimeList:NO];
-        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Add to New Crime List"])
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
         [self addToCrimeList:YES];
-        [self deselectTableViewRow];
     }
     
     else if ([text isEqualToString:@"Add All to Current Crime List"])
     {
-        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToCurrentList forKey:@"CrimePointOption"];
-        [self addToCrimeList:NO fromList:[DispersePoint getDispersedControlNum]];
-        [self deselectTableViewRow];
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddAllToCurrentList forKey:@"CrimePointOption"];
+        [self addToCrimeList:NO fromList:DispersePoint.getDispersedControlNum];
     }
     
     else if ([text isEqualToString:@"Add All to New Crime List"])
     {
-        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
-        [self addToCrimeList:YES fromList:[DispersePoint getDispersedControlNum]];
-        [self deselectTableViewRow];
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddAllToNewList forKey:@"CrimePointOption"];
+        [self addToCrimeList:YES fromList:DispersePoint.getDispersedControlNum];
+    }
+    
+    else if ([text isEqualToString:@"Delete from Current Crime List"])
+    {
+        [UserDefaults.defaults saveNSInteger:CrimePointSettingDefault forKey:@"CrimePointOption"];
+        _infoWindow.defaultEnabled = NO;
+        [self removeIncidentFromCrimeList];
     }
     
     else if ([text isEqualToString:@"Display Census Data Chart"])
     {
         [self displayCensusDataChart];
     }
+    
+    [self deselectTableViewRow];
+    [self dismissTableView];
 }
 
 - (MGVPlatData *)loadMGVData:(NSString *)line
@@ -4304,6 +4259,15 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     [cl addIncidentToCrimeList:(int)_selectedCrime];
 }
 
+- (void)removeIncidentFromCrimeList
+{
+    if ([CrimeList incidentInCurrentCrimeList:(int)_selectedCrime])
+    {
+        if ([CrimeList removeIncidentInCurrentCrimeList:(int)_selectedCrime])
+            [self vectorViewRefresh];
+    }
+}
+
 - (void)addToCrimeList:(BOOL)newList
               fromList:(NSArray *)cnumArray
 {
@@ -4313,7 +4277,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     _popover.delegate = self;
     [self.view bringSubviewToFront:_popover];
     [_popover updateProgress:0];
-    _tableView.hidden = YES;
     _continueLoad = YES;
     
     if (newList)
@@ -4344,7 +4307,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                        dispatch_async(dispatch_get_main_queue(),
                                       ^{
                                           [_popover hide];
-                                          _tableView.hidden = NO;
                                       });
                    });
 }
@@ -4362,7 +4324,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     lineChartVC.areaType = _selectedCensusBoundaryType;
     NVPager *pager = [NVPager pagerWithViewControllers:@[(lineChartVC), (pieChartVC)]];
     [self presentViewController:pager animated:YES completion:nil];
-    [self deselectTableViewRow];
 }
 
 - (void)showPropReport
@@ -4382,7 +4343,6 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypePropReport];
     chartsVC.propHistoryArray = [PropertyData.new getParcelHistory:_selectedPID];
     [self presentViewController:chartsVC animated:YES completion:nil];
-    [self deselectTableViewRow];
 }
 
 - (void)showZillow
@@ -4433,10 +4393,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)webViewDidReturn:(NVWebView *)webView
 {
     [webView hide:YES];
-    [self deselectTableViewRow];
-    
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    [self vectorViewRefresh];
 }
 
 - (void)showStreetView
@@ -4455,12 +4412,17 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
     dismissPan.backgroundColor = UIColor.clearColor;
     dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
-    dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
+    
+    else
+        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
+    
     dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
     dismissPan.titleLabel.layer.shadowOpacity = 1.0;
     dismissPan.titleLabel.layer.shadowRadius = 3.0;
     dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
-    
     [dismissPan setTitle:@"< Return" forState:UIControlStateNormal];
     [dismissPan setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
     [dismissPan setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
@@ -4468,10 +4430,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     [_panView addSubview:dismissPan];
     [dismissPan constrainLeadingToAnchor:_panView.leadingAnchor constant:20.0];
     [dismissPan constrainTopToAnchor:_panView.topAnchor constant:20.0];
-    
-    [dismissPan addTarget:self
-                   action:@selector(dismissPanTapped:)
-         forControlEvents:UIControlEventTouchUpInside];
+    [dismissPan addTarget:self action:@selector(dismissPanTapped:) forControlEvents:UIControlEventTouchUpInside];
     
     [UIView animateWithDuration:0.25 animations:^{
         _panView.alpha = 1.0;
@@ -4511,11 +4470,8 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
         self.tabBarController.tabBar.alpha = 1.0;
     } completion:^(BOOL finished) {
         [_panView removeFromSuperview];
-        [self deselectTableViewRow];
         _showsPanorama = NO;
-        
-        [self refreshVectorView:_mapView.projection.visibleRegion
-                         atZoom:_mapView.camera.zoom];
+        [self vectorViewRefresh];
     }];
 }
 
@@ -4571,21 +4527,18 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
 - (void)setTargetParcel
 {
     CRAPI.sharedInstance.currentPID = _selectedPID;
-    [self dismissTableView];
 }
 
 - (void)addToPropList
 {
     PropertyList *pl = PropertyList.new;
     [pl addParcelToPropertyList:_selectedPID popover:_popover];
-    [self dismissTableView];
 }
 
 - (void)addToDestinations
 {
     Destinations *dests = Destinations.new;
     [dests addParcelToDestinations:_selectedPID];
-    [self dismissTableView];
 }
 
 - (void)traceRouteFromCurrentLocation
@@ -4743,9 +4696,7 @@ didCompleteWithError:(NSError *)error
 - (void)removePipeTrace
 {
     [PipeTrace removeTrace];
-    
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    [self vectorViewRefresh];
 }
 
 - (void)updateCleaningDate
@@ -4802,13 +4753,11 @@ didCompleteWithError:(NSError *)error
                                               destructiveIndex:1];
     
     alert.identifier = @"DeleteWallAlert";
-    [self deselectTableViewRow];
 }
 
 - (void)editWallAttributes
 {
     [SharedDefaults.defaults saveString:_selectedAlleyWall forKey:@"AlleyWallEditAttributes"];
-    [self dismissTableView];
     [self performSelector:@selector(launchAlleyWallApp) withObject:nil afterDelay:0.3];
 }
 
@@ -4894,12 +4843,8 @@ didCompleteWithError:(NSError *)error
 {
     AlleyWallData *awd = [[AlleyWallData alloc] init];
     int status = [awd getAlleyLineStatus:_selectedAlleyLineRefno];
-    
-    [awd setAlleyLineStatus:_selectedAlleyLineRefno
-                         to:!status];
-    
-    [self refreshVectorView:_mapView.projection.visibleRegion
-                     atZoom:_mapView.camera.zoom];
+    [awd setAlleyLineStatus:_selectedAlleyLineRefno to:!status];
+    [self vectorViewRefresh];
 }
 
 - (void)editIntersectionAttributes
@@ -4937,7 +4882,6 @@ didCompleteWithError:(NSError *)error
                                               destructiveIndex:0];
     
     alert.identifier = @"EditIntersectionStatus";
-    [self deselectTableViewRow];
 }
 
 - (void)alleyStatus
@@ -5067,7 +5011,6 @@ didCompleteWithError:(NSError *)error
 didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     [alertView hideLargeAlertView:YES];
-    [self deselectTableViewRow];
     
     if ([alertView.identifier isEqualToString:@"DeleteWallAlert"])
     {
@@ -5076,12 +5019,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             
             [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
-            [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];
-            
-            [self refreshVectorView:_mapView.projection.visibleRegion
-                             atZoom:_mapView.camera.zoom];
+            [self vectorViewRefresh];
         }
     }
     
@@ -5092,15 +5032,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case CensusZoomSettingCancel:
                 break;
             case CensusZoomSettingBlock:
-                [self dismissTableView];
                 //implement zoom to block here
                 break;
             case CensusZoomSettingBlockGroup:
-                [self dismissTableView];
                 //implement zoom to block group here
                 break;
             case CensusZoomSettingTract:
-                [self dismissTableView];
                 //implement zoom to tract here
                 break;
             default:
@@ -5120,8 +5057,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelTextSettingEMVLandPerAcre:
             case ParcelTextSettingLastSale:
                 CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
-                [self dismissTableView];
-                [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+                [self vectorViewRefresh];
             default:
                 break;
         }
@@ -5141,8 +5077,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelColorSettingBuildingEMV:
                 CRAPI.sharedInstance.parcelShadingOption = 0;
                 CRAPI.sharedInstance.parcelColorOption = (int)buttonIndex;
-                [self dismissTableView];
-                [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+                [self vectorViewRefresh];
                 break;
             case ParcelColorSettingHomestead:
             case ParcelColorSettingResCom:
@@ -5151,8 +5086,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelColorSettingTaxForfeit:
             case ParcelColorSettingLastSale:
                 CRAPI.sharedInstance.parcelShadingOption = ((int)buttonIndex - 4);
-                [self dismissTableView];
-                [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+                [self vectorViewRefresh];
                 break;
             default:
                 break;
@@ -5170,12 +5104,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                            forIntersection:_selectedCRIntPt.intValue];
             
             [intDb commitTransaction];
-            [self dismissTableView];
             [self removePreviousInfoWindow];
             [self removeMarker];
-            
-            [self refreshVectorView:_mapView.projection.visibleRegion
-                             atZoom:_mapView.camera.zoom];
+            [self vectorViewRefresh];
         }
     }
     
@@ -5203,7 +5134,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         }
         
         _animateToLocation = NO;
-        [self dismissTableView];
         [self startTrackingUserLocation];
     }
 }
@@ -5557,11 +5487,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectClearMarkers
 {
-    [self dismissTableView];
-    
-    [self performSelector:@selector(clearMapItems)
-               withObject:nil
-               afterDelay:0.3];
+    [self performSelector:@selector(clearMapItems) withObject:nil afterDelay:0.3];
 }
 
 - (void)clearMapItems
@@ -5806,8 +5732,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
-                                 [self refreshVectorView:_mapView.projection.visibleRegion
-                                                  atZoom:_mapView.camera.zoom];
+                                 [self vectorViewRefresh];
                                  
                                  if (_mapView.camera.bearing != 0.0)
                                  {
@@ -5824,7 +5749,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _screenSetting = MapViewScreenSettingFullscreen;
         }
             break;
-            
         case MapViewScreenSettingSplitScreen:
         {
             [UIView animateWithDuration:duration
@@ -5837,8 +5761,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
-                                 [self refreshVectorView:_mapView.projection.visibleRegion
-                                                  atZoom:_mapView.camera.zoom];
+                                 [self vectorViewRefresh];
                              }];
             
             [UIView animateWithDuration:duration
@@ -5854,7 +5777,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _screenSetting = MapViewScreenSettingSplitScreen;
         }
             break;
-            
         case MapViewScreenSettingSplitPlatView:
         {
             [UIView animateWithDuration:duration
@@ -5878,7 +5800,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             CGRectMake(0.0, statusBarHeight, width, ((tabBarTop - statusBarHeight) / 2.0));
         }
             break;
-            
         case MapViewScreenSettingTriScreen:
         {
             [UIView animateWithDuration:duration
@@ -5891,8 +5812,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  [self updateMarkerPosition];
                              }
                              completion:^(BOOL finished) {
-                                 [self refreshVectorView:_mapView.projection.visibleRegion
-                                                  atZoom:_mapView.camera.zoom];
+                                 [self vectorViewRefresh];
                              }];
             
             [UIView animateWithDuration:duration
@@ -5910,7 +5830,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _screenSetting = MapViewScreenSettingTriScreen;
         }
             break;
-            
         case MapViewScreenSettingPlatView:
         {
             [UIView animateWithDuration:duration
@@ -6152,7 +6071,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              }];
         }
             break;
-            
         case MapToolbarOrientationBottom:
         {
             [UIView animateWithDuration:0.25
@@ -6165,7 +6083,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              }];
         }
             break;
-            
         case MapToolbarOrientationLeft:
         {
             [UIView animateWithDuration:0.25
@@ -6177,7 +6094,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              }];
         }
             break;
-            
         case MapToolbarOrientationRight:
         {
             [UIView animateWithDuration:0.25
@@ -6190,8 +6106,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                              }];
         }
             break;
-            
-        default:
+       default:
             break;
     }
 }
@@ -6281,9 +6196,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             _selectedPID = title;
             
-            _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record", @"Display Google Street View",
-                         @"Display Bing Streetside", @"Zoom to Census Area", @"Parcel Text", @"Color Parcels", @"Set as Target Parcel",
-                         @"Perform 3D Fly Around", @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Trip Time Profile"];
+            _options = @[@"", @"Property Report", @"Property History", @"Zillow Property Record",
+                         @"Display Google Street View", @"Display Bing Streetside", @"Zoom to Census Area",
+                         @"Parcel Text", @"Color Parcels", @"Set as Target Parcel", @"Perform 3D Fly Around",
+                         @"Add to Property List", @"Add to Destinations", @"Route From Current Location", @"Trip Time Profile"];
             
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             
@@ -6300,7 +6216,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
-            
         case MarkerInfoWindowTypeStormSewer:
         {
             _selectedSewerPipe = title;
@@ -6318,7 +6233,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
-            
         case MarkerInfoWindowTypeAlleyWall:
             _selectedAlleyWall = title;
             _selectedAlleyWallRefno = refno;
@@ -6341,29 +6255,26 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
             
             break;
-            
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
             _selectedAlleyLineRefno = refno;
             _options = @[@"", @"Toggle Alley Line\nCompletion Status"];
             break;
-            
         case MarkerInfoWindowTypeCRInt:
             _selectedCRIntPt = title;
             _options = @[@"", @"Edit Intersection Attributes", @"Edit Intersection Status"];
             break;
-            
         case MarkerInfoWindowTypeCustom:
             _options = @[@"", @"Snap to Node", @"Snap to Line"];
             break;
-            
         case MarkerInfoWindowTypeCrime:
         {
             _selectedCrime = refno;
-            _options = @[@"", @"Display Report", @"Add to Current Crime List", @"Add to New Crime List",@"Add All to Current Crime List", @"Add All to New Crime List", @"Perform 3D Fly Around", @"Display Google Street View"];
+            _options = @[@"", @"Display Report", @"Add to Current Crime List", @"Add to New Crime List",
+                         @"Add All to Current Crime List", @"Add All to New Crime List", @"Delete from Current Crime List",
+                         @"Perform 3D Fly Around", @"Display Google Street View", @"Display Bing Streetside"];
         }
             break;
-            
         case MarkerInfoWindowTypeMGVSanPoint:
         {
             _options = @[@""];
@@ -6385,7 +6296,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
-            
         case MarkerInfoWindowTypeMGVSanMain:
         {
             _options = @[@""];
@@ -6407,11 +6317,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeCensusBoundary:
         {
             _selectedCensusBoundaryRefno = refno;
-            _options = @[@"", @"Display Census Data Chart", @"Perform 3D Fly Around", @"Display Google Street View", @"Trip Time Profile"];
+            _options = @[@"", @"Display Census Data Chart", @"Perform 3D Fly Around", @"Display Google Street View",
+                         @"Trip Time Profile"];
         }
             break;
-            
-            
         default:
             break;
     }
@@ -6490,7 +6399,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
-            
         case MarkerInfoWindowTypeStormSewer:
         {
             _selectedSewerPipe = title;
@@ -6521,7 +6429,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             }
         }
             break;
-            
         case MarkerInfoWindowTypeAlleyWall:
         {
             option = [UserDefaults.defaults integerForKey:@"AlleyWallOption"];
@@ -6547,7 +6454,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
             }
         }
-            
         case MarkerInfoWindowTypeAlleyLine:
         {
             option = [UserDefaults.defaults integerForKey:@"AlleyLineOption"];
@@ -6559,13 +6465,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 case AlleyLineSettingToggleCompletionStatus:
                     [self toggleCompletionStatus];
-                    [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+                    [self vectorViewRefresh];
                     break;
                 default:
                     break;
             }
         }
-            
         case MarkerInfoWindowTypeCustom:
         {
             option = [UserDefaults.defaults integerForKey:@"CustomOption"];
@@ -6585,7 +6490,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
             }
         }
-            
         case MarkerInfoWindowTypeCrime:
         {
             option = [UserDefaults.defaults integerForKey:@"CrimePointOption"];
@@ -6601,14 +6505,22 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case CrimePointSettingAddToNewList:
                     [self addToCrimeList:YES];
                     break;
+                case CrimePointSettingAddAllToCurrentList:
+                    [self addToCrimeList:NO fromList:DispersePoint.getDispersedControlNum];
+                    break;
+                case CrimePointSettingAddAllToNewList:
+                    [self addToCrimeList:YES fromList:DispersePoint.getDispersedControlNum];
+                    break;
                 case CrimePointSettingDisplayStreetView:
                     [self showStreetView];
+                    break;
+                case CrimePointSettingDisplayStreetside:
+                    [self showStreetside];
                     break;
                 default:
                     break;
             }
         }
-            
         default:
             break;
     }
@@ -6683,7 +6595,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                            forPipe:_selectedSewerPipe];
             
             [datePicker hideDatePicker:YES];
-            [self deselectTableViewRow];
         }
     }
 }
@@ -6699,13 +6610,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     forPipe:_selectedSewerPipe];
     
     [notesView hideNotesView:YES];
-    [self deselectTableViewRow];
 }
 
 - (void)notesViewDidCancel:(GSSiNotesView *)notesView
 {
     [notesView hideNotesView:YES];
-    [self deselectTableViewRow];
 }
 
 - (void)notesView:(GSSiNotesView *)notesView
@@ -6860,6 +6769,11 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 {
     if (viewController == self && ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrovePDF)
         [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingFullscreen];
+}
+
+- (void)vectorViewRefresh
+{
+    [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
 }
 
 @end

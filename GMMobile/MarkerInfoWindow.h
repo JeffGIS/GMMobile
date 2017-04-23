@@ -24,7 +24,7 @@
 
 @property (nonatomic, weak) id <MarkerInfoWindowDelegate> delegate;
 @property (nonatomic) MarkerButton *marker;
-@property BOOL linkedPID;
+@property (nonatomic) BOOL linkedPID, defaultEnabled;
 @property (nonatomic, copy) NSString *optionsTitle;
 
 + (CGFloat)markerInfoWindowHeight;

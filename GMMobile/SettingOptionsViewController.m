@@ -339,25 +339,24 @@ EAGLContext *CreateBestEAGLContext()
     _tableView.layer.cornerRadius = 10.0;
     _totalPages = _numElements = _currentElement = 0;
     
+    _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
+    _versionLabel.adjustsFontSizeToFitWidth = YES;
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
-    _versionLabel.adjustsFontSizeToFitWidth = YES;
-    
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        [_tableView constrainToView:self.view leading:margin trailing:-margin top:64.0 bottom:-_versionLabel.frame.size.height];
         _tableView.rowHeight = 48.0;
         margin = 8.0;
     }
     
     else
     {
-        [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
         _tableView.rowHeight = 72.0;
         margin = 20.0;
     }
+    
+     [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
 }
 
 - (void)viewWillAppear:(BOOL)animated

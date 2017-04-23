@@ -33,7 +33,8 @@
                  LLBounds:(MNMXCORD *)platlonBounds
                viewBounds:(MNMXCORD *)pvbounds
                    themes:(Themes*)themes
-              pointInArea:(PointInArea *)pia;
+              pointInArea:(PointInArea *)pia
+                     pass:(int)pass;
 
 
 @end

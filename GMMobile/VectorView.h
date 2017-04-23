@@ -13,7 +13,8 @@
 
 @protocol VectorViewDelegate <NSObject>
 
-- (void)vectorViewDidComplete:(VectorView*)vectorView;
+- (void)vectorViewDidComplete:(VectorView*)vectorView
+                    reDisplay:(BOOL)reDisplay;
 
 @end
 
@@ -31,6 +32,8 @@
 @property MNMXCORD viewBounds;
 @property CGLayerRef vectorLayer;
 @property PointInArea *pia;
+@property int pass;
+@property BOOL redisplay;
 
 
 - (void) setRegion:(GMSVisibleRegion)region;

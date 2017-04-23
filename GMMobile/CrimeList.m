@@ -172,28 +172,23 @@ NSString * GetCrimeListDirectory (void)
 
 + (BOOL)removeIncidentInCurrentCrimeList:(int)controlNum
 {
-    BOOL rtn = FALSE;
-    CrimeList * cl = CrimeList.new;
+    BOOL rtn = NO;
+    CrimeList *cl = CrimeList.new;
     BOOL opened = [cl open];
     NSString *query = [NSString stringWithFormat:@"DELETE FROM CrimeList WHERE ControlNum = %i",controlNum];
     sqlite3_stmt *statement = NULL;
-    
     SQLOK(0,sqlite3_prepare_v2(cl.database, query.UTF8String, -1, &statement, 0), cl.database);
     
-    if (sqlite3_step(statement) == SQLITE_ROW)
-    {
-        rtn = TRUE;
-    }
+    if (sqlite3_step(statement) == SQLITE_DONE)
+        rtn = YES;
     
     SQLOK(0,sqlite3_finalize(statement), cl.database);
-    
     [cl close:opened];
- 
     return rtn;
 }
 
-+ (BOOL) setCurrentCrimeList:(NSString *)crimeList
 //returns false if crimelist does not exist
++ (BOOL)setCurrentCrimeList:(NSString *)crimeList
 {
     BOOL rtn = NO;
     
@@ -816,10 +811,35 @@ NSString * GetCrimeListDirectory (void)
     [self close:opened];
 }
 
-- (BOOL)addIncidentToCrimeList:(int)controlNum
+- (BOOL) controlNumInList:(int)controlNum
 {
     BOOL rtn = NO;
     BOOL opened = [self open];
+    NSString *query = [NSString stringWithFormat:@"SELECT ControlNum FROM CrimeList WHERE ControlNum = %i",controlNum];
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int controlid = sqlite3_column_int(statement, 0);
+        rtn = TRUE;
+    }
+    
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    
+    [self close:opened];
+    
+    return rtn;
+}
+
+- (BOOL)addIncidentToCrimeList:(int)controlNum
+{
+    BOOL rtn = NO;
+    if ([self controlNumInList:controlNum])
+        return NO;
+    BOOL opened = [self open];
+    
     int dbid = [self next_id];
     
     CrimeData *crimeData = [[CrimeData alloc] init];
