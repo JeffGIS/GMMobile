@@ -37,5 +37,6 @@
 - (int) getNumUCRRanges;
 - (BOOL) containsColorByRefTheme;
 - (int) haveCompareTheme;
+- (double) getCompareThemeFactor;
 
 @end

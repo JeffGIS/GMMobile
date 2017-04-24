@@ -400,4 +400,28 @@ Exit:
     return rtn;
 }
 
+- (double) getCompareThemeFactor
+{
+    double rtn = 1;
+    
+    for (Theme *thm in _themeList)
+    {
+        double nNonCompare = 0;
+        double nCompare = 0;
+        for (ThemeClass *tc in thm.classes)
+        {
+            if (tc.status == 1)
+                nNonCompare++;
+            if (tc.status == 2)
+                nCompare++;
+        }
+        if (nNonCompare > 0 && nCompare > 0)
+        {
+            rtn = nNonCompare / nCompare;
+            return rtn;
+        }
+    }
+    return rtn;
+}
+
 @end

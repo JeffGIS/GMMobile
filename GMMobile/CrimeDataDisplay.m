@@ -150,8 +150,11 @@
         pias = [[PointInAreas alloc]init];
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
+        pias.compareFactor = [themes getCompareThemeFactor];
+        
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
+        
         [bd   load:_choroplethTarget
     toPointInAreas:pias
 boundsPointInAreas:nil
@@ -159,8 +162,9 @@ boundsPointInAreas:nil
          llCorners:latlonCornerPoints
           LLBounds:platlonBounds
         viewBounds:pvbounds
-         haveCompareTheme:[themes haveCompareTheme]];
-        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+  haveCompareTheme:[themes haveCompareTheme]];
+
+         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
         
         [pias initTimeLine:_cd.database];
 

@@ -509,12 +509,6 @@
             class.UCR = 5;
             class.values = @[@"ASLT4"];
             [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"ASLT5: Attempt Cause Harm     "];
-            class.color = [UIColor greenColor];
-            class.symbol = Star1Sym;
-            class.UCR = 9;
-            class.values = @[@"ASLT5"];
-            [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"Domestic Assault              "];
             class.color = [UIColor greenColor];
             class.symbol = Star2Sym;
@@ -526,6 +520,12 @@
             class.symbol = CircleSym;
             class.UCR = 9;
             class.values = @[@"DASLT5"];
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"ASLT5: Attempt Cause Harm     "];
+            class.color = [UIColor greenColor];
+            class.symbol = Star1Sym;
+            class.UCR = 9;
+            class.values = @[@"ASLT5"];
             [thm.classes addObject:class];
             break;
         case RobberyTheme:
@@ -590,6 +590,12 @@
             thm.setSymbol = YES;
             thm.legend.usePointSymbols = YES;
             thm.numDesiredClasses = 4;
+            class = [ThemeClass createWithTitle:@"Theft From Motor Vehicle"];
+            class.color = [UIColor greenColor];
+            class.symbol = SquareSym;
+            class.UCR = 7;
+            class.values = @[@"TFMV"];
+            [thm.classes addObject:class];
             class = [ThemeClass createWithTitle:@"Motor Vehicle Theft     "];
             class.color = [UIColor greenColor];
             class.symbol = CrossSym;
@@ -607,12 +613,6 @@
             class.symbol = TriangleSym;
             class.UCR = 99;
             class.values = @[@"RECVEH"];
-            [thm.classes addObject:class];
-            class = [ThemeClass createWithTitle:@"Theft From Motor Vehicle"];
-            class.color = [UIColor greenColor];
-            class.symbol = SquareSym;
-            class.UCR = 7;
-            class.values = @[@"TFMV"];
             [thm.classes addObject:class];
             break;
         case TheftFromAutoTheme:
