@@ -1500,8 +1500,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
             [planData pickAlleyLine:llpickPt  atZoom:_mapView.camera.zoom highlightList:highlightList];
             break;}
-        default:
-            break;
+        default:break;
     }
     
     CRAPI.sharedInstance.currentZoom = _mapView.camera.zoom;
@@ -3761,6 +3760,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self tripTimeProfile];
     }
     
+    else if ([text isEqualToString:@"Display Timeline"])
+    {
+        [self displayTimeline];
+    }
+    
     else if ([text isEqualToString:@"Perform 3D Route Flyover"])
     {
         [SharedDefaults.defaults saveNSInteger:MarkerInfoWindowTypeStormSewer forKey:@"FlyOverType"];
@@ -4632,6 +4636,13 @@ didCompleteWithError:(NSError *)error
                                                   destructiveIndex:0];
 #pragma unused(alert)
     }
+}
+
+- (void)displayTimeline
+{
+    ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeTimeLine];
+    chartsVC.timeLineArray = [PointInAreas.new getAreaTimeline:_selectedBA];
+    [self presentViewController:chartsVC animated:YES completion:nil];
 }
 
 - (void)showPipeAttributes

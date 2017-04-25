@@ -578,7 +578,6 @@
     timeLineChart.chartDescription.text = @"";
     timeLineChart.delegate = self;
     
-    
     [self.view addSubview:timeLineChart];
     [timeLineChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
     [timeLineChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
