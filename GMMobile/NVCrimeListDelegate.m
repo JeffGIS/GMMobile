@@ -375,22 +375,17 @@
     {
         int cnum = (int)num.integerValue;
         
-        NSString *time = [crimelist getFieldValue:cnum
-                                             type:CFT_FromTime
-                                              raw:YES];
-        
-/*        NSString *nsus = [crimelist getFieldValue:cnum
-                                             type:CFT_NumSuspects
-                                              raw:YES];*/
+        NSString *time = [crimelist getFieldValue:cnum type:CFT_FromTime raw:YES];
         TimeLine *tl = TimeLine.new;
         tl.time = (int)time.integerValue;
-//        tl.value = nsus.integerValue;
         tl.value = 1+[NSCalendar.currentCalendar component:NSCalendarUnitHour fromDate:[NSDate dateWithTimeIntervalSince1970:time.integerValue]];
+        tl.refno = cnum;
         [array addObject:tl];
     }
     TimeLine *tl = TimeLine.new;
     tl.time = NSDate.date.timeIntervalSince1970;
     tl.value = 0.1;
+    tl.refno = -1;
     [array addObject:tl];
     
     [crimelist close:opened];
