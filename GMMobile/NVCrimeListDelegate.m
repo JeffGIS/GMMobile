@@ -9,7 +9,7 @@
 
 @interface NVCrimeListDelegate ()
 
-@property CrimeList *crimeList;
+@property (nonatomic) CrimeList *crimeList;
 
 @end
 
@@ -38,7 +38,7 @@
     return rtn;
 }
 
-- (void) closeList
+- (void)closeList
 {
     [_crimeList close:TRUE];
     _crimeList = nil;
@@ -120,6 +120,25 @@
     [crimelist close:YES];
     [crimelist open];
 }
+
+- (void)deleteForControlNumber:(int)controlNumber
+{
+    BOOL closeList = NO;
+    
+    if (!_crimeList)
+    {
+        if ([self openList])
+            closeList = YES;
+    }
+    
+    [_crimeList startTransaction];
+    [_crimeList deleteControlNumber:controlNumber];
+    [_crimeList commitTransaction];
+    
+    if (closeList)
+        [self closeList];
+}
+
 - (void)copyRows:(NSArray *)arrayOfRows
           toList:(NSString *)listName
 {
@@ -277,7 +296,7 @@
 }
 
 - (NSString *)spreadsheetGetReportForRow:(NSInteger)row
-                            column:(NSInteger)column
+                                  column:(NSInteger)column
 {
     NSString * report = nil;
     CrimeList *crimelist = [[CrimeList alloc] init];
@@ -292,17 +311,29 @@
     return report;
 }
 
-- (NSArray *) getSearchStrings
+- (NSArray *)getSearchStrings
 {
-    NSMutableArray * array = NSMutableArray.new;
+    BOOL closeList = NO;
+    
+    if (!_crimeList)
+    {
+        if ([self openList])
+            closeList = YES;
+    }
+    
+    NSMutableArray *array = NSMutableArray.array;
     
     for (CrimeFieldType ifield = CFT_SearchString1;ifield <= CFT_SearchString3;ifield++)
     {
-        NSString * sstring = [_crimeList getSearchString:ifield];
+        NSString *sstring = [_crimeList getSearchString:ifield];
+        
         [array addObject:sstring];
     }
     
-    return array;
+    if (closeList)
+        [self closeList];
+    
+    return array.copy;
 }
 - (void)spreadsheetDidMapItForRow:(NSInteger)row
                            column:(NSInteger)column
@@ -364,11 +395,11 @@
     return rtn;
 }
 
-- (void)getTimeLine:(UIViewController *)parentController
+- (void)getTimeLine:(NVSpreadsheetVC *)parentController
 {
     NSMutableArray<TimeLine *> *array = NSMutableArray.array;
     CrimeList *crimelist = _crimeList;
-    BOOL opened = [crimelist open];
+    BOOL opened = crimelist.open;
     NSArray *list = crimelist.getControlNumbers;
     
     for (NSNumber *num in list)
@@ -392,6 +423,7 @@
     
     ChartsViewController *chartsVC = [ChartsViewController chartViewWithType:ChartsViewTypeTimeLine];
     chartsVC.timeLineArray = array.copy;
+    chartsVC.currentSpreadsheet = parentController;
     [parentController presentViewController:chartsVC animated:YES completion:nil];
 }
 

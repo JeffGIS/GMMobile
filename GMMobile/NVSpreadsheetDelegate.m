@@ -20,7 +20,7 @@
     return SST_PropertyList;
 }
 
-- (BOOL) openList
+- (BOOL)openList
 {
     BOOL rtn = FALSE;
     
@@ -32,7 +32,8 @@
     }
     return rtn;
 }
-- (NSString*) currentListName
+
+- (NSString *)currentListName
 {
     return [PropertyList getCurrentPropertyListName];
 }
@@ -51,7 +52,7 @@
     return _propList.getPropertyNumbers.count + 4;
 }
 
-- (void) deleteRows:(NSArray *)arrayOfRows
+- (void)deleteRows:(NSArray *)arrayOfRows
 {
     
 }
