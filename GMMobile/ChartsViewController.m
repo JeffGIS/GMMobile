@@ -596,6 +596,7 @@
     for (TimeLine *tl in _timeLineArray)
     {
         BarChartDataEntry *tlDataEntry = [[BarChartDataEntry alloc] initWithX:tl.time y:tl.value];
+        tlDataEntry.data = [NSNumber numberWithInt:tl.refno];
         NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
         calendar.locale = NSLocale.currentLocale;
         calendar.timeZone = NSTimeZone.localTimeZone;
@@ -659,11 +660,23 @@
 {
     if (![self.view.subviews containsObject:_alert])
     {
-        _alert = [NVAlertView showLargeAlertViewinView:self.view
-                                              delegate:CRAPI.sharedInstance
-                                                 title:[NSString stringWithFormat:@"Chart Tapped at\nx:%i,\ny:%i", (int)entry.x, (int)entry.y]
-                                       buttonTextArray:@[@"OK"]
-                                      destructiveIndex:0];
+        int refno = [(NSNumber *)entry.data intValue];
+        NSString *title = @"";
+        
+        if (refno != 0)
+        {
+            if (refno > 0)
+                title = [NSString stringWithFormat:@"Chart tapped at refno:\n%i", refno];
+            
+            else if (refno == -1)
+                title = @"Chart tapped at present time.";
+            
+            _alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                  delegate:CRAPI.sharedInstance
+                                                     title:title
+                                           buttonTextArray:@[@"OK"]
+                                          destructiveIndex:0];
+        }
     }
 }
 
