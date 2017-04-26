@@ -18,6 +18,7 @@
 @property (nonatomic, copy) NSArray<NSNumber *> *timeArray;
 @property int currentSaleVal, durationCount, queryCount, numDays, numEntries;
 @property ChartsViewType type;
+@property (nonatomic) NVAlertView *alert;
 
 @end
 
@@ -656,7 +657,14 @@
                      entry:(ChartDataEntry *)entry
                  highlight:(ChartHighlight *)highlight
 {
-    NSLog(@"Chart Tapped at x:%f, y:%f", entry.x, entry.y);
+    if (![self.view.subviews containsObject:_alert])
+    {
+        _alert = [NVAlertView showLargeAlertViewinView:self.view
+                                              delegate:CRAPI.sharedInstance
+                                                 title:[NSString stringWithFormat:@"Chart Tapped at\nx:%i,\ny:%i", (int)entry.x, (int)entry.y]
+                                       buttonTextArray:@[@"OK"]
+                                      destructiveIndex:0];
+    }
 }
 
 @end
