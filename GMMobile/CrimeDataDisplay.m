@@ -310,6 +310,7 @@ NextPass:
                     {
                         [pias DPointInArea:&llpoint
                                     atTime:dc.itemBeginTime
+                                  andRefno:controlNbr
                                 whichCount:compareClass];
                     }
                     else if (_mode == HOTSPOT)
