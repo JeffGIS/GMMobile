@@ -6,9 +6,10 @@
 #import "CCodeLibrary/CensusData.h"
 #import "PropertyData.h"
 #import "CCodeLibrary/NVDestinationOptions.h"
+#import "CCodeLibrary/NVTextVC.h"
 @import Charts;
 
-@interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate,ChartViewDelegate>
+@interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate,ChartViewDelegate,NVAlertViewDelegate>
 
 @property (nonatomic) UIButton *returnButton;
 @property (nonatomic) NSMutableArray <CandleChartDataEntry *> *candleDataArray;
@@ -19,6 +20,8 @@
 @property int currentSaleVal, durationCount, queryCount, numDays, numEntries;
 @property ChartsViewType type;
 @property (nonatomic) NVAlertView *alert;
+@property (nonatomic) BarChartView *timeLineChart;
+@property (nonatomic) ChartDataEntry *currentEntry;
 
 @end
 
@@ -572,18 +575,18 @@
 
 - (void)setupTimeLine
 {
-    BarChartView *timeLineChart = BarChartView.new;
-    timeLineChart.translatesAutoresizingMaskIntoConstraints = NO;
-    timeLineChart.backgroundColor = UIColor.whiteColor;
-    timeLineChart.legend.font = [UIFont systemFontOfSize:16.0];
-    timeLineChart.chartDescription.text = @"";
-    timeLineChart.delegate = self;
+    _timeLineChart = BarChartView.new;
+    _timeLineChart.translatesAutoresizingMaskIntoConstraints = NO;
+    _timeLineChart.backgroundColor = UIColor.whiteColor;
+    _timeLineChart.legend.font = [UIFont systemFontOfSize:16.0];
+    _timeLineChart.chartDescription.text = @"";
+    _timeLineChart.delegate = self;
     
-    [self.view addSubview:timeLineChart];
-    [timeLineChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
-    [timeLineChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
-    [timeLineChart constrainTopToAnchor:_returnButton.bottomAnchor];
-    [timeLineChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
+    [self.view addSubview:_timeLineChart];
+    [_timeLineChart constrainLeadingToAnchor:self.view.leadingAnchor constant:20.0];
+    [_timeLineChart constrainTrailingToAnchor:self.view.trailingAnchor constant:-20.0];
+    [_timeLineChart constrainTopToAnchor:_returnButton.bottomAnchor];
+    [_timeLineChart constrainBottomToAnchor:self.view.bottomAnchor constant:-20.0];
     
     NSMutableArray<BarChartDataEntry *> *sunEntryArray = NSMutableArray.array;
     NSMutableArray<BarChartDataEntry *> *monEntryArray = NSMutableArray.array;
@@ -651,7 +654,7 @@
                                                                     wedDataSet, thursDataSet, friDataSet, satDataSet]];
     
     tlData.barWidth =  ((tlData.xMax - tlData.xMin) / 100.0);
-    timeLineChart.data = tlData;
+    _timeLineChart.data = tlData;
 }
 
 - (void)chartValueSelected:(ChartViewBase *)chartView
@@ -661,23 +664,73 @@
     if (![self.view.subviews containsObject:_alert])
     {
         int refno = [(NSNumber *)entry.data intValue];
-        NSString *title = @"";
         
         if (refno != 0)
         {
-            if (refno > 0)
-                title = [NSString stringWithFormat:@"Chart tapped at refno:\n%i", refno];
+            NSString *title = [NSString stringWithFormat:@"Chart tapped at refno:\n%i", refno];
+            NSArray *buttonTextArray = @[@"Cancel", @"Display Crime Report", @"Remove from List"];
             
-            else if (refno == -1)
+            if (refno < 0)
+            {
                 title = @"Chart tapped at present time.";
+                buttonTextArray = @[@"OK"];
+            }
             
             _alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                  delegate:CRAPI.sharedInstance
+                                                  delegate:self
                                                      title:title
-                                           buttonTextArray:@[@"OK"]
-                                          destructiveIndex:0];
+                                           buttonTextArray:buttonTextArray
+                                          destructiveIndex:1];
+            _alert.tag = refno;
+            _currentEntry = entry;
         }
     }
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex)
+    {
+        case 1:{//display report
+            NSString *reportText = [CrimeData reportForControlNumber:alertView.tag];
+            NVTextVC *textVC = [[NVTextVC alloc] initWithText:reportText fontSize:16.0];
+            NSArray *searchStrings = _currentSpreadsheet.retrieveSearchStrings;
+            
+            textVC.redSubstring = @"";
+            
+            if (searchStrings.count > 0)
+                textVC.redSubstring = searchStrings[0];
+            
+            textVC.greenSubstring = @"";
+            
+            if (searchStrings.count > 1)
+                textVC.greenSubstring = searchStrings[1];
+            
+            textVC.blueSubstring = @"";
+            
+            if (searchStrings.count > 2)
+                textVC.blueSubstring = searchStrings[2];
+            
+            [self presentViewController:textVC animated:YES completion:nil];
+            break;}
+        case 2://remove from list
+            [_currentSpreadsheet performDeleteForControlNumber:(int)alertView.tag];
+            
+            for (ChartDataSet *set in _timeLineChart.barData.dataSets)
+            {
+                if ([set contains:_currentEntry])
+                {
+                    if ([set removeEntry:_currentEntry])
+                        [_timeLineChart setNeedsDisplay];
+                }
+            }
+            
+            break;
+        default:break;
+    }
+    
+    [alertView hideLargeAlertView:YES];
 }
 
 @end

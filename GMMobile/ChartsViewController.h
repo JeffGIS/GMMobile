@@ -28,6 +28,7 @@ typedef NS_ENUM(NSInteger, ChartsViewType)
 @property int startTime, endTime, interval;
 @property TimeArraySpan span;
 @property (nonatomic, copy) NSArray<TimeLine *> *timeLineArray;
+@property (nonatomic, weak) NVSpreadsheetVC *currentSpreadsheet;
 
 /*
  * startTime & endTime are 24 hour format (hhmm)
