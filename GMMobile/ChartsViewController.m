@@ -7,6 +7,7 @@
 #import "PropertyData.h"
 #import "CCodeLibrary/NVDestinationOptions.h"
 #import "CCodeLibrary/NVTextVC.h"
+#import "CrimeList.h"
 @import Charts;
 
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate,ChartViewDelegate,NVAlertViewDelegate>
@@ -668,9 +669,12 @@
         if (refno != 0)
         {
             NSString *title = [NSString stringWithFormat:@"Chart tapped at refno:\n%i", refno];
-            NSArray *buttonTextArray = @[@"Cancel", @"Display Crime Report", @"Remove from List"];
+            NSArray *buttonTextArray = @[@"Cancel", @"Display Crime Report"];
             
-            if (refno < 0)
+            if ([CrimeList incidentInCurrentCrimeList:refno])
+                buttonTextArray = @[@"Cancel", @"Display Crime Report", @"Remove from List"];
+            
+            else if (refno < 0)
             {
                 title = @"Chart tapped at present time.";
                 buttonTextArray = @[@"OK"];
@@ -715,14 +719,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [self presentViewController:textVC animated:YES completion:nil];
             break;}
         case 2://remove from list
-            [_currentSpreadsheet performDeleteForControlNumber:(int)alertView.tag];
-            
-            for (ChartDataSet *set in _timeLineChart.barData.dataSets)
+            if ([CrimeList incidentInCurrentCrimeList:(int)alertView.tag])
             {
-                if ([set contains:_currentEntry])
+                if ([CrimeList removeIncidentInCurrentCrimeList:(int)alertView.tag])
                 {
-                    if ([set removeEntry:_currentEntry])
-                        [_timeLineChart setNeedsDisplay];
+                    for (ChartDataSet *set in _timeLineChart.barData.dataSets)
+                    {
+                        if ([set contains:_currentEntry])
+                        {
+                            if ([set removeEntry:_currentEntry])
+                                [_timeLineChart setNeedsDisplay];
+                        }
+                    }
                 }
             }
             

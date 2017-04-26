@@ -121,24 +121,6 @@
     [crimelist open];
 }
 
-- (void)deleteForControlNumber:(int)controlNumber
-{
-    BOOL closeList = NO;
-    
-    if (!_crimeList)
-    {
-        if ([self openList])
-            closeList = YES;
-    }
-    
-    [_crimeList startTransaction];
-    [_crimeList deleteControlNumber:controlNumber];
-    [_crimeList commitTransaction];
-    
-    if (closeList)
-        [self closeList];
-}
-
 - (void)copyRows:(NSArray *)arrayOfRows
           toList:(NSString *)listName
 {
