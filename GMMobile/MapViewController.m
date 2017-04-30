@@ -737,107 +737,116 @@
     }
 }
 
-- (void)emailPDF
+- (void)emailPDF:(BOOL)screenShot
 {
-    NSMutableArray *viewsArray = NSMutableArray.array;
-    
-    if ([self.view.subviews containsObject:[self.view viewWithTag:77777]])
-        [viewsArray addObject:[self.view viewWithTag:77777]];
-    
-    else
-        [viewsArray addObject:_mapView];
-    
-    [viewsArray addObject:_vectorView];
-    
-    UIView *tlov = [[UIView alloc] initWithFrame:self.view.frame];
-    tlov.backgroundColor = UIColor.clearColor;
-    
-    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    if (screenShot)
     {
-        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-            [tlov addSubview:tlmos];
-    }
-    
-    for (NVPhotoView *nvpvs in self.view.subviews)
-    {
-        if ([nvpvs isKindOfClass:NVPhotoView.class])
+        NSMutableArray *viewsArray = NSMutableArray.array;
+        
+        if ([self.view.subviews containsObject:[self.view viewWithTag:77777]])
+            [viewsArray addObject:[self.view viewWithTag:77777]];
+        
+        else
+            [viewsArray addObject:_mapView];
+        
+        [viewsArray addObject:_vectorView];
+        
+        UIView *tlov = [[UIView alloc] initWithFrame:self.view.frame];
+        tlov.backgroundColor = UIColor.clearColor;
+        
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
         {
-            [viewsArray addObject:nvpvs.overlay];
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [tlov addSubview:tlmos];
+        }
+        
+        for (NVPhotoView *nvpvs in self.view.subviews)
+        {
+            if ([nvpvs isKindOfClass:NVPhotoView.class])
+            {
+                [viewsArray addObject:nvpvs.overlay];
+                
+                nvpvs.transform = CGAffineTransformTranslate(nvpvs.transform, 0.0, -20.0);
+                nvpvs.deleteButton.hidden = YES;
+                [tlov addSubview:nvpvs];
+            }
+        }
+        
+        if (tlov.subviews.count)
+            [viewsArray addObject:tlov];
+        
+        NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
+        UIView *legendsView = [[UIView alloc] initWithFrame:self.view.frame];
+        legendsView.hidden = YES;
+        legendsView.backgroundColor = UIColor.lightGrayColor;
+        [self.view addSubview:legendsView];
+        
+        CGFloat margin = 10.0, tallestLegend = 0.0;
+        CGFloat xPos = margin, yPos = margin;
+        
+        for (ThemeLegend *tls in legends)
+        {
+            ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tls
+                                                                    withTag:0
+                                                                   delegate:self
+                                                                     inView:legendsView
+                                                                   atOrigin:CGPointMake(xPos, yPos)
+                                                                hideButtons:YES];
             
-            nvpvs.transform = CGAffineTransformTranslate(nvpvs.transform, 0.0, -20.0);
-            nvpvs.deleteButton.hidden = YES;
-            [tlov addSubview:nvpvs];
+            tallestLegend = MAX(tallestLegend, tlmo.frame.size.height);
+            xPos += (tlmo.frame.size.width + margin);
+            
+            if (xPos > (legendsView.frame.size.width - tlmo.frame.size.width - margin))
+            {
+                yPos += (tallestLegend + margin);
+                xPos = margin;
+                tallestLegend = 0.0;
+            }
         }
-    }
-    
-    if (tlov.subviews.count)
-        [viewsArray addObject:tlov];
-    
-    NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
-    UIView *legendsView = [[UIView alloc] initWithFrame:self.view.frame];
-    legendsView.hidden = YES;
-    legendsView.backgroundColor = UIColor.lightGrayColor;
-    [self.view addSubview:legendsView];
-    
-    CGFloat margin = 10.0, tallestLegend = 0.0;
-    CGFloat xPos = margin, yPos = margin;
-    
-    for (ThemeLegend *tls in legends)
-    {
-        ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tls
-                                                                withTag:0
-                                                               delegate:self
-                                                                 inView:legendsView
-                                                               atOrigin:CGPointMake(xPos, yPos)
-                                                            hideButtons:YES];
         
-        tallestLegend = MAX(tallestLegend, tlmo.frame.size.height);
-        xPos += (tlmo.frame.size.width + margin);
+        CGFloat maxWidth = 0.0, maxHeight = 0.0;
         
-        if (xPos > (legendsView.frame.size.width - tlmo.frame.size.width - margin))
+        for (ThemeLegendMapOverlay *tlmos in legendsView.subviews)
         {
-            yPos += (tallestLegend + margin);
-            xPos = margin;
-            tallestLegend = 0.0;
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            {
+                maxWidth = MAX(maxWidth, CGRectGetMaxX(tlmos.frame));
+                maxHeight = MAX(maxHeight, CGRectGetMaxY(tlmos.frame));
+            }
+        }
+        
+        legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
+        NSArray *dispPoints = NSArray.array;
+        NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray legendsView:legendsView pickedItems:dispPoints];
+        
+        [NVSendEmail sendEmailWithSubject:@"PDF from NVMobile"
+                                  message:@"The PDF attached to this email was rendered by NVMobile."
+                           attachmentData:pdf
+                                 mimeType:@"application/pdf"
+                                 fileName:@"testPDF.pdf"
+                               controller:self];
+        
+        for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                [self.view addSubview:tlmos];
+        }
+        
+        for (NVPhotoView *nvpvs in tlov.subviews)
+        {
+            if ([nvpvs isKindOfClass:NVPhotoView.class])
+            {
+                nvpvs.transform = CGAffineTransformTranslate(nvpvs.transform, 0.0, 20.0);
+                nvpvs.deleteButton.hidden = NO;
+                [self.view addSubview:nvpvs];
+            }
         }
     }
-    
-    CGFloat maxWidth = 0.0, maxHeight = 0.0;
-    
-    for (ThemeLegendMapOverlay *tlmos in legendsView.subviews)
+    else
     {
-        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-        {
-            maxWidth = MAX(maxWidth, CGRectGetMaxX(tlmos.frame));
-            maxHeight = MAX(maxHeight, CGRectGetMaxY(tlmos.frame));
-        }
-    }
-    
-    legendsView.frame = CGRectMake(0.0, 0.0, (maxWidth + margin), (maxHeight + margin));
-    NSArray *dispPoints = NSArray.array;
-    NSData *pdf = [NVPDFSnapshotter pdfFromViews:viewsArray legendsView:legendsView pickedItems:dispPoints];
-    
-    [NVSendEmail sendEmailWithSubject:@"PDF from NVMobile"
-                              message:@"The PDF attached to this email was rendered by NVMobile."
-                       attachmentData:pdf
-                             mimeType:@"application/pdf"
-                             fileName:@"testPDF.pdf"
-                           controller:self];
-    
-    for (ThemeLegendMapOverlay *tlmos in tlov.subviews)
-    {
-        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-            [self.view addSubview:tlmos];
-    }
-    
-    for (NVPhotoView *nvpvs in tlov.subviews)
-    {
-        if ([nvpvs isKindOfClass:NVPhotoView.class])
-        {
-            nvpvs.transform = CGAffineTransformTranslate(nvpvs.transform, 0.0, 20.0);
-            nvpvs.deleteButton.hidden = NO;
-            [self.view addSubview:nvpvs];
-        }
+        [self allocateVectorView:YES];
+        [self vectorViewSetup];
+        [_vectorView vectorViewToPDF];
     }
 }
 
@@ -2715,7 +2724,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     return alertVisible;
 }
 
-- (void)allocateVectorView
+- (void)allocateVectorView:(BOOL)backGround
 {
     int ivv;
     
@@ -2738,8 +2747,11 @@ haveVV:
     _vectorView.pass = _vvpass;
     _vectorView.userInteractionEnabled = NO;
     _vectorView.delegate = self;
-    [self.view addSubview:_vectorView];
-    [_vectorView constrainToView:_mapView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    if (!backGround)
+    {
+        [self.view addSubview:_vectorView];
+        [_vectorView constrainToView:_mapView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    }
 }
 
 - (void) CrimeDataUpdateDidComplete:(long)status
@@ -2803,7 +2815,13 @@ haveVV:
         else
             _cdUpdate = nil;
     }
-    [self allocateVectorView];
+    [self allocateVectorView:NO];
+    [self vectorViewSetup];
+    [_vectorView setNeedsDisplay];
+}
+
+- (void) vectorViewSetup
+{
     _vectorView.displayDataOption = DISPLAY_DATA_OPTION_DISPLAY;
     
     [_vectorView setRegion:_mapView.projection.visibleRegion];
@@ -2829,9 +2847,7 @@ haveVV:
         ConfigurationControl.sharedInstance.GMTilesVisible = NO;
     }
 
-    [_vectorView setNeedsDisplay];
 }
-
 - (void)setMapType
 {
     if (![ConfigurationControl.sharedInstance haveUserAerials] &&
@@ -2853,7 +2869,7 @@ haveVV:
               displayOption:(int)option
 {
     if (!_vectorView)
-        [self allocateVectorView];
+        [self allocateVectorView:NO];
     
     _vectorView.displayDataOption = option;
     
@@ -2867,11 +2883,22 @@ haveVV:
 }
 
 - (void)vectorViewDidComplete:(VectorView *)vectorView
+                      pdfData:(NSData *)pdfData
                     reDisplay:(BOOL)reDisplay
 {
     //static BOOL first = TRUE;
    _waitForVectorViewRefresh = NO;
     
+    if (pdfData)
+    {
+        [NVSendEmail sendEmailWithSubject:@"PDF from NVMobile"
+                                  message:@"The PDF attached to this email was rendered by NVMobile."
+                           attachmentData:pdfData
+                                 mimeType:@"application/pdf"
+                                 fileName:@"testPDF.pdf"
+                               controller:self];
+        return;
+    }
     if (vectorView.displayID != CRAPI.sharedInstance.keepProcessing)
         vectorViews[vectorView.ivv] = nil;
     else dispatch_async(dispatch_get_main_queue(),
@@ -5555,7 +5582,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectEmailPDF
 {
-    [self emailPDF];
+    [self emailPDF:YES];
 }
 
 - (void)mapToolbarDidSelectHelpButton

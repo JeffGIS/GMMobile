@@ -14,6 +14,7 @@
 @protocol VectorViewDelegate <NSObject>
 
 - (void)vectorViewDidComplete:(VectorView*)vectorView
+                      pdfData:(NSData *)pdfData
                     reDisplay:(BOOL)reDisplay;
 
 @end
@@ -34,8 +35,10 @@
 @property PointInArea *pia;
 @property int pass;
 @property BOOL redisplay;
+@property NSMutableData * pdf;
 
 
 - (void) setRegion:(GMSVisibleRegion)region;
+- (void) vectorViewToPDF;
 
 @end

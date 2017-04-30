@@ -155,8 +155,23 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     BOOL rtn = CRAPI.sharedInstance.keepProcessing == self.displayID;
     return rtn;
 }
+
+- (void) vectorViewToPDF
+{
+    CGRect bnds = CGRectMake(0, 0, 612, 792);
+    _pdf = NSMutableData.data;
+    UIGraphicsBeginPDFContextToData(_pdf, bnds, NULL);
+    UIGraphicsBeginPDFPage();//WithInfo(bnds,nil);
+    _vectorViewContext = UIGraphicsGetCurrentContext();
+    int scale = 1;
+    [self processVectorView:bnds
+                      scale:scale
+                  displayID:0];
+}
+
 - (void)drawRect:(CGRect)rect
 {
+    _pdf = nil;
     NSInteger fromDate = 0, toDate = 0;
     [NVDateRange getCurrentFromDate:&fromDate toDate:&toDate];
     CRAPI.sharedInstance.fromDate = fromDate;
@@ -171,7 +186,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         return;
     if (_haveVectorLayer)
     {
-        UIGraphicsEndPDFContext();
+        //UIGraphicsEndPDFContext();
         //CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), _vectorLayer);
         if ([self keepGoing])
         {
@@ -183,7 +198,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
         _haveVectorLayer = NO;
         if (self.delegate)
             [self.delegate vectorViewDidComplete:self
-             reDisplay:_redisplay];
+                                         pdfData:nil
+                                       reDisplay:_redisplay];
         return;
     }
     if (CRAPI.sharedInstance.keepProcessing > 0)
@@ -192,14 +208,28 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     self.displayID = CRAPI.sharedInstance.keepProcessing;
     
     CGRect bnds = self.bounds;
-    _viewBounds.xmn = (self.bounds.origin.x * scale);
-    _viewBounds.xmx = ((self.bounds.origin.x + self.bounds.size.width) * scale);
-    _viewBounds.ymx = ((self.bounds.origin.y + self.bounds.size.height) * scale);
-    _viewBounds.ymn = (self.bounds.origin.y * scale);
+    [self processVectorView:bnds
+                      scale:scale
+                  displayID:CRAPI.sharedInstance.keepProcessing];
+}
+
+- (void) processVectorView:(CGRect) bounds
+                     scale:(int) scale
+                 displayID:(int) displayID
+{
+    self.displayID = displayID;
+    _viewBounds.xmn = (bounds.origin.x * scale);
+    _viewBounds.xmx = ((bounds.origin.x + bounds.size.width) * scale);
+    _viewBounds.ymx = ((bounds.origin.y + bounds.size.height) * scale);
+    _viewBounds.ymn = (bounds.origin.y * scale);
     {
         
-            CGSize size = CGSizeMake(self.bounds.size.width * scale, self.bounds.size.height * scale);
-            if (_displayDataOption != DISPLAY_DATA_OPTION_HIGHLIGHT || !_vectorLayer)
+            CGSize size = CGSizeMake(bounds.size.width * scale, bounds.size.height * scale);
+            if (_pdf)
+            {
+                _context = _vectorViewContext;
+            }
+            else if (_displayDataOption != DISPLAY_DATA_OPTION_HIGHLIGHT || !_vectorLayer)
             {
                 if (_vectorLayer)
                 {
@@ -217,12 +247,13 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                            ^{
                                DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
                                _colorSpace = CGColorSpaceCreateDeviceRGB();
-                               _width = self.bounds.size.width * scale;
-                               _height = self.bounds.size.height * scale;
+                               _width = bounds.size.width * scale;
+                               _height = bounds.size.height * scale;
                                _rect = CGRectMake(0, 0, _width, _height);
                                //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
                                //_bitmapData = bmData;
-                               _context = CGLayerGetContext(_vectorLayer);
+                               if (!_pdf)
+                                   _context = CGLayerGetContext(_vectorLayer);
                               /* NSMutableData *pdf = NSMutableData.data;
                                UIGraphicsBeginPDFContextToData(pdf, CGRectZero, NULL);
                                UIGraphicsBeginPDFPage();
@@ -411,9 +442,9 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                                        {
                                                            [cd displayCrimePoints:_context
                                                            displayCharacteristics:dc
-                                                                        llCorners:&_latlonCornerPoints
+                                                                        llCorners:CORNERPOINTS_view(&_latlonCornerPoints)
                                                                          LLBounds:&_latlonBounds
-                                                                       viewBounds:&_viewBounds
+                                                                       viewBounds:MNMXCORD_view(&_viewBounds)
                                                                            themes:themes
                                                                       pointInArea:_pia
                                                                              pass:_pass];
@@ -560,7 +591,17 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                            break;
                                    }
                                }
-                               if ([self keepGoing])
+                               if (!self.displayID)
+                               {
+                                   UIGraphicsEndPDFContext();
+
+                                   if (self.delegate)
+                                       [self.delegate vectorViewDidComplete:self
+                                                                    pdfData:_pdf
+                                                                  reDisplay:_redisplay];
+
+                               }
+                               else if ([self keepGoing])
                                {
                                    _haveVectorLayer = YES;
                                    dispatch_async(dispatch_get_main_queue(),
@@ -583,6 +624,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                                    _haveVectorLayer = NO;
                                    if (self.delegate)
                                        [self.delegate vectorViewDidComplete:self
+                                                                    pdfData:nil
                                                                   reDisplay:NO];
                                }
                                
