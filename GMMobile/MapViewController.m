@@ -123,6 +123,9 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
     self.tabBarController.delegate = self;
     
+    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmobile"])
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
+    
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
                                                name:@"didBecomeActive"
