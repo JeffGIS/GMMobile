@@ -364,7 +364,13 @@
 {
     [super viewWillAppear:animated];
     
-    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+    {
+        if (_firstTimeAppear)
+            [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    }
+    
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
     {
         if (_firstTimeAppear)
             [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
@@ -704,7 +710,6 @@
     }
 }
 
-
 - (void)setupTempButton:(UIButton *)button
 {
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
@@ -720,11 +725,13 @@
 - (void)mapToolbarDidSelectReturnButton
 {
     [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    
     if (_fromSpreadsheet)
     {
         NVMetroSettings.sharedInstance.currentFeature = NVMetroSettings.sharedInstance.currentFeatureSaved;
         [self zoomToBounds:NVMetroSettings.sharedInstance.savedVisibleBounds];
     }
+    
     _fromSpreadsheet = NO;
     
     NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVSpreadsheet"
