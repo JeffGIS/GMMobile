@@ -13,7 +13,6 @@
 #import "NVPageController.h"
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
-#import "ReaderViewController.h"
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
@@ -40,7 +39,7 @@
 @implementation MGVPlatData
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate>
 
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -92,7 +91,6 @@
 @property (nonatomic) UIImageView *myLocationMarker;
 @property NSUInteger currentLegendTag, pdfCount;
 @property NVColorOption currentColorOption;
-@property (nonatomic) ReaderViewController *readerVC;
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) CrimeData *cdUpdate;
@@ -2107,14 +2105,6 @@ wasTappedAtPoint:(DPOINT)point
             NSLog(@"Bottom PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
             break;
     }
-}
-
-- (void)dismissReaderViewController:(ReaderViewController *)viewController
-{
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 _readerVC = nil;
-                             }];
 }
 
 - (void)removePreviousInfoWindow
