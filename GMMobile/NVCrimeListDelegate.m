@@ -260,6 +260,9 @@
 {
     [_crimeList close:YES];
     [CrimeList setCurrentCrimeList:file];
+    if (CRAPI.sharedInstance.mapCrimeList)
+        CRAPI.sharedInstance.mapCrimeList = file;
+
     [_crimeList open];
 }
 

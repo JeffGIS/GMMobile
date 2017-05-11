@@ -3791,6 +3791,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self displayTimeline];
     }
+    else if ([text isEqualToString:@"Add to New Crime List"])
+    {
+        NSArray * crimes = [PointInAreas.new getAreaPointRefs:_selectedBA];
+
+        [self addToCrimeList:YES fromList:crimes];
+    }
     
     else if ([text isEqualToString:@"Perform 3D Route Flyover"])
     {
@@ -6342,7 +6348,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             break;
         case MarkerInfoWindowTypeBA:
             _selectedBARefNo = refno;
-            _options = @[@"", @"Display Timeline"];
+            _options = @[@"", @"Display Timeline", @"Add to New Crime List"];
             break;
         default:break;
     }
