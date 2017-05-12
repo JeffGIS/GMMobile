@@ -124,7 +124,9 @@
     BOOL wantAll = FALSE;
     int ii;
     CGFloat scale = [UIScreen mainScreen].nativeScale;
-
+    double crimeCircleSizeMeters = 35;
+    double groundRes = GroundResolution((platlonBounds->ymn + platlonBounds->ymx)/2,IDNINT(_zoom));
+    double crimeCirclePixelRadius =  crimeCircleSizeMeters / groundRes;
     if (_zoom > 15)
         sizeFactor += (_zoom - 15)/2;
     sizeFactor *= scale;
@@ -151,7 +153,8 @@
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
         pias.compareFactor = [themes getCompareThemeFactor];
-        
+        int pointSize = ceil (crimeCirclePixelRadius);
+        [pias setPointSize:pointSize];
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
         
@@ -294,10 +297,10 @@ NextPass:
                                             displayID:_processingID
                                          compareClass:&compareClass] != DO_NOT_DISPLAY_ITEM)
                 {
-                    DPOINT llpoint = TranDPOINT(BasePt, _pTranLLtoView);
+                    DPOINT viewPoint = TranDPOINT(BasePt, _pTranLLtoView);
                     if (_mode == PINMAP)
                     {
-                        [dp addPoint:&llpoint
+                        [dp addPoint:&viewPoint
                           controlNbr:controlNbr
                                 time:dc.itemBeginTime
                              offense:dc.string1
@@ -308,14 +311,14 @@ NextPass:
                     }
                     else if (_mode == CHOROPLETH)
                     {
-                        [pias DPointInArea:&llpoint
+                        [pias DPointInArea:&viewPoint
                                     atTime:dc.itemBeginTime
                                   andRefno:controlNbr
                                 whichCount:compareClass];
                     }
                     else if (_mode == HOTSPOT)
                     {
-                        [hs addPointAtX:llpoint.x andY:llpoint.y
+                        [hs addPointAtX:viewPoint.x andY:viewPoint.y
                                 andTime:dc.itemBeginTime
                               whichGrid:compareClass];
                     }
