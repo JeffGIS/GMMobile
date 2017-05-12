@@ -13,7 +13,6 @@
 #import "NVPageController.h"
 #import "CrimeDataOptions.h"
 #import "UserLayerDisplay.h"
-#import "ReaderViewController.h"
 #import "CCodeLibrary/NVTextVC.h"
 #import "CCodeLibrary/NVDigitizerView.h"
 #import "CCodeLibrary/NVMarkerInfoButton.h"
@@ -40,7 +39,7 @@
 @implementation MGVPlatData
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,ReaderViewControllerDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate>
+@interface MapViewController () <GMSPanoramaViewDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate>
 
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -92,7 +91,6 @@
 @property (nonatomic) UIImageView *myLocationMarker;
 @property NSUInteger currentLegendTag, pdfCount;
 @property NVColorOption currentColorOption;
-@property (nonatomic) ReaderViewController *readerVC;
 @property (nonatomic) NVDigitizerView *nvdv;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) CrimeData *cdUpdate;
@@ -124,6 +122,9 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
     self.tabBarController.delegate = self;
+    
+    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmobile"])
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -364,7 +365,13 @@
 {
     [super viewWillAppear:animated];
     
-    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+    {
+        if (_firstTimeAppear)
+            [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    }
+    
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
     {
         if (_firstTimeAppear)
             [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
@@ -704,7 +711,6 @@
     }
 }
 
-
 - (void)setupTempButton:(UIButton *)button
 {
     [button setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
@@ -720,11 +726,13 @@
 - (void)mapToolbarDidSelectReturnButton
 {
     [ConfigurationControl.sharedInstance setApp:HCConfigMetroProp];
+    
     if (_fromSpreadsheet)
     {
         NVMetroSettings.sharedInstance.currentFeature = NVMetroSettings.sharedInstance.currentFeatureSaved;
         [self zoomToBounds:NVMetroSettings.sharedInstance.savedVisibleBounds];
     }
+    
     _fromSpreadsheet = NO;
     
     NSUInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVSpreadsheet"
@@ -2100,14 +2108,6 @@ wasTappedAtPoint:(DPOINT)point
             NSLog(@"Bottom PDF tapped on page %i at x:%f,y:%f", page, point.x, point.y);
             break;
     }
-}
-
-- (void)dismissReaderViewController:(ReaderViewController *)viewController
-{
-    [self dismissViewControllerAnimated:YES
-                             completion:^{
-                                 _readerVC = nil;
-                             }];
 }
 
 - (void)removePreviousInfoWindow

@@ -8,7 +8,6 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "CCodeLibrary/UserDefaults.h"
 #import "AppDelegate.h"
-#import "ReaderViewController.h"
 #import "CCodeLibrary/NVCalendarVC.h"
 #import "CCodeLibrary/NVSynchronizeVC.h"
 #import "CCodeLibrary/FTPDirectoryList.h"
@@ -19,7 +18,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <ReaderViewControllerDelegate,GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate>
+@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -686,12 +685,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else
         NSLog(@"File Delete ERROR:%@", path);
-}
-
-- (void)dismissReaderViewController:(ReaderViewController *)viewController
-{
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation

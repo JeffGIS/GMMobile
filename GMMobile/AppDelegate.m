@@ -86,14 +86,17 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
-    if (![self checkUnbundledFile:@"landuse"
-                             type:@"slt"
-                      inDirectory:UserDefaults.defaults.sharedFilePath])
+    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
     {
-        [NVGetODR getResourcesWithTag:@"landuse"
-                             type:@"slt"
-                      toDirectory:UserDefaults.defaults.sharedFilePath
-                         delegate:self];
+        if (![self checkUnbundledFile:@"landuse"
+                                 type:@"slt"
+                          inDirectory:UserDefaults.defaults.sharedFilePath])
+        {
+            [NVGetODR getResourcesWithTag:@"landuse"
+                                     type:@"slt"
+                              toDirectory:UserDefaults.defaults.sharedFilePath
+                                 delegate:self];
+        }
     }
     
     return YES;

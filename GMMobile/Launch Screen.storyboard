@@ -23,7 +23,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="GMMobileIconAppStore.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="577-3y-h6k">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="NVMobileIcon1024.png" translatesAutoresizingMaskIntoConstraints="NO" id="577-3y-h6k">
                                 <rect key="frame" x="60" y="188" width="648" height="648"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="577-3y-h6k" secondAttribute="height" multiplier="1:1" id="mgp-v8-xj6"/>
@@ -57,6 +57,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="GMMobileIconAppStore.jpg" width="1024" height="1024"/>
+        <image name="NVMobileIcon1024.png" width="1024" height="1024"/>
     </resources>
 </document>
