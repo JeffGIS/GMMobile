@@ -30,7 +30,7 @@ static int parcelsWanted[CPFeaturesCount];
 }
 NSString * formatText (LPSTR text,NSNumber * format,double acres)
 {
-    NSString * rtn;
+    NSString * rtn=@"";
     TXTAdjustment option = format.integerValue;
     switch (option)
     {

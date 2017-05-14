@@ -1892,7 +1892,7 @@ NextPass:
                     count = [pias countForArea:keyval
                                     whichCount:0];
                     char countstr[32];
-                    sprintf (countstr,"%f",count);
+                    sprintf (countstr,"%0.1f",count);
                     text = formatText(countstr, to.formats[0], 1);
                 }
             }

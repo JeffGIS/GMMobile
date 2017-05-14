@@ -124,8 +124,10 @@
     BOOL wantAll = FALSE;
     int ii;
     CGFloat scale = [UIScreen mainScreen].nativeScale;
-    double crimeCircleSizeMeters = 35;
-    double groundRes = GroundResolution((platlonBounds->ymn + platlonBounds->ymx)/2,IDNINT(_zoom));
+    double crimeCircleSizeMeters = 25;
+    double groundRes1 = GroundResolution((platlonBounds->ymn + platlonBounds->ymx)/2,_zoom);
+    double groundRes2 = GroundResolution((platlonBounds->ymn + platlonBounds->ymx)/2,_zoom+1);
+    double groundRes = groundRes1 + (groundRes2 - groundRes1) * (_zoom - floor (_zoom));
     double crimeCirclePixelRadius =  crimeCircleSizeMeters / groundRes;
     if (_zoom > 15)
         sizeFactor += (_zoom - 15)/2;
@@ -150,24 +152,26 @@
         CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
 
         pias = [[PointInAreas alloc]init];
+        pias.fullBounds = *pvbounds;
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
         pias.compareFactor = [themes getCompareThemeFactor];
         int pointSize = ceil (crimeCirclePixelRadius);
-        [pias setPointSize:pointSize];
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
-        
+
+        MNMXCORD pvboundsPias = [pias bitmapBounds:pvbounds];
+        [pias setPointSize:pointSize];
         [bd   load:_choroplethTarget
     toPointInAreas:pias
 boundsPointInAreas:nil
   usingPointInArea:pia
          llCorners:latlonCornerPoints
           LLBounds:platlonBounds
-        viewBounds:pvbounds
+        viewBounds:&pvboundsPias
   haveCompareTheme:[themes haveCompareTheme]];
-
-         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+        
+        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
         
         [pias initTimeLine:_cd.database];
 
@@ -311,7 +315,7 @@ NextPass:
                     }
                     else if (_mode == CHOROPLETH)
                     {
-                        [pias DPointInArea:&viewPoint
+                        [pias DPointInArea:&BasePt[0]
                                     atTime:dc.itemBeginTime
                                   andRefno:controlNbr
                                 whichCount:compareClass];
@@ -431,7 +435,7 @@ NextPass:
             to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountPerThousand], nil];
         }
         else
-            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountNoZero], nil];
+            to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustNone], nil];
         [CRAPI.sharedInstance updateProgress:-1
                                      current:0
                                        range:1
