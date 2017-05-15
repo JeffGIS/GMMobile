@@ -3791,6 +3791,16 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self displayTimeline];
     }
+    else if ([text isEqualToString:@"Show Text"])
+    {
+        AreaText * at = [CRAPI.sharedInstance areaTextForRefno:_selectedBARefNo];
+        _popover.progressView.hidden = YES;
+        _popover.progressLabel.hidden = YES;
+        _popover.delegate = self;
+        _popover.hideAtCancel = NO;
+        [_popover showAfter:0.5 withTitle:[NSString stringWithFormat:@"%@\n%@",at.areaID,at.text]];
+        [self.view bringSubviewToFront:_popover];
+    }
     else if ([text isEqualToString:@"Add to New Crime List"])
     {
         NSArray * crimes = [PointInAreas.new getAreaPointRefs:_selectedBA];
@@ -4333,7 +4343,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 }
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    _continueLoad = NO;
+    if (_continueLoad)
+        _continueLoad = NO;
+    else
+        [popoverView hide];
 }
 - (void)displayCensusDataChart
 {
@@ -6349,6 +6362,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeBA:
             _selectedBARefNo = refno;
             _options = @[@"", @"Display Timeline", @"Add to New Crime List"];
+            if ([CRAPI.sharedInstance refnoInAreaText:_selectedBARefNo])
+                _options = @[@"", @"Display Timeline", @"Add to New Crime List",@"Show Text"];
             break;
         default:break;
     }

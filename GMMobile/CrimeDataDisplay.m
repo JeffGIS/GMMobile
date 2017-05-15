@@ -380,8 +380,6 @@ NextPass:
     }
     else if (_mode == CHOROPLETH)
     {
-        NSArray * textArray = [NSArray new];
-        
         if (_choroplethAdjustValue && _choroplethAdjustValue < ACO_OverDueAverage)
         {
             PointInAreas *piasAdjust = [[PointInAreas alloc]init];

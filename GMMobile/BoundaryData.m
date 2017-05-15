@@ -1723,6 +1723,7 @@ NextPass:
     NSString *keyval = @"";
     int numPoints = 0;
     int numLoops = 0;
+    int refno = 0;
     NSString *key = areaType;
     NSString *table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
     CGFloat screenScale = [[UIScreen mainScreen] scale];
@@ -1746,20 +1747,20 @@ NextPass:
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
         table = @"BOUNDARYAREA";
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME,%@.id FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,areaType,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else if ([areaType isEqualToString:@"PARCEL"])
     {
         NSString * fields = to.fields;
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
     {
         NSString * fields = to.fields;
         NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
         NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
-        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,field,table,table,dataTable,table,table,
+        query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@.id,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,table,field,table,table,dataTable,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,table,areaType];
         
     }
@@ -1767,12 +1768,13 @@ NextPass:
 NextPass:
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
-    
+    CRAPI.sharedInstance.lastAreaText = NSMutableArray.new;
     while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
     {
         int *polyPartLen;
         NSNumber *textFormat[MAX_NVM_TEXT_FIELDS];
         int i=0;
+        BOOL first = TRUE;
         BasePt.x = sqlite3_column_double(statement,i++);
         BasePt.y = sqlite3_column_double(statement,i++);
         numPoints = sqlite3_column_int(statement,i++);
@@ -1790,6 +1792,7 @@ NextPass:
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         LPSTR pkeyval = (LPSTR)sqlite3_column_text(statement,i++);
         keyval = [NSString stringWithUTF8String:pkeyval];
+        refno = sqlite3_column_int(statement,7);
 
         _acres = sqlite3_column_double(statement,i++);
         int nTextFields = 0;
@@ -1913,6 +1916,15 @@ NextPass:
             else
             {
                 text = keyval;
+            }
+            if (first)
+            {
+                first = FALSE;
+                AreaText * at = AreaText.new;
+                at.refno = refno;
+                at.areaID = keyval;
+                at.text = text;
+                [CRAPI.sharedInstance.lastAreaText addObject:at];
             }
             if (text.length)
             {
