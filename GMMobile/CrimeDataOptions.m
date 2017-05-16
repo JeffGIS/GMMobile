@@ -10,16 +10,11 @@
 
 @interface CrimeDataOptions () <FindBoundsViewControllerDelegate>
 
-@property (weak, nonatomic) IBOutlet UIButton *dateRangeButton;
-@property (weak, nonatomic) IBOutlet UIButton *areaTypeButton;
-@property (weak, nonatomic) IBOutlet UIButton *legendButton;
-@property (weak, nonatomic) IBOutlet UIButton *modeButton;
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (weak, nonatomic) IBOutlet UIButton *multipleOffenseButton;
-@property (weak, nonatomic) IBOutlet UIButton *attemptOptionButton;
-@property (weak, nonatomic) IBOutlet UIButton *compareOptionButton;
-
-@property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
+@property (nonatomic) UIButton *dateRangeButton, *boundingAreaButton, *legendButton;
+@property (nonatomic) UIButton *modeButton, *multipleOffenseButton;
+@property (nonatomic) UIButton *adjustmentOptionButton, *compareOptionButton;
+@property (nonatomic) UITableView *tableView;
+@property (nonatomic) CGFloat rowHeight, headerHeight, margin, innerMargin, borderWidth;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
 @property (nonatomic, copy) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
@@ -42,7 +37,8 @@
     {
         _rowHeight = 36.0;
         _headerHeight = 24.0;
-        _cornerRadius = 4.0;
+        _borderWidth = 1.0;
+        _margin = _innerMargin = 4.0;
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT" size:14.0];
         _headerFont = [UIFont boldSystemFontOfSize:18.0];
     }
@@ -51,13 +47,24 @@
     {
         _rowHeight = 52.0;
         _headerHeight = 40.0;
-        _cornerRadius = 10.0;
+        _borderWidth = 2.5;
+        _margin = 12.0;
+        _innerMargin = 8.0;
         _font = [UIFont fontWithName:@"CourierNewPS-BoldMT" size:24.0];
         _headerFont = [UIFont boldSystemFontOfSize:28.0];
     }
     
-//    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery", @"Narcotics", @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto"];
-    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery",@"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto"];
+    _dateRangeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _boundingAreaButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _legendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _modeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _multipleOffenseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _adjustmentOptionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _compareOptionButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _tableView = UITableView.new;
+    
+    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery",
+                 @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto"];
     
     _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Choropleth Map"];
     _pinModes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals"];
@@ -70,60 +77,73 @@
                         @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
-    _adjustmentOptions = @[@"None", @"Population", @"Housing Units",@"Overdue as Percent of Average Frequency",@"Overdue as Percent of STDV of Frequency"];
-    _compareOptions = @[@"Raw",@"Count Corrected", @"Time Corrected"];
+    
+    _adjustmentOptions = @[@"None", @"Population", @"Housing Units", @"Overdue as Percent of Average Frequency",
+                           @"Overdue as Percent of STDV of Frequency"];
+    
+    _compareOptions = @[@"Raw", @"Count Corrected", @"Time Corrected"];
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
     
-    NSString *defaultSelectedLegend = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
+    NSString *defaultOption = [UserDefaults.defaults stringForKey:@"SelectedLegend"];
     
-    if (defaultSelectedLegend && defaultSelectedLegend.length)
-        _selectedLegend = defaultSelectedLegend;
+    if (defaultOption && defaultOption.length)
+        _selectedLegend = defaultOption;
     
     else
         _selectedLegend = _legends[0];
     
-    NSString *defaultSelectedMode = [UserDefaults.defaults stringForKey:@"SelectedMode"];
+    defaultOption = [UserDefaults.defaults stringForKey:@"SelectedMode"];
     
-    if (defaultSelectedMode && defaultSelectedMode.length)
-        _selectedMode = defaultSelectedMode;
+    if (defaultOption && defaultOption.length)
+        _selectedMode = defaultOption;
     
     else
         _selectedMode = _selectedMode = _modes[0][0];
     
-    NSString *defaultSelectedMultipleOffenseOption = [UserDefaults.defaults stringForKey:@"SelectedMultipleOffenseOption"];
+    defaultOption = [UserDefaults.defaults stringForKey:@"SelectedMultipleOffenseOption"];
     
-    if (defaultSelectedMultipleOffenseOption && defaultSelectedMultipleOffenseOption.length)
-        _selectedMultipleOffenseOption = defaultSelectedMultipleOffenseOption;
+    if (defaultOption && defaultOption.length)
+        _selectedMultipleOffenseOption = defaultOption;
     
     else
         _selectedMultipleOffenseOption = _multipleOffenseOptions[0];
     
-    NSString *defaultSelectedAdjustmentOption = [UserDefaults.defaults stringForKey:@"SelectedAdjustmentOption"];
+    defaultOption = [UserDefaults.defaults stringForKey:@"SelectedAdjustmentOption"];
     
-    if (defaultSelectedAdjustmentOption && defaultSelectedAdjustmentOption.length)
-        _selectedAdjustmentOption = defaultSelectedAdjustmentOption;
+    if (defaultOption && defaultOption.length)
+        _selectedAdjustmentOption = defaultOption;
     
     else
         _selectedAdjustmentOption = _adjustmentOptions[0];
     
+    defaultOption = [UserDefaults.defaults stringForKey:@"SelectedAdjustmentOption"];
+    
+    if (defaultOption && defaultOption.length)
+        _selectedCompareOption = defaultOption;
+    
+    else
+        _selectedCompareOption = _compareOptions[0];
+    
+    _selectedModeType = [UserDefaults.defaults integerForKey:@"SelectedModeType"];
+    
     _modeButton.selected = YES;
-    _areaTypeButton.selected = NO;
+    _boundingAreaButton.selected = NO;
     _legendButton.selected = NO;
     _dateRangeButton.selected = NO;
     _multipleOffenseButton.selected = NO;
-    _attemptOptionButton.selected = NO;
-    _attemptOptionButton.enabled = NO;
+    _adjustmentOptionButton.selected = NO;
     _compareOptionButton.selected = NO;
-    _compareOptionButton.enabled = NO;
+    _adjustmentOptionButton.enabled = (_selectedModeType == NVMapModeTypeChoropleth);
+    _compareOptionButton.enabled = (_selectedModeType != NVMapModeTypePIN);
     
-    [self setupButton:_dateRangeButton];
-    [self setupButton:_areaTypeButton];
-    [self setupButton:_legendButton];
-    [self setupButton:_modeButton];
-    [self setupButton:_multipleOffenseButton];
-    [self setupButton:_attemptOptionButton];
-    [self setupButton:_compareOptionButton];
+    [self setupButton:_dateRangeButton action:@selector(dateRangeTapped:)];
+    [self setupButton:_boundingAreaButton action:@selector(areaTypeTapped:)];
+    [self setupButton:_legendButton action:@selector(legendTapped:)];
+    [self setupButton:_modeButton action:@selector(modeTapped:)];
+    [self setupButton:_multipleOffenseButton action:@selector(multipleOffenseTapped:)];
+    [self setupButton:_adjustmentOptionButton action:@selector(adjustmentOptionTapped:)];
+    [self setupButton:_compareOptionButton action:@selector(compareOptionTapped:)];
     
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
@@ -137,8 +157,8 @@
     [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                             forState:UIControlStateNormal];
     
-    [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
-                          forState:UIControlStateNormal];
+    [_adjustmentOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
+                             forState:UIControlStateNormal];
     
     [_compareOptionButton setTitle:[NSString stringWithFormat:@"Data Compare Option:%@", _selectedCompareOption]
                           forState:UIControlStateNormal];
@@ -154,16 +174,17 @@
         _checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
     
     [self setupTableView];
+    [self setupConstraints];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
-                               CRAPI.sharedInstance.currentOverallBoundaryName,
-                               CRAPI.sharedInstance.currentOverallBoundaryType]
-                     forState:UIControlStateNormal];
+    [_boundingAreaButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
+                                   CRAPI.sharedInstance.currentOverallBoundaryName,
+                                   CRAPI.sharedInstance.currentOverallBoundaryType]
+                        forState:UIControlStateNormal];
     
     [_tableView reloadData];
 }
@@ -173,8 +194,15 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)setupButton:(UIButton *)button
+- (BOOL)prefersStatusBarHidden
 {
+    return YES;
+}
+
+- (void)setupButton:(UIButton *)button
+             action:(SEL)action
+{
+    button.translatesAutoresizingMaskIntoConstraints = NO;
     [self updateButton:button];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -189,10 +217,47 @@
     [button setTitleColor:UIColor.blackColor forState:UIControlStateSelected];
     button.titleLabel.adjustsFontSizeToFitWidth = YES;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    button.layer.cornerRadius = _cornerRadius;
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     button.contentEdgeInsets = UIEdgeInsetsMake(2.0, 2.0, 2.0, 2.0);
+    [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:button];
+}
+
+- (void)setupConstraints
+{
+    [_dateRangeButton constrainTopToAnchor:self.view.topAnchor constant:_margin];
+    [_dateRangeButton constrainLeadingToAnchor:self.view.leadingAnchor constant:_margin];
+    [_dateRangeButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-_margin];
+    [_boundingAreaButton constrainTopToAnchor:_dateRangeButton.bottomAnchor constant:_innerMargin];
+    [_boundingAreaButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_boundingAreaButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_legendButton constrainTopToAnchor:_boundingAreaButton.bottomAnchor constant:_innerMargin];
+    [_legendButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_legendButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_modeButton constrainTopToAnchor:_legendButton.bottomAnchor constant:_innerMargin];
+    [_modeButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_modeButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_multipleOffenseButton constrainTopToAnchor:_modeButton.bottomAnchor constant:_innerMargin];
+    [_multipleOffenseButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_multipleOffenseButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_adjustmentOptionButton constrainTopToAnchor:_multipleOffenseButton.bottomAnchor constant:_innerMargin];
+    [_adjustmentOptionButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_adjustmentOptionButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_compareOptionButton constrainTopToAnchor:_adjustmentOptionButton.bottomAnchor constant:_innerMargin];
+    [_compareOptionButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_compareOptionButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_tableView constrainTopToAnchor:_compareOptionButton.bottomAnchor constant:_margin];
+    [_tableView constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_tableView constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_tableView constrainBottomToAnchor:self.view.bottomAnchor constant:-_margin];
+    [_boundingAreaButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
+    [_legendButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
+    [_modeButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
+    [_multipleOffenseButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
+    [_adjustmentOptionButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
+    [_compareOptionButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
+    [_tableView constrainHeightToAnchor:_dateRangeButton.heightAnchor multiplier:8.0];
 }
 
 - (void)updateButton:(UIButton *)button
@@ -212,21 +277,22 @@
 
 - (void)setupTableView
 {
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.backgroundColor = UIColor.grayColor;
     _tableView.bounces = YES;
     _tableView.layer.borderColor = UIColor.blackColor.CGColor;
-    _tableView.layer.borderWidth = (_cornerRadius / 4.0);
-    _tableView.layer.cornerRadius = _cornerRadius;
+    _tableView.layer.borderWidth = _borderWidth;
     _tableView.rowHeight = _rowHeight;
     _tableView.sectionHeaderHeight = _headerHeight;
     _tableView.delaysContentTouches = NO;
     _tableView.separatorColor = UIColor.clearColor;
     _tableView.separatorInset = UIEdgeInsetsZero;
+    [self.view addSubview:_tableView];
 }
 
-- (IBAction)dateRange:(UIButton *)sender
+- (void)dateRangeTapped:(UIButton *)button
 {
     NVDateRange *nvdr = [NVDateRange showDateRangeInView:self.view
                                                 delegate:self
@@ -261,24 +327,24 @@ didReturnFromDate:(NSInteger)fromDate
 
 - (void)updateButtons
 {
-    [self updateButton:_areaTypeButton];
+    [self updateButton:_boundingAreaButton];
     [self updateButton:_legendButton];
     [self updateButton:_modeButton];
     [self updateButton:_dateRangeButton];
     [self updateButton:_multipleOffenseButton];
-    [self updateButton:_attemptOptionButton];
+    [self updateButton:_adjustmentOptionButton];
     [self updateButton:_compareOptionButton];
 }
 
-- (IBAction)legend:(UIButton *)sender
+- (void)legendTapped:(UIButton *)button
 {
     if (!_legendButton.selected)
     {
         _legendButton.selected = YES;
-        _areaTypeButton.selected = NO;
+        _boundingAreaButton.selected = NO;
         _modeButton.selected = NO;
         _multipleOffenseButton.selected = NO;
-        _attemptOptionButton.selected = NO;
+        _adjustmentOptionButton.selected = NO;
         _compareOptionButton.selected = NO;
         _currentArray = _legends;
         
@@ -287,15 +353,15 @@ didReturnFromDate:(NSInteger)fromDate
     }
 }
 
-- (IBAction)mode:(id)sender
+- (void)modeTapped:(UIButton *)button
 {
     if (!_modeButton.selected)
     {
         _modeButton.selected = YES;
-        _areaTypeButton.selected = NO;
+        _boundingAreaButton.selected = NO;
         _legendButton.selected = NO;
         _multipleOffenseButton.selected = NO;
-        _attemptOptionButton.selected = NO;
+        _adjustmentOptionButton.selected = NO;
         _compareOptionButton.selected = NO;
         _currentArray = _modeTypes;
         
@@ -310,15 +376,15 @@ didReturnFromDate:(NSInteger)fromDate
     }
 }
 
-- (IBAction)multipleOffense:(id)sender
+- (void)multipleOffenseTapped:(UIButton *)button
 {
     if (!_multipleOffenseButton.selected)
     {
         _multipleOffenseButton.selected = YES;
         _legendButton.selected = NO;
-        _areaTypeButton.selected = NO;
+        _boundingAreaButton.selected = NO;
         _modeButton.selected = NO;
-        _attemptOptionButton.selected = NO;
+        _adjustmentOptionButton.selected = NO;
         _compareOptionButton.selected = NO;
         _currentArray = _multipleOffenseOptions;
         
@@ -327,14 +393,14 @@ didReturnFromDate:(NSInteger)fromDate
     }
 }
 
-- (IBAction)attemptOption:(id)sender
+- (void)adjustmentOptionTapped:(UIButton *)button
 {
-    if (!_attemptOptionButton.selected)
+    if (!_adjustmentOptionButton.selected)
     {
-        _attemptOptionButton.selected = YES;
+        _adjustmentOptionButton.selected = YES;
         _multipleOffenseButton.selected = NO;
         _legendButton.selected = NO;
-        _areaTypeButton.selected = NO;
+        _boundingAreaButton.selected = NO;
         _modeButton.selected = NO;
         _compareOptionButton.selected = NO;
         _currentArray = _adjustmentOptions;
@@ -344,14 +410,14 @@ didReturnFromDate:(NSInteger)fromDate
     }
 }
 
-- (IBAction)compareOption:(id)sender
+- (void)compareOptionTapped:(UIButton *)button
 {
     if (!_compareOptionButton.selected)
     {
-        _attemptOptionButton.selected = NO;
+        _adjustmentOptionButton.selected = NO;
         _multipleOffenseButton.selected = NO;
         _legendButton.selected = NO;
-        _areaTypeButton.selected = NO;
+        _boundingAreaButton.selected = NO;
         _modeButton.selected = NO;
         _compareOptionButton.selected = YES;
         _currentArray = _compareOptions;
@@ -421,13 +487,14 @@ viewForHeaderInSection:(NSInteger)section
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"
-                                                            forIndexPath:indexPath];
+    static NSString *cellIdentifier = @"CustomCell";
+    
+    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                      reuseIdentifier:@"Cell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
+                                      reuseIdentifier:cellIdentifier];
     }
     
     if (_currentArray == _modeTypes)
@@ -488,6 +555,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             [UserDefaults.defaults saveString:_selectedMode forKey:@"SelectedMode"];
         }
         
+        [UserDefaults.defaults saveNSInteger:_selectedModeType forKey:@"SelectedModeType"];
         [self updateModes];
     }
     
@@ -508,8 +576,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         _selectedAdjustmentOption = _adjustmentOptions[indexPath.row];
         [UserDefaults.defaults saveString:_selectedAdjustmentOption forKey:@"SelectedAdjustmentOption"];
         
-        [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
-                              forState:UIControlStateNormal];
+        [_adjustmentOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
+                                 forState:UIControlStateNormal];
         
         ConfigurationControl.sharedInstance.adjustCrimeOption = (int)indexPath.row;
         [UserDefaults.defaults saveInteger:ConfigurationControl.sharedInstance.adjustCrimeOption forKey:@"AdjustCrimeOption"];
@@ -547,8 +615,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)updateModes
 {
-    _attemptOptionButton.enabled = (_selectedModeType == NVMapModeTypeChoropleth);
-    [self updateButton:_attemptOptionButton];
+    _adjustmentOptionButton.enabled = (_selectedModeType == NVMapModeTypeChoropleth);
+    _compareOptionButton.enabled = (_selectedModeType != NVMapModeTypePIN);
+    [self updateButton:_adjustmentOptionButton];
+    [self updateButton:_compareOptionButton];
     
     NSString *uppercaseMode = _selectedMode.uppercaseString;
     CRAPI.sharedInstance.crimeAdjustValueArea = nil;
@@ -631,7 +701,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     return formattedDate;
 }
 
-- (IBAction)selectBounds:(id)sender
+- (void)areaTypeTapped:(UIButton *)button
 {
     FindBoundariesViewController *findBounds = FindBoundariesViewController.new;
     findBounds.delegate = self;
@@ -661,10 +731,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.currentOverallBoundaryType = type;
         [UserDefaults.defaults saveString:type forKey:@"CurrentOverallBoundaryType"];
         
-        [_areaTypeButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
-                                   CRAPI.sharedInstance.currentOverallBoundaryName,
-                                   CRAPI.sharedInstance.currentOverallBoundaryType]
-                         forState:UIControlStateNormal];
+        [_boundingAreaButton setTitle:[NSString stringWithFormat:@"Bounding Area:%@ (%@)",
+                                       CRAPI.sharedInstance.currentOverallBoundaryName,
+                                       CRAPI.sharedInstance.currentOverallBoundaryType]
+                             forState:UIControlStateNormal];
     }
     
     else
