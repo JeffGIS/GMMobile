@@ -291,15 +291,26 @@
     return rtn;
 }
 
-- (BOOL) isHourSelected:(time_t)iTime
+- (ThemeTypes) themeWithCompare
+{
+    ThemeTypes rtn = NoTheme;
+    for (Theme *thm in _themeList)
+    {
+        rtn = [thm hasCompare];
+    }
+    return rtn;
+}
+
+- (int) isHourSelected:(time_t)iTime
+      themeWithCompare:(ThemeTypes)themeWithCompare
 {
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     struct tm tmtime = *localtime (&iTime);
-    int val;
-    BOOL rtn = YES;
+    int rtn = 3;
     
     for (Theme *thm in _themeList)
     {
+        int val = -1;
         switch (thm.type)
         {
                 
@@ -311,71 +322,31 @@
                     val = 1;
                 else
                     val = 0;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
             }
                 break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
                 val -= thm.minYear;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
                 break;
             case MonthTheme:
                 val = tmtime.tm_mon;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
-                
+                break;
             case ThirteenMonthTheme:
                 val = [thm classFromTime:dc.itemBeginTime];
-                
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
-                
                 break;
             case DayofWeekTheme:
                 val = tmtime.tm_wday;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
                 break;
             case HourTheme:
                 val = tmtime.tm_hour/2;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
                 break;
             default:
+                val = -999;
                 break;
         }
+        if (val != -999)
+            rtn = [thm compareStatus:val
+                    themeWithCompare:themeWithCompare];
         if (!rtn)
             break;
     }

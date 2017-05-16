@@ -456,7 +456,7 @@ NextPass:
         if (ConfigurationControl.sharedInstance.dataCompareOption == DCOptionRaw)
             compareFactor = 1;
         else if (ConfigurationControl.sharedInstance.dataCompareOption == DCOptionTime)
-            compareFactor = [self getTimeFactor];
+            compareFactor = [self getTimeFactor:themes];
         else
             pCompareFactor = nil;
         [hs display:context
@@ -468,10 +468,46 @@ Exit:
     [_cd close:opened];
 }
 
-- (double) getTimeFactor
+- (double) getTimeFactor:(Themes *)themes
 {
+    int numSecondsInHour = 60 * 60;
     double factor = 1;
+    int hours1 = 0;
+    int hours2 = 0;
+    NSArray *timeRanges = [CRAPI.sharedInstance getTimeRanges];
+    time_t fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
+    int numTimeRanges = (int)timeRanges.count;
+    ThemeTypes themeWithCompare = [themes themeWithCompare];
     
+    for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
+    {
+        TimeRange * tr = timeRanges[timeRange];
+        fromTime = tr.beginTime;
+        toTime = tr.endTime;
+        time_t time = fromTime;
+        while (time < toTime)
+        {
+            switch ([themes isHourSelected:time
+                     themeWithCompare:themeWithCompare])
+            {
+                case 0:
+                    break;
+                case 1:
+                    hours1++;
+                    break;
+                case 2:
+                    hours2++;
+                    break;
+                case 3:
+                    hours1++;
+                    hours2++;
+                    break;
+            }
+            time += numSecondsInHour;
+        }
+    }
+    if (hours1 && hours2)
+        factor = (double)hours1 /(double)hours2;
     return factor;
 }
 - (void)drawCrimePoint:(CGContextRef)context
