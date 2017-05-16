@@ -17,14 +17,15 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIButton *multipleOffenseButton;
 @property (weak, nonatomic) IBOutlet UIButton *attemptOptionButton;
+@property (weak, nonatomic) IBOutlet UIButton *compareOptionButton;
 
 @property (nonatomic) CGFloat rowHeight, headerHeight, cornerRadius;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
 @property (nonatomic, copy) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
-@property (nonatomic, copy) NSArray *multipleOffenseOptions, *adjustmentOptions, *currentArray;
+@property (nonatomic, copy) NSArray *multipleOffenseOptions, *adjustmentOptions, *currentArray, *compareOptions;
 @property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode;
-@property (nonatomic, copy) NSString *selectedMultipleOffenseOption, *selectedAdjustmentOption;
+@property (nonatomic, copy) NSString *selectedMultipleOffenseOption, *selectedAdjustmentOption, *selectedCompareOption;
 @property NVMapModeType selectedModeType;
 
 @end
@@ -70,7 +71,7 @@
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
     _adjustmentOptions = @[@"None", @"Population", @"Housing Units",@"Overdue as Percent of Average Frequency",@"Overdue as Percent of STDV of Frequency"];
-    
+    _compareOptions = @[@"Raw",@"Count Corrected", @"Time Corrected"];
     _modes = @[_pinModes, _hotspotModes, _choroplethModes];
     _currentArray = _modeTypes;
     
@@ -113,6 +114,8 @@
     _multipleOffenseButton.selected = NO;
     _attemptOptionButton.selected = NO;
     _attemptOptionButton.enabled = NO;
+    _compareOptionButton.selected = NO;
+    _compareOptionButton.enabled = NO;
     
     [self setupButton:_dateRangeButton];
     [self setupButton:_areaTypeButton];
@@ -120,6 +123,7 @@
     [self setupButton:_modeButton];
     [self setupButton:_multipleOffenseButton];
     [self setupButton:_attemptOptionButton];
+    [self setupButton:_compareOptionButton];
     
     [self setDateRangeButtonTextFromDate:CRAPI.sharedInstance.fromDate
                                   toDate:CRAPI.sharedInstance.toDate];
@@ -134,6 +138,9 @@
                             forState:UIControlStateNormal];
     
     [_attemptOptionButton setTitle:[NSString stringWithFormat:@"Adjustment Option:%@", _selectedAdjustmentOption]
+                          forState:UIControlStateNormal];
+    
+    [_compareOptionButton setTitle:[NSString stringWithFormat:@"Data Compare Option:%@", _selectedCompareOption]
                           forState:UIControlStateNormal];
     
     _checkmarkView = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:
@@ -260,6 +267,7 @@ didReturnFromDate:(NSInteger)fromDate
     [self updateButton:_dateRangeButton];
     [self updateButton:_multipleOffenseButton];
     [self updateButton:_attemptOptionButton];
+    [self updateButton:_compareOptionButton];
 }
 
 - (IBAction)legend:(UIButton *)sender
@@ -271,6 +279,7 @@ didReturnFromDate:(NSInteger)fromDate
         _modeButton.selected = NO;
         _multipleOffenseButton.selected = NO;
         _attemptOptionButton.selected = NO;
+        _compareOptionButton.selected = NO;
         _currentArray = _legends;
         
         [self updateButtons];
@@ -287,6 +296,7 @@ didReturnFromDate:(NSInteger)fromDate
         _legendButton.selected = NO;
         _multipleOffenseButton.selected = NO;
         _attemptOptionButton.selected = NO;
+        _compareOptionButton.selected = NO;
         _currentArray = _modeTypes;
         
         [self updateButtons];
@@ -309,6 +319,7 @@ didReturnFromDate:(NSInteger)fromDate
         _areaTypeButton.selected = NO;
         _modeButton.selected = NO;
         _attemptOptionButton.selected = NO;
+        _compareOptionButton.selected = NO;
         _currentArray = _multipleOffenseOptions;
         
         [self updateButtons];
@@ -325,7 +336,25 @@ didReturnFromDate:(NSInteger)fromDate
         _legendButton.selected = NO;
         _areaTypeButton.selected = NO;
         _modeButton.selected = NO;
+        _compareOptionButton.selected = NO;
         _currentArray = _adjustmentOptions;
+        
+        [self updateButtons];
+        [_tableView reloadData];
+    }
+}
+
+- (IBAction)compareOption:(id)sender
+{
+    if (!_compareOptionButton.selected)
+    {
+        _attemptOptionButton.selected = NO;
+        _multipleOffenseButton.selected = NO;
+        _legendButton.selected = NO;
+        _areaTypeButton.selected = NO;
+        _modeButton.selected = NO;
+        _compareOptionButton.selected = YES;
+        _currentArray = _compareOptions;
         
         [self updateButtons];
         [_tableView reloadData];
@@ -378,6 +407,9 @@ viewForHeaderInSection:(NSInteger)section
     else if (_currentArray == _adjustmentOptions)
         headerLabel.text = @"Value Adjustment Options";
     
+    else if (_currentArray == _compareOptions)
+        headerLabel.text = @"Data Compare Options";
+    
     else
         headerLabel.text = @"Select Mode";
     
@@ -411,6 +443,7 @@ viewForHeaderInSection:(NSInteger)section
         if ([_currentArray[indexPath.row] isEqualToString:_selectedLegend] ||
             [_currentArray[indexPath.row] isEqualToString:_selectedMode] ||
             [_currentArray[indexPath.row] isEqualToString:_selectedMultipleOffenseOption] ||
+            [_currentArray[indexPath.row] isEqualToString:_selectedCompareOption] ||
             [_currentArray[indexPath.row] isEqualToString:_selectedAdjustmentOption])
         {
             cell.accessoryView = _checkmarkView;
@@ -482,6 +515,23 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [UserDefaults.defaults saveInteger:ConfigurationControl.sharedInstance.adjustCrimeOption forKey:@"AdjustCrimeOption"];
         ConfigurationControl.sharedInstance.adjustCrimeArea = @"BLOCK";
         [UserDefaults.defaults saveString:ConfigurationControl.sharedInstance.adjustCrimeArea forKey:@"AdjustCrimeArea"];
+    }
+    
+    else if (_currentArray == _compareOptions)
+    {
+        _selectedCompareOption = _currentArray[indexPath.row];
+        [UserDefaults.defaults saveString:_selectedCompareOption forKey:@"SelectedCompareOption"];
+        
+        [_compareOptionButton setTitle:[NSString stringWithFormat:@"Compare Option:%@", _selectedCompareOption]
+                                forState:UIControlStateNormal];
+        if ([_selectedCompareOption isEqualToString:@"Raw"])
+            ConfigurationControl.sharedInstance.dataCompareOption = DCOptionRaw;
+        else if ([_selectedCompareOption isEqualToString:@"Count Corrected"])
+            ConfigurationControl.sharedInstance.dataCompareOption = DCOptionCount;
+        else if ([_selectedCompareOption isEqualToString:@"Time Corrected"])
+            ConfigurationControl.sharedInstance.dataCompareOption = DCOptionCount;
+        
+        [UserDefaults.defaults saveBool:ConfigurationControl.sharedInstance.wantAllCrimes forKey:@"WantAllCrimes"];
     }
     
     else
