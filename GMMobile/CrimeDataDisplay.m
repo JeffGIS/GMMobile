@@ -451,7 +451,8 @@ NextPass:
     else if (_mode == HOTSPOT)
     {
         static BOOL dump=FALSE;
-        [hs display:context];
+        [hs display:context
+         compareOption:ConfigurationControl.sharedInstance.dataCompareOption];
         if (dump)
             [hs dump:@"hotspottest"];
     }

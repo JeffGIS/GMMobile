@@ -30,13 +30,6 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerMapleGroveFiber,
 NUMHardCodedLayers};
 
-typedef NS_ENUM(NSInteger, DataCompareOptions)
-{
-    DCOptionRaw,
-    DCOptionCount,
-    DCOptionTime,
-};
-
 @interface ApplicationObject : NSObject
 
 @property NSString *appName;

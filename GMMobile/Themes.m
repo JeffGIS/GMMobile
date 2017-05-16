@@ -291,6 +291,98 @@
     return rtn;
 }
 
+- (BOOL) isHourSelected:(time_t)iTime
+{
+    DisplayCharacteristics *dc = DisplayCharacteristics.new;
+    struct tm tmtime = *localtime (&iTime);
+    int val;
+    BOOL rtn = YES;
+    
+    for (Theme *thm in _themeList)
+    {
+        switch (thm.type)
+        {
+                
+            case DayNightTheme:
+            {
+                double Altitude=0, Az;
+                GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
+                if (Altitude < -6.0)
+                    val = 1;
+                else
+                    val = 0;
+                if (![thm incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:YES])
+                {
+                    rtn = NO;
+                }
+            }
+                break;
+            case YearTheme:
+                val = tmtime.tm_year + 1900;
+                val -= thm.minYear;
+                if (![thm incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:YES])
+                {
+                    rtn = NO;
+                }
+                break;
+            case MonthTheme:
+                val = tmtime.tm_mon;
+                if (![thm incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:YES])
+                {
+                    rtn = NO;
+                }
+                
+            case ThirteenMonthTheme:
+                val = [thm classFromTime:dc.itemBeginTime];
+                
+                if (![thm incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:YES])
+                {
+                    rtn = NO;
+                }
+                
+                break;
+            case DayofWeekTheme:
+                val = tmtime.tm_wday;
+                if (![thm incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:YES])
+                {
+                    rtn = NO;
+                }
+                break;
+            case HourTheme:
+                val = tmtime.tm_hour/2;
+                if (![thm incrementCount:val
+                                      by:1
+                                      dc:dc
+                                testPass:YES])
+                {
+                    rtn = NO;
+                }
+                break;
+            default:
+                break;
+        }
+        if (!rtn)
+            break;
+    }
+    return rtn;
+    
+}
+
 - (BOOL) getMinMaxTime:(int)range min:(int *)minTime max:(int *)maxTime
 {
     BOOL display = TRUE;
