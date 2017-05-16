@@ -38,5 +38,8 @@
 - (BOOL) containsColorByRefTheme;
 - (int) haveCompareTheme;
 - (double) getCompareThemeFactor;
+- (int) isHourSelected:(time_t)iTime
+      themeWithCompare:(ThemeTypes)themeWithCompare;
+- (ThemeTypes) themeWithCompare;
 
 @end

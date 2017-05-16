@@ -291,93 +291,79 @@
     return rtn;
 }
 
-- (BOOL) isHourSelected:(time_t)iTime
+- (ThemeTypes) themeWithCompare
+{
+    ThemeTypes rtn = NoTheme;
+    for (Theme *thm in _themeList)
+    {
+        if ([thm hasCompare])
+            return thm.type;
+    }
+    return rtn;
+}
+
+- (int) isHourSelected:(time_t)iTime
+      themeWithCompare:(ThemeTypes)themeWithCompare
 {
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     struct tm tmtime = *localtime (&iTime);
-    int val;
-    BOOL rtn = YES;
+    int rtn = 3;
     
     for (Theme *thm in _themeList)
     {
+        int val = -1;
         switch (thm.type)
         {
                 
             case DayNightTheme:
             {
-                double Altitude=0, Az;
-                GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
-                if (Altitude < -6.0)
-                    val = 1;
-                else
-                    val = 0;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
+                val = -999;
+                for (ThemeClass *cls in thm.classes)
                 {
-                    rtn = NO;
+                    if (cls.status != 1)
+                        val = 0;
+                }
+                if (val != -999)
+                {
+                    double Altitude=0, Az;
+                    MNMXCORD mnmx = CRAPI.sharedInstance.lastDisplayBounds;
+                    DPOINT pt = DBoundsMid(&mnmx);
+                    GetAltitudeAndAzOfSun (pt,0,iTime,&Altitude,&Az);
+                    if (Altitude < -6.0)
+                        val = 1;
+                    else
+                        val = 0;
                 }
             }
                 break;
             case YearTheme:
                 val = tmtime.tm_year + 1900;
                 val -= thm.minYear;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
                 break;
             case MonthTheme:
                 val = tmtime.tm_mon;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
-                
+                break;
             case ThirteenMonthTheme:
                 val = [thm classFromTime:dc.itemBeginTime];
-                
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
-                
                 break;
             case DayofWeekTheme:
                 val = tmtime.tm_wday;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
                 break;
             case HourTheme:
                 val = tmtime.tm_hour/2;
-                if (![thm incrementCount:val
-                                      by:1
-                                      dc:dc
-                                testPass:YES])
-                {
-                    rtn = NO;
-                }
                 break;
             default:
+                val = -999;
                 break;
         }
-        if (!rtn)
-            break;
+        if (val != -999)
+        {
+            int ival = [thm compareStatus:val
+                         themeWithCompare:themeWithCompare];
+            if (!ival)
+                return 0;
+            rtn = min (rtn,ival);
+        }
     }
     return rtn;
     

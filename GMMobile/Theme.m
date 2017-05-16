@@ -1187,6 +1187,16 @@
     return -1;
 }
 
+- (BOOL) hasCompare
+{
+    for (ThemeClass *cls in _classes)
+    {
+        if (cls.status == 2)
+            return TRUE;
+    }
+    return FALSE;
+}
+
 int getThemeOpt(ThemeTypes type)
 {
     int opt = 1;
@@ -1199,6 +1209,25 @@ int getThemeOpt(ThemeTypes type)
     }
 
     return opt;
+}
+
+- (int) compareStatus:(int) class
+     themeWithCompare:(ThemeTypes) themeWithCompare
+{
+    int rtn = 0;
+    if (class >= 0 && class < _numDesiredClasses)
+    {
+        ThemeClass *cls =  _classes[class];
+        
+        if (cls.status)
+        {
+            if (_type == themeWithCompare)
+                rtn = cls.status;
+            else
+                rtn = 3;
+        }
+    }
+    return rtn;
 }
 
 - (BOOL) incrementCount:(int)class
@@ -1567,7 +1596,7 @@ int getThemeOpt(ThemeTypes type)
                         [self setCompareClass:cclass
                                     fromClass:val];
                 }
-                
+                break;
             case ThirteenMonthTheme:
                 val = [self classFromTime:dc.itemBeginTime];
                 

@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     MetroPropTheme,
     MetroLandUseTheme,
     ColorByRefnoTheme,
+    NoTheme,
 };
 
 #endif /* ThemeTypes_h */
