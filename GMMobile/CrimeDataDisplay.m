@@ -484,6 +484,7 @@ Exit:
         TimeRange * tr = timeRanges[timeRange];
         fromTime = tr.beginTime;
         toTime = tr.endTime;
+        double totHours = (double)(toTime - fromTime) / numSecondsInHour;
         time_t time = fromTime;
         while (time < toTime)
         {

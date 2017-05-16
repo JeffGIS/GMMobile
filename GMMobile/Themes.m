@@ -296,7 +296,8 @@
     ThemeTypes rtn = NoTheme;
     for (Theme *thm in _themeList)
     {
-        rtn = [thm hasCompare];
+        if ([thm hasCompare])
+            return thm.type;
     }
     return rtn;
 }
@@ -316,12 +317,23 @@
                 
             case DayNightTheme:
             {
-                double Altitude=0, Az;
-                GetAltitudeAndAzOfSun (dc.dPoint,0,iTime,&Altitude,&Az);
-                if (Altitude < -6.0)
-                    val = 1;
-                else
-                    val = 0;
+                val = -999;
+                for (ThemeClass *cls in thm.classes)
+                {
+                    if (cls.status != 1)
+                        val = 0;
+                }
+                if (val != -999)
+                {
+                    double Altitude=0, Az;
+                    MNMXCORD mnmx = CRAPI.sharedInstance.lastDisplayBounds;
+                    DPOINT pt = DBoundsMid(&mnmx);
+                    GetAltitudeAndAzOfSun (pt,0,iTime,&Altitude,&Az);
+                    if (Altitude < -6.0)
+                        val = 1;
+                    else
+                        val = 0;
+                }
             }
                 break;
             case YearTheme:
@@ -345,10 +357,13 @@
                 break;
         }
         if (val != -999)
-            rtn = [thm compareStatus:val
-                    themeWithCompare:themeWithCompare];
-        if (!rtn)
-            break;
+        {
+            int ival = [thm compareStatus:val
+                         themeWithCompare:themeWithCompare];
+            if (!ival)
+                return 0;
+            rtn = min (rtn,ival);
+        }
     }
     return rtn;
     
