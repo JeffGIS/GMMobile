@@ -174,7 +174,7 @@
         _checkmarkView.frame = CGRectMake(0.0, 0.0, 60.0, 60.0);
     
     [self setupTableView];
-    [self setupConstraints];
+    [self setupConstraintsForOrientation:UIApplication.sharedApplication.statusBarOrientation];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -224,40 +224,72 @@
     [self.view addSubview:button];
 }
 
-- (void)setupConstraints
+- (void)setupConstraintsForOrientation:(UIInterfaceOrientation)orientation
 {
     [_dateRangeButton constrainTopToAnchor:self.view.topAnchor constant:_margin];
     [_dateRangeButton constrainLeadingToAnchor:self.view.leadingAnchor constant:_margin];
     [_dateRangeButton constrainTrailingToAnchor:self.view.trailingAnchor constant:-_margin];
     [_boundingAreaButton constrainTopToAnchor:_dateRangeButton.bottomAnchor constant:_innerMargin];
     [_boundingAreaButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
-    [_boundingAreaButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_legendButton constrainTopToAnchor:_boundingAreaButton.bottomAnchor constant:_innerMargin];
-    [_legendButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
     [_legendButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_modeButton constrainTopToAnchor:_legendButton.bottomAnchor constant:_innerMargin];
     [_modeButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
-    [_modeButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_multipleOffenseButton constrainTopToAnchor:_modeButton.bottomAnchor constant:_innerMargin];
-    [_multipleOffenseButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
     [_multipleOffenseButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_adjustmentOptionButton constrainTopToAnchor:_multipleOffenseButton.bottomAnchor constant:_innerMargin];
     [_adjustmentOptionButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
-    [_adjustmentOptionButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_compareOptionButton constrainTopToAnchor:_adjustmentOptionButton.bottomAnchor constant:_innerMargin];
-    [_compareOptionButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
     [_compareOptionButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_tableView constrainTopToAnchor:_compareOptionButton.bottomAnchor constant:_margin];
-    [_tableView constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
-    [_tableView constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
-    [_tableView constrainBottomToAnchor:self.view.bottomAnchor constant:-_margin];
     [_boundingAreaButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
     [_legendButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
     [_modeButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
     [_multipleOffenseButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
     [_adjustmentOptionButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
     [_compareOptionButton constrainHeightToAnchor:_dateRangeButton.heightAnchor];
-    [_tableView constrainHeightToAnchor:_dateRangeButton.heightAnchor multiplier:8.0];
+    [_tableView constrainTopToAnchor:_compareOptionButton.bottomAnchor constant:_margin];
+    [_tableView constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+    [_tableView constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+    [_tableView constrainBottomToAnchor:self.view.bottomAnchor constant:-_margin];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad || orientation == UIInterfaceOrientationPortrait)
+    {
+        [_boundingAreaButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+        [_legendButton constrainTopToAnchor:_boundingAreaButton.bottomAnchor constant:_innerMargin];
+        [_legendButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+        [_modeButton constrainTopToAnchor:_legendButton.bottomAnchor constant:_innerMargin];
+        [_modeButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+        [_multipleOffenseButton constrainTopToAnchor:_modeButton.bottomAnchor constant:_innerMargin];
+        [_multipleOffenseButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+        [_adjustmentOptionButton constrainTopToAnchor:_multipleOffenseButton.bottomAnchor constant:_innerMargin];
+        [_adjustmentOptionButton constrainTrailingToAnchor:_dateRangeButton.trailingAnchor];
+        [_compareOptionButton constrainTopToAnchor:_adjustmentOptionButton.bottomAnchor constant:_innerMargin];
+        [_compareOptionButton constrainLeadingToAnchor:_dateRangeButton.leadingAnchor];
+        [_tableView constrainHeightToAnchor:_dateRangeButton.heightAnchor multiplier:8.0];
+    }
+    
+    else
+    {
+        [_legendButton constrainTopToAnchor:_boundingAreaButton.topAnchor];
+        [_legendButton constrainLeadingToAnchor:_boundingAreaButton.trailingAnchor constant:_innerMargin];
+        [_modeButton constrainTopToAnchor:_boundingAreaButton.bottomAnchor constant:_innerMargin];
+        [_multipleOffenseButton constrainTopToAnchor:_modeButton.topAnchor];
+        [_multipleOffenseButton constrainLeadingToAnchor:_modeButton.trailingAnchor constant:_innerMargin];
+        [_compareOptionButton constrainLeadingToAnchor:_adjustmentOptionButton.trailingAnchor constant:_innerMargin];
+        [_boundingAreaButton constrainWidthToAnchor:_legendButton.widthAnchor];
+        [_modeButton constrainWidthToAnchor:_multipleOffenseButton.widthAnchor];
+        [_adjustmentOptionButton constrainTopToAnchor:_modeButton.bottomAnchor constant:_innerMargin];
+        [_compareOptionButton constrainTopToAnchor:_adjustmentOptionButton.topAnchor];
+        [_adjustmentOptionButton constrainWidthToAnchor:_compareOptionButton.widthAnchor];
+        [_tableView constrainHeightToAnchor:_dateRangeButton.heightAnchor multiplier:5.0];
+    }
+}
+
+- (void)removeAllConstraints
+{
+    [_dateRangeButton removeAllConstraints];
+    [_boundingAreaButton removeAllConstraints];
+    [_legendButton removeAllConstraints];
+    [_modeButton removeAllConstraints];
+    [_multipleOffenseButton removeAllConstraints];
+    [_adjustmentOptionButton removeAllConstraints];
+    [_compareOptionButton removeAllConstraints];
+    [_tableView removeAllConstraints];
 }
 
 - (void)updateButton:(UIButton *)button
@@ -688,6 +720,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                 duration:(NSTimeInterval)duration
 {
     [_tableView reloadData];
+    [self removeAllConstraints];
+    [self setupConstraintsForOrientation:toInterfaceOrientation];
 }
 
 - (NSString *)formattedDate:(NSDate *)date
