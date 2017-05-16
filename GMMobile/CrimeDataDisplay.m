@@ -451,8 +451,16 @@ NextPass:
     else if (_mode == HOTSPOT)
     {
         static BOOL dump=FALSE;
+        double compareFactor;
+        double * pCompareFactor = &compareFactor;
+        if (ConfigurationControl.sharedInstance.dataCompareOption == DCOptionRaw)
+            compareFactor = 1;
+        else if (ConfigurationControl.sharedInstance.dataCompareOption == DCOptionTime)
+            compareFactor = [self getTimeFactor];
+        else
+            pCompareFactor = nil;
         [hs display:context
-         compareOption:ConfigurationControl.sharedInstance.dataCompareOption];
+         compareFactor:pCompareFactor];
         if (dump)
             [hs dump:@"hotspottest"];
     }
@@ -460,7 +468,12 @@ Exit:
     [_cd close:opened];
 }
 
-
+- (double) getTimeFactor
+{
+    double factor = 1;
+    
+    return factor;
+}
 - (void)drawCrimePoint:(CGContextRef)context
                atPoint:(DPOINT *)pPoint
              origPoint:(POINT *)origPoint
