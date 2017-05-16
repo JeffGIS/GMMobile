@@ -45,5 +45,11 @@
 - (void) endDisplay:(int)displayID;
 - (ThemeLegend *)copyLegend;
 - (int) getFirstUCRGreaterThan:(int)ucr;
+- (BOOL) incrementCount:(int)class
+                     by:(double)val
+                     dc:(DisplayCharacteristics *)dc
+               testPass:(BOOL)test;
+- (int) classFromTime:(int)time;
+
 
 @end

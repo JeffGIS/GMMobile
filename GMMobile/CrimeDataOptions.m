@@ -597,7 +597,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         else if ([_selectedCompareOption isEqualToString:@"Count Corrected"])
             ConfigurationControl.sharedInstance.dataCompareOption = DCOptionCount;
         else if ([_selectedCompareOption isEqualToString:@"Time Corrected"])
-            ConfigurationControl.sharedInstance.dataCompareOption = DCOptionCount;
+            ConfigurationControl.sharedInstance.dataCompareOption = DCOptionTime;
         
         [UserDefaults.defaults saveBool:ConfigurationControl.sharedInstance.wantAllCrimes forKey:@"WantAllCrimes"];
     }
