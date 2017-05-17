@@ -3793,7 +3793,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     else if ([text isEqualToString:@"Show Text"])
     {
-        AreaText * at = [CRAPI.sharedInstance areaTextForRefno:_selectedBARefNo];
+        AreaText *at = [CRAPI.sharedInstance areaTextForRefno:(int)_selectedBARefNo];
         _popover.progressView.hidden = YES;
         _popover.progressLabel.hidden = YES;
         _popover.delegate = self;
@@ -6362,7 +6362,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MarkerInfoWindowTypeBA:
             _selectedBARefNo = refno;
             _options = @[@"", @"Display Timeline", @"Add to New Crime List"];
-            if ([CRAPI.sharedInstance refnoInAreaText:_selectedBARefNo])
+            if ([CRAPI.sharedInstance refnoInAreaText:(int)_selectedBARefNo])
                 _options = @[@"", @"Display Timeline", @"Add to New Crime List",@"Show Text"];
             break;
         default:break;
