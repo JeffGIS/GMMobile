@@ -98,6 +98,14 @@ typedef NS_ENUM(NSInteger, CrimePointSetting)
     CrimePointSettingDisplayStreetside,
 };
 
+typedef NS_ENUM(NSInteger, BASetting)
+{
+    BASettingDefault,
+    BASettingDisplayTimeline,
+    BASettingAddToNewList,
+    BASettingShowText,
+};
+
 typedef NS_ENUM(NSInteger, AlleyLineSetting)
 {
     AlleyLineSettingDefault,
