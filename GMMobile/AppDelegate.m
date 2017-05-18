@@ -141,6 +141,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 
 - (void)scheduleLocationTracking
 {
+    return; //disable until tracking server implemented
     _backgroundTaskIdentifier = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
         [UIApplication.sharedApplication endBackgroundTask:_backgroundTaskIdentifier];
     }];
