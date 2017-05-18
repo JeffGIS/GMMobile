@@ -150,25 +150,35 @@
     [timer invalidate];
     LPSTR str = malloc(4096);
     FILE *fid = fopen(_fileListFile.UTF8String, "rb");
+    
     if (!fid)
+    {
+        free(str);
         return;
+    }
+    
     NSInteger totLen = FileLength(fid);
     fseek (fid,_currentFile,SEEK_SET);
+    
     if (totLen > 0)
     {
         int pctDone = (int)(100 * _currentFile)/totLen;
         _messageLabel.text = [NSString stringWithFormat:@"%i percent complete",pctDone];
     }
+    
     BOOL haveFile = NO;
     NSString * path = @"";
+    
     if (fgetstring(str, (4090 - 2), fid))
     {
         _nextFile = ftell (fid);
         haveFile = YES;
         path = textBeforeTab ([NSString stringWithUTF8String:str]);
     }
+    
     fclose(fid);
     free(str);
+    
     if (haveFile)
     {
         _push = [FTPDataPush push];
@@ -191,17 +201,15 @@
          deleteWhenDone:NO
          appendFileName:NO];
     }
+    
     else
     {
-        [NSFileManager.defaultManager removeItemAtPath:_fileListFile
-                                                 error:nil];
+        [NSFileManager.defaultManager removeItemAtPath:_fileListFile error:nil];
         _popover.cancelButtonTitle = @"OK";
-        [_popover showAfter:0.1
-                  withTitle:[NSString stringWithFormat:@"Upload Complete"]];
+        [_popover showAfter:0.1 withTitle:[NSString stringWithFormat:@"Upload Complete"]];
     }
-
-
 }
+
 - (void) uploadNextFile
 {
     _timer = [NSTimer scheduledTimerWithTimeInterval:0.1

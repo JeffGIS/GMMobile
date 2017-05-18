@@ -17,7 +17,7 @@
 @property (nonatomic) LPTRANDATA pTranLLtoView, pTranViewtoLL;
 @property double acres;
 @property INT64 currentRec;
-@property int iPass;
+@property int iPass, ii;
 
 @end
 
@@ -383,10 +383,11 @@
     }
 }
 
-- (BOOL) continue
+- (BOOL)continueProcessing
 {
     if (!self.processingID || self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
+    
     return NO;
 }
 - (NSMutableArray *)getBoundaryAreaTypes
@@ -651,7 +652,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -916,7 +917,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         int startValue = 0;
         int iValue = 0;
         long long ID=-1;
-        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+        while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
             ID = sqlite3_column_int64(statement,0);
             value = sqlite3_column_double(statement,1);
@@ -1139,7 +1140,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 query = [NSString stringWithFormat:@"SELECT %@,ACRES_POLY,GENUSECODE,HOMESTEAD,id FROM PROPINFO WHERE PIN = '%@'",field,CRAPI.sharedInstance.currentPID];
                 SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
                 _currentRec = 0;
-                if ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+                if ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
                 {
                     double dataValue = sqlite3_column_double(statement,0);
                     double landArea = sqlite3_column_double(statement,1);
@@ -1234,7 +1235,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         if (!_currentRec)
             CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
@@ -1467,7 +1468,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         else
             thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
     }
-    else if ([self continue])
+    else if ([self continueProcessing])
     {
         [CRAPI.sharedInstance updateProgress:(int)_totRecords
                                      current:(int)_totRecords
@@ -1479,27 +1480,27 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     [self close:opened];
 }
 
-- (int)       load:(NSString*)areaType
-    toPointInAreas:(PointInAreas*)pias
-boundsPointInAreas:(PointInAreas*)bpias
-  usingPointInArea:(PointInArea*)pia
-         llCorners:(CORNERPOINTS *) latlonCornerPoints
-          LLBounds:(MNMXCORD *)platlonBounds
-        viewBounds:(MNMXCORD *)pvbounds
-  haveCompareTheme:(int)haveCompareTheme
+-           (int)load:(NSString*)areaType
+       toPointInAreas:(PointInAreas*)pias
+   boundsPointInAreas:(PointInAreas*)bpias
+     usingPointInArea:(PointInArea*)pia
+            llCorners:(CORNERPOINTS *) latlonCornerPoints
+             LLBounds:(MNMXCORD *)platlonBounds
+           viewBounds:(MNMXCORD *)pvbounds
+     haveCompareTheme:(int)haveCompareTheme
 {
     //PointInAreas (pias) will be in screen coord while PointInArea(pia) will be in lat/lon
     int nLoaded = 0;
     NSString *query = @"";
     sqlite3_stmt *statement = NULL;
-    DPOINT BasePt;
-    int numPoints;
-    LPSTR pkeyval;
-    NSString * keyval;
-    int numLoops;
+    DPOINT BasePt = {};
+    int numPoints = 0;
+    LPSTR pkeyval = NULL;
+    NSString *keyval = @"";
+    int numLoops = 0;
     int pass = 0;
-    NSString * key = areaType;
-    NSString * table = [self getTableNameFromType:key];
+    NSString *key = areaType;
+    NSString *table = [self getTableNameFromType:key];
     
     pias.areaType = areaType;
     BOOL opened = [self open];
@@ -1518,19 +1519,21 @@ boundsPointInAreas:(PointInAreas*)bpias
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,areaType,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
+    
     else
     {
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@ FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",key,table,table,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
         
     }
+    
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        BOOL haveInPoint = FALSE;
+        BOOL haveInPoint = NO;
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
@@ -1542,6 +1545,7 @@ NextPass:
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
         keyval = [NSString stringWithUTF8String:pkeyval];
+        
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -1551,8 +1555,10 @@ NextPass:
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                
                 if (!pass && (!pia || [pia DPointInArea:&llpoints[i]] == 1))
-                    haveInPoint = TRUE;
+                    haveInPoint = YES;
+                
                 llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
             }
         }
@@ -1561,34 +1567,41 @@ NextPass:
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
+            
             if (!pass && (!pia || [pia DPointInArea:&llpoints[i]] == 1))
-                haveInPoint = TRUE;
+                haveInPoint = YES;
+            
             llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
         }
+        
         if (pass || haveInPoint)
         {
             if (!pass)
                 nLoaded++;
+            
             [pias loadArea:keyval
                  numPoints:numPoints
                   numLoops:numLoops
                polyPartLen:polyPartLen
                     points:llpoints
                    nCounts:haveCompareTheme];
+            
         }
+        
         free (llpoints);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), self.database);
-    [pias areasLoaded:bpias
-          convertToLL:_pTranViewtoLL];
+    SQLOK(0,sqlite3_finalize(statement), _database);
+    [pias areasLoaded:bpias convertToLL:_pTranViewtoLL];
+    
     if (pass++ < 3)
         goto NextPass;
+    
     [self close:opened];
     
     return nLoaded;
-    
 }
+
 - (int) display:(CGContextRef)context
        areaType:(NSString*)areaType
    pointInAreas:(PointInAreas*)pias
@@ -1636,7 +1649,7 @@ NextPass:
 NextPass:
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -1769,7 +1782,7 @@ NextPass:
     SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
     CRAPI.sharedInstance.lastAreaText = NSMutableArray.new;
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         int *polyPartLen;
         NSNumber *textFormat[MAX_NVM_TEXT_FIELDS];
@@ -1959,7 +1972,7 @@ NextPass:
                                    numRanges:_numPass];
         
     }
-    if ([self continue])
+    if ([self continueProcessing])
     {
         [CRAPI.sharedInstance updateProgress:(int)1
                                      current:(int)1

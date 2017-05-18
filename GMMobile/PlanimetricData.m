@@ -18,7 +18,7 @@ static float wallPtSize=0;
 
 @implementation PlanimetricData
 
-- (BOOL)continue
+- (BOOL)continueProcessing
 {
     if (!self.processingID)
         return YES;
@@ -35,7 +35,7 @@ static float wallPtSize=0;
               LLBounds:(MNMXCORD *)platlonBounds
             viewBounds:(MNMXCORD *)pvbounds
 {
-    if (![self continue])
+    if (![self continueProcessing])
         return;
     
     NSString *query = @"";
@@ -65,7 +65,7 @@ static float wallPtSize=0;
     
     SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -207,7 +207,7 @@ static float wallPtSize=0;
             viewBounds:(MNMXCORD *)pvbounds
 {
     
-    if (![self continue])
+    if (![self continueProcessing])
         return;
     
     NSString *query = @"";
@@ -235,7 +235,7 @@ static float wallPtSize=0;
     
     SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -359,7 +359,7 @@ static float wallPtSize=0;
     //LPSTR symName;
     PropertyData *pd = [[PropertyData alloc] init];
     
-    if (![self continue])
+    if (![self continueProcessing])
         return;
     
     CloseTRANS2(&_pTranLLtoView);
@@ -378,7 +378,7 @@ static float wallPtSize=0;
     
     SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -416,7 +416,7 @@ static float wallPtSize=0;
                LLBounds:(MNMXCORD *)platlonBounds
              viewBounds:(MNMXCORD *)pvbounds
 {
-    if (![self continue])
+    if (![self continueProcessing])
         return;
     CGFloat sizeFactor = 1;
     
@@ -456,7 +456,7 @@ static float wallPtSize=0;
     
     SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -685,7 +685,7 @@ static float wallPtSize=0;
 
     //LPSTR symName;
     
-    if (![self continue])
+    if (![self continueProcessing])
         return;
     CGFloat sizeFactor = 1;
     
@@ -715,7 +715,7 @@ static float wallPtSize=0;
     
     SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
@@ -851,7 +851,7 @@ static float wallPtSize=0;
     
     CRAPI.sharedInstance.mapToolbar.progress = 0;
     
-    if (![self continue])
+    if (![self continueProcessing])
         return;
     
     CGFloat sizeFactor = 1;
@@ -872,7 +872,7 @@ static float wallPtSize=0;
              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
     
-    if ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    if ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         tot = sqlite3_column_int(statement,0);
     }
@@ -884,7 +884,7 @@ static float wallPtSize=0;
         
         SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
         
-        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+        while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
             [CRAPI.sharedInstance updateProgress:tot current:++current range:0 numRanges:1];
             int i = 0;
@@ -985,7 +985,7 @@ static float wallPtSize=0;
 
     SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
 
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         offX = sqlite3_column_int(statement,0);
         offY = sqlite3_column_int(statement,1);

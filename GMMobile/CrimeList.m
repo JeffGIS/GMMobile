@@ -205,8 +205,6 @@ NSString * GetCrimeListDirectory (void)
     {
         _crimeListDir = GetCrimeListDirectory ();
         _fileName = [CrimeList getCurrentCrimeListName];
-        
-        
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _crimeListDir, _fileName];
         
         //int version = [self datasetVersion];
@@ -225,9 +223,8 @@ NSString * GetCrimeListDirectory (void)
         }
         
         [self createTables];
-        
+        NSLog(@"Init crime list %@", _fileName);
     }
-    NSLog(@"Init crime list %@", _fileName);
     
     return self;
 }

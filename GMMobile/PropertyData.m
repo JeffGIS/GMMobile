@@ -82,7 +82,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 @implementation PropertyData
 
 
-- (BOOL)continue
+- (BOOL)continueProcessing
 {
     if (!self.processingID)
         return YES;
@@ -1045,7 +1045,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 42);
     NSLog (@"Prepared");
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         //refno = sqlite3_column_int(statement,7);
         homeStead = (LPSTR)sqlite3_column_text(statement, 8);
@@ -1732,7 +1732,7 @@ Exit:
     
     SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         LPSTR pid = (LPSTR)sqlite3_column_text(statement, 0);
         PID = [NSString stringWithUTF8String:pid];
@@ -2605,7 +2605,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             
             SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 59);
             
-            while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+            while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 LPSTR word = (LPSTR)sqlite3_column_text(statement, 0);
                 int nOffsets = sqlite3_column_int(statement,1);
@@ -2634,7 +2634,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     }
     
    LPINT Hits = malloc(MAXHITS * sizeof(int));
-   if ([self continue] && GetNext)
+   if ([self continueProcessing] && GetNext)
         nHits = GetWIHits (Hits, nParts, nPartOffsets, partOffsets, MAXHITS);
     
     for (ipart = 0; ipart < nParts; ipart++)
@@ -2659,7 +2659,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         BoundaryData * bd = BoundaryData.new;
         SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 61);
         
-        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+        while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
             LPSTR pin = (LPSTR)sqlite3_column_text(statement, 0);
             LPSTR owner = (LPSTR)sqlite3_column_text(statement,1);
@@ -2747,7 +2747,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
     }
     free (Hits);
     [self close:25];
-    if ([self continue] && _delegate)
+    if ([self continueProcessing] && _delegate)
         [_delegate matchingOwners:[ownerArray.copy sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]];
     }
                    });
