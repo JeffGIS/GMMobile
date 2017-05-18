@@ -239,7 +239,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                     minRef = (int)_dc.refno;
                                     minPlatID = _dc.string2;
                                     PickedItem *pi = [PickedItem new];
-                                    pi.refno = _dc.refno;
+                                    pi.refno = (int)_dc.refno;
                                     pi.identifier = [NSString stringWithFormat:@"SanMH:%i",minRef];
                                     pi.itemType = _dc.elementType;
                                     pi.pickedPoint = llpt;
@@ -441,7 +441,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                             minRef = (int)_dc.refno;
                                             minPlatID = _dc.string2;
                                             PickedItem *pi = [PickedItem new];
-                                            pi.refno = _dc.refno;
+                                            pi.refno = (int)_dc.refno;
                                             pi.identifier = minPlatID;
                                             pi.itemType = _dc.elementType;
                                             pi.pickedPoint = llpoints[i];
@@ -478,7 +478,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                         minRef = (int)_dc.refno;
                                         minFid = _dc.string2;
                                         PickedItem *pi = [PickedItem new];
-                                        pi.refno = _dc.refno;
+                                        pi.refno = (int)_dc.refno;
                                         pi.identifier = [NSString stringWithFormat:@"SanMain:%i",minRef];
                                         pi.data = _dc.string2;
                                         pi.itemType = _dc.elementType;

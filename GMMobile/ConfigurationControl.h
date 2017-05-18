@@ -68,6 +68,7 @@ NUMHardCodedLayers};
 @property BOOL GMTilesVisible, wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;
+@property DataCompareOptions dataCompareOption;
 @property PropFieldType currentPropSheetFieldType;
 @property NSString * MapitPID;
 @property int MapitBoundaryOpt;
