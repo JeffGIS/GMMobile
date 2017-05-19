@@ -117,7 +117,7 @@
     else
         _selectedAdjustmentOption = _adjustmentOptions[0];
     
-    defaultOption = [UserDefaults.defaults stringForKey:@"SelectedAdjustmentOption"];
+    defaultOption = [UserDefaults.defaults stringForKey:@"SelectedCompareOption"];
     
     if (defaultOption && defaultOption.length)
         _selectedCompareOption = defaultOption;
@@ -623,11 +623,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [UserDefaults.defaults saveString:_selectedCompareOption forKey:@"SelectedCompareOption"];
         
         [_compareOptionButton setTitle:[NSString stringWithFormat:@"Compare Option:%@", _selectedCompareOption]
-                                forState:UIControlStateNormal];
+                              forState:UIControlStateNormal];
+        
         if ([_selectedCompareOption isEqualToString:@"Raw"])
             ConfigurationControl.sharedInstance.dataCompareOption = DCOptionRaw;
+        
         else if ([_selectedCompareOption isEqualToString:@"Count Corrected"])
             ConfigurationControl.sharedInstance.dataCompareOption = DCOptionCount;
+        
         else if ([_selectedCompareOption isEqualToString:@"Time Corrected"])
             ConfigurationControl.sharedInstance.dataCompareOption = DCOptionTime;
         
@@ -694,16 +697,19 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         CRAPI.sharedInstance.crimeCompare = @"Month With Yearly Compare";
         [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];
     }
+    
     else if ([uppercaseMode containsString:@"MONTH WITH MONTHLY COMPARE"])
     {
         CRAPI.sharedInstance.crimeCompare = @"Month With Monthly Compare";
         [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];
     }
+    
     else
     {
         CRAPI.sharedInstance.crimeCompare = @"";
         [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];        
     }
+    
     if ([uppercaseMode containsString:@"HOUSING UNIT"])
     {
         CRAPI.sharedInstance.crimeAdjustValue = @"HUTOTAL";
