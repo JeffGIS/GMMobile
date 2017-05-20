@@ -69,8 +69,10 @@
     _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Choropleth Map"];
     _pinModes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals"];
     
-    _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare",
-                      @"Hotspot Map for Month with Monthly Compare", @"Hotspot Map for Week with Weekly Compare"];
+//    _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare",
+//                      @"Hotspot Map for Month with Monthly Compare", @"Hotspot Map for Week with Weekly Compare"];
+    
+    _hotspotModes = @[@"Basic Hotspot Map"];
     
     _choroplethModes = @[@"Choropleth Map for Precincts", @"Choropleth Map for Wards",
                          @"Basic Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
