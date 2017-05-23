@@ -742,6 +742,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [dateFormatter setDateFormat:@"MMedd"];
     NSString *dateString = [dateFormatter stringFromDate:NSDate.date];
     dateString = reverseString(dateString);
+    NSLog(@"Password: %@", dateString);
     
     if ([dateString isEqualToString:text])
         [self performSegueWithIdentifier:@"ShowSettings" sender:self];
