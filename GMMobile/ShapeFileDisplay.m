@@ -16,7 +16,7 @@
 
 @implementation ShapeFileDisplay
 
-- (BOOL)continue
+- (BOOL)continueProcessing
 {
     if (!self.processingID)
         return YES;
@@ -166,7 +166,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:&midpt];
     for (int irec = 0; irec < _hSHP->nRecords; irec++)
     {
-        if (![self continue])
+        if (![self continueProcessing])
             break;
         SHPObject *psCShape = SHPReadObject (_hSHP, irec );
         MNMXCORD SHPBounds;
@@ -511,14 +511,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     }
 
 }
+
 - (void)fillArea:(CGContextRef)context
            nPoints:(int)np
             points:(LPDPOINT)pPoints
          withColor:(CGColorRef)color
 {
     CGContextSetLineWidth(context, 3);
-    
-    
     CGContextMoveToPoint(context, pPoints[0].x, pPoints[0].y);
     
     for (int i = 1; i < np; i++)

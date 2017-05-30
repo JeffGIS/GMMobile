@@ -15,7 +15,7 @@
     CrimeData *_cd;
 }
 
-- (BOOL)continue
+- (BOOL)continueProcessing
 {
     if (self.processingID <= 0)
         return YES;
@@ -162,6 +162,7 @@
 
         MNMXCORD pvboundsPias = [pias bitmapBounds:pvbounds];
         [pias setPointSize:pointSize];
+        
         [bd   load:_choroplethTarget
     toPointInAreas:pias
 boundsPointInAreas:nil
@@ -172,12 +173,10 @@ boundsPointInAreas:nil
   haveCompareTheme:[themes haveCompareTheme]];
         
         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
-        
         [pias initTimeLine:_cd.database];
-
     }
     
-    if (![self continue])
+    if (![self continueProcessing])
         goto Exit;
 
 NextPass:
@@ -216,7 +215,7 @@ NextPass:
     int iRange = 0;
     for (int ucrRange = 0; ucrRange < numUCRRanges; ucrRange++)
     {
-        if (![self continue]) break;
+        if (![self continueProcessing]) break;
         if (!CRAPI.sharedInstance.mapCrimeList)
             [themes getMinMaxUCR:ucrRange min:&_minUCR max:&_maxUCR];
         if (!pass)
@@ -226,7 +225,7 @@ NextPass:
         }
         for (int timeRange = 0; timeRange < numTimeRanges; timeRange++)
         {
-            if (![self continue]) break;
+            if (![self continueProcessing]) break;
             if (!CRAPI.sharedInstance.mapCrimeList)
             {
                 TimeRange * tr = timeRanges[timeRange];
@@ -262,7 +261,7 @@ NextPass:
             }
             SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             
-            while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+            while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
                 BOOL attempted = FALSE;
                 controlNbr = sqlite3_column_int(statement,0);
@@ -340,7 +339,7 @@ NextPass:
         goto NextPass;
     
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
-    if (![self continue])
+    if (![self continueProcessing])
         ;
     else if (_mode == PINMAP)
     {
@@ -348,10 +347,10 @@ NextPass:
         SQLOK(0,sqlite3_prepare_v2(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
         CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
         
-        while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+        while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
             POINT Point, origPoint;
-            static BOOL doDisperse = TRUE;
+            //static BOOL doDisperse = YES;
             controlNbr = sqlite3_column_int(statement,0);
             origPoint.x = sqlite3_column_int(statement,1);
             origPoint.y = sqlite3_column_int(statement,2);
@@ -365,6 +364,7 @@ NextPass:
             BasePt[0].y = Point.y;
             BasePt[1].x = origPoint.x;
             BasePt[1].y = origPoint.y;
+            
             [self drawCrimePoint:context
                          atPoint:BasePt
                        origPoint:&origPoint
@@ -373,11 +373,13 @@ NextPass:
                          andSize:size
                        dispersed:seq > 1];
         }
+        
         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
-        if ([self continue])
+        if ([self continueProcessing])
             [dp commitTransaction];
         SQLOK(0,sqlite3_finalize(statement), dp.database);
     }
+    
     else if (_mode == CHOROPLETH)
     {
         if (_choroplethAdjustValue && _choroplethAdjustValue < ACO_OverDueAverage)
@@ -387,18 +389,21 @@ NextPass:
             piasAdjust.adjustValue = [ConfigurationControl getAdjustValueString:_choroplethAdjustValue];
             bd = [[BoundaryData alloc]init];
             bd.processingID = self.processingID;
+            
            [bd load:_choroplethAdjustArea
-                  toPointInAreas:piasAdjust
-              boundsPointInAreas:pias
-                usingPointInArea:pia
-                       llCorners:latlonCornerPoints
-                        LLBounds:platlonBounds
-                      viewBounds:pvbounds
-                haveCompareTheme:0];
+     toPointInAreas:piasAdjust
+ boundsPointInAreas:pias
+   usingPointInArea:pia
+          llCorners:latlonCornerPoints
+           LLBounds:platlonBounds
+         viewBounds:pvbounds
+   haveCompareTheme:0];
+            
             [pias createDisplayColors:piasAdjust
                                  mask:pia
                           wantOverdue:0];
         }
+        
         else
         {
             AdjustCrimeOptions overDueOption = 0;

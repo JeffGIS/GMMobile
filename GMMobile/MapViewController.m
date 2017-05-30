@@ -421,8 +421,7 @@
                 _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
                                                                                                           ofType:@"png"]];
                 break;
-            default:
-                break;
+            default:break;
         }
     }
     
@@ -688,8 +687,7 @@
             case MapToolbarOrientationRight:
                 _compass.center = CGPointMake(xCenterLeft, _mapToolbar.center.y);
                 break;
-            default:
-                break;
+            default:break;
         }
     }
     
@@ -705,8 +703,7 @@
             case MapToolbarOrientationRight:
                 _compass.center = CGPointMake(_mapToolbar.center.x, yCenterTop);
                 break;
-            default:
-                break;
+            default:break;
         }
     }
 }
@@ -1686,8 +1683,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case MarkerInfoWindowTypeBA:
                 _selectedBA = marker.title;
-            default:
-                break;
+            default:break;
         }
         
         [_markerArray addObject:marker];
@@ -1853,8 +1849,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case DigitizationModeSewer:
                 break;
-            default:
-                break;
+            default:break;
         }
         
         CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
@@ -2078,9 +2073,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
             }
                 break;
-                
-            default:
-                break;
+            default:break;
         }
     }
     
@@ -2413,8 +2406,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                 (_firstView.frame.size.height / 2.0));
                              }];
         }
-        default:
-            break;
+        default:break;
     }
     
     [_mapToolbar didRotateWithTabBarHeight:_tabBarHeight
@@ -2642,8 +2634,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                 (_firstView.frame.size.height / 2.0));
                              }];
         }
-        default:
-            break;
+        default:break;
     }
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
@@ -3471,8 +3462,7 @@ viewForHeaderInSection:(NSInteger)section
             headerLabel.numberOfLines = 2;
             headerLabel.text = @"Property Report for\nFirst Quarter 2016";
             break;
-        default:
-            break;
+        default:break;
     }
     
     return headerLabel;
@@ -3491,8 +3481,7 @@ viewForHeaderInSection:(NSInteger)section
         case PropertyTableViewSettingPropertyReport:
             numberOfRows = _propertyReport.count;
             break;
-        default:
-            break;
+        default:break;
     }
     
     return numberOfRows;
@@ -3595,8 +3584,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             [cell.contentView addSubview:rowHeader];
             break;
         }
-        default:
-            break;
+        default:break;
     }
     
     if ([cell.textLabel.text isEqualToString:@""])
@@ -3716,8 +3704,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             case MarkerInfoWindowTypeCrime:
                 [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetView forKey:@"CrimePointOption"];
                 break;
-            default:
-                break;
+            default:break;
         }
         
         [self showStreetView];
@@ -3733,8 +3720,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             case MarkerInfoWindowTypeCrime:
                 [UserDefaults.defaults saveNSInteger:CrimePointSettingDisplayStreetside forKey:@"CrimePointOption"];
                 break;
-            default:
-                break;
+            default:break;
         }
         
         [self showStreetside];
@@ -3789,23 +3775,31 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([text isEqualToString:@"Display Timeline"])
     {
+        [UserDefaults.defaults saveNSInteger:BASettingDisplayTimeline forKey:@"BAOption"];
         [self displayTimeline];
     }
+    
     else if ([text isEqualToString:@"Show Text"])
     {
-        AreaText *at = [CRAPI.sharedInstance areaTextForRefno:(int)_selectedBARefNo];
-        _popover.progressView.hidden = YES;
-        _popover.progressLabel.hidden = YES;
-        _popover.delegate = self;
-        _popover.hideAtCancel = NO;
-        [_popover showAfter:0.5 withTitle:[NSString stringWithFormat:@"%@\n%@",at.areaID,at.text]];
-        [self.view bringSubviewToFront:_popover];
+        [UserDefaults.defaults saveNSInteger:BASettingShowText forKey:@"BAOption"];
+        [self showText];
     }
+    
     else if ([text isEqualToString:@"Add to New Crime List"])
     {
-        NSArray * crimes = [PointInAreas.new getAreaPointRefs:_selectedBA];
-
-        [self addToCrimeList:YES fromList:crimes];
+        switch (_infoWindow.marker.type)
+        {
+            case MarkerInfoWindowTypeCrime:
+                [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
+                [self addToCrimeList:YES];
+                break;
+            case MarkerInfoWindowTypeBA:{
+                [UserDefaults.defaults saveNSInteger:BASettingAddToNewList forKey:@"BAOption"];
+                NSArray *crimes = [PointInAreas.new getAreaPointRefs:_selectedBA];
+                [self addToCrimeList:YES fromList:crimes];
+                break;}
+            default:break;
+        }
     }
     
     else if ([text isEqualToString:@"Perform 3D Route Flyover"])
@@ -4088,12 +4082,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self addToCrimeList:NO];
     }
     
-    else if ([text isEqualToString:@"Add to New Crime List"])
-    {
-        [UserDefaults.defaults saveNSInteger:CrimePointSettingAddToNewList forKey:@"CrimePointOption"];
-        [self addToCrimeList:YES];
-    }
-    
     else if ([text isEqualToString:@"Add All to Current Crime List"])
     {
         [UserDefaults.defaults saveNSInteger:CrimePointSettingAddAllToCurrentList forKey:@"CrimePointOption"];
@@ -4120,6 +4108,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [self deselectTableViewRow];
     [self dismissTableView];
+}
+
+- (void)showText
+{
+    AreaText *at = [CRAPI.sharedInstance areaTextForRefno:(int)_selectedBARefNo];
+    _popover.progressView.hidden = YES;
+    _popover.progressLabel.hidden = YES;
+    _popover.delegate = self;
+    _popover.hideAtCancel = NO;
+    [_popover showAfter:0.5 withTitle:[NSString stringWithFormat:@"%@\n%@",at.areaID,at.text]];
+    [self.view bringSubviewToFront:_popover];
 }
 
 - (MGVPlatData *)loadMGVData:(NSString *)line
@@ -5081,8 +5080,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case CensusZoomSettingTract:
                 //implement zoom to tract here
                 break;
-            default:
-                break;
+            default:break;
         }
     }
     
@@ -5099,8 +5097,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case ParcelTextSettingLastSale:
                 CRAPI.sharedInstance.parcelTextOption = (int)buttonIndex;
                 [self vectorViewRefresh];
-            default:
-                break;
+            default:break;
         }
     }
     
@@ -5129,8 +5126,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 CRAPI.sharedInstance.parcelShadingOption = ((int)buttonIndex - 4);
                 [self vectorViewRefresh];
                 break;
-            default:
-                break;
+            default:break;
         }
     }
     
@@ -5639,8 +5635,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigCurbRamps:
             _digitizationMode = DigitizationModeCurbRamps;
             break;
-        default:
-            break;
+        default:break;
     }
     
     _inDigitizationMode = YES;
@@ -6100,8 +6095,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     switch (_mapToolbar.orientation)
     {
-        case MapToolbarOrientationTop:
-        {
+        case MapToolbarOrientationTop:{
             [UIView animateWithDuration:0.25
                              animations:^{
                                  [_mapToolbar animateToHorizontalOrientation];
@@ -6110,10 +6104,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                   (_mapToolbar.frame.size.height / 2.0) +
                                                                   [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]);
                              }];
-        }
-            break;
-        case MapToolbarOrientationBottom:
-        {
+            break;}
+        case MapToolbarOrientationBottom:{
             [UIView animateWithDuration:0.25
                              animations:^{
                                  [_mapToolbar animateToHorizontalOrientation];
@@ -6122,10 +6114,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                   (self.view.frame.size.height -
                                                                    (_mapToolbar.frame.size.height / 2.0)));
                              }];
-        }
-            break;
-        case MapToolbarOrientationLeft:
-        {
+            break;}
+        case MapToolbarOrientationLeft:{
             [UIView animateWithDuration:0.25
                              animations:^{
                                  [_mapToolbar animateToVerticalOrientation];
@@ -6133,10 +6123,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                  _mapToolbar.center = CGPointMake((_mapToolbar.frame.size.width / 2.0),
                                                                   (self.view.frame.size.height / 2.0));
                              }];
-        }
-            break;
-        case MapToolbarOrientationRight:
-        {
+            break;}
+        case MapToolbarOrientationRight:{
             [UIView animateWithDuration:0.25
                              animations:^{
                                  [_mapToolbar animateToVerticalOrientation];
@@ -6145,10 +6133,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                                   (_mapToolbar.frame.size.width / 2.0),
                                                                   (self.view.frame.size.height / 2.0));
                              }];
-        }
-            break;
-       default:
-            break;
+            break;}
+       default:break;
     }
 }
 
@@ -6315,8 +6301,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                          @"Add All to Current Crime List", @"Add All to New Crime List", @"Delete from Current Crime List",
                          @"Perform 3D Fly Around", @"Display Google Street View", @"Display Bing Streetside"];
             break;
-        case MarkerInfoWindowTypeMGVSanPoint:
-        {
+        case MarkerInfoWindowTypeMGVSanPoint:{
             _options = @[@""];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
@@ -6334,10 +6319,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 
                 _options = newArray.copy;
             }
-        }
-            break;
-        case MarkerInfoWindowTypeMGVSanMain:
-        {
+            break;}
+        case MarkerInfoWindowTypeMGVSanMain:{
             _options = @[@""];
             NSMutableArray *newArray = [NSMutableArray arrayWithArray:_options];
             BOOL splitPlatViewSave = _splitPlatView;
@@ -6351,8 +6334,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [newArray addObject:@"Display Split Screen Profile Along Pipe"];
                 _options = newArray;
             }
-        }
-            break;
+            break;}
         case MarkerInfoWindowTypeCensusBoundary:
             _selectedCensusBoundaryRefno = refno;
             
@@ -6363,7 +6345,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedBARefNo = refno;
             _options = @[@"", @"Display Timeline", @"Add to New Crime List"];
             if ([CRAPI.sharedInstance refnoInAreaText:(int)_selectedBARefNo])
-                _options = @[@"", @"Display Timeline", @"Add to New Crime List",@"Show Text"];
+                _options = @[@"", @"Display Timeline", @"Add to New Crime List", @"Show Text"];
             break;
         default:break;
     }
@@ -6388,8 +6370,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     switch (type)
     {
-        case MarkerInfoWindowTypePID:
-        {
+        case MarkerInfoWindowTypePID:{
             _selectedPID = title;
             option = [UserDefaults.defaults integerForKey:@"PIDOption"];
             
@@ -6437,13 +6418,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case PropertyTableViewSettingRoute:
                     [self traceRouteFromCurrentLocation];
                     break;
-                default:
-                    break;
+                default:break;
             }
-        }
-            break;
-        case MarkerInfoWindowTypeStormSewer:
-        {
+            break;}
+        case MarkerInfoWindowTypeStormSewer:{
             _selectedSewerPipe = title;
             option = [UserDefaults.defaults integerForKey:@"SewerOption"];
             
@@ -6467,13 +6445,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case SewerPipeSettingUpdateNotes:
                     [self updateInspectionNotes];
                     break;
-                default:
-                    break;
+                default:break;
             }
-        }
-            break;
-        case MarkerInfoWindowTypeAlleyWall:
-        {
+            break;}
+        case MarkerInfoWindowTypeAlleyWall:{
             option = [UserDefaults.defaults integerForKey:@"AlleyWallOption"];
             
             if (option == AlleyWallSettingDefault)
@@ -6493,12 +6468,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case AlleyWallSettingViewWallPhotos:
                     [self viewWallPhotos];
                     break;
-                default:
-                    break;
+                default:break;
             }
-        }
-        case MarkerInfoWindowTypeAlleyLine:
-        {
+            break;}
+        case MarkerInfoWindowTypeAlleyLine:{
             option = [UserDefaults.defaults integerForKey:@"AlleyLineOption"];
             
             if (option == AlleyLineSettingDefault)
@@ -6510,12 +6483,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     [self toggleCompletionStatus];
                     [self vectorViewRefresh];
                     break;
-                default:
-                    break;
+                default:break;
             }
-        }
-        case MarkerInfoWindowTypeCustom:
-        {
+            break;}
+        case MarkerInfoWindowTypeCustom:{
             option = [UserDefaults.defaults integerForKey:@"CustomOption"];
             
             if (option == CustomSettingDefault)
@@ -6529,12 +6500,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case CustomSettingSnapToNode:
                     [self snapToNode];
                     break;
-                default:
-                    break;
+                default:break;
             }
-        }
-        case MarkerInfoWindowTypeCrime:
-        {
+            break;}
+        case MarkerInfoWindowTypeCrime:{
             option = [UserDefaults.defaults integerForKey:@"CrimePointOption"];
             
             switch (option)
@@ -6560,12 +6529,27 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case CrimePointSettingDisplayStreetside:
                     [self showStreetside];
                     break;
-                default:
-                    break;
+                default:break;
             }
-        }
-        default:
-            break;
+            break;}
+        case MarkerInfoWindowTypeBA:{
+            option = [UserDefaults.defaults integerForKey:@"BAOption"];
+            
+            switch (option)
+            {
+                case BASettingDisplayTimeline:
+                    [self displayTimeline];
+                    break;
+                case BASettingAddToNewList:
+                    [self addToCrimeList:NO];
+                    break;
+                case BASettingShowText:
+                    if ([CRAPI.sharedInstance refnoInAreaText:(int)_selectedBARefNo])
+                        [self showText];
+                default:break;
+            }
+            break;}
+        default:break;
     }
 }
 
@@ -6740,8 +6724,7 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
         case AlleyStatusSettingCenterline:
             title = @"Centerline\nStatus";
             break;
-        default:
-            break;
+        default:break;
     }
     
     return title;

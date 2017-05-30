@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>38</string>
+	<string>41</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -50,6 +50,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Take photos for field survey</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Get contacts for email</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Get location for field survey</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

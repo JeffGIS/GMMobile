@@ -655,7 +655,7 @@ $RETURN(1);
     return nrec;
 }
 
-- (BOOL) continue
+- (BOOL)continueProcessing
 {
     if (!self.processingID)
         return YES;
@@ -685,7 +685,7 @@ $RETURN(1);
     
     SQLOK(0,sqlite3_prepare_v2(_sd.database, query.UTF8String, -1, &statement, 0),_sd.database);
     
-    while ([self continue] && sqlite3_step(statement) == SQLITE_ROW)
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
