@@ -250,7 +250,7 @@ Top:
         {
             PropertyData *pd = [[PropertyData alloc] init];
             
-            if (pd.planDatasetVersion >= -1)
+            if (pd.planDatasetVersion > -1)
                 rtn = YES;
         }
             break;

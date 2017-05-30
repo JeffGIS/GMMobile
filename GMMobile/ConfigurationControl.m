@@ -499,7 +499,10 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                 {
                     case HCLayerParcels:
                         //[list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
-                        //[list addObject:[NSNumber numberWithInt:GetDatabaseSettingProperty]];
+                    if (appID == HCConfigAlleyWalls || appID == HCConfigAlleyWallStatus)
+                    {
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingNVMetro]];
+                    }
                         break;
                         
                     case HCLayerSewers:
