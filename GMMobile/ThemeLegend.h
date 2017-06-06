@@ -41,6 +41,7 @@
 @property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait, hasColors;
 @property (nonatomic) CGPoint portraitMapOrigin, landscapeMapOrigin;
 @property (nonatomic) CGFloat scrollYPosition;
+@property int selectionMode;
 @property MNMXCORD maxValBounds;
 @property (readonly) CGFloat headerHeight;
 
