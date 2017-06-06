@@ -20,7 +20,7 @@
 @property (nonatomic) CGFloat buttonMargin;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
-@property (nonatomic) UITapGestureRecognizer *tap1, *tap2;
+@property (nonatomic) UITapGestureRecognizer *tap;
 
 @end
 
@@ -173,12 +173,9 @@
                                                                               action:@selector(tlmoPinched:)];
     [tlmo addGestureRecognizer:pgr];
     
-    tlmo.tap1 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
-    tlmo.tap1.numberOfTouchesRequired = 1;
-    [tlmo.tableView addGestureRecognizer:tlmo.tap1];
-    tlmo.tap2 = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
-    tlmo.tap2.numberOfTouchesRequired = 2;
-    [tlmo.tableView addGestureRecognizer:tlmo.tap2];
+    tlmo.tap = [[UITapGestureRecognizer alloc] initWithTarget:tlmo action:@selector(legendTapped:)];
+    tlmo.tap.numberOfTouchesRequired = 1;
+    [tlmo.tableView addGestureRecognizer:tlmo.tap];
     
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
@@ -475,15 +472,30 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         superview = self.superview.superview;
     
     NSMutableArray *textArray = NSMutableArray.array;
-    NSMutableArray *idArray = NSMutableArray.array;
-    [textArray addObject:@"Cancel"];[idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
-    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];[idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
-    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];[idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
-    [textArray addObject:@"Zoom to Item With\nMaximum Value"];[idArray addObject:[NSNumber numberWithInteger:TLTZoomToMax]];
+    [textArray addObject:@"Cancel"];
     
+    if (CRAPI.sharedInstance.inCompareMode)
+        [textArray addObject:@"Switch to Selection Mode"];
+    
+    else
+        [textArray addObject:@"Switch to Compare Mode"];
+    
+    [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
+    [textArray addObject:@"Zoom to Item With\nMaximum Value"];
+    
+    NSMutableArray *idArray = NSMutableArray.array;
+    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTZoomToMax]];
     
     if (_legend.titles.count > 1)
+    {
         [textArray addObject:@"Select Legend Title"];
+        [idArray addObject:[NSNumber numberWithInteger:TLTTitles]];
+    }
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
                                                       delegate:self
@@ -535,11 +547,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             
             switch (buttonIndex)
             {
+                case TLTSwitchMode:
+                    CRAPI.sharedInstance.inCompareMode = !CRAPI.sharedInstance.inCompareMode;
+                    break;
                 case TLTApplyExistingColors:
                     break;
-                    
-                case TLTSelectColors:
-                {
+                case TLTSelectColors:{
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                       delegate:self
                                                                          title:@"Select Color Scheme"
@@ -547,11 +560,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               destructiveIndex:1];
                     
                     alert.identifier = @"ColorOptionsAlert";
-                }
-                    break;
-                    
-                case TLTTitles:
-                {
+                    break;}
+                case TLTTitles:{
                     NSMutableArray *textArray = NSMutableArray.array;
                     [textArray addObject:@"Cancel"];
                     [textArray addObjectsFromArray:_legend.titles.copy];
@@ -563,17 +573,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                               destructiveIndex:1];
                     
                     alert.identifier = @"TitlesAlert";
-                }
-                    break;
-                    
-                case TLTZoomToMax:
-                {
+                    break;}
+                case TLTZoomToMax:{
                     MNMXCORD bnds = _legend.maxValBounds;
                     
                     if ([_delegate respondsToSelector:@selector(zoomToBounds:)])
                         [_delegate zoomToBounds:bnds];
-                }
-                    break;
+                    break;}
             }
             
             [alertView hideLargeAlertView:YES];
@@ -590,8 +596,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             switch (buttonIndex)
             {
-                case NVColorOptionReds:
-                {
+                case NVColorOptionReds:{
                     NSArray *colorArray = [NVColorSet redsArrayWithNumComponents:_legend.numCells];
                     
                     for (int i = 0; i < _legend.numCells; i++)
@@ -601,11 +606,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     }
                     
                     [_tableView reloadData];
-                }
-                    break;
-                    
-                case NVColorOptionGreens:
-                {
+                    break;}
+                case NVColorOptionGreens:{
                     NSArray *colorArray = [NVColorSet greensArrayWithNumComponents:_legend.numCells];
                     
                     for (int i = 0; i < _legend.numCells; i++)
@@ -615,11 +617,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     }
                     
                     [_tableView reloadData];
-                }
-                    break;
-                    
-                case NVColorOptionBlues:
-                {
+                    break;}
+                case NVColorOptionBlues:{
                     NSArray *colorArray = [NVColorSet bluesArrayWithNumComponents:_legend.numCells];
                     
                     for (int i = 0; i < _legend.numCells; i++)
@@ -629,11 +628,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     }
                     
                     [_tableView reloadData];
-                }
-                    break;
-                    
-                case NVColorOptionRandom:
-                {
+                    break;}
+                case NVColorOptionRandom:{
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                       delegate:self
                                                                          title:@"Select Color Palette"
@@ -642,15 +638,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                     alert.identifier = @"RandomColorAlert";
                     [alertView hideLargeAlertView:YES];
-                    return;
-                }
-                    break;
-                    
+                    return;break;}
                 case NVColorOptionCustom:
                     break;
-                    
-                default:
-                    break;
+                default:break;
             }
         }
         
@@ -1037,28 +1028,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         NSInteger row = (NSInteger)((point.y - _headerHeight) / tv.rowHeight);
         ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[row];
         
-        if (tlc.status == 2)
-        {
-            if (gesture.numberOfTouches == 2)
-                tlc.status = 1;
-            
-            else
-                tlc.status = 0;
-        }
-        
-        else if (tlc.status == 1)
-        {
-            if (gesture.numberOfTouches == 2)
-            {
-                tlc.status = 2;
-                [ConfigurationControl.sharedInstance clearLegendCompareFlags:_legend.type];
-            }
-            else
-                tlc.status = 0;
-        }
+        if (CRAPI.sharedInstance.inCompareMode)
+            tlc.status = (tlc.status == 2) ? 1 : 2;
         
         else
-            tlc.status = (int)gesture.numberOfTouches;
+            tlc.status = (tlc.status == 1) ? 0 : 1;
     }
     
     if (!_preventRefresh && _delegate)
@@ -1085,18 +1059,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)disableSelect
 {
     [self disableMultipleSelect];
-    [self disableFlag];
-    [_tableView removeGestureRecognizer:_tap1];
+    [_tableView removeGestureRecognizer:_tap];
 }
 
 - (void)disableMultipleSelect
 {
     [_tableView removeGestureRecognizer:_longPress];
-}
-
-- (void)disableFlag
-{
-    [_tableView removeGestureRecognizer:_tap2];
 }
 
 @end

@@ -9,6 +9,7 @@
 typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 {
     TLTCancel,
+    TLTSwitchMode,
     TLTApplyExistingColors,
     TLTSelectColors,
     TLTTitles,
@@ -60,6 +61,5 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 - (void)displayRandomColorAlertInView:(UIView *)view;
 - (void)disableSelect;
 - (void)disableMultipleSelect;
-- (void)disableFlag;
 
 @end
