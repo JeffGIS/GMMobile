@@ -326,12 +326,15 @@ EAGLContext *CreateBestEAGLContext()
                                                                                         ofType:@"png"]];
     
     UIImage *version = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"versionHistory"
-                                                                                        ofType:@"png"]];
+                                                                                      ofType:@"png"]];
+    
+    UIImage *glossary = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"glossary"
+                                                                                       ofType:@"png"]];
     
     /*UIImage *trackLocation = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"trackLocation"
                                                                                             ofType:@"png"]];*/
     
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, version, nil];
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, version, glossary, nil];
     CGFloat margin = 0.0;
     
     _tableView.delegate = self;
@@ -368,7 +371,8 @@ EAGLContext *CreateBestEAGLContext()
     /*removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages, @"Test Keyboard",
      @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location", @"Set Default Email Recipients"*/
     
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device", @"See Version History"];
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
+                  @"See Version History", @"See Glossary of Terms"];
     
     [_tableView reloadData];
 }
@@ -528,6 +532,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"See Version History"])
     {
         [self seeVersionHistory];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"See Glossary of Terms"])
+    {
+        [self seeGlossary];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -740,6 +750,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 }
 
 - (void)seeVersionHistory
+{
+    
+}
+
+- (void)seeGlossary
 {
     NVWebView *webView = [NVWebView showWebViewInView:self.view urlString:@"gssiserver3.com/glossary"];
 #pragma unused(webView)
