@@ -5,6 +5,13 @@
 #import "ThemeTypes.h"
 #import "ThemeLegendCell.h"
 
+#define SEL_MODE_SELECT 0
+#define SEL_MODE_COMPARE 1
+
+#define TLC_STATUS_OFF 0
+#define TLC_STATUS_ON 1
+#define TLC_STATUS_COMPARE 2
+
 @interface ThemeLegend : NSObject
 
 @property ThemeTypes type;             // legend type
@@ -38,10 +45,10 @@
 @property (nonatomic)int currentTitleIndex; //index of current title
 @property NSMutableArray *cells;  //ThemeLegendCell array
 
-@property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait, hasColors;
+@property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait, hasColors, hasOverlay;
 @property (nonatomic) CGPoint portraitMapOrigin, landscapeMapOrigin;
 @property (nonatomic) CGFloat scrollYPosition;
-@property int selectionMode;
+@property (nonatomic) int selectionMode;
 @property MNMXCORD maxValBounds;
 @property (readonly) CGFloat headerHeight;
 

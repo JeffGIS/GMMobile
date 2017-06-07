@@ -104,6 +104,6 @@ visibleAtZoom:(CGFloat)zoom
        inLayer:(HardCodedLayers)layerID
  visibleAtZoom:(CGFloat)zoom;
 
-- (void) clearLegendCompareFlags:(ThemeTypes)type;
+- (void)clearCompareModeForLegendsOtherThanLegend:(ThemeLegend *)legend;
 
 @end

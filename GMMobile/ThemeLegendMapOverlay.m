@@ -156,7 +156,13 @@
     tlmo.tableView.backgroundColor = UIColor.blackColor;
     tlmo.tableView.rowHeight = tlmo.rowHeight;
     tlmo.tableView.scrollEnabled = NO;
-    tlmo.tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    
+    if (tlmo.legend.selectionMode == SEL_MODE_COMPARE)
+        tlmo.tableView.layer.borderColor = UIColor.greenColor.CGColor;
+    
+    else
+        tlmo.tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    
     tlmo.tableView.layer.borderWidth = 2.0;
     tlmo.tableView.delaysContentTouches = NO;
     tlmo.tableView.delaysContentTouches = NO;
@@ -481,11 +487,22 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
     
-    if (CRAPI.sharedInstance.inCompareMode)
-        [textArray addObject:@"Switch to Selection Mode"];
+    switch (_legend.selectionMode)
+    {
+        case SEL_MODE_SELECT:
+            [textArray addObject:@"Switch to Compare Mode"];
+            break;
+        case SEL_MODE_COMPARE:
+            [textArray addObject:@"Switch to Selection Mode"];
+            break;
+        default:break;
+    }
+    
+    if (_legend.hasOverlay)
+        [textArray addObject:@"Disable Overlay"];
     
     else
-        [textArray addObject:@"Switch to Compare Mode"];
+        [textArray addObject:@"Enable Overlay"];
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
@@ -494,6 +511,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     NSMutableArray *idArray = NSMutableArray.array;
     [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
     [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
     [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
     [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
     [idArray addObject:[NSNumber numberWithInteger:TLTZoomToMax]];
@@ -555,7 +573,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             switch (buttonIndex)
             {
                 case TLTSwitchMode:
-                    CRAPI.sharedInstance.inCompareMode = !CRAPI.sharedInstance.inCompareMode;
+                    _legend.selectionMode = (_legend.selectionMode == SEL_MODE_SELECT) ? SEL_MODE_COMPARE : SEL_MODE_SELECT;
+                    [ConfigurationControl.sharedInstance clearCompareModeForLegendsOtherThanLegend:_legend];
+                    [_delegate themeLegendDidChangeStatus:YES];
+                    break;
+                case TLTOverlay:
+                    _legend.hasOverlay = !_legend.hasOverlay;
+                    [_delegate themeLegendDidChangeStatus:YES];
                     break;
                 case TLTApplyExistingColors:
                     break;
@@ -906,14 +930,20 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     cell.layer.borderColor = UIColor.blackColor.CGColor;
     cell.layer.borderWidth = 0.5;
     
-    if (tlc.status)
+    if (tlc.status == TLC_STATUS_ON || tlc.status == TLC_STATUS_COMPARE)
     {
         cell.backgroundColor = UIColor.whiteColor;
         
-        if (tlc.status == 2)
+        if (tlc.status == TLC_STATUS_COMPARE)
         {
-            cell.layer.borderColor = _legend.symbolDefaultColor.CGColor;
-            cell.layer.borderWidth = (cell.frame.size.height / 12);
+            if (_legend.selectionMode == SEL_MODE_SELECT)
+                tlc.status = TLC_STATUS_ON;
+            
+            else
+            {
+                cell.layer.borderColor = _legend.symbolDefaultColor.CGColor;
+                cell.layer.borderWidth = (cell.frame.size.height / 12);
+            }
         }
     }
     
@@ -1002,16 +1032,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
                              top:(_rowHeight * 0.15) bottom:(-_rowHeight * 0.15)];
         
-        UIView *avgView = UIView.new;
-        avgView.translatesAutoresizingMaskIntoConstraints = NO;
-        avgView.backgroundColor = UIColor.redColor;
-        avgView.tag = 999;
-        
-        [cell.contentView addSubview:avgView];
-        [avgView constrainTopToAnchor:cell.contentView.topAnchor];
-        [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
-        [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin - 1.0)];
-        [avgView constrainWidthToConstant:2.0];
+        if (_legend.hasOverlay)
+        {
+            UIView *avgView = UIView.new;
+            avgView.translatesAutoresizingMaskIntoConstraints = NO;
+            avgView.backgroundColor = UIColor.redColor;
+            avgView.tag = 999;
+            
+            [cell.contentView addSubview:avgView];
+            [avgView constrainTopToAnchor:cell.contentView.topAnchor];
+            [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin - 1.0)];
+            [avgView constrainWidthToConstant:2.0];
+        }
     }
     
     [cell.contentView addSubview:textLabel];
@@ -1047,11 +1080,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         NSInteger row = (NSInteger)((point.y - _headerHeight) / tv.rowHeight);
         ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[row];
         
-        if (CRAPI.sharedInstance.inCompareMode)
-            tlc.status = (tlc.status == 2) ? 1 : 2;
-        
-        else
-            tlc.status = (tlc.status == 1) ? 0 : 1;
+        switch (_legend.selectionMode)
+        {
+            case SEL_MODE_SELECT:
+                tlc.status = (tlc.status == TLC_STATUS_ON) ? TLC_STATUS_OFF : TLC_STATUS_ON;
+                break;
+            case SEL_MODE_COMPARE:
+                tlc.status = (tlc.status == TLC_STATUS_COMPARE) ? TLC_STATUS_ON : TLC_STATUS_COMPARE;
+                break;
+            default:break;
+        }
     }
     
     if (!_preventRefresh && _delegate)

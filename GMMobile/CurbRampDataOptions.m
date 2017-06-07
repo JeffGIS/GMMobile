@@ -702,7 +702,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
         ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-        tlc.status = YES;
+        tlc.status = TLC_STATUS_ON;
         
         if (!_preventRefresh)
         {
@@ -720,7 +720,7 @@ didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         ThemeLegend *tl = (ThemeLegend *)_legends[tableView.tag - 1];
         ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[indexPath.row];
-        tlc.status = NO;
+        tlc.status = TLC_STATUS_OFF;
         
         if (!_preventRefresh)
         {
