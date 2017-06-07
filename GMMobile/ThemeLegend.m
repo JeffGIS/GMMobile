@@ -50,6 +50,7 @@
     another.type = _type;
     another.hasColors = _hasColors;
     another.maxValBounds = _maxValBounds;
+    another.selectionMode = _selectionMode;
     
     for (ThemeLegendCell *cl in _cells)
     {

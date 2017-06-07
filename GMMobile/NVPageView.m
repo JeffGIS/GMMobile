@@ -79,12 +79,9 @@
         tv.translatesAutoresizingMaskIntoConstraints = NO;
         [self setupTableView:tv tag:(i + 1)];
         [self.view addSubview:tv];
-        UITapGestureRecognizer *tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(legendTapped:)];
-        tap1.numberOfTouchesRequired = 1;
-        [tv addGestureRecognizer:tap1];
-        UITapGestureRecognizer *tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(legendTapped:)];
-        tap2.numberOfTouchesRequired = 2;
-        [tv addGestureRecognizer:tap2];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(legendTapped:)];
+        tap.numberOfTouchesRequired = 1;
+        [tv addGestureRecognizer:tap];
     }
     
     switch (_pageArrangement)
@@ -504,12 +501,27 @@ viewForHeaderInSection:(NSInteger)section
     
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
+    
+    if (CRAPI.sharedInstance.inCompareMode)
+        [textArray addObject:@"Switch to Selection Mode"];
+    
+    else
+        [textArray addObject:@"Switch to Compare Mode"];
+    
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
     
+    NSMutableArray *idArray = NSMutableArray.array;
+    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
     
     if (tl.titles.count > 1)
+    {
         [textArray addObject:@"Select Legend Title"];
+        [idArray addObject:[NSNumber numberWithInteger:TLTTitles]];
+    }
     
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                       delegate:self
@@ -518,6 +530,7 @@ viewForHeaderInSection:(NSInteger)section
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
     
+    alert.buttonIdentifiers = idArray;
     alert.identifier = @"TopLevelAlert";
     alert.tag = button.tag;
     [_controller disablePaging];
@@ -536,37 +549,44 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         if ([alertView.identifier isEqualToString:@"TopLevelAlert"])
         {
-            if (buttonIndex == 1)//Apply Existing Colors
+            if (alertView.buttonIdentifiers.count > buttonIndex)
             {
-                
+                NSNumber *num = alertView.buttonIdentifiers[buttonIndex];
+                buttonIndex = num.integerValue;
             }
             
-            if (buttonIndex == 2)//Select Colors Option
+            switch (buttonIndex)
             {
-                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
-                                                                  delegate:self
-                                                                     title:@"Select Color Scheme"
-                                                           buttonTextArray:NVColorSet.colorOptions
-                                                          destructiveIndex:1];
-                
-                alert.identifier = @"ColorOptionsAlert";
-                alert.tag = alertView.tag;
-            }
-            
-            else if (buttonIndex == 3)//Titles Option
-            {
-                NSMutableArray *textArray = NSMutableArray.array;
-                [textArray addObject:@"Cancel"];
-                [textArray addObjectsFromArray:tl.titles.copy];
-                
-                NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
-                                                                  delegate:self
-                                                                     title:@"Select Legend Title"
-                                                           buttonTextArray:textArray
-                                                          destructiveIndex:1];
-                
-                alert.identifier = @"TitlesAlert";
-                alert.tag = alertView.tag;
+                case TLTSwitchMode:
+                    CRAPI.sharedInstance.inCompareMode = !CRAPI.sharedInstance.inCompareMode;
+                    break;
+                case TLTApplyExistingColors:
+                    break;
+                case TLTSelectColors:{
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Color Scheme"
+                                                               buttonTextArray:NVColorSet.colorOptions
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"ColorOptionsAlert";
+                    alert.tag = alertView.tag;
+                    break;}
+                case TLTTitles:{
+                    NSMutableArray *textArray = NSMutableArray.array;
+                    [textArray addObject:@"Cancel"];
+                    [textArray addObjectsFromArray:tl.titles.copy];
+                    
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
+                                                                      delegate:self
+                                                                         title:@"Select Legend Title"
+                                                               buttonTextArray:textArray
+                                                              destructiveIndex:1];
+                    
+                    alert.identifier = @"TitlesAlert";
+                    alert.tag = alertView.tag;
+                    break;}
+                default:break;
             }
             
             return;
@@ -582,8 +602,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             switch (buttonIndex)
             {
-                case NVColorOptionReds:
-                {
+                case NVColorOptionReds:{
                     NSArray *colorArray = [NVColorSet redsArrayWithNumComponents:tl.numCells];
                     
                     for (int i = 0; i < tl.numCells; i++)
@@ -593,11 +612,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     }
                     
                     [self reloadTableViews];
-                }
-                    break;
-                    
-                case NVColorOptionGreens:
-                {
+                    break;}
+                case NVColorOptionGreens:{
                     NSArray *colorArray = [NVColorSet greensArrayWithNumComponents:tl.numCells];
                     
                     for (int i = 0; i < tl.numCells; i++)
@@ -607,11 +623,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     }
                     
                     [self reloadTableViews];
-                }
-                    break;
-                    
-                case NVColorOptionBlues:
-                {
+                    break;}
+                case NVColorOptionBlues:{
                     NSArray *colorArray = [NVColorSet bluesArrayWithNumComponents:tl.numCells];
                     
                     for (int i = 0; i < tl.numCells; i++)
@@ -621,11 +634,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     }
                     
                     [self reloadTableViews];
-                }
-                    break;
-                    
-                case NVColorOptionRandom:
-                {
+                    break;}
+                case NVColorOptionRandom:{
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                       delegate:self
                                                                          title:@"Select Color Palette"
@@ -635,14 +645,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     alert.identifier = @"RandomColorAlert";
                     alert.tag = alertView.tag;
                     return;
-                }
-                    break;
-                    
+                    break;}
                 case NVColorOptionCustom:
                     break;
-                    
-                default:
-                    break;
+                default:break;
             }
         }
         
@@ -808,14 +814,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         CGFloat barMargin = 10.0;
         CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 3.0)) * tlc.symbolWidth);
         
-        UIImageView *barView = [[UIImageView alloc] initWithFrame:
-                                CGRectMake(barMargin, (tableView.rowHeight * 0.15), barWidth, (tableView.rowHeight * 0.7))];
+        UIView *barView = [[UIImageView alloc] initWithFrame:
+                           CGRectMake(barMargin, (tableView.rowHeight * 0.15), barWidth, (tableView.rowHeight * 0.7))];
         
         if (tl.useClassColors)
-            barView.image = [UIImage imageFromColor:tlc.symbolColor];
+            barView.backgroundColor = tlc.symbolColor;
         
         else
-            barView.image = [UIImage imageFromColor:tl.symbolDefaultColor];
+            barView.backgroundColor = tl.symbolDefaultColor;
         
         barView.layer.borderColor = UIColor.blackColor.CGColor;
         barView.layer.borderWidth = 1.0;
@@ -858,26 +864,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         ThemeLegend *tl = (ThemeLegend *)_legends[((tv.tag - 1) + _startingIndex)];
         ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[row];
         
-        if (tlc.status == 2)
-        {
-            if (gesture.numberOfTouches == 2)
-                [self setThemeLegendCellStatusTo:1 forClass:row andThemeWithTag:tv.tag];
-            
-            else
-                [self setThemeLegendCellStatusTo:0 forClass:row andThemeWithTag:tv.tag];
-        }
-        
-        else if (tlc.status == 1)
-        {
-            if (gesture.numberOfTouches == 2)
-                [self setThemeLegendCellStatusTo:2 forClass:row andThemeWithTag:tv.tag];
-            
-            else
-                [self setThemeLegendCellStatusTo:0 forClass:row andThemeWithTag:tv.tag];
-        }
+        if (CRAPI.sharedInstance.inCompareMode)
+            tlc.status = (tlc.status == 2) ? 1 : 2;
         
         else
-            [self setThemeLegendCellStatusTo:(int)gesture.numberOfTouches forClass:row andThemeWithTag:tv.tag];
+            tlc.status = (tlc.status == 1) ? 0 : 1;
         
          [self refreshMapView];
     }
@@ -930,7 +921,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case NVPageViewArrangementFit6:
             numColumns = 1;
             break;
-            
         case NVPageViewArrangementFit2Columns2:
         case NVPageViewArrangementFit3Columns2:
         case NVPageViewArrangementFit4Columns2:
@@ -938,31 +928,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case NVPageViewArrangementFit6Columns2:
             numColumns = 2;
             break;
-            
         case NVPageViewArrangementFit3Columns3:
         case NVPageViewArrangementFit4Columns3:
         case NVPageViewArrangementFit5Columns3:
         case NVPageViewArrangementFit6Columns3:
             numColumns = 3;
             break;
-            
         case NVPageViewArrangementFit4Columns4:
         case NVPageViewArrangementFit5Columns4:
         case NVPageViewArrangementFit6Columns4:
             numColumns = 4;
             break;
-            
         case NVPageViewArrangementFit5Columns5:
         case NVPageViewArrangementFit6Columns5:
             numColumns = 5;
             break;
-            
         case NVPageViewArrangementFit6Columns6:
             numColumns = 6;
             break;
-            
-        default:
-            break;
+        default:break;
     }
     
     return numColumns;

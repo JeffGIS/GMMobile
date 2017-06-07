@@ -325,10 +325,16 @@ EAGLContext *CreateBestEAGLContext()
     UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
                                                                                         ofType:@"png"]];
     
-    UIImage *trackLocation = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"trackLocation"
-                                                                                            ofType:@"png"]];
+    UIImage *version = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"versionHistory"
+                                                                                      ofType:@"png"]];
     
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, trackLocation, nil];
+    UIImage *glossary = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"glossary"
+                                                                                       ofType:@"png"]];
+    
+    /*UIImage *trackLocation = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"trackLocation"
+                                                                                            ofType:@"png"]];*/
+    
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, version, glossary, nil];
     CGFloat margin = 0.0;
     
     _tableView.delegate = self;
@@ -363,10 +369,10 @@ EAGLContext *CreateBestEAGLContext()
     [super viewWillAppear:animated];
     
     /*removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages, @"Test Keyboard",
-     @"Test Calendar Interface", @"Watch TestDrive Training Video"*/
+     @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location", @"Set Default Email Recipients"*/
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"Track Location", @"Set Default Email Recipients"];
+                  @"See Version History", @"See Glossary of Terms"];
     
     [_tableView reloadData];
 }
@@ -520,6 +526,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Calibrate Device"])
     {
         [self calibrateDevice];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"See Version History"])
+    {
+        [self seeVersionHistory];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"See Glossary of Terms"])
+    {
+        [self seeGlossary];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
@@ -729,6 +747,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [self presentViewController:calibrationController
                        animated:YES
                      completion:nil];
+}
+
+- (void)seeVersionHistory
+{
+    
+}
+
+- (void)seeGlossary
+{
+    NVWebView *webView = [NVWebView showWebViewInView:self.view urlString:@"gssiserver3.com/glossary"];
+#pragma unused(webView)
 }
 
 - (void)textAlert:(NVTextAlert *)textAlert
