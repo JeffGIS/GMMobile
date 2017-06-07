@@ -17,7 +17,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin;
+@property (nonatomic) CGFloat buttonMargin, avgPctOfMax;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
@@ -180,6 +180,13 @@
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [view addSubview:tlmo];
+    int sum = 0, max = 0;
+    
+    for (ThemeLegendCell *tlc in tlmo.legend.cells)
+        sum+= tlc.count, max = MAX(max, tlc.count);
+    
+    if (max)
+        tlmo.avgPctOfMax = ((sum / (CGFloat)tlmo.legend.numCells) / (CGFloat)max);
     
     return tlmo;
 }
@@ -865,7 +872,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 666 || views.tag == 777 || views.tag == 888)
+        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999)
             [views removeFromSuperview];
     }
     
@@ -976,23 +983,35 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             tlc.symbolWidth = 1.0;
         
         CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
+        CGFloat avgMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - _avgPctOfMax));
         
-        UIImageView *barView = UIImageView.new;
+        UIView *barView = UIView.new;
         barView.translatesAutoresizingMaskIntoConstraints = NO;
         barView.layer.borderColor = UIColor.blackColor.CGColor;
         barView.layer.borderWidth = 1.0;
         barView.tag = 666;
         
         if (_legend.useClassColors)
-            barView.image = [UIImage imageFromColor:tlc.symbolColor];
+            barView.backgroundColor = tlc.symbolColor;
         
         else
-            barView.image = [UIImage imageFromColor:_legend.symbolDefaultColor];
+            barView.backgroundColor = _legend.symbolDefaultColor;
         
         [cell.contentView addSubview:barView];
         
         [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
                              top:(_rowHeight * 0.15) bottom:(-_rowHeight * 0.15)];
+        
+        UIView *avgView = UIView.new;
+        avgView.translatesAutoresizingMaskIntoConstraints = NO;
+        avgView.backgroundColor = UIColor.redColor;
+        avgView.tag = 999;
+        
+        [cell.contentView addSubview:avgView];
+        [avgView constrainTopToAnchor:cell.contentView.topAnchor];
+        [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+        [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin - 1.0)];
+        [avgView constrainWidthToConstant:2.0];
     }
     
     [cell.contentView addSubview:textLabel];

@@ -814,14 +814,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         CGFloat barMargin = 10.0;
         CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 3.0)) * tlc.symbolWidth);
         
-        UIImageView *barView = [[UIImageView alloc] initWithFrame:
-                                CGRectMake(barMargin, (tableView.rowHeight * 0.15), barWidth, (tableView.rowHeight * 0.7))];
+        UIView *barView = [[UIImageView alloc] initWithFrame:
+                           CGRectMake(barMargin, (tableView.rowHeight * 0.15), barWidth, (tableView.rowHeight * 0.7))];
         
         if (tl.useClassColors)
-            barView.image = [UIImage imageFromColor:tlc.symbolColor];
+            barView.backgroundColor = tlc.symbolColor;
         
         else
-            barView.image = [UIImage imageFromColor:tl.symbolDefaultColor];
+            barView.backgroundColor = tl.symbolDefaultColor;
         
         barView.layer.borderColor = UIColor.blackColor.CGColor;
         barView.layer.borderWidth = 1.0;
@@ -921,7 +921,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case NVPageViewArrangementFit6:
             numColumns = 1;
             break;
-            
         case NVPageViewArrangementFit2Columns2:
         case NVPageViewArrangementFit3Columns2:
         case NVPageViewArrangementFit4Columns2:
@@ -929,31 +928,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case NVPageViewArrangementFit6Columns2:
             numColumns = 2;
             break;
-            
         case NVPageViewArrangementFit3Columns3:
         case NVPageViewArrangementFit4Columns3:
         case NVPageViewArrangementFit5Columns3:
         case NVPageViewArrangementFit6Columns3:
             numColumns = 3;
             break;
-            
         case NVPageViewArrangementFit4Columns4:
         case NVPageViewArrangementFit5Columns4:
         case NVPageViewArrangementFit6Columns4:
             numColumns = 4;
             break;
-            
         case NVPageViewArrangementFit5Columns5:
         case NVPageViewArrangementFit6Columns5:
             numColumns = 5;
             break;
-            
         case NVPageViewArrangementFit6Columns6:
             numColumns = 6;
             break;
-            
-        default:
-            break;
+        default:break;
     }
     
     return numColumns;
