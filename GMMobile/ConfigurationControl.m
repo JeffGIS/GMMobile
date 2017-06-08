@@ -510,7 +510,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                         break;
                         
                     case HCLayerPlanimetric:
-                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
+                       // [list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
                         break;
                         
                     case HCLayerAlleys:
