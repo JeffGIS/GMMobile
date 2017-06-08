@@ -537,14 +537,11 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         default:break;
     }
     
-    if (!_legend.usePointSymbols)
-    {
-        if (_legend.hasOverlay)
-            [textArray addObject:@"Disable Overlay"];
-        
-        else
-            [textArray addObject:@"Enable Overlay"];
-    }
+    if (!_legend.usePointSymbols && _legend.hasOverlay)
+        [textArray addObject:@"Disable Overlay"];
+    
+    else
+        [textArray addObject:@"Enable Overlay"];
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
