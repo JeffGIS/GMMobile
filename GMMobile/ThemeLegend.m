@@ -17,10 +17,9 @@
     return self;
 }
 
--(id) copyWithZone: (NSZone *) zone
+- (id)copyWithZone:(NSZone *)zone
 {
     ThemeLegend *another = [[ThemeLegend allocWithZone: zone] init];
-    
     another.numCells = _numCells;
     another.numColumns = _numColumns;
     another.numDecimals = _numDecimals;
@@ -51,6 +50,7 @@
     another.hasColors = _hasColors;
     another.maxValBounds = _maxValBounds;
     another.selectionMode = _selectionMode;
+    another.hasOverlay = _hasOverlay;
     
     for (ThemeLegendCell *cl in _cells)
     {

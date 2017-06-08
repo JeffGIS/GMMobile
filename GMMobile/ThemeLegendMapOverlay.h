@@ -10,6 +10,7 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 {
     TLTCancel,
     TLTSwitchMode,
+    TLTOverlay,
     TLTApplyExistingColors,
     TLTSelectColors,
     TLTTitles,

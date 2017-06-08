@@ -148,6 +148,7 @@
                     thm.legend.landscapeMapOrigin = tl.landscapeMapOrigin;
                     thm.legend.isDraggedPortrait = tl.isDraggedPortrait;
                     thm.legend.isDraggedLandscape = tl.isDraggedLandscape;
+                    
                     for (ThemeLegendCell *tlc in thm.legend.cells)
                     {
                         if (tl.cells.count > j)
@@ -202,6 +203,8 @@
                 thm.legend.title = tleg.title;
                 thm.legend.currentTitleIndex = tleg.currentTitleIndex;
                 thm.legend.type = tleg.type;
+                thm.legend.hasOverlay = tleg.hasOverlay;
+                thm.legend.selectionMode = tleg.selectionMode;
                 
                 for (ThemeClass * cls in thm.classes)
                 {

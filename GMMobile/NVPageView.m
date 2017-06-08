@@ -284,11 +284,19 @@
 - (void)setupTableView:(UITableView *)tableView
                    tag:(NSUInteger)tag
 {
+    ThemeLegend *tl = (ThemeLegend *)_legends[((tag - 1) + _startingIndex)];
+    
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.backgroundColor = UIColor.grayColor;
     tableView.bounces = NO;
-    tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    
+    if (tl.selectionMode == SEL_MODE_COMPARE)
+        tableView.layer.borderColor = UIColor.greenColor.CGColor;
+    
+    else
+        tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    
     tableView.layer.borderWidth = (_cornerRadius / 4.0);
     tableView.layer.cornerRadius = _cornerRadius;
     tableView.delaysContentTouches = NO;
@@ -435,8 +443,7 @@ viewForHeaderInSection:(NSInteger)section
         
         if (tl.titles.count > 1 || tl.hasColors)
         {
-            [titleButton setTitleColor:UIColor.greenColor
-                              forState:UIControlStateHighlighted];
+            [titleButton setTitleColor:UIColor.greenColor forState:UIControlStateHighlighted];
             
             [titleButton addTarget:self
                             action:@selector(showLegendOptions:)
@@ -444,13 +451,9 @@ viewForHeaderInSection:(NSInteger)section
         }
         
         else
-        {
-            [titleButton setTitleColor:UIColor.redColor
-                              forState:UIControlStateHighlighted];
-        }
+            [titleButton setTitleColor:UIColor.redColor forState:UIControlStateHighlighted];
         
-        [titleButton setTitle:tl.title
-                     forState:UIControlStateNormal];
+        [titleButton setTitle:tl.title forState:UIControlStateNormal];
         
         [headerView addSubview:titleButton];
         [titleButton constrainTopToAnchor:headerView.topAnchor];
@@ -502,11 +505,16 @@ viewForHeaderInSection:(NSInteger)section
     NSMutableArray *textArray = NSMutableArray.array;
     [textArray addObject:@"Cancel"];
     
-    if (CRAPI.sharedInstance.inCompareMode)
-        [textArray addObject:@"Switch to Selection Mode"];
-    
-    else
-        [textArray addObject:@"Switch to Compare Mode"];
+    switch (tl.selectionMode)
+    {
+        case SEL_MODE_SELECT:
+            [textArray addObject:@"Switch to Compare Mode"];
+            break;
+        case SEL_MODE_COMPARE:
+            [textArray addObject:@"Switch to Selection Mode"];
+            break;
+        default:break;
+    }
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
@@ -558,7 +566,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             switch (buttonIndex)
             {
                 case TLTSwitchMode:
-                    CRAPI.sharedInstance.inCompareMode = !CRAPI.sharedInstance.inCompareMode;
+                    tl.selectionMode = (tl.selectionMode == SEL_MODE_SELECT) ? SEL_MODE_COMPARE : SEL_MODE_SELECT;
+                    [ConfigurationControl.sharedInstance clearCompareModeForLegendsOtherThanLegend:tl];
                     break;
                 case TLTApplyExistingColors:
                     break;
@@ -751,10 +760,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         cell.backgroundColor = UIColor.whiteColor;
         
-        if (tlc.status == 2)
+        if (tlc.status == TLC_STATUS_COMPARE)
         {
-            cell.layer.borderColor = tl.symbolDefaultColor.CGColor;
-            cell.layer.borderWidth = (cell.frame.size.height / 12);
+            if (tl.selectionMode == SEL_MODE_SELECT)
+                tlc.status = TLC_STATUS_ON;
+            
+            else
+            {
+                cell.layer.borderColor = tl.symbolDefaultColor.CGColor;
+                cell.layer.borderWidth = (cell.frame.size.height / 12);
+            }
         }
     }
     
@@ -864,13 +879,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         ThemeLegend *tl = (ThemeLegend *)_legends[((tv.tag - 1) + _startingIndex)];
         ThemeLegendCell *tlc = (ThemeLegendCell *)tl.cells[row];
         
-        if (CRAPI.sharedInstance.inCompareMode)
-            tlc.status = (tlc.status == 2) ? 1 : 2;
+        switch (tl.selectionMode)
+        {
+            case SEL_MODE_SELECT:
+                tlc.status = (tlc.status == TLC_STATUS_ON) ? TLC_STATUS_OFF : TLC_STATUS_ON;
+                break;
+            case SEL_MODE_COMPARE:
+                tlc.status = (tlc.status == TLC_STATUS_COMPARE) ? TLC_STATUS_ON : TLC_STATUS_COMPARE;
+                break;
+            default:break;
+        }
         
-        else
-            tlc.status = (tlc.status == 1) ? 0 : 1;
-        
-         [self refreshMapView];
+        [self refreshMapView];
     }
 }
 

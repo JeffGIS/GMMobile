@@ -763,16 +763,21 @@ visibleAtZoom:(CGFloat)zoom
     return rtn;
 }
 
-- (void) clearLegendCompareFlags:(ThemeTypes)type
+- (void)clearCompareModeForLegendsOtherThanLegend:(ThemeLegend *)legend
 {
     for (ThemeLegend *tl in _legendList)
     {
-        if (tl.type != type)
-        for (ThemeLegendCell *tlc in tl.cells)
+        if (tl != legend)
         {
-            if (tlc.status == 2)
-                tlc.status = 0;
+            tl.selectionMode = SEL_MODE_SELECT;
+            
+            for (ThemeLegendCell *tlc in tl.cells)
+            {
+                if (tlc.status == TLC_STATUS_COMPARE)
+                    tlc.status = TLC_STATUS_ON;
+            }
         }
     }
 }
+
 @end
