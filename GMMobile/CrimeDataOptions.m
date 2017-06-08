@@ -354,9 +354,10 @@ didReturnFromDate:(NSInteger)fromDate
 {
     NSString *fromString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:fromDate]];
     NSString *toString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:toDate]];
-    
-    [_dateRangeButton setTitle:[NSString stringWithFormat:@"Date Range:%@-%@", fromString, toString]
-                      forState:UIControlStateNormal];
+    NSString *titleText = [NSString stringWithFormat:@"Date Range:%@-%@", fromString, toString];
+    if (CRAPI.sharedInstance.forAllYears)
+        titleText = [titleText stringByAppendingString:@" FAR"];
+    [_dateRangeButton setTitle:titleText forState:UIControlStateNormal];
 }
 
 - (void)updateButtons
