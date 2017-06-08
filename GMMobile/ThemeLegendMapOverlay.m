@@ -17,7 +17,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin, avgPctOfMax;
+@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
@@ -186,13 +186,28 @@
     [tlmo addSubview:tlmo.tableView];
     [tlmo.tableView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     [view addSubview:tlmo];
-    int sum = 0, max = 0;
     
-    for (ThemeLegendCell *tlc in tlmo.legend.cells)
-        sum+= tlc.count, max = MAX(max, tlc.count);
-    
-    if (max)
-        tlmo.avgPctOfMax = ((sum / (CGFloat)tlmo.legend.numCells) / (CGFloat)max);
+    if (tlmo.legend.hasOverlay)
+    {
+        int sum = 0, max = 0;
+        NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
+        
+        for (ThemeLegendCell *tlc in tlmo.legend.cells)
+        {
+            sum+= tlc.count;
+            max = MAX(max, tlc.count);
+            [countArray addObject:[NSNumber numberWithInt:tlc.count]];
+        }
+        
+        NSSortDescriptor *sortAscending = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:YES];
+        [countArray sortUsingDescriptors:[NSArray arrayWithObject:sortAscending]];
+        
+        if (max)
+        {
+            tlmo.avgPctOfMax = ((sum / (CGFloat)tlmo.legend.numCells) / (CGFloat)max);
+            tlmo.medianPctOfMax = ((countArray[countArray.count / 2].intValue) / (CGFloat)max);
+        }
+    }
     
     return tlmo;
 }
@@ -896,7 +911,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999)
+        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 || views.tag == 998)
             [views removeFromSuperview];
     }
     
@@ -1013,7 +1028,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             tlc.symbolWidth = 1.0;
         
         CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
-        CGFloat avgMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - _avgPctOfMax));
         
         UIView *barView = UIView.new;
         barView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1034,6 +1048,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         if (_legend.hasOverlay)
         {
+            CGFloat avgMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - _avgPctOfMax));
+            CGFloat medianMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - _medianPctOfMax));
+            
             UIView *avgView = UIView.new;
             avgView.translatesAutoresizingMaskIntoConstraints = NO;
             avgView.backgroundColor = UIColor.redColor;
@@ -1044,6 +1061,17 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
             [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin - 1.0)];
             [avgView constrainWidthToConstant:2.0];
+            
+            UIView *medianView = UIView.new;
+            medianView.translatesAutoresizingMaskIntoConstraints = NO;
+            medianView.backgroundColor = UIColor.blueColor;
+            medianView.tag = 998;
+            
+            [cell.contentView addSubview:medianView];
+            [medianView constrainTopToAnchor:cell.contentView.topAnchor];
+            [medianView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin - 1.0)];
+            [medianView constrainWidthToConstant:2.0];
         }
     }
     
