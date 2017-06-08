@@ -17,7 +17,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax, stdDevLower, stdDevUpper;
+@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax, stdDev1Lower, stdDev1Upper, stdDev2Lower, stdDev2Upper;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
@@ -204,10 +204,10 @@
         
         if (max)
         {
-            CGFloat sqrDiff = 0.0;
             CGFloat avgValue = (sum / (CGFloat)tlmo.legend.numCells);
             tlmo.avgPctOfMax = (avgValue / (CGFloat)max);
             NSInteger middle = (countArray.count / 2);
+            CGFloat stdDev = 0.0;
             
             if (countArray.count % 2)
                 tlmo.medianPctOfMax = ((countArray[middle].intValue) / (CGFloat)max);
@@ -219,17 +219,14 @@
                 tlmo.medianPctOfMax = (((value1 + value2) / 2.0) / (CGFloat)max);
             }
             
-            CGFloat stdDev = 0.0;
-            
             for (ThemeLegendCell *tlc in tlmo.legend.cells)
-            {
-                sqrDiff = pow((tlmo.avgPctOfMax - tlc.count), 2);
-                stdDev += sqrDiff;
-            }
+                stdDev += pow((avgValue - tlc.count), 2);
             
             stdDev = sqrt(stdDev / (CGFloat)tlmo.legend.numCells);
-            tlmo.stdDevLower = ((avgValue - (stdDev / 2.0)) / (CGFloat)max);
-            tlmo.stdDevUpper = ((avgValue + (stdDev / 2.0)) / (CGFloat)max);
+            tlmo.stdDev1Lower = ((avgValue - stdDev) / (CGFloat)max);
+            tlmo.stdDev1Upper = ((avgValue + stdDev) / (CGFloat)max);
+            tlmo.stdDev2Lower = ((avgValue - (stdDev * 2.0)) / (CGFloat)max);
+            tlmo.stdDev2Upper = ((avgValue + (stdDev * 2.0)) / (CGFloat)max);
         }
     }
     
@@ -935,7 +932,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 || views.tag == 998 || views.tag == 997)
+        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 ||
+            views.tag == 998 || views.tag == 997 || views.tag == 996)
             [views removeFromSuperview];
     }
     
@@ -1075,8 +1073,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             CGFloat mask = ((tableView.frame.size.width - textWidth) - (margin * 2.0));
             CGFloat avgMask = (mask * (1 - _avgPctOfMax));
             CGFloat medianMask = (mask * (1 - _medianPctOfMax));
-            CGFloat upperStdDevMask =  (mask * (1 - _stdDevUpper));
-            CGFloat lowerStdDevMask = (mask * _stdDevLower);
+            CGFloat upperStdDev1Mask =  (mask * (1 - _stdDev1Upper));
+            CGFloat lowerStdDev1Mask = (mask * _stdDev1Lower);
+            CGFloat upperStdDev2Mask =  (mask * (1 - _stdDev2Upper));
+            CGFloat lowerStdDev2Mask = (mask * _stdDev2Lower);
             
             UIView *avgView = UIView.new;
             avgView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1100,17 +1100,29 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin - 1.0)];
             [medianView constrainWidthToConstant:2.0];
             
-            UIView *stdDevView = UIView.new;
-            stdDevView.translatesAutoresizingMaskIntoConstraints = NO;
-            stdDevView.backgroundColor = UIColor.blackColor;
-            stdDevView.alpha = 0.1;
-            stdDevView.tag = 997;
+            UIView *stdDev1View = UIView.new;
+            stdDev1View.translatesAutoresizingMaskIntoConstraints = NO;
+            stdDev1View.backgroundColor = UIColor.blackColor;
+            stdDev1View.alpha = 0.05;
+            stdDev1View.tag = 997;
             
-            [cell.contentView addSubview:stdDevView];
-            [stdDevView constrainTopToAnchor:cell.contentView.topAnchor];
-            [stdDevView constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [stdDevView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDevMask - margin)];
-            [stdDevView constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDevMask)];
+            [cell.contentView addSubview:stdDev1View];
+            [stdDev1View constrainTopToAnchor:cell.contentView.topAnchor];
+            [stdDev1View constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev1Mask - margin)];
+            [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev1Mask)];
+            
+            UIView *stdDev2View = UIView.new;
+            stdDev2View.translatesAutoresizingMaskIntoConstraints = NO;
+            stdDev2View.backgroundColor = UIColor.blackColor;
+            stdDev2View.alpha = 0.05;
+            stdDev2View.tag = 996;
+            
+            [cell.contentView addSubview:stdDev2View];
+            [stdDev2View constrainTopToAnchor:cell.contentView.topAnchor];
+            [stdDev2View constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin)];
+            [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask)];
         }
     }
     
