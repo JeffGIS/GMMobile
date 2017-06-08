@@ -17,7 +17,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax;
+@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax, stdDevLower, stdDevUpper;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
@@ -204,8 +204,32 @@
         
         if (max)
         {
-            tlmo.avgPctOfMax = ((sum / (CGFloat)tlmo.legend.numCells) / (CGFloat)max);
-            tlmo.medianPctOfMax = ((countArray[countArray.count / 2].intValue) / (CGFloat)max);
+            CGFloat sqrDiff = 0.0;
+            CGFloat avgValue = (sum / (CGFloat)tlmo.legend.numCells);
+            tlmo.avgPctOfMax = (avgValue / (CGFloat)max);
+            NSInteger middle = (countArray.count / 2);
+            
+            if (countArray.count % 2)
+                tlmo.medianPctOfMax = ((countArray[middle].intValue) / (CGFloat)max);
+            
+            else
+            {
+                int value1 = (countArray[middle].intValue);
+                int value2 = (countArray[middle - 1].intValue);
+                tlmo.medianPctOfMax = (((value1 + value2) / 2.0) / (CGFloat)max);
+            }
+            
+            CGFloat stdDev = 0.0;
+            
+            for (ThemeLegendCell *tlc in tlmo.legend.cells)
+            {
+                sqrDiff = pow((tlmo.avgPctOfMax - tlc.count), 2);
+                stdDev += sqrDiff;
+            }
+            
+            stdDev = sqrt(stdDev / (CGFloat)tlmo.legend.numCells);
+            tlmo.stdDevLower = ((avgValue - (stdDev / 2.0)) / (CGFloat)max);
+            tlmo.stdDevUpper = ((avgValue + (stdDev / 2.0)) / (CGFloat)max);
         }
     }
     
@@ -513,11 +537,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         default:break;
     }
     
-    if (_legend.hasOverlay)
-        [textArray addObject:@"Disable Overlay"];
-    
-    else
-        [textArray addObject:@"Enable Overlay"];
+    if (!_legend.usePointSymbols)
+    {
+        if (_legend.hasOverlay)
+            [textArray addObject:@"Disable Overlay"];
+        
+        else
+            [textArray addObject:@"Enable Overlay"];
+    }
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
@@ -911,7 +938,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 || views.tag == 998)
+        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 || views.tag == 998 || views.tag == 997)
             [views removeFromSuperview];
     }
     
@@ -1048,8 +1075,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         if (_legend.hasOverlay)
         {
-            CGFloat avgMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - _avgPctOfMax));
-            CGFloat medianMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - _medianPctOfMax));
+            CGFloat mask = ((tableView.frame.size.width - textWidth) - (margin * 2.0));
+            CGFloat avgMask = (mask * (1 - _avgPctOfMax));
+            CGFloat medianMask = (mask * (1 - _medianPctOfMax));
+            CGFloat upperStdDevMask =  (mask * (1 - _stdDevUpper));
+            CGFloat lowerStdDevMask = (mask * _stdDevLower);
             
             UIView *avgView = UIView.new;
             avgView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1072,6 +1102,18 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [medianView constrainBottomToAnchor:cell.contentView.bottomAnchor];
             [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin - 1.0)];
             [medianView constrainWidthToConstant:2.0];
+            
+            UIView *stdDevView = UIView.new;
+            stdDevView.translatesAutoresizingMaskIntoConstraints = NO;
+            stdDevView.backgroundColor = UIColor.blackColor;
+            stdDevView.alpha = 0.1;
+            stdDevView.tag = 997;
+            
+            [cell.contentView addSubview:stdDevView];
+            [stdDevView constrainTopToAnchor:cell.contentView.topAnchor];
+            [stdDevView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [stdDevView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDevMask - margin)];
+            [stdDevView constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDevMask)];
         }
     }
     
