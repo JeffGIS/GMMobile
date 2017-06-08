@@ -751,7 +751,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)seeVersionHistory
 {
+    NSString *filePath = [NSBundle.mainBundle pathForResource:@"NVMobile_VersionHistory"
+                                                       ofType:@"pdf"];
     
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                    showFileAtPath:filePath];
+#pragma unused(nvwv)
 }
 
 - (void)seeGlossary
