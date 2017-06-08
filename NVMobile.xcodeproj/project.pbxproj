@@ -75,6 +75,7 @@
 		69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */; };
 		69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
+		69C835251EE98CDC00CDCAB6 /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C835241EE98CDC00CDCAB6 /* NVMobile_VersionHistory.pdf */; };
 		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
 		69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */; };
 		69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DB1DCD4BBE00D408E9 /* upArrow.png */; };
@@ -341,6 +342,7 @@
 		69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteQuestionMark.png; sourceTree = "<group>"; };
 		69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_SlopeVC.pdf; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
+		69C835241EE98CDC00CDCAB6 /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .gitignore; path = GMMobile/.gitignore; sourceTree = "<group>"; };
 		69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIconHighlighted.png; sourceTree = "<group>"; };
 		69CB89DB1DCD4BBE00D408E9 /* upArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = upArrow.png; sourceTree = "<group>"; };
@@ -947,6 +949,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				69C835241EE98CDC00CDCAB6 /* NVMobile_VersionHistory.pdf */,
 				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
@@ -1184,6 +1187,7 @@
 				69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */,
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
+				69C835251EE98CDC00CDCAB6 /* NVMobile_VersionHistory.pdf in Resources */,
 				69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
