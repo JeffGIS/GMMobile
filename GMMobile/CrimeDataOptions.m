@@ -356,7 +356,7 @@ didReturnFromDate:(NSInteger)fromDate
     NSString *toString = [self formattedDate:[NSDate dateWithTimeIntervalSince1970:toDate]];
     NSString *titleText = [NSString stringWithFormat:@"Date Range:%@-%@", fromString, toString];
     if (CRAPI.sharedInstance.forAllYears)
-        titleText = [titleText stringByAppendingString:@" FAR"];
+        titleText = [titleText stringByAppendingString:@" FAY"];
     [_dateRangeButton setTitle:titleText forState:UIControlStateNormal];
 }
 
