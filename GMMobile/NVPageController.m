@@ -8,8 +8,7 @@
 
 @property (nonatomic) NSMutableArray *pages;
 @property (nonatomic) UIPageControl *pageControl;
-@property (nonatomic, copy) NSArray *legends;
-@property (nonatomic, copy) NSArray *pageViewArrangementArray;
+@property (nonatomic, copy) NSArray *legends, *pageViewArrangementArray;
 
 @end
 
@@ -54,6 +53,7 @@
     self.dataSource = self;
     self.delegate = self;
     self.view.backgroundColor = UIColor.blackColor;
+    _pagingEnabled = YES;
     
     [self setViewControllers:@[_pages[0]]
                    direction:UIPageViewControllerNavigationDirectionForward
@@ -200,11 +200,13 @@
 - (void)disablePaging
 {
     self.dataSource = nil;
+    _pagingEnabled = NO;
 }
 
 - (void)enablePaging
 {
     self.dataSource = self;
+    _pagingEnabled = YES;
 }
 
 @end

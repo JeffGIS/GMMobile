@@ -102,7 +102,7 @@
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
-@property BOOL continueLoad;
+@property BOOL continueLoad, fromLegends2X;
 @property int vvpass;
 
 @end
@@ -2890,16 +2890,25 @@ haveVV:
                                controller:self];
         return;
     }
+    
     if (vectorView.displayID != CRAPI.sharedInstance.keepProcessing)
         vectorViews[vectorView.ivv] = nil;
+    
     else dispatch_async(dispatch_get_main_queue(),
                    ^{
                        if (_fromLegends)
                        {
-                           self.tabBarController.selectedIndex = _fromIndex;
-                           self.tabBarController.tabBar.userInteractionEnabled = YES;
-                           _fromLegends = NO;
-                           return;
+                           if (_fromLegends2X)
+                           {
+                               _fromLegends2X = YES;
+                               
+                               self.tabBarController.selectedIndex = _fromIndex;
+                               self.tabBarController.tabBar.userInteractionEnabled = YES;
+                               _fromLegends = _fromLegends2X = NO;
+                               return;
+                           }
+                           
+                           _fromLegends2X = YES;
                        }
                        
                        [_vectorView removeFromSuperview];

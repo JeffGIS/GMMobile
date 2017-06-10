@@ -191,7 +191,7 @@
             [[self.view viewWithTag:2] constrainLeadingToAnchor:[self.view viewWithTag:1].leadingAnchor];
             [[self.view viewWithTag:1] constrainHeightToAnchor:[self.view viewWithTag:2].heightAnchor multiplier:multiplier1];
             [[self.view viewWithTag:1] constrainBottomToAnchor:[self.view viewWithTag:2].topAnchor constant:-_innerMargin];
-            [[self.view viewWithTag:4] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_innerMargin];
+            [[self.view viewWithTag:4] constrainTrailingToAnchor:self.view.trailingAnchor constant:-_outerMargin];
             [[self.view viewWithTag:5] constrainTrailingToAnchor:[self.view viewWithTag:4].trailingAnchor];
             [[self.view viewWithTag:4] constrainHeightToAnchor:[self.view viewWithTag:5].heightAnchor multiplier:multiplier3];
             [[self.view viewWithTag:4] constrainBottomToAnchor:[self.view viewWithTag:5].topAnchor constant:-_innerMargin];
@@ -516,12 +516,22 @@ viewForHeaderInSection:(NSInteger)section
         default:break;
     }
     
+    if (!tl.usePointSymbols)
+    {
+        if (tl.hasOverlay)
+            [textArray addObject:@"Disable Stats Overlay"];
+        
+        else
+            [textArray addObject:@"Enable Stats Overlay"];
+    }
+    
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
     
     NSMutableArray *idArray = NSMutableArray.array;
     [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
     [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
+    [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
     [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
     [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
     
@@ -549,7 +559,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     NSInteger index = ((alertView.tag / 333) - 1);
     ThemeLegend *tl = (ThemeLegend *)_legends[index + _startingIndex];
-    BOOL disablePaging = NO;
     
     [alertView hideLargeAlertView:YES];
     
@@ -571,6 +580,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 case TLTApplyExistingColors:
                     break;
+                case TLTOverlay:
+                    tl.hasOverlay = !tl.hasOverlay;
+                    [self reloadTableViews];
+                    break;
                 case TLTSelectColors:{
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
                                                                       delegate:self
@@ -580,7 +593,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                     alert.identifier = @"ColorOptionsAlert";
                     alert.tag = alertView.tag;
-                    break;}
+                    return;}
                 case TLTTitles:{
                     NSMutableArray *textArray = NSMutableArray.array;
                     [textArray addObject:@"Cancel"];
@@ -594,11 +607,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                     alert.identifier = @"TitlesAlert";
                     alert.tag = alertView.tag;
-                    break;}
+                    return;}
                 default:break;
             }
-            
-            return;
         }
         
         else if ([alertView.identifier isEqualToString:@"TitlesAlert"])
@@ -653,8 +664,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     
                     alert.identifier = @"RandomColorAlert";
                     alert.tag = alertView.tag;
-                    return;
-                    break;}
+                    return;}
                 case NVColorOptionCustom:
                     break;
                 default:break;
@@ -665,7 +675,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                  [alertView.identifier isEqualToString:@"RandomColorConfirmation"])
         {
             [_controller disablePaging];
-            disablePaging = YES;
             
             if ([alertView.identifier isEqualToString:@"RandomColorAlert"])
                 _currentColorPalette = buttonIndex;
@@ -704,7 +713,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     self.tabBarController.tabBar.userInteractionEnabled = YES;
     
-    if (!disablePaging)
+    if (!_controller.pagingEnabled)
         [_controller enablePaging];
 }
 
@@ -723,8 +732,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *views in cell.contentView.subviews)
     {
-        if (views.tag == 666 || views.tag == 777 || views.tag == 888)
+        if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 ||
+            views.tag == 998 || views.tag == 997 || views.tag == 996)
+        {
             [views removeFromSuperview];
+        }
     }
     
     ThemeLegend *tl = (ThemeLegend *)_legends[((tableView.tag - 1) + _startingIndex)];
@@ -825,12 +837,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else
     {
-        [textLabel constrainLeadingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - 10.0)];
-        CGFloat barMargin = 10.0;
-        CGFloat barWidth = (((tableView.frame.size.width - textWidth) - (barMargin * 3.0)) * tlc.symbolWidth);
+        [textLabel constrainLeadingToAnchor:cell.contentView.trailingAnchor constant:-textWidth];
+        CGFloat margin = 10.0;
         
-        UIView *barView = [[UIImageView alloc] initWithFrame:
-                           CGRectMake(barMargin, (tableView.rowHeight * 0.15), barWidth, (tableView.rowHeight * 0.7))];
+        if (!tl.showSymbolAsBarChart)
+            tlc.symbolWidth = 1.0;
+        
+        CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
+        
+        UIView *barView = UIView.new;
+        barView.translatesAutoresizingMaskIntoConstraints = NO;
+        barView.layer.borderColor = UIColor.blackColor.CGColor;
+        barView.layer.borderWidth = 1.0;
+        barView.tag = 666;
         
         if (tl.useClassColors)
             barView.backgroundColor = tlc.symbolColor;
@@ -838,10 +857,108 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             barView.backgroundColor = tl.symbolDefaultColor;
         
-        barView.layer.borderColor = UIColor.blackColor.CGColor;
-        barView.layer.borderWidth = 1.0;
-        barView.tag = 666;
         [cell.contentView addSubview:barView];
+        
+        [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+                             top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
+        
+        if (tl.hasOverlay)
+        {
+            int sum = 0, max = 0;
+            CGFloat medianPctOfMax = 0.0;
+            NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
+            
+            for (ThemeLegendCell *tlc in tl.cells)
+            {
+                sum+= tlc.count;
+                max = MAX(max, tlc.count);
+                [countArray addObject:[NSNumber numberWithInt:tlc.count]];
+            }
+            
+            NSSortDescriptor *sortAscending = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:YES];
+            [countArray sortUsingDescriptors:[NSArray arrayWithObject:sortAscending]];
+            
+            if (max)
+            {
+                CGFloat avgValue = (sum / (CGFloat)tl.numCells);
+                CGFloat avgPctOfMax = (avgValue / (CGFloat)max);
+                NSInteger middle = (countArray.count / 2);
+                CGFloat stdDev = 0.0;
+                
+                if (countArray.count % 2)
+                    medianPctOfMax = ((countArray[middle].intValue) / (CGFloat)max);
+                
+                else
+                {
+                    int value1 = (countArray[middle].intValue);
+                    int value2 = (countArray[middle - 1].intValue);
+                    medianPctOfMax = (((value1 + value2) / 2.0) / (CGFloat)max);
+                }
+                
+                for (ThemeLegendCell *tlc in tl.cells)
+                    stdDev += pow((avgValue - tlc.count), 2);
+                
+                stdDev = sqrt(stdDev / (CGFloat)tl.numCells);
+                CGFloat stdDev1Lower = ((avgValue - stdDev) / (CGFloat)max);
+                CGFloat stdDev1Upper = ((avgValue + stdDev) / (CGFloat)max);
+                CGFloat stdDev2Lower = ((avgValue - (stdDev * 2.0)) / (CGFloat)max);
+                CGFloat stdDev2Upper = ((avgValue + (stdDev * 2.0)) / (CGFloat)max);
+                
+                CGFloat mask = ((tableView.frame.size.width - textWidth) - (margin * 2.0));
+                CGFloat avgMask = (mask * (1 - avgPctOfMax));
+                CGFloat medianMask = (mask * (1 - medianPctOfMax));
+                CGFloat upperStdDev1Mask =  (mask * (1 - stdDev1Upper));
+                CGFloat lowerStdDev1Mask = (mask * stdDev1Lower);
+                CGFloat upperStdDev2Mask =  (mask * (1 - stdDev2Upper));
+                CGFloat lowerStdDev2Mask = (mask * stdDev2Lower);
+                
+                UIView *avgView = UIView.new;
+                avgView.translatesAutoresizingMaskIntoConstraints = NO;
+                avgView.backgroundColor = UIColor.redColor;
+                avgView.tag = 999;
+                
+                [cell.contentView addSubview:avgView];
+                [avgView constrainTopToAnchor:cell.contentView.topAnchor];
+                [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+                [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin + 1.0)];
+                [avgView constrainWidthToConstant:2.0];
+                
+                UIView *medianView = UIView.new;
+                medianView.translatesAutoresizingMaskIntoConstraints = NO;
+                medianView.backgroundColor = UIColor.blueColor;
+                medianView.tag = 998;
+                
+                [cell.contentView addSubview:medianView];
+                [medianView constrainTopToAnchor:cell.contentView.topAnchor];
+                [medianView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+                [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin + 1.0)];
+                [medianView constrainWidthToConstant:2.0];
+                
+                UIView *stdDev1View = UIView.new;
+                stdDev1View.translatesAutoresizingMaskIntoConstraints = NO;
+                stdDev1View.backgroundColor = UIColor.blackColor;
+                stdDev1View.alpha = 0.05;
+                stdDev1View.tag = 997;
+                
+                [cell.contentView addSubview:stdDev1View];
+                [stdDev1View constrainTopToAnchor:cell.contentView.topAnchor];
+                [stdDev1View constrainBottomToAnchor:cell.contentView.bottomAnchor];
+                [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev1Mask - margin + 1.0)];
+                [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev1Mask + 1.0)];
+                
+                UIView *stdDev2View = UIView.new;
+                stdDev2View.translatesAutoresizingMaskIntoConstraints = NO;
+                stdDev2View.backgroundColor = UIColor.blackColor;
+                stdDev2View.alpha = 0.05;
+                stdDev2View.tag = 996;
+                
+                [cell.contentView addSubview:stdDev2View];
+                [stdDev2View constrainTopToAnchor:cell.contentView.topAnchor];
+                [stdDev2View constrainBottomToAnchor:cell.contentView.bottomAnchor];
+                [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
+                [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask + 1.0)];
+            }
+        }
     }
     
     return cell;

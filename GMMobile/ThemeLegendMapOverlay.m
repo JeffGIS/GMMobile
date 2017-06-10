@@ -534,11 +534,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         default:break;
     }
     
-    if (!_legend.usePointSymbols && _legend.hasOverlay)
-        [textArray addObject:@"Disable Stats Overlay"];
-    
-    else
-        [textArray addObject:@"Enable Stats Overlay"];
+    if (!_legend.usePointSymbols)
+    {
+        if (_legend.hasOverlay)
+            [textArray addObject:@"Disable Stats Overlay"];
+        
+        else
+            [textArray addObject:@"Enable Stats Overlay"];
+    }
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
     [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
@@ -1086,7 +1089,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:avgView];
             [avgView constrainTopToAnchor:cell.contentView.topAnchor];
             [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin - 1.0)];
+            [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin + 1.0)];
             [avgView constrainWidthToConstant:2.0];
             
             UIView *medianView = UIView.new;
@@ -1097,7 +1100,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:medianView];
             [medianView constrainTopToAnchor:cell.contentView.topAnchor];
             [medianView constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin - 1.0)];
+            [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin + 1.0)];
             [medianView constrainWidthToConstant:2.0];
             
             UIView *stdDev1View = UIView.new;
@@ -1109,8 +1112,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:stdDev1View];
             [stdDev1View constrainTopToAnchor:cell.contentView.topAnchor];
             [stdDev1View constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev1Mask - margin)];
-            [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev1Mask)];
+            [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev1Mask - margin + 1.0)];
+            [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev1Mask + 1.0)];
             
             UIView *stdDev2View = UIView.new;
             stdDev2View.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1121,8 +1124,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:stdDev2View];
             [stdDev2View constrainTopToAnchor:cell.contentView.topAnchor];
             [stdDev2View constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin)];
-            [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask)];
+            [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
+            [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask + 1.0)];
         }
     }
     

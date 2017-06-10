@@ -6,6 +6,8 @@
 
 @interface NVPageController : UIPageViewController
 
+@property BOOL pagingEnabled;
+
 + (instancetype)pageControllerWithArrangementArray:(NSArray *)arrangementArray;
 
 - (void)addViewController:(UIViewController *)viewController;
