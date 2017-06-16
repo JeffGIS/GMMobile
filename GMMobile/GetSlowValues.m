@@ -360,7 +360,7 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     int totPix = 0;
     int pixels;
     
-    SQLOK(0,sqlite3_prepare_v2(_bd.database, query.UTF8String, -1, &statement, 0), _bd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_bd.database, query.UTF8String, -1, &statement, 0), _bd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -370,7 +370,7 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
         totPix += pixels;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _bd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _bd.database);
     return totPix;
 }
 -(void)   displayMapit:(CGContextRef)context

@@ -397,7 +397,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    else if (dataType == GetDatabaseSettingAlleyWall)
                                                    {
                                                        [awd executeCmd:str
-                                                          sendToServer:_sendAlleyToServer];
+                                                          sendToServer:_sendAlleyToServer
+                                                        fromFile:__FILE__ fromLine:__LINE__];
                                                    }
                                                    else if (dataType == GetDatabaseSettingCensus)
                                                        [bd executeCmd:str];

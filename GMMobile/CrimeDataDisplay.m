@@ -75,7 +75,7 @@
     NSString *query = [NSString stringWithFormat:@"SELECT UCR FROM CNUMCHECK WHERE ControlNbr = %i",controlNbr];
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -84,7 +84,7 @@
             outOfOrder = TRUE;
         rtn = TRUE;
     }
-    SQLOK(0,sqlite3_finalize(statement), _cd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _cd.database);
     if (!rtn)
     {
         query = [NSString stringWithFormat:@"INSERT INTO CNUMCHECK VALUES(%i,%i);",controlNbr,UCR];
@@ -259,7 +259,7 @@ NextPass:
                          controlNumberList];
                 
             }
-            SQLOK(0,sqlite3_prepare_v2(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+            SQLOK(__FILE__,__LINE__,SQLitePrepare(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
             
             while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -331,7 +331,7 @@ NextPass:
                 }
             }
             iRange++;
-            SQLOK(0,sqlite3_finalize(statement), _cd.database);
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _cd.database);
             CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
        }
     }
@@ -344,7 +344,7 @@ NextPass:
     else if (_mode == PINMAP)
     {
         query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,DispersedX,DispersedY,Sequence,Symbol,Size,Color FROM DISPERSE"];
-        SQLOK(0,sqlite3_prepare_v2(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
         CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
         
         while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
@@ -377,7 +377,7 @@ NextPass:
         CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
         if ([self continueProcessing])
             [dp commitTransaction];
-        SQLOK(0,sqlite3_finalize(statement), dp.database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), dp.database);
     }
     
     else if (_mode == CHOROPLETH)

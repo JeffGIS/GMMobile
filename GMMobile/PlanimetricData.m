@@ -63,7 +63,7 @@ static float wallPtSize=0;
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -107,7 +107,7 @@ static float wallPtSize=0;
                   andWidth:3];
     }
     CGColorRelease(color);
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     [pd close:pdopened];
 }
 - (void)fillPlanArea:(CGContextRef)context
@@ -233,7 +233,7 @@ static float wallPtSize=0;
             
     }
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -277,7 +277,7 @@ static float wallPtSize=0;
                   andWidth:3];
     }
     
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     [pd close:pdopened];
 }
 
@@ -376,7 +376,7 @@ static float wallPtSize=0;
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0),pd.database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -390,7 +390,7 @@ static float wallPtSize=0;
                  withColor:UIColor.greenColor.CGColor];
     }
     
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     [pd close:pdopened];
 
 }
@@ -454,7 +454,7 @@ static float wallPtSize=0;
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -503,7 +503,7 @@ static float wallPtSize=0;
                   andWidth:width];
     }
     
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     [pd close:opened];
 }
 
@@ -535,7 +535,7 @@ static float wallPtSize=0;
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -579,7 +579,7 @@ static float wallPtSize=0;
         free (llpoints);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), pd.database);
     [pd close:opened];
     pt.lon = minpt.x;
     pt.lat = minpt.y;
@@ -627,7 +627,7 @@ static float wallPtSize=0;
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -649,7 +649,7 @@ static float wallPtSize=0;
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     [pd close:opened];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
@@ -713,7 +713,7 @@ static float wallPtSize=0;
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -732,7 +732,7 @@ static float wallPtSize=0;
                     andSize:size];
     }
     
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     [pd close:opened];
     
 }
@@ -789,7 +789,7 @@ static float wallPtSize=0;
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -812,7 +812,7 @@ static float wallPtSize=0;
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement),crd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),crd.database);
     [crd close:YES];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
@@ -870,19 +870,19 @@ static float wallPtSize=0;
     [crd open];
     query = [NSString stringWithFormat:@"SELECT Count(*) FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
              platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
-    SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
     
     if ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         tot = sqlite3_column_int(statement,0);
     }
-    SQLOK(0,sqlite3_finalize(statement),crd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),crd.database);
     if (tot)
     {
         query = [NSString stringWithFormat:@"SELECT LONGITUDE,LATITUDE, AssignedToDetail, Status, Intersections.intID, Intersections.lastUpdateTime FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
         
-        SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
         
         while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -920,7 +920,7 @@ static float wallPtSize=0;
             }
         }
         
-        SQLOK(0,sqlite3_finalize(statement),crd.database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),crd.database);
     }
     [crd close:YES];
     
@@ -983,7 +983,7 @@ static float wallPtSize=0;
     NSString * query = [NSString stringWithFormat:@"SELECT lev21x, lev21y, rampType, rampNum, rampID, yearRebuilt FROM Ramps WHERE intID=%i",
              intID];
 
-    SQLOK(0,sqlite3_prepare_v2(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(crd.database, query.UTF8String, -1, &statement, 0), crd.database);
 
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1018,7 +1018,7 @@ static float wallPtSize=0;
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement),crd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),crd.database);
     
 }
 
@@ -1032,7 +1032,7 @@ static float wallPtSize=0;
     
     NSString *query = [NSString stringWithFormat:@"SELECT DISTINCT SYMBOLNAME FROM %@", tableName];
     
-    SQLOK(0,sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1040,7 +1040,7 @@ static float wallPtSize=0;
         [symList addObject:symName];
     }
     
-    SQLOK(0,sqlite3_finalize(statement),pd.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
     
     [pd close:pdopened];
     

@@ -155,7 +155,7 @@ NSString * GetCrimeListDirectory (void)
     NSString *query = [NSString stringWithFormat:@"SELECT ControlNum FROM CrimeList WHERE ControlNum = %i",controlNum];
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(cl.database, query.UTF8String, -1, &statement, 0), cl.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(cl.database, query.UTF8String, -1, &statement, 0), cl.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -163,7 +163,7 @@ NSString * GetCrimeListDirectory (void)
         rtn = TRUE;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), cl.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), cl.database);
     
     [cl close:opened];
     
@@ -177,12 +177,12 @@ NSString * GetCrimeListDirectory (void)
     BOOL opened = [cl open];
     NSString *query = [NSString stringWithFormat:@"DELETE FROM CrimeList WHERE ControlNum = %i",controlNum];
     sqlite3_stmt *statement = NULL;
-    SQLOK(0,sqlite3_prepare_v2(cl.database, query.UTF8String, -1, &statement, 0), cl.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(cl.database, query.UTF8String, -1, &statement, 0), cl.database);
     
     if (sqlite3_step(statement) == SQLITE_DONE)
         rtn = YES;
     
-    SQLOK(0,sqlite3_finalize(statement), cl.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), cl.database);
     [cl close:opened];
     return rtn;
 }
@@ -246,8 +246,8 @@ NSString * GetCrimeListDirectory (void)
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentCrimeList"];
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _crimeListDir, _fileName];
         
-        //        _isOpen = !SQLOK(0,sqlite3_open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
-        _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
+        //        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
         NSLog(@"CrimeList Database open");
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
         rtn = YES;
@@ -261,7 +261,7 @@ NSString * GetCrimeListDirectory (void)
     if (opened && _isOpen)
     {
         NSLog(@"CrimeList Database close");
-        SQLOK(0,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
         _controlNumberList = nil;
@@ -270,18 +270,18 @@ NSString * GetCrimeListDirectory (void)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
-    SQLOK(0,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(0,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
 - (NSArray*)availableCrimeFields
@@ -377,7 +377,7 @@ NSString * GetCrimeListDirectory (void)
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS CrimeList (id INTEGER PRIMARY KEY,ControlNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
     CREATE INDEX IF NOT EXISTS CrimeList_index ON CrimeList (ControlNum ASC);\
     CREATE TABLE IF NOT EXISTS SearchStrings (FieldType INTEGER PRIMARY KEY, SearchString CHAR);";
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -398,7 +398,7 @@ NSString * GetCrimeListDirectory (void)
         {
             text = textAfter(text,@":");
             NSString * cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO SearchStrings VALUES(%li,'%@');",(long)field,text];
-            rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+            rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
             if (rtn)
                 [self reloadSearchValues];
         }
@@ -448,14 +448,14 @@ NSString * GetCrimeListDirectory (void)
     NSString *query = [NSString stringWithFormat:@"SELECT SearchString FROM SearchStrings WHERE FieldType = %li",(long)field];
     sqlite3_stmt *statement = NULL;
     
-    if (sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
+    if (SQLitePrepare(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
     {
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             LPSTR sstring = (LPSTR)sqlite3_column_text(statement, 0);
             rtn = [NSString stringWithUTF8String:sstring];
         }
-        SQLOK(0,sqlite3_finalize(statement), _database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     }
     [self close:opened];
     
@@ -470,7 +470,7 @@ NSString * GetCrimeListDirectory (void)
     _controlNumberList = nil;
     
     NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER);INSERT INTO SortOn VALUES (%li,%i)",(long)field,ascending];
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -483,7 +483,7 @@ NSString * GetCrimeListDirectory (void)
     _controlNumberList = nil;
    
     NSString *cmd =  @"DROP TABLE IF EXISTS SortedList;";
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     if (sortField != CFT_END)
     {
@@ -494,7 +494,7 @@ NSString * GetCrimeListDirectory (void)
         else if (vt == VTDouble)
             type = @"DOUBLE";
         cmd =  [NSString stringWithFormat:@"CREATE TABLE SortedList (Value %@,ControlNum INTEGER);",type];
-        rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+        rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
         NSArray * cnumList = [self createControlNumbers:NO];
         [self startTransaction];
         for (NSNumber * num in cnumList)
@@ -511,7 +511,7 @@ NSString * GetCrimeListDirectory (void)
             else
                 cmd = [NSString stringWithFormat:@"INSERT INTO SortedList VALUES (%@,%i);",value,controlNum];
 
-            rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+            rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
         }
         [self commitTransaction];
     }
@@ -526,7 +526,7 @@ NSString * GetCrimeListDirectory (void)
     NSString *query = [NSString stringWithFormat:@"SELECT FieldType, Ascending FROM SortOn"];
     sqlite3_stmt *statement = NULL;
     
-    if (sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
+    if (SQLitePrepare(_database, query.UTF8String, -1, &statement, 0) == SQLITE_OK)
     {
         
         if (sqlite3_step(statement) == SQLITE_ROW)
@@ -534,7 +534,7 @@ NSString * GetCrimeListDirectory (void)
             rtn = sqlite3_column_int(statement, 0);
             asc = sqlite3_column_int(statement, 1);
         }
-        SQLOK(0,sqlite3_finalize(statement), _database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     }
     [self close:opened];
     
@@ -563,7 +563,7 @@ NSString * GetCrimeListDirectory (void)
 
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -572,7 +572,7 @@ NSString * GetCrimeListDirectory (void)
         [controlNums addObject:controlNum];
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
     return controlNums.copy;
 }
@@ -610,12 +610,12 @@ NSString * GetCrimeListDirectory (void)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         rtn = sqlite3_column_int(statement, 0);
     }
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     if (rtn < 0)
         rtn = [self next_id];
     [self close:opened];
@@ -636,7 +636,7 @@ NSString * GetCrimeListDirectory (void)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -700,7 +700,7 @@ NSString * GetCrimeListDirectory (void)
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
     
     return value;
@@ -724,14 +724,14 @@ NSString * GetCrimeListDirectory (void)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         rtn = sqlite3_column_int(statement, 0) + 1;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     return rtn;
 }
@@ -744,14 +744,14 @@ NSString * GetCrimeListDirectory (void)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         rtn = sqlite3_column_int(statement, 0) + 1;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     return rtn;
 }
@@ -815,7 +815,7 @@ NSString * GetCrimeListDirectory (void)
     NSString *query = [NSString stringWithFormat:@"SELECT ControlNum FROM CrimeList WHERE ControlNum = %i",controlNum];
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -823,7 +823,7 @@ NSString * GetCrimeListDirectory (void)
         rtn = TRUE;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     [self close:opened];
     
@@ -857,7 +857,7 @@ NSString * GetCrimeListDirectory (void)
     /*    NSString * query = [NSString stringWithFormat:@"SELECT X,Y,Offense,UCR,FromDate,ToDate, CityCode, CaseYear, CaseNbr, HouseNbr, HouseModifier,StreetName,StreetType,StreetDirection,IntersectionStreetName,IntersectionStreetType,IntersectionStreetDirection,Apartment FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];*/
         NSString * query = [NSString stringWithFormat:@"SELECT X,Y,Offense,UCR,FromDate,ToDate, CityCode, CaseYear, CaseNbr, Location FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];
     //NSString * query = [NSString stringWithFormat:@"SELECT * FROM OFFENSEXY WHERE ControlNbr = %i",controlNum];
-    SQLOK(0,sqlite3_prepare_v2(crimeData.database, query.UTF8String, -1, &statement, 0), crimeData.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(crimeData.database, query.UTF8String, -1, &statement, 0), crimeData.database);
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
 /*        int i=0;
@@ -899,7 +899,7 @@ NSString * GetCrimeListDirectory (void)
         }
         first = FALSE;
     }
-    SQLOK(0,sqlite3_finalize(statement), crimeData.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), crimeData.database);
     [crimeData close:openedCd];
     if (!first)
     {

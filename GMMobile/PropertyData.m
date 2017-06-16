@@ -24,7 +24,7 @@ LPYEARLYVALUES pYearly;
 
 int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 {
-    return SQLOK (1000,sqlReturn,database);
+    return SQLOK (__FILE__,__LINE__,sqlReturn,database);
 }
 @implementation NSString (NSNumber)
 - (BOOL) isNumberWithLocale:(NSLocale *) stringLocale
@@ -182,7 +182,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 6);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 6);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -190,7 +190,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         _version = [NSString stringWithUTF8String:ver];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 7);
+    SQLOKpd(SQLiteFinalize(statement), _database, 7);
     return _version;
 }
 
@@ -214,7 +214,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         sqlite3_stmt *statement = NULL;
         
-        int st = SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 12);
+        int st = SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 12);
         
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -222,7 +222,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             rtn = atoi (version);
         }
         
-        SQLOKpd(sqlite3_finalize(statement), _database, 13);
+        SQLOKpd(SQLiteFinalize(statement), _database, 13);
     }
     
     [self close:opened];
@@ -240,7 +240,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 14);
+        SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 14);
         
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -249,7 +249,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                 rtn = 0;
         }
         
-        SQLOKpd(sqlite3_finalize(statement), _database, 15);
+        SQLOKpd(SQLiteFinalize(statement), _database, 15);
     }
     
     [self close:opened];
@@ -272,7 +272,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             break;
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 16);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 16);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -280,7 +280,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         outString = [outString stringByAppendingString:[NSString stringWithFormat:@"\r\n%s", useCode]];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 17);
+    SQLOKpd(SQLiteFinalize(statement), _database, 17);
     
     [self close:opened];
     
@@ -313,7 +313,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             break;
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 18);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 18);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -321,7 +321,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         pt.lon = sqlite3_column_double(statement, 1);
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 19);
+    SQLOKpd(SQLiteFinalize(statement), _database, 19);
     
     [self close:opened];
     return pt;
@@ -348,7 +348,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             break;
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 20);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 20);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -358,7 +358,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         bounds.ymx = sqlite3_column_double(statement, 4);
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 21);
+    SQLOKpd(SQLiteFinalize(statement), _database, 21);
     
     [self close:opened];
     return bounds;
@@ -375,7 +375,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 28);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 28);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -384,7 +384,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [array addObject:pid];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 29);
+    SQLOKpd(SQLiteFinalize(statement), _database, 29);
     
     [self close:opened];
     return array;
@@ -403,7 +403,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0),_database, 30);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0),_database, 30);
     
     while (n++ < lim && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -417,7 +417,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [array addObject:pid];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 31);
+    SQLOKpd(SQLiteFinalize(statement), _database, 31);
     
     [self close:opened];
     return array;
@@ -447,7 +447,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement,0), _database, 32);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement,0), _database, 32);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -462,7 +462,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         [array addObject:output];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 33);
+    SQLOKpd(SQLiteFinalize(statement), _database, 33);
     
     [self close:opened];
     return array;
@@ -494,7 +494,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 34);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 34);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -516,7 +516,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         }
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 35);
+    SQLOKpd(SQLiteFinalize(statement), _database, 35);
     [self close:opened];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
@@ -551,7 +551,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 36);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 36);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -571,7 +571,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         }
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 37);
+    SQLOKpd(SQLiteFinalize(statement), _database, 37);
     [self close:opened];
     pt->longitude = minpt.x;
     pt->latitude = minpt.y;
@@ -592,7 +592,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(pd.database, query.UTF8String, -1, &statement, 0), pd.database, 38);
+    SQLOKpd(SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database, 38);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -600,7 +600,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         block = [NSString stringWithUTF8String:cblock];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), pd.database, 39);
+    SQLOKpd(SQLiteFinalize(statement), pd.database, 39);
     [pd close:opened];
     
     return block;
@@ -617,7 +617,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 38);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 38);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -625,7 +625,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         ownerName = [NSString stringWithUTF8String:owner];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 39);
+    SQLOKpd(SQLiteFinalize(statement), _database, 39);
     [self close:opened];
     return ownerName;
 }
@@ -667,7 +667,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                        PID];
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0),_database, 40);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0),_database, 40);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -720,7 +720,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         rtn = TRUE;
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 41);
+    SQLOKpd(SQLiteFinalize(statement), _database, 41);
     [self close:opened];
     return rtn;
 }
@@ -882,7 +882,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 34);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 34);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -931,7 +931,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             break;
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 35);
+    SQLOKpd(SQLiteFinalize(statement), _database, 35);
     [self close:opened];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
@@ -958,7 +958,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     if (CRAPI.sharedInstance.parcelColorOption)
     {
         NSString *query = [NSString stringWithFormat:@"SELECT ACRES_POLY,USE1_DESC,EMV_LAND,EMV_BLDG,EMV_TOTAL,TOTAL_TAX,CENBLOCK FROM PROPINFO WHERE PROPINFO.PIN='%s'", CRAPI.sharedInstance.selectedPID.UTF8String];
-        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 42);
+        SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 42);
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             double acres = sqlite3_column_double(statement,0);
@@ -989,7 +989,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                     value = bldgEMV;
                     break;
             }
-            SQLOKpd(sqlite3_finalize(statement), _database, 43);
+            SQLOKpd(SQLiteFinalize(statement), _database, 43);
         }
     }
 
@@ -1042,7 +1042,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 42);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 42);
     NSLog (@"Prepared");
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
@@ -1249,7 +1249,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         free (llpoints);
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 43);
+    SQLOKpd(SQLiteFinalize(statement), _database, 43);
     [self close:opened];
 }
 
@@ -1267,7 +1267,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM PARCELPOLY WHERE PARCELPOLY.PID = '%@'", PID];
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 44);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 44);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1302,7 +1302,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         }
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 45);
+    SQLOKpd(SQLiteFinalize(statement), _database, 45);
     
     [self close:opened];
     
@@ -1592,7 +1592,7 @@ Exit:
     
     NSString *query = [NSString stringWithFormat:@"SELECT PIN,ACRES_POLY,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES, OWNER_NAME,TAX_NAME,BLDG_NUM,SALE_DATE,SALE_VALUE, NUMLINKEDPARCELS FROM PROPINFO WHERE PROPINFO.LINKEDPARCEL = '%@'",pid];
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 46);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1614,7 +1614,7 @@ Exit:
         numLinked = (CGFloat)sqlite3_column_int(statement, 14);
         tot += emvTotal;
     }
-    SQLOKpd(sqlite3_finalize(statement), _database, 47);
+    SQLOKpd(SQLiteFinalize(statement), _database, 47);
     return tot;
 }
 -(NSArray*)getLinkedParcels:(NSString*)pid
@@ -1631,7 +1631,7 @@ Exit:
     
     NSString *query = [NSString stringWithFormat:@"SELECT PIN,HOMESTEAD,USE1_DESC,USE2_DESC,TAX_EXEMPT,EMV_TOTAL,EMV_LAND,SPEC_ASSES, OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,UNIT_INFO,CITY,SALE_DATE,SALE_VALUE FROM PROPINFO WHERE PROPINFO.LINKEDPARCEL = '%@'",pid];
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 46);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1655,7 +1655,7 @@ Exit:
         saleVal = (CGFloat)sqlite3_column_double(statement, 14);
         [array addObject:pde];
     }
-    SQLOKpd(sqlite3_finalize(statement), _database, 47);
+    SQLOKpd(SQLiteFinalize(statement), _database, 47);
     [self close:opened];
     return array;
 }
@@ -1730,7 +1730,7 @@ Exit:
             
     }
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 46);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1830,7 +1830,7 @@ Exit:
                   context:context];
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 47);
+    SQLOKpd(SQLiteFinalize(statement), _database, 47);
     [self close:opened];
 }
 
@@ -1871,7 +1871,7 @@ Exit:
     BOOL opened = [self open];
     NSMutableArray * array=[[NSMutableArray alloc]init];
     NSMutableArray * ageArray=[[NSMutableArray alloc]init];
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 48);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 48);
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
         CGFloat acres = sqlite3_column_double(statement,0);
@@ -2006,14 +2006,14 @@ Exit:
         values->rankTotEMV = IDNINT((100.0 * (myStartRank + myEndRank)/2.0)/[array count]);
     }
     
-    SQLOKpd(sqlite3_finalize(statement),_database, 49);
+    SQLOKpd(SQLiteFinalize(statement),_database, 49);
     
     
     if (strlen (cenBlockIN) > 12)
         query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT,HHTOTAL,HH_UNDER18,HH_65OVER FROM CENSUSBLOCKDATA WHERE GEOG_UNIT ='%s'",cenBlockIN];
     else
         query = [NSString stringWithFormat:@"SELECT MEDIANAGE,HOMEOWNPCT,HHTOTAL,HH_UNDER18,HH_65OVER FROM CENSUSBLOCKGROUPDATA WHERE GEOG_UNIT ='%s'",cenBlockIN];
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 50);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 50);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -2029,7 +2029,7 @@ Exit:
         }
     }
     
-    SQLOKpd(sqlite3_finalize(statement), _database, 51);
+    SQLOKpd(SQLiteFinalize(statement), _database, 51);
     
     [self close:opened];
 }
@@ -2045,13 +2045,13 @@ Exit:
     
     NSString *query = [NSString stringWithFormat:@"SELECT MULTIYEAROFFSET FROM PROPINFO WHERE PIN = '%@'",PID];
     
-    SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 46);
+    SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         offset = sqlite3_column_int(statement, 0);
     }
-    SQLOKpd(sqlite3_finalize(statement), _database, 47);
+    SQLOKpd(SQLiteFinalize(statement), _database, 47);
 
     if (offset)
     {
@@ -2133,7 +2133,7 @@ Exit:
             NSString *query = [NSString stringWithFormat:@"SELECT HOUSENUM,HOUSEFRACT,STREET,UNITNUM,ZIPCODE,\"OWNER NAME\",\"TAXPAYER NAME\",\"TAXPAYER ADDR1\",\"TAXPAYER ADDR2\",\"TAXPAYER ADDR3\",PARCEL_DEPTH,PARCEL_FRONTAGE,AREA_SQFT,USECODE,USE_DESC,TAX_EXEMPT,LAND_VALUE,BLDG_VALUE,TOTAL_VALUE,TOTAL_TAX,HOMESTEAD,WTRSHD,PARCELZONE.ZONETYPE,ASSESSMENT_YEAR,Date_of_Query FROM PROPINFO,PARCELZONE WHERE PROPINFO.PID='%s' AND PARCELZONE.PID='%s'",
                                pid.UTF8String,pid.UTF8String];
             
-            SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 54);
+            SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 54);
             
             if (sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -2252,7 +2252,7 @@ Exit:
                 line = [NSString stringWithFormat:@"Date of Query:%s", dateOfQuery];
                 [report addObject:line];
                 
-                SQLOKpd(sqlite3_finalize(statement), _database, 55);
+                SQLOKpd(SQLiteFinalize(statement), _database, 55);
             }
         }
             break;
@@ -2262,7 +2262,7 @@ Exit:
             NSString *query = [NSString stringWithFormat:@"SELECT BLDG_NUM,STREETNAME,UNIT_INFO,CITY,CITY_USPS,ZIP,ZIP4,PLAT_NAME,BLOCK,LOT,ACRES_POLY,ACRES_DEED,USE1_DESC,USE2_DESC,USE3_DESC,USE4_DESC,MULTI_USES,LANDMARK,OWNER_NAME,OWNER_MORE,EMV_LAND,EMV_BLDG,EMV_TOTAL,TAX_CAPAC,TOTAL_TAX,SPEC_ASSES,SALE_DATE,SALE_VALUE,CENBLOCK,TAX_NAME,HOMESTEAD,OWN_ADD_L1,OWN_ADD_L2,OWN_ADD_L3,TAX_ADD_L1,TAX_ADD_L2,TAX_ADD_L3,MULTIYEAROFFSET FROM PROPINFO WHERE PROPINFO.PIN='%s'",
                                pid.UTF8String];
             
-            SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 56);
+            SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 56);
             /*
              CREATE TABLE PROPINFO ('id' INT,'PIN' CHAR(17),'BLDG_NUM' CHAR(10),'STREETNAME' CHAR(60),'UNIT_INFO' CHAR(12),'CITY' CHAR(30),'CITY_USPS' CHAR(30),'ZIP' CHAR(5),'ZIP4' CHAR(4),'PLAT_NAME' CHAR(50),'BLOCK' CHAR(5),'LOT' CHAR(5),'ACRES_POLY' REAL,'ACRES_DEED' REAL,'USE1_DESC' CHAR(100),'USE2_DESC' CHAR(100),'USE3_DESC' CHAR(100),'USE4_DESC' CHAR(100),'MULTI_USES' CHAR(1),'LANDMARK' CHAR(100),'OWNER_NAME' CHAR(50),'OWNER_MORE' CHAR(50),'OWN_ADD_L1' CHAR(40),'OWN_ADD_L2' CHAR(40),'OWN_ADD_L3' CHAR(40),'TAX_NAME' CHAR(40),'TAX_ADD_L1' CHAR(40),'TAX_ADD_L2' CHAR(40),'TAX_ADD_L3' CHAR(40),'HOMESTEAD' CHAR(1),'EMV_LAND' REAL,'EMV_BLDG' REAL,'EMV_TOTAL' REAL,'TAX_CAPAC' REAL,'TOTAL_TAX' REAL,'SPEC_ASSES' REAL,'TAX_EXEMPT' CHAR(1),'XUSE1_DESC' CHAR(100),'XUSE2_DESC' CHAR(100),'XUSE3_DESC' CHAR(100),'XUSE4_DESC' CHAR(100),'DWELL_TYPE' CHAR(30),'HOME_STYLE' CHAR(30),'FIN_SQ_FT' REAL,'GARAGE' CHAR(1),'GARAGESQFT' CHAR(11),'BASEMENT' CHAR(1),'HEATING' CHAR(30),'COOLING' CHAR(30),'YEAR_BUILT' CHAR(5),'NUM_UNITS' CHAR(6),'SALE_DATE' CHAR(8),'SALE_VALUE' REAL,'SCHOOL_DST' CHAR(6),'WSHD_DIST' CHAR(50),'GREEN_ACRE' CHAR(1),'OPEN_SPACE' CHAR(1),'AG_PRESERV' CHAR(1),'AGPRE_ENRD' CHAR(8),'AGPRE_EXPD' CHAR(8),'PARC_CODE' CHAR(5),'CENBLOCK' CHAR(15),'LONGITUDE' REAL,'LATITUDE' REAL,PRIMARY KEY('id' ASC))
              */
@@ -2423,7 +2423,7 @@ Exit:
                 line = [NSString stringWithFormat:@"Landmark:%s", landMark];
                 [report addObject:line];
                 
-                //SQLOKpd(sqlite3_finalize(statement),_database, 57);
+                //SQLOKpd(SQLiteFinalize(statement),_database, 57);
                 
                 DATA_FROM_TABLES values;
                 [self computeValuesFromTables:&values
@@ -2444,7 +2444,7 @@ Exit:
                 [report addObject:line];
             }
             
-            SQLOKpd(sqlite3_finalize(statement), _database, 58);
+            SQLOKpd(SQLiteFinalize(statement), _database, 58);
         }
     }
     
@@ -2603,7 +2603,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             NSString *query = [NSString stringWithFormat:@"SELECT Word,NOFFSETS,OFFSETS FROM NAMEINDEX WHERE Word >='%s' AND Word < '%s'",
                                begWord,endWord];
             
-            SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 59);
+            SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 59);
             
             while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
             {
@@ -2623,7 +2623,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
                 }
             }
             
-            SQLOKpd(sqlite3_finalize(statement), _database, 60);
+            SQLOKpd(SQLiteFinalize(statement), _database, 60);
             
             if (!nPartOffsets[ipart])
                 GetNext = FALSE;
@@ -2657,7 +2657,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
         NSString *query = [NSString stringWithFormat:@"SELECT PIN,OWNER_NAME,TAX_NAME,BLDG_NUM,STREETNAME,CITY, LATITUDE, LONGITUDE, OWNER_MORE,TAX_NAME FROM PROPINFO WHERE id IN(%@)",
                            inList];
         BoundaryData * bd = BoundaryData.new;
-        SQLOKpd(sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database, 61);
+        SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 61);
         
         while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -2743,7 +2743,7 @@ int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, i
             }
         }
         
-        SQLOKpd(sqlite3_finalize(statement), _database, 62);
+        SQLOKpd(SQLiteFinalize(statement), _database, 62);
     }
     free (Hits);
     [self close:25];

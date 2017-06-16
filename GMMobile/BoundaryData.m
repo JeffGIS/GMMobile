@@ -53,8 +53,8 @@
     BOOL rtn = FALSE;
     if (!_isOpen)
     {
-        _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
-//        _isOpen = !SQLOK(0,sqlite3_open(_proppath.UTF8String, &_database), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
+//        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_proppath.UTF8String, &_database), _database);
         NSLog(@"Boundary Database open");
         
         if (_isOpen)
@@ -89,7 +89,7 @@
 {
     if (opened && _isOpen)
     {
-        SQLOK(0,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
         NSLog(@"Boundary Database close");
         _isOpen = NO;
     }
@@ -118,7 +118,7 @@
         
         sqlite3_stmt *statement = NULL;
         
-        BOOL st = SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);;
+        BOOL st = SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);;
         if (st)
             [self createVersionTable];
         else
@@ -132,7 +132,7 @@
                     rtn = atoi(version);
             }
             
-            SQLOK(0,sqlite3_finalize(statement), _database);
+            SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
         }
     }
     [self close:opened];
@@ -141,19 +141,19 @@
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
     [self open];
-    SQLOK(0,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(0,sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database);
+    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database);
 }
 
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
@@ -257,7 +257,7 @@
                      refno];
     }
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -323,7 +323,7 @@
         }
     }
  
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
 }
 
@@ -415,7 +415,7 @@
                 break;
         }
         
-        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
         
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -424,7 +424,7 @@
             [types addObject:outString];
         }
         
-        SQLOK(0,sqlite3_finalize(statement), _database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
         [self close:opened];
     }
     return types;
@@ -445,7 +445,7 @@
             break;
     }
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -457,7 +457,7 @@
         [data addObject:baData];
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     [self close:opened];
     return data;
@@ -505,14 +505,14 @@
     {
         query = [NSString stringWithFormat:@"SELECT id FROM %@ WHERE %@='%@'",table,type,name];
     }
-    SQLOK(0,sqlite3_prepare_v2(bad.database, query.UTF8String, -1, &statement, 0), bad.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(bad.database, query.UTF8String, -1, &statement, 0), bad.database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         refno = sqlite3_column_int(statement, 0);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), bad.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), bad.database);
     
     [bad close:opened];
     return refno;
@@ -541,7 +541,7 @@
 
     }
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -552,7 +552,7 @@
         bounds.ymx = sqlite3_column_double(statement, 4);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     [self close:opened];
     return bounds;
@@ -572,7 +572,7 @@
     
     NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, BOUNDARYAREA.id FROM BOUNDARYAREA WHERE BOUNDARYAREA.id=%i", refno];
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -607,7 +607,7 @@
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
     
     return llpoints;
@@ -650,7 +650,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
     }
     
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -730,7 +730,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
     }
     
-    SQLOK(0,sqlite3_finalize(statement), self.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     [self close:opened];
 }
 
@@ -845,12 +845,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     INT64 count = 0;
     CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
 
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, NULL), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, NULL), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
         count = sqlite3_column_int64(statement, 0);
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
 
     return count;
@@ -862,12 +862,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     INT64 count = 0;
     CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
 
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, NULL), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, NULL), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
         count = sqlite3_column_int64(statement, 0);
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
 
     return count;
@@ -911,7 +911,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if (NVMetroSettings.sharedInstance.themeClassType > -1)
     {
         NSString * query = @"SELECT ID,Value FROM SORTEDVALUES ORDER BY Value";
-        SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
         int iClass = 0;
         int startClass = 0;
         int startValue = 0;
@@ -946,7 +946,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         rtn = ID;
         classMax[iClass] = value;
         classAve[iClass] = classTot / classCounts[iClass];
-        SQLOK(0,sqlite3_finalize(statement), self.database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
         query = @"DROP TABLE IF EXISTS SORTEDVALUES;";
 //        [self executeCmd:(LPSTR)query.UTF8String];
         NVMetroSettings.sharedInstance.numThemeClasses = iClass+1;
@@ -1138,7 +1138,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             if (NVMetroSettings.sharedInstance.overUnder && CRAPI.sharedInstance.currentPID)
             {
                 query = [NSString stringWithFormat:@"SELECT %@,ACRES_POLY,GENUSECODE,HOMESTEAD,id FROM PROPINFO WHERE PIN = '%@'",field,CRAPI.sharedInstance.currentPID];
-                SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+                SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
                 _currentRec = 0;
                 if ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
                 {
@@ -1166,7 +1166,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
 
                     NVMetroSettings.sharedInstance.targetValue = dataValue;
                 }
-                SQLOK(0,sqlite3_finalize(statement), self.database);
+                SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
             }
 
             query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,GENUSECODE,HOMESTEAD,minX,maxX,minY,maxY FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
@@ -1233,7 +1233,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         }
     }
     CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1449,7 +1449,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     }
     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
     
-    SQLOK(0,sqlite3_finalize(statement), self.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     //svc = [self getCountOfSortedValues];
     if (_pass == DataPass)
     {
@@ -1529,7 +1529,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1591,7 +1591,7 @@ NextPass:
         free (llpoints);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [pias areasLoaded:bpias convertToLL:_pTranViewtoLL];
     
     if (pass++ < 3)
@@ -1647,7 +1647,7 @@ NextPass:
     }
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -1710,7 +1710,7 @@ NextPass:
         free (llpoints);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), self.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     [self close:opened];
     
     return nLoaded;
@@ -1779,7 +1779,7 @@ NextPass:
     }
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
     CRAPI.sharedInstance.lastAreaText = NSMutableArray.new;
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
@@ -1980,7 +1980,7 @@ NextPass:
                                    numRanges:1];
     }
     
-    SQLOK(0,sqlite3_finalize(statement), self.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     [self close:opened];
     
     return nLoaded;
@@ -2006,7 +2006,7 @@ NextPass:
             break;
     }
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     DBoundsInit(&bounds);
     while (sqlite3_step(statement) == SQLITE_ROW)
@@ -2019,7 +2019,7 @@ NextPass:
         AddMinMaxD (&bounds, &bounds2);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     [self close:opened];
     
@@ -2074,7 +2074,7 @@ NextPass:
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@, %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",areaType,table,table,table,table,table,
                  point.lon,point.lon,point.lat,point.lat];
     }
-    SQLOK(0,sqlite3_prepare_v2(self.database, query.UTF8String, -1, &statement, 0), self.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -2117,7 +2117,7 @@ NextPass:
         free (llpoints);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), self.database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
     [self close:opened];
     if (nPicked == 1)
     {
@@ -2181,7 +2181,7 @@ NextPass:
     }
     
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -2216,7 +2216,7 @@ NextPass:
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     [self close:opened];
     
@@ -2253,7 +2253,7 @@ NextPass:
     }
     
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -2263,7 +2263,7 @@ NextPass:
         bounds.ymx = sqlite3_column_double(statement, 4);
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     [self close:opened];
     return bounds;

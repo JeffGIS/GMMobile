@@ -201,8 +201,8 @@ NSString * GetPropListDirectory (void)
         _fileName = [UserDefaults.defaults stringForKey:@"CurrentPropertyList"];
         _path = [NSString stringWithFormat:@"%@/%@.sqlite", _propListDir, _fileName];
 
-//        _isOpen = !SQLOK(0,sqlite3_open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
-        _isOpen = !SQLOK(0,sqlite3_open(_path.UTF8String, &_database), _database);
+//        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open_v2(_path.UTF8String, &_database,SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE|SQLITE_OPEN_NOMUTEX,NULL), _database);
+        _isOpen = !SQLOK(__FILE__,__LINE__,sqlite3_open(_path.UTF8String, &_database), _database);
         NSLog(@"PropertyList Database open");
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
         rtn = YES;
@@ -216,7 +216,7 @@ NSString * GetPropListDirectory (void)
     if (opened && _isOpen)
     {
         NSLog(@"PropertyList Database close");
-        SQLOK(0,sqlite3_close(_database),_database);
+        SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
         _isOpen = NO;
         _dbIsOpen--;
     }
@@ -228,7 +228,7 @@ NSString * GetPropListDirectory (void)
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
                         CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC);";
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -246,14 +246,14 @@ NSString * GetPropListDirectory (void)
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
         
         if (sqlite3_step(statement) == SQLITE_ROW)
         {
             rtn = sqlite3_column_int(statement, 0);
         }
         
-        SQLOK(0,sqlite3_finalize(statement), _database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     }
     
     [self close:opened];
@@ -263,18 +263,18 @@ NSString * GetPropListDirectory (void)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(0,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
-    SQLOK(0,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(0,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
 - (NSArray*)availablePropertyFields
@@ -630,7 +630,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -639,7 +639,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [propNums addObject:propNum];
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
     return propNums.copy;
 }
@@ -708,7 +708,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -755,7 +755,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         }
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     [self close:opened];
     
     return value;
@@ -775,7 +775,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
         
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -783,7 +783,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             totval += dval;
             nval++;
         }
-        SQLOK(0,sqlite3_finalize(statement), _database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
         [self close:opened];
         switch (fieldType)
         {
@@ -821,7 +821,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         
         sqlite3_stmt *statement = NULL;
         
-        SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
         
         while (sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -829,7 +829,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
             totval += dval;
             nval++;
         }
-        SQLOK(0,sqlite3_finalize(statement), _database);
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
         [self close:opened];
         if (nval > 0)
         {
@@ -865,14 +865,14 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         rtn = sqlite3_column_int(statement, 0) + 1;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     return rtn;
 }
@@ -885,14 +885,14 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(0,sqlite3_prepare_v2(_database, query.UTF8String, -1, &statement, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
     {
         rtn = sqlite3_column_int(statement, 0) + 1;
     }
     
-    SQLOK(0,sqlite3_finalize(statement), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     
     return rtn;
 }
