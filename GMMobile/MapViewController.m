@@ -116,6 +116,11 @@
 {
     [super viewDidLoad];
     
+#ifdef DEBUG
+    SetVendoIDInc(64);//Bill
+    //SetVendoIDInc(101);//Jeff
+#endif
+    
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
