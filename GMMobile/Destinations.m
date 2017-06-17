@@ -147,10 +147,10 @@
     CREATE TABLE IF NOT EXISTS Routes (RouteNum INT,PropertyNum INT,DestinationNum INT,Direction INT,Distance REAL,Time REAL);\
                       CREATE INDEX IF NOT EXISTS PropNum_index ON Routes (PropertyNum ASC);";
     
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     /*cmd = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS Destinations_VERSION (id INT,Version INT);INSERT INTO Destinations_VERSION VALUES (1,%i);",CURRENT_VERSION];
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);*/
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);*/
     
     [self close:opened];
     return rtn;
@@ -185,18 +185,18 @@
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
 - (int)next_id

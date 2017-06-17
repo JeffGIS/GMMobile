@@ -228,7 +228,7 @@ NSString * GetPropListDirectory (void)
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
                         CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC);";
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -263,18 +263,18 @@ NSString * GetPropListDirectory (void)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
 - (NSArray*)availablePropertyFields

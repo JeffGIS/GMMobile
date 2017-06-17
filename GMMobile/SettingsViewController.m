@@ -392,7 +392,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                        cmd = [cmd stringByReplacingOccurrencesOfString:@"AssignedTo=" withString:@"AssignedToDetail="];
                                                        [crd executeCmd:(LPSTR)cmd.UTF8String
                                                           sendToServer:NO
-                                                                  from:1675];
+                                                              fromFile:__FILE__ fromLine:__LINE__];
+
                                                    }
                                                    else if (dataType == GetDatabaseSettingAlleyWall)
                                                    {
