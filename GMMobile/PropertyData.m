@@ -160,19 +160,19 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOKpd(sqlite3_exec(_database, cmd, 0, 0, 0),_database, 3);
+    BOOL rtn = !SQLOKpd(SQLiteExec(_database, cmd, 0, 0, 0),_database, 3);
     return rtn;
 }
 
 - (void)startTransaction
 {
     [self open];
-    SQLOKpd(sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database, 4);
+    SQLOKpd(SQLiteExec(_database, "BEGIN", 0, 0, 0), _database, 4);
 }
 
 - (void)commitTransaction
 {
-    SQLOKpd(sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database, 5);
+    SQLOKpd(SQLiteExec(_database, "COMMIT", 0, 0, 0),_database, 5);
 }
 
 - (NSString *) propVersion

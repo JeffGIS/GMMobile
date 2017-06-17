@@ -141,19 +141,19 @@
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
     [self open];
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0),_database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0),_database);
 }
 
 -(void)displayCircularBoundaryAt:(LLPOINT)pt
@@ -881,7 +881,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         NSString * cmd = [NSString stringWithFormat:@"INSERT INTO SORTEDVALUES VALUES(%lli,%lli);",id,value];
       //  int st = [self executeCmd:(LPSTR)cmd.UTF8String];
-        int st = sqlite3_exec(_database,(LPSTR)cmd.UTF8String, 0, 0, 0);
+        int st = SQLiteExec(_database,(LPSTR)cmd.UTF8String, 0, 0, 0);
         if (st)
             st = 0;
     }

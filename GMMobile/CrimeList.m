@@ -270,18 +270,18 @@ NSString * GetCrimeListDirectory (void)
 
 - (BOOL)executeCmd:(char *)cmd
 {
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd, 0, 0, 0), _database);
     return rtn;
 }
 
 - (void)startTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "BEGIN", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "BEGIN", 0, 0, 0), _database);
 }
 
 - (void)commitTransaction
 {
-    SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, "COMMIT", 0, 0, 0), _database);
+    SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
 - (NSArray*)availableCrimeFields
@@ -377,7 +377,7 @@ NSString * GetCrimeListDirectory (void)
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS CrimeList (id INTEGER PRIMARY KEY,ControlNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
     CREATE INDEX IF NOT EXISTS CrimeList_index ON CrimeList (ControlNum ASC);\
     CREATE TABLE IF NOT EXISTS SearchStrings (FieldType INTEGER PRIMARY KEY, SearchString CHAR);";
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -398,7 +398,7 @@ NSString * GetCrimeListDirectory (void)
         {
             text = textAfter(text,@":");
             NSString * cmd = [NSString stringWithFormat:@"INSERT OR REPLACE INTO SearchStrings VALUES(%li,'%@');",(long)field,text];
-            rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+            rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
             if (rtn)
                 [self reloadSearchValues];
         }
@@ -470,7 +470,7 @@ NSString * GetCrimeListDirectory (void)
     _controlNumberList = nil;
     
     NSString *cmd =  [NSString stringWithFormat:@"DROP TABLE IF EXISTS SortOn;CREATE TABLE SortOn (FieldType INTEGER, Ascending INTEGER);INSERT INTO SortOn VALUES (%li,%i)",(long)field,ascending];
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     [self close:opened];
     return rtn;
@@ -483,7 +483,7 @@ NSString * GetCrimeListDirectory (void)
     _controlNumberList = nil;
    
     NSString *cmd =  @"DROP TABLE IF EXISTS SortedList;";
-    BOOL rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+    BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
     if (sortField != CFT_END)
     {
@@ -494,7 +494,7 @@ NSString * GetCrimeListDirectory (void)
         else if (vt == VTDouble)
             type = @"DOUBLE";
         cmd =  [NSString stringWithFormat:@"CREATE TABLE SortedList (Value %@,ControlNum INTEGER);",type];
-        rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+        rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
         NSArray * cnumList = [self createControlNumbers:NO];
         [self startTransaction];
         for (NSNumber * num in cnumList)
@@ -511,7 +511,7 @@ NSString * GetCrimeListDirectory (void)
             else
                 cmd = [NSString stringWithFormat:@"INSERT INTO SortedList VALUES (%@,%i);",value,controlNum];
 
-            rtn = !SQLOK(__FILE__,__LINE__,sqlite3_exec(_database, cmd.UTF8String, 0, 0, 0), _database);
+            rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
         }
         [self commitTransaction];
     }
