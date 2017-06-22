@@ -72,6 +72,7 @@
 		699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699F33BB1D6232AE0074BDFD /* WebKit.framework */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
+		69B64DF91EFC6A9300659986 /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69B64DF81EFC6A9300659986 /* NVMobile_VersionHistory.pdf */; };
 		69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */; };
 		69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
@@ -108,7 +109,6 @@
 		69F5B2261BC5A3BC00119212 /* editText.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F5B2251BC5A3BC00119212 /* editText.png */; };
 		69F5B2281BC5A56600119212 /* editOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F5B2271BC5A56600119212 /* editOptions.png */; };
 		69F5B22C1BC5D80F00119212 /* googleIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69F5B22B1BC5D80F00119212 /* googleIcon.png */; };
-		69F743B91EF7778200826FB8 /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69F743B81EF7778200826FB8 /* NVMobile_VersionHistory.pdf */; };
 		69FDA4341EE77D4600BA9735 /* versionHistory.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FDA4331EE77D4600BA9735 /* versionHistory.png */; };
 		69FDA4361EE7838A00BA9735 /* glossary.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FDA4351EE7838A00BA9735 /* glossary.png */; };
 		69FEC88D1CA9A53E002BF231 /* whiteMapIt.png in Resources */ = {isa = PBXBuildFile; fileRef = 69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */; };
@@ -339,6 +339,7 @@
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
 		69B46EFD1BC215F100BB7724 /* destinations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = destinations.png; sourceTree = "<group>"; };
+		69B64DF81EFC6A9300659986 /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteQuestionMark.png; sourceTree = "<group>"; };
 		69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_SlopeVC.pdf; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
@@ -383,7 +384,6 @@
 		69F5B2251BC5A3BC00119212 /* editText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editText.png; sourceTree = "<group>"; };
 		69F5B2271BC5A56600119212 /* editOptions.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = editOptions.png; sourceTree = "<group>"; };
 		69F5B22B1BC5D80F00119212 /* googleIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = googleIcon.png; sourceTree = "<group>"; };
-		69F743B81EF7778200826FB8 /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		69FDA4331EE77D4600BA9735 /* versionHistory.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = versionHistory.png; sourceTree = "<group>"; };
 		69FDA4351EE7838A00BA9735 /* glossary.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glossary.png; sourceTree = "<group>"; };
 		69FEC88C1CA9A53E002BF231 /* whiteMapIt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteMapIt.png; sourceTree = "<group>"; };
@@ -949,7 +949,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				69F743B81EF7778200826FB8 /* NVMobile_VersionHistory.pdf */,
+				69B64DF81EFC6A9300659986 /* NVMobile_VersionHistory.pdf */,
 				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
@@ -1187,7 +1187,7 @@
 				69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */,
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
-				69F743B91EF7778200826FB8 /* NVMobile_VersionHistory.pdf in Resources */,
+				69B64DF91EFC6A9300659986 /* NVMobile_VersionHistory.pdf in Resources */,
 				69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
