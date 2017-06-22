@@ -1704,11 +1704,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)handleLongPressDigitizingForState:(UILongPressGestureRecognizer *)gesture
 {
-    [self clearVectorView];
-
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
+        [self clearVectorView];
         CGPoint gesturePoint = [gesture locationInView:self.view];
         
         if (gesture.state == UIGestureRecognizerStateBegan)
@@ -1770,7 +1769,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             {
                 if (![AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno to:position])
                 {
-                    Do something here
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                      delegate:CRAPI.sharedInstance
+                                                                         title:@"Failed to Move Point"
+                                                               buttonTextArray:@[@"OK"]
+                                                              destructiveIndex:0];
+#pragma unused(alert)
                 }
                 else
                 {
@@ -1829,7 +1833,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                          withHouse:houseAndUnit
                          andStreet:streetName])
                 {
-                    do something here
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                      delegate:CRAPI.sharedInstance
+                                                                         title:@"Failed to Create Point"
+                                                               buttonTextArray:@[@"OK"]
+                                                              destructiveIndex:0];
+#pragma unused(alert)
                 }
                 else
                 {
