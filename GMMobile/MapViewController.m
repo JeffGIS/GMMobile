@@ -1704,6 +1704,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 
 - (void)handleLongPressDigitizingForState:(UILongPressGestureRecognizer *)gesture
 {
+    [self clearVectorView];
+
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
     {
@@ -1766,24 +1768,29 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case DigitizationModeAlleyWallMove:
             {
-                [AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno to:position];
-                
-                MarkerButton *marker = _markerArray.lastObject;
-                marker.position = position;
-                
-                marker.center = CGPointMake(_digitizerTargetView.center.x,
-                                            (_digitizerTargetView.center.y -
-                                             (marker.frame.size.height / 2.0)));
-                
-                [self updateInfoWindowPosition];
-                
-                [UIView animateWithDuration:0.25
-                                 animations:^{
-                                     _cancelDigitizerButton.alpha = 0.0;
-                                     _saveDigitizerButton.alpha = 1.0;
-                                 }];
-                
-                [_vectorView setNeedsDisplay];
+                if (![AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno to:position])
+                {
+                    Do something here
+                }
+                else
+                {
+                    MarkerButton *marker = _markerArray.lastObject;
+                    marker.position = position;
+                    
+                    marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                                (_digitizerTargetView.center.y -
+                                                 (marker.frame.size.height / 2.0)));
+                    
+                    [self updateInfoWindowPosition];
+                    
+                    [UIView animateWithDuration:0.25
+                                     animations:^{
+                                         _cancelDigitizerButton.alpha = 0.0;
+                                         _saveDigitizerButton.alpha = 1.0;
+                                     }];
+                    
+                    [_vectorView setNeedsDisplay];
+                }
             }
                 break;
             case DigitizationModeAlleyWallNew:
@@ -1817,19 +1824,24 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                          acres:nil];
                 }
                 
-                [awd createNewWall:newWallID
+                if (![awd createNewWall:newWallID
                            atPoint:position
                          withHouse:houseAndUnit
-                         andStreet:streetName];
-                
-                [self vectorViewRefresh];
-                _noneSelected = NO;
-                
-                [UIView animateWithDuration:0.25
-                                 animations:^{
-                                     _cancelDigitizerButton.alpha = 0.0;
-                                     _saveDigitizerButton.alpha = 1.0;
-                                 }];
+                         andStreet:streetName])
+                {
+                    do something here
+                }
+                else
+                {
+                    [self vectorViewRefresh];
+                    _noneSelected = NO;
+                    
+                    [UIView animateWithDuration:0.25
+                                     animations:^{
+                                         _cancelDigitizerButton.alpha = 0.0;
+                                         _saveDigitizerButton.alpha = 1.0;
+                                     }];
+                }
             }
                 break;
             case DigitizationModeCurbRamps:
