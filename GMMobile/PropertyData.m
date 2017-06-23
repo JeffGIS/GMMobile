@@ -2034,11 +2034,11 @@ Exit:
     [self close:opened];
 }
 
--(NSMutableArray *) getParcelHistory:(NSString*)PID
+- (NSArray *)getParcelHistory:(NSString *)PID
 {
-    NSMutableArray * values = [NSMutableArray new];
+    NSMutableArray *values = NSMutableArray.array;
     LPYEARLYVALUES pYearly;
-    int nYears, firstYear, lastYear, offset=0;
+    int nYears =  0, firstYear = 0, lastYear = 0, offset = 0;
     BOOL opened = [self open];
     
     sqlite3_stmt *statement = NULL;
@@ -2048,32 +2048,32 @@ Exit:
     SQLOKpd(SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database, 46);
     
     if (sqlite3_step(statement) == SQLITE_ROW)
-    {
         offset = sqlite3_column_int(statement, 0);
-    }
+    
     SQLOKpd(SQLiteFinalize(statement), _database, 47);
 
     if (offset)
     {
-        FILE * fid = fopen (_multiValueFile.UTF8String,"rb");
-        BOOL homestead, taxexempt;
-        int ii = sizeof(YEARLYVALUES);
-        int compressedSize;
-        int decompressedSize;
-        LPBYTE pCompressed;
-        LPINT pInts, pIntsInit;
+        FILE *fid = fopen (_multiValueFile.UTF8String,"rb");
+        BOOL homestead = NO, taxexempt = NO;
+        //int ii = sizeof(YEARLYVALUES);
+        int compressedSize = 0;
+        int decompressedSize = 0;
+        LPBYTE pCompressed = {0};
+        LPINT pInts = {0}, pIntsInit = {0};
     
         fread(&nYears, 4, 1, fid);
         fread(&firstYear, 4, 1, fid);
         fread(&lastYear, 4, 1, fid);
-        pYearly = (LPYEARLYVALUES)malloc (nYears * sizeof(YEARLYVALUES));
-        pIntsInit = pInts = (LPINT)malloc (nYears*8*4);
+        pYearly = (LPYEARLYVALUES)malloc(nYears * sizeof(YEARLYVALUES));
+        pIntsInit = pInts = (LPINT)malloc(nYears * 8 * 4);
         fseek(fid, offset, SEEK_SET);
         BigRead(fid, &compressedSize, 4);
-        pCompressed = malloc (compressedSize);
-        BigRead (fid,pCompressed,compressedSize);
+        pCompressed = malloc(compressedSize);
+        BigRead(fid, pCompressed, compressedSize);
         fclose(fid);
         decompressedSize = DecompressBinaryRecordUnsafe((LPBYTE)pInts, pCompressed, compressedSize);
+        
         for (int ival = 0;ival<8;ival++)
         {
             for (int iyear=0;iyear<nYears;iyear++)
@@ -2083,23 +2083,28 @@ Exit:
                 *pInt2++ = *pInts++;
             }
         }
+        
         for (int iyear=0;iyear<nYears;iyear++)
         {
             PropertyHistory *ph = PropertyHistory.new;
             
             ph.year = lastYear - iyear;
             ph.emvLand = pYearly[iyear].EMV_LAND;
+            
             if (ph.emvLand < 0)
             {
                 ph.emvLand = -(ph.emvLand + 1);
-                homestead = TRUE;
+                homestead = YES;
             }
+            
             ph.emvBldg = pYearly[iyear].EMV_BLDG;
+            
             if (ph.emvBldg < 0)
             {
                 ph.emvBldg = -(ph.emvBldg + 1);
-                taxexempt = TRUE;
+                taxexempt = YES;
             }
+            
             ph.emvTotal = pYearly[iyear].EMV_TOTAL;
             ph.taxCapacity = pYearly[iyear].TAX_CAPACITY;
             ph.totalTax = pYearly[iyear].TOTAL_TAX;
@@ -2108,18 +2113,20 @@ Exit:
             ph.saleVal = pYearly[iyear].SALE_VALUE;
             [values addObject:ph];
         }
+        
         free (pYearly);
         free (pIntsInit);
         free (pCompressed);
     }
+    
     [self close:opened];
-    return values;
+    return values.copy;
 }
 
 - (NSMutableArray *)getReport:(PropDataOption)option
                        forPID:(NSString *)pid
 {
-    NSMutableArray *history = nil;//[self getParcelHistory:pid];
+    //NSMutableArray *history = nil;//[self getParcelHistory:pid];
     NSMutableArray *report = [[NSMutableArray alloc] init];
     sqlite3_stmt *statement = NULL;
     char censusBlock[32];
