@@ -117,7 +117,7 @@
     [super viewDidLoad];
     
 #ifdef DEBUG
-    SetVendoIDInc(72);//Bill
+    //SetVendoIDInc(72);//Bill
     //SetVendoIDInc(101);//Jeff
 #endif
     
