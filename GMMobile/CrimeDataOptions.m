@@ -597,7 +597,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if (_currentArray == _multipleOffenseOptions)
     {
         _selectedMultipleOffenseOption = _multipleOffenseOptions[indexPath.row];
-        [UserDefaults.defaults saveString:_selectedMultipleOffenseOption forKey:@"SelectedMultipleOffenseOptions"];
+        [UserDefaults.defaults saveString:_selectedMultipleOffenseOption forKey:@"SelectedMultipleOffenseOption"];
         
         [_multipleOffenseButton setTitle:[NSString stringWithFormat:@"Multiple Offenses:%@", _selectedMultipleOffenseOption]
                                 forState:UIControlStateNormal];
