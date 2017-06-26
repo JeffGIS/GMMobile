@@ -637,7 +637,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         else if ([_selectedCompareOption isEqualToString:@"Time Corrected"])
             ConfigurationControl.sharedInstance.dataCompareOption = DCOptionTime;
         
-        [UserDefaults.defaults saveBool:ConfigurationControl.sharedInstance.wantAllCrimes forKey:@"WantAllCrimes"];
+        [UserDefaults.defaults saveBool:ConfigurationControl.sharedInstance.dataCompareOption forKey:@"DataCompareOption"];
     }
     
     else

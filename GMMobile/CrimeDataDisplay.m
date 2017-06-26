@@ -70,6 +70,7 @@
                          UCR:(int)UCR
 {
     BOOL rtn = FALSE;
+    int st = 0;
     BOOL outOfOrder = FALSE;
     
     NSString *query = [NSString stringWithFormat:@"SELECT UCR FROM CNUMCHECK WHERE ControlNbr = %i",controlNbr];
@@ -82,10 +83,12 @@
         int ucr = sqlite3_column_int(statement, 0);
         if (UCR < ucr)
             outOfOrder = TRUE;
-        rtn = TRUE;
+        else if (UCR > ucr)
+            rtn = TRUE;
+        st = 1;
     }
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _cd.database);
-    if (!rtn)
+    if (!st)
     {
         query = [NSString stringWithFormat:@"INSERT INTO CNUMCHECK VALUES(%i,%i);",controlNbr,UCR];
         [_cd executeCmd:(LPSTR)query.UTF8String];
@@ -93,6 +96,33 @@
     return rtn;
 }
 
+-(void) checkMultipleCodes
+{
+    doesSQLiteFieldExist("OFFENSEXY", "OffenseOrder",_cd.database);
+    sqlite3_stmt *statement = NULL;
+    NSString * query = [NSString stringWithFormat:@"SELECT ControlNbr,Offense FROM OFFENSEXY ORDER BY ControlNbr,Offense"];
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_cd.database, query.UTF8String, -1, &statement, 0), _cd.database);
+    NSString * lastOffense = @"";
+    NSString * firstOffense = @"";
+    int lastControlNum = 0;
+    int haveMults = 0;
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int controlNbr = sqlite3_column_int(statement,0);
+        NSString * offense = [NSString stringWithUTF8String:(LPSTR)sqlite3_column_text(statement,1)];
+        if (controlNbr != lastControlNum)
+            firstOffense = offense;
+        else if ([offense isEqualToString:lastOffense] && [offense isEqualToString:firstOffense])
+        {
+            haveMults++;
+        }
+        lastControlNum = controlNbr;
+        lastOffense = offense;
+    }
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _cd.database);
+    
+    
+}
 - (void)displayCrimePoints:(CGContextRef)context
     displayCharacteristics:(DisplayCharacteristics *)dc
                  llCorners:(CORNERPOINTS *) latlonCornerPoints
@@ -134,6 +164,7 @@
     sizeFactor *= scale;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     BOOL opened = [_cd startTransaction];
+   // [self checkMultipleCodes];
     
     if (!ConfigurationControl.sharedInstance.wantAllCrimes)
         [self createCNUMCheckTable];
