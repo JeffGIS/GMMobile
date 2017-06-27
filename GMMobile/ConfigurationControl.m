@@ -89,42 +89,43 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     
     if (self)
     {
-        self.firstCall = YES;
-        self.appList = [[NSMutableArray alloc] init];
+        _firstCall = YES;
+        _appList = NSMutableArray.array;
         
         ApplicationObject *ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Inventory"
                                                                   identifier:HCConfigAlleyWalls];
-        
-        [self.appList addObject:ap];
+        [_appList addObject:ap];
         
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Status"
                                                identifier:HCConfigAlleyWallStatus];
-        [self.appList addObject:ap];
+        [_appList addObject:ap];
         
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Curb Ramp Inventory"
                                                identifier:HCConfigCurbRamps];
+        [_appList addObject:ap];
         
-        [self.appList addObject:ap];
+        ap = [[ApplicationObject alloc] initWithNameAndID:@"Sidewalk Inventory"
+                                               identifier:HCConfigSidewalk];
+        [_appList addObject:ap];
         
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Sewers"
                                                identifier:HCConfigSewers];
-        
-        [self.appList addObject:ap];
+        [_appList addObject:ap];
         
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Metro Property Analysis"
                                                identifier:HCConfigMetroProp];
-        
-        [self.appList addObject:ap];
+        [_appList addObject:ap];
         
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Minneapolis Crime Data"
                                                identifier:HCConfigCrimes];
         
-        [self.appList addObject:ap];
+        [_appList addObject:ap];
+        
         ap = [[ApplicationObject alloc] initWithNameAndID:@"Maple Grove App"
                                                identifier:HCConfigMapleGrove];
+        [_appList addObject:ap];
         
-        [self.appList addObject:ap];
-        self.currentApp = -1;
+        _currentApp = -1;
         
         strcpy(layerName[HCLayerAerials], "Aerial Photos");
         strcpy(layerName[HCLayerParcels], "Parcel Boundaries");
@@ -207,6 +208,19 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantProgressBar] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantHelpButton] = YES;
         configToobarSegs[HCConfigCurbRamps][MapToolbarPropertyWantReturnButton] = NO;
+        
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantDigitize] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantUserLocation] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantExtents] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantGrayscale] = NO;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantClearMarkers] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantEmailPDF] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantProgressBar] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantHelpButton] = YES;
+        configToobarSegs[HCConfigSidewalk][MapToolbarPropertyWantReturnButton] = NO;
         
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantPlat] = NO;
         configToobarSegs[HCConfigMetroProp][MapToolbarPropertyWantDigitize] = NO;
@@ -302,6 +316,13 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigCurbRamps][HCLayerAlleys] = NO;
         configLayers[HCConfigCurbRamps][HCLayerCurbRamps] = YES;
         
+        configLayers[HCConfigSidewalk][HCLayerAerials] = YES;
+        configLayers[HCConfigSidewalk][HCLayerParcels] = NO;
+        configLayers[HCConfigSidewalk][HCLayerSewers] = NO;
+        configLayers[HCConfigSidewalk][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigSidewalk][HCLayerAlleys] = NO;
+        configLayers[HCConfigSidewalk][HCLayerCurbRamps] = NO;
+        
         configLayers[HCConfigMetroProp][HCLayerAerials] = NO;
         configLayers[HCConfigMetroProp][HCLayerParcels] = YES;
         configLayers[HCConfigMetroProp][HCLayerSewers] = NO;
@@ -340,13 +361,6 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                 configLayerZoom[config][layer][0] = layerDefaultZoom[layer];
         }
         
-        configLayerZoom[HCConfigAlleyWalls][HCLayerAerials][0] = 18;
-        configLayerZoom[HCConfigAlleyWalls][HCLayerParcels][0] = 22;
-        configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys][0] = 10;
-        configLayerZoom[HCConfigCurbRamps][HCLayerAerials][0] = 18;
-        configLayerZoom[HCConfigCrimes][HCLayerAerials][0] = 17;
-        configLayerZoom[HCConfigMapleGrove][HCLayerAerials][0] = 17;
-        
         userAerials[HCConfigSewers] = YES;
         userAerials[HCConfigAlleyWalls] = YES;
         userAerials[HCConfigCrimes] = YES;
@@ -354,7 +368,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayerZoom[HCConfigAlleyWallStatus][HCLayerAlleys][0] = 10;
         configLayerZoom[HCConfigCurbRamps][HCLayerAerials][0] = 18;
         configLayerZoom[HCConfigCrimes][HCLayerAerials][0] = 22;
-        configLayerZoom[HCConfigCrimes][HCLayerParcels][0] = 22;
+        configLayerZoom[HCConfigMapleGrove][HCLayerAerials][0] = 17;
     }
     
     return self;
@@ -415,6 +429,14 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             if (first)
                 CRAPI.sharedInstance.parcelTextOption = 1;
             first = FALSE;
+            break;
+        case HCConfigSidewalk:
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = 0;
+            [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.currentOverallBoundaryRefno forKey:@"CurrentOverallBoundaryRefno"];
+            CRAPI.sharedInstance.currentOverallBoundaryName = @"";
+            [UserDefaults.defaults saveString:CRAPI.sharedInstance.currentOverallBoundaryName forKey:@"CurrentOverallBoundaryName"];
+            CRAPI.sharedInstance.currentOverallBoundaryType = @"";
+            [UserDefaults.defaults saveString:CRAPI.sharedInstance.currentOverallBoundaryType forKey:@"CurrentOverallBoundaryType"];
             break;
         case HCConfigSewers:
         case HCConfigAlleyWalls:

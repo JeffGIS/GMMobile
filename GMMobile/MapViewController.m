@@ -351,7 +351,13 @@
 
 - (void)becameActive:(id)selector
 {
-    if (CRAPI.sharedInstance.setToAlleyWalls)
+    if ([CRAPI.sharedInstance.sourceApp isEqualToString:@"CRISDetailSdwk"])
+    {
+        [UserDefaults.defaults saveNSInteger:(HCConfigSidewalk + 1) forKey:@"CurrentConfig"];
+        [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
+    }
+    
+    else if (CRAPI.sharedInstance.setToAlleyWalls)
     {
         [UserDefaults.defaults saveNSInteger:(HCConfigAlleyWalls + 1) forKey:@"CurrentConfig"];
         [ConfigurationControl.sharedInstance setApp:HCConfigAlleyWalls];
@@ -1163,6 +1169,12 @@
     _firstTimeAppear = NO;
     self.tabBarController.moreNavigationController.navigationBar.hidden = YES;
     self.tabBarController.customizableViewControllers = @[];
+    
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
+    {
+        _mapView.mapType = _mapView.mapType = kGMSTypeHybrid;
+        [_locationManager requestLocation];
+    }
 }
 
 #pragma mark - EndOfViewDidAppear
@@ -1366,15 +1378,17 @@
     [self zoomToBounds:bounds];
 }
 
--(void) gotoNewCameraPosition:(GMSCameraPosition*) camera
+- (void)gotoNewCameraPosition:(GMSCameraPosition *)camera
 {
     [_mapView animateToCameraPosition:camera];
 }
-- (void) moveToNewCameraPosition:(GMSCameraUpdate *)newPos
+
+- (void)moveToNewCameraPosition:(GMSCameraUpdate *)newPos
 {
     [_mapView moveCamera:newPos];
 }
--(void) animateWithCameraUpdate:(GMSCameraUpdate*)update
+
+- (void)animateWithCameraUpdate:(GMSCameraUpdate *)update
 {
     [_mapView animateWithCameraUpdate:update];
 }
@@ -5412,7 +5426,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     _currentLocation = [locations.firstObject coordinate];
     _locationCount++;
     
-    if (_animateToLocation)
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
+    {
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
+                                                                   zoom:21];
+        
+        GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
+        [self moveToNewCameraPosition:update];
+    }
+    
+    else if (_animateToLocation)
     {
         if (_locationCount < 2)
         {
@@ -5555,6 +5578,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
     [self moveToNewCameraPosition:update];
     [_locationManager performSelector:@selector(stopUpdatingHeading) withObject:nil afterDelay:0.5];
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+       didFailWithError:(NSError *)error
+{
+    NSLog(@"CLLocationManager ERROR:%@", error.localizedDescription);
 }
 
 - (void)mapToolbarDidSelectClearMarkers

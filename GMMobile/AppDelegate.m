@@ -295,17 +295,13 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
         CRAPI.sharedInstance.setToAlleyWalls = YES;
     
     CRAPI.sharedInstance.sourceApp = sourceApp;
-    
-    [SharedDefaults.defaults saveString:@""
-                                 forKey:@"SourceApplication"];
+    [SharedDefaults.defaults saveString:@"" forKey:@"SourceApplication"];
     
     [NSNotificationCenter.defaultCenter postNotificationName:@"didBecomeActive"
                                                       object:nil
                                                     userInfo:nil];
     
     CRAPI.sharedInstance.becameActive = YES;
-    
-    
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
