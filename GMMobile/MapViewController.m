@@ -1749,8 +1749,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         switch (_digitizationMode)
         {
-            case DigitizationModeCustom:
-            {
+            case DigitizationModeCustom:{
                 _digitizerCount++;
                 
                 MarkerButton *marker = [MarkerButton markerWithPosition:position
@@ -1761,14 +1760,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 
                 [self removePreviousInfoWindow];
                 _infoWindow = MarkerInfoWindow.new;
-                
-                [marker setImage:_orangeCrosshairs
-                        forState:UIControlStateNormal];
-                
+                [marker setImage:_orangeCrosshairs forState:UIControlStateNormal];
                 marker.title = [NSString stringWithFormat:@"Custom Marker %ld", (long)_digitizerCount];
                 marker.snippet = [NSString stringWithFormat:@"%f, %f", marker.position.latitude, marker.position.longitude];
                 marker.type = MarkerInfoWindowTypeCustom;
-                
                 [_markerArray addObject:marker];
                 
                 _infoWindow.delegate = self;
@@ -1800,19 +1795,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                  (marker.frame.size.height / 2.0)));
                     
                     [self updateInfoWindowPosition];
-                    
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         _cancelDigitizerButton.alpha = 0.0;
-                                         _saveDigitizerButton.alpha = 1.0;
-                                     }];
-                    
                     [_vectorView setNeedsDisplay];
                 }
-            }
-                break;
-            case DigitizationModeAlleyWallNew:
-            {
+                break;}
+            case DigitizationModeAlleyWallNew:{
                 _digitizerCount++;
                 CLLocationCoordinate2D positioncl = position;
                 CLLocationCoordinate2D positionpid = position;
@@ -1858,39 +1844,31 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 {
                     [self vectorViewRefresh];
                     _noneSelected = NO;
-                    
-                    [UIView animateWithDuration:0.25
-                                     animations:^{
-                                         _cancelDigitizerButton.alpha = 0.0;
-                                         _saveDigitizerButton.alpha = 1.0;
-                                     }];
                 }
-            }
-                break;
-            case DigitizationModeCurbRamps:
-            {
+                break;}
+            case DigitizationModeCurbRamps:{
                 LLPOINT intPoint = {0};
                 intPoint.lat = position.latitude;
                 intPoint.lon = position.longitude;
                 IntersectionsDatabase *intDB = [IntersectionsDatabase databaseForGeoid:CRAPI.sharedInstance.currentGeoid];
                 [intDB addNewIntersectionAt:intPoint withName:@"Added in NVMobile"];
-                
                 [self vectorViewRefresh];
                 _noneSelected = NO;
-                
-                [UIView animateWithDuration:0.25
-                                 animations:^{
-                                     _cancelDigitizerButton.alpha = 0.0;
-                                     _saveDigitizerButton.alpha = 1.0;
-                                 }];
-            }
-                break;
+                break;}
             case DigitizationModeProperty:
                 break;
             case DigitizationModeSewer:
                 break;
+            case DigitizationModeSidewalks:
+                break;
             default:break;
         }
+        
+        [UIView animateWithDuration:0.25
+                         animations:^{
+                             _cancelDigitizerButton.alpha = 0.0;
+                             _saveDigitizerButton.alpha = 1.0;
+                         }];
         
         CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
         
@@ -4671,7 +4649,7 @@ didCompleteWithError:(NSError *)error
 
 - (void)perform3DFlyAround
 {
-    NSString *flyOverURL = @"NVFlyover:";
+    NSString *flyOverURL = @"NVFlyover://";
     [SharedDefaults.defaults saveString:@"NVMobile:" forKey:@"FlyoverSourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:flyOverURL]])
@@ -4938,13 +4916,9 @@ didCompleteWithError:(NSError *)error
 
 - (void)editIntersectionAttributes
 {
-    NSString *CRISDetailURL = @"CRISDetail:";
-    
-    [SharedDefaults.defaults saveString:@"NVMobile"
-                                 forKey:@"SourceApplication"];
-    
-    [SharedDefaults.defaults saveInteger:_selectedCRIntPt.intValue
-                                  forKey:@"DetailCurrentIntersection"];
+    NSString *CRISDetailURL = @"CRISDetail://";
+    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
+    [SharedDefaults.defaults saveInteger:_selectedCRIntPt.intValue forKey:@"DetailCurrentIntersection"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
@@ -4953,7 +4927,7 @@ didCompleteWithError:(NSError *)error
     {
         NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                           delegate:self
-                                                             title:@"NVMobile cannot launch CRIS Detail"
+                                                             title:@"NVMobile cannot launch NVCRIS Detail"
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
         
@@ -4998,10 +4972,29 @@ didCompleteWithError:(NSError *)error
 - (void)hideDigitizationMode:(UIButton *)button
 {
     _inDigitizationMode = NO;
-    
     [self hideDigitizer];
     [self showMarkersAndInfoWindows:YES];
     [_mapToolbar show];
+    
+    if (CRAPI.sharedInstance.currentApp == HCConfigSidewalk)
+    {
+        NSString *CRISDetailURL = @"CRISDetail://";
+        [SharedDefaults.defaults saveString:@"NVMobileSdwk" forKey:@"SourceApplication"];
+        
+        if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+            [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+        
+        else
+        {
+            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                              delegate:self
+                                                                 title:@"NVMobile cannot launch NVCRIS Detail"
+                                                       buttonTextArray:@[@"OK"]
+                                                      destructiveIndex:0];
+            
+            alert.identifier = @"CannotLaunchCRISDetail";
+        }
+    }
 }
 
 - (void)removeMarker
@@ -5698,6 +5691,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             break;
         case HCConfigCurbRamps:
             _digitizationMode = DigitizationModeCurbRamps;
+            break;
+        case HCConfigSidewalk:
+            _digitizationMode = DigitizationModeSidewalks;
             break;
         default:break;
     }
@@ -6730,7 +6726,7 @@ didFindMatchBetweenNote:(NSString *)note
 
 - (void)launchAlleyWallApp
 {
-    NSString *AlleyWallURL = @"NVAlleyWalls:";
+    NSString *AlleyWallURL = @"NVAlleyWalls://";
     [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:AlleyWallURL]])

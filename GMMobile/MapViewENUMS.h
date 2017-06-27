@@ -126,6 +126,7 @@ typedef NS_ENUM(NSInteger, DigitizationMode)
     DigitizationModeSewer,
     DigitizationModeProperty,
     DigitizationModeCurbRamps,
+    DigitizationModeSidewalks,
 };
 
 typedef NS_ENUM(NSInteger, AlleyStatusSetting)
