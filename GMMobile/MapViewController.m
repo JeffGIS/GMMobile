@@ -25,6 +25,7 @@
 #import "NVMetroSettingsVC.h"
 #import "CCodeLibrary/NVPager.h"
 #import "CCodeLibrary/NVSendEmail.h"
+#import "NVPanoramaView.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -36,10 +37,12 @@
 @property CGFloat rotUpper, rotLower;
 @property CGFloat imageWidth, imageHeight;
 @end
+
 @implementation MGVPlatData
+
 @end
 
-@interface MapViewController () <GMSPanoramaViewDelegate,NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate>
 
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -98,7 +101,6 @@
 @property BOOL splitPlatView, legendMinimized, keepZoomExtents, grayscaleMode;
 @property int splitPlatDirection;
 @property NVMarkerStyle markerStyle;
-@property (nonatomic) GMSPanoramaView *panView;
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
@@ -4458,101 +4460,21 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 
 - (void)showStreetView
 {
-    _showsPanorama = YES;
-    _panView = GMSPanoramaView.new;
-    [_panView moveNearCoordinate:_selectedPIDCoords];
-    _panView.translatesAutoresizingMaskIntoConstraints = NO;
-    _panView.delegate = self;
-    _panView.alpha = 0.0;
-    
-    [self.view addSubview:_panView];
-    [_panView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:self.tabBarController.tabBar.frame.size.height];
-    
-    UIButton *dismissPan = [UIButton buttonWithType:UIButtonTypeCustom];
-    dismissPan.translatesAutoresizingMaskIntoConstraints = NO;
-    dismissPan.backgroundColor = UIColor.clearColor;
-    dismissPan.titleLabel.textAlignment = NSTextAlignmentCenter;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:28.0];
-    
-    else
-        dismissPan.titleLabel.font = [UIFont boldSystemFontOfSize:40.0];
-    
-    dismissPan.titleLabel.layer.shadowColor = UIColor.blackColor.CGColor;
-    dismissPan.titleLabel.layer.shadowOpacity = 1.0;
-    dismissPan.titleLabel.layer.shadowRadius = 3.0;
-    dismissPan.titleLabel.layer.shadowOffset = CGSizeZero;
-    [dismissPan setTitle:@"< Return" forState:UIControlStateNormal];
-    [dismissPan setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
-    [dismissPan setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
-    
-    [_panView addSubview:dismissPan];
-    [dismissPan constrainLeadingToAnchor:_panView.leadingAnchor constant:20.0];
-    [dismissPan constrainTopToAnchor:_panView.topAnchor constant:20.0];
-    [dismissPan addTarget:self action:@selector(dismissPanTapped:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [UIView animateWithDuration:0.25 animations:^{
-        _panView.alpha = 1.0;
-        self.tabBarController.tabBar.alpha = 0.0;
-    }];
-}
-
-- (void)panoramaView:(GMSPanoramaView *)view
-   didMoveToPanorama:(GMSPanorama *)panorama
-      nearCoordinate:(CLLocationCoordinate2D)coordinate
-{
-    CLLocationDirection heading = getHeading(panorama.coordinate, coordinate);
-    
-    view.camera = [GMSPanoramaCamera cameraWithHeading:heading
-                                                 pitch:0.0
-                                                  zoom:1.0
-                                                   FOV:90.0];
-}
-
-- (void)panoramaView:(GMSPanoramaView *)view
-               error:(NSError *)error
-onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
-{
-    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                      delegate:self
-                                                         title:@"Street View is not yet available for this address."
-                                               buttonTextArray:@[@"OK"]
-                                              destructiveIndex:0];
-    
-    alert.identifier = @"NoStreetViewAvailable";
-}
-
-- (void)panoramaView:(GMSPanoramaView *)panoramaView
-              didTap:(CGPoint)point
-{
-    GMSOrientation ofp = [_panView orientationForPoint:point];
-    double heading = ofp.heading;
-    double pitch = ofp.pitch;
-    double distanceInFeet = 0.0;
-    CLLocationCoordinate2D newCoordinate = {0};
-    
-    if (pitch < 0.0)
+    if ([NVPanoramaView showPanoramaAtCoord:_selectedPIDCoords
+                                     inView:self.view
+                                   delegate:self
+                                     tabBar:self.tabBarController.tabBar])
     {
-        pitch = -pitch;
-        pitch *= DEGtoRAD;
-        distanceInFeet = (9.25 / tan(pitch));
-        newCoordinate = locationWithBearing(heading, distanceInFeet, panoramaView.panorama.coordinate);
-        GMSMarker *marker = [GMSMarker markerWithPosition:newCoordinate];
-        marker.panoramaView = panoramaView;
+        _showsPanorama = YES;
     }
 }
 
-- (void)dismissPanTapped:(UIButton *)button
+- (void)panoramaView:(NVPanoramaView *)panoramaView
+  didReturnWithCoord:(CLLocationCoordinate2D)coordinate
 {
-    [UIView animateWithDuration:0.25 animations:^{
-        _panView.alpha = 0.0;
-        self.tabBarController.tabBar.alpha = 1.0;
-    } completion:^(BOOL finished) {
-        [_panView removeFromSuperview];
-        _showsPanorama = NO;
-        [self vectorViewRefresh];
-    }];
+    [panoramaView hide:YES];
+    NSLog(@"Picked Coordinate:%f,%f", coordinate.latitude, coordinate.longitude);
+    _showsPanorama = NO;
 }
 
 - (void)showStreetside
@@ -5208,9 +5130,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [self vectorViewRefresh];
         }
     }
-    
-    else if ([alertView.identifier isEqualToString:@"NoStreetViewAvailable"])
-        [self dismissPanTapped:nil];
     
     else if ([alertView.identifier isEqualToString:@"RouteType"])
     {

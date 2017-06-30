@@ -82,6 +82,7 @@
 		69CB89E01DCD558700D408E9 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DF1DCD558700D408E9 /* backspace.png */; };
 		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
+		69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69D4C3061F06BA1700051E1C /* NVPanoramaView.m */; };
 		69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47841C74CEFC0042E47F /* singleArrowReverse.png */; };
 		69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47851C74CEFC0042E47F /* singleArrowForward.png */; };
 		69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47861C74CEFC0042E47F /* doubleArrowForward.png */; };
@@ -351,6 +352,8 @@
 		69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurbRampDataOptions.h; sourceTree = "<group>"; };
 		69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurbRampDataOptions.m; sourceTree = "<group>"; };
 		69D2C7EF1E5209CC0040FCF9 /* landuse.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = landuse.slt; sourceTree = "<group>"; };
+		69D4C3051F06BA1700051E1C /* NVPanoramaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVPanoramaView.h; sourceTree = "<group>"; };
+		69D4C3061F06BA1700051E1C /* NVPanoramaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPanoramaView.m; sourceTree = "<group>"; };
 		69DA47841C74CEFC0042E47F /* singleArrowReverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowReverse.png; sourceTree = "<group>"; };
 		69DA47851C74CEFC0042E47F /* singleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowForward.png; sourceTree = "<group>"; };
 		69DA47861C74CEFC0042E47F /* doubleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowForward.png; sourceTree = "<group>"; };
@@ -871,6 +874,8 @@
 				69366E021C542A6700E79AA7 /* NVPageController.m */,
 				69366DFE1C542A4B00E79AA7 /* NVPageView.h */,
 				69366DFF1C542A4B00E79AA7 /* NVPageView.m */,
+				69D4C3051F06BA1700051E1C /* NVPanoramaView.h */,
+				69D4C3061F06BA1700051E1C /* NVPanoramaView.m */,
 				69E0BB811DBE522A003555DD /* NVSpreadsheetDelegate.h */,
 				69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */,
 				A9237F801AFA84E400D10E96 /* SettingOptionsViewController.h */,
@@ -1271,6 +1276,7 @@
 				EBD6B8AB1BC1CE1200BACC89 /* Destinations.m in Sources */,
 				EBFC2A271BE7954700E0C1B3 /* ThemeLegend.m in Sources */,
 				EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */,
+				69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */,
 				BB12E2341E9565130063FE4A /* NVCrimeListDelegate.m in Sources */,
 				69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */,
 				EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */,
