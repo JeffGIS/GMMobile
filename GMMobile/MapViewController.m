@@ -4523,6 +4523,26 @@ onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate
     alert.identifier = @"NoStreetViewAvailable";
 }
 
+- (void)panoramaView:(GMSPanoramaView *)panoramaView
+              didTap:(CGPoint)point
+{
+    GMSOrientation ofp = [_panView orientationForPoint:point];
+    double heading = ofp.heading;
+    double pitch = ofp.pitch;
+    double distanceInFeet = 0.0;
+    CLLocationCoordinate2D newCoordinate = {0};
+    
+    if (pitch < 0.0)
+    {
+        pitch = -pitch;
+        pitch *= DEGtoRAD;
+        distanceInFeet = (9.25 / tan(pitch));
+        newCoordinate = locationWithBearing(heading, distanceInFeet, panoramaView.panorama.coordinate);
+        GMSMarker *marker = [GMSMarker markerWithPosition:newCoordinate];
+        marker.panoramaView = panoramaView;
+    }
+}
+
 - (void)dismissPanTapped:(UIButton *)button
 {
     [UIView animateWithDuration:0.25 animations:^{
@@ -6324,7 +6344,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWall = title;
             _selectedAlleyWallRefno = refno;
             
-            _options = @[@"", @"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes", @"View Wall Photos"];
+            _options = @[@"", @"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
+                         @"Display Google Street View", @"Display Bing Streetside", @"View Wall Photos"];
             
             BOOL hasInsetWallPhoto = NO;
             
