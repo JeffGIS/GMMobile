@@ -179,8 +179,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     
     if (CRAPI.sharedInstance.keepProcessing < 0)
         return;
-    
-    int scale = UIScreen.mainScreen.scale;
+    int printFactor = 1;
+    int scale = UIScreen.mainScreen.scale*printFactor;
     _vectorViewContext = UIGraphicsGetCurrentContext();
     if (!_vectorViewContext || CRAPI.sharedInstance.keepProcessing < 0)
         return;
