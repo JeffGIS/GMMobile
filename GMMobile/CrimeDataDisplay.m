@@ -180,7 +180,7 @@
     }
     else if (_mode == CHOROPLETH)
     {
-        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+        [CRAPI.sharedInstance showMapToolbarIndicator:YES];
 
         pias = [[PointInAreas alloc]init];
         pias.fullBounds = *pvbounds;
@@ -203,7 +203,7 @@ boundsPointInAreas:nil
         viewBounds:&pvboundsPias
   haveCompareTheme:[themes haveCompareTheme]];
         
-        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+        [CRAPI.sharedInstance showMapToolbarIndicator:NO];
         [pias initTimeLine:_cd.database];
     }
     
@@ -281,7 +281,7 @@ NextPass:
                          platlonBounds->ymn,
                          platlonBounds->ymx];
                 tot = toTime - fromTime;
-                CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+                [CRAPI.sharedInstance showMapToolbarIndicator:YES];
             }
             else
             {
@@ -363,7 +363,7 @@ NextPass:
             }
             iRange++;
             SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _cd.database);
-            CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+            [CRAPI.sharedInstance showMapToolbarIndicator:NO];
        }
     }
     if (_mode == HOTSPOT && iPass++ < _numPass)
@@ -376,7 +376,7 @@ NextPass:
     {
         query = [NSString stringWithFormat:@"SELECT ControlNbr,X,Y,DispersedX,DispersedY,Sequence,Symbol,Size,Color FROM DISPERSE"];
         SQLOK(__FILE__,__LINE__,SQLitePrepare(dp.database, query.UTF8String, -1, &statement, 0), dp.database);
-        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+        [CRAPI.sharedInstance showMapToolbarIndicator:YES];
         
         while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
         {
@@ -405,7 +405,7 @@ NextPass:
                        dispersed:seq > 1];
         }
         
-        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+        [CRAPI.sharedInstance showMapToolbarIndicator:NO];
         if ([self continueProcessing])
             [dp commitTransaction];
         SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), dp.database);
@@ -445,7 +445,7 @@ NextPass:
                           wantOverdue:overDueOption];
         }
 
-        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+        [CRAPI.sharedInstance showMapToolbarIndicator:YES];
         bd.totRecords = [bd display:context
            areaType:_choroplethTarget
             pointInAreas:pias
@@ -453,7 +453,7 @@ NextPass:
            LLBounds:platlonBounds
          viewBounds:pvbounds];
 
-        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+        [CRAPI.sharedInstance showMapToolbarIndicator:NO];
 
         NVMetroTextOptions *to = [[NVMetroTextOptions alloc]init];
         
