@@ -843,8 +843,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (!tl.showSymbolAsBarChart)
             tlc.symbolWidth = 1.0;
         
-        CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
-        
         UIView *barView = UIView.new;
         barView.translatesAutoresizingMaskIntoConstraints = NO;
         barView.layer.borderColor = UIColor.blackColor.CGColor;
@@ -859,21 +857,25 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [cell.contentView addSubview:barView];
         
-        [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
-                             top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
-        
         if (tl.hasOverlay)
         {
             int sum = 0, max = 0;
-            CGFloat medianPctOfMax = 0.0;
+            CGFloat medianPctOfMax = 0.0, minSymbolWidth = 1.0;
             NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
             
             for (ThemeLegendCell *tlc in tl.cells)
             {
                 sum+= tlc.count;
                 max = MAX(max, tlc.count);
+                minSymbolWidth = MIN(minSymbolWidth, tlc.symbolWidth);
                 [countArray addObject:[NSNumber numberWithInt:tlc.count]];
             }
+            
+            CGFloat newSymbolWidth = ((tlc.symbolWidth - minSymbolWidth) / (1.0 - minSymbolWidth));
+            CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - newSymbolWidth));
+            
+            [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+                                 top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
             
             NSSortDescriptor *sortAscending = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:YES];
             [countArray sortUsingDescriptors:[NSArray arrayWithObject:sortAscending]];
@@ -882,6 +884,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             {
                 CGFloat avgValue = (sum / (CGFloat)tl.numCells);
                 CGFloat avgPctOfMax = (avgValue / (CGFloat)max);
+                avgPctOfMax = ((avgPctOfMax - minSymbolWidth) / (1.0 - minSymbolWidth));
                 NSInteger middle = (countArray.count / 2);
                 CGFloat stdDev = 0.0;
                 
@@ -895,6 +898,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     medianPctOfMax = (((value1 + value2) / 2.0) / (CGFloat)max);
                 }
                 
+                medianPctOfMax = ((medianPctOfMax - minSymbolWidth) / (1.0 - minSymbolWidth));
+                
                 for (ThemeLegendCell *tlc in tl.cells)
                     stdDev += pow((avgValue - tlc.count), 2);
                 
@@ -903,6 +908,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 CGFloat stdDev1Upper = ((avgValue + stdDev) / (CGFloat)max);
                 CGFloat stdDev2Lower = ((avgValue - (stdDev * 2.0)) / (CGFloat)max);
                 CGFloat stdDev2Upper = ((avgValue + (stdDev * 2.0)) / (CGFloat)max);
+                stdDev1Lower = ((stdDev1Lower - minSymbolWidth) / (1.0 - minSymbolWidth));
+                stdDev1Upper = ((stdDev1Upper - minSymbolWidth) / (1.0 - minSymbolWidth));
+                stdDev2Lower = ((stdDev2Lower - minSymbolWidth) / (1.0 - minSymbolWidth));
+                stdDev2Upper = ((stdDev2Upper - minSymbolWidth) / (1.0 - minSymbolWidth));
                 
                 CGFloat mask = ((tableView.frame.size.width - textWidth) - (margin * 2.0));
                 CGFloat avgMask = (mask * (1 - avgPctOfMax));
@@ -958,6 +967,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
                 [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask + 1.0)];
             }
+        }
+        
+        else
+        {
+            CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
+            
+            [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+                                 top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
         }
     }
     

@@ -17,7 +17,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax, stdDev1Lower, stdDev1Upper, stdDev2Lower, stdDev2Upper;
+@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax, stdDev1Lower, stdDev1Upper, stdDev2Lower, stdDev2Upper, minSymbolWidth;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
@@ -134,6 +134,7 @@
     tlmo.previousFrame = tlmo.previousScrollFrame = CGRectZero;
     tlmo.currentRow = tlmo.currentColorPalette = 0;
     tlmo.previousContentOffset = CGPointZero;
+    tlmo.minSymbolWidth = 1.0;
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
     {
@@ -196,6 +197,7 @@
         {
             sum+= tlc.count;
             max = MAX(max, tlc.count);
+            tlmo.minSymbolWidth = MIN(tlmo.minSymbolWidth, tlc.symbolWidth);
             [countArray addObject:[NSNumber numberWithInt:tlc.count]];
         }
         
@@ -206,6 +208,7 @@
         {
             CGFloat avgValue = (sum / (CGFloat)tlmo.legend.numCells);
             tlmo.avgPctOfMax = (avgValue / (CGFloat)max);
+            tlmo.avgPctOfMax = ((tlmo.avgPctOfMax - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
             NSInteger middle = (countArray.count / 2);
             CGFloat stdDev = 0.0;
             
@@ -219,6 +222,8 @@
                 tlmo.medianPctOfMax = (((value1 + value2) / 2.0) / (CGFloat)max);
             }
             
+            tlmo.medianPctOfMax = ((tlmo.medianPctOfMax - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
+            
             for (ThemeLegendCell *tlc in tlmo.legend.cells)
                 stdDev += pow((avgValue - tlc.count), 2);
             
@@ -227,6 +232,10 @@
             tlmo.stdDev1Upper = ((avgValue + stdDev) / (CGFloat)max);
             tlmo.stdDev2Lower = ((avgValue - (stdDev * 2.0)) / (CGFloat)max);
             tlmo.stdDev2Upper = ((avgValue + (stdDev * 2.0)) / (CGFloat)max);
+            tlmo.stdDev1Lower = ((tlmo.stdDev1Lower - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
+            tlmo.stdDev1Upper = ((tlmo.stdDev1Upper - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
+            tlmo.stdDev2Lower = ((tlmo.stdDev2Lower - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
+            tlmo.stdDev2Upper = ((tlmo.stdDev2Upper - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
         }
     }
     
@@ -1052,8 +1061,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (!_legend.showSymbolAsBarChart)
             tlc.symbolWidth = 1.0;
         
-        CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
-        
         UIView *barView = UIView.new;
         barView.translatesAutoresizingMaskIntoConstraints = NO;
         barView.layer.borderColor = UIColor.blackColor.CGColor;
@@ -1068,11 +1075,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         
         [cell.contentView addSubview:barView];
         
-        [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
-                             top:(_rowHeight * 0.15) bottom:(-_rowHeight * 0.15)];
-        
         if (_legend.hasOverlay)
         {
+            CGFloat newSymbolWidth = ((tlc.symbolWidth - _minSymbolWidth) / (1.0 - _minSymbolWidth));
+            CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - newSymbolWidth));
+            
+            [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+                                 top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
+            
             CGFloat mask = ((tableView.frame.size.width - textWidth) - (margin * 2.0));
             CGFloat avgMask = (mask * (1 - _avgPctOfMax));
             CGFloat medianMask = (mask * (1 - _medianPctOfMax));
@@ -1126,6 +1136,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [stdDev2View constrainBottomToAnchor:cell.contentView.bottomAnchor];
             [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
             [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask + 1.0)];
+        }
+        
+        else
+        {
+            CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
+            
+            [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+                                 top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
         }
     }
     
