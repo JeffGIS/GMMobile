@@ -2,10 +2,10 @@
 //  GMMobile
 
 #import "MapViewController.h"
+@import MapKit;
 #import "AppDelegate.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
-#import <MapKit/MapKit.h>
 #import "CCodeLibrary/PolylineCompression.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "Destinations.h"
@@ -26,6 +26,7 @@
 #import "CCodeLibrary/NVPager.h"
 #import "CCodeLibrary/NVSendEmail.h"
 #import "NVPanoramaView.h"
+#import "CCodeLibrary/SidewalkData.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -69,8 +70,8 @@
 @property (nonatomic) MarkerInfoWindow *infoWindow;
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt, *selectedBA;
-@property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo;
-@property NSString * selectedCensusBoundaryType;
+@property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo, selectedSdwkRefNo;
+@property (nonatomic, copy) NSString *selectedCensusBoundaryType, *selectedSdwk;
 @property int selectedMGVSanMH, selectedMGVSanPipe;
 @property NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
@@ -1636,6 +1637,12 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 marker.snippet = pi.symbolName;
                 marker.type = MarkerInfoWindowTypeCensusBoundary;
                 break;
+            case Sidewalk:
+                _selectedSdwkRefNo = pi.refno;
+                _selectedSdwk = pi.identifier;
+                marker.title = _selectedSdwk;
+                marker.type = MarkerInfoWindowTypeSdwk;
+                break;
             default:break;
         }
         
@@ -1704,6 +1711,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case MarkerInfoWindowTypeBA:
                 _selectedBA = marker.title;
+                break;
+            case MarkerInfoWindowTypeSdwk:
+                _selectedSdwk = marker.title;
+                break;
             default:break;
         }
         
@@ -1776,32 +1787,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [self updateInfoWindowPosition];
             }
                 break;
-            case DigitizationModeAlleyWallMove:
-            {
-                if (![AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno to:position])
-                {
-                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                                      delegate:CRAPI.sharedInstance
-                                                                         title:@"Failed to Move Point"
-                                                               buttonTextArray:@[@"OK"]
-                                                              destructiveIndex:0];
-#pragma unused(alert)
-                }
-                else
-                {
-                    MarkerButton *marker = _markerArray.lastObject;
-                    marker.position = position;
-                    
-                    marker.center = CGPointMake(_digitizerTargetView.center.x,
-                                                (_digitizerTargetView.center.y -
-                                                 (marker.frame.size.height / 2.0)));
-                    
-                    [self updateInfoWindowPosition];
-                    [_vectorView setNeedsDisplay];
-                }
-                break;}
             case DigitizationModeAlleyWallNew:{
-                _digitizerCount++;
                 CLLocationCoordinate2D positioncl = position;
                 CLLocationCoordinate2D positionpid = position;
                 AlleyWallData *awd = [[AlleyWallData alloc] init];
@@ -1837,15 +1823,38 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 {
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                                       delegate:CRAPI.sharedInstance
-                                                                         title:@"Failed to Create Point"
+                                                                         title:@"Failed to Create Wall Point"
+                                                               buttonTextArray:@[@"OK"]
+                                                              destructiveIndex:0];
+#pragma unused(alert)
+                }
+                
+                else
+                {
+                    [self vectorViewRefresh];
+                    _noneSelected = NO;
+                }
+                break;}
+            case DigitizationModeAlleyWallMove:{
+                if (![AlleyWallData moveAlleyWallPoint:_selectedAlleyWallRefno to:position])
+                {
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                      delegate:CRAPI.sharedInstance
+                                                                         title:@"Failed to Move Wall Point"
                                                                buttonTextArray:@[@"OK"]
                                                               destructiveIndex:0];
 #pragma unused(alert)
                 }
                 else
                 {
-                    [self vectorViewRefresh];
-                    _noneSelected = NO;
+                    MarkerButton *marker = _markerArray.lastObject;
+                    marker.position = position;
+                    
+                    marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                                (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
+                    
+                    [self updateInfoWindowPosition];
+                    [_vectorView setNeedsDisplay];
                 }
                 break;}
             case DigitizationModeCurbRamps:{
@@ -1861,8 +1870,73 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 break;
             case DigitizationModeSewer:
                 break;
-            case DigitizationModeSidewalks:
-                break;
+            case DigitizationModeSidewalkPointNew:{
+                CLLocationCoordinate2D positionpid = position;
+                SidewalkData *sdwkd = SidewalkData.new;
+                PropertyData *propData = PropertyData.new;
+                NSString *houseAndUnit = @"";
+                NSString *streetName = @"";
+                NSString *nearPID = [propData getNearestPID:&positionpid];
+                
+                if (nearPID)
+                {
+                    [propData getAddressForPID:nearPID
+                               houseNumAndUnit:&houseAndUnit
+                                    streetName:&streetName
+                                          city:nil
+                                     ownerName:nil
+                                  taxpayerName:nil
+                                   censusBlock:nil
+                                       useDesc:nil
+                                        totEMV:nil
+                                       landEMV:nil
+                                       bldgEMV:nil
+                                        totTAX:nil
+                                       specAss:nil
+                                         acres:nil];
+                }
+                
+                if (![sdwkd createNewSdwkPointAtLocation:position
+                                               withHouse:houseAndUnit
+                                               andStreet:streetName])
+                {
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                      delegate:CRAPI.sharedInstance
+                                                                         title:@"Failed to Create Sidewalk Point"
+                                                               buttonTextArray:@[@"OK"]
+                                                              destructiveIndex:0];
+#pragma unused(alert)
+                }
+                
+                else
+                {
+                    [self vectorViewRefresh];
+                    _noneSelected = NO;
+                }
+                break;}
+            case DigitizationModeSidewalkPointMove:{
+                if (![SidewalkData moveSdwkPoint:_selectedSdwkRefNo toLocation:position])
+                {
+                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                                      delegate:CRAPI.sharedInstance
+                                                                         title:@"Failed to Move Sidewalk Point"
+                                                               buttonTextArray:@[@"OK"]
+                                                              destructiveIndex:0];
+#pragma unused(alert)
+                }
+                
+                else
+                {
+                    MarkerButton *marker = _markerArray.lastObject;
+                    marker.position = position;
+                    
+                    marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                                (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
+                    
+                    [self updateInfoWindowPosition];
+                    [_vectorView setNeedsDisplay];
+                }
+                break;}
             default:break;
         }
         
@@ -4044,7 +4118,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([text isEqualToString:@"Move Wall Point"])
     {
         [UserDefaults.defaults saveNSInteger:AlleyWallSettingMoveWallPoint forKey:@"AlleyWallOption"];
-        [self performSelector:@selector(moveWallPoint) withObject:nil afterDelay:0.3];
+        _digitizationMode = DigitizationModeAlleyWallMove;
+        [self performSelector:@selector(movePoint) withObject:nil afterDelay:0.3];
     }
     
     else if ([text isEqualToString:@"Delete Wall Point"])
@@ -4134,6 +4209,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         [self displayCensusDataChart];
     }
+    
+    else if ([text isEqualToString:@"Move Sidewalk Point"])
+    {
+        _digitizationMode = DigitizationModeSidewalkPointMove;
+        [self performSelector:@selector(movePoint) withObject:nil afterDelay:0.3];
+    }
+    
+    else if ([text isEqualToString:@"Delete Sidewalk Point"])
+    {
+        [self deleteSdwkPoint];
+    }
+    
+    else if ([text isEqualToString:@"Edit Sidewalk Attributes"])
+    {
+        [self editSdwkAttributes];
+    }
+    
+    
     
     [self deselectTableViewRow];
     [self dismissTableView];
@@ -4734,10 +4827,9 @@ didCompleteWithError:(NSError *)error
     //implement snap to line here
 }
 
-- (void)moveWallPoint
+- (void)movePoint
 {
     _inDigitizationMode = YES;
-    _digitizationMode = DigitizationModeAlleyWallMove;
     [self hideMarkersAndInfoWindows:YES];
     [_mapToolbar hide];
     
@@ -4768,6 +4860,23 @@ didCompleteWithError:(NSError *)error
 {
     [SharedDefaults.defaults saveString:_selectedAlleyWall forKey:@"AlleyWallEditAttributes"];
     [self performSelector:@selector(launchAlleyWallApp) withObject:nil afterDelay:0.3];
+}
+
+- (void)deleteSdwkPoint
+{
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:@"Do You Wish to Delete This Sidewalk Point?"
+                                               buttonTextArray:@[@"YES", @"NO"]
+                                              destructiveIndex:1];
+    
+    alert.identifier = @"DeleteSdwkAlert";
+}
+
+- (void)editSdwkAttributes
+{
+    [SharedDefaults.defaults saveInteger:(int)_selectedSdwkRefNo forKey:@"SidewalkAttributes"];
+    [self performSelector:@selector(launchNVCRISDetail) withObject:nil afterDelay:0.3];
 }
 
 - (void)viewWallPhotos
@@ -4858,23 +4967,8 @@ didCompleteWithError:(NSError *)error
 
 - (void)editIntersectionAttributes
 {
-    NSString *CRISDetailURL = @"CRISDetail://";
-    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
     [SharedDefaults.defaults saveInteger:_selectedCRIntPt.intValue forKey:@"DetailCurrentIntersection"];
-    
-    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
-        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
-    
-    else
-    {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:@"NVMobile cannot launch NVCRIS Detail"
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-        
-        alert.identifier = @"CannotLaunchCRISDetail";
-    }
+    [self launchNVCRISDetail];
 }
 
 - (void)editIntersectionStatus
@@ -4917,26 +5011,6 @@ didCompleteWithError:(NSError *)error
     [self hideDigitizer];
     [self showMarkersAndInfoWindows:YES];
     [_mapToolbar show];
-    
-    if (CRAPI.sharedInstance.currentApp == HCConfigSidewalk)
-    {
-        NSString *CRISDetailURL = @"CRISDetail://";
-        [SharedDefaults.defaults saveString:@"NVMobileSdwk" forKey:@"SourceApplication"];
-        
-        if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
-            [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
-        
-        else
-        {
-            NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                              delegate:self
-                                                                 title:@"NVMobile cannot launch NVCRIS Detail"
-                                                       buttonTextArray:@[@"OK"]
-                                                      destructiveIndex:0];
-            
-            alert.identifier = @"CannotLaunchCRISDetail";
-        }
-    }
 }
 
 - (void)removeMarker
@@ -5005,11 +5079,10 @@ didCompleteWithError:(NSError *)error
     if (moveMarker)
     {
         MarkerButton *marker = _markerArray.lastObject;
-        
         CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
         
         _digitizerTargetView.center = CGPointMake(markerPosition.x,
-                                                  (markerPosition.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+        (markerPosition.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
     
     [UIView animateWithDuration:0.25
@@ -5613,8 +5686,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigAlleyWalls:
             _digitizationMode = DigitizationModeAlleyWallNew;
             break;
-        case HCConfigMetroProp:
-        {
+        case HCConfigMetroProp:{
             _digitizationMode = DigitizationModeProperty;
             [self hideMarkersAndInfoWindows:YES];
             [_mapToolbar hide];
@@ -5622,9 +5694,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _nvdv = [NVDigitizerView showDigitizerInView:self.view
                                        constrainedToView:_mapView
                                                 delegate:self];
-            return;
-        }
-        
+            return;}
         case HCConfigSewers:
             _digitizationMode = DigitizationModeSewer;
             break;
@@ -5632,7 +5702,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _digitizationMode = DigitizationModeCurbRamps;
             break;
         case HCConfigSidewalk:
-            _digitizationMode = DigitizationModeSidewalks;
+            _digitizationMode = DigitizationModeSidewalkPointNew;
             break;
         default:break;
     }
@@ -6264,7 +6334,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _selectedAlleyWallRefno = refno;
             
             _options = @[@"", @"Move Wall Point", @"Delete Wall Point", @"Edit Wall Attributes",
-                         @"Display Google Street View", @"Display Bing Streetside", @"View Wall Photos"];
+                         @"Display Google Street View", @"Display Bing Streetside"];
             
             BOOL hasInsetWallPhoto = NO;
             
@@ -6281,6 +6351,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 _options = newArray.copy;
             }
             
+            break;
+        case MarkerInfoWindowTypeSdwk:
+            _selectedSdwk = title;
+            _selectedSdwkRefNo = refno;
+            
+            _options = @[@"", @"Move Sidewalk Point", @"Delete Sidewalk Point", @"Edit Sidewalk Point Attributes",
+                         @"Display Google Street View", @"Display Bing Streetside"];
             break;
         case MarkerInfoWindowTypeAlleyLine:
             _selectedAlleySeg = title;
@@ -6457,7 +6534,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             switch (option)
             {
                 case AlleyWallSettingMoveWallPoint:
-                    [self moveWallPoint];
+                    _digitizationMode = DigitizationModeAlleyWallMove;
+                    [self movePoint];
                     break;
                 case AlleyWallSettingDeleteWallPoint:
                     [self deleteWallPoint];
@@ -6680,6 +6758,26 @@ didFindMatchBetweenNote:(NSString *)note
                                                    buttonTextArray:@[@"OK"]
                                                   destructiveIndex:0];
 #pragma unused(alert)
+    }
+}
+
+- (void)launchNVCRISDetail
+{
+    NSString *CRISDetailURL = @"CRISDetail://";
+    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
+    
+    if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
+        [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
+    
+    else
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:self
+                                                             title:@"NVMobile cannot launch NVCRIS Detail"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+        
+        alert.identifier = @"CannotLaunchCRISDetail";
     }
 }
 
