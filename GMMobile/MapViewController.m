@@ -1888,17 +1888,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
-                                          city:nil
-                                     ownerName:nil
-                                  taxpayerName:nil
-                                   censusBlock:nil
-                                       useDesc:nil
-                                        totEMV:nil
-                                       landEMV:nil
-                                       bldgEMV:nil
-                                        totTAX:nil
-                                       specAss:nil
-                                         acres:nil];
+                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                                        totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
                 }
                 
                 if (![sdwkd createNewSdwkPointAtLocation:position
@@ -1920,11 +1911,30 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
                 break;}
             case DigitizationModeSidewalkPointMove:{
-                if (![SidewalkData moveSdwkPoint:_selectedSdwkRefNo toLocation:position])
+                CLLocationCoordinate2D positionpid = position;
+                SidewalkData *sdwkd = SidewalkData.new;
+                PropertyData *propData = PropertyData.new;
+                NSString *houseAndUnit = @"";
+                NSString *streetName = @"";
+                NSString *nearPID = [propData getNearestPID:&positionpid];
+                
+                if (nearPID)
+                {
+                    [propData getAddressForPID:nearPID
+                               houseNumAndUnit:&houseAndUnit
+                                    streetName:&streetName
+                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                                        totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+                }
+                
+                if (![sdwkd moveSdwkPoint:_selectedSdwkRefNo
+                               toLocation:position
+                                withHouse:houseAndUnit
+                                andStreet:streetName])
                 {
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                                       delegate:CRAPI.sharedInstance
-                                                                         title:@"Failed to Move Sidewalk Point"
+                                                                         title:@"Failed to Create Sidewalk Point"
                                                                buttonTextArray:@[@"OK"]
                                                               destructiveIndex:0];
 #pragma unused(alert)
@@ -1934,6 +1944,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 {
                     MarkerButton *marker = _markerArray.lastObject;
                     marker.position = position;
+                    marker.title = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
+                    _infoWindow.marker = marker;
                     
                     marker.center = CGPointMake(_digitizerTargetView.center.x,
                                                 (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
@@ -1953,8 +1965,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         CGPoint targetPoint = [_mapView.projection pointForCoordinate:_mapView.camera.target];
         
-        _digitizerTargetView.center = CGPointMake(targetPoint.x,
-                                                  (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
+        _digitizerTargetView.center =
+        CGPointMake(targetPoint.x, (targetPoint.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
 }
 
