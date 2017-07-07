@@ -120,11 +120,6 @@
 {
     [super viewDidLoad];
     
-#ifdef DEBUG
-    //SetVendoIDInc(72);//Bill
-    //SetVendoIDInc(101);//Jeff
-#endif
-    
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
@@ -312,9 +307,7 @@
     {
         _nvdl = [[NVDataLoader alloc] init];
         _nvdl.delegate = self;
-        
-        [_nvdl loadNVData:(config - 1)
-                  popover:_popover];
+        [_nvdl loadNVData:(config - 1) popover:_popover];
     }
     
     UIImage *compassImage = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"compass"
@@ -1537,6 +1530,16 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             [planData pickAlleyWallPoint:llpickPt highlightList:highlightList];
             [planData pickAlleyLine:llpickPt  atZoom:_mapView.camera.zoom highlightList:highlightList];
             break;}
+        case HCConfigSidewalk:{
+            if ([ConfigurationControl.sharedInstance layer:HCLayerSidewalkPoints
+                                             visibleAtZoom:_vectorViewZoom
+                                                   andPass:PickPass])
+            {
+                SidewalkData *sdwkd = SidewalkData.new;
+                sdwkd.zoom = _mapView.camera.zoom;
+                [sdwkd pickSdwkPoint:llpickPt highlightList:highlightList];
+            }
+            break;}
         default:break;
     }
     
@@ -1638,10 +1641,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 marker.snippet = pi.symbolName;
                 marker.type = MarkerInfoWindowTypeCensusBoundary;
                 break;
-            case Sidewalk:
+            case SidewalkPoint:
                 _selectedSdwkRefNo = pi.refno;
                 _selectedSdwk = pi.identifier;
                 marker.title = _selectedSdwk;
+                marker.snippet = pi.symbolName;
                 marker.type = MarkerInfoWindowTypeSdwk;
                 break;
             default:break;
@@ -1855,7 +1859,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                 (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
                     
                     [self updateInfoWindowPosition];
-                    [_vectorView setNeedsDisplay];
+                    [self vectorViewRefresh];
                 }
                 break;}
             case DigitizationModeCurbRamps:{
@@ -1935,7 +1939,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                                 (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
                     
                     [self updateInfoWindowPosition];
-                    [_vectorView setNeedsDisplay];
+                    [self vectorViewRefresh];
                 }
                 break;}
             default:break;
@@ -4222,12 +4226,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [self deleteSdwkPoint];
     }
     
-    else if ([text isEqualToString:@"Edit Sidewalk Attributes"])
+    else if ([text isEqualToString:@"Edit Sidewalk Point Attributes"])
     {
         [self editSdwkAttributes];
     }
-    
-    
     
     [self deselectTableViewRow];
     [self dismissTableView];
@@ -4290,16 +4292,15 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     return mgvdat;
 }
 
-- (NSArray *) getMGVPlatDataByRefno:(int)refno
+- (NSArray *)getMGVPlatDataByRefno:(int)refno
 {
-    NSMutableArray * array = NSMutableArray.new;
-    NSString * imageFile;
-    NSString * manholeID;
-    NSString * dataFile = [NSBundle.mainBundle pathForResource:@"SANPTID"
-                                        ofType:@"txt"];
-    NSString * fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    NSMutableArray *array = NSMutableArray.new;
+    NSString *imageFile;
+    NSString *manholeID;
+    NSString *dataFile = [NSBundle.mainBundle pathForResource:@"SANPTID" ofType:@"txt"];
+    NSString *fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
+    NSArray *Lines = [fileData componentsSeparatedByString:@"\r\n"];
     
-    NSArray * Lines = [fileData componentsSeparatedByString:@"\r\n"];
     for (NSString * line in Lines)
     {
         if (refno && refno == [line integerValue])
@@ -4310,14 +4311,17 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
             break;
         }
     }
+    
     dataFile = [NSBundle.mainBundle pathForResource:@"upperlower"
                                                         ofType:@"txt"];
     fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
     int index = 0;
     Lines = [fileData componentsSeparatedByString:@"\r\n"];
+    
     for (NSString * line in Lines)
     {
         NSArray * values = [line componentsSeparatedByString:@"\t"];
+        
         if (values.count == 8)
         {
              if ([values[0] isEqualToString:manholeID] &&
@@ -4350,30 +4354,27 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                             double dist = ldistp(nextData.ptUpper,curData.ptUpper);
                             nextData.scaleUpper = curData.imageWidth /(1.5*dist);
                             nextData.scaleLower = nextData.scaleUpper;
+                            
                             if (nextData.ptLower.x > curData.ptLower.x)
                                 nextData.rotUpper = 90 - LTWOPI (getaz (nextData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
+                            
                             else
-                                nextData.rotUpper = 90 - LTWOPI (getaz (curData.ptUpper,nextData.ptUpper)-HALFPI) * RADtoDEG;
-                            nextData.ptUpper = PercentPoint (MidPointD (nextData.ptUpper,curData.ptUpper),curData.imageWidth,curData.imageHeight);
-                            nextData.ptLower = PercentPoint (MidPointD (nextData.ptLower,curData.ptLower),curData.imageWidth,curData.imageHeight);
+                                nextData.rotUpper = 90 - LTWOPI(getaz(curData.ptUpper,nextData.ptUpper)-HALFPI) * RADtoDEG;
+                            nextData.ptUpper = PercentPoint(MidPointD(nextData.ptUpper,curData.ptUpper),curData.imageWidth,curData.imageHeight);
+                            nextData.ptLower = PercentPoint(MidPointD(nextData.ptLower,curData.ptLower),curData.imageWidth,curData.imageHeight);
                             [array addObject:nextData];
                         }
                     }
                 }
-                /*else
-                {
-                    curData.ptUpper = PercentPoint (curData.ptUpper,curData.imageWidth,curData.imageHeight);
-                    curData.ptLower = PercentPoint (curData.ptLower,curData.imageWidth,curData.imageHeight);
-                    [array addObject:curData];
-                }*/
             }
         }
+        
         index++;
     }
     
     return array;
-    
 }
+
 - (void)loadPlat
 {
     
@@ -4383,6 +4384,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
     if (array.count > _splitPlatDirection)
     {
         _mgvData = array[_splitPlatDirection];
+        
         if (_mgvData)
         {
             [sd loadPlat:_mgvData.pdfFile
@@ -4391,8 +4393,9 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
              andDelegate:self];
         }
     }
+    
     else
-       NSLog (@"Error in load plat"); 
+       NSLog(@"Error in load plat");
 }
 
 - (void)displayCrimeReport
@@ -4567,7 +4570,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
   didReturnWithCoord:(CLLocationCoordinate2D)coordinate
 {
     [panoramaView hide:YES];
-    NSLog(@"Picked Coordinate:%f,%f", coordinate.latitude, coordinate.longitude);
+    
+    if (coordinate.latitude && coordinate.longitude)
+        NSLog(@"Picked Coordinate:%f,%f", coordinate.latitude, coordinate.longitude);
+    
     _showsPanorama = NO;
 }
 
@@ -4668,10 +4674,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         NVTextVC *textVC = [[NVTextVC alloc] initWithText:data fontSize:16.0];
         textVC.clampTextViewToText = YES;
         textVC.zoomingEnabled = NO;
-        
-        [self presentViewController:textVC
-                           animated:YES
-                         completion:nil];
+        [self presentViewController:textVC animated:YES completion:nil];
     }
 }
 
@@ -4833,7 +4836,6 @@ didCompleteWithError:(NSError *)error
     _inDigitizationMode = YES;
     [self hideMarkersAndInfoWindows:YES];
     [_mapToolbar hide];
-    
     MarkerButton *marker = _markerArray.lastObject;
     
     if (CLLocationCoordinateEqual(_mapView.camera.target, marker.position))
@@ -4877,6 +4879,7 @@ didCompleteWithError:(NSError *)error
 - (void)editSdwkAttributes
 {
     [SharedDefaults.defaults saveInteger:(int)_selectedSdwkRefNo forKey:@"SidewalkAttributes"];
+    [SharedDefaults.defaults saveString:@"NVMobileSdwk" forKey:@"SourceApplication"];
     [self performSelector:@selector(launchNVCRISDetail) withObject:nil afterDelay:0.3];
 }
 
@@ -4969,6 +4972,7 @@ didCompleteWithError:(NSError *)error
 - (void)editIntersectionAttributes
 {
     [SharedDefaults.defaults saveInteger:_selectedCRIntPt.intValue forKey:@"DetailCurrentIntersection"];
+    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
     [self launchNVCRISDetail];
 }
 
@@ -5081,7 +5085,6 @@ didCompleteWithError:(NSError *)error
     {
         MarkerButton *marker = _markerArray.lastObject;
         CGPoint markerPosition = [_mapView.projection pointForCoordinate:marker.position];
-        
         _digitizerTargetView.center = CGPointMake(markerPosition.x,
         (markerPosition.y + [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation]));
     }
@@ -5115,8 +5118,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         if (buttonIndex == 0)
         {
             AlleyWallData *awd = [[AlleyWallData alloc] init];
-            
             [awd deleteAlleyWallPoint:_selectedAlleyWallRefno];
+            [self removePreviousInfoWindow];
+            [self removeMarker];
+            [self vectorViewRefresh];
+        }
+    }
+    
+    else if ([alertView.identifier isEqualToString:@"DeleteSdwkAlert"])
+    {
+        if (buttonIndex == 0)
+        {
+            SidewalkData *sdwkd = SidewalkData.new;
+            [sdwkd deleteSdwkPoint:_selectedSdwkRefNo];
             [self removePreviousInfoWindow];
             [self removeMarker];
             [self vectorViewRefresh];
@@ -5223,6 +5237,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case 4:
                 _routeMode = @"walking";
                 break;
+            default:break;
         }
         
         _animateToLocation = NO;
@@ -5434,9 +5449,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
     {
-        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation
-                                                                   zoom:21];
-        
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation zoom:21];
         GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
         [self moveToNewCameraPosition:update];
     }
@@ -5633,17 +5646,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         grayscaleMapView.backgroundColor = UIColor.whiteColor;
         grayscaleMapView.tag = 77777;
         grayscaleMapView.userInteractionEnabled = NO;
-        
         UIGraphicsBeginImageContext(_mapView.frame.size);
         [_mapView.layer renderInContext:UIGraphicsGetCurrentContext()];
         UIImage *mapImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-        
         UIImageView *grayscaleView = [[UIImageView alloc] initWithFrame:grayscaleMapView.bounds];
         grayscaleView.alpha = 0.6;
         grayscaleView.image = grayscaleImage(mapImage);
         [grayscaleMapView addSubview:grayscaleView];
-        
         [self.view addSubview:grayscaleMapView];
         
         if ([self.view.subviews containsObject:_vectorView])
@@ -5672,11 +5682,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectHelpButton
 {
-    NSString *filePath = [NSBundle.mainBundle pathForResource:@"DOES_NOT_EXIST"
-                                                       ofType:@"pdf"];
-    
-    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
-                                    showFileAtPath:filePath];
+    NSString *filePath = [NSBundle.mainBundle pathForResource:@"DOES_NOT_EXIST" ofType:@"pdf"];
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view showFileAtPath:filePath];
 #pragma unused(nvwv)
 }
 
@@ -5687,7 +5694,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case HCConfigAlleyWalls:
             _digitizationMode = DigitizationModeAlleyWallNew;
             break;
-        case HCConfigMetroProp:{
+        case HCConfigMetroProp:
             _digitizationMode = DigitizationModeProperty;
             [self hideMarkersAndInfoWindows:YES];
             [_mapToolbar hide];
@@ -5695,7 +5702,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             _nvdv = [NVDigitizerView showDigitizerInView:self.view
                                        constrainedToView:_mapView
                                                 delegate:self];
-            return;}
+            return;
         case HCConfigSewers:
             _digitizationMode = DigitizationModeSewer;
             break;
@@ -5739,6 +5746,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         case MapTypeSettingHybrid:
             _mapView.mapType = kGMSTypeHybrid;
             break;
+        default:break;
     }
 }
 
@@ -5967,16 +5975,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 break;
             case MapViewScreenSettingPlatView:
                 frame = CGRectMake(0.0, 0.0, frame6.size.width, frame6.size.height);
+            default:break;
         }
         
-        _platView = [PlatImageView platImageViewWithDelegate:self
-                                                    andFrame:frame];
+        _platView = [PlatImageView platImageViewWithDelegate:self andFrame:frame];
         
         if (_selectedPlatRefno > 0)
-        {
-            [_platView setPlatID:_selectedPlatRefno
-                         andType:PLAT_TYPE_STORM];
-        }
+            [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
         
         [self performSelector:@selector(addPlatView)
                    withObject:nil
@@ -6448,7 +6453,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     switch (type)
     {
-        case MarkerInfoWindowTypePID:{
+        case MarkerInfoWindowTypePID:
             _selectedPID = title;
             option = [UserDefaults.defaults integerForKey:@"PIDOption"];
             
@@ -6498,8 +6503,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 default:break;
             }
-            break;}
-        case MarkerInfoWindowTypeStormSewer:{
+            break;
+        case MarkerInfoWindowTypeStormSewer:
             _selectedSewerPipe = title;
             option = [UserDefaults.defaults integerForKey:@"SewerOption"];
             
@@ -6525,8 +6530,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 default:break;
             }
-            break;}
-        case MarkerInfoWindowTypeAlleyWall:{
+            break;
+        case MarkerInfoWindowTypeAlleyWall:
             option = [UserDefaults.defaults integerForKey:@"AlleyWallOption"];
             
             if (option == AlleyWallSettingDefault)
@@ -6549,8 +6554,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 default:break;
             }
-            break;}
-        case MarkerInfoWindowTypeAlleyLine:{
+            break;
+        case MarkerInfoWindowTypeAlleyLine:
             option = [UserDefaults.defaults integerForKey:@"AlleyLineOption"];
             
             if (option == AlleyLineSettingDefault)
@@ -6564,8 +6569,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 default:break;
             }
-            break;}
-        case MarkerInfoWindowTypeCustom:{
+            break;
+        case MarkerInfoWindowTypeCustom:
             option = [UserDefaults.defaults integerForKey:@"CustomOption"];
             
             if (option == CustomSettingDefault)
@@ -6581,8 +6586,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 default:break;
             }
-            break;}
-        case MarkerInfoWindowTypeCrime:{
+            break;
+        case MarkerInfoWindowTypeCrime:
             option = [UserDefaults.defaults integerForKey:@"CrimePointOption"];
             
             switch (option)
@@ -6610,8 +6615,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 default:break;
             }
-            break;}
-        case MarkerInfoWindowTypeBA:{
+            break;
+        case MarkerInfoWindowTypeBA:
             option = [UserDefaults.defaults integerForKey:@"BAOption"];
             
             switch (option)
@@ -6627,7 +6632,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                         [self showText];
                 default:break;
             }
-            break;}
+            break;
         default:break;
     }
 }
@@ -6695,11 +6700,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     {
         if ([datePicker isKindOfClass:GSSiDatePicker.class])
         {
-            SewerData *sewerData = [[SewerData alloc] init];
-            
-            [sewerData processDate:datePicker.dateString
-                           forPipe:_selectedSewerPipe];
-            
+            SewerData *sewerData = SewerData.new;
+            [sewerData processDate:datePicker.dateString forPipe:_selectedSewerPipe];
             [datePicker hideDatePicker:YES];
         }
     }
@@ -6765,7 +6767,6 @@ didFindMatchBetweenNote:(NSString *)note
 - (void)launchNVCRISDetail
 {
     NSString *CRISDetailURL = @"CRISDetail://";
-    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
