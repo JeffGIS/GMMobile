@@ -13,6 +13,7 @@
 #import "NVMetroSettings.h"
 #import "Themes.h"
 #import "CCodeLibrary/NVDateRange.h"
+#import "CCodeLibrary/SidewalkData.h"
 
 #define METERS_PER_MILE 1609.344
 
@@ -223,416 +224,447 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     _viewBounds.ymx = ((bounds.origin.y + bounds.size.height) * scale);
     _viewBounds.ymn = (bounds.origin.y * scale);
     {
+        CGSize size = CGSizeMake(bounds.size.width * scale, bounds.size.height * scale);
         
-            CGSize size = CGSizeMake(bounds.size.width * scale, bounds.size.height * scale);
-            if (_pdf)
+        if (_pdf)
+            _context = _vectorViewContext;
+        
+        else if (_displayDataOption != DISPLAY_DATA_OPTION_HIGHLIGHT || !_vectorLayer)
+        {
+            if (_vectorLayer)
             {
-                _context = _vectorViewContext;
+                CGLayerRelease(_vectorLayer);
+                NSLog (@"Vector layer released");
             }
-            else if (_displayDataOption != DISPLAY_DATA_OPTION_HIGHLIGHT || !_vectorLayer)
-            {
-                if (_vectorLayer)
-                {
-                    CGLayerRelease(_vectorLayer);
-                    NSLog (@"Vector layer released");
-                }
-                _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
-                NSLog (@"Vector layer created");
+            
+            _vectorLayer = CGLayerCreateWithContext(_vectorViewContext, size, NULL);
+            NSLog (@"Vector layer created");
+        }
+        
+        else
+            _context = CGLayerGetContext(_vectorLayer);
 
-            }
-            else
+        dispatch_async(_vectorQueue, ^{
+            DisplayCharacteristics *dc = DisplayCharacteristics.new;
+            _colorSpace = CGColorSpaceCreateDeviceRGB();
+            _width = bounds.size.width * scale;
+            _height = bounds.size.height * scale;
+            _rect = CGRectMake(0, 0, _width, _height);
+            //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
+            //_bitmapData = bmData;
+            
+            if (!_pdf)
                 _context = CGLayerGetContext(_vectorLayer);
-
-            dispatch_async(_vectorQueue,
-                           ^{
-                               DisplayCharacteristics *dc = [[DisplayCharacteristics alloc]init];
-                               _colorSpace = CGColorSpaceCreateDeviceRGB();
-                               _width = bounds.size.width * scale;
-                               _height = bounds.size.height * scale;
-                               _rect = CGRectMake(0, 0, _width, _height);
-                               //_context = createBitmapContext (_rect,_width,_height,_colorSpace,&bmData);
-                               //_bitmapData = bmData;
-                               if (!_pdf)
-                                   _context = CGLayerGetContext(_vectorLayer);
-                              /* NSMutableData *pdf = NSMutableData.data;
-                               UIGraphicsBeginPDFContextToData(pdf, CGRectZero, NULL);
-                               UIGraphicsBeginPDFPage();
-                               _context = UIGraphicsGetCurrentContext();*/
-                               if ([self keepGoing] && CRAPI.sharedInstance.showPlats)
-                               {
-                                   if (ConfigurationControl.sharedInstance.currentApp == HCConfigSewers)
-                                   {
-                                       SewerData *sd = [[SewerData alloc] init];
-                                       sd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                       sd.zoom = _zoom;
-                                       
-                                       [sd displayPlats:_context
-                                                   type:@"STORM"
+            
+            /* NSMutableData *pdf = NSMutableData.data;
+             UIGraphicsBeginPDFContextToData(pdf, CGRectZero, NULL);
+             UIGraphicsBeginPDFPage();
+             _context = UIGraphicsGetCurrentContext();*/
+            
+            if ([self keepGoing] && CRAPI.sharedInstance.showPlats)
+            {
+                if (ConfigurationControl.sharedInstance.currentApp == HCConfigSewers)
+                {
+                    SewerData *sd = [[SewerData alloc] init];
+                    sd.processingID = CRAPI.sharedInstance.keepProcessing;
+                    sd.zoom = _zoom;
+                    
+                    [sd displayPlats:_context
+                                type:@"STORM"
+                           llCorners:&_latlonCornerPoints
+                            LLBounds:&_latlonBounds
+                          viewBounds:&_viewBounds];
+                }
+                else if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+                {
+                    UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+                    ud.processingID = CRAPI.sharedInstance.keepProcessing;
+                    ud.zoom = _zoom;
+                    if ([self keepGoing])
+                    {
+                        [ud displayLayers:_context
+                   displayCharacteristics:dc
+                                llCorners:&_latlonCornerPoints
+                                 LLBounds:&_latlonBounds
+                               viewBounds:&_viewBounds
+                                   themes:nil
+                              pointInArea:_pia];
+                    }
+                }
+            }
+            
+            else if ([self doNVMetroDisplay:dc])
+            {
+                
+            }
+            
+            else
+            {
+                Themes * themes = [[Themes alloc]init];
+                themes.displayID = CRAPI.sharedInstance.keepProcessing;
+                
+                [themes setAppThemes];
+                switch (_displayDataOption)
+                {
+                    case DISPLAY_DATA_OPTION_DISPLAY:
+                    {
+                        if (CRAPI.sharedInstance.selectBoundaryFromMapType)
+                        {
+                            BoundaryData *bd = [[BoundaryData alloc] init];
+                            bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                            bd.zoom = _zoom;
+                            
+                            [bd display:_context
+                               areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
+                           pointInAreas:nil
+                              llCorners:&_latlonCornerPoints
+                               LLBounds:&_latlonBounds
+                             viewBounds:&_viewBounds];
+                            
+                            [bd displayText:_context
+                                       from:TFOSelectBoundary
+                                   areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
+                                textOptions:NVMetroSettings.sharedInstance.currentTextOption
+                               pointInAreas:nil
+                                  llCorners:&_latlonCornerPoints
+                                   LLBounds:&_latlonBounds
+                                 viewBounds:&_viewBounds];
+                            
+                        }
+                        else
+                        {
+                            int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
+                            while (passID < DonePass)
+                            {
+                                if (passID == DataPass)
+                                    [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
+                                else if (passID == DisplayPass)
+                                    [themes themesBeginDisplayPass:CRAPI.sharedInstance.keepProcessing];
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerParcels
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    PropertyData *pd = [[PropertyData alloc] init];
+                                    
+                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    
+                                    [pd displayParcels:_context
+                                             llCorners:&_latlonCornerPoints
+                                              LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds
+                                                themes:nil];
+                                    
+                                    [pd displayParcelText:_context
+                                                llCorners:&_latlonCornerPoints
+                                                 LLBounds:&_latlonBounds
+                                               viewBounds:&_viewBounds];
+                                }
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.zoom = _zoom;
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [pd displayPlanArea:_context
+                                                  llCorners:&_latlonCornerPoints
+                                                   LLBounds:&_latlonBounds
+                                                 viewBounds:&_viewBounds];
+                                    }
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [pd displayPlanLine:_context
+                                                  llCorners:&_latlonCornerPoints
+                                                   LLBounds:&_latlonBounds
+                                                 viewBounds:&_viewBounds];
+                                    }
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [pd displayPlanPoint:_context
+                                                   llCorners:&_latlonCornerPoints
+                                                    LLBounds:&_latlonBounds
+                                                  viewBounds:&_viewBounds];
+                                    }
+                                }
+                                
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerAlleys
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.zoom = _zoom;
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [pd displayAlleyLine:_context
+                                                   llCorners:&_latlonCornerPoints
+                                                    LLBounds:&_latlonBounds
+                                                  viewBounds:&_viewBounds];
+                                    }
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [pd displayWallPoint:_context
+                                                   llCorners:&_latlonCornerPoints
+                                                    LLBounds:&_latlonBounds
+                                                  viewBounds:&_viewBounds];
+                                    }
+                                }
+                                
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerSidewalkPoints
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    SidewalkData *sdwkd = SidewalkData.new;
+                                    sdwkd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    sdwkd.zoom = _zoom;
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [sdwkd displaySdwkPoint:_context
+                                                      llCorners:&_latlonCornerPoints
+                                                       llBounds:&_latlonBounds
+                                                     viewBounds:&_viewBounds];
+                                    }
+                                }
+                                
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    PlanimetricData *pd = [[PlanimetricData alloc] init];
+                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.zoom = _zoom;
+                                    
+                                    if ([self keepGoing])
+                                    {
+                                        [pd displayCurRampIntersectionPoint:_context
+                                                     displayCharacteristics:dc
+                                                                  llCorners:&_latlonCornerPoints
+                                                                   LLBounds:&_latlonBounds
+                                                                 viewBounds:&_viewBounds
+                                                                     themes:themes];
+                                    }
+                                }
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerCrimes
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
+                                    cd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    cd.zoom = _zoom;
+                                    cd.mode = CRAPI.sharedInstance.crimeMode;
+                                    cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
+                                    cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
+                                    cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
+                                    if ([self keepGoing])
+                                    {
+                                        [cd displayCrimePoints:_context
+                                        displayCharacteristics:dc
+                                                     llCorners:CORNERPOINTS_view(&_latlonCornerPoints)
+                                                      LLBounds:&_latlonBounds
+                                                    viewBounds:MNMXCORD_view(&_viewBounds)
+                                                        themes:themes
+                                                   pointInArea:_pia
+                                                          pass:_pass];
+                                        if (!_pass && [self keepGoing])
+                                            _redisplay = YES;
+                                        else
+                                            _redisplay = NO;
+                                    }
+                                }
+                                if ([self keepGoing] &&
+                                    [ConfigurationControl.sharedInstance layer:HCLayerSewers
+                                                                 visibleAtZoom:_zoom
+                                                                       andPass:passID])
+                                {
+                                    SewerData *sd = [[SewerData alloc] init];
+                                    sd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    sd.zoom = _zoom;
+                                    
+                                    [sd displayStormLine:_context
+                                                    pass:LINE_PASS
+                                               llCorners:&_latlonCornerPoints
+                                                LLBounds:&_latlonBounds
+                                              viewBounds:&_viewBounds];
+                                    
+                                    [sd displayStormPoint:_context
+                                                llCorners:&_latlonCornerPoints
+                                                 LLBounds:&_latlonBounds
+                                               viewBounds:&_viewBounds];
+                                    
+                                    [sd displayStormLine:_context
+                                                    pass:TEXT_PASS
+                                               llCorners:&_latlonCornerPoints
+                                                LLBounds:&_latlonBounds
+                                              viewBounds:&_viewBounds];
+                                    
+                                }
+                                if ([self keepGoing] &&
+                                    ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+                                {
+                                    UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+                                    ud.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    ud.zoom = _zoom;
+                                    ud.passID = passID;
+                                    if ([self keepGoing])
+                                    {
+                                        [ud displayLayers:_context
+                                   displayCharacteristics:dc
+                                                llCorners:&_latlonCornerPoints
+                                                 LLBounds:&_latlonBounds
+                                               viewBounds:&_viewBounds
+                                                   themes:themes
+                                              pointInArea:_pia];
+                                    }
+                                }
+                                
+                                
+                                /* if ([self keepGoing])
+                                 {
+                                 BoundaryData *bd = [[BoundaryData alloc] init];
+                                 bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                 bd.zoom = _zoom;
+                                 [bd displayLandUse:_context
+                                 llCorners:&_latlonCornerPoints
+                                 LLBounds:&_latlonBounds
+                                 viewBounds:&_viewBounds];
+                                 }
+                                 
+                                 if ([self keepGoing])
+                                 {
+                                 BoundaryData *bd = [[BoundaryData alloc] init];
+                                 bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                 bd.zoom = _zoom;
+                                 [bd displayCensusAreas:_context
+                                 type:@"TRACT"
+                                 llCorners:&_latlonCornerPoints
+                                 LLBounds:&_latlonBounds
+                                 viewBounds:&_viewBounds];
+                                 }*/
+                                
+                                if ([self keepGoing] && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+                                    (CRAPI.sharedInstance.showPolylineForBounds ||
+                                     CRAPI.sharedInstance.maskBoundsForBounds))
+                                {
+                                    BoundaryData *bd = [[BoundaryData alloc] init];
+                                    
+                                    [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                                                 ofType:@"BOUNDARY"
+                                                 asMask:CRAPI.sharedInstance.maskBoundsForBounds
+                                              inContext:_context
                                               llCorners:&_latlonCornerPoints
                                                LLBounds:&_latlonBounds
                                              viewBounds:&_viewBounds];
-                                   }
-                                   else if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
-                                   {
-                                       UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
-                                       ud.processingID = CRAPI.sharedInstance.keepProcessing;
-                                       ud.zoom = _zoom;
-                                       if ([self keepGoing])
-                                       {
-                                           [ud displayLayers:_context
-                                      displayCharacteristics:dc
-                                                   llCorners:&_latlonCornerPoints
-                                                    LLBounds:&_latlonBounds
-                                                  viewBounds:&_viewBounds
-                                                      themes:nil
-                                                 pointInArea:_pia];
-                                       }
-                                   }
-                               }
-                               
-                               else if ([self doNVMetroDisplay:dc])
-                               {
-                                   
-                               }
-                               
-                               else
-                               {
-                                   Themes * themes = [[Themes alloc]init];
-                                   themes.displayID = CRAPI.sharedInstance.keepProcessing;
-                                   
-                                   [themes setAppThemes];
-                                   switch (_displayDataOption)
-                                   {
-                                       case DISPLAY_DATA_OPTION_DISPLAY:
-                                       {
-                                           if (CRAPI.sharedInstance.selectBoundaryFromMapType)
-                                           {
-                                               BoundaryData *bd = [[BoundaryData alloc] init];
-                                               bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                               bd.zoom = _zoom;
-                                               
-                                               [bd display:_context
-                                                  areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
-                                              pointInAreas:nil
-                                                 llCorners:&_latlonCornerPoints
-                                                  LLBounds:&_latlonBounds
-                                                viewBounds:&_viewBounds];
-                                               
-                                               [bd displayText:_context
-                                                          from:TFOSelectBoundary
-                                                      areaType:CRAPI.sharedInstance.selectBoundaryFromMapType
-                                                     textOptions:NVMetroSettings.sharedInstance.currentTextOption
-                                                  pointInAreas:nil
-                                                     llCorners:&_latlonCornerPoints
-                                                      LLBounds:&_latlonBounds
-                                                    viewBounds:&_viewBounds];
-
-                                           }
-                                           else
-                                           {
-                                               int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
-                                               while (passID < DonePass)
-                                               {
-                                                   if (passID == DataPass)
-                                                       [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
-                                                   else if (passID == DisplayPass)
-                                                       [themes themesBeginDisplayPass:CRAPI.sharedInstance.keepProcessing];
-                                                   if ([self keepGoing] &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerParcels
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
-                                                   {
-                                                       PropertyData *pd = [[PropertyData alloc] init];
-                                                       
-                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       
-                                                       [pd displayParcels:_context
-                                                                llCorners:&_latlonCornerPoints
-                                                                 LLBounds:&_latlonBounds
-                                                               viewBounds:&_viewBounds
-                                                                   themes:nil];
-                                                       
-                                                       [pd displayParcelText:_context
-                                                                   llCorners:&_latlonCornerPoints
-                                                                    LLBounds:&_latlonBounds
-                                                                  viewBounds:&_viewBounds];
-                                                   }
-                                                   if ([self keepGoing] &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerPlanimetric
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
-                                                   {
-                                                       PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       pd.zoom = _zoom;
-                                                       
-                                                       if ([self keepGoing])
-                                                           [pd displayPlanArea:_context
-                                                                     llCorners:&_latlonCornerPoints
-                                                                      LLBounds:&_latlonBounds
-                                                                    viewBounds:&_viewBounds];
-                                                       
-                                                       if ([self keepGoing])
-                                                           [pd displayPlanLine:_context
-                                                                     llCorners:&_latlonCornerPoints
-                                                                      LLBounds:&_latlonBounds
-                                                                    viewBounds:&_viewBounds];
-                                                       
-                                                       if ([self keepGoing])
-                                                           [pd displayPlanPoint:_context
-                                                                      llCorners:&_latlonCornerPoints
-                                                                       LLBounds:&_latlonBounds
-                                                                     viewBounds:&_viewBounds];
-                                                   }
-                                                   
-                                                   
-                                                   if ([self keepGoing] &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerAlleys
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
-                                                   {
-                                                       PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       pd.zoom = _zoom;
-                                                       
-                                                       if ([self keepGoing])
-                                                           [pd displayAlleyLine:_context
-                                                                      llCorners:&_latlonCornerPoints
-                                                                       LLBounds:&_latlonBounds
-                                                                     viewBounds:&_viewBounds];
-                                                       
-                                                       if ([self keepGoing])
-                                                           [pd displayWallPoint:_context
-                                                                      llCorners:&_latlonCornerPoints
-                                                                       LLBounds:&_latlonBounds
-                                                                     viewBounds:&_viewBounds];
-                                                   }
-                                                   if ([self keepGoing] &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerCurbRamps
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
-                                                   {
-                                                       PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                                       pd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       pd.zoom = _zoom;
-                                                       
-                                                       if ([self keepGoing])
-                                                       {
-                                                           [pd displayCurRampIntersectionPoint:_context
-                                                                        displayCharacteristics:dc
-                                                                                     llCorners:&_latlonCornerPoints
-                                                                                      LLBounds:&_latlonBounds
-                                                                                    viewBounds:&_viewBounds
-                                                                                        themes:themes];
-                                                       }
-                                                   }
-                                                   if ([self keepGoing] &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerCrimes
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
-                                                   {
-                                                       CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
-                                                       cd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       cd.zoom = _zoom;
-                                                       cd.mode = CRAPI.sharedInstance.crimeMode;
-                                                       cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
-                                                       cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
-                                                       cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
-                                                       if ([self keepGoing])
-                                                       {
-                                                           [cd displayCrimePoints:_context
-                                                           displayCharacteristics:dc
-                                                                        llCorners:CORNERPOINTS_view(&_latlonCornerPoints)
-                                                                         LLBounds:&_latlonBounds
-                                                                       viewBounds:MNMXCORD_view(&_viewBounds)
-                                                                           themes:themes
-                                                                      pointInArea:_pia
-                                                                             pass:_pass];
-                                                           if (!_pass && [self keepGoing])
-                                                               _redisplay = YES;
-                                                           else
-                                                               _redisplay = NO;
-                                                       }
-                                                   }
-                                                   if ([self keepGoing] &&
-                                                       [ConfigurationControl.sharedInstance layer:HCLayerSewers
-                                                                                    visibleAtZoom:_zoom
-                                                                                          andPass:passID])
-                                                   {
-                                                       SewerData *sd = [[SewerData alloc] init];
-                                                       sd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       sd.zoom = _zoom;
-                                                       
-                                                       [sd displayStormLine:_context
-                                                                       pass:LINE_PASS
-                                                                  llCorners:&_latlonCornerPoints
-                                                                   LLBounds:&_latlonBounds
-                                                                 viewBounds:&_viewBounds];
-                                                       
-                                                       [sd displayStormPoint:_context
-                                                                   llCorners:&_latlonCornerPoints
-                                                                    LLBounds:&_latlonBounds
-                                                                  viewBounds:&_viewBounds];
-                                                       
-                                                       [sd displayStormLine:_context
-                                                                       pass:TEXT_PASS
-                                                                  llCorners:&_latlonCornerPoints
-                                                                   LLBounds:&_latlonBounds
-                                                                 viewBounds:&_viewBounds];
-                                                       
-                                                   }
-                                                   if ([self keepGoing] &&
-                                                       ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
-                                                   {
-                                                       UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
-                                                       ud.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       ud.zoom = _zoom;
-                                                       ud.passID = passID;
-                                                       if ([self keepGoing])
-                                                       {
-                                                           [ud displayLayers:_context
-                                                      displayCharacteristics:dc
-                                                                   llCorners:&_latlonCornerPoints
-                                                                    LLBounds:&_latlonBounds
-                                                                  viewBounds:&_viewBounds
-                                                                      themes:themes
-                                                                 pointInArea:_pia];
-                                                       }
-                                                   }
-                                                   
-                                                   
-                                                  /* if ([self keepGoing])
-                                                   {
-                                                        BoundaryData *bd = [[BoundaryData alloc] init];
-                                                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                        bd.zoom = _zoom;
-                                                        [bd displayLandUse:_context
-                                                        llCorners:&_latlonCornerPoints
-                                                        LLBounds:&_latlonBounds
-                                                        viewBounds:&_viewBounds];
-                                                    }
-                                                    
-                                                    if ([self keepGoing])
-                                                    {
-                                                    BoundaryData *bd = [[BoundaryData alloc] init];
-                                                    bd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                    bd.zoom = _zoom;
-                                                    [bd displayCensusAreas:_context
-                                                    type:@"TRACT"
-                                                    llCorners:&_latlonCornerPoints
-                                                    LLBounds:&_latlonBounds
-                                                    viewBounds:&_viewBounds];
-                                                    }*/
-                                                   
-                                                   if ([self keepGoing] && CRAPI.sharedInstance.currentOverallBoundaryRefno &&
-                                                       (CRAPI.sharedInstance.showPolylineForBounds ||
-                                                        CRAPI.sharedInstance.maskBoundsForBounds))
-                                                   {
-                                                       BoundaryData *bd = [[BoundaryData alloc] init];
-                                                       
-                                                       [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                                    ofType:@"BOUNDARY"
-                                                                    asMask:CRAPI.sharedInstance.maskBoundsForBounds
-                                                                 inContext:_context
-                                                                 llCorners:&_latlonCornerPoints
-                                                                  LLBounds:&_latlonBounds
-                                                                viewBounds:&_viewBounds];
-                                                   }
-                                                   
-                                                   if ([self keepGoing] && passID == DisplayPass &&
-                                                       [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
-                                                   {
-                                                       PipeTrace *pt = [[PipeTrace alloc] init];
-                                                       pt.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                       
-                                                       [pt displayPipeTrace:_context
-                                                                  llCorners:&_latlonCornerPoints
-                                                                   LLBounds:&_latlonBounds
-                                                                 viewBounds:&_viewBounds];
-                                                   }
-                                                   if (passID == DataPass)
-                                                       [themes themesEndDataPass:CRAPI.sharedInstance.keepProcessing];
-                                                   else if (passID == DisplayPass)
-                                                       [themes themesEndDisplayPass:CRAPI.sharedInstance.keepProcessing];
-                                                   passID++;
-                                               }
-                                           }
-                                       }
-                                           break;
-                                           
-                                       case DISPLAY_DATA_OPTION_HIGHLIGHT:
-                                       {
-                                           switch (_pickedItem.itemType)
-                                           {
-                                               case StormMain:
-                                               {
-                                                   SewerData *sd = [[SewerData alloc] init];
-                                                   sd.processingID = CRAPI.sharedInstance.keepProcessing;
-                                                   sd.zoom = _zoom;
-                                                   
-                                                   [sd highlightStormLine:_context
-                                                                    refno:(int)_pickedItem.refno
-                                                                llCorners:&_latlonCornerPoints
-                                                                 LLBounds:&_latlonBounds
-                                                               viewBounds:&_viewBounds];
-                                                   
-                                                  /* [sd displayStormLine:_context
-                                                                   pass:LINE_PASS
-                                                              llCorners:&_latlonCornerPoints
-                                                               LLBounds:&_latlonBounds
-                                                             viewBounds:&_viewBounds];*/
-                                               }
-                                                   break;
-                                              
-                                               default:
-                                                   break;
-                                           }
-                                      }
-                                           break;
-                                   }
-                               }
-                               if (!self.displayID)
-                               {
-                                   UIGraphicsEndPDFContext();
-
-                                   if (self.delegate)
-                                       [self.delegate vectorViewDidComplete:self
-                                                                    pdfData:_pdf
-                                                                  reDisplay:_redisplay];
-
-                               }
-                               else if ([self keepGoing])
-                               {
-                                   _haveVectorLayer = YES;
-                                   dispatch_async(dispatch_get_main_queue(),
-                                                  ^{
-                                                      [self setNeedsDisplay];
-                                                  });
-                                   /*UIGraphicsBeginImageContext(size);
-                                    _context = UIGraphicsGetCurrentContext();
-                                    CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
-                                    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
-                                    NSData * pngData = UIImagePNGRepresentation(image);
-                                    [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
-                                   
-                               }
-                               else
-                               {
-                                   CGLayerRelease(_vectorLayer);
-                                   NSLog (@"Vector layer released");
-                                   _vectorLayer = 0;
-                                   _haveVectorLayer = NO;
-                                   if (self.delegate)
-                                       [self.delegate vectorViewDidComplete:self
-                                                                    pdfData:nil
-                                                                  reDisplay:NO];
-                               }
-                               
-                               //[self freeResources];
-                               NSLog (@"Vector view complete");
-                           });
+                                }
+                                
+                                if ([self keepGoing] && passID == DisplayPass &&
+                                    [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
+                                {
+                                    PipeTrace *pt = [[PipeTrace alloc] init];
+                                    pt.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    
+                                    [pt displayPipeTrace:_context
+                                               llCorners:&_latlonCornerPoints
+                                                LLBounds:&_latlonBounds
+                                              viewBounds:&_viewBounds];
+                                }
+                                if (passID == DataPass)
+                                    [themes themesEndDataPass:CRAPI.sharedInstance.keepProcessing];
+                                else if (passID == DisplayPass)
+                                    [themes themesEndDisplayPass:CRAPI.sharedInstance.keepProcessing];
+                                passID++;
+                            }
+                        }
+                    }
+                        break;
+                        
+                    case DISPLAY_DATA_OPTION_HIGHLIGHT:
+                    {
+                        switch (_pickedItem.itemType)
+                        {
+                            case StormMain:
+                            {
+                                SewerData *sd = [[SewerData alloc] init];
+                                sd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                sd.zoom = _zoom;
+                                
+                                [sd highlightStormLine:_context
+                                                 refno:(int)_pickedItem.refno
+                                             llCorners:&_latlonCornerPoints
+                                              LLBounds:&_latlonBounds
+                                            viewBounds:&_viewBounds];
+                                
+                                /* [sd displayStormLine:_context
+                                 pass:LINE_PASS
+                                 llCorners:&_latlonCornerPoints
+                                 LLBounds:&_latlonBounds
+                                 viewBounds:&_viewBounds];*/
+                            }
+                                break;
+                                
+                            default:
+                                break;
+                        }
+                    }
+                        break;
+                }
+            }
+            if (!self.displayID)
+            {
+                UIGraphicsEndPDFContext();
+                
+                if (self.delegate)
+                    [self.delegate vectorViewDidComplete:self
+                                                 pdfData:_pdf
+                                               reDisplay:_redisplay];
+                
+            }
+            else if ([self keepGoing])
+            {
+                _haveVectorLayer = YES;
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [self setNeedsDisplay];
+                               });
+                /*UIGraphicsBeginImageContext(size);
+                 _context = UIGraphicsGetCurrentContext();
+                 CGContextDrawLayerAtPoint(_context, CGPointMake(0, 0), vectorLayer);
+                 UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+                 NSData * pngData = UIImagePNGRepresentation(image);
+                 [pngData writeToFile:CRAPI.sharedInstance.extractFile atomically:YES];*/
+                
+            }
+            else
+            {
+                CGLayerRelease(_vectorLayer);
+                NSLog (@"Vector layer released");
+                _vectorLayer = 0;
+                _haveVectorLayer = NO;
+                if (self.delegate)
+                    [self.delegate vectorViewDidComplete:self
+                                                 pdfData:nil
+                                               reDisplay:NO];
+            }
+            
+            //[self freeResources];
+            NSLog (@"Vector view complete");
+        });
     }
 }
+
 -(void)   displayMapit:(CGContextRef)context
 displayCharacteristics:(DisplayCharacteristics *)dc
              llCorners:(CORNERPOINTS *) latlonCornerPoints

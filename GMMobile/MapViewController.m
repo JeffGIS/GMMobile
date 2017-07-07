@@ -27,6 +27,7 @@
 #import "CCodeLibrary/NVSendEmail.h"
 #import "NVPanoramaView.h"
 #import "CCodeLibrary/SidewalkData.h"
+#import "CCodeLibrary/CRAPI.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -2922,14 +2923,14 @@ haveVV:
     {
         _layer_jpeg.map = _mapView;
         _layer_png.map = _mapView;
-        ConfigurationControl.sharedInstance.GMTilesVisible = YES;
+        CRAPI.sharedInstance.GMTilesVisible = YES;
     }
     
     else
     {
         _layer_jpeg.map = nil;
         _layer_png.map = nil;
-        ConfigurationControl.sharedInstance.GMTilesVisible = NO;
+        CRAPI.sharedInstance.GMTilesVisible = NO;
     }
 
 }

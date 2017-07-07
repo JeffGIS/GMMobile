@@ -136,16 +136,18 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         strcpy(layerName[HCLayerCrimes], "Crimes");
         strcpy(layerName[HCLayerMapleGroveWater], "Water");
         strcpy(layerName[HCLayerMapleGroveFiber], "Fiber");
+        strcpy(layerName[HCLayerSidewalkPoints], "Sidewalk Points");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
         layerDefaultZoom[HCLayerSewers] = 17;
         layerDefaultZoom[HCLayerPlanimetric] = 18;
         layerDefaultZoom[HCLayerAlleys] = 14;
-        layerDefaultZoom[HCLayerAlleys] = 13;
+        layerDefaultZoom[HCLayerCurbRamps] = 13;
         layerDefaultZoom[HCLayerCrimes] = 8;
         layerDefaultZoom[HCLayerMapleGroveFiber] = 11;
         layerDefaultZoom[HCLayerMapleGroveWater] = 11;
+        layerDefaultZoom[HCLayerSidewalkPoints] = 14;
         
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
@@ -155,6 +157,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         layerHasSymbols[HCLayerCrimes] = NO;
         layerHasSymbols[HCLayerMapleGroveWater] = NO;
         layerHasSymbols[HCLayerMapleGroveFiber] = NO;
+        layerHasSymbols[HCLayerSidewalkPoints] = YES;
         
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
@@ -294,6 +297,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigSewers][HCLayerPlanimetric] = NO;
         configLayers[HCConfigSewers][HCLayerAlleys] = NO;
         configLayers[HCConfigSewers][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigSewers][HCLayerSidewalkPoints] = NO;
         
         configLayers[HCConfigAlleyWalls][HCLayerAerials] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerParcels] = YES;
@@ -301,6 +305,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigAlleyWalls][HCLayerPlanimetric] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerAlleys] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigAlleyWalls][HCLayerSidewalkPoints] = NO;
        
         configLayers[HCConfigAlleyWallStatus][HCLayerAerials] = NO;
         configLayers[HCConfigAlleyWallStatus][HCLayerParcels] = NO;
@@ -308,6 +313,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigAlleyWallStatus][HCLayerPlanimetric] = NO;
         configLayers[HCConfigAlleyWallStatus][HCLayerAlleys] = YES;
         configLayers[HCConfigAlleyWallStatus][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigAlleyWallStatus][HCLayerSidewalkPoints] = NO;
         
         configLayers[HCConfigCurbRamps][HCLayerAerials] = YES;
         configLayers[HCConfigCurbRamps][HCLayerParcels] = NO;
@@ -315,6 +321,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigCurbRamps][HCLayerPlanimetric] = NO;
         configLayers[HCConfigCurbRamps][HCLayerAlleys] = NO;
         configLayers[HCConfigCurbRamps][HCLayerCurbRamps] = YES;
+        configLayers[HCConfigCurbRamps][HCLayerSidewalkPoints] = NO;
         
         configLayers[HCConfigSidewalk][HCLayerAerials] = YES;
         configLayers[HCConfigSidewalk][HCLayerParcels] = NO;
@@ -322,6 +329,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigSidewalk][HCLayerPlanimetric] = NO;
         configLayers[HCConfigSidewalk][HCLayerAlleys] = NO;
         configLayers[HCConfigSidewalk][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigSidewalk][HCLayerSidewalkPoints] = YES;
         
         configLayers[HCConfigMetroProp][HCLayerAerials] = NO;
         configLayers[HCConfigMetroProp][HCLayerParcels] = YES;
@@ -329,6 +337,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigMetroProp][HCLayerPlanimetric] = NO;
         configLayers[HCConfigMetroProp][HCLayerAlleys] = NO;
         configLayers[HCConfigMetroProp][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigMetroProp][HCLayerSidewalkPoints] = NO;
         
         configLayers[HCConfigFromSpreadsheet][HCLayerAerials] = NO;
         configLayers[HCConfigFromSpreadsheet][HCLayerParcels] = YES;
@@ -336,6 +345,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigFromSpreadsheet][HCLayerPlanimetric] = NO;
         configLayers[HCConfigFromSpreadsheet][HCLayerAlleys] = NO;
         configLayers[HCConfigFromSpreadsheet][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigFromSpreadsheet][HCLayerSidewalkPoints] = NO;
         
         configLayers[HCConfigCrimes][HCLayerAerials] = YES;
         configLayers[HCConfigCrimes][HCLayerParcels] = YES;
@@ -344,6 +354,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigCrimes][HCLayerAlleys] = NO;
         configLayers[HCConfigCrimes][HCLayerCurbRamps] = NO;
         configLayers[HCConfigCrimes][HCLayerCrimes] = YES;
+        configLayers[HCConfigCrimes][HCLayerSidewalkPoints] = NO;
         
         configLayers[HCConfigMapleGrove][HCLayerAerials] = YES;
         configLayers[HCConfigMapleGrove][HCLayerParcels] = YES;
@@ -354,6 +365,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigMapleGrove][HCLayerCrimes] = NO;
         configLayers[HCConfigMapleGrove][HCLayerMapleGroveWater] = YES;
         configLayers[HCConfigMapleGrove][HCLayerMapleGroveFiber] = YES;
+        configLayers[HCConfigMapleGrove][HCLayerSidewalkPoints] = NO;
         
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
@@ -441,8 +453,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         case HCConfigSewers:
         case HCConfigAlleyWalls:
         case HCConfigAlleyWallStatus:
-        case HCConfigCrimes:
-        {
+        case HCConfigCrimes:{
             CRAPI.sharedInstance.currentOverallBoundaryRefno = (int)[UserDefaults.defaults integerForKey:@"CurrentOverallBoundaryRefno"];
             CRAPI.sharedInstance.parcelTextOption = 2;
             
@@ -469,8 +480,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             
             if (defaultAdjustCrimeArea && defaultAdjustCrimeArea.length)
                 _adjustCrimeArea = defaultAdjustCrimeArea;
-            break;
-        }
+            break;}
         case HCConfigMapleGrove:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 51157;
             CRAPI.sharedInstance.parcelTextOption = 1;
@@ -488,6 +498,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         [CRAPI.sharedInstance processPlaces];
         [CRAPI.sharedInstance setGeoIDForCurrentApp];
     }
+    
     return rtn;
 }
 
@@ -508,6 +519,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAreas]];*/
     }
+    
     else
     {
         NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingAreas];
@@ -521,28 +533,21 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                 {
                     case HCLayerParcels:
                         //[list addObject:[NSNumber numberWithInt:GetDatabaseSettingParcels]];
-                    if (appID == HCConfigAlleyWalls || appID == HCConfigAlleyWallStatus)
-                    {
-                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingNVMetro]];
-                    }
+                        if (appID == HCConfigAlleyWalls || appID == HCConfigAlleyWallStatus)
+                            [list addObject:[NSNumber numberWithInt:GetDatabaseSettingNVMetro]];
                         break;
-                        
                     case HCLayerSewers:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingSewer]];
                         break;
-                        
                     case HCLayerPlanimetric:
-                       // [list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
+                        //[list addObject:[NSNumber numberWithInt:GetDatabaseSettingPlan]];
                         break;
-                        
                     case HCLayerAlleys:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAlleyWall]];
                         break;
-                        
                     case HCLayerCurbRamps:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCurbRamp]];
                         break;
-                        
                     case HCLayerMapleGroveFiber:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingMapleGrove]];
                         break;
@@ -552,21 +557,23 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         
         if (appID == HCConfigMetroProp)
             [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
-        if (appID == HCConfigCrimes)
+        
+        else if (appID == HCConfigCrimes)
             [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCrimes]];
     }
+    
     return list;
 }
 
 - (NSArray *)getLayers
 {
-    NSMutableArray *layers = [[NSMutableArray alloc] init];
+    NSMutableArray *layers = NSMutableArray.array;
     
     for (int layer = 0; layer < NUMHardCodedLayers; layer++)
     {
         if (configLayers[_currentApp][layer])
         {
-            LayerObject *lo = [[LayerObject alloc] init];
+            LayerObject *lo = LayerObject.new;
             lo.layerID = layer;
             lo.layerName = [NSString stringWithUTF8String:layerName[layer]];
             lo.hasSymbols = layerHasSymbols[layer];
@@ -589,35 +596,31 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
 visibleAtZoom:(CGFloat)zoom
       andPass:(ItemProcessingPassTypes)passID
 {
-    if (configLayers[_currentApp][layerID] &&
-        zoom >= configLayerZoom[_currentApp][layerID][0])
-    {
+    if (configLayers[_currentApp][layerID] && zoom >= configLayerZoom[_currentApp][layerID][0])
         return YES;
-    }
     
-    return NO;
+    else
+        return NO;
 }
+
 - (BOOL)layerInConfig:(HardCodedLayers)layerID
 {
     if (configLayers[_currentApp][layerID])
-    {
         return YES;
-    }
     
-    return NO;
+    else
+        return NO;
 }
 
 - (BOOL)symbol:(int)symbol
        inLayer:(HardCodedLayers)layerID
  visibleAtZoom:(CGFloat)zoom
 {
-    if (configLayers[_currentApp][layerID] &&
-        zoom >= configLayerZoom[_currentApp][layerID][symbol])
-    {
+    if (configLayers[_currentApp][layerID] && zoom >= configLayerZoom[_currentApp][layerID][symbol])
         return YES;
-    }
     
-    return NO;
+    else
+        return NO;
 }
 
 - (NSArray *)getLayerSymbols
@@ -638,7 +641,7 @@ visibleAtZoom:(CGFloat)zoom
 
 - (HardCodedLayers)layerIDforIndex:(NSInteger)index
 {
-    int identifier =-1;
+    int identifier = -1;
     int i;
     
     for (i = 0; i < NUMHardCodedLayers; i++)
@@ -655,29 +658,26 @@ visibleAtZoom:(CGFloat)zoom
 
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID
 {
-    NSMutableArray *array=[[NSMutableArray alloc] init];
+    NSMutableArray *array= NSMutableArray.array;
+    LayerObject *lo = nil;
 
     switch (layerID)
     {
-        case HCLayerPlanimetric:
-        {
-            
-            PlanimetricData *pd = [[PlanimetricData alloc] init];
-            
+        case HCLayerPlanimetric:{
+            PlanimetricData *pd = PlanimetricData.new;
             NSArray *syms = [pd getDistinctSymbols:@"PLAN_POINT"];
             
             for (NSString *symName in syms)
             {
-                LayerObject *lo = [[LayerObject alloc]initWithName:symName
-                                                             andID:-1];
+                lo = [[LayerObject alloc] initWithName:symName andID:-1];
                 [array addObject:lo];
             }
+            
             syms = [pd getDistinctSymbols:@"PLAN_LINE"];
             
             for (NSString *symName in syms)
             {
-                LayerObject *lo = [[LayerObject alloc]initWithName:symName
-                                                             andID:-1];
+                lo = [[LayerObject alloc] initWithName:symName andID:-1];
                 [array addObject:lo];
             }
             
@@ -685,61 +685,35 @@ visibleAtZoom:(CGFloat)zoom
             
             for (NSString *symName in syms)
             {
-                LayerObject *lo = [[LayerObject alloc]initWithName:symName
-                                                              andID:-1];
-                
+                lo = [[LayerObject alloc] initWithName:symName andID:-1];
                 [array addObject:lo];
             }
-        }
-            break;
-            
+            break;}
         case HCLayerAlleys:
-        {
-            LayerObject * lo = [[LayerObject alloc]initWithName:@"ALLEYWALLPOINT"
-                                                          andID:-1];
-            
+            lo = [[LayerObject alloc] initWithName:@"ALLEYWALLPOINT" andID:-1];
             [array addObject:lo];
-            
-            lo = [[LayerObject alloc]initWithName:@"ALLEYWALL"
-                                            andID:-1];
+            lo = [[LayerObject alloc] initWithName:@"ALLEYWALL" andID:-1];
             [array addObject:lo];
-            
-            lo = [[LayerObject alloc]initWithName:@"ALLEYCENTERLINE"
-                                            andID:-1];
+            lo = [[LayerObject alloc] initWithName:@"ALLEYCENTERLINE" andID:-1];
             [array addObject:lo];
-            
-        }
             break;
-            
-        case HCLayerCurbRamps:
-        {
-            LayerObject * lo = [[LayerObject alloc]initWithName:@"CRINTPT"
-                                                          andID:-1];
-            
+        case HCLayerSidewalkPoints:
+            lo = [[LayerObject alloc] initWithName:@"SIDEWALKPOINT" andID:-1];
             [array addObject:lo];
-            
-        }
+            break;
+        case HCLayerCurbRamps:
+            lo = [[LayerObject alloc] initWithName:@"CRINTPT" andID:-1];
+            [array addObject:lo];
             break;
         case HCLayerSewers:
-        {
-            LayerObject * lo = [[LayerObject alloc]initWithName:@"STORM"
-                                                             ID:layerID
-                                                      andSymbol:STORM_SYMBOLS];
+            lo = [[LayerObject alloc] initWithName:@"STORM" ID:layerID andSymbol:STORM_SYMBOLS];
             lo.zoomLevel = configLayerZoom[_currentApp][layerID][STORM_SYMBOLS];
             [array addObject:lo];
-            
-            lo = [[LayerObject alloc]initWithName:@"SANITARY"
-                                               ID:layerID
-                                        andSymbol:SANITARY_SYMBOLS];
+            lo = [[LayerObject alloc] initWithName:@"SANITARY" ID:layerID andSymbol:SANITARY_SYMBOLS];
             lo.zoomLevel = configLayerZoom[_currentApp][layerID][SANITARY_SYMBOLS];
             [array addObject:lo];
-            
-        }
             break;
-            
-            
-        default:
-            break;
+        default:break;
     }
     
     [self sortSymbolsByName:array];
@@ -749,17 +723,18 @@ visibleAtZoom:(CGFloat)zoom
 - (void)sortSymbolsByName:(NSMutableArray *)symbols
 {
     [symbols sortUsingComparator: ^(id obj1, id obj2)
-     {
+    {
          LayerObject *lo1 = obj1;
          LayerObject *lo2 = obj2;
-         
          return [lo1.layerName compare:lo2.layerName];
-     }];
+    }];
 }
+
 - (BOOL)haveUserAerials
 {
     return userAerials[_currentApp];
 }
+
 - (BOOL)useMapTypeControl
 {
     return configToobarSegs[_currentApp][MapToolbarPropertyWantMapType];
@@ -777,9 +752,7 @@ visibleAtZoom:(CGFloat)zoom
         case ACO_HousingUnits:
             rtn = @"HUTOTAL";
             break;
-            
-        default:
-            break;
+        default:break;
     }
     
     return rtn;

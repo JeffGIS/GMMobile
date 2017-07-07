@@ -599,7 +599,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         
         if (!CGPathIsEmpty(path))
         {
-            if (ConfigurationControl.sharedInstance.GMTilesVisible)
+            if (CRAPI.sharedInstance.GMTilesVisible)
             {
                 CGContextSetLineWidth(context, width*2);
                 CGContextSetStrokeColorWithColor(context,UIColor.whiteColor.CGColor);

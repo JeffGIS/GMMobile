@@ -20,12 +20,14 @@ static float wallPtSize=0;
 
 - (BOOL)continueProcessing
 {
-    if (!self.processingID)
-        return YES;
-    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
+    if (!_processingID)
         return YES;
     
-    return NO;
+    if (_processingID == CRAPI.sharedInstance.keepProcessing)
+        return YES;
+    
+    else
+        return NO;
 }
 
 #pragma mark - Plan Areas
@@ -331,7 +333,7 @@ static float wallPtSize=0;
         
         if (!CGPathIsEmpty(path))
         {
-            if (ConfigurationControl.sharedInstance.GMTilesVisible)
+            if (CRAPI.sharedInstance.GMTilesVisible)
             {
                 CGContextSetLineWidth(context, width*2);
                 CGContextSetStrokeColorWithColor(context,UIColor.whiteColor.CGColor);
@@ -619,15 +621,15 @@ static float wallPtSize=0;
     p1.y = pt->lat;
     minpt = p1;
     dbounds bnds = [CRAPI.sharedInstance getPickApBoundsAtPoint:pt];
-    AlleyWallData *pd = [[AlleyWallData alloc] init];
-    BOOL opened = [pd open];
+    AlleyWallData *awd = [[AlleyWallData alloc] init];
+    BOOL opened = [awd open];
     
     NSString *query = [NSString stringWithFormat:@"SELECT ALLEYWALLS_NEW.id,[Wall ID],LATITUDE,LONGITUDE FROM ALLEYWALLS_NEW,ALLEYWALLS_NEW_index WHERE ALLEYWALLS_NEW.Current=1 AND ALLEYWALLS_NEW.id=ALLEYWALLS_NEW_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                        bnds.xmn, bnds.xmx, bnds.ymn, bnds.ymx];
     
     sqlite3_stmt *statement = NULL;
     
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database);
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(awd.database, query.UTF8String, -1, &statement, 0), awd.database);
     
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
@@ -649,8 +651,8 @@ static float wallPtSize=0;
         }
     }
     
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),pd.database);
-    [pd close:opened];
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement),awd.database);
+    [awd close:opened];
     pt->lon = minpt.x;
     pt->lat = minpt.y;
     
@@ -749,7 +751,7 @@ static float wallPtSize=0;
     CGContextFillEllipseInRect(context, pointRect);
     CGContextSetLineWidth(context, 2);
     
-    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+    if (CRAPI.sharedInstance.GMTilesVisible)
         CGContextSetRGBStrokeColor(context, 1, 1, 0, 1);
     
     else
@@ -942,7 +944,7 @@ static float wallPtSize=0;
     CGContextFillEllipseInRect(context, pointRect);
     CGContextSetLineWidth(context, 2);
     
-    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+    if (CRAPI.sharedInstance.GMTilesVisible)
         CGContextSetRGBStrokeColor(context, 1, 1, 0, 1);
     
     else

@@ -1026,7 +1026,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     
     double targetPidValue = [self getTargetPidValue];
     
-    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+    if (CRAPI.sharedInstance.GMTilesVisible)
         parcelLineColor = [UIColor colorWithRed:1 green:1 blue:0 alpha:1];
     switch (CRAPI.sharedInstance.project)
     {
@@ -1480,7 +1480,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         return;
     if (text.length * minFontSize * minFontSize > maxPixels)
         return;
-    if (ConfigurationControl.sharedInstance.GMTilesVisible)
+    if (CRAPI.sharedInstance.GMTilesVisible)
         textColor = UIColor.redColor;
     else
         textColor = UIColor.blackColor;

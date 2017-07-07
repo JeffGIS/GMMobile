@@ -28,6 +28,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerCrimes,
     HCLayerMapleGroveWater,
     HCLayerMapleGroveFiber,
+    HCLayerSidewalkPoints,
 NUMHardCodedLayers};
 
 @interface ApplicationObject : NSObject
@@ -65,7 +66,7 @@ NUMHardCodedLayers};
 @property NSMutableArray *appList, *legendList;
 @property HardCodedConfigs legendApp;
 @property HardCodedConfigs currentApp;
-@property BOOL GMTilesVisible, wantAllCrimes;
+@property BOOL wantAllCrimes;
 @property AdjustCrimeOptions  adjustCrimeOption;
 @property NSString *adjustCrimeArea;
 @property DataCompareOptions dataCompareOption;
