@@ -99,6 +99,7 @@
 		69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */; };
 		69E7FCAD1D81D9A300171E44 /* metalSliderRightPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */; };
 		69E7FCB11D81DFFC00171E44 /* redSliderThumbPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */; };
+		69E8C4321F1057E7001F2995 /* NVGeocoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E8C4311F1057E7001F2995 /* NVGeocoder.m */; };
 		69F177381D7A0B7400741C68 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177331D7A0B7400741C68 /* GoogleMaps.framework */; };
 		69F177391D7A0B7400741C68 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */; };
 		69F1773A1D7A0B7400741C68 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */; };
@@ -376,6 +377,8 @@
 		69E7FCA91D81D9A300171E44 /* metalSliderLeftPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderLeftPhone.png; sourceTree = "<group>"; };
 		69E7FCAA1D81D9A300171E44 /* metalSliderRightPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metalSliderRightPhone.png; sourceTree = "<group>"; };
 		69E7FCB01D81DFFC00171E44 /* redSliderThumbPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redSliderThumbPhone.png; sourceTree = "<group>"; };
+		69E8C4301F1057E7001F2995 /* NVGeocoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVGeocoder.h; sourceTree = "<group>"; };
+		69E8C4311F1057E7001F2995 /* NVGeocoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVGeocoder.m; sourceTree = "<group>"; };
 		69F177331D7A0B7400741C68 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMaps.framework; sourceTree = "<group>"; };
 		69F177341D7A0B7400741C68 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsBase.framework; sourceTree = "<group>"; };
 		69F177351D7A0B7400741C68 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMapsCore.framework; sourceTree = "<group>"; };
@@ -799,6 +802,8 @@
 				A979B03A1A9EAFA20098E1C5 /* MarkerInfoWindow.m */,
 				EB3268531B19146400A7D40A /* NVDataLoader.h */,
 				EB3268541B19146400A7D40A /* NVDataLoader.m */,
+				69E8C4301F1057E7001F2995 /* NVGeocoder.h */,
+				69E8C4311F1057E7001F2995 /* NVGeocoder.m */,
 				BB7592B61E0CFCCA001871EB /* NVMetroSettings.h */,
 				BB7592B71E0CFCCA001871EB /* NVMetroSettings.m */,
 				EB4A18C01AA89DE100B8B162 /* PipeTrace.h */,
@@ -1279,6 +1284,7 @@
 				69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */,
 				BB12E2341E9565130063FE4A /* NVCrimeListDelegate.m in Sources */,
 				69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */,
+				69E8C4321F1057E7001F2995 /* NVGeocoder.m in Sources */,
 				EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */,
 				EBCA6C271A934D15003F7FB8 /* BoundaryData.m in Sources */,
 				69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */,

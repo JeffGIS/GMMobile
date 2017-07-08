@@ -1,13 +1,8 @@
-//
 //  NVMetroSettings.h
 //  NVMobile
-//
-//  Created by Jeff Smith on 12/23/16.
-//  Copyright © 2016 GSSi. All rights reserved.
-//
 
-#import <Foundation/Foundation.h>
-#import <GoogleMaps/GoogleMaps.h>
+@import Foundation;
+@import GoogleMaps;
 
 CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region);
 
@@ -116,8 +111,6 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 @property NSMutableArray * themeClassCounts;
 @property NSMutableArray * themeClassAve;
 
-
-
 - (NSArray *) features;
 - (NSArray *) adjustmentOptions;
 - (NSString *) currentFeatureText;
@@ -135,7 +128,5 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 -(int) factorForField:(NSString *)field
               inTable:(NSString *)table
           numDecimals:(int*)pnDecimals;
-
-
 
 @end
