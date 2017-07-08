@@ -28,6 +28,7 @@
 #import "NVPanoramaView.h"
 #import "CCodeLibrary/SidewalkData.h"
 #import "CCodeLibrary/CRAPI.h"
+#import "NVGeocoder.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -44,7 +45,7 @@
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate,NVGeocoderDelegate>
 
 @property MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -72,7 +73,7 @@
 @property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt, *selectedBA;
 @property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo, selectedSdwkRefNo;
-@property (nonatomic, copy) NSString *selectedCensusBoundaryType, *selectedSdwk;
+@property (nonatomic, copy) NSString *selectedCensusBoundaryType, *selectedSdwk, *currentAddress;
 @property int selectedMGVSanMH, selectedMGVSanPipe;
 @property NSInteger selectedSewerPipeRefno, selectedAlleyWallRefno, selectedAlleyLineRefno;
 @property BOOL waitForVectorViewRefresh, inDigitizationMode, animateToLocation, displayRandomColorAlert;
@@ -1808,23 +1809,18 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [propData getAddressForPID:nearPID
                                houseNumAndUnit:&houseAndUnit
                                     streetName:&streetName
-                                          city:nil
-                                     ownerName:nil
-                                  taxpayerName:nil
-                                   censusBlock:nil
-                                       useDesc:nil
-                                        totEMV:nil
-                                       landEMV:nil
-                                       bldgEMV:nil
-                                        totTAX:nil
-                                       specAss:nil
-                                         acres:nil];
+                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                                        totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+                    
+                    _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
+                    NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:position delegate:self];
+#pragma unused(geocoder)
                 }
                 
                 if (![awd createNewWall:newWallID
-                           atPoint:position
-                         withHouse:houseAndUnit
-                         andStreet:streetName])
+                                atPoint:position
+                              withHouse:houseAndUnit
+                              andStreet:streetName])
                 {
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
                                                                       delegate:CRAPI.sharedInstance
@@ -1890,6 +1886,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                     streetName:&streetName
                                           city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
                                         totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+                    
+                    _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
+                    NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:position delegate:self];
+#pragma unused(geocoder)
                 }
                 
                 if (![sdwkd createNewSdwkPointAtLocation:position
@@ -1925,6 +1925,10 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                                     streetName:&streetName
                                           city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
                                         totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+                    
+                    _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
+                    NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:position delegate:self];
+#pragma unused(geocoder)
                 }
                 
                 if (![sdwkd moveSdwkPoint:_selectedSdwkRefNo
@@ -3502,7 +3506,6 @@ haveVV:
     _tableView.separatorInset = UIEdgeInsetsZero;
     _tableView.bounces = NO;
     _tableView.backgroundColor = _tableViewBackgroundColor;
-    
     _screenSize = MIN(self.view.frame.size.width, self.view.bounds.size.height);
     _tableView.layer.cornerRadius = (_screenSize / 48.0);
     [self.view bringSubviewToFront:_tableView];
@@ -3550,10 +3553,7 @@ haveVV:
 - (void)deselectTableViewRow
 {
     if (_tableView.indexPathForSelectedRow)
-    {
-        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow
-                                  animated:YES];
-    }
+        [_tableView deselectRowAtIndexPath:_tableView.indexPathForSelectedRow animated:YES];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -3700,7 +3700,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
                                                   alpha:1.0];
             rowHeader.numberOfLines = 2;
             cell.textLabel.adjustsFontSizeToFitWidth = YES;
-            
             [cell.contentView addSubview:rowHeader];
             break;
         }
@@ -3712,7 +3711,6 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         CGFloat size = min(64.0, cell.contentView.frame.size.height);
         CGFloat margin = (size / 3.0);
-        
         CGFloat xOrigin = margin;
         
         if (indexPath.row == 0)
@@ -3728,11 +3726,8 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
                          forState:UIControlStateNormal];
             
             [clearMarker addTarget:self action:@selector(prepareToRemoveMarker) forControlEvents:UIControlEventTouchUpInside];
-            
             [cell.contentView addSubview:clearMarker];
-            
             xOrigin += (margin * 4.0);
-            
             NSArray *items = nil;
             
             if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
@@ -3746,12 +3741,10 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath
             markerOptions.center = CGPointMake(markerOptions.center.x, (cell.contentView.frame.size.height / 2.0));
             markerOptions.tintColor = UIColor.whiteColor;
             markerOptions.selectedSegmentIndex = _markerStyle;
-            
             UIFont *font = [UIFont boldSystemFontOfSize:14.0];
             NSDictionary *attributes = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
             [markerOptions setTitleTextAttributes:attributes forState:UIControlStateNormal];
             [markerOptions addTarget:self action:@selector(markerOptionsTapped:) forControlEvents:UIControlEventValueChanged];
-            
             [cell.contentView addSubview:markerOptions];
         }
     }
@@ -4527,16 +4520,11 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
              houseNumAndUnit:&houseAndUnit
                   streetName:&streetName
                         city:&city
-                   ownerName:nil
-                taxpayerName:nil
+                   ownerName:nil taxpayerName:nil
                  censusBlock:&cenblock
                      useDesc:&usedesc
                       totEMV:&totEMV
-                     landEMV:nil
-                     bldgEMV:nil
-                      totTAX:nil
-                     specAss:nil
-                       acres:nil])
+                     landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil])
     {
         houseAndUnit = [houseAndUnit stringByReplacingOccurrencesOfString:@" " withString:@"-"];
         streetName = [streetName stringByReplacingOccurrencesOfString:@" " withString:@"-"];
@@ -6855,16 +6843,12 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 
 - (void)NVDataLoaderFailed:(int)status
 {
-    _nvdl.popover = nil;
-    _nvdl.delegate = nil;
-    _nvdl = nil;
+    _nvdl.popover = nil; _nvdl.delegate = nil; _nvdl = nil;
 }
 
 - (void)NVDataLoaderSuccess
 {
-    _nvdl.popover = nil;
-    _nvdl.delegate = nil;
-    _nvdl = nil;
+    _nvdl.popover = nil; _nvdl.delegate = nil; _nvdl = nil;
 }
 
 - (CLLocationCoordinate2D)coordinateForPoint:(CGPoint)point
@@ -6912,6 +6896,13 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 - (void)vectorViewRefresh
 {
     [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+}
+
+- (void)geocoderDidReturnAddresses:(NSArray<GMSAddress *> *)addresses
+                             error:(NSError *)error
+{
+    NSLog(@"Database Address: %@", _currentAddress);
+    NSLog(@"NVGeocoder Address: %@", addresses.firstObject.thoroughfare);
 }
 
 @end
