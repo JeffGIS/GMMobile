@@ -10,7 +10,7 @@
 
 @property (nonatomic, weak) id <NVPanoramaViewDelegate> viewDelegate;
 @property (nonatomic) GMSMarker *marker;
-@property CLLocationCoordinate2D pickedCoord;
+@property CLLocationCoordinate2D pickedCoord, origCoord;
 
 @end
 
@@ -39,6 +39,7 @@
     panView.translatesAutoresizingMaskIntoConstraints = NO;
     panView.alpha = 0.0;
     panView.pickedCoord = CLLocationCoordinate2DMake(0.0, 0.0);
+    panView.origCoord = coord;
     
     [view addSubview:panView];
     [panView constrainToView:view leading:0.0 trailing:0.0 top:0.0 bottom:tabBar.frame.size.height];
@@ -106,6 +107,9 @@
                                                  pitch:0.0
                                                   zoom:1.0
                                                    FOV:90.0];
+    
+    _marker = [GMSMarker markerWithPosition:_origCoord];
+    _marker.panoramaView = view;
 }
 
 - (void)panoramaView:(GMSPanoramaView *)view

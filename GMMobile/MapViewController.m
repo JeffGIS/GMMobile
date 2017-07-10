@@ -353,6 +353,7 @@
     {
         [UserDefaults.defaults saveNSInteger:(HCConfigSidewalk + 1) forKey:@"CurrentConfig"];
         [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
+        self.tabBarController.tabBar.hidden = YES;
     }
     
     else if (CRAPI.sharedInstance.setToAlleyWalls)
@@ -1910,54 +1911,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     _noneSelected = NO;
                 }
                 break;}
-            case DigitizationModeSidewalkPointMove:{
-                CLLocationCoordinate2D positionpid = position;
-                SidewalkData *sdwkd = SidewalkData.new;
-                PropertyData *propData = PropertyData.new;
-                NSString *houseAndUnit = @"";
-                NSString *streetName = @"";
-                NSString *nearPID = [propData getNearestPID:&positionpid];
-                
-                if (nearPID)
-                {
-                    [propData getAddressForPID:nearPID
-                               houseNumAndUnit:&houseAndUnit
-                                    streetName:&streetName
-                                          city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
-                                        totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
-                    
-                    _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
-                    NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:position delegate:self];
-#pragma unused(geocoder)
-                }
-                
-                if (![sdwkd moveSdwkPoint:_selectedSdwkRefNo
-                               toLocation:position
-                                withHouse:houseAndUnit
-                                andStreet:streetName])
-                {
-                    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                                      delegate:CRAPI.sharedInstance
-                                                                         title:@"Failed to Create Sidewalk Point"
-                                                               buttonTextArray:@[@"OK"]
-                                                              destructiveIndex:0];
-#pragma unused(alert)
-                }
-                
-                else
-                {
-                    MarkerButton *marker = _markerArray.lastObject;
-                    marker.position = position;
-                    marker.title = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
-                    _infoWindow.marker = marker;
-                    
-                    marker.center = CGPointMake(_digitizerTargetView.center.x,
-                                                (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
-                    
-                    [self updateInfoWindowPosition];
-                    [self vectorViewRefresh];
-                }
-                break;}
+            case DigitizationModeSidewalkPointMove:
+                [self moveSdwkPointToCoord:position];
+                break;
             default:break;
         }
         
@@ -4570,11 +4526,63 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
   didReturnWithCoord:(CLLocationCoordinate2D)coordinate
 {
     [panoramaView hide:YES];
+    _showsPanorama = NO;
     
     if (coordinate.latitude && coordinate.longitude)
-        NSLog(@"Picked Coordinate:%f,%f", coordinate.latitude, coordinate.longitude);
+        [self moveSdwkPointToCoord:coordinate];
+}
+
+- (void)moveSdwkPointToCoord:(CLLocationCoordinate2D)coord
+{
+    CLLocationCoordinate2D positionpid = coord;
+    SidewalkData *sdwkd = SidewalkData.new;
+    PropertyData *propData = PropertyData.new;
+    NSString *houseAndUnit = @"";
+    NSString *streetName = @"";
+    NSString *nearPID = [propData getNearestPID:&positionpid];
     
-    _showsPanorama = NO;
+    if (nearPID)
+    {
+        [propData getAddressForPID:nearPID
+                   houseNumAndUnit:&houseAndUnit
+                        streetName:&streetName
+                              city:nil ownerName:nil taxpayerName:nil censusBlock:nil useDesc:nil
+                            totEMV:nil landEMV:nil bldgEMV:nil totTAX:nil specAss:nil acres:nil];
+        
+        _currentAddress = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
+        NVGeocoder *geocoder = [NVGeocoder geocoderForCoordinate:coord delegate:self];
+#pragma unused(geocoder)
+    }
+    
+    if (![sdwkd moveSdwkPoint:_selectedSdwkRefNo
+                   toLocation:coord
+                    withHouse:houseAndUnit
+                    andStreet:streetName])
+    {
+        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                          delegate:CRAPI.sharedInstance
+                                                             title:@"Failed to Create Sidewalk Point"
+                                                   buttonTextArray:@[@"OK"]
+                                                  destructiveIndex:0];
+#pragma unused(alert)
+    }
+    
+    else
+    {
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:coord zoom:_mapView.camera.zoom];
+        GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
+        [self moveToNewCameraPosition:update];
+        MarkerButton *marker = _markerArray.lastObject;
+        marker.position = coord;
+        marker.title = [NSString stringWithFormat:@"%@ %@", houseAndUnit, streetName];
+        _infoWindow.marker = marker;
+        
+        marker.center = CGPointMake(_digitizerTargetView.center.x,
+                                    (_digitizerTargetView.center.y - (marker.frame.size.height / 2.0)));
+        
+        [self updateInfoWindowPosition];
+        [self vectorViewRefresh];
+    }
 }
 
 - (void)showStreetside
@@ -5449,7 +5457,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
     {
-        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation zoom:21];
+        GMSCameraPosition *camera = [GMSCameraPosition cameraWithTarget:_currentLocation zoom:20];
         GMSCameraUpdate *update = [GMSCameraUpdate setCamera:camera];
         [self moveToNewCameraPosition:update];
     }
