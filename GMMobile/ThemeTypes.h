@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
 {
     Part1Theme,
     Part2Theme,
+    CrimeIndexTheme,
     AssaultTheme,
     BurglaryTheme,
     RobberyTheme,

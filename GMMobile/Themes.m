@@ -47,6 +47,8 @@
             thm = [Theme createTheme:Part1Theme];
             if ([crimeLegend isEqualToString:@"Part 2 Offenses"])
                 thm = [Theme createTheme:Part2Theme];
+            if ([crimeLegend isEqualToString:@"Crime Index"])
+                thm = [Theme createTheme:CrimeIndexTheme];
             if ([crimeLegend isEqualToString:@"Assault"])
                 thm = [Theme createTheme:AssaultTheme];
             if ([crimeLegend isEqualToString:@"Burglary"])
@@ -61,6 +63,8 @@
                 thm = [Theme createTheme:SelectedTheftTheme];
             if ([crimeLegend isEqualToString:@"Theft From Auto"])
                 thm = [Theme createTheme:TheftFromAutoTheme];
+            if ([crimeLegend isEqualToString:@"Crime Index"])
+                thm = [Theme createTheme:CrimeIndexTheme];
             [_themeList addObject:thm];
             thm = [Theme createTheme:DepartmentTheme];
             [_themeList addObject:thm];
@@ -290,7 +294,8 @@
         if (rtn == DO_NOT_DISPLAY_ITEM)
             return rtn;
     }
-    
+    if (!dc.size)
+        dc.size = 1;
     return rtn;
 }
 
@@ -393,6 +398,7 @@
         {
             case Part1Theme:
             case Part2Theme:
+            case CrimeIndexTheme:
             case AssaultTheme:
             case RobberyTheme:
             case BurglaryTheme:
@@ -404,6 +410,8 @@
                 int lastUCR = minUCR;
                 if (thm.type == Part1Theme && lastUCR == 1)
                     lastUCR = 2;
+                if (thm.type == CrimeIndexTheme && lastUCR == 0)
+                    lastUCR = thm.maxUCR;
                 int nextUCR = [thm getFirstUCRGreaterThan:lastUCR];
                 
                 while (nextUCR > -1)

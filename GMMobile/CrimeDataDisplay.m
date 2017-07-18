@@ -340,7 +340,7 @@ NextPass:
                              offense:dc.string1
                          usingSymbol:dc.pointSymbol
                            withColor:dc.fillColor.CGColor
-                             andSize:(size * sizeFactor)];
+                             andSize:(size * sizeFactor * dc.size)];
 
                     }
                     else if (_mode == CHOROPLETH)
@@ -348,7 +348,8 @@ NextPass:
                         [pias DPointInArea:&BasePt[0]
                                     atTime:dc.itemBeginTime
                                   andRefno:controlNbr
-                                whichCount:compareClass];
+                                whichCount:compareClass
+                                      value:dc.incValue];
                     }
                     else if (_mode == HOTSPOT)
                     {

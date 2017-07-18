@@ -387,6 +387,20 @@
                 tc.UCR = ucr;
             }
             break;
+        case CrimeIndexTheme:
+            thm.minUCR = 1;
+            thm.maxUCR = 98;
+            thm.legend.title = @"Crime Index";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 1;
+            class = [ThemeClass createWithTitle:@"Indexed Crime"];
+            class.color = [UIColor greenColor];
+            class.symbol = CircleSym;
+            class.UCR = 0;
+            [thm.classes addObject:class];
+            break;
         case Part2Theme:
             thm.minUCR = 9;
             thm.maxUCR = 43;
@@ -1251,7 +1265,8 @@ int getThemeOpt(ThemeTypes type)
                 if (_setColor)
                 {
                     dc.fillColor = cls.color;
-                    dc.size = cls.size;
+                    if (cls.size)
+                        dc.size = cls.size;
                 }
                 
                 cls.count += val;
@@ -1283,6 +1298,10 @@ int getThemeOpt(ThemeTypes type)
     int iclass = -1;
     switch (self.type)
     {
+        case CrimeIndexTheme:
+            if (ucr && ucr < 99)
+                iclass = 0;
+            break;
         case Part1Theme:
             if (ucr < 1 || ucr > 10 || ucr == 9)
                 break;
@@ -1500,6 +1519,23 @@ int getThemeOpt(ThemeTypes type)
                                 testPass:test])
                 {
                     rtn = DISPLAY_ITEM;
+                    if (!test)
+                        [self setCompareClass:cclass
+                                    fromClass:val];
+                }
+                break;
+            case CrimeIndexTheme:
+                if (dc.UCR < 1 || dc.UCR > 98)
+                    break;
+                val = 0;
+                dc.incValue = 100 - dc.UCR;
+                if ([self incrementCount:val
+                                      by:dc.incValue
+                                      dc:dc
+                                testPass:test])
+                {
+                    rtn = DISPLAY_ITEM;
+                    dc.size = (100 - dc.UCR)/50.0;
                     if (!test)
                         [self setCompareClass:cclass
                                     fromClass:val];
@@ -1813,7 +1849,10 @@ DisplayExit:
         {
             ThemeLegendCell * tlc = _legend.cells[i++];
             tlc.symbolWidth = cls.symbolWidth;
-            tlc.count = (int)cls.numItems;
+            if (_type == CrimeIndexTheme)
+                tlc.count = cls.count;
+            else
+                tlc.count = (int)cls.numItems;
             tlc.status = cls.status;
         }
     }
