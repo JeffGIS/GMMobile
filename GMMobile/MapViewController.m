@@ -1818,7 +1818,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
 #pragma unused(geocoder)
                 }
                 
-                if (![awd createNewWall:newWallID
+                if ([newWallID isEqualToString:@""] ||
+                    ![awd createNewWall:newWallID
                                 atPoint:position
                               withHouse:houseAndUnit
                               andStreet:streetName])
