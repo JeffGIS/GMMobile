@@ -222,7 +222,7 @@ Top:
         {
             AlleyWallData *awd = [[AlleyWallData alloc] init];
             
-            if (awd.datasetVersion >= 1)
+            if (awd.datasetVersion >= 2)
                 rtn = YES;
         }
             break;

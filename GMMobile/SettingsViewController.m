@@ -134,6 +134,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 break;
                 
             case GetDatabaseSettingAlleyWallNew:
+            {
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [_popover hide];
+                               });
+            }
                 break;
             case GetDatabaseSettingProperty:
             case GetDatabaseSettingParcels:
@@ -803,7 +809,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (IBAction)loadAlleyWall:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.localFilePath;
-    NSString *fileName = @"AlleyWalls.slt";
+    NSString *fileName = @"AlleyWalls.sqlite";
     AlleyWallData *awd = AlleyWallData.new;
     NSString * toFile = [awd databasePath];
     FTPDataPull *pull = FTPDataPull.pull;
