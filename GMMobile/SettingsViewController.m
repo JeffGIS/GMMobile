@@ -812,6 +812,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     NSString *fileName = @"AlleyWalls.sqlite";
     AlleyWallData *awd = AlleyWallData.new;
     NSString * toFile = [awd databasePath];
+    [awd clear];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
