@@ -48,7 +48,6 @@
 		694F00761C1B2A000074AF72 /* emailIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F00751C1B2A000074AF72 /* emailIcon.png */; };
 		694F93B51C30475500723155 /* questionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 694F93B41C30475500723155 /* questionMark.png */; };
 		694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 694FB1EE1C58846F005410F6 /* Localizable.strings */; };
-		69519E551F25A6560040798C /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69519E541F25A6560040798C /* NVMobile_VersionHistory.pdf */; };
 		695577D31D83714100A34C24 /* checkedBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 695577D21D83714100A34C24 /* checkedBox.png */; };
 		695577D51D83714E00A34C24 /* uncheckedBox.png in Resources */ = {isa = PBXBuildFile; fileRef = 695577D41D83714E00A34C24 /* uncheckedBox.png */; };
 		6956EAE81C20E992008BF283 /* myLocationMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 6956EAE71C20E992008BF283 /* myLocationMarker.png */; };
@@ -57,6 +56,7 @@
 		695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */ = {isa = PBXBuildFile; fileRef = 695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
+		6971B3971F25D25400B894A9 /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 6971B3961F25D25400B894A9 /* NVMobile_VersionHistory.pdf */; };
 		697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */; };
 		697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */; };
 		697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */; };
@@ -313,7 +313,6 @@
 		694F00751C1B2A000074AF72 /* emailIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = emailIcon.png; sourceTree = "<group>"; };
 		694F93B41C30475500723155 /* questionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = questionMark.png; sourceTree = "<group>"; };
 		694FB1EE1C58846F005410F6 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
-		69519E541F25A6560040798C /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		695577D21D83714100A34C24 /* checkedBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkedBox.png; sourceTree = "<group>"; };
 		695577D41D83714E00A34C24 /* uncheckedBox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = uncheckedBox.png; sourceTree = "<group>"; };
 		6956EAE71C20E992008BF283 /* myLocationMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = myLocationMarker.png; sourceTree = "<group>"; };
@@ -322,6 +321,7 @@
 		695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transWhiteX.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
+		6971B3961F25D25400B894A9 /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueInfoMarker.png; sourceTree = "<group>"; };
 		697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenInfoMarker.png; sourceTree = "<group>"; };
 		697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeInfoMarker.png; sourceTree = "<group>"; };
@@ -959,7 +959,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				69519E541F25A6560040798C /* NVMobile_VersionHistory.pdf */,
+				6971B3961F25D25400B894A9 /* NVMobile_VersionHistory.pdf */,
 				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
@@ -1197,7 +1197,7 @@
 				69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */,
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
-				69519E551F25A6560040798C /* NVMobile_VersionHistory.pdf in Resources */,
+				6971B3971F25D25400B894A9 /* NVMobile_VersionHistory.pdf in Resources */,
 				69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
