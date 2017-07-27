@@ -140,6 +140,23 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    [_popover hide];
                                });
             }
+                if (_fromDataLoader)
+                {
+                    if (!_keepGoing)
+                        status = DLSTATUS_USER_CANCELLED;
+                    CRAPI.sharedInstance.inDataUpdate = NO;
+                    
+                    if (_delegate)
+                    {
+                        if (!status)
+                            [_delegate SettingsViewControllerSuccess];
+                        
+                        else
+                            [_delegate SettingsViewControllerFailed:status];
+                    }
+                    
+                    
+                }
                 break;
             case GetDatabaseSettingProperty:
             case GetDatabaseSettingParcels:
@@ -813,7 +830,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     AlleyWallData *awd = AlleyWallData.new;
     NSString * toFile = [awd databasePath];
     [awd clear];
-    [awd clearFiles];
+    //[awd clearFiles];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
