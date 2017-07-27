@@ -813,6 +813,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     AlleyWallData *awd = AlleyWallData.new;
     NSString * toFile = [awd databasePath];
     [awd clear];
+    [awd clearFiles];
     FTPDataPull *pull = FTPDataPull.pull;
     pull.delegate = self;
     pull.popover = _popover;
