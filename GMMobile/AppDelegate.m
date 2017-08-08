@@ -86,7 +86,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     [NSURLCache.sharedURLCache removeAllCachedResponses];
     
-    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"])
+    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisioncrime"] &&
+        ![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
     {
         if (![self checkUnbundledFile:@"landuse"
                                  type:@"slt"
