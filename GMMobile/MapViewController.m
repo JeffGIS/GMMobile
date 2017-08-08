@@ -387,6 +387,12 @@
             [ConfigurationControl.sharedInstance setApp:HCConfigCrimes];
     }
     
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
+    {
+        if (_firstTimeAppear)
+            [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
+    }
+    
     else if (!_fromSpreadsheet)
     {
         HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
@@ -1171,6 +1177,9 @@
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigSidewalk)
     {
+        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
+            [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
+        
         _mapView.mapType = _mapView.mapType = kGMSTypeHybrid;
         [_locationManager requestLocation];
     }
