@@ -633,7 +633,11 @@
     
     else
     {
-        self.tabBarController.tabBar.hidden = NO;
+        if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"] &&
+            ![CRAPI.sharedInstance.sourceApp isEqualToString:@"CRISDetailSdwk"])
+        {
+            self.tabBarController.tabBar.hidden = NO;
+        }
         
         if (_legendsAreOffMap)
             [_mapView constrainToView:self.view leading:0.0 trailing:-_mapViewLegendOffset top:statusBarHeight bottom:0.0];
