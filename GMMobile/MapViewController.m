@@ -390,7 +390,10 @@
     else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
     {
         if (_firstTimeAppear)
+        {
             [ConfigurationControl.sharedInstance setApp:HCConfigSidewalk];
+            self.tabBarController.tabBar.hidden = YES;
+        }
     }
     
     else if (!_fromSpreadsheet)
