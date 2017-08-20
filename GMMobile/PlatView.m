@@ -90,9 +90,9 @@
     ptImage1.x = ptImage2.x = imageRect.size.width;
     ptImage1.y = 0;
     ptImage2.y = imageRect.size.height;
-    ptWorld1 = TranDPOINT (&ptImage1,_pTranImageToLatlon);
-    ptWorld2 = TranDPOINT (&ptImage2,_pTranImageToLatlon);
-    az = getazd(&ptWorld1,&ptWorld2);
+    ptWorld1 = TranDPOINTP (&ptImage1,_pTranImageToLatlon);
+    ptWorld2 = TranDPOINTP (&ptImage2,_pTranImageToLatlon);
+    az = getazdp(&ptWorld1,&ptWorld2);
     *bearing = LTWOPI (HALFPI - az)*DEGRAD;
     return gbounds;
 }
@@ -104,22 +104,22 @@
     
     ptIn.x = imageRect.origin.x;
     ptIn.y = imageRect.origin.y;
-    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    ptOut = TranDPOINTP(&ptIn,_pTranImageToLatlon);
     region.nearLeft.longitude = ptOut.x;
     region.nearLeft.latitude = ptOut.y;
     
     ptIn.y = imageRect.origin.y + imageRect.size.height;
-    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    ptOut = TranDPOINTP(&ptIn,_pTranImageToLatlon);
     region.farLeft.longitude = ptOut.x;
     region.farLeft.latitude = ptOut.y;
     
     ptIn.x = imageRect.origin.x + imageRect.size.width;
-    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    ptOut = TranDPOINTP(&ptIn,_pTranImageToLatlon);
     region.farRight.longitude = ptOut.x;
     region.farRight.latitude = ptOut.y;
     
     ptIn.y = imageRect.origin.y - imageRect.size.height;
-    ptOut = TranDPOINT(&ptIn,_pTranImageToLatlon);
+    ptOut = TranDPOINTP(&ptIn,_pTranImageToLatlon);
     region.nearRight.longitude = ptOut.x;
     region.nearRight.latitude = ptOut.y;
     
@@ -131,8 +131,8 @@
     double imagex[32], imagey[32], worldx[32], worldy[32];
     float rsq;
     int npt = 0;
-    CloseTRANS2 (&_pTranImageToLatlon);
-    CloseTRANS2 (&_pTranLatlonToImage);
+    CloseTRANS2P (&_pTranImageToLatlon);
+    CloseTRANS2P (&_pTranLatlonToImage);
     SewerData * sd = [[SewerData alloc]init];
     
     [sd open];
@@ -148,8 +148,8 @@
         worldx[npt] = sqlite3_column_double(statement, 2);
         worldy[npt++] = sqlite3_column_double(statement, 3);
     }
-    _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
-    _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
+    _pTranImageToLatlon = STRAN2P(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
+    _pTranLatlonToImage = STRAN2P(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), sd.database);
     [sd close];
     return FALSE;

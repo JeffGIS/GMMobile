@@ -148,7 +148,7 @@
     frameCorners[1].y = frameCorners[2].y = frameRect.origin.y;
     frameCorners[2].x = frameCorners[3].x = frameRect.origin.x + frameRect.size.width;
     frameCorners[0].y = frameCorners[3].y = frameRect.origin.y + frameRect.size.height;
-    LPTRANDATA pTran = STRANPoints(frameCorners, _virtualImageCorners, 4, 1, &rsq);
+    LPTRANDATA pTran = STRANPointsP(frameCorners, _virtualImageCorners, 4, 1, &rsq);
     
     screenBounds.xmn = bnd.origin.x;
     screenBounds.ymn = bnd.origin.y;
@@ -190,7 +190,7 @@
     ptImage2.y = imageRect.origin.y + imageRect.size.height/2;
     ptLev201 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
     ptLev202 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
-    CGFloat az = getazd(&ptLev201, &ptLev202);
+    CGFloat az = getazdp(&ptLev201, &ptLev202);
     CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
     *target = center;
@@ -315,8 +315,8 @@ top:
     else if (npt)
     {
         rtn = YES;
-        _pTranImageToLatlon = STRAN2(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
-        _pTranLatlonToImage = STRAN2(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
+        _pTranImageToLatlon = STRAN2P(0, imagex, imagey, worldx, worldy, npt,2, &rsq);
+        _pTranLatlonToImage = STRAN2P(0, worldx, worldy, imagex, imagey, npt,2, &rsq);
         
         _imageCorners[0].x = _imageCorners[0].y = 0;
         _imageCorners[1].x = 0;
@@ -334,8 +334,8 @@ top:
         imageCornersFrame[0].y = imageCornersFrame[3].y = midy + self.image.size.height * scale;
         imageCornersFrame[2].x = imageCornersFrame[3].x = midx + self.image.size.width * scale;
         imageCornersFrame[1].y = imageCornersFrame[2].y = midy - self.image.size.height * scale;
-        _pTranFrameToImage = STRANPoints(imageCornersFrame, _imageCorners, 4, 1, 0);
-        _pTranImageToFrame = STRANPoints(_imageCorners, imageCornersFrame, 4, 1, 0);
+        _pTranFrameToImage = STRANPointsP(imageCornersFrame, _imageCorners, 4, 1, 0);
+        _pTranImageToFrame = STRANPointsP(_imageCorners, imageCornersFrame, 4, 1, 0);
         DPOINT frameCorners[4];
         frameCorners[0].x = frameCorners[1].x = frameCorners[1].y = frameCorners[2].y = 0;
         frameCorners[2].x = frameCorners[3].x = self.frame.size.width;

@@ -29,6 +29,8 @@
 #import "CCodeLibrary/SidewalkData.h"
 #import "CCodeLibrary/CRAPI.h"
 #import "NVGeocoder.h"
+#import "CCodeLibrary/shr.h"
+
 
 #define MAX_VECTORVIEWS 8
 
@@ -2879,11 +2881,12 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
+    /*
     if (CRAPI.sharedInstance.becameActive &&
         !CRAPI.sharedInstance.inDataUpdate &&
         ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"] &&
         ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
-    {
+    {        
         if (_cdUpdate)
             return;
         _cdUpdate = [CrimeData new];
@@ -2893,7 +2896,7 @@ haveVV:
             return;
         else
             _cdUpdate = nil;
-    }
+    }*/
     [self allocateVectorView:NO];
     [self vectorViewSetup];
     [_vectorView setNeedsDisplay];
@@ -4316,9 +4319,9 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                         prevData.scaleUpper = curData.imageWidth /(1.5*dist);
                         prevData.scaleLower = prevData.scaleUpper;
                         if (prevData.ptLower.x > curData.ptLower.x)
-                            prevData.rotUpper = 90 - LTWOPI (getaz (prevData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
+                            prevData.rotUpper = 90 - LTWOPI (getazd (prevData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
                         else
-                            prevData.rotUpper = 90 - LTWOPI (getaz (curData.ptUpper,prevData.ptUpper)-HALFPI) * RADtoDEG;
+                            prevData.rotUpper = 90 - LTWOPI (getazd (curData.ptUpper,prevData.ptUpper)-HALFPI) * RADtoDEG;
                         prevData.ptUpper = PercentPoint (MidPointD (prevData.ptUpper,curData.ptUpper),curData.imageWidth,curData.imageHeight);
                         prevData.ptLower = PercentPoint (MidPointD (prevData.ptLower,curData.ptLower),curData.imageWidth,curData.imageHeight);
                         [array addObject:prevData];
@@ -4334,10 +4337,10 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                             nextData.scaleLower = nextData.scaleUpper;
                             
                             if (nextData.ptLower.x > curData.ptLower.x)
-                                nextData.rotUpper = 90 - LTWOPI (getaz (nextData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
+                                nextData.rotUpper = 90 - LTWOPI (getazd (nextData.ptUpper,curData.ptUpper)-HALFPI) * RADtoDEG;
                             
                             else
-                                nextData.rotUpper = 90 - LTWOPI(getaz(curData.ptUpper,nextData.ptUpper)-HALFPI) * RADtoDEG;
+                                nextData.rotUpper = 90 - LTWOPI(getazd(curData.ptUpper,nextData.ptUpper)-HALFPI) * RADtoDEG;
                             nextData.ptUpper = PercentPoint(MidPointD(nextData.ptUpper,curData.ptUpper),curData.imageWidth,curData.imageHeight);
                             nextData.ptLower = PercentPoint(MidPointD(nextData.ptLower,curData.ptLower),curData.imageWidth,curData.imageHeight);
                             [array addObject:nextData];

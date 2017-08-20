@@ -1,6 +1,7 @@
 //  CrimeDataOptions.m
 //  GMMobile
 
+#include "CCodeLibrary/shr.h"
 #import "CrimeDataOptions.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/CRAPI.h"
@@ -26,6 +27,7 @@
 @end
 
 @implementation CrimeDataOptions
+
 
 - (void)viewDidLoad
 {

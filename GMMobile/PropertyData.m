@@ -2464,11 +2464,6 @@ Exit:
 #define	MAXWIOFFSETS 100
 #define MAXPARTS 32
 
-typedef struct	{char Word[8];
-    short Seq;
-    short nOffsets;
-    long Offsets[MAXWIOFFSETS];} WORDINDEX;
-typedef WORDINDEX *LPWORDINDEX;
 
 int GetWIHits(LPINT Hits, int nParts, LPINT nPartOffsets, LPINT *pPartOffsets, int MaxHits)
 {

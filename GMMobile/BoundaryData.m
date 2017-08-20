@@ -218,10 +218,10 @@
     DPOINT BasePt;
     int numPoints, numLoops;
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
 }
 
 
@@ -238,10 +238,10 @@
     DPOINT BasePt;
     int numPoints, numLoops;
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     BOOL opened = [self open];
     NSString * table = [self getTableNameFromType:areaType];
     
@@ -283,7 +283,7 @@
                 {
                     llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                     llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                    llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                 }
             }
             
@@ -291,7 +291,7 @@
             {
                 llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
             LPDPOINT existingPoints = llpoints;
             int numExistingPoints = numPoints;

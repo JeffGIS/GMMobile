@@ -53,8 +53,8 @@
     
     CloseTRANS2(&_pTranLLtoView);
     CloseTRANS2(&_pTranViewtoLL);
-    _pTranLLtoView = STRANCornersToBounds(corners, pvbounds);
-    _pTranViewtoLL = STRANBoundsToCorners(corners, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(corners, pvbounds);
+    _pTranViewtoLL = STRANBoundsToCornersP(corners, pvbounds);
 }
 
 - (BOOL) createCNUMCheckTable
@@ -165,7 +165,6 @@
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     BOOL opened = [_cd startTransaction];
    // [self checkMultipleCodes];
-    
     if (!ConfigurationControl.sharedInstance.wantAllCrimes)
         [self createCNUMCheckTable];
     else
@@ -331,7 +330,7 @@ NextPass:
                                             displayID:_processingID
                                          compareClass:&compareClass] != DO_NOT_DISPLAY_ITEM)
                 {
-                    DPOINT viewPoint = TranDPOINT(BasePt, _pTranLLtoView);
+                    DPOINT viewPoint = TranDPOINTP(BasePt, _pTranLLtoView);
                     if (_mode == PINMAP)
                     {
                         [dp addPoint:&viewPoint
