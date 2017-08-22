@@ -49,10 +49,10 @@
 
 - (void)dealloc
 {
-    CloseTRANS2(&_pTranImageToLatlon);
-    CloseTRANS2(&_pTranLatlonToImage);
-    CloseTRANS2(&_pTranFrameToImage);
-    CloseTRANS2(&_pTranImageToFrame);
+    CloseTRANS2P(&_pTranImageToLatlon);
+    CloseTRANS2P(&_pTranLatlonToImage);
+    CloseTRANS2P(&_pTranFrameToImage);
+    CloseTRANS2P(&_pTranImageToFrame);
     
     for (int i = 0; i < _numProfileAreas; i++)
         free(_profileAreaPoints[i]);
@@ -99,7 +99,7 @@
     DPOINT dptIn, dptOut;
     dptIn.x = latLonPoint.lon;
     dptIn.y = latLonPoint.lat;
-    dptOut = TranDPOINT(&dptIn, _pTranLatlonToImage);
+    dptOut = TranDPOINTP(&dptIn, _pTranLatlonToImage);
     return dptOut;
 }
 
@@ -107,7 +107,7 @@
 {
     LLPOINT llPt;
     DPOINT dptOut;
-    dptOut = TranDPOINT(&imagePoint, _pTranImageToLatlon);
+    dptOut = TranDPOINTP(&imagePoint, _pTranImageToLatlon);
     llPt.lon = dptOut.x;
     llPt.lat = dptOut.y;
     return llPt;
@@ -115,13 +115,13 @@
 
 - (DPOINT)frameToImage:(DPOINT)framePoint
 {
-    DPOINT imagePoint = TranDPOINT(&framePoint, _pTranFrameToImage);
+    DPOINT imagePoint = TranDPOINTP(&framePoint, _pTranFrameToImage);
     return imagePoint;
 }
 
 - (DPOINT)imageToFrame:(DPOINT)imagePoint
 {
-    DPOINT framePoint = TranDPOINT(&imagePoint, _pTranImageToFrame);
+    DPOINT framePoint = TranDPOINTP(&imagePoint, _pTranImageToFrame);
     return framePoint;
 }
 
@@ -129,7 +129,7 @@
 {
     CLLocationCoordinate2D llPt;
     DPOINT dptOut;
-    dptOut = TranDPOINT(&imagePoint, _pTranImageToLatlon);
+    dptOut = TranDPOINTP(&imagePoint, _pTranImageToLatlon);
     llPt.longitude = dptOut.x;
     llPt.latitude = dptOut.y;
     return llPt;
@@ -154,8 +154,8 @@
     screenBounds.ymn = bnd.origin.y;
     screenBounds.xmx = screenBounds.xmn + bnd.size.width;
     screenBounds.ymx = screenBounds.ymn + bnd.size.height;
-    TranMNMXCORD(&screenBounds, &imageBounds,pTran);
-    CloseTRANS2(&pTran);
+    TranMNMXCORDP(&screenBounds, &imageBounds,pTran);
+    CloseTRANS2P(&pTran);
     
     imageRect = CGRectMake(imageBounds.xmn,imageBounds.ymn,
                            imageBounds.xmx - imageBounds.xmn,
@@ -188,8 +188,8 @@
     ptImage1.x = ptImage2.x = imageRect.origin.x + imageRect.size.width/2;
     ptImage1.y = imageRect.origin.y - imageRect.size.height/2;
     ptImage2.y = imageRect.origin.y + imageRect.size.height/2;
-    ptLev201 = TranDPOINT(&ptImage1, _pTranImageToLatlon);
-    ptLev202 = TranDPOINT(&ptImage2, _pTranImageToLatlon);
+    ptLev201 = TranDPOINTP(&ptImage1, _pTranImageToLatlon);
+    ptLev202 = TranDPOINTP(&ptImage2, _pTranImageToLatlon);
     CGFloat az = getazdp(&ptLev201, &ptLev202);
     CGFloat trueBearing = (LTWOPI(HALFPI - az) * DEGRAD);
     *bearing = ((roundf(trueBearing / 5.0)) * 5.0);
@@ -250,7 +250,7 @@
     frameCornersImage[3].x = imageRect.origin.x + imageRect.size.width;
     frameCornersImage[3].y = imageRect.origin.y + imageRect.size.height;
 
-    TranPoints(frameCornersImage, frameCornersWorld, 4, _pTranImageToLatlon);
+    TranPointsP(frameCornersImage, frameCornersWorld, 4, _pTranImageToLatlon);
     
     for (int i = 0; i < 4; i++)
     {
@@ -284,10 +284,10 @@
     if ([_platName isEqualToString:_currentTransName])
         return _currentTransStatus;
     _currentTransName = _platName;
-    CloseTRANS2(&_pTranImageToLatlon);
-    CloseTRANS2(&_pTranLatlonToImage);
-    CloseTRANS2(&_pTranFrameToImage);
-    CloseTRANS2(&_pTranImageToFrame);
+    CloseTRANS2P(&_pTranImageToLatlon);
+    CloseTRANS2P(&_pTranLatlonToImage);
+    CloseTRANS2P(&_pTranFrameToImage);
+    CloseTRANS2P(&_pTranImageToFrame);
     SewerData *sd = [[SewerData alloc] init];
     [sd open];
 
@@ -325,7 +325,7 @@ top:
         _imageCorners[2].y = self.image.size.height;
         _imageCorners[3].x = self.image.size.width;
         _imageCorners[3].y = 0;
-        TranPoints (_imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
+        TranPointsP (_imageCorners,_imageCornersWorld,4,_pTranImageToLatlon);
         DPOINT imageCornersFrame[4];
         CGFloat midx = self.frame.origin.x + self.frame.size.width / 2;
         CGFloat midy = self.frame.origin.y + self.frame.size.height / 2;
@@ -340,7 +340,7 @@ top:
         frameCorners[0].x = frameCorners[1].x = frameCorners[1].y = frameCorners[2].y = 0;
         frameCorners[2].x = frameCorners[3].x = self.frame.size.width;
         frameCorners[0].y = frameCorners[3].y = self.frame.size.height;
-        TranPoints(frameCorners, _virtualImageCorners, 4, _pTranFrameToImage);
+        TranPointsP(frameCorners, _virtualImageCorners, 4, _pTranFrameToImage);
         
         for (int i = 0; i < _numProfileAreas; i++)
             free (_profileAreaPoints[i]);

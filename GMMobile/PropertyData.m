@@ -110,8 +110,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
 
 - (void)dealloc
 {
-    CloseTRANS2 (&_pTranLLtoView);
-    CloseTRANS2 (&_pTranViewtoLL);
+    CloseTRANS2P (&_pTranLLtoView);
+    CloseTRANS2P (&_pTranViewtoLL);
     sqlite3_close(_database);
     //NSLog(@"Property Database dealloc");
 }
@@ -907,7 +907,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -915,7 +915,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         if (POINT_IN_AREAD(p1, numPoints, llpoints, 1, 0, 0, 0))
         {
@@ -1001,10 +1001,10 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             viewBounds:(MNMXCORD *)pvbounds
                 themes:(Themes*)themes
 {
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     UIColor *parcelLineColor = [UIColor colorWithRed:0.5 green:0 blue:0 alpha:1];
     int parcelLineWidth = 3;
@@ -1081,7 +1081,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -1089,7 +1089,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
         if (CRAPI.sharedInstance.parcelShadingOption)
@@ -1495,7 +1495,7 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
                                               polyPartLen:&polyPartLen];
     
     for (int i = 0; i < numPoints; i++)
-        pPoints[i] = TranDPOINT(&pPoints[i], _pTranLLtoView);
+        pPoints[i] = TranDPOINTP(&pPoints[i], _pTranLLtoView);
     
     [NVTextDrawing drawText:text
                   inContext:context
@@ -1667,10 +1667,10 @@ Exit:
     if (!CRAPI.sharedInstance.parcelTextOption)
         return;
     curbounds = *pvbounds;//db
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     int numLinked;
     int maxPixels;
     DPOINT p1, p2;
@@ -1818,8 +1818,8 @@ Exit:
                 break;
         }
         
-        viewPoint = TranDPOINT(&BasePt, _pTranLLtoView);
-        TranMNMXCORD(&bnds, &bndsScreen, _pTranLLtoView);
+        viewPoint = TranDPOINTP(&BasePt, _pTranLLtoView);
+        TranMNMXCORDP(&bnds, &bndsScreen, _pTranLLtoView);
         CGRect textRect = MNMXCORDtoCGRect(&bndsScreen);
         
         [self displayText:text
@@ -2068,9 +2068,9 @@ Exit:
         pYearly = (LPYEARLYVALUES)malloc(nYears * sizeof(YEARLYVALUES));
         pIntsInit = pInts = (LPINT)malloc(nYears * 8 * 4);
         fseek(fid, offset, SEEK_SET);
-        BigRead(fid, &compressedSize, 4);
+        BigReadF(fid, &compressedSize, 4);
         pCompressed = malloc(compressedSize);
-        BigRead(fid, pCompressed, compressedSize);
+        BigReadF(fid, pCompressed, compressedSize);
         fclose(fid);
         decompressedSize = DecompressBinaryRecordUnsafe((LPBYTE)pInts, pCompressed, compressedSize);
         

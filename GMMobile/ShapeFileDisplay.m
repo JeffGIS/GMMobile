@@ -137,13 +137,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         dc.penColor = [UIColor blackColor];
         _sizeFactor *=1.5;
     }
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     [self processShape:context highlightList:nil LLBounds:platlonBounds themes:themes];
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
 }
 
 - (void)processShape:(CGContextRef)context
@@ -188,7 +188,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     pt.x = psCShape->padfX[0];
                     pt.y = psCShape->padfY[0];
                     llpt = pt;
-                    pt = TranDPOINT(&pt, _pTranLLtoView);
+                    pt = TranDPOINTP(&pt, _pTranLLtoView);
                     int iField, fieldWidth, nDecimals;
                     char fieldName[32];
                     switch (_dc.elementType)
@@ -428,7 +428,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             {
                                 llpoints[i].x = psCShape->padfX[i];
                                 llpoints[i].y = psCShape->padfY[i];
-                                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                             }
                             if (hlist)
                             {
@@ -468,7 +468,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 {
                                     llpoints[i].x = psCShape->padfX[i];
                                     llpoints[i].y = psCShape->padfY[i];
-                                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                                    llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                                 }
                                 if (PICK_POINT_ON_LINE(pickPoint, bnds, &pickedPoint, psCShape->nVertices, llpoints))
                                 {
@@ -554,7 +554,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         llpoints[i].x = pX[i];
         llpoints[i].y = pY[i];
-        llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
     }
     if (nLoops > 1)
     {

@@ -171,15 +171,15 @@
     double ainc = (HALFPI * 4) / (numPoints-1);
     double az = PY;
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     for (int i=0;i<numPoints-1;i++,az+=ainc)
     {
         llpoints[i] = NewLatLong(pt.lat, pt.lon, radiusInMeters, az);
-        llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+        llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
     }
     llpoints[numPoints-1] = llpoints[0];
     if (lineWidth)
@@ -628,10 +628,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     int numPoints, useCode;
     int numLoops;
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     BOOL opened = [self open];
     
@@ -678,7 +678,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             {
                 llpoints[np].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[np].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[np] = TranDPOINT(&llpoints[np], _pTranLLtoView);
+                llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
                /* if (np)
                 {
                     if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
@@ -693,7 +693,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         {
             llpoints[np].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[np].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[np] = TranDPOINT(&llpoints[np], _pTranLLtoView);
+            llpoints[np] = TranDPOINTP(&llpoints[np], _pTranLLtoView);
            /* if (np)
             {
                 if (!sameDPoint(&llpoints[np-1], &llpoints[np],1))
@@ -1052,8 +1052,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUSBLOCKGROUPACS"];
         type = @"BLOCKGROUP";
     }
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     double minValue=DBL_MAX, maxValue=DBL_MIN;
     double area;
     int nDecimals = 0;
@@ -1075,7 +1075,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     double minDisplayAreaInAcres = 4 * screenAreaInAcres / screenAreaInPixels;
     if (_pass == DataPass && !field.length)
         return;
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
 
     switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
     {
@@ -1360,7 +1360,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 {
                     llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                     llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                    llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                    llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                 }
             }
             
@@ -1368,7 +1368,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             {
                 llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
             dc.iValue = IDNINT64(dataValue);
             if ([themes containsColorByRefTheme])
@@ -1505,11 +1505,11 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     pias.areaType = areaType;
     BOOL opened = [self open];
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
-    _pTranViewtoLL = STRANBoundsToCorners(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
+    _pTranViewtoLL = STRANBoundsToCornersP(latlonCornerPoints, pvbounds);
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
@@ -1559,7 +1559,7 @@ NextPass:
                 if (!pass && (!pia || [pia DPointInArea:&llpoints[i]] == 1))
                     haveInPoint = YES;
                 
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -1571,7 +1571,7 @@ NextPass:
             if (!pass && (!pia || [pia DPointInArea:&llpoints[i]] == 1))
                 haveInPoint = YES;
             
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
         if (pass || haveInPoint)
@@ -1622,10 +1622,10 @@ NextPass:
 
     BOOL opened = [self open];
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
@@ -1671,7 +1671,7 @@ NextPass:
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -1679,7 +1679,7 @@ NextPass:
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         CGColorRef color;
         
@@ -1746,10 +1746,10 @@ NextPass:
     
     BOOL opened = [self open];
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     if ([areaType isEqualToString:@"Minneapolis Precincts"] ||
         [areaType isEqualToString:@"Minneapolis Wards"] ||
@@ -1835,7 +1835,7 @@ NextPass:
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[numNewPoints] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                 
                 if (!numNewPoints || !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
                     numNewPoints++;
@@ -1853,7 +1853,7 @@ NextPass:
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[numNewPoints] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[numNewPoints] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             
             if (!numNewPoints || !sameDPoint(&llpoints[numNewPoints],&llpoints[numNewPoints-1],1))
                 numNewPoints++;
@@ -2096,7 +2096,7 @@ NextPass:
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -2104,7 +2104,7 @@ NextPass:
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         DPOINT dp;
         dp = LLPointToDPoint (point);

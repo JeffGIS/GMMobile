@@ -38,8 +38,8 @@
 
 - (void)dealloc
 {
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     [_cd close:YES];
     if (_saveFromDate)
         CRAPI.sharedInstance.fromDate = _saveFromDate;
@@ -51,8 +51,8 @@
       viewBounds:(MNMXCORD *)pvbounds
 {
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     _pTranLLtoView = STRANCornersToBoundsP(corners, pvbounds);
     _pTranViewtoLL = STRANBoundsToCornersP(corners, pvbounds);
 }

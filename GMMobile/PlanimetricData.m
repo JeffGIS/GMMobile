@@ -49,10 +49,10 @@ static float wallPtSize=0;
     //LPSTR symName;
     PropertyData * pd = [[PropertyData alloc]init];
 
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     BOOL pdopened = [pd open];
     
@@ -89,7 +89,7 @@ static float wallPtSize=0;
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -97,7 +97,7 @@ static float wallPtSize=0;
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
         [self fillPlanArea:context
@@ -220,10 +220,10 @@ static float wallPtSize=0;
     //LPSTR symName;
     PropertyData *pd = [[PropertyData alloc] init];
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     BOOL pdopened = [pd open];
     
@@ -259,7 +259,7 @@ static float wallPtSize=0;
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -267,7 +267,7 @@ static float wallPtSize=0;
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
         [self drawPlanLine:context
@@ -364,10 +364,10 @@ static float wallPtSize=0;
     if (![self continueProcessing])
         return;
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     BOOL pdopened = [pd open];
     
@@ -386,7 +386,7 @@ static float wallPtSize=0;
         BasePt.y = sqlite3_column_double(statement,1);
         //symName = (LPSTR)sqlite3_column_text(statement,2);
         
-        DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        DPOINT llpoint = TranDPOINTP(&BasePt, _pTranLLtoView);
         [self drawPlanPoint:context
                     atPoint:&llpoint
                  withColor:UIColor.greenColor.CGColor];
@@ -440,10 +440,10 @@ static float wallPtSize=0;
     //LPSTR symName;
     AlleyWallData *pd = [[AlleyWallData alloc] init];
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     BOOL opened = [pd open];
     
@@ -485,7 +485,7 @@ static float wallPtSize=0;
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
         
@@ -493,7 +493,7 @@ static float wallPtSize=0;
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
         [self drawPlanLine:context
@@ -702,10 +702,10 @@ static float wallPtSize=0;
     wallPtSize = size * metersPerPixel;
     
     AlleyWallData *pd = [[AlleyWallData alloc] init];
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     BOOL opened = [pd open];
     switch (CRAPI.sharedInstance.project)
@@ -727,7 +727,7 @@ static float wallPtSize=0;
             color = red;
         else
             color = wallPointColor;
-        DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+        DPOINT llpoint = TranDPOINTP(&BasePt, _pTranLLtoView);
         [self drawWallPoint:context
                     atPoint:&llpoint
                   withColor:color
@@ -864,10 +864,10 @@ static float wallPtSize=0;
     CurbRampData *crd = [CurbRampData databaseForGeoid:CRAPI.sharedInstance.currentGeoid
                                                 create:NO];
     
-    CloseTRANS2(&_pTranLLtoView);
-    CloseTRANS2(&_pTranViewtoLL);
+    CloseTRANS2P(&_pTranLLtoView);
+    CloseTRANS2P(&_pTranViewtoLL);
     
-    _pTranLLtoView = STRANCornersToBounds(latlonCornerPoints, pvbounds);
+    _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
     
     [crd open];
     query = [NSString stringWithFormat:@"SELECT Count(*) FROM Intersections,Intersections_index WHERE Intersections.intID=Intersections_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
@@ -903,7 +903,7 @@ static float wallPtSize=0;
                                         displayID:_processingID
                                      compareClass:nil] != DO_NOT_DISPLAY_ITEM)
             {
-                DPOINT llpoint = TranDPOINT(&BasePt, _pTranLLtoView);
+                DPOINT llpoint = TranDPOINTP(&BasePt, _pTranLLtoView);
                 NSString *text = [NSString stringWithFormat:@"%i",intID];
                 
                 [self drawCurbRampIntersection:intID
@@ -1008,7 +1008,7 @@ static float wallPtSize=0;
                 rampPt.y += offY;
             }
             PixelXYToLatLongd(rampPt.x, rampPt.y, 21, &rampPt.y, &rampPt.x);
-            DPOINT llpoint = TranDPOINT(&rampPt, _pTranLLtoView);
+            DPOINT llpoint = TranDPOINTP(&rampPt, _pTranLLtoView);
             NSString *text = [NSString stringWithFormat:@"%i\n%i",rampNum,rampType];
            [self drawCurbRampIntersection:rampNum
                                 inContext:context

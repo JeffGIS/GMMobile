@@ -40,8 +40,8 @@
 -(void)dealloc
 {
     CGImageRelease(_image);
-    CloseTRANS2 (&_pTranImageToLatlon);
-    CloseTRANS2 (&_pTranLatlonToImage);
+    CloseTRANS2P (&_pTranImageToLatlon);
+    CloseTRANS2P (&_pTranLatlonToImage);
     NSLog(@"Sewer Database dealloc");
 }
 
@@ -52,7 +52,7 @@
     dptIn.x = latLonPoint.lon;
     dptIn.y = latLonPoint.lat;
     
-    dptOut = TranDPOINT(&dptIn, _pTranLatlonToImage);
+    dptOut = TranDPOINTP(&dptIn, _pTranLatlonToImage);
     return dptOut;
 }
 - (LLPOINT) imageToLatLon:(DPOINT)imagePoint
@@ -60,7 +60,7 @@
     LLPOINT llPt;
     DPOINT dptOut;
     
-    dptOut = TranDPOINT(&imagePoint, _pTranImageToLatlon);
+    dptOut = TranDPOINTP(&imagePoint, _pTranImageToLatlon);
     llPt.lon = dptOut.x;
     llPt.lat = dptOut.y;
     
@@ -72,7 +72,7 @@
     CLLocationCoordinate2D llPt;
     DPOINT dptOut;
     
-    dptOut = TranDPOINT(&imagePoint, _pTranImageToLatlon);
+    dptOut = TranDPOINTP(&imagePoint, _pTranImageToLatlon);
     llPt.longitude = dptOut.x;
     llPt.latitude = dptOut.y;
     

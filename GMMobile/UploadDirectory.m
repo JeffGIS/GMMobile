@@ -92,7 +92,7 @@
     NSMutableArray * array = [NSMutableArray new];
     FILE *fid = fopen(file.UTF8String, "rb");
     LPSTR str = malloc(4096);
-    while (fgetstring(str, (4090 - 2), fid))
+    while (fgetstringF(str, (4090 - 2), fid))
     {
         NSString * path = textBeforeTab ([NSString stringWithUTF8String:str]);
         NSString * path2 = [NSString stringWithFormat:@"/%@",path];
@@ -157,7 +157,7 @@
         return;
     }
     
-    NSInteger totLen = FileLength(fid);
+    NSInteger totLen = FileLengthF(fid);
     fseek (fid,_currentFile,SEEK_SET);
     
     if (totLen > 0)
@@ -169,7 +169,7 @@
     BOOL haveFile = NO;
     NSString * path = @"";
     
-    if (fgetstring(str, (4090 - 2), fid))
+    if (fgetstringF(str, (4090 - 2), fid))
     {
         _nextFile = ftell (fid);
         haveFile = YES;
@@ -257,7 +257,7 @@
     FILE *fid = fopen(_lastFileFile.UTF8String, "rb");
     LPSTR str = malloc(4096);
     _currentFile = -1;
-    if (fgetstring(str, (4090 - 2), fid))
+    if (fgetstringF(str, (4090 - 2), fid))
     {
         _currentFile = atol (str);
     }
@@ -273,7 +273,7 @@
     LPSTR str = malloc(4096);
     _currentFile = -1;
     _nextFile = -1;
-    if (fgetstring(str, (4090 - 2), fid))
+    if (fgetstringF(str, (4090 - 2), fid))
     {
         _currentFile = atol (str);
     }
@@ -282,7 +282,7 @@
     {
         fid = fopen(_fileListFile.UTF8String, "rb");
         fseek (fid,_currentFile,SEEK_SET);
-        if (fgetstring(str, (4090 - 2), fid))
+        if (fgetstringF(str, (4090 - 2), fid))
         {
             _nextFile = ftell (fid);
             haveFile = YES;

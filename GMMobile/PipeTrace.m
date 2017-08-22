@@ -702,7 +702,7 @@ $RETURN(1);
             {
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+                llpoints[i] = TranDPOINTP(&llpoints[i], _sd.pTranLLtoView);
             }
         }
         
@@ -710,7 +710,7 @@ $RETURN(1);
         {
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-            llpoints[i] = TranDPOINT(&llpoints[i], _sd.pTranLLtoView);
+            llpoints[i] = TranDPOINTP(&llpoints[i], _sd.pTranLLtoView);
         }
         
         [_sd drawStormLine:context

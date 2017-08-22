@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "CCodeLibrary/shr.h"
 #import "FindViewController.h"
 #import "PropertyData.h"
 #import "BoundaryData.h"

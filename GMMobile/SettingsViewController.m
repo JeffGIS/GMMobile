@@ -373,7 +373,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                    opened = [pd open];
                                                }
                                                
-                                               CGFloat totLen = FileLength (fid);
+                                               CGFloat totLen = FileLengthF (fid);
                                                if (dataType == GetDatabaseSettingSewer)
                                                    [sd startTransaction];
                                                
@@ -394,7 +394,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                else
                                                    [pd startTransaction];
                                                
-                                               while (_keepGoing && fgetstring(str, (INPUTBUFSIZE - 2), fid))
+                                               while (_keepGoing && fgetstringF(str, (INPUTBUFSIZE - 2), fid))
                                                {
                                                    if (dataType == GetDatabaseSettingSewer)
                                                        [sd executeCmd:str];
