@@ -13,7 +13,7 @@
 #import "PlatProfileView.h"
 #import "LayersViewController.h"
 #import "CCodeLibrary/MapToolbar.h"
-#import <GoogleMaps/GoogleMaps.h>
+@import GoogleMaps;
 #import "MarkerInfoWindow.h"
 #import "MarkerButton.h"
 #import "PropertyList.h"

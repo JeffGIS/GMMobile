@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
-#import <GoogleMaps/GoogleMaps.h>
+@import GoogleMaps;
 
 #define DISPLAY_DATA_OPTION_NODISPLAY   0
 #define DISPLAY_DATA_OPTION_DISPLAY     1

@@ -381,11 +381,13 @@
 {
     BOOL display = TRUE;
     return display;
+    
+    /*
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
     
     *minTime = fromTime;
     *maxTime = toTime;
-    return display;
+    return display;*/
 }
 
 - (NSArray *) getUCRRanges

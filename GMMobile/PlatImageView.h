@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
-#import <GoogleMaps/GoogleMaps.h>
+@import GoogleMaps;
 
 @class PlatImageView;
 

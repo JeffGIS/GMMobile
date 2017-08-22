@@ -2,7 +2,7 @@
 //  GMMobile
 
 #import "AppDelegate.h"
-#import <GoogleMaps/GoogleMaps.h>
+@import GoogleMaps;
 #import "CCodeLibrary/NVDateRange.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/SharedDefaults.h"
@@ -142,8 +142,10 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 
 - (void)scheduleLocationTracking
 {
-    return; //disable until tracking server implemented
-    _backgroundTaskIdentifier = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
+    //disable until tracking server implemented
+    return;
+    
+    /*_backgroundTaskIdentifier = [UIApplication.sharedApplication beginBackgroundTaskWithExpirationHandler:^{
         [UIApplication.sharedApplication endBackgroundTask:_backgroundTaskIdentifier];
     }];
     
@@ -151,7 +153,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                                                       target:self
                                                     selector:@selector(checkUserLocation:)
                                                     userInfo:nil
-                                                     repeats:YES];
+                                                     repeats:YES];*/
 }
 
 - (void)stopLocationTracking

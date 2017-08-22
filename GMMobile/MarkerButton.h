@@ -3,7 +3,7 @@
 
 @import UIKit;
 @import CoreLocation;
-#import <GoogleMaps/GoogleMaps.h>
+@import GoogleMaps;
 #import "CCodeLibrary/NVPhotoController.h"
 #import "CCodeLibrary/GSSiEnums.h"
 

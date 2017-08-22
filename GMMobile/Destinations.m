@@ -4,7 +4,7 @@
 #import "Destinations.h"
 #import "PropertyData.h"
 #import "PropertyList.h"
-#import "GoogleMaps/GoogleMaps.h"
+@import GoogleMaps;
 #import "CCodeLibrary/NVDestinationOptions.h"
 
 //#define CURRENT_VERSION 22
