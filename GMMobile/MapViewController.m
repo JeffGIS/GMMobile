@@ -124,6 +124,7 @@
     [super viewDidLoad];
     
     int i = testVars(1);
+#pragma unused(i)
     NSLog(@"available storage space:%llu bytes", (unsigned long long)UIDevice.availableStorageSpace);
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"FieldOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"DestinationsVC"];
