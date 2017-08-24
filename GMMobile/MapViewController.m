@@ -2883,7 +2883,7 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
-    /*
+    
     if (CRAPI.sharedInstance.becameActive &&
         !CRAPI.sharedInstance.inDataUpdate &&
         ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"] &&
@@ -2898,7 +2898,7 @@ haveVV:
             return;
         else
             _cdUpdate = nil;
-    }*/
+    }
     [self allocateVectorView:NO];
     [self vectorViewSetup];
     [_vectorView setNeedsDisplay];
