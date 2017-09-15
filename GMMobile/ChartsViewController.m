@@ -13,7 +13,7 @@
 @interface ChartsViewController () <NSURLSessionDataDelegate,NSURLSessionTaskDelegate,ChartViewDelegate,NVAlertViewDelegate>
 
 @property (nonatomic) UIButton *returnButton;
-@property (nonatomic) NSMutableArray <CandleChartDataEntry *> *candleDataArray;
+@property (nonatomic) NSMutableArray<CandleChartDataEntry *> *candleDataArray;
 @property (nonatomic) NSMutableDictionary *queryCounter;
 @property (nonatomic) CandleStickChartView *routingCandleStickChart;
 @property (nonatomic) NVColor *color;
