@@ -40,6 +40,9 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres)
         case TXTAdjustDollars:
             rtn = [CRAPI.sharedInstance dollarsFormat:atof(text)];
             break;
+        case TXTAdjustThousandDollars:
+            rtn = [NSString stringWithFormat:@"%.1fK",atof(text)/1000.0];
+            break;
         case TXTAdjustDollarsPerAcre:
         {
             double value = atof(text);
@@ -420,7 +423,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
                 [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Land EMV","EMV_LAND",(int)value]];
                 break;
             case CPParcelVLastSalePrice:
-                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Last Sale Price","SALE_VALUE",(int)value]];
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Last Sale Price (K)","SALE_VALUE",(int)value]];
                 break;
             case CPParcelVCount:
                 break;
@@ -486,6 +489,10 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
                 
             case CPAdjustPctOfTotalHouseholds:
                 [rtn addObject:stringWithID("As Percent of Total Households",value)];
+                break;
+                
+            case CPAdjustThousandsOfDollars:
+                [rtn addObject:stringWithID("In Thousands of Dollars",value)];
                 break;
                 
             case CPAdjustCount:
@@ -874,7 +881,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Last Sale Price/Last Sale Date/Owner",i++];
     to.numTextFields = 5;
     to.fields = @"SALE_VALUE,SALE_DATE,OWNER_NAME,OWNER_MORE,TAX_NAME";
-    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustDollars],[NSNumber numberWithInt:TXTAdjustDate],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames], nil];
+    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustThousandDollars],[NSNumber numberWithInt:TXTAdjustDate],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames], nil];
     [rtn addObject:to];
     return rtn;
 }

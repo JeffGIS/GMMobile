@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, CPAdjustmentValues)
     CPAdjustPctOfTotalPop,
     CPAdjustPctOfTotalHousingUnits,
     CPAdjustPctOfTotalHouseholds,
+    CPAdjustThousandsOfDollars,
     CPAdjustCount
 };
 
@@ -59,6 +60,7 @@ typedef NS_ENUM(NSInteger, TXTAdjustment)
     TXTAdjustNone,
     TXTAdjustOwnerNames,
     TXTAdjustDollars,
+    TXTAdjustThousandDollars,
     TXTAdjustDollarsPerAcre,
     TXTAdjustAcres,
     TXTAdjustDate,

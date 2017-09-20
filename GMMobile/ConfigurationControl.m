@@ -567,7 +567,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
 
 - (NSArray *)getLayers
 {
-    NSMutableArray *layers = NSMutableArray.array;
+    NSMutableArray *layers = NSMutableArray.new;
     
     for (int layer = 0; layer < NUMHardCodedLayers; layer++)
     {
@@ -658,7 +658,7 @@ visibleAtZoom:(CGFloat)zoom
 
 - (NSArray *)getSymbolsForLayer:(HardCodedLayers)layerID
 {
-    NSMutableArray *array= NSMutableArray.array;
+    NSMutableArray *array= NSMutableArray.new;
     LayerObject *lo = nil;
 
     switch (layerID)

@@ -1301,6 +1301,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 if (!totalHouseholds)
                     goto SkipRecord;
                 dataValue /= totalHouseholds;
+            case CPAdjustThousandsOfDollars:
+                dataValue /= 1000;
                 break;
         }
         NVMetroSettings.sharedInstance.valueMultiplier = factor;
@@ -1805,7 +1807,7 @@ NextPass:
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         LPSTR pkeyval = (LPSTR)sqlite3_column_text(statement,i++);
         keyval = [NSString stringWithUTF8String:pkeyval];
-        refno = sqlite3_column_int(statement,7);
+        refno = sqlite3_column_int(statement,i++);
 
         _acres = sqlite3_column_double(statement,i++);
         int nTextFields = 0;
