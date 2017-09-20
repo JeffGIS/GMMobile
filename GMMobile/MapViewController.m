@@ -2987,7 +2987,11 @@ haveVV:
     if (vectorView.displayID != CRAPI.sharedInstance.keepProcessing)
         vectorViews[vectorView.ivv] = nil;
     
-    else dispatch_async(dispatch_get_main_queue(),
+    else
+    {
+        if (!reDisplay)
+            vectorView.displayID = -1;
+        dispatch_async(dispatch_get_main_queue(),
                    ^{
                        if (_fromLegends)
                        {
@@ -3004,11 +3008,11 @@ haveVV:
                            _fromLegends2X = YES;
                        }
                        
-                       [_vectorView removeFromSuperview];
+                       //[_vectorView removeFromSuperview];
                        
                        if (_screenSetting != MapViewScreenSettingPlatView)
                        {
-                           [self.view addSubview:_vectorView];
+                           //[self.view addSubview:_vectorView];
                            [_vectorView constrainToView:_mapView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
                            
                            if (!_myLocationMarker.hidden)
@@ -3138,6 +3142,7 @@ haveVV:
                        }
 
                    });
+    }
 }
 
 - (void)bringMarkersAndInfoWindowsToFront
