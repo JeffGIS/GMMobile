@@ -25,12 +25,15 @@
 @property (nonatomic) NSInteger width, height;
 @property (nonatomic) dispatch_queue_t vectorQueue;
 @property (nonatomic) CGRect rect;
-@property BOOL haveVectorLayer;
+@property (nonatomic) int haveVectorLayer;
 @property BoundaryData *bd;
 @end
 
 @implementation VectorView
-
+- (void) setHaveVectorLayer:(int)vectorLayer
+{
+    _haveVectorLayer = vectorLayer;
+}
 - (id)init
 {
     self = [super init];
@@ -180,12 +183,15 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     
     if (CRAPI.sharedInstance.keepProcessing < 0)
         return;
+    if (self.displayID < 0)
+        return;
+  
     int printFactor = 1;
     int scale = UIScreen.mainScreen.scale*printFactor;
     _vectorViewContext = UIGraphicsGetCurrentContext();
     if (!_vectorViewContext || CRAPI.sharedInstance.keepProcessing < 0)
         return;
-    if (_haveVectorLayer)
+    if (self.haveVectorLayer)
     {
         //UIGraphicsEndPDFContext();
         //CGContextDrawLayerAtPoint(_vectorViewContext, CGPointMake(0, 0), _vectorLayer);
@@ -196,7 +202,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             CGContextDrawLayerInRect(_vectorViewContext, rect, _vectorLayer);
         }
         //CGLayerRelease(_vectorLayer);
-        _haveVectorLayer = NO;
+        self.haveVectorLayer = NO;
         if (self.delegate)
             [self.delegate vectorViewDidComplete:self
                                          pdfData:nil
@@ -634,7 +640,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
             }
             else if ([self keepGoing])
             {
-                _haveVectorLayer = YES;
+                self.haveVectorLayer = YES;
                 dispatch_async(dispatch_get_main_queue(),
                                ^{
                                    [self setNeedsDisplay];
@@ -652,7 +658,7 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
                 CGLayerRelease(_vectorLayer);
                 NSLog (@"Vector layer released");
                 _vectorLayer = 0;
-                _haveVectorLayer = NO;
+                self.haveVectorLayer = NO;
                 if (self.delegate)
                     [self.delegate vectorViewDidComplete:self
                                                  pdfData:nil
