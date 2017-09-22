@@ -18,7 +18,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate>
+@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate,GSSiPopoverViewDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -37,6 +37,7 @@
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NVTextAlert *textAlert;
 @property (nonatomic) NVKeyboard *keyboard;
+@property (nonatomic) GSSiPopoverView *popoverView;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;
@@ -362,6 +363,8 @@ EAGLContext *CreateBestEAGLContext()
     }
     
      [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
+    _popoverView = [[GSSiPopoverView alloc] initWithView:self.view];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -372,7 +375,7 @@ EAGLContext *CreateBestEAGLContext()
      @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location", @"Set Default Email Recipients"*/
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"See Version History", @"See Glossary of Terms"];
+                  @"See Version History", @"See Glossary of Terms"];//,@"Upload Crime Data"];
     
     [_tableView reloadData];
 }
@@ -559,6 +562,12 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Upload Crime Data"])
+    {
+        [self uploadCrimeData];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Compute PDF Pages"])
     {
         [self computePDFPages];
@@ -594,6 +603,34 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 #pragma unused(nvtva)
     }
 }
+
+- (IBAction)uploadCrimeData
+{
+    _push = FTPDataPush.push;
+    _push.delegate = self;
+    _push.popover = _popoverView;
+    
+    _cd = [CrimeData new];
+    
+    NSString *toDir = @"NVCRIS/UploadedDatabases";
+    NSString * dbpath = _cd.path;
+    NSString *file = dbpath.lastPathComponent;
+    NSString *fromDir = dbpath.stringByDeletingLastPathComponent;
+    [_popoverView showAfter:0.1 withTitle:@"Upload Crime Database"];
+    
+    [_push sendFile:file
+      fromDirectory:fromDir
+             toFile:file
+        toDirectory:toDir
+     deleteWhenDone:NO
+     appendFileName:NO];
+}
+
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    [popoverView hide];
+}
+
 
 - (void)textViewAlert:(NVTextViewAlert *)textViewAlert
         didReturnText:(NSString *)text
