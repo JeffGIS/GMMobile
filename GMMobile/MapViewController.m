@@ -2127,9 +2127,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 }
                 
                 NVWebView *nvwv1 = [NVWebView showWebViewInView:_firstView
-                                                 showFileAtPath:path];
+                                                 showFileAtPath:path
+                                                       delegate:self];
                 
-                nvwv1.delegate = self;
                 nvwv1.tag = 111;
                 [nvwv1 hideReturnButton];
                 
@@ -2152,9 +2152,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 if (_splitPlatView)
                 {
                     NVWebView *nvwv2 = [NVWebView showWebViewInView:_secondView
-                                                     showFileAtPath:path];
+                                                     showFileAtPath:path
+                                                           delegate:self];
                     
-                    nvwv2.delegate = self;
                     nvwv2.tag = 222;
                     [nvwv2 hideReturnButton];
                     
@@ -5718,7 +5718,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)mapToolbarDidSelectHelpButton
 {
     NSString *filePath = [NSBundle.mainBundle pathForResource:@"DOES_NOT_EXIST" ofType:@"pdf"];
-    NVWebView *nvwv = [NVWebView showWebViewInView:self.view showFileAtPath:filePath];
+    
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                    showFileAtPath:filePath
+                                          delegate:nil];
 #pragma unused(nvwv)
 }
 
