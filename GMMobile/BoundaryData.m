@@ -1057,7 +1057,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     double minValue=DBL_MAX, maxValue=DBL_MIN;
     double area;
     int nDecimals = 0;
-    int factor = [NVMetroSettings.sharedInstance factorForField:field inTable:type numDecimals:&nDecimals];
+    double factor = [NVMetroSettings.sharedInstance factorForField:field inTable:type numDecimals:&nDecimals];
     double areaFactor = 1;
     int ii=0;
     double waterArea = 0;
@@ -1077,6 +1077,9 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         return;
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
 
+    NVMetroSettings.sharedInstance.skipZero = TRUE;
+    NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustThousandsOfDollars;
+    
     switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
     {
         case CPAdjustCount:
@@ -1117,6 +1120,10 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         case CPAdjustCountPerHousehold:
             factor = 1000;
             nDecimals = 3;
+            break;
+        case CPAdjustThousandsOfDollars:
+            factor = 0.001;
+            nDecimals = 0;
             break;
     }
     BOOL opened = [self open];
@@ -1274,6 +1281,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         area = landArea;
         if (!area)
             goto SkipRecord;
+        if (!dataValue && NVMetroSettings.sharedInstance.skipZero)
+            goto SkipRecord;
         area *= areaFactor;
         dataValue *= factor;
         switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
@@ -1302,8 +1311,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                     goto SkipRecord;
                 dataValue /= totalHouseholds;
             case CPAdjustThousandsOfDollars:
-                dataValue /= 1000;
-                break;
+                 break;
         }
         NVMetroSettings.sharedInstance.valueMultiplier = factor;
         NVMetroSettings.sharedInstance.roundTo = nDecimals;

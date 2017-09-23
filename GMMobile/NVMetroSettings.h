@@ -100,6 +100,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 @property (nonatomic)NSArray * currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
 @property NVMetroTextOptions* currentTextOption;
+@property (nonatomic)BOOL skipZero;
 @property (nonatomic)BOOL overUnder;
 @property int themeClassType;
 @property AreaOutlineTypes areaOutlineType;
