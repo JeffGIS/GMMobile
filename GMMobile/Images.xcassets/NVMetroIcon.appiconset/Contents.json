@@ -143,6 +143,12 @@
       "idiom" : "ipad",
       "filename" : "NVMetroIcon167.png",
       "scale" : "2x"
+    },
+    {
+      "size" : "1024x1024",
+      "idiom" : "ios-marketing",
+      "filename" : "NVMetroIcon1024.png",
+      "scale" : "1x"
     }
   ],
   "info" : {

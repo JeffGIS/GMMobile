@@ -76,7 +76,6 @@
 		69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */; };
 		69C0F8661D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */; };
 		69C441A71BB4694E00D026A7 /* spreadsheetIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */; };
-		69C8DB4C1C515B440062AE84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 69C8DB4B1C515B440062AE84 /* .gitignore */; };
 		69C9682D1CADBAA50066D1DA /* swapIconHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */; };
 		69CB89DC1DCD4BBE00D408E9 /* upArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DB1DCD4BBE00D408E9 /* upArrow.png */; };
 		69CB89E01DCD558700D408E9 /* backspace.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB89DF1DCD558700D408E9 /* backspace.png */; };
@@ -282,6 +281,8 @@
 		690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "Charts-master/Charts.xcodeproj"; sourceTree = "<group>"; };
 		690E829B1C11042A00AB410E /* Assets.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Assets.bundle; sourceTree = "<group>"; };
 		6918B2251E9F4D270091C434 /* clockIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clockIcon.png; sourceTree = "<group>"; };
+		691BC0FF1F755319007E0423 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NVSdwkIcon1024.png; sourceTree = "<group>"; };
 		6924B4351D37BDC8007C6C76 /* trackLocation.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trackLocation.png; sourceTree = "<group>"; };
 		6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrimeDataOptions.h; sourceTree = "<group>"; };
 		6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrimeDataOptions.m; sourceTree = "<group>"; };
@@ -345,7 +346,6 @@
 		69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteQuestionMark.png; sourceTree = "<group>"; };
 		69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCRISHelp_SlopeVC.pdf; sourceTree = "<group>"; };
 		69C441A61BB4694E00D026A7 /* spreadsheetIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spreadsheetIcon.png; sourceTree = "<group>"; };
-		69C8DB4B1C515B440062AE84 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = .gitignore; path = GMMobile/.gitignore; sourceTree = "<group>"; };
 		69C9682C1CADBAA50066D1DA /* swapIconHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIconHighlighted.png; sourceTree = "<group>"; };
 		69CB89DB1DCD4BBE00D408E9 /* upArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = upArrow.png; sourceTree = "<group>"; };
 		69CB89DF1DCD558700D408E9 /* backspace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backspace.png; sourceTree = "<group>"; };
@@ -638,6 +638,7 @@
 			children = (
 				69FDA4351EE7838A00BA9735 /* glossary.png */,
 				69FDA4331EE77D4600BA9735 /* versionHistory.png */,
+				691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */,
 				6948ED331EC50D7A00809632 /* NVMobileIcon1024.png */,
 				6948ED2F1EC50A6600809632 /* NVMetroIcon1024.png */,
 				6948ED2D1EC50A5500809632 /* NVCrimeIcon1024.jpg */,
@@ -928,7 +929,7 @@
 		EB5521C01A61B6A8008CE2D1 = {
 			isa = PBXGroup;
 			children = (
-				69C8DB4B1C515B440062AE84 /* .gitignore */,
+				691BC0FF1F755319007E0423 /* .gitignore */,
 				EB5521CB1A61B6A8008CE2D1 /* GMMobile */,
 				690E2D991DAD3CF6005FAE3A /* Charts.xcodeproj */,
 				A9C837291A65B27C005EC4FA /* Frameworks */,
@@ -1225,7 +1226,6 @@
 				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,
 				6948ED341EC50D7A00809632 /* NVMobileIcon1024.png in Resources */,
 				69FEC88D1CA9A53E002BF231 /* whiteMapIt.png in Resources */,
-				69C8DB4C1C515B440062AE84 /* .gitignore in Resources */,
 				69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */,
 				A90D1FAB1AE5D67B00CBFEE7 /* backArrow.png in Resources */,
 				695984181CACE6F900CA14C0 /* swapIcon.png in Resources */,
