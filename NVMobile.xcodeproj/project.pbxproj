@@ -19,6 +19,7 @@
 		691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EB1E513B2800156827 /* areapoly.slt */; };
 		691B5DCE1E520E3300C90383 /* censusdata.slt in Resources */ = {isa = PBXBuildFile; fileRef = BBCDF7EC1E513B2800156827 /* censusdata.slt */; };
 		6924B4361D37BDC8007C6C76 /* trackLocation.png in Resources */ = {isa = PBXBuildFile; fileRef = 6924B4351D37BDC8007C6C76 /* trackLocation.png */; };
+		692537161F7ACFF0003F5ABA /* NVSdwkIcon1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */; };
 		6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */; };
 		692B4A041BF6392E0016CE5D /* redMinusSign.png in Resources */ = {isa = PBXBuildFile; fileRef = 692B4A031BF6392E0016CE5D /* redMinusSign.png */; };
 		692B4A071BF669D80016CE5D /* ThemeLegendMapOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 692B4A061BF669D80016CE5D /* ThemeLegendMapOverlay.m */; };
@@ -1136,6 +1137,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				692537161F7ACFF0003F5ABA /* NVSdwkIcon1024.png in Resources */,
 				BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */,
 				691B5DCC1E520E3300C90383 /* landuse.slt in Resources */,
 				691B5DCD1E520E3300C90383 /* areapoly.slt in Resources */,

@@ -2054,7 +2054,6 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             _splitPlatView = NO;
             if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
             {
-                
                 [sd loadPlat:CRAPI.sharedInstance.selectedPDFID
                       ofType:@"pdf"
                 usingPopover:_popover
@@ -4298,8 +4297,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         }
     }
     
-    dataFile = [NSBundle.mainBundle pathForResource:@"upperlower"
-                                                        ofType:@"txt"];
+    dataFile = [NSBundle.mainBundle pathForResource:@"upperlower" ofType:@"txt"];
     fileData = [NSString stringWithContentsOfFile:dataFile encoding:NSUTF8StringEncoding error:nil];
     int index = 0;
     Lines = [fileData componentsSeparatedByString:@"\r\n"];
@@ -4373,8 +4371,11 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
         
         if (_mgvData)
         {
-            [sd loadPlat:_mgvData.pdfFile
-                  ofType:@"pdf"
+            NSString *platFile = [NSString stringWithFormat:@"%@_page_%i.jpg",
+                                  _mgvData.pdfFile.stringByDeletingPathExtension, _mgvData.page];
+            
+            [sd loadPlat:platFile
+                  ofType:@"pdfToJpg"
             usingPopover:_popover
              andDelegate:self];
         }
