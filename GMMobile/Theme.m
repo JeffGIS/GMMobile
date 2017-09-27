@@ -387,6 +387,37 @@
                 tc.UCR = ucr;
             }
             break;
+        case ViolentTheme:
+            thm.minUCR = 1;
+            thm.maxUCR = 5;
+            thm.legend.title = @"Violent Crimes";
+            [thm.titles addObject:thm.legend.title];
+            thm.setSymbol = YES;
+            thm.legend.usePointSymbols = YES;
+            thm.numDesiredClasses = 8;
+            class = [ThemeClass createWithTitle:@"UCR 01-02: Homicide"];
+            class.color = [UIColor greenColor];
+            class.symbol = CrossSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 03: Rape       "];
+            class.color = [UIColor greenColor];
+            class.symbol = DiamondSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 04: Robbery    "];
+            class.color = [UIColor greenColor];
+            class.symbol = TriangleSym;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"UCR 05: Agg Assault"];
+            class.color = [UIColor greenColor];
+            class.symbol = SquareSym;
+            [thm.classes addObject:class];
+            for (ThemeClass *tc in thm.classes)
+            {
+                int ucr = atoi(&tc.title.UTF8String[4]);
+                tc.UCR = ucr;
+            }
+            break;
+
         case CrimeIndexTheme:
             thm.minUCR = 1;
             thm.maxUCR = 98;
@@ -1314,6 +1345,7 @@ int getThemeOpt(ThemeTypes type)
             break;
         case Part2Theme:
         case AssaultTheme:
+        case ViolentTheme:
         case RobberyTheme:
         case BurglaryTheme:
         case SelectedTheftTheme:
@@ -1492,6 +1524,7 @@ int getThemeOpt(ThemeTypes type)
                 
                 break;
             case Part1Theme:
+            case ViolentTheme:                
                 if (dc.UCR < 1 || dc.UCR > 10 || dc.UCR == 9)
                     break;
                 if (dc.UCR < 3)
