@@ -49,6 +49,8 @@
                 thm = [Theme createTheme:Part2Theme];
             if ([crimeLegend isEqualToString:@"Crime Index"])
                 thm = [Theme createTheme:CrimeIndexTheme];
+            if ([crimeLegend isEqualToString:@"Violent Crimes"])
+                thm = [Theme createTheme:ViolentTheme];
             if ([crimeLegend isEqualToString:@"Assault"])
                 thm = [Theme createTheme:AssaultTheme];
             if ([crimeLegend isEqualToString:@"Burglary"])
@@ -400,6 +402,7 @@
         {
             case Part1Theme:
             case Part2Theme:
+            case ViolentTheme:
             case CrimeIndexTheme:
             case AssaultTheme:
             case RobberyTheme:

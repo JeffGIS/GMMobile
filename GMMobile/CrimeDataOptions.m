@@ -65,7 +65,7 @@
     _compareOptionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _tableView = UITableView.new;
     
-    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Assault", @"Burglary", @"Robbery",
+    _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Violent Crimes", @"Assault", @"Burglary", @"Robbery",
                  @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto", @"Crime Index"];
     
     _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Choropleth Map"];
