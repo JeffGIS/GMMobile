@@ -55,6 +55,8 @@
 		695984181CACE6F900CA14C0 /* swapIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 695984171CACE6F900CA14C0 /* swapIcon.png */; };
 		695A9C211EA173F400F1B5D7 /* copyIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 695A9C201EA173F400F1B5D7 /* copyIcon.png */; };
 		695CEB7D1CF7607F00B1E7B2 /* transWhiteX.png in Resources */ = {isa = PBXBuildFile; fileRef = 695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */; };
+		695F860C1F7C45AB002018D8 /* ConfigurationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 695F860B1F7C45AB002018D8 /* ConfigurationVC.m */; };
+		695F86101F7C48A9002018D8 /* config.png in Resources */ = {isa = PBXBuildFile; fileRef = 695F860F1F7C4895002018D8 /* config.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
 		697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */; };
@@ -321,6 +323,9 @@
 		695984171CACE6F900CA14C0 /* swapIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = swapIcon.png; sourceTree = "<group>"; };
 		695A9C201EA173F400F1B5D7 /* copyIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = copyIcon.png; sourceTree = "<group>"; };
 		695CEB7C1CF7607F00B1E7B2 /* transWhiteX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = transWhiteX.png; sourceTree = "<group>"; };
+		695F860A1F7C45AB002018D8 /* ConfigurationVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConfigurationVC.h; sourceTree = "<group>"; };
+		695F860B1F7C45AB002018D8 /* ConfigurationVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConfigurationVC.m; sourceTree = "<group>"; };
+		695F860F1F7C4895002018D8 /* config.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = config.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
 		697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueInfoMarker.png; sourceTree = "<group>"; };
@@ -637,6 +642,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				695F860F1F7C4895002018D8 /* config.png */,
 				69FDA4351EE7838A00BA9735 /* glossary.png */,
 				69FDA4331EE77D4600BA9735 /* versionHistory.png */,
 				691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */,
@@ -847,6 +853,8 @@
 			children = (
 				693BF80A1DAF56370044C602 /* ChartsViewController.h */,
 				693BF80B1DAF56370044C602 /* ChartsViewController.m */,
+				695F860A1F7C45AB002018D8 /* ConfigurationVC.h */,
+				695F860B1F7C45AB002018D8 /* ConfigurationVC.m */,
 				6925E5F01BCE156E005E5D5A /* CrimeDataOptions.h */,
 				6925E5F11BCE156E005E5D5A /* CrimeDataOptions.m */,
 				69CE9D701C11CCCF00BF7BFF /* CurbRampDataOptions.h */,
@@ -1137,6 +1145,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				695F86101F7C48A9002018D8 /* config.png in Resources */,
 				69A72DDB1F7C0B3B0094758C /* NVMobile_VersionHistory.pdf in Resources */,
 				692537161F7ACFF0003F5ABA /* NVSdwkIcon1024.png in Resources */,
 				BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */,
@@ -1327,6 +1336,7 @@
 				BB12E2391E9567F40063FE4A /* CrimeList.m in Sources */,
 				69366E031C542A6700E79AA7 /* NVPageController.m in Sources */,
 				EBFC2A2A1BE79DCA00E0C1B3 /* ThemeClass.m in Sources */,
+				695F860C1F7C45AB002018D8 /* ConfigurationVC.m in Sources */,
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
 				69366E001C542A4B00E79AA7 /* NVPageView.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,

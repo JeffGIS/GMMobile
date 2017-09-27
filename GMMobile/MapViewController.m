@@ -30,7 +30,7 @@
 #import "CCodeLibrary/CRAPI.h"
 #import "NVGeocoder.h"
 #import "CCodeLibrary/shr.h"
-
+#import "ConfigurationVC.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -934,6 +934,18 @@
            replaceViewControllerWithID:@"SettingsVC"
                     withViewController:nvmsvc];
         
+        NSInteger index = [NVTabBarEdit indexOfViewControllerWithID:@"NVMetroSettingsVC"
+                                                 inTabBarController:self.tabBarController];
+        
+        ConfigurationVC *configVC = ConfigurationVC.new;
+        configVC.restorationIdentifier = @"ConfigVC";
+        configVC.tabBarItem.title = @"Config";
+        
+        configVC.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"config"
+                                                                                                   ofType:@"png"]];
+        
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:configVC atIndex:index];
+        
         if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
         {
             [NVTabBarEdit tabBarController:self.tabBarController
@@ -1026,6 +1038,7 @@
         UIViewController *lvc = [storyboard instantiateViewControllerWithIdentifier:@"LayersVC"];
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:lvc atIndex:1];
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"NVWebKitVC"];
+        [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ConfigVC"];
         UIViewController *svc = [storyboard instantiateViewControllerWithIdentifier:@"SettingsVC"];
         
         [NVTabBarEdit tabBarController:self.tabBarController
@@ -1230,7 +1243,6 @@
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    
     [self clearVectorView];
 }
 

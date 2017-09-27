@@ -44,7 +44,7 @@
         _headerFont = [UIFont boldSystemFontOfSize:40.0];
     }
     
-    PropertyList *proplist = [[PropertyList alloc] init];
+    PropertyList *proplist = PropertyList.new;
     NSArray *fields = [proplist availablePropertyFields];
     
     _fieldNames = NSMutableArray.array;
