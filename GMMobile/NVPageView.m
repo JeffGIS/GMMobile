@@ -39,16 +39,11 @@
     return nvpv;
 }
 
-- (void)loadView
-{
-    UIView *view = [[UIView alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    view.backgroundColor = UserDefaults.defaults.appleBlue;
-    self.view = view;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     
     _legends = ConfigurationControl.sharedInstance.legendList;
     _mapVC = (MapViewController *)CRAPI.sharedInstance.mapVC;

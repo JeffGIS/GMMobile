@@ -24,6 +24,13 @@
     [self setupButton:_boundariesButton];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ConfigVC"];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

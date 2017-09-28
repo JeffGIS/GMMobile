@@ -3,6 +3,7 @@
 
 #import "ThemesViewController.h"
 #import "ConfigurationControl.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 @interface ThemesViewController ()
 
@@ -63,6 +64,13 @@
     
     [self updateTableView];
     [_tableView reloadData];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ConfigVC"];
 }
 
 - (void)didReceiveMemoryWarning

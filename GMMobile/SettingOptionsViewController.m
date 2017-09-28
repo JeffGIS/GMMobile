@@ -15,6 +15,7 @@
 @import GLKit;
 #import "CCodeLibrary/NVKeyboard.h"
 #import "CCodeLibrary/NVTextViewAlert.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 

@@ -4,22 +4,16 @@
 #import "NVMetroSettingsVC.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
+#import "CCodeLibrary/NVTabBarEdit.h"
 
 @interface NVMetroSettingsVC () <NVPopoverTableViewDelegate>
 
 @property (nonatomic) UIButton *featureButton, *valueButton, *adjButton, *textButton, *colorSchemeButton;
 @property (nonatomic, copy) NSArray *optionsList;
 
-
 @end
 
 @implementation NVMetroSettingsVC
-
-- (void)loadView
-{
-    UIView *view = [[UIView alloc] initWithFrame:UIScreen.mainScreen.bounds];
-    self.view = view;
-}
 
 - (void)viewDidLoad
 {
@@ -308,6 +302,13 @@
                 break;
         }
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ConfigVC"];
 }
 
 - (void)didReceiveMemoryWarning
