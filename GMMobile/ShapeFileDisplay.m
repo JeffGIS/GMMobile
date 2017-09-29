@@ -53,7 +53,7 @@
     if (pFS)
     {
         char * pFS2 = strrchr (shapeFile,'/');
-        sprintf (pFS,"/latlon%s",pFS2);
+        sprintf (pFS,"/latlong%s",pFS2);
     }
     else
         return NULL;

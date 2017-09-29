@@ -2145,10 +2145,11 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 if (_mgvData)
                 {
                     [nvwv1 zoomToPoint:_mgvData.ptUpper
-                            withinPage:_mgvData.page
+                            withinPage:1
                              withScale:_mgvData.scaleUpper
                               rotation:_mgvData.rotUpper];
                 }
+                
                 else
                 {
                     DPOINT pt = {0,0};
@@ -2168,7 +2169,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [nvwv2 hideReturnButton];
                     
                     [nvwv2 zoomToPoint:_mgvData.ptLower
-                            withinPage:_mgvData.page
+                            withinPage:1
                              withScale:_mgvData.scaleLower
                               rotation:_mgvData.rotLower];
                 }
