@@ -1046,12 +1046,32 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)showBumpDetector:(id)sender
 {
-    GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
+/*    GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
                                                                    coundownTime:8
                                                                           title:@"This is the title parameter"
                                                                        delegate:self];
-#pragma unused(bumpDetector)
+#pragma unused(bumpDetector)*/
+    {
+        return;
+        _push = FTPDataPush.push;
+        _push.delegate = self;
+        _push.popover = _popover;
+        PropertyData *pd = PropertyData.new;
+        
+        NSString *toDir = @"Propdata";
+        NSString *file = pd.path.lastPathComponent;;
+        NSString *fromDir = pd.path.stringByDeletingLastPathComponent;
+        [_popover showAfter:0.1 withTitle:@"Upload Database"];
+        
+        [_push sendFile:file
+          fromDirectory:fromDir
+                 toFile:file
+            toDirectory:toDir
+         deleteWhenDone:NO
+         appendFileName:NO];
+    }
 }
+
 
 - (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
 didReturnTimeInterval:(NSString *)timeInterval
