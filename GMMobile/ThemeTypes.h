@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, ThemeTypes)
     MGVFiberPointTheme,
     PropertyListTheme,
     MetroPropTheme,
+    MetroPropTheme2,
     MetroLandUseTheme,
     ColorByRefnoTheme,
     NoTheme,

@@ -71,6 +71,7 @@ NUMHardCodedLayers};
 @property NSString *adjustCrimeArea;
 @property DataCompareOptions dataCompareOption;
 @property PropFieldType currentPropSheetFieldType;
+@property PropFieldType currentPropSheetFieldType2;
 @property NSString * MapitPID;
 @property int MapitBoundaryOpt;
 @property int MapitBoundaryRefno;

@@ -148,6 +148,69 @@
             [thm adjustClassTitles];
         }
             break;
+        case MetroPropTheme2:
+        {
+            thm.setColor = YES;
+            thm.legend.appendClassCount = YES;
+            thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
+            thm.legend.title = [NVMetroSettings.sharedInstance currentValueText];
+            NSString * adjustText = [NSString stringWithFormat:@" %@",[NVMetroSettings.sharedInstance currentAdjustmentText]];
+            if (![adjustText containsString:@" None"])
+                thm.legend.title = [thm.legend.title stringByAppendingString:adjustText];
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = NVMetroSettings.sharedInstance.numThemeClasses;
+            thm.numDecimals = NVMetroSettings.sharedInstance.roundTo;
+            NSNumber * themeMin = NVMetroSettings.sharedInstance.themeClassMin[0];
+            NSNumber * themeMax = NVMetroSettings.sharedInstance.themeClassMax[thm.numDesiredClasses-1];
+            NSNumber * rangeAveTop = NVMetroSettings.sharedInstance.themeClassAve[thm.numDesiredClasses-1];
+            NSNumber * rangeAveBot = NVMetroSettings.sharedInstance.themeClassAve[0];
+            double range = rangeAveTop.doubleValue - rangeAveBot.doubleValue;
+            if (range <= 0)
+                range = themeMax.integerValue - themeMin.integerValue;
+            int targetClass = -1;
+            if (NVMetroSettings.sharedInstance.overUnder && CRAPI.sharedInstance.currentPID)
+            {
+                long long intVal = IDNINT64(NVMetroSettings.sharedInstance.targetValue);
+                for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
+                {
+                    NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
+                    NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
+                    if (intVal >=  min.longLongValue && NVMetroSettings.sharedInstance.targetValue <=  max.longLongValue)
+                        targetClass = iClass;
+                }
+            }
+            
+            for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
+            {
+                NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
+                NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
+                NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
+                NSNumber * ave = NVMetroSettings.sharedInstance.themeClassAve[iClass];
+                if (thm.numDecimals)
+                {
+                    NSString * fmt = [NSString stringWithFormat:@"%%.%if to %%.%if",thm.numDecimals,thm.numDecimals];
+                    class = [ThemeClass createWithTitle:[NSString stringWithFormat:fmt,min.doubleValue/pow(10,thm.numDecimals),max.doubleValue/pow(10,thm.numDecimals)]];
+                }
+                else
+                    class = [ThemeClass createWithTitle:[NSString stringWithFormat:@"%li to %li",(long)min.integerValue,(long)max.integerValue]];
+                class.minValue = min.longLongValue;
+                class.maxValue = max.longLongValue;
+                class.aveValue = ave.doubleValue;
+                class.numItems = count.longLongValue;
+                //                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
+                double intensity = 0;
+                if (range > 0)
+                    intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
+                class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
+                if (iClass == targetClass)
+                    class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
+                else if (iClass < targetClass)
+                    class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
+                [thm.classes addObject:class];
+            }
+            [thm adjustClassTitles];
+        }
+            break;
         case MetroLandUseTheme:
             thm.setColor = YES;
             thm.showSymbolAsBarChart = NO;

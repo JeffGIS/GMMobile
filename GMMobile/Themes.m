@@ -120,6 +120,12 @@
                 thm = [Theme createTheme:MetroPropTheme];
                 if (thm)
                     [_themeList addObject:thm];
+                if (ConfigurationControl.sharedInstance.currentPropSheetFieldType2)
+                {
+                    thm = [Theme createTheme:MetroPropTheme2];
+                    if (thm)
+                        [_themeList addObject:thm];
+                }
             }
             break;
         default:

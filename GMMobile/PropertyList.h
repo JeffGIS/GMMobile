@@ -7,6 +7,7 @@
 
 typedef NS_ENUM(NSInteger, PropFieldType)
 {
+    PFT_None,
     PFT_LatLon,
     PFT_UserID,
     PFT_PIN,
@@ -63,6 +64,9 @@ typedef NS_ENUM(NSInteger, PropFieldType)
     PFT_PctCommercial_qtrMile,
     PFT_PctCommercial_halfMile,
     PFT_PctCommercial_Mile,
+    PFT_YearBuilt,
+    PFT_LastSaleYear,
+    PFT_LastSalePrice,
     PFT_END,
 };
 typedef NS_ENUM(NSInteger, PropBaseType)
