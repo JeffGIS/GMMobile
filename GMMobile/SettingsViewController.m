@@ -7,7 +7,7 @@
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32
-//#define USE_TEST_SERVER NO
+#define USE_TEST_SERVER NO
 
 @interface SettingsViewController ()
 
@@ -609,7 +609,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingTiles;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     [_popover showAfter:0.5 withTitle:@"Get Tilelist File"];
     
     [pull getFile:fileName
@@ -634,7 +634,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingProperty;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Property File"];
@@ -658,7 +658,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingParcels;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Parcel File"];
@@ -680,7 +680,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingCensus;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Census File"];
@@ -702,7 +702,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingNVMetro;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Data File"];
@@ -725,7 +725,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingAreas;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
@@ -747,7 +747,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingCrimes;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Crime File"];
@@ -773,7 +773,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingMapleGrove;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Shape Files"];
@@ -808,7 +808,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingPlan;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Planimetric File"];
@@ -832,7 +832,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingAlleyWallNew;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -856,7 +856,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingAlleyWall;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -877,7 +877,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingCurbRamp;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Curb Ramp File"];
@@ -898,7 +898,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingSewer;
-    //pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Sewer File"];
