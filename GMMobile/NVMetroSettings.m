@@ -898,13 +898,17 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     [rtn addObject:to];
     return rtn;
 }
+- (void) setCurrentTextOption:(NVMetroTextOptions*)option
+{
+    _currentTextOption = option;
+}
 
 - (void) currentTextSelection:(int)index
 {
     NSArray * textOptions = [self textValuesForFeature:_currentFeature];
     if (index < textOptions.count)
     {
-        _currentTextOption = textOptions[index];
+        self.currentTextOption = textOptions[index];
         currentTextValues[_currentFeature] = index;
     }
 }

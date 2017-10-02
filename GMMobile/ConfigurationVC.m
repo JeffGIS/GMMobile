@@ -2,6 +2,7 @@
 //  NVMobile
 
 #import "ConfigurationVC.h"
+#import "NVMetroSettings.h"
 #import "CCodeLibrary/UserDefaults.h"
 
 @interface ConfigurationVC () <UITableViewDelegate,UITableViewDataSource>
@@ -21,12 +22,13 @@
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _configurations = NSMutableArray.array;
-    [_configurations addObject:@"Good Configuration"];
-    [_configurations addObject:@"Better Configuration"];
-    [_configurations addObject:@"Desperate Configuration"];
-    [_configurations addObject:@"Last Resort Configuration"];
-    [_configurations addObject:@"Pathetic Configuration"];
-    [_configurations addObject:@"Million Dollar Configuration"];
+    [_configurations addObject:@"Basic Parcel Text|0"];
+    [_configurations addObject:@"Parcel Text With Coloring by Total EMV|1"];
+    [_configurations addObject:@"Last Sale Text With Coloring by Last Sale Price|2"];
+    [_configurations addObject:@"Build Date Text With Coloring by Build Date|3"];
+    [_configurations addObject:@"Owner Name Text With Coloring by Homestead Status|4"];
+    [_configurations addObject:@"Land Value per Acre Text With Coloring By Land Value per Acre|5"];
+    [_configurations addObject:@"Owner/Land EMV/Acres/Land EMV per Acre Text With Coloring By Land Value per Acre|6"];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -156,6 +158,57 @@ viewForHeaderInSection:(NSInteger)section
     
 }
 
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+    int iOpt = (int)cell.tag;
+    NSArray * optionsList = nil;
+    switch (iOpt)
+    {
+        default:
+        case 0:
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:0];
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+            optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[2];
+            [NVMetroSettings.sharedInstance currentTextSelection:2];
+
+            break;
+        case 1:
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:2];
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+            optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[2];
+            [NVMetroSettings.sharedInstance currentTextSelection:2];
+
+            break;
+        case 2:
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:5];
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+            optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
+            [NVMetroSettings.sharedInstance currentTextSelection:5];
+
+            break;
+        case 6://Owner/Land EMV/Acres/Land EMV per Acre
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:2];
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+            optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
+            [NVMetroSettings.sharedInstance currentTextSelection:5];
+            
+            break;
+    }
+}
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -169,7 +222,8 @@ viewForHeaderInSection:(NSInteger)section
                                       reuseIdentifier:cellIdentifier];
     }
     
-    cell.textLabel.text = _configurations[indexPath.row];
+    cell.textLabel.text = textBefore (_configurations[indexPath.row],@"|");
+    cell.tag = textAfter(_configurations[indexPath.row],@"|").integerValue;
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
     cell.backgroundColor = UIColor.whiteColor;

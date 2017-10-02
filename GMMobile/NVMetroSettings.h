@@ -99,7 +99,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 @property (nonatomic)NSMutableArray * currentValues;
 @property (nonatomic)NSArray * currentFeatureValue;
 @property CPAdjustmentValues currentAdjustmentValue;
-@property NVMetroTextOptions* currentTextOption;
+@property (nonatomic)NVMetroTextOptions* currentTextOption;
 @property (nonatomic)BOOL skipZero;
 @property (nonatomic)BOOL overUnder;
 @property int themeClassType;
@@ -114,6 +114,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 @property NSMutableArray * themeClassCounts;
 @property NSMutableArray * themeClassAve;
 
+- (void) setCurrentTextOption:(NVMetroTextOptions*)option;
 - (NSArray *) features;
 - (NSArray *) adjustmentOptions;
 - (NSString *) currentFeatureText;
@@ -131,5 +132,6 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 -(int) factorForField:(NSString *)field
               inTable:(NSString *)table
           numDecimals:(int*)pnDecimals;
+- (NSArray *) textValuesForFeature:(CPFeatures)feature;
 
 @end

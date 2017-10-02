@@ -18,7 +18,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+}
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
     [NVMetroSettings.sharedInstance setCurrentFeature:NVMetroSettings.sharedInstance.currentFeature];
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     CGFloat cornerRadius = 10.0, margin = 16.0, bigFont = 36.0, littleFont = 28.0;
@@ -302,12 +306,7 @@
                 break;
         }
     }
-}
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ConfigVC"];
 }
 
