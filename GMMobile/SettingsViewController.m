@@ -7,12 +7,9 @@
 #import "AppDelegate.h"
 
 #define INPUTBUFSIZE USHRT_MAX * 32
-#define USE_TEST_SERVER NO
+//#define USE_TEST_SERVER NO
 
 @interface SettingsViewController ()
-
-@property (nonatomic) NSMutableArray *allPlats;
-@property (nonatomic) NSInteger nextPlat;
 
 @property (weak, nonatomic) IBOutlet UISwitch *locSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *extSwitch;
@@ -22,7 +19,10 @@
 @property (weak, nonatomic) IBOutlet UISwitch *mapSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *platSwitch;
 @property (weak, nonatomic) IBOutlet UILabel *databaseSize;
-@property FTPDataPush *push;
+
+@property (nonatomic) NSMutableArray *allPlats;
+@property (nonatomic) FTPDataPush *push;
+@property NSInteger nextPlat;
 
 @end
 
@@ -609,17 +609,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingTiles;
-    pull.useTestServer = USE_TEST_SERVER;
-    
-    [_popover showAfter:0.5
-              withTitle:@"Get Tilelist File"];
+    //pull.useTestServer = USE_TEST_SERVER;
+    [_popover showAfter:0.5 withTitle:@"Get Tilelist File"];
     
     [pull getFile:fileName
     fromDirectory:@"GMMobile"
            toFile:fileName
       toDirectory:documentsDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];
-    
 }
 
 - (IBAction)loadDatabase:(id)sender
@@ -637,7 +634,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingProperty;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Property File"];
@@ -661,7 +658,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingParcels;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Parcel File"];
@@ -683,7 +680,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingCensus;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Census File"];
@@ -705,7 +702,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingNVMetro;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Data File"];
@@ -728,7 +725,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingAreas;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Area File"];
@@ -750,7 +747,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingCrimes;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Crime File"];
@@ -776,7 +773,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingMapleGrove;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Shape Files"];
@@ -811,7 +808,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingPlan;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Planimetric File"];
@@ -835,7 +832,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingAlleyWallNew;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -859,7 +856,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingAlleyWall;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get AlleyWall File"];
@@ -880,7 +877,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingCurbRamp;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Curb Ramp File"];
@@ -901,7 +898,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingSewer;
-    pull.useTestServer = USE_TEST_SERVER;
+    //pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Sewer File"];
@@ -1024,11 +1021,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 {
     NSString *CRISDetailURL = @"CRISDetail://";
     
-    [SharedDefaults.defaults saveString:@"NVMobile"
-                                 forKey:@"SourceApplication"];
-    
-    [SharedDefaults.defaults saveInteger:85
-                                  forKey:@"DetailCurrentIntersection"];
+    [SharedDefaults.defaults saveString:@"NVMobile" forKey:@"SourceApplication"];
+    [SharedDefaults.defaults saveInteger:85 forKey:@"DetailCurrentIntersection"];
     
     if ([UIApplication.sharedApplication canOpenURL:[NSURL URLWithString:CRISDetailURL]])
         [UIApplication.sharedApplication openURL:[NSURL URLWithString:CRISDetailURL]];
@@ -1046,13 +1040,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (IBAction)showBumpDetector:(id)sender
 {
-/*    GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
+    return;
+    
+    /*GSSiBumpDetector *bumpDetector = [GSSiBumpDetector showBumpDetectorWithView:self.view
                                                                    coundownTime:8
                                                                           title:@"This is the title parameter"
                                                                        delegate:self];
-#pragma unused(bumpDetector)*/
-    {
+#pragma unused(bumpDetector)
         return;
+        
         _push = FTPDataPush.push;
         _push.delegate = self;
         _push.popover = _popover;
@@ -1068,10 +1064,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                  toFile:file
             toDirectory:toDir
          deleteWhenDone:NO
-         appendFileName:NO];
-    }
+         appendFileName:NO];*/
 }
-
 
 - (void)bumpDetector:(GSSiBumpDetector *)bumpDetector
 didReturnTimeInterval:(NSString *)timeInterval

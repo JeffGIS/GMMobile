@@ -1297,6 +1297,10 @@
     FTPDataPull *pull = FTPDataPull.pull;
     pull.dataType = FTPDataJPG;
     pull.delegate = self;
+    pull.popover = _popover;
+    _popover.cancelButtonTitle = @"Cancel";
+    _popover.title = [NSString stringWithFormat:@"Downloading %@", _files[_currentFile]];
+    [_popover show];
     
     [pull getFile:_files[_currentFile]
     fromDirectory:[NSString stringWithFormat:@"MapleGrove/As-built/JPG/%@",
@@ -1306,9 +1310,13 @@
     refreshOption:FTPDataPullRefreshOptionUseFileIfExists];
 }
 
-- (void)showImageFiles
+- (void)showImage
 {
+    NSString *path = [NSString stringWithFormat:@"%@/pdfToJpgPlats/%@",
+                      UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
     
+    NVWebView *webView = [NVWebView showWebViewInView:self.view showFileAtPath:path delegate:self];
+    [webView showNextButton];
 }
 
 - (void)setupDigitizerToolbarButton:(UIButton *)button
@@ -2171,10 +2179,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 _currentFile++;
                 
                 if (_currentFile < _files.count)
-                    [self getNextFile];
+                    [self performSelector:@selector(getNextFile) withObject:nil afterDelay:0.1];
                 
                 else
-                    [self showImageFiles];
+                {
+                    _currentFile = 0;
+                    [self showImage];
+                }
                 break;
             case FTPDataPlat:{
                 CRAPI.sharedInstance.currentPlatImagePath = path;
