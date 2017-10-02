@@ -1282,7 +1282,10 @@
                 [files addObject:dirListString];
             
             for (int i = 0; i < files.count; i++)
+            {
                 files[i] = removeOpeningReturn(removeEndingReturn(textAfterLastSpace(files[i])));
+                files[i] = [files[i] stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+            }
             
             [files removeObject:@""];
             _files = files.copy;
@@ -1301,12 +1304,16 @@
     _popover.cancelButtonTitle = @"Cancel";
     _popover.title = [NSString stringWithFormat:@"Downloading %@", _files[_currentFile]];
     [_popover show];
+    NSString *toDir = [NSString stringWithFormat:@"%@/pdfToJpgPlats", UserDefaults.defaults.sharedFilePath];
+    BOOL exists = NO;
+    [NSFileManager.defaultManager fileExistsAtPath:toDir isDirectory:&exists];
+    pull.createDirectory = !exists;
     
     [pull getFile:_files[_currentFile]
     fromDirectory:[NSString stringWithFormat:@"MapleGrove/As-built/JPG/%@",
                    CRAPI.sharedInstance.selectedPDFID.stringByDeletingPathExtension]
            toFile:_files[_currentFile]
-      toDirectory:[NSString stringWithFormat:@"%@/pdfToJpgPlats", UserDefaults.defaults.sharedFilePath]
+      toDirectory:toDir
     refreshOption:FTPDataPullRefreshOptionUseFileIfExists];
 }
 
@@ -1316,7 +1323,35 @@
                       UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
     
     NVWebView *webView = [NVWebView showWebViewInView:self.view showFileAtPath:path delegate:self];
-    [webView showNextButton];
+    [webView showNextAndPrevious];
+}
+
+- (void)webViewDidRequestNextImage:(NVWebView *)webView
+{
+    if (_currentFile < (_files.count - 1))
+        _currentFile++;
+        
+    else
+        _currentFile = 0;
+    
+    NSString *path = [NSString stringWithFormat:@"%@/pdfToJpgPlats/%@",
+                      UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
+    
+    [webView updateImageViewToImageAtPath:path];
+}
+
+- (void)webViewDidRequestPreviousImage:(NVWebView *)webView
+{
+    if (_currentFile > 0)
+        _currentFile--;
+    
+    else
+        _currentFile = (int)(_files.count - 1);
+    
+    NSString *path = [NSString stringWithFormat:@"%@/pdfToJpgPlats/%@",
+                      UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
+    
+    [webView updateImageViewToImageAtPath:path];
 }
 
 - (void)setupDigitizerToolbarButton:(UIButton *)button
