@@ -1304,12 +1304,16 @@
     _popover.cancelButtonTitle = @"Cancel";
     _popover.title = [NSString stringWithFormat:@"Downloading %@", _files[_currentFile]];
     [_popover show];
+    NSString *toDir = [NSString stringWithFormat:@"%@/pdfToJpgPlats", UserDefaults.defaults.sharedFilePath];
+    BOOL exists = NO;
+    [NSFileManager.defaultManager fileExistsAtPath:toDir isDirectory:&exists];
+    pull.createDirectory = !exists;
     
     [pull getFile:_files[_currentFile]
     fromDirectory:[NSString stringWithFormat:@"MapleGrove/As-built/JPG/%@",
                    CRAPI.sharedInstance.selectedPDFID.stringByDeletingPathExtension]
            toFile:_files[_currentFile]
-      toDirectory:[NSString stringWithFormat:@"%@/pdfToJpgPlats", UserDefaults.defaults.sharedFilePath]
+      toDirectory:toDir
     refreshOption:FTPDataPullRefreshOptionUseFileIfExists];
 }
 
