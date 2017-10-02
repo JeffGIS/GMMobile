@@ -3650,7 +3650,7 @@ viewForHeaderInSection:(NSInteger)section
             break;
         case PropertyTableViewSettingPropertyReport:
             headerLabel.numberOfLines = 2;
-            headerLabel.text = @"Property Report for\nFirst Quarter 2016";
+            headerLabel.text = @"Property Report for\nSecond Quarter 2017";
             break;
         default:break;
     }

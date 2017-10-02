@@ -44,7 +44,7 @@
 }
 - (NSInteger)numRowsInSpreadsheet
 {
-    return (_propList.availablePropertyFields.count - 1);
+    return (_propList.availablePropertyFields.count - 2);
 }
 
 - (NSInteger)numColumnsInSpreadsheet
@@ -62,9 +62,9 @@
     PropertyList *proplist = _propList;
     NSArray *list = proplist.availablePropertyFields;
     
-    if (row < list.count)
+    if (row < list.count-1)
     {
-        PropFieldType ifield = [list[row] integerValue];
+        PropFieldType ifield = [list[row+1] integerValue];
         NSString *fieldName = [proplist propertyFieldName:ifield];
         
         return [fieldName stringByReplacingOccurrencesOfString:@" ("
