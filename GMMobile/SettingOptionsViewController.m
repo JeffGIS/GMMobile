@@ -668,7 +668,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)computePDFPages
 {
-    FTPDirectoryList *list = [FTPDirectoryList getListingFromFTPDomain:[CRAPI.sharedInstance getNVCRISServer]
+    FTPDirectoryList *list = [FTPDirectoryList getListingFromFTPDomain:CRAPI.sharedInstance.getNVCRISServer
                                                              directory:@"mgv/linked"
                                                               username:@"GSSiProfessionalServer"
                                                               password:@"GSSi"

@@ -8,6 +8,7 @@
 #import "CCodeLibrary/SymbolDictionary.h"
 #import "MapViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
+#import "CCodeLibrary/NVColorSet.h"
 
 @interface CurbRampDataOptions ()
 

@@ -2,7 +2,6 @@
 //  GMMobile
 
 #import "MapViewController.h"
-@import MapKit;
 #import "AppDelegate.h"
 #import "ConfigurationControl.h"
 #import "MapViewENUMS.h"
@@ -31,27 +30,53 @@
 #import "NVGeocoder.h"
 #import "CCodeLibrary/shr.h"
 #import "ConfigurationVC.h"
+#import "CCodeLibrary/shr.h"
+#import "FindViewController.h"
+#import "BoundaryData.h"
+#import "PlanimetricData.h"
+#import "PipeTrace.h"
+#import "VectorView.h"
+#import "PlatImageView.h"
+#import "PlatProfileView.h"
+#import "LayersViewController.h"
+#import "CCodeLibrary/MapToolbar.h"
+#import "MarkerInfoWindow.h"
+#import "MarkerButton.h"
+#import "PropertyList.h"
+#import "CrimeList.h"
+#import "Destinations.h"
+#import "NVDataLoader.h"
+#import "CCodeLibrary/NVAlertView.h"
+#import "ThemeLegendMapOverlay.h"
+#import "CCodeLibrary/FTPDirectoryList.h"
 
 #define MAX_VECTORVIEWS 8
 
 @interface MGVPlatData : NSObject
-@property NSString * pdfFile;
+
+@property (nonatomic, copy) NSString *pdfFile;
 @property int page;
 @property DPOINT ptUpper, ptLower;
-@property CGFloat scaleUpper, scaleLower;
-@property CGFloat rotUpper, rotLower;
-@property CGFloat imageWidth, imageHeight;
+@property CGFloat scaleUpper, scaleLower, rotUpper, rotLower, imageWidth, imageHeight;
+
 @end
 
 @implementation MGVPlatData
 
 @end
 
-@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate,NVGeocoderDelegate>
+@interface MapViewController () <NVDigitizerViewDelegate,NSURLSessionDataDelegate,NSURLSessionTaskDelegate,
+    NVPhotoControllerDelegate,NVPhotoViewDelegate,NVWebViewDelegate,NVPopoverTableViewDelegate,
+    UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate,NVGeocoderDelegate,
+    GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,
+    NVAlertViewDelegate,MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,
+    PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,
+    NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,
+    ThemeLegendMapOverlayDelegate,CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate>
 
-@property MGVPlatData *mgvData;
+@property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
-@property (nonatomic, copy) NSArray *options, *linkedList;
+@property (nonatomic, copy) NSArray *options, *linkedList, *files;
 @property (nonatomic) NSMutableArray *propertyReport, *markerArray, *pdfsArray, *insetPixArray;
 @property PropertyTableViewSetting tableViewSetting;
 @property (nonatomic) CGFloat screenSize;
@@ -59,16 +84,16 @@
 @property BOOL clearWhenDeselected, rotateZoom, legendsAreOffMap, showsPanorama, usePlatView;
 @property BOOL firstTimeAppear, firstTimeMap, noneSelected, moveDigitizer, routeTraceExists;
 @property (nonatomic, copy) NSString *selectedPID, *selectedSanPoint, *selectedSanMain, *selectedPlat, *routeMode;
-@property (nonatomic) int selectedPlatRefno, nVectorViews;
-@property (nonatomic) CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
-@property (nonatomic) CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
-@property (nonatomic) CGFloat heading, pitch, fov;
+@property int selectedPlatRefno, nVectorViews;
+@property CGFloat vectorViewZoom, mapViewLegendOffset, compassSize;
+@property CGFloat currentScreenHeight, splitScreenBorderWidth, tabBarHeight;
+@property CGFloat heading, pitch, fov;
 @property (nonatomic) VectorView *vectorView;
 @property (nonatomic) NSTimer *vectorViewTimer;
 @property (nonatomic) UIImageView *targetView, *digitizerTargetView;
 @property (nonatomic) UIView *firstView, *secondView;
 @property MapViewScreenSetting screenSetting;
-@property (nonatomic) NSInteger gestureCount, digitizerCount;
+@property NSInteger gestureCount, digitizerCount;
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
@@ -104,13 +129,12 @@
 @property (nonatomic) CrimeData *cdUpdate;
 @property (nonatomic) NSMutableString *dataString;
 @property BOOL splitPlatView, legendMinimized, keepZoomExtents, grayscaleMode;
-@property int splitPlatDirection;
+@property int splitPlatDirection, vvpass, currentFile;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 @property BOOL continueLoad, fromLegends2X;
-@property int vvpass;
 
 @end
 
@@ -1209,29 +1233,6 @@
 
 #pragma mark - EndOfViewDidAppear
 
-- (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
-                                   statusString:(NSString *)statusString
-                                      directory:(NSString *)directory
-{
-    if (status == FTPStatusOK || status == FTPStatusStop)
-        NSLog(@"CREATE DIR LIST complete for FTP directory %@", directory);
-}
-
-- (void)FTPDirectoryListDidCompleteWithStatus:(FTPStatus)status
-                                 statusString:(NSString *)statusString
-                                directoryList:(NSData *)directoryList
-{
-    if (status == FTPStatusOK && directoryList)
-    {
-        NSString *dirListString = [[NSString alloc] initWithData:directoryList
-                                                        encoding:NSUTF8StringEncoding];
-        
-        NSLog(@"%@", dirListString);
-    }
-    
-    NSLog(@"FTP Status:%li:%@", (long)status, statusString);
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
@@ -1249,6 +1250,65 @@
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
+}
+
+- (void)FTPDirectoryCreateDidCompleteWithStatus:(FTPStatus)status
+                                   statusString:(NSString *)statusString
+                                      directory:(NSString *)directory
+{
+    if (status == FTPStatusOK || status == FTPStatusStop)
+        NSLog(@"CREATE DIR LIST complete for FTP directory %@", directory);
+}
+
+- (void)FTPDirectoryListDidCompleteWithStatus:(FTPStatus)status
+                                 statusString:(NSString *)statusString
+                                directoryList:(NSData *)directoryList
+{
+    NSLog(@"FTP Status:%li:%@", (long)status, statusString);
+    
+    if (status == FTPStatusOK && directoryList)
+    {
+        NSString *dirListString = [[NSString alloc] initWithData:directoryList
+                                                        encoding:NSUTF8StringEncoding];
+        
+        if (dirListString && dirListString.length)
+        {
+            NSMutableArray *files = NSMutableArray.array;
+            
+            if ([dirListString containsString:@"\n"])
+                [files addObjectsFromArray:[dirListString componentsSeparatedByString:@"\n"]];
+            
+            else
+                [files addObject:dirListString];
+            
+            for (int i = 0; i < files.count; i++)
+                files[i] = removeOpeningReturn(removeEndingReturn(textAfterLastSpace(files[i])));
+            
+            [files removeObject:@""];
+            _files = files.copy;
+            _currentFile = 0;
+            [self getNextFile];
+        }
+    }
+}
+
+- (void)getNextFile
+{
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.dataType = FTPDataJPG;
+    pull.delegate = self;
+    
+    [pull getFile:_files[_currentFile]
+    fromDirectory:[NSString stringWithFormat:@"MapleGrove/As-built/JPG/%@",
+                   CRAPI.sharedInstance.selectedPDFID.stringByDeletingPathExtension]
+           toFile:_files[_currentFile]
+      toDirectory:[NSString stringWithFormat:@"%@/pdfToJpgPlats", UserDefaults.defaults.sharedFilePath]
+    refreshOption:FTPDataPullRefreshOptionUseFileIfExists];
+}
+
+- (void)showImageFiles
+{
+    
 }
 
 - (void)setupDigitizerToolbarButton:(UIButton *)button
@@ -1983,7 +2043,9 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     if (![ConfigurationControl.sharedInstance layer:HCLayerSewers
                                       visibleAtZoom:_mapView.camera.zoom
                                             andPass:PickPass])
+    {
         return;
+    }
     
     if (gesture.state == UIGestureRecognizerStateBegan ||
         gesture.state == UIGestureRecognizerStateChanged)
@@ -2002,23 +2064,21 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         {
             CGPoint gesturePoint = [gesture locationInView:self.view];
             CLLocationCoordinate2D gestureLocation = [_mapView.projection coordinateForPoint:gesturePoint];
-            LLPOINT llp;
+            LLPOINT llp = {0};
             llp.lat = gestureLocation.latitude;
             llp.lon = gestureLocation.longitude;
             int platRefno = 0;
             
             if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
             {
-                UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
+                UserLayerDisplay *ud = UserLayerDisplay.new;
                 ud.processingID = CRAPI.sharedInstance.keepProcessing;
-                
-                CRAPI.sharedInstance.selectedPDFID = [ud pickPDFPlat:&llp
-                                                           platRefno:&platRefno];
-           }
+                CRAPI.sharedInstance.selectedPDFID = [ud pickPDFPlat:&llp platRefno:&platRefno];
+            }
             
             else
             {
-                SewerData *sewerData = [[SewerData alloc] init];
+                SewerData *sewerData = SewerData.new;
                 platRefno = [sewerData pickSanPlat:&llp];
             }
             
@@ -2061,21 +2121,28 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         
         if (_selectedPlatRefno)
         {
-            SewerData *sd = [[SewerData alloc] init];
+            SewerData *sd = SewerData.new;
             _mgvData = nil;
             _splitPlatView = NO;
+            
             if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
             {
-                [sd loadPlat:CRAPI.sharedInstance.selectedPDFID
-                      ofType:@"pdf"
-                usingPopover:_popover
-                 andDelegate:self];
+                NSString *dir = [NSString stringWithFormat:@"MapleGrove/As-built/JPG/%@",
+                                 CRAPI.sharedInstance.selectedPDFID.stringByDeletingPathExtension];
+                
+                [FTPDirectoryList getListingFromFTPDomain:CRAPI.sharedInstance.getNVCRISServer
+                                                directory:dir
+                                                 username:@"GSSiProfessionalServer"
+                                                 password:@"GSSi"
+                                                     port:@"21"
+                                                 delegate:self];
             }
+            
             else
             {
                 
-                NSString *platID = [sd getPlatIDofType:@"storm"
-                                             fromRefno:_selectedPlatRefno];
+                NSString *platID = [sd getPlatIDofType:@"storm" fromRefno:_selectedPlatRefno];
+                
                 [sd loadPlat:platID
                       ofType:@"storm"
                 usingPopover:_popover
@@ -2086,6 +2153,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
         [self vectorViewRefresh];
     }
 }
+
 - (void)FTPdidComplete:(FTPDataType)dataType
             withStatus:(FTPStatus)status
        andStatusString:(NSString *)statusString
@@ -2099,13 +2167,19 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     {
         switch (dataType)
         {
-            case FTPDataPlat:
-            {
+            case FTPDataJPG:
+                _currentFile++;
+                
+                if (_currentFile < _files.count)
+                    [self getNextFile];
+                
+                else
+                    [self showImageFiles];
+                break;
+            case FTPDataPlat:{
                 CRAPI.sharedInstance.currentPlatImagePath = path;
                 CRAPI.sharedInstance.currentPlatType = @"storm";
-                
-                [_platView setPlatID:_selectedPlatRefno
-                             andType:PLAT_TYPE_STORM];
+                [_platView setPlatID:_selectedPlatRefno andType:PLAT_TYPE_STORM];
                 
                 if (_screenSetting == MapViewScreenSettingFullscreen && _selectedPlatRefno > 0)
                 {
@@ -2113,10 +2187,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                     [self mapToolbarDidSelectSplitScreenSetting:MapViewScreenSettingSplitScreen];
                     [_mapToolbar splitScreenSelectedSegmentIndex:MapViewScreenSettingSplitScreen];
                 }
-            }
-                break;
-            case FTPDataPDF:
-            {
+                break;}
+            case FTPDataPDF:{
                 [self removeAllPlatPDFs];
                 _usePlatView = NO;
                 [self hideMarkersAndInfoWindows:NO];
@@ -2173,21 +2245,15 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                              withScale:_mgvData.scaleLower
                               rotation:_mgvData.rotLower];
                 }
-            }
-                break;
+                break;}
             default:break;
         }
     }
     
     else
     {
-        NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
-                                                          delegate:self
-                                                             title:[NSString stringWithFormat:@"FTP Error:Cannot get %@ (%@)",
-                                                                    path.lastPathComponent, statusString]
-                                                   buttonTextArray:@[@"OK"]
-                                                  destructiveIndex:0];
-#pragma unused(alert)
+        showAlert([NSString stringWithFormat:@"FTP Error:Cannot get %@ (%@)",
+                   path.lastPathComponent, statusString]);
     }
 }
 - (void)webView:(NVWebView *)webView

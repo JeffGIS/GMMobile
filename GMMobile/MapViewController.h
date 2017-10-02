@@ -1,29 +1,11 @@
 //  MapViewController.h
 //  GMMobile
 
-#import "CCodeLibrary/CCodeLibrary.h"
-#import "CCodeLibrary/shr.h"
-#import "FindViewController.h"
-#import "PropertyData.h"
-#import "BoundaryData.h"
-#import "PlanimetricData.h"
-#import "PipeTrace.h"
-#import "VectorView.h"
-#import "PlatImageView.h"
-#import "PlatProfileView.h"
-#import "LayersViewController.h"
-#import "CCodeLibrary/MapToolbar.h"
 @import GoogleMaps;
-#import "MarkerInfoWindow.h"
-#import "MarkerButton.h"
-#import "PropertyList.h"
-#import "CrimeList.h"
-#import "Destinations.h"
-#import "NVDataLoader.h"
-#import "CCodeLibrary/NVAlertView.h"
-#import "ThemeLegendMapOverlay.h"
+@import MapKit;
+#import "PropertyData.h"
 
-@interface MapViewController : UIViewController <GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,NVAlertViewDelegate, MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,CrimeDataDelegate,GSSiPopoverViewDelegate>
+@interface MapViewController : UIViewController
 
 typedef NS_ENUM(NSInteger, NVMarkerStyle)
 {
@@ -33,12 +15,12 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 };
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic) MKMapRect cityInnerBounds;
+@property MKMapRect cityInnerBounds;
 @property BOOL fromSpreadsheet, fromLegends;
-@property (nonatomic) CLLocationCoordinate2D spreadsheetCoords;
+@property CLLocationCoordinate2D spreadsheetCoords;
 @property (nonatomic) GMSMapView *mapView;
 @property NSUInteger fromIndex;
-@property (nonatomic) NSArray<PropertyRecord *> *propArray;
+@property (nonatomic, copy) NSArray<PropertyRecord *> *propArray;
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;
