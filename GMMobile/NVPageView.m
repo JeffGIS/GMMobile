@@ -9,8 +9,10 @@
 #import "MapViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "NVPageController.h"
+#import "CCodeLibrary/NVColorSet.h"
+#import "ThemeLegendMapOverlay.h"
 
-@interface NVPageView () <UITableViewDataSource, UITableViewDelegate>
+@interface NVPageView () <UITableViewDataSource,UITableViewDelegate>
 
 @property NSUInteger numLegends, startingIndex, currentRow, currentColorPalette;
 @property (nonatomic, copy) NSArray *legends;

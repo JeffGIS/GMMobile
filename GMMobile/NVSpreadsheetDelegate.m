@@ -244,4 +244,10 @@
     return nil;
 }
 
+- (void)copyRows:(NSArray *)arrayOfRows
+          toList:(NSString *)listName
+{
+    
+}
+
 @end

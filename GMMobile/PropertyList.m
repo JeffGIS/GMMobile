@@ -288,11 +288,11 @@ NSString * GetPropListDirectory (void)
     return fields.copy;
 }
 
-- (NSString*) propertyFieldName:(PropFieldType)fieldType
+- (NSString *)propertyFieldName:(PropFieldType)fieldType
 {
     NSString *name = @"";
     
-    switch(fieldType)
+    switch (fieldType)
     {
         case PFT_LatLon:
         case PFT_END:
@@ -462,6 +462,7 @@ NSString * GetPropListDirectory (void)
         case PFT_PctResidential_qtrMile:
             name = @"PCT Residential (Qtr Mile)";
             break;
+        default:break;
     }
     
     return name;
