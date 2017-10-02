@@ -1282,7 +1282,10 @@
                 [files addObject:dirListString];
             
             for (int i = 0; i < files.count; i++)
+            {
                 files[i] = removeOpeningReturn(removeEndingReturn(textAfterLastSpace(files[i])));
+                files[i] = [files[i] stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+            }
             
             [files removeObject:@""];
             _files = files.copy;
