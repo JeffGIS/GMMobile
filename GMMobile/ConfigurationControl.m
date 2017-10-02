@@ -514,10 +514,10 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
 
     if (appID == HCConfigMetroProp)
     {
-        /*NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingNVMetro];
+        NSNumber *dsid = [NSNumber numberWithInt:GetDatabaseSettingNVMetro];
         [list addObject:dsid];
         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingCensus]];
-        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAreas]];*/
+        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingAreas]];
     }
     
     else

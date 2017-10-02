@@ -55,26 +55,25 @@
         NSLog (@"VectorView dealloc");
         NSLog (@"Vector layer released");
     }
-    //[self freeResources];
+    [self freeResources];
 }
 
 
-/*- (void)freeResources
+- (void)freeResources
 {
-    return;
     if (_bitmapData)
         free (_bitmapData);
     _bitmapData = nil;
     
-    if (_context)
-        CGContextRelease(_context);
+//    if (_context)
+//        CGContextRelease(_context);
     _context = nil;
     if (_colorSpace)
         CGColorSpaceRelease(_colorSpace);
     _colorSpace = nil;
 
 }
-CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGColorSpaceRef colorSpace, void **bmData)
+/*CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGColorSpaceRef colorSpace, void **bmData)
 {
     CGContextRef context = NULL;
     void *bitmapData = NULL;
@@ -105,8 +104,8 @@ CGContextRef createBitmapContext(CGRect rect,int pixelsWide, int pixelsHigh,CGCo
     
     *bmData = bitmapData;
     return context;
-}
-*/
+}*/
+
 
 - (void) setRegion:(GMSVisibleRegion)region
 {

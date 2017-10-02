@@ -1077,7 +1077,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         return;
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
 
-    NVMetroSettings.sharedInstance.skipZero = TRUE;
+    NVMetroSettings.sharedInstance.skipZero = FALSE;
     NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustThousandsOfDollars;
     
     switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)

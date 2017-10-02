@@ -199,7 +199,8 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     BOOL opened = [self open];
     
     [self close:opened];
-    return atoi (_version.UTF8String);
+    int rtn = atoi (_version.UTF8String);
+    return rtn;
 }
 
 - (int) censusDatasetVersion
