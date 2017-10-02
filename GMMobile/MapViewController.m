@@ -1316,7 +1316,35 @@
                       UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
     
     NVWebView *webView = [NVWebView showWebViewInView:self.view showFileAtPath:path delegate:self];
-    [webView showNextButton];
+    [webView showNextAndPrevious];
+}
+
+- (void)webViewDidRequestNextImage:(NVWebView *)webView
+{
+    if (_currentFile < (_files.count - 1))
+        _currentFile++;
+        
+    else
+        _currentFile = 0;
+    
+    NSString *path = [NSString stringWithFormat:@"%@/pdfToJpgPlats/%@",
+                      UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
+    
+    [webView updateImageViewToImageAtPath:path];
+}
+
+- (void)webViewDidRequestPreviousImage:(NVWebView *)webView
+{
+    if (_currentFile > 0)
+        _currentFile--;
+    
+    else
+        _currentFile = (int)(_files.count - 1);
+    
+    NSString *path = [NSString stringWithFormat:@"%@/pdfToJpgPlats/%@",
+                      UserDefaults.defaults.sharedFilePath, _files[_currentFile]];
+    
+    [webView updateImageViewToImageAtPath:path];
 }
 
 - (void)setupDigitizerToolbarButton:(UIButton *)button
