@@ -1808,6 +1808,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
         }
     }
+    
+    [self vectorViewRefresh];
 }
 
 - (void)markerButtonWasTapped:(MarkerButton *)marker
