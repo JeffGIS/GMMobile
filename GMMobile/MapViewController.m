@@ -153,6 +153,11 @@
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CurbRampDataOptionsVC"];
     [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"CrimeDataOptionsVC"];
     self.tabBarController.delegate = self;
+    _nvssvc = NVSpreadsheetVC.new;
+    _nvssvc.restorationIdentifier = @"NVSpreadsheet";
+    
+    _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
+                                                                                              ofType:@"png"]];
     
     if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmobile"])
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
@@ -436,6 +441,7 @@
     if (CRAPI.sharedInstance.appChanged)
     {
         [self themeLegendWasDraggedOffLeftSide];
+        [self clearMapItems];
         
         for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
         {
@@ -444,27 +450,18 @@
         }
         
         CRAPI.sharedInstance.appChanged = NO;
+        
         switch (ConfigurationControl.sharedInstance.currentApp)
         {
             case HCConfigMetroProp:
-                _nvssvc = NVSpreadsheetVC.new;
                 _ssDelegate = NVSpreadsheetDelegate.new;
                 _nvssvc.delegate = _ssDelegate;
-                _nvssvc.restorationIdentifier = @"NVSpreadsheet";
                 _nvssvc.tabBarItem.title = @"Property List";
-                
-                _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
-                                                                                                          ofType:@"png"]];
                 break;
             case HCConfigCrimes:
-                _nvssvc = NVSpreadsheetVC.new;
-                _ssDelegate = (NVSpreadsheetDelegate*)NVCrimeListDelegate.new;
+                _ssDelegate = (NVSpreadsheetDelegate *)NVCrimeListDelegate.new;
                 _nvssvc.delegate = _ssDelegate;
-                _nvssvc.restorationIdentifier = @"NVSpreadsheet";
                 _nvssvc.tabBarItem.title = @"Crime List";
-                
-                _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
-                                                                                                          ofType:@"png"]];
                 break;
             default:break;
         }
@@ -1811,6 +1808,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             }
         }
     }
+    
+    [self vectorViewRefresh];
 }
 
 - (void)markerButtonWasTapped:(MarkerButton *)marker

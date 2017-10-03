@@ -56,14 +56,12 @@
     _selectFromMapButton.enabled = NO;
     _selectFromMapButton.alpha = 0.4;
     
-    [self setupButton:_returnButton
-                title:@"< Return"];
+    [self setupButton:_returnButton title:@"< Return"];
     
     [self setupButton:_offsetButton
                 title:[NSString stringWithFormat:@"Offset:%@", CRAPI.sharedInstance.offsetForBounds]];
     
-    [self setupButton:_selectFromMapButton
-                title:@"Select From Map"];
+    [self setupButton:_selectFromMapButton title:@"Select From Map"];
     
     _polylineView = NVConstrainedView.new;
     _maskBoundsView = NVConstrainedView.new;

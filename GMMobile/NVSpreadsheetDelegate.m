@@ -35,8 +35,9 @@
 
 - (NSString *)currentListName
 {
-    return [PropertyList getCurrentPropertyListName];
+    return PropertyList.getCurrentPropertyListName;
 }
+
 - (void) closeList
 {
     [_propList close:TRUE];
