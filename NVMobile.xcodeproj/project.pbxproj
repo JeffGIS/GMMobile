@@ -89,6 +89,7 @@
 		69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47851C74CEFC0042E47F /* singleArrowForward.png */; };
 		69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47861C74CEFC0042E47F /* doubleArrowForward.png */; };
 		69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47871C74CEFC0042E47F /* doubleArrowReverse.png */; };
+		69DA9C701F84150A00D38A5D /* NVAccessIcon1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA9C6F1F8414EE00D38A5D /* NVAccessIcon1024.png */; };
 		69DB8AD81BE3D82A009372AC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD71BE3D82A009372AC /* libz.tbd */; };
 		69DB8ADA1BE3D83D009372AC /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8AD91BE3D83D009372AC /* libicucore.tbd */; };
 		69DB8ADC1BE3D862009372AC /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADB1BE3D862009372AC /* libc++.tbd */; };
@@ -365,6 +366,7 @@
 		69DA47851C74CEFC0042E47F /* singleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowForward.png; sourceTree = "<group>"; };
 		69DA47861C74CEFC0042E47F /* doubleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowForward.png; sourceTree = "<group>"; };
 		69DA47871C74CEFC0042E47F /* doubleArrowReverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowReverse.png; sourceTree = "<group>"; };
+		69DA9C6F1F8414EE00D38A5D /* NVAccessIcon1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NVAccessIcon1024.png; sourceTree = "<group>"; };
 		69DB8AD71BE3D82A009372AC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		69DB8AD91BE3D83D009372AC /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		69DB8ADB1BE3D862009372AC /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -642,13 +644,14 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				695F860F1F7C4895002018D8 /* config.png */,
-				69FDA4351EE7838A00BA9735 /* glossary.png */,
-				69FDA4331EE77D4600BA9735 /* versionHistory.png */,
+				69DA9C6F1F8414EE00D38A5D /* NVAccessIcon1024.png */,
 				691BC10A1F7557C4007E0423 /* NVSdwkIcon1024.png */,
 				6948ED331EC50D7A00809632 /* NVMobileIcon1024.png */,
 				6948ED2F1EC50A6600809632 /* NVMetroIcon1024.png */,
 				6948ED2D1EC50A5500809632 /* NVCrimeIcon1024.jpg */,
+				695F860F1F7C4895002018D8 /* config.png */,
+				69FDA4351EE7838A00BA9735 /* glossary.png */,
+				69FDA4331EE77D4600BA9735 /* versionHistory.png */,
 				69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */,
 				695A9C201EA173F400F1B5D7 /* copyIcon.png */,
 				6918B2251E9F4D270091C434 /* clockIcon.png */,
@@ -1145,6 +1148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69DA9C701F84150A00D38A5D /* NVAccessIcon1024.png in Resources */,
 				695F86101F7C48A9002018D8 /* config.png in Resources */,
 				69A72DDB1F7C0B3B0094758C /* NVMobile_VersionHistory.pdf in Resources */,
 				692537161F7ACFF0003F5ABA /* NVSdwkIcon1024.png in Resources */,
