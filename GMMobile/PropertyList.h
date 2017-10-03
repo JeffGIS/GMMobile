@@ -131,5 +131,6 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (NSString *) getFieldAverage:(PropFieldType)fieldType;
 - (NSString *) getFieldTotal:(PropFieldType)fieldType;
+- (Bool) parcelInPropertyList:(NSString *)PIN;
 
 @end

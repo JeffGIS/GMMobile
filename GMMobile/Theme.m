@@ -87,6 +87,8 @@
     {
         case MetroPropTheme:
         {
+            if (NVMetroSettings.sharedInstance.numThemeClasses < 1)
+                break;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;

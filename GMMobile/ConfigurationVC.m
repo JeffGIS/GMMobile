@@ -165,6 +165,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     int iOpt = (int)cell.tag;
     NSArray * optionsList = nil;
     NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+    NVMetroSettings.sharedInstance.skipZero = FALSE;
+
     switch (iOpt)
     {
         default:
@@ -193,6 +195,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
             [NVMetroSettings.sharedInstance currentTextSelection:5];
+            NVMetroSettings.sharedInstance.skipZero = TRUE;
             
             break;
         case 3://Build Date Text\nColoring by Build Date
@@ -202,6 +205,8 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
             [NVMetroSettings.sharedInstance currentTextSelection:6];
+            NVMetroSettings.sharedInstance.skipZero = TRUE;
+
             
             break;
         case 4://Owner Name Text\nColoring by Homestead Status
