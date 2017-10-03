@@ -127,7 +127,7 @@
     overUnderSwitch.translatesAutoresizingMaskIntoConstraints = NO;
     overUnderSwitch.tintColor = UIColor.redColor;
     overUnderSwitch.onTintColor = UIColor.greenColor;
-    overUnderSwitch.on = NO;
+    overUnderSwitch.on = NVMetroSettings.sharedInstance.overUnder;
     
     [overUnderSwitch addTarget:self
                         action:@selector(overUnderSwitchTapped:)

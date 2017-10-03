@@ -31,6 +31,8 @@ typedef NS_ENUM(NSInteger, CPParcelValues)
     CPParcelVBuildEMV,
     CPParcelVLandEMV,
     CPParcelVLastSalePrice,
+    CPParcelVHomestead,
+    CPParcelVBuildDate,
     CPParcelVCount
 };
 

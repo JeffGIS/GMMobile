@@ -102,9 +102,11 @@
             NSNumber * rangeAveTop = NVMetroSettings.sharedInstance.themeClassAve[thm.numDesiredClasses-1];
             NSNumber * rangeAveBot = NVMetroSettings.sharedInstance.themeClassAve[0];
             double range = rangeAveTop.doubleValue - rangeAveBot.doubleValue;
-            if (range <= 0)
+           // if (range <= 0)
                 range = themeMax.integerValue - themeMin.integerValue;
+            range = thm.numDesiredClasses;
             int targetClass = -1;
+            NSString * curPID = CRAPI.sharedInstance.currentPID;
             if (NVMetroSettings.sharedInstance.overUnder && CRAPI.sharedInstance.currentPID)
             {
                 long long intVal = IDNINT64(NVMetroSettings.sharedInstance.targetValue);
@@ -112,11 +114,16 @@
                 {
                     NSNumber * min = NVMetroSettings.sharedInstance.themeClassMin[iClass];
                     NSNumber * max = NVMetroSettings.sharedInstance.themeClassMax[iClass];
-                    if (intVal >=  min.longLongValue && NVMetroSettings.sharedInstance.targetValue <=  max.longLongValue)
+                    long long minl = min.longLongValue;
+                    long long maxl = max.longLongValue;
+                    
+                    if (intVal >=  minl && intVal <=  maxl)
+                    {
                         targetClass = iClass;
+                    }
                 }
             }
-
+            NSMutableArray * colors = NSMutableArray.new;
             for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
             {
                 NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
@@ -137,14 +144,27 @@
 //                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
                 double intensity = 0;
                 if (range > 0)
-                    intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
+                    //intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
+                    //intensity = 1.0-(class.aveValue - themeMin.doubleValue)/range;
+                    intensity = 1.0 - (iClass + 0.5)/ range;
                 class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
                 if (iClass == targetClass)
                     class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
                 else if (iClass < targetClass)
                     class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
                 [thm.classes addObject:class];
+                UIColor * clr = class.color.copy;
+                [colors addObject:clr];
             }
+            if (targetClass > 0)
+            {
+                for (int iClass=0;iClass < targetClass; iClass++)
+                {
+                    ThemeClass *tc = thm.classes[iClass];
+                    tc.color = colors[targetClass-iClass-1];
+                }
+            }
+        
             [thm adjustClassTitles];
         }
             break;
@@ -179,7 +199,7 @@
                         targetClass = iClass;
                 }
             }
-            
+            NSMutableArray * colors = NSMutableArray.new;
             for (int iClass=0;iClass < thm.numDesiredClasses;iClass++)
             {
                 NSNumber * count = NVMetroSettings.sharedInstance.themeClassCounts[iClass];
@@ -206,7 +226,18 @@
                     class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
                 else if (iClass < targetClass)
                     class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
+                
                 [thm.classes addObject:class];
+                UIColor * clr = class.color.copy;
+                [colors addObject:clr];
+            }
+            if (targetClass > 0)
+            {
+                for (int iClass=0;iClass < targetClass; iClass++)
+                {
+                    ThemeClass *tc = thm.classes[iClass];
+                    tc.color = colors[targetClass-iClass-1];
+                }
             }
             [thm adjustClassTitles];
         }

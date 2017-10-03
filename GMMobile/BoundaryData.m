@@ -908,7 +908,12 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     double numPerClass = (double)numValues / maxClass;
     double classTot = 0;
     
-    if (NVMetroSettings.sharedInstance.themeClassType > -1)
+    if (maxClass < 1)
+    {
+        NVMetroSettings.sharedInstance.numThemeClasses = 0;
+        return 0;
+    }
+    if (NVMetroSettings.sharedInstance.themeClassType > 0)
     {
         NSString * query = @"SELECT ID,Value FROM SORTEDVALUES ORDER BY Value";
         SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
@@ -958,12 +963,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         classMin[0] = minVal;
         for (int iclass = 0;iclass < maxClass-1;iclass++)
         {
-            classMax[iclass] = IDNINT64 ((iclass+1) * classInc);
+            classMax[iclass] = IDNINT64 (minVal + (iclass+1) * classInc);
+            if (classMax[iclass] >= maxVal)
+                classMax[iclass]--;
             classMin[iclass+1] = classMax[iclass]+1;
         }
         classMax[maxClass-1] = IDNINT64 (maxVal);
     }
-    if (!NVMetroSettings.sharedInstance.themeClassType)
+    /*if (!NVMetroSettings.sharedInstance.themeClassType)
     {
         NVMetroSettings.sharedInstance.numThemeClasses = maxClass;
         double maxVal2 = maxVal;//d95percentValue;
@@ -977,7 +984,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         }
         classMax[maxClass-1] = IDNINT64 (maxVal);
         classAve[maxClass-1] = (classMin[maxClass-1] + classMax[maxClass-1])/2;
-    }
+    }*/
     NVMetroSettings.sharedInstance.valueMultiplier = factor;
     NVMetroSettings.sharedInstance.themeClassCounts = NSMutableArray.new;
     NVMetroSettings.sharedInstance.themeClassMin = NSMutableArray.new;
@@ -1073,12 +1080,13 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     double screenAreaInAcres = LLRectInSQMeters (LLCornerPointsFromCornerPoints(latlonCornerPoints)) * ACRES_PER_SQMETER;
     double screenAreaInPixels = (pvbounds->xmx - pvbounds->xmn) * (pvbounds->ymx - pvbounds->ymn);
     double minDisplayAreaInAcres = 4 * screenAreaInAcres / screenAreaInPixels;
+    Bool valuesAreInteger = TRUE;
     if (_pass == DataPass && !field.length)
         return;
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
 
     NVMetroSettings.sharedInstance.skipZero = FALSE;
-    NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustThousandsOfDollars;
+    //NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustThousandsOfDollars;
     
     switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
     {
@@ -1250,10 +1258,29 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         MNMXCORD bounds;
         long long ID = sqlite3_column_int64(statement,i++);
         dc.refno = ID;
-        double dataValue = sqlite3_column_double(statement,i++);
+        double dataValue = 0;
         NSArray * tempArray = [field componentsSeparatedByString:@","];
-        for (int ival = 1;ival < tempArray.count;ival++)
-            dataValue += sqlite3_column_double(statement,i++);
+        for (int ival = 0;ival < tempArray.count;ival++)
+        {
+            double v = 0;
+            LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
+            if (!strcmp (type,"CHAR(1)"))
+            {
+                LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
+                if (atob (cval))
+                    v = 1;
+            }
+            else if (!strcmp (type,"INT"))
+            {
+                v = sqlite3_column_int(statement,i++);
+            }
+            else
+            {
+                v = sqlite3_column_double(statement,i++);
+                valuesAreInteger = FALSE;
+            }
+            dataValue += v;
+        }
         double landArea = sqlite3_column_double(statement,i++);
         if (isParcel)
         {
@@ -1464,8 +1491,13 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     if (_pass == DataPass)
     {
         Theme * thm = themes.themeList[0];
+        int maxClasses = 10;
+        if (valuesAreInteger)
+        {
+            maxClasses = min (maxClasses,maxValue - minValue + 1);
+        }
         long long maxValID = [self getClassBounds:numValues
-                  maxClasses:10
+                  maxClasses:maxClasses
                     minValue:minValue
                     maxValue:maxValue
                                            factor:factor

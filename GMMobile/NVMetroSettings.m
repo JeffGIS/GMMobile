@@ -425,6 +425,12 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
             case CPParcelVLastSalePrice:
                 [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Last Sale Price (K)","SALE_VALUE",(int)value]];
                 break;
+            case CPParcelVHomestead:
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Homestead","HOMESTEAD",(int)value]];
+                break;
+            case CPParcelVBuildDate:
+                [rtn addObject:[NSString stringWithFormat:@"%s\x03%s\x04%i","Build Date","YEAR_BUILT",(int)value]];
+                break;
             case CPParcelVCount:
                 break;
         }
@@ -856,6 +862,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Auto Text",i++];
     to.numTextFields = -1;
     [rtn addObject:to];
+    
     to = NVMetroTextOptions.new;
     to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Total EMV/Taxpayer",i++];
     to.numTextFields = 4;
@@ -882,6 +889,13 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     to.numTextFields = 5;
     to.fields = @"SALE_VALUE,SALE_DATE,OWNER_NAME,OWNER_MORE,TAX_NAME";
     to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustThousandDollars],[NSNumber numberWithInt:TXTAdjustDate],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames],[NSNumber numberWithInt:TXTAdjustOwnerNames], nil];
+    [rtn addObject:to];
+    
+    to = NVMetroTextOptions.new;
+    to.desc = [NSString stringWithFormat:@"%s\x03\x04%i","Build Date",i++];
+    to.numTextFields = 1;
+    to.fields = @"BUILD_DATE";
+    to.formats = [NSArray arrayWithObjects:[NSNumber numberWithInt:TXTAdjustCountNoZero], nil];
     [rtn addObject:to];
     return rtn;
 }
