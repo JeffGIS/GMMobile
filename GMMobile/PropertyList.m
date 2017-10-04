@@ -645,6 +645,35 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     return propNums.copy;
 }
 
+- (NSArray*) getPIDS
+{
+    NSMutableArray * pids = [[NSMutableArray alloc]init];
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",PFT_PIN];
+    
+    BOOL opened = [self open];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR val;
+        
+        val = (LPSTR)sqlite3_column_blob(statement, 0);
+        if (val)
+        {
+            NSString * value = [NSString stringWithFormat:@"%s",val];
+            [pids addObject:value];
+        }
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    [self close:opened];
+    
+    return pids.copy;
+}
+
 + (void) deleteProperty:(NSInteger)propNum
 {
     
@@ -696,6 +725,41 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
     return;
 }
+
+- (Bool) parcelInPropertyList:(NSString *)PIN
+{
+    Bool rtn = FALSE;
+    NSString *value = @"";
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",PFT_PIN];
+    
+    BOOL opened = [self open];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR val;
+        
+        val = (LPSTR)sqlite3_column_blob(statement, 0);
+        if (val)
+        {
+            value = [NSString stringWithFormat:@"%s",val];
+            if ([PIN isEqualToString:value])
+            {
+                rtn = TRUE;
+                break;
+            }
+        }
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    [self close:opened];
+    
+    return rtn;
+}
+
 
 - (NSString *) getFieldValue:(NSInteger)propNum
                         type:(PropFieldType)fieldType
@@ -1025,16 +1089,65 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (void)setZoomValues:(NSInteger)propNum forRow:(NSInteger)row
 {
     BOOL opened = [self open];
+    if (propNum == -1)
+    {
+        NSString * value = [self getFieldValue:propNum
+                                          type:PFT_LatLon];
+        PropertyData *pd = PropertyData.new;
+        NSArray * pids = [self getPIDS];
+        MNMXCORD fullBounds;
+        DBoundsInit(&fullBounds);
+        for (NSString *PID in pids)
+        {
+            MNMXCORD bounds = [pd getBoundsForPID:PID];
+            AddMinMaxD (&fullBounds, &bounds);
+        }
+        NVMetroSettings.sharedInstance.savedVisibleBounds = fullBounds;
+        LLPOINT center;
+        center.lat = (fullBounds.ymn + fullBounds.ymx) / 2;
+        center.lon = (fullBounds.xmn + fullBounds.xmx) / 2;
+        ConfigurationControl.sharedInstance.MapitTargetCenterPoint = center;
+        LLPOINT p1, p2;
+        p1.lat = fullBounds.ymn;
+        p1.lon = fullBounds.xmn;
+        p2.lat = fullBounds.ymx;
+        p2.lon = fullBounds.xmx;
+        double dist = ArcDistanceLL(p1,p2) * 1.2;
+        double radius = dist / METERS_PER_MILE;
+        ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = radius;
+        [self close:opened];
+        return;
+    }
+    NSString * PID = [self getFieldValue:propNum
+                                    type:PFT_PIN];
+    if (row == 1)
+    {
+        NSString * value = [self getFieldValue:propNum
+                                          type:PFT_LatLon];
+        ConfigurationControl.sharedInstance.MapitTargetCenterPoint = LLPOINTFromString (value);
+        PropertyData *pd = PropertyData.new;
+        MNMXCORD bounds = [pd getBoundsForPID:PID];
+        NVMetroSettings.sharedInstance.savedVisibleBounds = bounds;
+        LLPOINT p1, p2;
+        p1.lat = bounds.ymn;
+        p1.lon = bounds.xmn;
+        p2.lat = bounds.ymx;
+        p2.lon = bounds.xmx;
+        double dist = ArcDistanceLL(p1,p2) * 1.5;
+        double radius = dist / METERS_PER_MILE;
+        ConfigurationControl.sharedInstance.MapitCirularBoundaryRadiusInMiles = radius;
+        [self close:opened];
+        return;
+    }
     NSArray *fields = [self availablePropertyFields];
     NSNumber *field = fields[row];
     PropFieldType ifield = field.integerValue;
-    NSString * PID = [self getFieldValue:propNum
-                                      type:PFT_PIN];
     ConfigurationControl.sharedInstance.MapitPID = PID;
     ConfigurationControl.sharedInstance.currentPropSheetFieldType = ifield;
     ConfigurationControl.sharedInstance.MapitBoundaryOpt = [self getBoundaryTypeForField:ifield];
     NVMetroSettings.sharedInstance.currentFeatureSaved = [self setFeatureTypeForField:ifield];
     NVMetroSettings.sharedInstance.savedVisibleBounds = CRAPI.sharedInstance.lastViewBounds;
+
     if (ConfigurationControl.sharedInstance.MapitBoundaryOpt == MAPIT_CIRCULAR)
     {
         NSString * value = [self getFieldValue:propNum

@@ -31,6 +31,8 @@ typedef NS_ENUM(NSInteger, CPParcelValues)
     CPParcelVBuildEMV,
     CPParcelVLandEMV,
     CPParcelVLastSalePrice,
+    CPParcelVHomestead,
+    CPParcelVBuildDate,
     CPParcelVCount
 };
 
@@ -77,6 +79,13 @@ typedef NS_ENUM(NSInteger, AreaOutlineTypes)
     AreaOutlineDark,
 };
 
+typedef NS_ENUM(NSInteger, PropertyListDisplayTypes)
+{
+    PLD_PINMap,
+    PLD_Tags,
+    PLD_Areas,
+};
+
 
 #define MAX_NVM_TEXT_FIELDS 16
 
@@ -113,6 +122,7 @@ NSString * formatText (LPSTR text,NSNumber * format,double acres);
 @property NSMutableArray * themeClassMax;
 @property NSMutableArray * themeClassCounts;
 @property NSMutableArray * themeClassAve;
+@property int propertyListDisplayType;
 
 - (void) setCurrentTextOption:(NVMetroTextOptions*)option;
 - (NSArray *) features;

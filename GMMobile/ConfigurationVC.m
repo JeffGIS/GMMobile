@@ -22,13 +22,13 @@
     
     self.view.backgroundColor = UserDefaults.defaults.appleBlue;
     _configurations = NSMutableArray.array;
-    [_configurations addObject:@"Basic Parcel Text|0"];
-    [_configurations addObject:@"Parcel Text With Coloring by Total EMV|1"];
-    [_configurations addObject:@"Last Sale Text With Coloring by Last Sale Price|2"];
-    [_configurations addObject:@"Build Date Text With Coloring by Build Date|3"];
-    [_configurations addObject:@"Owner Name Text With Coloring by Homestead Status|4"];
-    [_configurations addObject:@"Land Value per Acre Text With Coloring By Land Value per Acre|5"];
-    [_configurations addObject:@"Owner/Land EMV/Acres/Land EMV per Acre Text With Coloring By Land Value per Acre|6"];
+    [_configurations addObject:@"Basic Parcel Text\nNo Coloring|0"];
+    [_configurations addObject:@"Basic Parcel Text\nColoring by Total EMV|1"];
+    [_configurations addObject:@"Last Sale Text\nColoring by Last Sale Price|2"];
+    [_configurations addObject:@"Build Date Text\nColoring by Build Date|3"];
+    [_configurations addObject:@"Owner Name Text\nColoring by Homestead Status|4"];
+    [_configurations addObject:@"Land Value Text\nColoring By Land Value per Acre|5"];
+    [_configurations addObject:@"Owner/Land EMV/Acres/Land EMV Text\nColoring By Land Value per Acre|6"];
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
@@ -164,65 +164,96 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
     int iOpt = (int)cell.tag;
     NSArray * optionsList = nil;
+    NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+    NVMetroSettings.sharedInstance.skipZero = FALSE;
+
     switch (iOpt)
     {
         default:
-        case 0:
+        case 0://Basic Parcel Text\nNo Coloring
             NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
             optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
             [NVMetroSettings.sharedInstance setCurrentValue:0];
-            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[2];
             [NVMetroSettings.sharedInstance currentTextSelection:2];
 
             break;
-        case 1:
+        case 1://Basic Parcel Text\nColoring by Total EMV
             NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
             optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
             [NVMetroSettings.sharedInstance setCurrentValue:2];
-            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[2];
             [NVMetroSettings.sharedInstance currentTextSelection:2];
 
             break;
-        case 2:
+        case 2://Last Sale Text\nColoring by Last Sale Price
             NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
             optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
             [NVMetroSettings.sharedInstance setCurrentValue:5];
-            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
             [NVMetroSettings.sharedInstance currentTextSelection:5];
-
+            NVMetroSettings.sharedInstance.skipZero = TRUE;
+            
             break;
-        case 6://Owner/Land EMV/Acres/Land EMV per Acre
+        case 3://Build Date Text\nColoring by Build Date
             NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
             optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
-            [NVMetroSettings.sharedInstance setCurrentValue:2];
-            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustRawCounts;
+            [NVMetroSettings.sharedInstance setCurrentValue:7];
+            optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
+            [NVMetroSettings.sharedInstance currentTextSelection:6];
+            NVMetroSettings.sharedInstance.skipZero = TRUE;
+
+            
+            break;
+        case 4://Owner Name Text\nColoring by Homestead Status
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:6];
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
             [NVMetroSettings.sharedInstance currentTextSelection:5];
             
             break;
+        case 5://Land Value Text\nColoring By Land Value per Acre
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:4];
+             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
+            [NVMetroSettings.sharedInstance currentTextSelection:3];
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustCountPerAcre;
+            break;
+        case 6://Owner/Land EMV/Acres/Land EMV Text\nColoring By Land Value per Acre
+            NVMetroSettings.sharedInstance.currentFeature = CPFParcels;
+            optionsList = [NVMetroSettings.sharedInstance valuesForFeature:CPFParcels];
+            [NVMetroSettings.sharedInstance setCurrentValue:4];
+            optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
+            //NVMetroSettings.sharedInstance.currentTextOption = optionsList[5];
+            [NVMetroSettings.sharedInstance currentTextSelection:4];
+            NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustCountPerAcre;
+            break;
     }
 }
+
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"CustomCell";
     
-    UITableViewCell *cell = (UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    UITableViewCell *cell = nil;//(UITableViewCell *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:cellIdentifier];
     }
-    
-    cell.textLabel.text = textBefore (_configurations[indexPath.row],@"|");
+    NSString * label = textBefore (_configurations[indexPath.row],@"|");
+    cell.textLabel.text = textBefore (label,@"\n");
+    cell.detailTextLabel.text = textAfter (label,@"\n");
     cell.tag = textAfter(_configurations[indexPath.row],@"|").integerValue;
     cell.textLabel.textColor = UIColor.blackColor;
     cell.textLabel.font = _font;
