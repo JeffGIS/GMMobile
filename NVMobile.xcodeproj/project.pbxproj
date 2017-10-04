@@ -73,7 +73,6 @@
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
 		699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699F33BB1D6232AE0074BDFD /* WebKit.framework */; };
-		69A72DDB1F7C0B3B0094758C /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69A72DDA1F7C0B230094758C /* NVMobile_VersionHistory.pdf */; };
 		69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */; };
 		69B46EFE1BC215F100BB7724 /* destinations.png in Resources */ = {isa = PBXBuildFile; fileRef = 69B46EFD1BC215F100BB7724 /* destinations.png */; };
 		69BDC4831EA5447E006921B1 /* whiteQuestionMark.png in Resources */ = {isa = PBXBuildFile; fileRef = 69BDC4821EA5447E006921B1 /* whiteQuestionMark.png */; };
@@ -85,6 +84,7 @@
 		69CE00FA1C615F2A00DC56E2 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69CE00F91C615F2A00DC56E2 /* Launch Screen.storyboard */; };
 		69CE9D721C11CCCF00BF7BFF /* CurbRampDataOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE9D711C11CCCF00BF7BFF /* CurbRampDataOptions.m */; };
 		69D4C30A1F06C23E00051E1C /* NVPanoramaView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69D4C3061F06BA1700051E1C /* NVPanoramaView.m */; };
+		69D7939B1F84A29500556F73 /* NVMobile_VersionHistory.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69D7939A1F84A28400556F73 /* NVMobile_VersionHistory.pdf */; };
 		69DA47881C74CEFC0042E47F /* singleArrowReverse.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47841C74CEFC0042E47F /* singleArrowReverse.png */; };
 		69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47851C74CEFC0042E47F /* singleArrowForward.png */; };
 		69DA478A1C74CEFC0042E47F /* doubleArrowForward.png in Resources */ = {isa = PBXBuildFile; fileRef = 69DA47861C74CEFC0042E47F /* doubleArrowForward.png */; };
@@ -346,7 +346,6 @@
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
 		699F33BB1D6232AE0074BDFD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		69A72DDA1F7C0B230094758C /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		69B46EFA1BC2140E00BB7724 /* DestinationsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DestinationsViewController.h; sourceTree = "<group>"; };
 		69B46EFB1BC2140E00BB7724 /* DestinationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DestinationsViewController.m; sourceTree = "<group>"; };
 		69B46EFD1BC215F100BB7724 /* destinations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = destinations.png; sourceTree = "<group>"; };
@@ -362,6 +361,7 @@
 		69D2C7EF1E5209CC0040FCF9 /* landuse.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = landuse.slt; sourceTree = "<group>"; };
 		69D4C3051F06BA1700051E1C /* NVPanoramaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVPanoramaView.h; sourceTree = "<group>"; };
 		69D4C3061F06BA1700051E1C /* NVPanoramaView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVPanoramaView.m; sourceTree = "<group>"; };
+		69D7939A1F84A28400556F73 /* NVMobile_VersionHistory.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVMobile_VersionHistory.pdf; sourceTree = "<group>"; };
 		69DA47841C74CEFC0042E47F /* singleArrowReverse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowReverse.png; sourceTree = "<group>"; };
 		69DA47851C74CEFC0042E47F /* singleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = singleArrowForward.png; sourceTree = "<group>"; };
 		69DA47861C74CEFC0042E47F /* doubleArrowForward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doubleArrowForward.png; sourceTree = "<group>"; };
@@ -972,7 +972,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				69A72DDA1F7C0B230094758C /* NVMobile_VersionHistory.pdf */,
+				69D7939A1F84A28400556F73 /* NVMobile_VersionHistory.pdf */,
 				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
 				BB2B13921D6F78B10072957F /* upperlower.txt */,
@@ -1148,9 +1148,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69D7939B1F84A29500556F73 /* NVMobile_VersionHistory.pdf in Resources */,
 				69DA9C701F84150A00D38A5D /* NVAccessIcon1024.png in Resources */,
 				695F86101F7C48A9002018D8 /* config.png in Resources */,
-				69A72DDB1F7C0B3B0094758C /* NVMobile_VersionHistory.pdf in Resources */,
 				692537161F7ACFF0003F5ABA /* NVSdwkIcon1024.png in Resources */,
 				BB8B96A21E85933100B6A9F7 /* TheftFromAuto.png in Resources */,
 				691B5DCC1E520E3300C90383 /* landuse.slt in Resources */,
