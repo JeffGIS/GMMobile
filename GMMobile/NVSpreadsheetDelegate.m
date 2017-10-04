@@ -9,7 +9,7 @@
 
 @interface NVSpreadsheetDelegate ()
 
-@property PropertyList *propList;
+@property (nonatomic) PropertyList *propList;
 
 @end
 

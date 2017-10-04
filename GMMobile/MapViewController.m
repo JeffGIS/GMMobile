@@ -132,6 +132,7 @@
 @property int splitPlatDirection, vvpass, currentFile;
 @property NVMarkerStyle markerStyle;
 @property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
+@property (nonatomic) NVCrimeListDelegate *crimeDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 @property BOOL continueLoad, fromLegends2X;
@@ -155,12 +156,20 @@
     self.tabBarController.delegate = self;
     _nvssvc = NVSpreadsheetVC.new;
     _nvssvc.restorationIdentifier = @"NVSpreadsheet";
+    _ssDelegate = NVSpreadsheetDelegate.new;
+    _crimeDelegate = NVCrimeListDelegate.new;
     
     _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
                                                                                               ofType:@"png"]];
     
-    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmobile"])
+    if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmobile"] &&
+        ![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionaccess"])
+    {
         [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
+        
+        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionaccess"])
+            [NVTabBarEdit tabBarController:self.tabBarController setText:@"Projects" forViewControllerWithID:@"ApplicationsVC"];
+    }
     
     [NSNotificationCenter.defaultCenter addObserver:self
                                            selector:@selector(becameActive:)
@@ -454,13 +463,11 @@
         switch (ConfigurationControl.sharedInstance.currentApp)
         {
             case HCConfigMetroProp:
-                _ssDelegate = NVSpreadsheetDelegate.new;
                 _nvssvc.delegate = _ssDelegate;
                 _nvssvc.tabBarItem.title = @"Property List";
                 break;
             case HCConfigCrimes:
-                _ssDelegate = (NVSpreadsheetDelegate *)NVCrimeListDelegate.new;
-                _nvssvc.delegate = _ssDelegate;
+                _nvssvc.delegate = _crimeDelegate;
                 _nvssvc.tabBarItem.title = @"Crime List";
                 break;
             default:break;

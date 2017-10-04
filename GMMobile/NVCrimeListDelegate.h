@@ -3,6 +3,6 @@
 
 #import "CCodeLibrary/NVSpreadsheetVC.h"
 
-@interface NVCrimeListDelegate : NSObject<NVSpreadsheetVCDelegate>
+@interface NVCrimeListDelegate : NSObject <NVSpreadsheetVCDelegate>
 
 @end
