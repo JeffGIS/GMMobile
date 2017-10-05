@@ -90,6 +90,7 @@
     
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
+    HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
     ConfigurationControl.sharedInstance.currentApp = HCConfigFromSlowValues;
     ConfigurationControl.sharedInstance.currentMapitBaseLayer = baseLayer;
     [themes setAppThemes];
@@ -218,6 +219,7 @@
         free (bmData);
     if (_colorConversionBmData)
         free (_colorConversionBmData);
+    ConfigurationControl.sharedInstance.currentApp = saveConfig;
 }
 
 - (int) getColorsFromTheme:(Theme*)theme

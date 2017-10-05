@@ -90,7 +90,8 @@ static int ii=0;
     {
         case MetroPropTheme:
         {
-            if (NVMetroSettings.sharedInstance.themeClassMin.count < 1)
+            if (NVMetroSettings.sharedInstance.themeClassMin.count < 1 ||
+                NVMetroSettings.sharedInstance.numThemeClasses < 1)
                 return thm;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
