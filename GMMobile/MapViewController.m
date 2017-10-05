@@ -651,14 +651,24 @@
     
     if (_fromSpreadsheet)
     {
-        [ConfigurationControl.sharedInstance setApp:HCConfigFromSpreadsheet];
+        if (!CRAPI.sharedInstance.justZoom)
+        {
+            [ConfigurationControl.sharedInstance setApp:HCConfigFromSpreadsheet];
+            
+            self.tabBarController.tabBar.hidden = YES;
+            [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
+            _mapView.userInteractionEnabled = NO;
+            [self setMapType];
+            _compass.hidden = YES;
+            [self hideMarkersAndInfoWindows:NO];
+        }
         
-        self.tabBarController.tabBar.hidden = YES;
-        [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
-        _mapView.userInteractionEnabled = NO;
-        [self setMapType];
-        _compass.hidden = YES;
-        [self hideMarkersAndInfoWindows:NO];
+        else
+        {
+            [self zoomToBounds:NVMetroSettings.sharedInstance.savedVisibleBounds];
+            CRAPI.sharedInstance.justZoom = NO;
+            _fromSpreadsheet = NO;
+        }
     }
     
     else
@@ -971,6 +981,9 @@
         
         configVC.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"config"
                                                                                                    ofType:@"png"]];
+        
+        if (![NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmetro"])
+            index--;
         
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:configVC atIndex:index];
         

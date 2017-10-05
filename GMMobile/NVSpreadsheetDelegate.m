@@ -253,6 +253,7 @@
                                                                     inTabBarController:tabBarController
                                                                                  index:&index];
     ConfigurationControl.sharedInstance.currentMapitBaseLayer = MBL_None;
+    CRAPI.sharedInstance.justZoom = YES;
 
     if (mapVC)
     {
