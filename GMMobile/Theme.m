@@ -13,14 +13,17 @@
 #import "NVMetroSettings.h"
 
 @implementation Theme
-
+static int ii=0;
 - (id)init
 {
     self = [super init];
     
     if (self)
-        _showSymbolAsBarChart = YES;
-    
+    {
+        self.showSymbolAsBarChart = YES;
+        self.titles = NSMutableArray.new;
+        self.classes = NSMutableArray.new;
+    }
     return self;
 }
 
@@ -54,7 +57,7 @@
     {
         cls.title = [cls.title stringByPaddingToLength:maxLen withString: @" " startingAtIndex:0];
     }
-
+    
 }
 
 + (Theme *)createTheme:(ThemeTypes)type
@@ -80,15 +83,15 @@
     thm.legend.labelTxColor = [UIColor blueColor];
     thm.legend.symbolDefaultColor = [UIColor greenColor];
     thm.legend.hasColors = YES;
-
+    
     CGFloat PropListAlpha = 1.0-NVMetroSettings.sharedInstance.themeTransparency;
     UIColor *selectedColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
     switch (type)
     {
         case MetroPropTheme:
         {
-            if (NVMetroSettings.sharedInstance.numThemeClasses < 1)
-                break;
+            if (NVMetroSettings.sharedInstance.themeClassMin.count < 1)
+                return thm;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
@@ -104,8 +107,9 @@
             NSNumber * rangeAveTop = NVMetroSettings.sharedInstance.themeClassAve[thm.numDesiredClasses-1];
             NSNumber * rangeAveBot = NVMetroSettings.sharedInstance.themeClassAve[0];
             double range = rangeAveTop.doubleValue - rangeAveBot.doubleValue;
-           // if (range <= 0)
-                range = themeMax.integerValue - themeMin.integerValue;
+            double range1=0, range2=0;
+            // if (range <= 0)
+            range = themeMax.integerValue - themeMin.integerValue;
             range = thm.numDesiredClasses;
             int targetClass = -1;
             NSString * curPID = CRAPI.sharedInstance.currentPID;
@@ -122,6 +126,8 @@
                     if (intVal >=  minl && intVal <=  maxl)
                     {
                         targetClass = iClass;
+                        range1 = targetClass;
+                        range2 = thm.numDesiredClasses - targetClass - 1;
                     }
                 }
             }
@@ -143,17 +149,26 @@
                 class.maxValue = max.longLongValue;
                 class.aveValue = ave.doubleValue;
                 class.numItems = count.longLongValue;
-//                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
+                //                double intensity = 1.0-((double)iClass+1)/thm.numDesiredClasses;
                 double intensity = 0;
                 if (range > 0)
                     //intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
                     //intensity = 1.0-(class.aveValue - themeMin.doubleValue)/range;
                     intensity = 1.0 - (iClass + 0.5)/ range;
+                if (range1 > 0 && iClass < targetClass)
+                    intensity = 1.0 - (targetClass - iClass - 0.5) / range1;
+                if (range2 > 0 && iClass > targetClass)
+                    intensity = 1.0 - (iClass - targetClass - 0.5) / range2;
                 class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
                 if (iClass == targetClass)
                     class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
                 else if (iClass < targetClass)
+                {
+                    intensity = 1.0 - intensity;
                     class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
+                }
+                if (intensity < 0 || intensity > 1)
+                    ii=1;
                 [thm.classes addObject:class];
                 UIColor * clr = class.color.copy;
                 [colors addObject:clr];
@@ -166,7 +181,7 @@
                     tc.color = colors[targetClass-iClass-1];
                 }
             }
-        
+            
             [thm adjustClassTitles];
         }
             break;
@@ -513,7 +528,7 @@
                 tc.UCR = ucr;
             }
             break;
-
+            
         case CrimeIndexTheme:
             thm.minUCR = 1;
             thm.maxUCR = 98;
@@ -850,7 +865,7 @@
         {
             int startYear = [self yearFromDate:CRAPI.sharedInstance.fromDate];
             int endYear = [self yearFromDate:CRAPI.sharedInstance.toDate];
-
+            
             thm.legend.title = @"Year";
             thm.minYear = startYear;
             thm.maxYear = endYear;
@@ -1348,7 +1363,7 @@ int getThemeOpt(ThemeTypes type)
             opt = tleg.currentTitleIndex + 1;
         }
     }
-
+    
     return opt;
 }
 
@@ -1611,7 +1626,7 @@ int getThemeOpt(ThemeTypes type)
                             rtn = DISPLAY_ITEM;
                         if (val == _classes.count-1)//debug
                             rtn = DISPLAY_ITEM;
-
+                        
                         break;
                     }
                     val++;
@@ -1620,7 +1635,7 @@ int getThemeOpt(ThemeTypes type)
                 
                 break;
             case Part1Theme:
-            case ViolentTheme:                
+            case ViolentTheme:
                 if (dc.UCR < 1 || dc.UCR > 10 || dc.UCR == 9)
                     break;
                 if (dc.UCR < 3)
@@ -1637,7 +1652,7 @@ int getThemeOpt(ThemeTypes type)
                     rtn = DISPLAY_ITEM;
                     if (!test)
                         [self setCompareClass:cclass
-                                fromClass:val];
+                                    fromClass:val];
                 }
                 break;
             case Part2Theme:
@@ -1713,7 +1728,7 @@ int getThemeOpt(ThemeTypes type)
                     val++;
                 }
                 //if (!ii)
-                    //ii=1;
+                //ii=1;
                 break;
             case DayNightTheme:
             {
@@ -1932,7 +1947,7 @@ DisplayExit:
 
 - (void) beginDisplay:(int)displayID
 {
-   
+    
     if (displayID == _displayID)
     {
         _totCount = 0;
@@ -1950,9 +1965,9 @@ DisplayExit:
     double maxPct = 0;
     
     /*if (_type == ColorByRefnoTheme)
-    {
-        int ii = _totNumItems;
-    }*/
+     {
+     int ii = _totNumItems;
+     }*/
     if (displayID == _displayID)
     {
         _legend.useClassColors = _setColor;
@@ -2003,5 +2018,6 @@ DisplayExit:
     
     return -1;
 }
-         
+
 @end
+

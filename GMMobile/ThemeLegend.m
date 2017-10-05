@@ -13,7 +13,7 @@
     
     if (self)
     {
-        _showSymbolAsBarChart = YES;
+        self.showSymbolAsBarChart = YES;
         self.title = @"";
     }
     return self;
@@ -124,3 +124,4 @@
 }
 
 @end
+
