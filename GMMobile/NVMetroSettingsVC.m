@@ -148,7 +148,7 @@
     UISegmentedControl *displayParamsSC = [[UISegmentedControl alloc] initWithItems:@[@"Pin Map", @"Tags", @"Shaded Areas"]];
     displayParamsSC.translatesAutoresizingMaskIntoConstraints = NO;
     displayParamsSC.tintColor = UIColor.blackColor;
-    displayParamsSC.selectedSegmentIndex = 0;
+    displayParamsSC.selectedSegmentIndex = NVMetroSettings.sharedInstance.propertyListDisplayType;
     [displayParamsSC setTitleTextAttributes:attributes forState:UIControlStateNormal];
     
     [displayParamsSC addTarget:self
@@ -480,6 +480,7 @@ didReturnWithSelectedRows:(NSArray<NSNumber *> *)selectedRows
 
 - (void)displayParamsSCTapped:(UISegmentedControl *)segControl
 {
+    NVMetroSettings.sharedInstance.propertyListDisplayType = (int)segControl.selectedSegmentIndex;
     
 }
 

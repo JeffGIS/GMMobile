@@ -9,7 +9,7 @@
 
 @interface NVSpreadsheetDelegate ()
 
-@property PropertyList *propList;
+@property (nonatomic) PropertyList *propList;
 
 @end
 
@@ -226,6 +226,34 @@
                                                                     inTabBarController:tabBarController
                                                                                  index:&index];
     
+    if (mapVC)
+    {
+        mapVC.fromSpreadsheet = YES;
+        mapVC.spreadsheetCoords = ssCoords;
+    }
+    
+    tabBarController.selectedIndex = index;
+}
+
+- (void)spreadsheetDidZoomForRow:(NSInteger)row
+                           column:(NSInteger)column
+                 tabBarController:(UITabBarController *)tabBarController
+{
+    PropertyList *proplist = [[PropertyList alloc] init];
+    
+    LLPOINT llpoint = [proplist getPropertyLatLon:column];
+    
+    [proplist setZoomValues:column
+                     forRow:row];
+    
+    CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
+    NSUInteger index = 0;
+    
+    MapViewController *mapVC = (MapViewController *)[NVTabBarEdit viewControllerWithID:@"MapVC"
+                                                                    inTabBarController:tabBarController
+                                                                                 index:&index];
+    ConfigurationControl.sharedInstance.currentMapitBaseLayer = MBL_None;
+
     if (mapVC)
     {
         mapVC.fromSpreadsheet = YES;

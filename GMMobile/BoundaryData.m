@@ -1085,7 +1085,6 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         return;
     _pTranLLtoView = STRANCornersToBoundsP(latlonCornerPoints, pvbounds);
 
-    NVMetroSettings.sharedInstance.skipZero = FALSE;
     //NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustThousandsOfDollars;
     
     switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
@@ -1152,16 +1151,20 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             
             if (NVMetroSettings.sharedInstance.overUnder && CRAPI.sharedInstance.currentPID)
             {
-                query = [NSString stringWithFormat:@"SELECT %@,ACRES_POLY,GENUSECODE,HOMESTEAD,id FROM PROPINFO WHERE PIN = '%@'",field,CRAPI.sharedInstance.currentPID];
+                query = [NSString stringWithFormat:@"SELECT %@,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,id FROM PROPINFO WHERE PIN = '%@'",field,CRAPI.sharedInstance.currentPID];
                 SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
                 _currentRec = 0;
                 if ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
                 {
-                    double dataValue = sqlite3_column_double(statement,0);
-                    double landArea = sqlite3_column_double(statement,1);
-                    wantGenUseCode = sqlite3_column_int(statement,2);
-                    LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,3);
-                    INT64 ID = sqlite3_column_int64(statement,4);
+                    int i=0;
+                    double dataValue = sqlite3_column_double(statement,i++);
+                    double landArea = sqlite3_column_double(statement,i++);
+                    LPSTR pin = (LPSTR)sqlite3_column_text(statement,i++);
+                    NSString * PIN = [NSString stringWithUTF8String:pin];
+
+                    wantGenUseCode = sqlite3_column_int(statement,i++);
+                    LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,i++);
+                    INT64 ID = sqlite3_column_int64(statement,i++);
                     wantHomeStead = *homeStead;
 
                     landArea *= areaFactor;
@@ -1184,7 +1187,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
             }
 
-            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,GENUSECODE,HOMESTEAD,minX,maxX,minY,maxY FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id,%@, ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,minX,maxX,minY,maxY FROM %@_index,%@,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
         }
         else
@@ -1210,7 +1213,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                 query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 _totRecords = [self getQueryCount:query];
-                query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_DEED,ACRES_POLY,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
+                query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_DEED,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];
             }
             else
@@ -1234,7 +1237,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             {
                 /*            query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@,SORTEDVALUES  WHERE %@.id=%@_index.id AND SORTEDVALUES.ID=%@.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,polyTable,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,polyTable];*/
-                query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM SORTEDVALUES,%@,%@  WHERE %@.id= SORTEDVALUES.ID AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
+                query = [NSString stringWithFormat:@"SELECT %@.id,%@,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM SORTEDVALUES,%@,%@  WHERE %@.id= SORTEDVALUES.ID AND %@.PIN = %@.PID ORDER BY SORTEDVALUES.Value ASC",polyTable,field,polyTable,dataTable,polyTable,
                          dataTable,polyTable];
             }
             else
@@ -1250,6 +1253,13 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
     CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
     SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
     _currentRec = 0;
+    Bool plOpened = FALSE;
+    PropertyList *pl = nil;
+    if (NVMetroSettings.sharedInstance.propertyListDisplayType == PLD_Areas)
+    {
+        pl = PropertyList.new;
+        plOpened = [pl open];
+    }
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
         if (!_currentRec)
@@ -1285,6 +1295,10 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         if (isParcel)
         {
             if (landArea < max (minDisplayAreaInAcres,MIN_PARCEL_ACRES))
+                goto SkipRecord;
+            LPSTR pin = (LPSTR)sqlite3_column_text(statement,i++);
+            NSString * PIN = [NSString stringWithUTF8String:pin];
+            if (pl && ![pl parcelInPropertyList:PIN])
                 goto SkipRecord;
             genUseCode = sqlite3_column_int(statement,i++);
             LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,i++);
@@ -1484,6 +1498,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                                    numRanges:_numPass];
         
     }
+    if (pl)
+        [pl close:plOpened];
     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
@@ -1787,6 +1803,7 @@ NextPass:
     LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
     
     BOOL opened = [self open];
+    BOOL isParcel = FALSE;
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
@@ -1807,6 +1824,7 @@ NextPass:
     }
     else if ([areaType isEqualToString:@"PARCEL"])
     {
+        isParcel = TRUE;
         NSString * fields = to.fields;
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
@@ -1819,6 +1837,14 @@ NextPass:
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx,dataTable,table,areaType];
         
     }
+    Bool plOpened = FALSE;
+    PropertyList *pl = nil;
+    if (isParcel && NVMetroSettings.sharedInstance.propertyListDisplayType == PLD_Areas)
+    {
+        pl = PropertyList.new;
+        plOpened = [pl open];
+    }
+
     //querys = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,USECODE,id FROM LANDUSE"];
 NextPass:
     SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
@@ -1847,6 +1873,9 @@ NextPass:
         LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         LPSTR pkeyval = (LPSTR)sqlite3_column_text(statement,i++);
         keyval = [NSString stringWithUTF8String:pkeyval];
+        if (pl && ![pl parcelInPropertyList:keyval])
+            continue;
+        
         refno = sqlite3_column_int(statement,i++);
 
         _acres = sqlite3_column_double(statement,i++);
@@ -2014,6 +2043,9 @@ NextPass:
                                    numRanges:_numPass];
         
     }
+    if (pl)
+        [pl close:plOpened];
+
     if ([self continueProcessing])
     {
         [CRAPI.sharedInstance updateProgress:(int)1

@@ -105,7 +105,7 @@
 {
     CrimeList *crimelist = _crimeList;
     NSArray *list = crimelist.getControlNumbers;
-    BOOL opened = [crimelist open];
+    //BOOL opened = [crimelist open];
     [crimelist startTransaction];
     for (NSNumber * rownum in arrayOfRows)
     {
@@ -435,6 +435,13 @@
 - (NSString *)filePathForHelpFile
 {
     return nil;
+}
+
+- (void)spreadsheetDidZoomForRow:(NSInteger)row
+                          column:(NSInteger)column
+                tabBarController:(UITabBarController *)tabBarController
+{
+    //no implmentation for NVCrime spreadsheet.
 }
 
 @end

@@ -91,39 +91,54 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     {
         _firstCall = YES;
         _appList = NSMutableArray.array;
+        ApplicationObject *ap = nil;
         
-        ApplicationObject *ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Inventory"
-                                                                  identifier:HCConfigAlleyWalls];
-        [_appList addObject:ap];
+        if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionaccess"])
+        {
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Maple Grove"
+                                                   identifier:HCConfigMapleGrove];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Minneapolis"
+                                                   identifier:HCConfigSewers];
+            [_appList addObject:ap];
+        }
         
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Status"
-                                               identifier:HCConfigAlleyWallStatus];
-        [_appList addObject:ap];
-        
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Curb Ramp Inventory"
-                                               identifier:HCConfigCurbRamps];
-        [_appList addObject:ap];
-        
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Sidewalk Inventory"
-                                               identifier:HCConfigSidewalk];
-        [_appList addObject:ap];
-        
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Sewers"
-                                               identifier:HCConfigSewers];
-        [_appList addObject:ap];
-        
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Metro Property Analysis"
-                                               identifier:HCConfigMetroProp];
-        [_appList addObject:ap];
-        
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Minneapolis Crime Data"
-                                               identifier:HCConfigCrimes];
-        
-        [_appList addObject:ap];
-        
-        ap = [[ApplicationObject alloc] initWithNameAndID:@"Maple Grove App"
-                                               identifier:HCConfigMapleGrove];
-        [_appList addObject:ap];
+        else
+        {
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Inventory"
+                                                   identifier:HCConfigAlleyWalls];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Alley Wall Status"
+                                                   identifier:HCConfigAlleyWallStatus];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Curb Ramp Inventory"
+                                                   identifier:HCConfigCurbRamps];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Sidewalk Inventory"
+                                                   identifier:HCConfigSidewalk];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Sewers"
+                                                   identifier:HCConfigSewers];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Metro Property Analysis"
+                                                   identifier:HCConfigMetroProp];
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Minneapolis Crime Data"
+                                                   identifier:HCConfigCrimes];
+            
+            [_appList addObject:ap];
+            
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Maple Grove App"
+                                                   identifier:HCConfigMapleGrove];
+            [_appList addObject:ap];
+        }
         
         _currentApp = -1;
         

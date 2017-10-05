@@ -3,6 +3,6 @@
 
 #import "CCodeLibrary/NVSpreadsheetVC.h"
 
-@interface NVSpreadsheetDelegate : NSObject  <NVSpreadsheetVCDelegate>
+@interface NVSpreadsheetDelegate : NSObject <NVSpreadsheetVCDelegate>
 
 @end
