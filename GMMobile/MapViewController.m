@@ -1119,7 +1119,7 @@
             [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
         
         _nvssvc.tabBarItem.title = @"Crime Lists";
-        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:_nvssvc atIndex:4];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:_nvssvc atIndex:2];
     }
     
     else
