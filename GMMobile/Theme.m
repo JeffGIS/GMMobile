@@ -13,14 +13,17 @@
 #import "NVMetroSettings.h"
 
 @implementation Theme
-
+static int ii=0;
 - (id)init
 {
     self = [super init];
     
     if (self)
-        _showSymbolAsBarChart = YES;
-    
+    {
+        self.showSymbolAsBarChart = YES;
+        self.titles = NSMutableArray.new;
+        self.classes = NSMutableArray.new;
+    }
     return self;
 }
 
@@ -87,6 +90,8 @@
     {
         case MetroPropTheme:
         {
+            if (NVMetroSettings.sharedInstance.themeClassMin.count < 1)
+                return thm;
             thm.setColor = YES;
             thm.legend.appendClassCount = YES;
             thm.subType = ConfigurationControl.sharedInstance.currentPropSheetFieldType;
@@ -102,6 +107,7 @@
             NSNumber * rangeAveTop = NVMetroSettings.sharedInstance.themeClassAve[thm.numDesiredClasses-1];
             NSNumber * rangeAveBot = NVMetroSettings.sharedInstance.themeClassAve[0];
             double range = rangeAveTop.doubleValue - rangeAveBot.doubleValue;
+            double range1=0, range2=0;
            // if (range <= 0)
                 range = themeMax.integerValue - themeMin.integerValue;
             range = thm.numDesiredClasses;
@@ -120,6 +126,8 @@
                     if (intVal >=  minl && intVal <=  maxl)
                     {
                         targetClass = iClass;
+                        range1 = targetClass;
+                        range2 = thm.numDesiredClasses - targetClass - 1;
                     }
                 }
             }
@@ -147,11 +155,20 @@
                     //intensity = 1.0-(class.aveValue - rangeAveBot.doubleValue)/range;
                     //intensity = 1.0-(class.aveValue - themeMin.doubleValue)/range;
                     intensity = 1.0 - (iClass + 0.5)/ range;
+                if (range1 > 0 && iClass < targetClass)
+                    intensity = 1.0 - (targetClass - iClass - 0.5) / range1;
+                if (range2 > 0 && iClass > targetClass)
+                    intensity = 1.0 - (iClass - targetClass - 0.5) / range2;
                 class.color = [UIColor colorWithRed:1 green:intensity blue:intensity alpha:PropListAlpha];
                 if (iClass == targetClass)
                     class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:PropListAlpha];
                 else if (iClass < targetClass)
+                {
+                    intensity = 1.0 - intensity;
                     class.color = [UIColor colorWithRed:intensity green:intensity blue:1 alpha:PropListAlpha];
+                }
+                if (intensity < 0 || intensity > 1)
+                    ii=1;
                 [thm.classes addObject:class];
                 UIColor * clr = class.color.copy;
                 [colors addObject:clr];
