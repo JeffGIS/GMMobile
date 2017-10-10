@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "PropertyList.h"
 
 
 @interface SlowValues : NSObject
@@ -41,12 +42,13 @@
 @property int maxColors;
 @property CGContextRef colorConversionContext;
 @property void * colorConversionBmData;
+@property PropertyList * propList;
 
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
+             propertyList:(PropertyList *)plist
                   popover:(GSSiPopoverView*)popover
              aroundLatLon:(LLPOINT)latlon
-                   totEMV:(int)totEMV
                   useDesc:(LPSTR) usedescIN;
 - (void) addIDtoColorByIDTable:(UINT)fileAndID
                          color:(UIColor*)color;

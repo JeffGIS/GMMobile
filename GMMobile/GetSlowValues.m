@@ -17,54 +17,70 @@
 
 @interface GetSlowValues ()
 @property BoundaryData * bd;
+@property int totMaskPixels;
+@property int totPixelsInCircle;
+@property int totPixelsInRect;
+@property NSString * areaType;
+@property int propNum;
+@property int iDist;
+@property double squareMetersInRect;
+@property double squareMetersPerPixel;
 @end
 
 @implementation GetSlowValues
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
+             propertyList:(PropertyList *)plist
                   popover:(GSSiPopoverView*)popover
                 aroundLatLon:(LLPOINT)latlon
-                      totEMV:(int)totEMV
                      useDesc:(LPSTR) usedescIN
 {
-    
+    double OneMile = 5280 * FTM;
+    double radius[4] = {OneMile / 8,OneMile / 4,OneMile / 2,OneMile};
+    _propList = plist;
+    _propNum = propNum;
     SlowValues * slowVals = [[SlowValues alloc]init];
     _popover = popover;
     _popover.title = @"Computing Values From Map";
-    [self computeValuesFromMap:slowVals
-                          dbid:propNum
-                       popover:popover
-                  aroundLatLon:latlon
-                        totEMV:totEMV
-                       useDesc:usedescIN
-                     baseLayer:MBL_LandUse];
-    
-    [self computeValuesFromMap:slowVals
-                          dbid:propNum
-                       popover:popover
-                  aroundLatLon:latlon
-                        totEMV:totEMV
-                       useDesc:usedescIN
-                     baseLayer:MBL_CensusTracts];
+    for (int idist = 0; idist < 4; idist++)
+    {
+        [self computeValuesFromMap:slowVals
+                           popover:popover
+                      aroundLatLon:latlon
+                        withRadius:radius[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_LandUse];
+        
+        [self computeValuesFromMap:slowVals
+                           popover:popover
+                      aroundLatLon:latlon
+                        withRadius:radius[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_CensusTracts];
+    }
     
     //add routes from property to destinations
     Destinations *dests = [[Destinations alloc]init];
     [dests addRoutesForProperty:propNum];
     
-    if (_delegate)
-        [_delegate getSlowValuesDidComplete:propNum values:slowVals];
+    //if (_delegate)
+    //    [_delegate getSlowValuesDidComplete:propNum values:slowVals];
 
 }
+
 - (void)computeValuesFromMap:(SlowValues *)values
-                        dbid:(int)dbid
                      popover:(GSSiPopoverView*)popover
                 aroundLatLon:(LLPOINT)latlon
-                      totEMV:(int)totEMV
-                     useDesc:(LPSTR) usedescIN
+                  withRadius:(double)radius
+                  distanceID:(int)idist
+                    useDesc:(LPSTR) usedescIN
                    baseLayer:(MapitBaseLayer)baseLayer
 
 {
     void *bmData = NULL;
+    _iDist = idist;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     int width = 1024;
     int height = 1024;
@@ -78,40 +94,60 @@
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     MNMXCORD latlonBounds;
     MNMXCORD viewBounds;
-    double OneMile = 5280 * FTM;
-    double radius = OneMile / 2;
     
     viewBounds.xmn = 0;
     viewBounds.ymn = height;
     viewBounds.xmx = width;
     viewBounds.ymx = 0;
-    CORNERPOINTS latlonCornerPoints = CornerPointsFromLatLonAndDist (latlon,radius);
-    latlonBounds = CornerPointBounds (&latlonCornerPoints);
-    
+    CORNERPOINTS cornerPoints = CornerPointsFromLatLonAndDist (latlon,radius);
+    LLCORNERPOINTS latlonCornerPoints = LLCornerPointsFromCornerPoints (&cornerPoints);
+
+    latlonBounds = CornerPointBounds (&cornerPoints);
+    _totPixelsInRect = width * height;
+    _squareMetersInRect = LLRectInSQMeters (latlonCornerPoints);
+    _squareMetersPerPixel = _squareMetersInRect / _totPixelsInRect;
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
     HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
     ConfigurationControl.sharedInstance.currentApp = HCConfigFromSlowValues;
     ConfigurationControl.sharedInstance.currentMapitBaseLayer = baseLayer;
     [themes setAppThemes];
-    
 
     Theme * theme = themes.themeList[0];
     theme.getSlowValues = self;
-    COLORREF_RGB4 *wantColors;
+    COLORREF_RGB4 *wantColors = nil;
     int *colorCounts;
-    
-//    _maxColors = [self getColorsFromTheme:theme colors:&wantColors];
     
     dc.width = 0;
     _bd = [[BoundaryData alloc] init];
     
-    if (baseLayer != MBL_LandUse)
-        [self createColorByIDTable];
+    switch (baseLayer)
+    {
+        case MBL_LandUse:
+            _areaType = @"LANDUSE";
+            _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
+            break;
+        case MBL_Parcels:
+            _areaType = @"PARCELS";
+            [self createColorByIDTable];
+            break;
+        case MBL_CensusBlocks:
+            _areaType = @"CENBLOCK";
+            [self createColorByIDTable];
+            break;
+        case MBL_CensusBlockGroups:
+            _areaType = @"CENBLOCKGROUP";
+            [self createColorByIDTable];
+            break;
+        case MBL_CensusTracts:
+            _areaType = @"CENTRACT";
+            [self createColorByIDTable];
+            break;
+    }
     [self        displayMapit:context
                     baseLayer:baseLayer
        displayCharacteristics:dc
-                    llCorners:&latlonCornerPoints
+                    llCorners:&cornerPoints
                      LLBounds:&latlonBounds
                    viewBounds:&viewBounds
                        themes:themes
@@ -124,7 +160,7 @@
                             lineWidth:0
                                asMask:1
                             inContext:context
-                            llCorners:&latlonCornerPoints
+                            llCorners:&cornerPoints
                              LLBounds:&latlonBounds
                            viewBounds:&viewBounds];
         
@@ -141,18 +177,21 @@
         
     }*/
     
-    if (baseLayer == MBL_LandUse)
-        _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
-    else
+    if (baseLayer != MBL_LandUse)
     {
         _maxColors = theme.totNumItems;
         wantColors = nil;
     }
-    
+
     colorCounts = calloc ((_maxColors+1),sizeof(int));
     COLORREF_RGB4 * pColor = (COLORREF_RGB4*)bmData;
     int count = 0;
+    double totPct=0;
+
     COLORREF_RGB4 lastColor = *pColor;
+    COLORREF_RGB4 maskColor = *pColor;
+    _totMaskPixels = 0;
+    
     for (int irow = 0;irow < height;irow++)
     {
         for (int icol = 0;icol < width;icol++)
@@ -161,7 +200,9 @@
                 count++;
             else
             {
-                if (wantColors)
+                if (*(LPUINT)&lastColor == *(LPUINT)&maskColor)
+                    _totMaskPixels += count;
+                else if (wantColors)
                     [self countColors:&lastColor
                            wantColors:wantColors
                                counts:colorCounts
@@ -182,18 +223,31 @@
             pColor++;
         }
     }
+    double pct;
+    int c;
+    double r = width / 2;
+    int pixInCircle = PY * r * r;
+    int maskPixels = _totPixelsInRect - pixInCircle;
+    if (*(LPUINT)&lastColor == *(LPUINT)&maskColor)
+        _totMaskPixels += count;
+    _totPixelsInCircle = _totPixelsInRect - _totMaskPixels;
     if (wantColors)
     {
         [self countColors:&lastColor
                wantColors:wantColors
                    counts:colorCounts
                     count:count];
-        double totPct=0;
-        for (int i=0;i<_maxColors;i++)
+        for (int i=0;i<theme.numClasses;i++)
         {
-            int c = colorCounts[i];
-            double pct = (double)(c * 100)/(width*height);
+            NSString * areaID;
+            ThemeClass *tc = theme.classes[i];
+            areaID = [tc.title stringByReplacingOccurrencesOfString:@" " withString:@""];
+            c = colorCounts[i];
+            pct = (double)(c)/_totPixelsInRect;
+            double squareMetersInRadius = pct * _squareMetersInRect;
             totPct += pct;
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,'%@','%@',%i,%f,%f);",_propNum,_areaType,areaID,idist+1,squareMetersInRadius,pct];
+            [_propList executeCmd:(LPSTR)cmd.UTF8String];
         }
     }
     else
@@ -257,9 +311,10 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
     int nColors = theme.numClasses;
     COLORREF_RGB4 * pColors = malloc ((nColors+1)*sizeof(COLORREF_RGB4));
     ThemeLegend * legend = theme.legend;
-    for (int i=0;i<nColors;i++)
+    int i;
+    CGFloat R,G,B,Alpha;
+    for (i=0;i<nColors;i++)
     {
-        CGFloat R,G,B,Alpha;
         ThemeLegendCell *cell = legend.cells[i];
         UIColor *color = cell.symbolColor;
         CGColorRef colorRef =[color CGColor];
@@ -272,9 +327,20 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
         pColors[i].cIntensity = pColor->cIntensity;
         
     }
+    i = nColors;
+    UIColor *color = [UIColor whiteColor];
+    CGColorRef colorRef =[color CGColor];
+    CGContextSetFillColorWithColor(context,colorRef);
+    CGContextFillRect (context,colorRect);
+    [color getRed:&R green:&G blue:&B alpha:&Alpha];
+    pColors[i].cRed = pColor->cRed;
+    pColors[i].cGreen = pColor->cGreen;
+    pColors[i].cBlue = pColor->cBlue;
+    pColors[i].cIntensity = pColor->cIntensity;
+    
     *pclrs = pColors;
     
-    return nColors;
+    return nColors+1;
 }
 
 - (void) countColors:(COLORREF_RGB4*)color
@@ -370,6 +436,13 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
         fileAndID = sqlite3_column_int(statement, 1);
         pixels = sqlite3_column_int(statement, 2);
         totPix += pixels;
+        if (pixels)
+        {
+            double pct = (double)pixels / _totPixelsInCircle;
+            double squareMetersInRadius = pixels * _squareMetersPerPixel;
+            NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,'%@',%u,%i,%f,%f);",_propNum,_areaType,fileAndID,_iDist+1,squareMetersInRadius,pct];
+            [_propList executeCmd:(LPSTR)cmd.UTF8String];
+        }
     }
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _bd.database);

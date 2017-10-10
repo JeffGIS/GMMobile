@@ -9,6 +9,7 @@
 #import "NVMetroSettings.h"
 #import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/MathUtil.h"
+#import "GetSlowValues.h"
 
 //#define CURRENT_VERSION 28
 
@@ -75,6 +76,7 @@ NSString * GetPropListDirectory (void)
     
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentPropertyList"];
+
 }
 
 + (NSString*) getCurrentPropertyListName
@@ -227,9 +229,13 @@ NSString * GetPropListDirectory (void)
     BOOL opened = [self open];
     
     NSString *cmd =  @"CREATE TABLE IF NOT EXISTS PropertyList (id INTEGER PRIMARY KEY,PropNum INTEGER,FieldType INTEGER,DataVersion INTEGER,FieldValue BLOB(33554432));\
-                        CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC);";
+    CREATE INDEX IF NOT EXISTS PropertyList_index ON PropertyList (PropNum ASC, FieldType ASC);";
     BOOL rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
     
+    cmd =  @"CREATE TABLE IF NOT EXISTS AreasWithinDistance (PropNum INTEGER,AreaType CHAR(32),AreaID CHAR(64),Distance INT,SQMetersInCircle FLOAT,PercentOfCircle FLOAT);\
+    CREATE INDEX IF NOT EXISTS AreasWithinDistance_index ON AreasWithinDistance (PropNum ASC, AreaType ASC);";
+    rtn = !SQLOK(__FILE__,__LINE__,SQLiteExec(_database, cmd.UTF8String, 0, 0, 0), _database);
+
     [self close:opened];
     return rtn;
 }
@@ -1349,13 +1355,12 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
      dispatch_async(getSlowValueQue,
      ^{*/
     GetSlowValues *sv = [[GetSlowValues alloc]init];
-    sv.delegate = self;
     [sv computeSlowValues:PropNum
                      dbid:dbid
+             propertyList:self
                   popover:_popover
              aroundLatLon:pidPoint
-                   totEMV:totEMV
-                  useDesc:(LPSTR)usedesc.UTF8String];
+                   useDesc:(LPSTR)usedesc.UTF8String];
     //  });
     
     [self close:opened];

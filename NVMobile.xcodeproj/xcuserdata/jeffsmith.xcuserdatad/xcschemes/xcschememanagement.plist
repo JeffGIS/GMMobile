@@ -14,21 +14,10 @@
 		<key>NVMobile.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>19</integer>
+			<integer>20</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
-	<dict>
-		<key>EB5521C81A61B6A8008CE2D1</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>EB5521E41A61B6A8008CE2D1</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-	</dict>
+	<dict/>
 </dict>
 </plist>
