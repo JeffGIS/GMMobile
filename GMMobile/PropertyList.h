@@ -133,5 +133,6 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber);
 - (NSString *) getFieldAverage:(PropFieldType)fieldType;
 - (NSString *) getFieldTotal:(PropFieldType)fieldType;
 - (Bool) parcelInPropertyList:(NSString *)PIN;
+- (NSArray*) getAreaRecords:(NSInteger)propNum;
 
 @end

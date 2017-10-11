@@ -1385,5 +1385,33 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     
 }
 
-
+- (NSArray*) getAreaRecords:(NSInteger)propNum
+{
+    BOOL opened = [self open];
+    NSMutableArray *array = NSMutableArray.new;
+    NSString *query = [NSString stringWithFormat:@"SELECT AreaType ,AreaID, Distance, SQMetersInCircle, PercentOfCircle FROM AreasWithinDistance WHERE PropNum = %li",(long)propNum];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    while (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        int i = 0;
+        LPSTR cval = (LPSTR)sqlite3_column_text(statement, i++);
+        NSString * areaType = [NSString stringWithUTF8String:cval];
+        cval = (LPSTR)sqlite3_column_text(statement, i++);
+        NSString * areaID = [NSString stringWithUTF8String:cval];
+        int iDist = sqlite3_column_int(statement, i++);
+        double sqrMetersInCircle = sqlite3_column_double(statement, i++);
+        double percentOfCircle = sqlite3_column_double(statement, i++);
+        NSString * line = [NSString stringWithFormat:@"%@:%@ %i %f %f",areaType,areaID,iDist,sqrMetersInCircle,percentOfCircle];
+        [array addObject:line];
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    [self close:opened];
+    
+    return array.copy;
+}
 @end

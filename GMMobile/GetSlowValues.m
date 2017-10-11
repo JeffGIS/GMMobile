@@ -42,7 +42,7 @@
     SlowValues * slowVals = [[SlowValues alloc]init];
     _popover = popover;
     _popover.title = @"Computing Values From Map";
-    for (int idist = 0; idist < 4; idist++)
+    for (int idist = 0; idist < 3; idist++)
     {
         [self computeValuesFromMap:slowVals
                            popover:popover
@@ -59,6 +59,27 @@
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusTracts];
+        [self computeValuesFromMap:slowVals
+                           popover:popover
+                      aroundLatLon:latlon
+                        withRadius:radius[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_CensusBlockGroups];
+        [self computeValuesFromMap:slowVals
+                           popover:popover
+                      aroundLatLon:latlon
+                        withRadius:radius[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_CensusBlocks];
+        [self computeValuesFromMap:slowVals
+                           popover:popover
+                      aroundLatLon:latlon
+                        withRadius:radius[idist]
+                        distanceID:idist
+                           useDesc:usedescIN
+                         baseLayer:MBL_Parcels];
     }
     
     //add routes from property to destinations
@@ -475,13 +496,49 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         case MBL_CensusTracts:
         {
             [_bd displayCensusAreas:context
-                              type:@"TRACT"
-            displayCharacteristics:dc
-                     llCorners:latlonCornerPoints
-                      LLBounds:platlonBounds
-                    viewBounds:pvBounds
-                        themes:themes
-                   pointInArea:pia];
+                               type:@"TRACT"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
+        }
+            break;
+        case MBL_CensusBlockGroups:
+        {
+            [_bd displayCensusAreas:context
+                               type:@"BLOCKGROUP"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
+        }
+            break;
+        case MBL_CensusBlocks:
+        {
+            [_bd displayCensusAreas:context
+                               type:@"BLOCK"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
+        }
+            break;
+        case MBL_Parcels:
+        {
+            [_bd displayCensusAreas:context
+                               type:@"PARCEL"
+             displayCharacteristics:dc
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvBounds
+                             themes:themes
+                        pointInArea:pia];
         }
             break;
         default:

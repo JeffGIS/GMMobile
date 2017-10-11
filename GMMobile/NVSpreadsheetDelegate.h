@@ -2,7 +2,8 @@
 //  NVMobile
 
 #import "CCodeLibrary/NVSpreadsheetVC.h"
+#import "CCodeLibrary/NVPopoverTableView.h"
 
-@interface NVSpreadsheetDelegate : NSObject <NVSpreadsheetVCDelegate>
+@interface NVSpreadsheetDelegate : NSObject <NVSpreadsheetVCDelegate,NVPopoverTableViewDelegate>
 
 @end

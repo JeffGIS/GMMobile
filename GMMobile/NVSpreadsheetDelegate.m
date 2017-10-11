@@ -240,10 +240,21 @@
 
 - (void)spreadsheetDidZoomForRow:(NSInteger)row
                            column:(NSInteger)column
+                            from:(NVSpreadsheetVC *)fromVC
                  tabBarController:(UITabBarController *)tabBarController
 {
     PropertyList *proplist = [[PropertyList alloc] init];
-    
+    int propNum = column;
+    if (row == -1)
+    {
+        NSArray * areaRecs = [proplist getAreaRecords:propNum];
+        [NVPopoverTableView showPopoverTableViewInView:fromVC.view
+                           delegate:self
+                              title:@"Area Records"
+                          textArray:areaRecs
+                      includeCancel:YES];
+        return;
+    }
     LLPOINT llpoint = [proplist getPropertyLatLon:column];
     
     [proplist setZoomValues:column
@@ -265,7 +276,21 @@
     }
     
     tabBarController.selectedIndex = index;
+
 }
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    [popoverTableView hide:YES];
+    
+}
+
+- (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+}
+
 
 - (NSString *)propFieldDescriptionFilePathAtRow:(NSInteger)row
 {
