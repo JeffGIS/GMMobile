@@ -14,7 +14,7 @@
 
 @interface ThemeLegend : NSObject
 
-@property ThemeTypes type;             // legend type
+@property ThemeTypes type;      // legend type
 @property int numCells;         // number of desired cells. Actual number in cells
                                 // array may differ
 @property int numColumns;
@@ -44,7 +44,8 @@
 @property NSMutableArray *titles; //possible titles
 @property (nonatomic)int currentTitleIndex; //index of current title
 @property NSMutableArray *cells;  //ThemeLegendCell array
-
+@property NSString * outputFile; //if not null string write legend to this file
+@property CGFloat  outputFactor; //if writing to file multiply size by this factor
 @property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait, hasColors, hasOverlay;
 @property (nonatomic) CGPoint portraitMapOrigin, landscapeMapOrigin;
 @property (nonatomic) CGFloat scrollYPosition;
