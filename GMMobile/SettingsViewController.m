@@ -1296,10 +1296,10 @@ didReturnTimeInterval:(NSString *)timeInterval
 {
     NSString *outFile = @"hotspottest";
     
-    NSString *filepath = [NSString stringWithFormat:@"%@/%@.bin",
-                           CRAPI.sharedInstance.sharedFilePath,outFile];
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@.bin",
+                          CRAPI.sharedInstance.sharedFilePath, outFile];
     
-    [CRAPI.sharedInstance.docManager exportDocumentFromFilepath:filepath
+    [CRAPI.sharedInstance.docManager exportDocumentFromFilePath:filePath
                                                        delegate:self
                                                  deleteWhenDone:NO];
 }

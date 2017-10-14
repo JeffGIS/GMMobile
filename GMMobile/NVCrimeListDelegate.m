@@ -437,6 +437,11 @@
     return nil;
 }
 
+- (void)spreadsheetDidZoomForRow:(NSInteger)row column:(NSInteger)column from:(NVSpreadsheetVC *)fromVC tabBarController:(UITabBarController *)tabBarController { 
+    return;
+}
+
+
 - (void)spreadsheetDidZoomForRow:(NSInteger)row
                           column:(NSInteger)column
                 tabBarController:(UITabBarController *)tabBarController
