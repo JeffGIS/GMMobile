@@ -284,6 +284,7 @@
     if (rtn)
         NSLog(@"Image written");
     UIImage *image = [UIImage imageWithContentsOfFile:file];
+ [UIImagePNGRepresentation(image) writeToFile:filePath atomically:YES];
     UIImageWriteToSavedPhotosAlbum(image,
                                    nil,
                                    nil,
