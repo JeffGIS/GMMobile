@@ -244,7 +244,7 @@
                  tabBarController:(UITabBarController *)tabBarController
 {
     PropertyList *proplist = [[PropertyList alloc] init];
-    int propNum = column;
+    int propNum = (int)column;
     if (row == -1)
     {
         NSArray * areaRecs = [proplist getAreaRecords:propNum];

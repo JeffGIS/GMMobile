@@ -654,7 +654,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 - (NSArray*) getPIDS
 {
     NSMutableArray * pids = [[NSMutableArray alloc]init];
-    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",PFT_PIN];
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li", (long)PFT_PIN];
     
     BOOL opened = [self open];
     
@@ -736,7 +736,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {
     Bool rtn = FALSE;
     NSString *value = @"";
-    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li",PFT_PIN];
+    NSString *query = [NSString stringWithFormat:@"SELECT FieldValue FROM PropertyList WHERE FieldType = %li", (long)PFT_PIN];
     
     BOOL opened = [self open];
     
