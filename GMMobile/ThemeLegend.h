@@ -43,7 +43,7 @@
 @property NSString* title;      //current legend title
 @property NSMutableArray *titles; //possible titles
 @property (nonatomic) int currentTitleIndex; //index of current title
-@property NSMutableArray *cells;  //ThemeLegendCell array
+@property NSMutableArray<ThemeLegendCell *> *cells;  //ThemeLegendCell array
 @property (nonatomic, copy) NSString *outputFile; //if not null string write legend to this file
 @property CGFloat outputFactor; //if writing to file multiply size by this factor
 @property (nonatomic) BOOL drawOnMap, isDraggedLandscape, isDraggedPortrait, hasColors, hasOverlay;
