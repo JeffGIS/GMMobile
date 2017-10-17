@@ -164,17 +164,17 @@
             _areaType = @"CENTRACT";
             [self createColorByIDTable];
             break;
+        default:break;
     }
-    [self        displayMapit:context
-                    baseLayer:baseLayer
-       displayCharacteristics:dc
-                    llCorners:&cornerPoints
-                     LLBounds:&latlonBounds
-                   viewBounds:&viewBounds
-                       themes:themes
-                  pointInArea:nil];
     
-    
+    [self displayMapit:context
+             baseLayer:baseLayer
+displayCharacteristics:dc
+             llCorners:&cornerPoints
+              LLBounds:&latlonBounds
+            viewBounds:&viewBounds
+                themes:themes
+           pointInArea:nil];
     {
         [_bd displayCircularBoundaryAt:latlon
                            withRadius:radius

@@ -4,6 +4,15 @@
 #import "ThemeLegend.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "ThemeLegendMapOverlay.h"
+#import "CCodeLibrary/PointInArea.h"
+#import "CCodeLibrary/SymbolDictionary.h"
+@import CoreText;
+
+#define STD_ROW_HEIGHT 70
+#define STD_WIDTH 640
+#define STD_BORDER 2
+#define STD_MARGIN 10
+#define STD_FONT_SIZE 48
 
 @implementation ThemeLegend
 
@@ -16,6 +25,7 @@
         self.showSymbolAsBarChart = YES;
         self.title = @"";
         self.outputFile = @"";
+        self.outputFactor = 1.0;
     }
     return self;
 }
@@ -123,6 +133,186 @@
     
     else
         return (height + 10.0);
+}
+
+- (BOOL)writeThemeLegendToFile
+{
+    BOOL rtn = NO;
+    
+    if (_outputFile && _outputFile.length)
+    {
+        void *bmData = NULL;
+        CGColorRef white = UIColor.whiteColor.CGColor;
+        CGColorRef black = UIColor.blackColor.CGColor;
+        CGFloat rowHeight =  (STD_ROW_HEIGHT * _outputFactor);
+        CGFloat margin = (STD_MARGIN * _outputFactor);
+        int width = (STD_WIDTH * _outputFactor);
+        int height = (rowHeight * (_numCells + 1));
+        CGFloat border = (STD_BORDER * _outputFactor);
+        CGFloat fontSize = (STD_FONT_SIZE * _outputFactor);
+        NSUInteger countLength = 0;
+        CGFloat symbolSize = (rowHeight * 0.7);
+        
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
+        CGContextSetAllowsAntialiasing(context, YES);
+        CGContextSetShouldAntialias(context, YES);
+        CGRect rect = CGRectZero;
+        CGContextSetFillColorWithColor(context, white);
+        
+        for (int i = 1; i < (_numCells + 1); i++)
+        {
+            rect = CGRectMake(border, (i * rowHeight), (width - (border * 2.0)), (rowHeight - border));
+            CGContextFillRect(context, rect);
+        }
+        
+        CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"AppleSDGothicNeo-Bold", fontSize, NULL);
+        CGRect fontRect = CTFontGetBoundingBox(fontRef);
+        CGFloat verticalOffset = (rowHeight - fontRect.size.height);
+        
+        NSMutableParagraphStyle *style = NSParagraphStyle.defaultParagraphStyle.mutableCopy;
+        style.alignment = NSTextAlignmentCenter;
+        
+        NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        (__bridge id)fontRef, kCTFontAttributeName,
+                                        style, kCTParagraphStyleAttributeName,
+                                        white, kCTForegroundColorAttributeName, nil];
+        
+        NSAttributedString *text = [[NSAttributedString alloc] initWithString:_title
+                                                                   attributes:textAttributes];
+        
+        rect = CGRectMake(0.0, (-verticalOffset * 0.5), width, (rowHeight - verticalOffset));
+        CGPathRef path = CGPathCreateWithRect(rect, NULL);
+        CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
+        CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
+        
+        CGContextTranslateCTM(context, 0.0, rowHeight);
+        CGContextScaleCTM(context, 1.0, -1.0);
+        
+        CTFrameDraw(frame, context);
+        
+        CFRelease(path);
+        CFRelease(framesetter);
+        CFRelease(frame);
+        CFRelease(fontRef);
+        
+        for (int i = 0; i < _numCells; i++)
+        {
+            NSString *countString = [NSString stringWithFormat:@"%i", _cells[i].count];
+            countLength = MAX(countLength, countString.length);
+        }
+        
+        fontRef = CTFontCreateWithName((CFStringRef)@"CourierNewPS-BoldMT", (fontSize * 0.64), NULL);
+        fontRect = CTFontGetBoundingBox(fontRef);
+        verticalOffset = (rowHeight - fontRect.size.height);
+        
+        textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                          (__bridge id)fontRef, kCTFontAttributeName,
+                          black, kCTForegroundColorAttributeName, nil];
+        
+        for (int i = 0; i < _numCells; i++)
+        {
+            if (_usePointSymbols)
+            {
+                LPDPOINT point = malloc(sizeof(DPOINT) + 4);
+                point->x = (rowHeight * 0.5);
+                point->y = (-rowHeight * (i + 1) + (rowHeight * 0.5));
+                
+                CGColorRef color = _symbolDefaultColor.CGColor;
+                
+                if (_useClassColors)
+                    color = _cells[i].symbolColor.CGColor;
+                
+                [SymbolDictionary drawPointWithSymbol:context
+                                                   at:point
+                                          usingSymbol:_cells[i].symbol
+                                                 Size:symbolSize
+                                            fillColor:color
+                                            lineColor:black
+                                            lineWidth:_outputFactor];
+                
+                free(point);
+            }
+            
+            NSMutableString *label = _cells[i].label.mutableCopy;
+            NSMutableString *countString = NSMutableString.string;
+            [countString insertString:[NSString stringWithFormat:@"%i", _cells[i].count] atIndex:0];
+            
+            while (countString.length < countLength)
+                [countString insertString:@" " atIndex:0];
+            
+            [label appendString:[NSString stringWithFormat:@" (%@)", countString.copy]];
+            
+            text = [[NSAttributedString alloc] initWithString:label.copy
+                                                   attributes:textAttributes];
+            
+            if (_usePointSymbols)
+            {
+                rect = CGRectMake(symbolSize +  (margin * 2.0),
+                                  ((-rowHeight * (i + 1)) - (verticalOffset * 0.5)),
+                                  width, (rowHeight - verticalOffset));
+            }
+            
+            else
+            {
+                rect = CGRectMake(margin, ((-rowHeight * (i + 1)) - (verticalOffset * 0.5)),
+                                  width, (rowHeight - verticalOffset));
+            }
+            
+            path = CGPathCreateWithRect(rect, NULL);
+            framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
+            frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
+            
+            if (!_usePointSymbols)
+            {
+                CGSize frameSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, text.length),
+                                                                                NULL, rect.size, NULL);
+                
+                rect = CGRectMake(width - margin - frameSize.width, rect.origin.y,
+                                  frameSize.width, rect.size.height);
+                
+                path = CGPathCreateWithRect(rect, NULL);
+                framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
+                frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
+                
+                CGFloat barAreaWidth = (width - (margin * 3.0) - frameSize.width);
+                
+                rect = CGRectMake(margin, (-rowHeight * (i + 1) + (rowHeight * 0.15)),
+                                  barAreaWidth * _cells[i].symbolWidth, (rowHeight * 0.7));
+                
+                if (_useClassColors)
+                {
+                    CGContextSetFillColorWithColor(context, _cells[i].symbolColor.CGColor);
+                    NSLog(@"%@", _cells[i].symbolColor.description);
+                }
+                
+                else
+                    CGContextSetFillColorWithColor(context, _symbolDefaultColor.CGColor);
+                
+                CGContextSetStrokeColorWithColor(context, black);
+                CGContextSetLineWidth(context, _outputFactor);
+                CGContextFillRect(context, rect);
+                CGContextStrokeRect(context, rect);
+            }
+
+            CTFrameDraw(frame, context);
+            
+            CFRelease(path);
+            CFRelease(framesetter);
+            CFRelease(frame);
+        }
+        
+        CFRelease(fontRef);
+
+        WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
+        UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
+        
+        CGColorSpaceRelease(colorSpace);
+        
+        rtn = YES;
+    }
+    
+    return rtn;
 }
 
 @end
