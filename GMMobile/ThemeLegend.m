@@ -72,10 +72,6 @@
         [another.cells addObject:newCell];
     }
     
-    another.outputFile = [NSString stringWithFormat:@"%@/TestFile.bmp", UserDefaults.defaults.localFilePath];
-    another.outputFactor = 2.0;
-    [another writeThemeLegendToFile];
-    
     return another;
 }
 
@@ -146,7 +142,6 @@
     if (_outputFile && _outputFile.length)
     {
         void *bmData = NULL;
-        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGColorRef white = UIColor.whiteColor.CGColor;
         CGColorRef black = UIColor.blackColor.CGColor;
         CGFloat rowHeight =  (STD_ROW_HEIGHT * _outputFactor);
@@ -158,6 +153,7 @@
         NSUInteger countLength = 0;
         CGFloat symbolSize = (rowHeight * 0.7);
         
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
         CGContextSetAllowsAntialiasing(context, YES);
         CGContextSetShouldAntialias(context, YES);
@@ -169,9 +165,6 @@
             rect = CGRectMake(border, (i * rowHeight), (width - (border * 2.0)), (rowHeight - border));
             CGContextFillRect(context, rect);
         }
-        
-        CGContextTranslateCTM(context, 0.0, rowHeight);
-        CGContextScaleCTM(context, 1.0, -1.0);
         
         CTFontRef fontRef = CTFontCreateWithName((CFStringRef)@"AppleSDGothicNeo-Bold", fontSize, NULL);
         CGRect fontRect = CTFontGetBoundingBox(fontRef);
@@ -192,6 +185,10 @@
         CGPathRef path = CGPathCreateWithRect(rect, NULL);
         CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
         CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
+        
+        CGContextTranslateCTM(context, 0.0, rowHeight);
+        CGContextScaleCTM(context, 1.0, -1.0);
+        
         CTFrameDraw(frame, context);
         
         CFRelease(path);
@@ -265,6 +262,39 @@
             path = CGPathCreateWithRect(rect, NULL);
             framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
             frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
+            
+            if (!_usePointSymbols)
+            {
+                CGSize frameSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, text.length),
+                                                                                NULL, rect.size, NULL);
+                
+                rect = CGRectMake(width - margin - frameSize.width, rect.origin.y,
+                                  frameSize.width, rect.size.height);
+                
+                path = CGPathCreateWithRect(rect, NULL);
+                framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
+                frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
+                
+                CGFloat barAreaWidth = (width - (margin * 3.0) - frameSize.width);
+                
+                rect = CGRectMake(margin, (-rowHeight * (i + 1) + (rowHeight * 0.15)),
+                                  barAreaWidth * _cells[i].symbolWidth, (rowHeight * 0.7));
+                
+                if (_useClassColors)
+                {
+                    CGContextSetFillColorWithColor(context, _cells[i].symbolColor.CGColor);
+                    NSLog(@"%@", _cells[i].symbolColor.description);
+                }
+                
+                else
+                    CGContextSetFillColorWithColor(context, _symbolDefaultColor.CGColor);
+                
+                CGContextSetStrokeColorWithColor(context, black);
+                CGContextSetLineWidth(context, _outputFactor);
+                CGContextFillRect(context, rect);
+                CGContextStrokeRect(context, rect);
+            }
+
             CTFrameDraw(frame, context);
             
             CFRelease(path);
@@ -273,9 +303,11 @@
         }
         
         CFRelease(fontRef);
-  
+
         WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
         UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
+        
+        CGColorSpaceRelease(colorSpace);
         
         rtn = YES;
     }
