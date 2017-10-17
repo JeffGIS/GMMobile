@@ -16,6 +16,7 @@
 #import "CCodeLibrary/NVKeyboard.h"
 #import "CCodeLibrary/NVTextViewAlert.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
+#import "CreateBatchCrimeMaps.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -376,7 +377,7 @@ EAGLContext *CreateBestEAGLContext()
      @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location", @"Set Default Email Recipients"*/
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"See Version History", @"See Glossary of Terms"];//,@"Upload Crime Data"];
+                  @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps"];//, @"Compress Crime Data"];//,@"Upload Crime Data"];
     
     [_tableView reloadData];
 }
@@ -569,6 +570,18 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Create Background Crime Maps"])
+    {
+        [self batchCrimeMaps];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Compress Crime Data"])
+    {
+        [self compressCrimeData];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Compute PDF Pages"])
     {
         [self computePDFPages];
@@ -605,7 +618,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
 }
 
-- (IBAction)uploadCrimeData
+- (void)uploadCrimeData
 {
     _push = FTPDataPush.push;
     _push.delegate = self;
@@ -627,6 +640,27 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
      appendFileName:NO];
 }
 
+- (void)compressCrimeData
+{
+    
+    _cd = [CrimeData new];
+    [_cd open];
+    long long oldSize = _cd.fileSize;
+    NSString *title = [NSString stringWithFormat:@"Compressing Crime Database\nInitial Size:%lli",oldSize];
+    [_cd close:YES];
+    [_popoverView showAfter:0.1 withTitle:title];
+    long long newSize = [_cd compress];
+    int pct = 100.0 * (double)newSize / (double)oldSize;
+    _popoverView.title = [NSString stringWithFormat:@"Compress Crime Database Complete\nNew Size:%lli\n%i Percent",newSize, pct];
+ }
+
+- (void) batchCrimeMaps
+{
+    CreateBatchCrimeMaps * bcm = CreateBatchCrimeMaps.new;
+    
+    [bcm createImages:@"test"
+              popover:_popoverView];
+}
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     [popoverView hide];

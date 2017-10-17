@@ -1,0 +1,92 @@
+//
+//  CreateBatchCrimeMaps.m
+//  NVMobile
+//
+//  Created by Jeff Smith on 10/15/17.
+//  Copyright © 2017 GSSi. All rights reserved.
+//
+
+#import "CreateBatchCrimeMaps.h"
+#import "CrimeDataDisplay.h"
+#import "BoundaryData.h"
+
+@implementation CreateBatchCrimeMaps
+- (void)createImages:(NSString *)batchName
+                     popover:(GSSiPopoverView*)popover
+
+{
+    DisplayCharacteristics *dc = DisplayCharacteristics.new;
+    void *bmData = NULL;
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    int width = 1024*4;
+    int height = 1024*8;
+    CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
+    CGContextSetAllowsAntialiasing(context, YES);
+    CGContextSetShouldAntialias(context, YES);
+    CGRect colorRect;
+    colorRect.origin.x = 0;
+    colorRect.origin.y = 0;
+    colorRect.size.width = width;
+    colorRect.size.height = height;
+    UIColor *white = [UIColor whiteColor];
+    CGContextSetFillColorWithColor(context,[white CGColor]);
+    CGContextFillRect (context,colorRect);
+
+    
+    MNMXCORD viewBounds;
+    
+    viewBounds.xmn = 0;
+    viewBounds.ymn = 0;
+    viewBounds.xmx = width;
+    viewBounds.ymx = height;
+
+    Themes * themes = [[Themes alloc]init];
+    themes.displayID = CRAPI.sharedInstance.keepProcessing;
+    HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
+    ConfigurationControl.sharedInstance.currentApp = HCConfigCrimes;
+    [themes setAppThemes];
+
+    long long refno = 51144;//[BoundaryData getBoundaryAreaRefnoForType:@"CITY" andName:@"Minneapolis"];
+    BoundaryData * bd = BoundaryData.new;
+    MNMXCORD areaBounds = [bd getBoundaryAreaBounds:refno
+                                   ofType:@"BOUNDARY"];
+    CORNERPOINTS latlonCornerPoints = CornerPointsFromLLBoundsAndView (&areaBounds,&viewBounds);
+    MNMXCORD latlonBounds = CornerPointBounds (&latlonCornerPoints);
+    CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
+    cd.processingID = 0;
+    cd.zoom = 0;
+    cd.mode = PINMAP;
+    cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
+    cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
+    cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
+    int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
+    while (passID < DonePass)
+    {
+        if (passID == DataPass)
+            [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
+        else if (passID == DisplayPass)
+            [themes themesBeginDisplayPass:CRAPI.sharedInstance.keepProcessing];
+        [cd displayCrimePoints:context
+        displayCharacteristics:dc
+                     llCorners:&latlonCornerPoints
+                      LLBounds:&latlonBounds
+                    viewBounds:MNMXCORD_view(&viewBounds)
+                        themes:themes
+                   pointInArea:nil
+                          pass:passID++];
+    }
+    
+    if (context)
+        CGContextRelease(context);
+    NSString * file = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.bmp"];
+    BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
+    UIImage *image = [UIImage imageWithContentsOfFile:file];
+    [UIImagePNGRepresentation(image) writeToFile:file atomically:YES];
+    
+    CGColorSpaceRelease(colorSpace);
+    if (bmData)
+        free (bmData);
+    ConfigurationControl.sharedInstance.currentApp = saveConfig;
+}
+
+@end
