@@ -32,6 +32,8 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
+    BOOL uploadTestLegend = YES;
+    
     ThemeLegend *another = [[ThemeLegend allocWithZone: zone] init];
     another.numCells = _numCells;
     another.numColumns = _numColumns;
@@ -70,6 +72,25 @@
     {
         ThemeLegendCell *newCell = [cl copy];
         [another.cells addObject:newCell];
+    }
+    
+    if (uploadTestLegend && [another.title isEqualToString:@"Hour"])
+    {
+        BOOL hasValues = NO;
+        
+        for (int i = 0; i < _numCells; i++)
+        {
+            hasValues = _cells[i].count;
+            
+            if (hasValues)
+            {
+                another.outputFactor = 1.0;
+                another.outputFile = [NSString stringWithFormat:@"%@/TestFile.bmp", UserDefaults.defaults.localFilePath];
+                [another writeThemeLegendToFile];
+                uploadToCloud(another.outputFile, YES);
+                break;
+            }
+        }
     }
     
     return another;
@@ -306,6 +327,7 @@
 
         WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
         UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
+#pragma unused(image)
         
         CGColorSpaceRelease(colorSpace);
         
