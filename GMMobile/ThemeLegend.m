@@ -32,7 +32,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    BOOL uploadTestLegend = YES;
+    BOOL uploadTestLegend = NO;
     
     ThemeLegend *another = [[ThemeLegend allocWithZone: zone] init];
     another.numCells = _numCells;
