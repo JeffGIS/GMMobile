@@ -32,7 +32,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    BOOL uploadTestLegend = NO;
+    BOOL testLegend = YES;
     
     ThemeLegend *another = [[ThemeLegend allocWithZone: zone] init];
     another.numCells = _numCells;
@@ -74,9 +74,9 @@
         [another.cells addObject:newCell];
     }
     
-    if (uploadTestLegend && [another.title isEqualToString:@"Hour"])
+    if (testLegend && [another.title isEqualToString:@"Hour"])
     {
-        BOOL hasValues = NO;
+        BOOL hasValues = NO, uploadTestLegend = NO;
         
         for (int i = 0; i < _numCells; i++)
         {
@@ -87,7 +87,9 @@
                 another.outputFactor = 1.0;
                 another.outputFile = [NSString stringWithFormat:@"%@/TestFile.bmp", UserDefaults.defaults.localFilePath];
                 [another writeThemeLegendToFile];
-                uploadToCloud(another.outputFile, YES);
+                
+                if (uploadTestLegend)
+                    uploadToCloud(another.outputFile, YES);
                 break;
             }
         }
@@ -165,6 +167,10 @@
         void *bmData = NULL;
         CGColorRef white = UIColor.whiteColor.CGColor;
         CGColorRef black = UIColor.blackColor.CGColor;
+        CGColorRef red = UIColor.redColor.CGColor;
+        CGColorRef blue = UIColor.blueColor.CGColor;
+        CGColorRef stdDevMask = [UIColor colorWithWhite:0.0 alpha:0.05].CGColor;
+        
         CGFloat rowHeight =  (STD_ROW_HEIGHT * _outputFactor);
         CGFloat margin = (STD_MARGIN * _outputFactor);
         int width = (STD_WIDTH * _outputFactor);
@@ -173,6 +179,7 @@
         CGFloat fontSize = (STD_FONT_SIZE * _outputFactor);
         NSUInteger countLength = 0;
         CGFloat symbolSize = (rowHeight * 0.7);
+        CGFloat barAreaWidth = 0.0;
         
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
@@ -217,12 +224,26 @@
         CFRelease(frame);
         CFRelease(fontRef);
         
+        int sum = 0, max = 0;
+        NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
+        NSString *countString = @"";
+        
         for (int i = 0; i < _numCells; i++)
         {
-            NSString *countString = [NSString stringWithFormat:@"%i", _cells[i].count];
+            countString = [NSString stringWithFormat:@"%i", _cells[i].count];
             countLength = MAX(countLength, countString.length);
+            
+            if (_hasOverlay)
+            {
+                sum+= _cells[i].count;
+                max = MAX(max, _cells[i].count);
+                [countArray addObject:[NSNumber numberWithInt:_cells[i].count]];
+            }
         }
         
+        NSSortDescriptor *sortAscending = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:YES];
+        [countArray sortUsingDescriptors:[NSArray arrayWithObject:sortAscending]];
+
         fontRef = CTFontCreateWithName((CFStringRef)@"CourierNewPS-BoldMT", (fontSize * 0.64), NULL);
         fontRect = CTFontGetBoundingBox(fontRef);
         verticalOffset = (rowHeight - fontRect.size.height);
@@ -296,10 +317,10 @@
                 framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
                 frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, text.length), path, NULL);
                 
-                CGFloat barAreaWidth = (width - (margin * 3.0) - frameSize.width);
+                barAreaWidth = (width - (margin * 3.0) - frameSize.width);
                 
                 rect = CGRectMake(margin, (-rowHeight * (i + 1) + (rowHeight * 0.15)),
-                                  barAreaWidth * _cells[i].symbolWidth, (rowHeight * 0.7));
+                                  (barAreaWidth * _cells[i].symbolWidth), (rowHeight * 0.7));
                 
                 if (_useClassColors)
                 {
@@ -324,12 +345,66 @@
         }
         
         CFRelease(fontRef);
+        
+        if (max)
+        {
+            double avgPctOfMax = 0.0, medianPctOfMax = 0.0, stdDev = 0.0, avgValue = 0.0;
+            double sd1Lower = 0.0, sd1Upper = 0.0, sd2Lower = 0.0, sd2Upper = 0.0;
+            int middle = 0;
+            
+            avgValue = (sum / (double)_numCells);
+            avgPctOfMax = (avgValue / (double)max);
+            middle = ((int)countArray.count / 2);
+            
+            if (countArray.count % 2)
+                medianPctOfMax = ((countArray[middle].intValue) / (CGFloat)max);
+            
+            else
+            {
+                int value1 = (countArray[middle].intValue);
+                int value2 = (countArray[middle - 1].intValue);
+                medianPctOfMax = (((value1 + value2) / 2.0) / (double)max);
+            }
+            
+            for (int i = 0; i < _numCells; i++)
+                stdDev += pow((avgValue -_cells[i].count), 2);
+            
+            stdDev = sqrt(stdDev / (double)_numCells);
+            sd1Lower = ((avgValue - stdDev) / (double)max);
+            sd1Upper = ((avgValue + stdDev) / (double)max);
+            sd2Lower = ((avgValue - (stdDev * 2.0)) / (double)max);
+            sd2Upper = ((avgValue + (stdDev * 2.0)) / (double)max);
+            
+            CGFloat avgXPos = (margin + (barAreaWidth * avgPctOfMax));
+            CGFloat medianXPos = (margin + (barAreaWidth * medianPctOfMax));
+            CGFloat sd1XPos = (margin + (barAreaWidth * sd1Lower));
+            CGFloat sd1Width = (barAreaWidth * (sd1Upper - sd1Lower));
+            CGFloat sd2XPos = (margin + (barAreaWidth * sd2Lower));
+            CGFloat sd2Width = (barAreaWidth * (sd2Upper - sd2Lower));
+            
+            rect = CGRectMake(avgXPos, (-height + rowHeight) , border, (height - rowHeight));
+            CGContextSetFillColorWithColor(context, red);
+            CGContextFillRect(context, rect);
+            
+            rect = CGRectMake(medianXPos, rect.origin.y, rect.size.width, rect.size.height);
+            CGContextSetFillColorWithColor(context, blue);
+            CGContextFillRect(context, rect);
+            
+            rect = CGRectMake(sd1XPos, rect.origin.y, sd1Width, rect.size.height);
+            CGContextSetFillColorWithColor(context, stdDevMask);
+            CGContextFillRect(context, rect);
+            
+            rect = CGRectMake(sd2XPos, rect.origin.y, sd2Width, rect.size.height);
+            CGContextSetFillColorWithColor(context, stdDevMask);
+            CGContextFillRect(context, rect);
+        }
 
         WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
         UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
 #pragma unused(image)
         
         CGColorSpaceRelease(colorSpace);
+        CGContextRelease(context);
         
         rtn = YES;
     }
