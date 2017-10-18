@@ -33,7 +33,9 @@
 @property MNMXCORD maxValBounds;
 @property GetSlowValues * getSlowValues;
 
-+ (Theme *)createTheme:(ThemeTypes)type;
++ (Theme *)createTheme:(ThemeTypes)type
+                inFile:(NSString *)file
+               atScale:(double)outScale;
 
 - (BOOL) classIsSelected:(int)iclass;
 - (int) classFromUCR:(int)ucr;

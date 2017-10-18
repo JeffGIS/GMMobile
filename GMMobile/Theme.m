@@ -61,6 +61,8 @@ static int ii=0;
 }
 
 + (Theme *)createTheme:(ThemeTypes)type
+                inFile:(NSString *)file
+               atScale:(double)outScale
 {
     Theme * thm = [[Theme alloc]init];
     ThemeClass *class;
@@ -83,6 +85,11 @@ static int ii=0;
     thm.legend.labelTxColor = [UIColor blueColor];
     thm.legend.symbolDefaultColor = [UIColor greenColor];
     thm.legend.hasColors = YES;
+    if (file)
+    {
+        thm.legend.outputFile = file;
+        thm.legend.outputFactor = outScale;
+    }
     
     CGFloat PropListAlpha = 1.0-NVMetroSettings.sharedInstance.themeTransparency;
     UIColor *selectedColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];

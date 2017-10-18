@@ -14,8 +14,11 @@
 @property NSMutableArray *themeList;
 @property int displayID;
 @property NSArray * UCRRanges;
+@property NSString * outDir;
+@property double outScale;
 
-- (void) setAppThemes;
+- (void) setAppThemes:(NSString *)outputDirectory
+         outputFactor:(double)factor;
 - (ItemProcessingPassTypes)themesNeedDataPass:(int)displayID;
 - (void) themesBeginDataPass:(int)displayID;
 - (void) themesEndDataPass:(int)displayID;

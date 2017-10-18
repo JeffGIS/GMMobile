@@ -801,6 +801,8 @@
 				EBCA6C261A934D15003F7FB8 /* BoundaryData.m */,
 				EBF1356E1AE282A30046990F /* ConfigurationControl.h */,
 				EBF1356F1AE282A30046990F /* ConfigurationControl.m */,
+				EB10EEF81F93AF6B006A6938 /* CreateBatchCrimeMaps.h */,
+				EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */,
 				EBFC2A321BE9186900E0C1B3 /* CrimeDataDisplay.h */,
 				EBFC2A331BE9186900E0C1B3 /* CrimeDataDisplay.m */,
 				BB12E2371E9567F40063FE4A /* CrimeList.h */,
@@ -840,8 +842,6 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
-				EB10EEF81F93AF6B006A6938 /* CreateBatchCrimeMaps.h */,
-				EB10EEF91F93AF6B006A6938 /* CreateBatchCrimeMaps.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -966,10 +966,10 @@
 		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
 			isa = PBXGroup;
 			children = (
-				A9C8372A1A65B2DE005EC4FA /* Model */,
-				A9C8372B1A65B2E4005EC4FA /* View */,
 				A9C8372C1A65B2E8005EC4FA /* Controller */,
+				A9C8372A1A65B2DE005EC4FA /* Model */,
 				EB5521CC1A61B6A8008CE2D1 /* Supporting Files */,
+				A9C8372B1A65B2E4005EC4FA /* View */,
 			);
 			path = GMMobile;
 			sourceTree = "<group>";
