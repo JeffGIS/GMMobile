@@ -156,9 +156,9 @@
         return (height + 10.0);
 }
 
-- (BOOL)writeThemeLegendToFile
+- (CGSize)writeThemeLegendToFile
 {
-    BOOL rtn = NO;
+    CGSize rtn = {0};
     
     if (_outputFile && _outputFile.length)
     {
@@ -331,7 +331,7 @@
         
         CGColorSpaceRelease(colorSpace);
         
-        rtn = YES;
+        rtn = CGSizeMake (width,height);
     }
     
     return rtn;

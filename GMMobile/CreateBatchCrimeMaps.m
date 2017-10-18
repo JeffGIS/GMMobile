@@ -19,7 +19,7 @@
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     int width = 1024*1;
-    int height = 1024*4;
+    int height = 1024*2;
     CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
     CGContextSetAllowsAntialiasing(context, YES);
     CGContextSetShouldAntialias(context, YES);
@@ -48,7 +48,7 @@
     HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
     ConfigurationControl.sharedInstance.currentApp = HCConfigCrimes;
     [themes setAppThemes:tempDirectory
-            outputFactor:1];
+            outputFactor:0.3];
 
     long long refno = 51144;//[BoundaryData getBoundaryAreaRefnoForType:@"CITY" andName:@"Minneapolis"];
     BoundaryData * bd = BoundaryData.new;
@@ -112,12 +112,35 @@
     if (bmData)
         free (bmData);
     ConfigurationControl.sharedInstance.currentApp = saveConfig;
+    NSString * pdfFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.pdf"];;
+    NSMutableArray * pageArray = NSMutableArray.new;
+    PDFPage * page = PDFPage.new;
+    page.pageWidth = 850;
+    page.pageHeight = 1100;
+    PDFPageImage * mainImage = PDFPageImage.new;
+    mainImage.imageFile = file;
+    mainImage.imageLocation = CGRectMake (20,20,300,600);
+    [page.PDFPageImages addObject:mainImage];
+    int x = 640;
+    int y = 30;
     for (Theme *thm in themes.themeList)
     {
-        [thm.legend writeThemeLegendToFile];
+        PDFPageImage * image = PDFPageImage.new;
+        CGSize size = [thm.legend writeThemeLegendToFile];
+        image.imageLocation = CGRectMake(x,y, size.width, size.height);
+        y+= size.height + 10;
+        image.imageFile = thm.legend.outputFile;
+        [page.PDFPageImages addObject:image];
     }
-    
-   // uploadToCloud(file, YES);
+    PDFPageTextBlock *tb = PDFPageTextBlock.new;
+    tb.text = @"Test Page 1";
+    tb.textLocation = CGRectMake(5, 5, 600, 30);
+    tb.font = [UIFont boldSystemFontOfSize:24.0];
+    [page.PDFPageTextBlocks addObject:tb];
+    [PDFCreator writePDFtoFile:pdfFile
+                 fromPageArray:pageArray];
+
+    uploadToCloud(pdfFile, YES);
 
 }
 

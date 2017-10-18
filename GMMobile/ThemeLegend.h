@@ -53,6 +53,6 @@
 @property MNMXCORD maxValBounds;
 @property (readonly) CGFloat headerHeight;
 
-- (BOOL)writeThemeLegendToFile;
+- (CGSize)writeThemeLegendToFile;
 
 @end
