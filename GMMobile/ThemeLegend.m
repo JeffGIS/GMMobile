@@ -205,12 +205,14 @@
         NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
         NSString *countString = @"";
         
+        _hasOverlay = YES;
+        
         for (int i = 0; i < _numCells; i++)
         {
             countString = [NSString stringWithFormat:@"%i", _cells[i].count];
             countLength = MAX(countLength, countString.length);
             
-            if (_hasOverlay)
+            if (!_usePointSymbols && _hasOverlay)
             {
                 sum+= _cells[i].count;
                 max = MAX(max, _cells[i].count);
@@ -377,8 +379,7 @@
         }
 
         WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
-        UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
-#pragma unused(image)
+        //UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
         
         CGColorSpaceRelease(colorSpace);
         CGContextRelease(context);
