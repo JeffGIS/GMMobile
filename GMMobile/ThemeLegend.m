@@ -32,8 +32,6 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    BOOL testLegend = YES;
-    
     ThemeLegend *another = [[ThemeLegend allocWithZone: zone] init];
     another.numCells = _numCells;
     another.numColumns = _numColumns;
@@ -72,27 +70,6 @@
     {
         ThemeLegendCell *newCell = [cl copy];
         [another.cells addObject:newCell];
-    }
-    
-    if (testLegend && [another.title isEqualToString:@"Hour"])
-    {
-        BOOL hasValues = NO, uploadTestLegend = NO;
-        
-        for (int i = 0; i < _numCells; i++)
-        {
-            hasValues = _cells[i].count;
-            
-            if (hasValues)
-            {
-                another.outputFactor = 1.0;
-                another.outputFile = [NSString stringWithFormat:@"%@/TestFile.bmp", UserDefaults.defaults.localFilePath];
-                [another writeThemeLegendToFile];
-                
-                if (uploadTestLegend)
-                    uploadToCloud(another.outputFile, YES);
-                break;
-            }
-        }
     }
     
     return another;
