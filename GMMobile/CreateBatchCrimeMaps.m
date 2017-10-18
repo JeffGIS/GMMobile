@@ -18,11 +18,13 @@
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    int width = 1024*4;
-    int height = 1024*8;
+    int width = 1024*2;
+    int height = 1024*4;
     CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
     CGContextSetAllowsAntialiasing(context, YES);
     CGContextSetShouldAntialias(context, YES);
+    CGContextTranslateCTM(context, 0, height);
+    CGContextScaleCTM(context, 1, -1);
     CGRect colorRect;
     colorRect.origin.x = 0;
     colorRect.origin.y = 0;
@@ -55,7 +57,7 @@
     CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
     cd.processingID = 0;
     cd.zoom = 0;
-    cd.mode = PINMAP;
+    cd.mode = HOTSPOT;
     cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
     cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
     cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
@@ -75,13 +77,34 @@
                    pointInArea:nil
                           pass:passID++];
     }
-    
+    if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
+        (CRAPI.sharedInstance.showPolylineForBounds ||
+         CRAPI.sharedInstance.maskBoundsForBounds))
+    {
+        BoundaryData *bd = [[BoundaryData alloc] init];
+        
+        [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
+                     ofType:@"BOUNDARY"
+                     asMask:CRAPI.sharedInstance.maskBoundsForBounds
+                  inContext:context
+                  llCorners:&latlonCornerPoints
+                   LLBounds:&latlonBounds
+                 viewBounds:&viewBounds];
+    }
+
     if (context)
         CGContextRelease(context);
     NSString * file = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.bmp"];
     BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
+
+    long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:file
+                                                                        error:nil].fileSize;
+
     UIImage *image = [UIImage imageWithContentsOfFile:file];
     [UIImagePNGRepresentation(image) writeToFile:file atomically:YES];
+    
+    fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:file
+                                                               error:nil].fileSize;
     
     CGColorSpaceRelease(colorSpace);
     if (bmData)
