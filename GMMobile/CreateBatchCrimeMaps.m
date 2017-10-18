@@ -1,19 +1,14 @@
-//
 //  CreateBatchCrimeMaps.m
 //  NVMobile
-//
-//  Created by Jeff Smith on 10/15/17.
-//  Copyright © 2017 GSSi. All rights reserved.
-//
 
 #import "CreateBatchCrimeMaps.h"
 #import "CrimeDataDisplay.h"
 #import "BoundaryData.h"
 
 @implementation CreateBatchCrimeMaps
-- (void)createImages:(NSString *)batchName
-                     popover:(GSSiPopoverView*)popover
 
+- (void)createImages:(NSString *)batchName
+             popover:(GSSiPopoverView *)popover
 {
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     void *bmData = NULL;
@@ -34,7 +29,6 @@
     CGContextSetFillColorWithColor(context,[white CGColor]);
     CGContextFillRect (context,colorRect);
 
-    
     MNMXCORD viewBounds;
     
     viewBounds.xmn = 0;
@@ -138,11 +132,9 @@
     tb.font = [UIFont boldSystemFontOfSize:24.0];
     [page.PDFPageTextBlocks addObject:tb];
     [pageArray addObject:page];
-    [PDFCreator writePDFtoFile:pdfFile
-                 fromPageArray:pageArray];
-
+    
+    [PDFCreator writePDFtoFile:pdfFile fromPageArray:pageArray];
     uploadToCloud(pdfFile, YES);
-
 }
 
 @end

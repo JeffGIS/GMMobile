@@ -966,10 +966,10 @@
 		EB5521CB1A61B6A8008CE2D1 /* GMMobile */ = {
 			isa = PBXGroup;
 			children = (
-				A9C8372C1A65B2E8005EC4FA /* Controller */,
 				A9C8372A1A65B2DE005EC4FA /* Model */,
-				EB5521CC1A61B6A8008CE2D1 /* Supporting Files */,
 				A9C8372B1A65B2E4005EC4FA /* View */,
+				A9C8372C1A65B2E8005EC4FA /* Controller */,
+				EB5521CC1A61B6A8008CE2D1 /* Supporting Files */,
 			);
 			path = GMMobile;
 			sourceTree = "<group>";

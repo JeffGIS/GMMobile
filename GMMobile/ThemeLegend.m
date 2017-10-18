@@ -205,8 +205,6 @@
         NSMutableArray<NSNumber *> *countArray = NSMutableArray.array;
         NSString *countString = @"";
         
-        _hasOverlay = YES;
-        
         for (int i = 0; i < _numCells; i++)
         {
             countString = [NSString stringWithFormat:@"%i", _cells[i].count];
@@ -384,11 +382,10 @@
         CGColorSpaceRelease(colorSpace);
         CGContextRelease(context);
         
-        rtn = CGSizeMake (width,height);
+        rtn = CGSizeMake(width,height);
     }
     
     return rtn;
 }
 
 @end
-
