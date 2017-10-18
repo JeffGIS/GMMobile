@@ -137,6 +137,7 @@
     tb.textLocation = CGRectMake(5, 5, 600, 30);
     tb.font = [UIFont boldSystemFontOfSize:24.0];
     [page.PDFPageTextBlocks addObject:tb];
+    [pageArray addObject:page];
     [PDFCreator writePDFtoFile:pdfFile
                  fromPageArray:pageArray];
 
