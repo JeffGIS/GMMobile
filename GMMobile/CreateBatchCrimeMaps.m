@@ -18,7 +18,7 @@
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    int width = 1024*2;
+    int width = 1024*1;
     int height = 1024*4;
     CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
     CGContextSetAllowsAntialiasing(context, YES);
@@ -41,12 +41,14 @@
     viewBounds.ymn = 0;
     viewBounds.xmx = width;
     viewBounds.ymx = height;
-
+    
+    NSString * tempDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:@"/BatchCrimeMaps"];
     Themes * themes = [[Themes alloc]init];
-    themes.displayID = CRAPI.sharedInstance.keepProcessing;
+    themes.displayID = 0;
     HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
     ConfigurationControl.sharedInstance.currentApp = HCConfigCrimes;
-    [themes setAppThemes];
+    [themes setAppThemes:tempDirectory
+            outputFactor:1];
 
     long long refno = 51144;//[BoundaryData getBoundaryAreaRefnoForType:@"CITY" andName:@"Minneapolis"];
     BoundaryData * bd = BoundaryData.new;
@@ -57,17 +59,17 @@
     CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
     cd.processingID = 0;
     cd.zoom = 0;
-    cd.mode = HOTSPOT;
+    cd.mode = PINMAP;
     cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
     cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
     cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
-    int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
+    int passID = [themes themesNeedDataPass:0];
     while (passID < DonePass)
     {
         if (passID == DataPass)
-            [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
+            [themes themesBeginDataPass:0];
         else if (passID == DisplayPass)
-            [themes themesBeginDisplayPass:CRAPI.sharedInstance.keepProcessing];
+            [themes themesBeginDisplayPass:0];
         [cd displayCrimePoints:context
         displayCharacteristics:dc
                      llCorners:&latlonCornerPoints
@@ -91,7 +93,7 @@
                    LLBounds:&latlonBounds
                  viewBounds:&viewBounds];
     }
-
+    [themes themesEndDisplayPass:0];
     if (context)
         CGContextRelease(context);
     NSString * file = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.bmp"];
@@ -99,8 +101,8 @@
 
     long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:file
                                                                         error:nil].fileSize;
-
     UIImage *image = [UIImage imageWithContentsOfFile:file];
+    file = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.png"];
     [UIImagePNGRepresentation(image) writeToFile:file atomically:YES];
     
     fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:file
@@ -110,6 +112,13 @@
     if (bmData)
         free (bmData);
     ConfigurationControl.sharedInstance.currentApp = saveConfig;
+    for (Theme *thm in themes.themeList)
+    {
+        [thm.legend writeThemeLegendToFile];
+    }
+    
+   // uploadToCloud(file, YES);
+
 }
 
 @end

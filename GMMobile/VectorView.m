@@ -308,7 +308,8 @@
                 Themes * themes = [[Themes alloc]init];
                 themes.displayID = CRAPI.sharedInstance.keepProcessing;
                 
-                [themes setAppThemes];
+                [themes setAppThemes:nil
+                        outputFactor:1];
                 switch (_displayDataOption)
                 {
                     case DISPLAY_DATA_OPTION_DISPLAY:
@@ -707,7 +708,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     
     Themes * themes = [[Themes alloc]init];
     themes.displayID = CRAPI.sharedInstance.keepProcessing;
-    [themes setAppThemes];
+    [themes setAppThemes:nil
+            outputFactor:1];
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigFromSlowValues)
     {

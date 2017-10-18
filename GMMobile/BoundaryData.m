@@ -1518,7 +1518,8 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                     maxValue:maxValue
                                            factor:factor
                        theme:thm];
-        [themes setAppThemes];
+        [themes setAppThemes:nil
+                outputFactor:1];
         thm = themes.themeList[0];
         thm.numDecimals = nDecimals;
         if (isParcel)

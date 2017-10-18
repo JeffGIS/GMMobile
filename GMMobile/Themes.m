@@ -15,11 +15,33 @@
 
 @implementation Themes
 
-- (void)setAppThemes
+- (Theme *) createTheme:(ThemeTypes)type
+{
+    NSString * outFile = nil;
+    if (_outDir)
+        outFile = [NSString stringWithFormat:@"%@/%i.bmp",_outDir,(int)type];
+    Theme * thm = [Theme createTheme:type
+                              inFile:outFile
+                             atScale:_outScale];
+    return thm;
+}
+
+- (void)setAppThemes:(NSString *)outputDirectory
+        outputFactor:(double)factor;
 {
     Theme *thm;
     
-    if (ConfigurationControl.sharedInstance.legendApp != ConfigurationControl.sharedInstance.currentApp)
+    _outDir = outputDirectory;
+    _outScale = factor;
+    if (_outDir && ![_outDir isEqualToString:@""])
+    {
+        [NSFileManager.defaultManager createDirectoryAtPath:_outDir
+                                withIntermediateDirectories:YES attributes:nil
+                                                      error:nil];
+    }
+    else
+        _outDir = nil;
+    if (_outDir || ConfigurationControl.sharedInstance.legendApp != ConfigurationControl.sharedInstance.currentApp)
         [self destroyCurrentThemes];
     
     ConfigurationControl.sharedInstance.legendApp = ConfigurationControl.sharedInstance.currentApp;
@@ -32,9 +54,9 @@
         case HCConfigFromSlowValues:
         {
             if (ConfigurationControl.sharedInstance.currentMapitBaseLayer == MBL_LandUse)
-                thm = [Theme createTheme:MetroLandUseTheme];
+                thm = [self createTheme:MetroLandUseTheme];
             else
-                thm = [Theme createTheme:ColorByRefnoTheme];
+                thm = [self createTheme:ColorByRefnoTheme];
             [_themeList addObject:thm];
         }
             break;
@@ -44,64 +66,64 @@
             
             NSString *crimeCompare = [UserDefaults.defaults stringForKey:@"CrimeCompareValue"];
             
-            thm = [Theme createTheme:Part1Theme];
+            thm = [self createTheme:Part1Theme];
             if ([crimeLegend isEqualToString:@"Part 2 Offenses"])
-                thm = [Theme createTheme:Part2Theme];
+                thm = [self createTheme:Part2Theme];
             if ([crimeLegend isEqualToString:@"Crime Index"])
-                thm = [Theme createTheme:CrimeIndexTheme];
+                thm = [self createTheme:CrimeIndexTheme];
             if ([crimeLegend isEqualToString:@"Violent Crimes"])
-                thm = [Theme createTheme:ViolentTheme];
+                thm = [self createTheme:ViolentTheme];
             if ([crimeLegend isEqualToString:@"Assault"])
-                thm = [Theme createTheme:AssaultTheme];
+                thm = [self createTheme:AssaultTheme];
             if ([crimeLegend isEqualToString:@"Burglary"])
-                thm = [Theme createTheme:BurglaryTheme];
+                thm = [self createTheme:BurglaryTheme];
             if ([crimeLegend isEqualToString:@"Robbery"])
-                thm = [Theme createTheme:RobberyTheme];
+                thm = [self createTheme:RobberyTheme];
             if ([crimeLegend isEqualToString:@"Narcotics"])
-                thm = [Theme createTheme:NarcoticsTheme];
+                thm = [self createTheme:NarcoticsTheme];
             if ([crimeLegend isEqualToString:@"Motor Vehicle Theft"])
-                thm = [Theme createTheme:MotorVehicleTheftTheme];
+                thm = [self createTheme:MotorVehicleTheftTheme];
             if ([crimeLegend isEqualToString:@"Selected Theft"])
-                thm = [Theme createTheme:SelectedTheftTheme];
+                thm = [self createTheme:SelectedTheftTheme];
             if ([crimeLegend isEqualToString:@"Theft From Auto"])
-                thm = [Theme createTheme:TheftFromAutoTheme];
+                thm = [self createTheme:TheftFromAutoTheme];
             if ([crimeLegend isEqualToString:@"Crime Index"])
-                thm = [Theme createTheme:CrimeIndexTheme];
+                thm = [self createTheme:CrimeIndexTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:DepartmentTheme];
+            thm = [self createTheme:DepartmentTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:DayNightTheme];
+            thm = [self createTheme:DayNightTheme];
             [_themeList addObject:thm];
             
-            thm = [Theme createTheme:YearTheme];
+            thm = [self createTheme:YearTheme];
             [_themeList addObject:thm];
             if ([crimeCompare isEqualToString:@"Month With Monthly Compare"])
-                thm = [Theme createTheme:ThirteenMonthTheme];
+                thm = [self createTheme:ThirteenMonthTheme];
             else
-                thm = [Theme createTheme:MonthTheme];
+                thm = [self createTheme:MonthTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:DayofWeekTheme];
+            thm = [self createTheme:DayofWeekTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:HourTheme];
+            thm = [self createTheme:HourTheme];
             [_themeList addObject:thm];
         }
             break;
         case HCConfigCurbRamps:
-            thm = [Theme createTheme:CurbRampIntersectionTheme];
+            thm = [self createTheme:CurbRampIntersectionTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:CurbRampTheme];
+            thm = [self createTheme:CurbRampTheme];
             [_themeList addObject:thm];
             break;
         case HCConfigMapleGrove:
-            thm = [Theme createTheme:MGVWaterLineTheme];
+            thm = [self createTheme:MGVWaterLineTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVHydrantTheme];
+            thm = [self createTheme:MGVHydrantTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVFiberLineTheme];
+            thm = [self createTheme:MGVFiberLineTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVFiberPointTheme];
+            thm = [self createTheme:MGVFiberPointTheme];
             [_themeList addObject:thm];
-            thm = [Theme createTheme:MGVWaterMeterTheme];
+            thm = [self createTheme:MGVWaterMeterTheme];
             [_themeList addObject:thm];
             break;
         case HCConfigMetroProp:
@@ -111,18 +133,18 @@
             {
                 if (NVMetroSettings.sharedInstance.currentFeatureValue)
                 {
-                    thm = [Theme createTheme:MetroLandUseTheme];
+                    thm = [self createTheme:MetroLandUseTheme];
                     [_themeList addObject:thm];
                 }
             }
             else
             {
-                thm = [Theme createTheme:MetroPropTheme];
+                thm = [self createTheme:MetroPropTheme];
                 if (thm)
                     [_themeList addObject:thm];
                 if (ConfigurationControl.sharedInstance.currentPropSheetFieldType2)
                 {
-                    thm = [Theme createTheme:MetroPropTheme2];
+                    thm = [self createTheme:MetroPropTheme2];
                     if (thm)
                         [_themeList addObject:thm];
                 }

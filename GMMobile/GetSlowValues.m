@@ -132,7 +132,8 @@
     HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
     ConfigurationControl.sharedInstance.currentApp = HCConfigFromSlowValues;
     ConfigurationControl.sharedInstance.currentMapitBaseLayer = baseLayer;
-    [themes setAppThemes];
+    [themes setAppThemes:nil
+            outputFactor:1];
 
     Theme * theme = themes.themeList[0];
     theme.getSlowValues = self;
