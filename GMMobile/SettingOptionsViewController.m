@@ -17,6 +17,7 @@
 #import "CCodeLibrary/NVTextViewAlert.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "CreateBatchCrimeMaps.h"
+#import "CCodeLibrary/ChartsBitmap.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -377,7 +378,10 @@ EAGLContext *CreateBestEAGLContext()
      @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location", @"Set Default Email Recipients"*/
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps"];//, @"Compress Crime Data"];//,@"Upload Crime Data"];
+                  @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
+                  @"Create Charts Bitmap File"];
+    
+    //,@"Compress Crime Data"];//,@"Upload Crime Data"];
     
     [_tableView reloadData];
 }
@@ -573,6 +577,13 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Create Background Crime Maps"])
     {
         [self batchCrimeMaps];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Create Charts Bitmap File"])
+    {
+        ChartsBitmap *chart = ChartsBitmap.new;
+        [chart createChartBitmap];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
