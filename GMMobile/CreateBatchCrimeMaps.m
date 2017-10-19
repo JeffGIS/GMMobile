@@ -13,8 +13,8 @@
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    int width = 1024*1;
-    int height = 1024*2;
+    int width = 1600;
+    int height = 3200;
     CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
     CGContextSetAllowsAntialiasing(context, YES);
     CGContextSetShouldAntialias(context, YES);
@@ -37,15 +37,14 @@
     viewBounds.ymx = height;
     
     NSString * tempDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:@"/BatchCrimeMaps"];
-    Themes * themes = [[Themes alloc]init];
+    Themes *themes = Themes.new;
     themes.displayID = 0;
     HardCodedConfigs saveConfig = ConfigurationControl.sharedInstance.currentApp;
     ConfigurationControl.sharedInstance.currentApp = HCConfigCrimes;
-    [themes setAppThemes:tempDirectory
-            outputFactor:0.3];
+    [themes setAppThemes:tempDirectory outputFactor:0.8];
 
     long long refno = 51144;//[BoundaryData getBoundaryAreaRefnoForType:@"CITY" andName:@"Minneapolis"];
-    BoundaryData * bd = BoundaryData.new;
+    BoundaryData *bd = BoundaryData.new;
     MNMXCORD areaBounds = [bd getBoundaryAreaBounds:refno
                                    ofType:@"BOUNDARY"];
     CORNERPOINTS latlonCornerPoints = CornerPointsFromLLBoundsAndView (&areaBounds,&viewBounds);
@@ -58,12 +57,15 @@
     cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;
     cd.choroplethAdjustArea = ConfigurationControl.sharedInstance.adjustCrimeArea;
     int passID = [themes themesNeedDataPass:0];
+    
     while (passID < DonePass)
     {
         if (passID == DataPass)
             [themes themesBeginDataPass:0];
+        
         else if (passID == DisplayPass)
             [themes themesBeginDisplayPass:0];
+        
         [cd displayCrimePoints:context
         displayCharacteristics:dc
                      llCorners:&latlonCornerPoints
@@ -73,6 +75,7 @@
                    pointInArea:nil
                           pass:passID++];
     }
+    
     if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
         (CRAPI.sharedInstance.showPolylineForBounds ||
          CRAPI.sharedInstance.maskBoundsForBounds))
@@ -90,8 +93,8 @@
     [themes themesEndDisplayPass:0];
     if (context)
         CGContextRelease(context);
-    NSString * file = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.bmp"];
-    BOOL rtn = WriteBitmapDataToFile ((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
+    NSString *file = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.bmp"];
+    BOOL rtn = WriteBitmapDataToFile((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
 
     long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:file
                                                                         error:nil].fileSize;
@@ -106,31 +109,34 @@
     if (bmData)
         free (bmData);
     ConfigurationControl.sharedInstance.currentApp = saveConfig;
-    NSString * pdfFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.pdf"];;
-    NSMutableArray * pageArray = NSMutableArray.new;
-    PDFPage * page = PDFPage.new;
-    page.pageWidth = 850;
-    page.pageHeight = 1240;
-    PDFPageImage * mainImage = PDFPageImage.new;
+    NSString *pdfFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"temp.pdf"];;
+    NSMutableArray *pageArray = NSMutableArray.array;
+    PDFPage *page = PDFPage.new;
+    page.pageWidth = 2550;//8.5 inches X 300 DPI
+    page.pageHeight = 3300;//11 inches X 300 DPI
+    PDFPageImage *mainImage = PDFPageImage.new;
     mainImage.imageFile = file;
-    mainImage.imageLocation = CGRectMake (20,20,300,600);
+    mainImage.imageLocation = CGRectMake(60.0, 60.0, width, height);
     [page.PDFPageImages addObject:mainImage];
-    int x = 640;
-    int y = 30;
+    
+    int x = 1950;
+    int y = 90;
+    
     for (Theme *thm in themes.themeList)
     {
-        PDFPageImage * image = PDFPageImage.new;
+        PDFPageImage *image = PDFPageImage.new;
         CGSize size = [thm.legend writeThemeLegendToFile];
-        image.imageLocation = CGRectMake(x,y, size.width, size.height);
-        y+= size.height + 10;
+        image.imageLocation = CGRectMake(x, y, size.width, size.height);
+        y+= (size.height + 30);
         image.imageFile = thm.legend.outputFile;
         [page.PDFPageImages addObject:image];
     }
+    
     PDFPageTextBlock *tb = PDFPageTextBlock.new;
     tb.text = @"Test Page 1";
     tb.textColor = UIColor.purpleColor;
-    tb.textLocation = CGRectMake(5, 5, 600, 30);
-    tb.font = [UIFont boldSystemFontOfSize:24.0];
+    tb.textLocation = CGRectMake(15.0, 15.0, width, 90.0);
+    tb.font = [UIFont boldSystemFontOfSize:72.0];
     [page.PDFPageTextBlocks addObject:tb];
     [pageArray addObject:page];
     

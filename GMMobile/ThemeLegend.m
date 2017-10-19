@@ -10,7 +10,8 @@
 
 #define STD_ROW_HEIGHT 70
 #define STD_WIDTH 640
-#define STD_BORDER 2
+#define STD_BORDER 4
+#define STD_LINE 2
 #define STD_MARGIN 10
 #define STD_FONT_SIZE 48
 
@@ -148,14 +149,15 @@
         CGColorRef blue = UIColor.blueColor.CGColor;
         CGColorRef stdDevMask = [UIColor colorWithWhite:0.0 alpha:0.05].CGColor;
         
-        CGFloat rowHeight =  (STD_ROW_HEIGHT * _outputFactor);
-        CGFloat margin = (STD_MARGIN * _outputFactor);
-        int width = (STD_WIDTH * _outputFactor);
+        int rowHeight = round(STD_ROW_HEIGHT * _outputFactor);
+        int margin = round(STD_MARGIN * _outputFactor);
+        int width = round(STD_WIDTH * _outputFactor);
         int height = (rowHeight * (_numCells + 1));
-        CGFloat border = (STD_BORDER * _outputFactor);
+        int border = round(STD_BORDER * _outputFactor);
         CGFloat fontSize = (STD_FONT_SIZE * _outputFactor);
+        int lineWidth = round(STD_LINE * _outputFactor);
         NSUInteger countLength = 0;
-        CGFloat symbolSize = (rowHeight * 0.8);
+        CGFloat symbolSize = round((CGFloat)rowHeight * 0.8);
         CGFloat barAreaWidth = 0.0;
         
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -248,7 +250,7 @@
                                                  Size:symbolSize
                                             fillColor:color
                                             lineColor:black
-                                            lineWidth:_outputFactor];
+                                            lineWidth:lineWidth];
                 
                 free(point);
             }
@@ -309,7 +311,7 @@
                     CGContextSetFillColorWithColor(context, _symbolDefaultColor.CGColor);
                 
                 CGContextSetStrokeColorWithColor(context, black);
-                CGContextSetLineWidth(context, _outputFactor);
+                CGContextSetLineWidth(context, lineWidth);
                 CGContextFillRect(context, rect);
                 CGContextStrokeRect(context, rect);
             }
