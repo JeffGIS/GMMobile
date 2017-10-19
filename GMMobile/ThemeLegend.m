@@ -155,7 +155,7 @@
         CGFloat border = (STD_BORDER * _outputFactor);
         CGFloat fontSize = (STD_FONT_SIZE * _outputFactor);
         NSUInteger countLength = 0;
-        CGFloat symbolSize = (rowHeight * 0.7);
+        CGFloat symbolSize = (rowHeight * 0.8);
         CGFloat barAreaWidth = 0.0;
         
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -377,7 +377,7 @@
         }
 
         WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
-        UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
+        //UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
         
         CGColorSpaceRelease(colorSpace);
         CGContextRelease(context);
