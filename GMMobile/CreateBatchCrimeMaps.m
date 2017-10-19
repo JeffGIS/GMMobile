@@ -110,7 +110,7 @@
     NSMutableArray * pageArray = NSMutableArray.new;
     PDFPage * page = PDFPage.new;
     page.pageWidth = 850;
-    page.pageHeight = 1100;
+    page.pageHeight = 1240;
     PDFPageImage * mainImage = PDFPageImage.new;
     mainImage.imageFile = file;
     mainImage.imageLocation = CGRectMake (20,20,300,600);
@@ -128,6 +128,7 @@
     }
     PDFPageTextBlock *tb = PDFPageTextBlock.new;
     tb.text = @"Test Page 1";
+    tb.textColor = UIColor.purpleColor;
     tb.textLocation = CGRectMake(5, 5, 600, 30);
     tb.font = [UIFont boldSystemFontOfSize:24.0];
     [page.PDFPageTextBlocks addObject:tb];

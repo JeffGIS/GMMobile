@@ -267,7 +267,7 @@
             
             if (_usePointSymbols)
             {
-                rect = CGRectMake(symbolSize +  (margin * 2.0),
+                rect = CGRectMake(symbolSize + (margin * 2.0),
                                   ((-rowHeight * (i + 1)) - (verticalOffset * 0.5)),
                                   width, (rowHeight - verticalOffset));
             }
@@ -377,7 +377,7 @@
         }
 
         WriteBitmapDataToFile((LPSTR)_outputFile.UTF8String, width, height, colorSpace, bmData);
-        //UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
+        UIImage *image = [UIImage imageWithContentsOfFile:_outputFile];
         
         CGColorSpaceRelease(colorSpace);
         CGContextRelease(context);
