@@ -27,8 +27,8 @@ static int pageWidthFactor = 1;
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    int width = 1600;
-    int height = 3200;
+    int width = 1600*2;
+    int height = 3200*2;
     int numPages = 2;
     MNMXCORD viewBounds;
     _pdfFile = [NSString stringWithFormat:@"%@/sample%i.pdf",NSTemporaryDirectory(),pageWidthFactor];
@@ -68,7 +68,7 @@ static int pageWidthFactor = 1;
                            });
             
             NSString * tempDirectory = [NSString stringWithFormat:@"%@/BatchCrimeMaps/page%i",NSTemporaryDirectory(),pageNumber];
-            [themes setAppThemes:tempDirectory outputFactor:0.8*pageWidthFactor];
+            [themes setAppThemes:tempDirectory outputFactor:0.6*pageWidthFactor];
             
             CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
             CGContextSetAllowsAntialiasing(context, YES);
@@ -147,11 +147,13 @@ static int pageWidthFactor = 1;
                 free (bmData);
             ConfigurationControl.sharedInstance.currentApp = saveConfig;
             PDFPage *page = PDFPage.new;
-            page.pageWidth = 2550*pageWidthFactor;//8.5 inches X 300 DPI
-            page.pageHeight = 3300*pageWidthFactor;//11 inches X 300 DPI
+            page.pageWidth = 2550;//8.5 inches X 300 DPI
+            page.pageHeight = 3300;//11 inches X 300 DPI
             PDFPageImage *mainImage = PDFPageImage.new;
             mainImage.imageFile = file;
-            mainImage.imageLocation = CGRectMake(60.0*pageWidthFactor, 60.0*pageWidthFactor, width*pageWidthFactor, height*pageWidthFactor);
+            double mainImageWidth = 0.6;
+            double imageFactor = (mainImageWidth * height) / width;
+            mainImage.imageLocation = CGRectMake(60.0*pageWidthFactor, 60.0*pageWidthFactor, mainImageWidth*page.pageWidth, page.pageWidth*imageFactor);
             [page.PDFPageImages addObject:mainImage];
             
             int x = 1950;
@@ -172,7 +174,7 @@ static int pageWidthFactor = 1;
             if (pageNumber)
                 tb.text = @"Violent Crime Hotspot Map\nCity of Minneapolis";
             tb.textColor = UIColor.blueColor;
-            tb.textLocation = CGRectMake(15.0*pageWidthFactor, 15.0*pageWidthFactor, width*pageWidthFactor, 90.0*pageWidthFactor*2);
+            tb.textLocation = CGRectMake(15.0*pageWidthFactor, 15.0*pageWidthFactor, page.pageWidth, 90.0*pageWidthFactor*2);
             tb.font = [UIFont boldSystemFontOfSize:72.0*pageWidthFactor];
             [page.PDFPageTextBlocks addObject:tb];
             [_pageArray addObject:page];
