@@ -583,6 +583,72 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
               isEqualToString:@"Create Charts Bitmap File"])
     {
         ChartsBitmap *chart = ChartsBitmap.new;
+        ChartsBitmapDataSet *dataSet = ChartsBitmapDataSet.new;
+        dataSet.color = UIColor.blueColor;
+        
+        for (int i = 1; i < 20; i++)
+        {
+            DPoint *point = DPoint.new;
+            point.x = (150 * i);
+            point.y = ((arc4random() % 500) + 1450);
+            [dataSet.data addObject:point];
+        }
+        
+        [chart.dataSets addObject:dataSet];
+        
+        dataSet = ChartsBitmapDataSet.new;
+        dataSet.color = UIColor.redColor;
+        
+        for (int i = 1; i < 20; i++)
+        {
+            DPoint *point = DPoint.new;
+            point.x = (150 * i);
+            point.y = ((arc4random() % 250) + 500);
+            [dataSet.data addObject:point];
+        }
+        
+        [chart.dataSets addObject:dataSet];
+        
+        dataSet = ChartsBitmapDataSet.new;
+        dataSet.color = UserDefaults.defaults.darkGreen;
+        
+        for (int i = 1; i < 20; i++)
+        {
+            DPoint *point = DPoint.new;
+            point.x = (150 * i);
+            point.y = ((arc4random() % 1000) + 850);
+            [dataSet.data addObject:point];
+        }
+        
+        [chart.dataSets addObject:dataSet];
+        
+        dataSet = ChartsBitmapDataSet.new;
+        dataSet.color = UIColor.orangeColor;
+        
+        for (int i = 1; i < 20; i++)
+        {
+            DPoint *point = DPoint.new;
+            point.x = (150 * i);
+            point.y = (arc4random() % 500);
+            [dataSet.data addObject:point];
+        }
+        
+        [chart.dataSets addObject:dataSet];
+        
+        dataSet = ChartsBitmapDataSet.new;
+        dataSet.color = UIColor.purpleColor;
+        
+        for (int i = 1; i < 20; i++)
+        {
+            DPoint *point = DPoint.new;
+            point.x = (150 * i);
+            point.y = ((arc4random() % 675) + 675);
+            [dataSet.data addObject:point];
+        }
+        
+        [chart.dataSets addObject:dataSet];
+        
+        chart.title = @"A Confusing Line Chart from GSSi";
         [chart createChartBitmap];
     }
     
