@@ -589,7 +589,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 1; i < 20; i++)
         {
             DPoint *point = DPoint.new;
-            point.x = (150 * i);
+            point.x = ((150 * i) - 75);
             point.y = ((arc4random() % 500) + 1450);
             [dataSet.data addObject:point];
         }
@@ -602,7 +602,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 1; i < 20; i++)
         {
             DPoint *point = DPoint.new;
-            point.x = (150 * i);
+            point.x = ((150 * i) - 75);
             point.y = ((arc4random() % 250) + 500);
             [dataSet.data addObject:point];
         }
@@ -615,7 +615,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 1; i < 20; i++)
         {
             DPoint *point = DPoint.new;
-            point.x = (150 * i);
+            point.x = ((150 * i) - 75);
             point.y = ((arc4random() % 1000) + 850);
             [dataSet.data addObject:point];
         }
@@ -628,7 +628,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 1; i < 20; i++)
         {
             DPoint *point = DPoint.new;
-            point.x = (150 * i);
+            point.x = ((150 * i) - 75);
             point.y = (arc4random() % 500);
             [dataSet.data addObject:point];
         }
@@ -641,14 +641,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         for (int i = 1; i < 20; i++)
         {
             DPoint *point = DPoint.new;
-            point.x = (150 * i);
+            point.x = ((150 * i) - 75);
             point.y = ((arc4random() % 675) + 675);
             [dataSet.data addObject:point];
         }
         
         [chart.dataSets addObject:dataSet];
         
-        chart.title = @"A Confusing Line Chart from GSSi";
+        chart.title = @"An Interesting Line Chart from GSSi";
         [chart createChartBitmap];
     }
     
