@@ -1592,7 +1592,8 @@ NextPass:
     
     while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
     {
-        BOOL haveInPoint = NO;
+        int haveInPoint = 0;
+        int haveOutPoint = 0;
         BasePt.x = sqlite3_column_double(statement,0);
         BasePt.y = sqlite3_column_double(statement,1);
         numPoints = sqlite3_column_int(statement,2);
@@ -1615,9 +1616,20 @@ NextPass:
                 llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
                 llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
                 
-                if (!pass && (!pia || [pia DPointInArea:&llpoints[i]] == 1))
-                    haveInPoint = YES;
-                
+                if (!pass)
+                {
+                    if (!pia)
+                        haveInPoint++;
+                    else
+                    {
+                        int icode = [pia DPointInArea:&llpoints[i]];
+                        if (icode == 1)
+                            haveInPoint++;
+                        else if (!icode)
+                            haveOutPoint++;
+                    }
+                }
+
                 llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
@@ -1627,13 +1639,24 @@ NextPass:
             llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
             llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
             
-            if (!pass && (!pia || [pia DPointInArea:&llpoints[i]] == 1))
-                haveInPoint = YES;
+            if (!pass)
+            {
+                if (!pia)
+                    haveInPoint++;
+                else
+                {
+                    int icode = [pia DPointInArea:&llpoints[i]];
+                    if (icode == 1)
+                        haveInPoint++;
+                    else if (!icode)
+                        haveOutPoint++;
+                }
+            }
             
             llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
         }
         
-        if (pass || haveInPoint)
+        if (pass || haveInPoint > haveOutPoint)
         {
             if (!pass)
                 nLoaded++;
@@ -1718,9 +1741,16 @@ NextPass:
         //int nBlobBytes = sqlite3_column_bytes(statement,4);
         LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,5);
         //nBlobBytes = sqlite3_column_bytes(statement,5);
-        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         pkeyval = (LPSTR)sqlite3_column_text(statement,6);
         keyval = [NSString stringWithUTF8String:pkeyval];
+        if (pias)
+        {
+            double count = [pias countForArea:keyval
+                                   whichCount:0];
+            if (count < 0)
+                continue;
+        }
+        LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
         if (numPoints < 0)
         {
             numPoints = -numPoints;
@@ -1805,6 +1835,7 @@ NextPass:
     
     BOOL opened = [self open];
     BOOL isParcel = FALSE;
+    int  fieldLoc = 0;
     
     CloseTRANS2P(&_pTranLLtoView);
     CloseTRANS2P(&_pTranViewtoLL);
@@ -1820,6 +1851,7 @@ NextPass:
         [areaType isEqualToString:@"Minneapolis Neighborhoods"])
     {
         table = @"BOUNDARYAREA";
+        fieldLoc = 6;
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,NAME,%@.id FROM %@,%@_index WHERE TYPE='%@' AND %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",table,table,table,areaType,table,table,
                  platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
@@ -1827,11 +1859,13 @@ NextPass:
     {
         isParcel = TRUE;
         NSString * fields = to.fields;
+        fieldLoc = 9;
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,PID,PARCELPOLY.id,ACRES_POLY,%@ FROM PARCELPOLY,PARCELPOLY_index,PROPINFO  WHERE PARCELPOLY.id=PARCELPOLY_index.id AND PROPINFO.PIN=PARCELPOLY.PID AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",fields,platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
     }
     else
     {
         NSString * fields = to.fields;
+        fieldLoc = 8;
         NSString * dataTable = [NSString stringWithFormat:@"CENSUSDB.CENSUS%@DATA",key];
         NSString * field = [NVMetroSettings.sharedInstance currentValueFields];
         query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points,%@,%@.id,%@ FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",key,table,field,table,table,dataTable,table,table,
@@ -1881,6 +1915,7 @@ NextPass:
 
         _acres = sqlite3_column_double(statement,i++);
         int nTextFields = 0;
+        i = fieldLoc;
         for (int iField=0;iField<to.numTextFields;iField++)
         {
             pTextValue[nTextFields] = (LPSTR)sqlite3_column_text(statement,i++);
@@ -1980,8 +2015,15 @@ NextPass:
                     count = [pias countForArea:keyval
                                     whichCount:0];
                     char countstr[32];
-                    sprintf (countstr,"%0.1f",count);
-                    text = formatText(countstr, to.formats[0], 1);
+                    if (count > -1)
+                    {
+                        sprintf (countstr,"%0.1f",count);
+                        text = formatText(countstr, to.formats[0], 1);
+                        if (nTextFields)
+                            text = [text stringByAppendingString:[NSString stringWithFormat:@"\n%@",keyval]];
+                    }
+                    else
+                        text = @"";
                 }
             }
             else if (from == TFONVMetroDisplay)
@@ -2029,6 +2071,12 @@ NextPass:
                               textColor:textColor
                            processingID:_processingID];
                 if (!st && from == TFONVMetroDisplay && nTextFields>1)
+                {
+                    nTextFields--;
+                    text = @"";
+                    goto TryLessText;
+                }
+                else if (!st && from == TFOSelectBoundary && nTextFields)
                 {
                     nTextFields--;
                     text = @"";

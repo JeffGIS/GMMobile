@@ -95,7 +95,7 @@
             CGFloat numCells2 = (CGFloat)[(ThemeLegend *)_legends[_startingIndex + 1] numCells];
             CGFloat multiplier = ((numCells1 + (1.5 / numCells1)) / (numCells2 + (1.5 / numCells2)));
             
-            if (isnan(multiplier))
+            if (isnan(multiplier) || isinf(multiplier))
                 return;
             
             [[self.view viewWithTag:1] constrainLeadingToAnchor:self.view.leadingAnchor constant:_outerMargin];

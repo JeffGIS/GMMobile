@@ -89,6 +89,8 @@
                 thm = [self createTheme:TheftFromAutoTheme];
             if ([crimeLegend isEqualToString:@"Crime Index"])
                 thm = [self createTheme:CrimeIndexTheme];
+            //if (CRAPI.sharedInstance.crimeMode == CHOROPLETH)
+            //    thm = [self createTheme:ChoroplethSummaryTheme];
             [_themeList addObject:thm];
             thm = [self createTheme:DepartmentTheme];
             [_themeList addObject:thm];
