@@ -164,7 +164,7 @@
     sizeFactor *= scale;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     BOOL opened = [_cd startTransaction];
-   // [self checkMultipleCodes];
+    // [self checkMultipleCodes];
     if (!ConfigurationControl.sharedInstance.wantAllCrimes)
         [self createCNUMCheckTable];
     else
@@ -174,13 +174,13 @@
     {
         dp = [DispersePoint initWithWidth:MNMXCORDWidth(pvbounds)
                                    Height:MNMXCORDHeight(pvbounds)
-                                     tran1:_pTranLLtoView
-                                     tran2:_pTranViewtoLL];
+                                    tran1:_pTranLLtoView
+                                    tran2:_pTranViewtoLL];
     }
     else if (_mode == CHOROPLETH)
     {
         [CRAPI.sharedInstance showMapToolbarIndicator:YES];
-
+        
         pias = [[PointInAreas alloc]init];
         pias.fullBounds = *pvbounds;
         pias.areaType = _choroplethTarget;
@@ -189,7 +189,7 @@
         int pointSize = ceil (crimeCirclePixelRadius);
         bd = [[BoundaryData alloc]init];
         bd.processingID = self.processingID;
-
+        
         MNMXCORD pvboundsPias = [pias bitmapBounds:pvbounds];
         [pias setPointSize:pointSize];
         
@@ -208,7 +208,7 @@ boundsPointInAreas:nil
     
     if (![self continueProcessing])
         goto Exit;
-
+    
 NextPass:
     if (_mode == HOTSPOT)
     {
@@ -235,7 +235,7 @@ NextPass:
                                    tran:_pTranLLtoView];
         }
     }
-   
+    
     if (!CRAPI.sharedInstance.mapCrimeList)
     {
         numUCRRanges  = [themes getNumUCRRanges];
@@ -297,7 +297,7 @@ NextPass:
                 controlNbr = sqlite3_column_int(statement,0);
                 dc.UCR =sqlite3_column_int(statement,4);
                 if (!wantAll && [self alreadyHaveThisCNUM:controlNbr
-                                          UCR:dc.UCR])
+                                                      UCR:dc.UCR])
                     continue;
                 BasePt[0].x = sqlite3_column_double(statement,1);
                 BasePt[0].y = sqlite3_column_double(statement,2);
@@ -319,11 +319,11 @@ NextPass:
                 dc.fillColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
                 size = 15;
                 
-/*                if (attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == IgnoreAttempts)
-                    continue;
-                if (!attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == OnlyAttempts)
-                    continue;
-*/
+                /*                if (attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == IgnoreAttempts)
+                 continue;
+                 if (!attempted && ConfigurationControl.sharedInstance.attemptedCrimeOption == OnlyAttempts)
+                 continue;
+                 */
                 int compareClass = 0;
                 if ((!pia || [pia DPointInArea:BasePt]) &&
                     [themes setDisplayCharacteristics:dc
@@ -340,7 +340,7 @@ NextPass:
                          usingSymbol:dc.pointSymbol
                            withColor:dc.fillColor.CGColor
                              andSize:(size * sizeFactor * dc.size)];
-
+                        
                     }
                     else if (_mode == CHOROPLETH)
                     {
@@ -348,7 +348,7 @@ NextPass:
                                     atTime:dc.itemBeginTime
                                   andRefno:controlNbr
                                 whichCount:compareClass
-                                      value:dc.incValue];
+                                     value:dc.incValue];
                     }
                     else if (_mode == HOTSPOT)
                     {
@@ -364,7 +364,7 @@ NextPass:
             iRange++;
             SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _cd.database);
             [CRAPI.sharedInstance showMapToolbarIndicator:NO];
-       }
+        }
     }
     if (_mode == HOTSPOT && iPass++ < _numPass)
         goto NextPass;
@@ -421,14 +421,14 @@ NextPass:
             bd = [[BoundaryData alloc]init];
             bd.processingID = self.processingID;
             
-           [bd load:_choroplethAdjustArea
-     toPointInAreas:piasAdjust
- boundsPointInAreas:pias
-   usingPointInArea:pia
-          llCorners:latlonCornerPoints
-           LLBounds:platlonBounds
-         viewBounds:pvbounds
-   haveCompareTheme:0];
+            [bd load:_choroplethAdjustArea
+      toPointInAreas:piasAdjust
+  boundsPointInAreas:pias
+    usingPointInArea:pia
+           llCorners:latlonCornerPoints
+            LLBounds:platlonBounds
+          viewBounds:pvbounds
+    haveCompareTheme:0];
             
             [pias createDisplayColors:piasAdjust
                                  mask:pia
@@ -444,17 +444,17 @@ NextPass:
                                  mask:pia
                           wantOverdue:overDueOption];
         }
-
+        
         [CRAPI.sharedInstance showMapToolbarIndicator:YES];
         bd.totRecords = [bd display:context
-           areaType:_choroplethTarget
-            pointInAreas:pias
-          llCorners:latlonCornerPoints
-           LLBounds:platlonBounds
-         viewBounds:pvbounds];
-
+                           areaType:_choroplethTarget
+                       pointInAreas:pias
+                          llCorners:latlonCornerPoints
+                           LLBounds:platlonBounds
+                         viewBounds:pvbounds];
+        
         [CRAPI.sharedInstance showMapToolbarIndicator:NO];
-
+        
         NVMetroTextOptions *to = [[NVMetroTextOptions alloc]init];
         
         to.numTextFields = 1;
@@ -474,12 +474,12 @@ NextPass:
                                      current:0
                                        range:1
                                    numRanges:1];
-
+        
         [bd displayText:context
                    from:TFOSelectBoundary
                areaType:_choroplethTarget
             textOptions:to
-                pointInAreas:pias
+           pointInAreas:pias
               llCorners:latlonCornerPoints
                LLBounds:platlonBounds
              viewBounds:pvbounds];
@@ -496,7 +496,7 @@ NextPass:
         else
             pCompareFactor = nil;
         [hs display:context
-         compareFactor:pCompareFactor];
+      compareFactor:pCompareFactor];
         if (dump)
             [hs dump:@"hotspottest"];
     }
@@ -525,7 +525,7 @@ Exit:
         while (time < toTime)
         {
             switch ([themes isHourSelected:time
-                     themeWithCompare:themeWithCompare])
+                          themeWithCompare:themeWithCompare])
             {
                 case 0:
                     break;
@@ -564,11 +564,11 @@ Exit:
                                 fillColor:color
                                 lineColor:0
                                 lineWidth:dispersed ? -2 : 2];
-
+    
 }
 
 
 @end
 
 /*CREATE TABLE OFFENSEXY (id INT PRIMARY KEY,'ControlNbr' INT,'OffenseOrder' INT,'Offense' CHAR(6),'CityCode' CHAR(2),'CaseYear' INT,'CaseNbr' CHAR(6),'ControlType' CHAR(1),'Attempt' CHAR(1),'BeginDate2' CHAR(19),'Precinct' CHAR(2),'UCRCode' CHAR(2),'NIBRSCode' CHAR(3),'CrimeCategory' CHAR(1),'CrimeClass' CHAR(1),'LastChangedID2' CHAR(11),'LastChanged2' CHAR(19),'OriginalCaseYear' INT,'OriginalCaseNbr' CHAR(6),'HouseNbr' CHAR(6),'HouseModifier' CHAR(1),'StreetName' CHAR(22),'StreetType' CHAR(2),'StreetDirection' CHAR(2),'IntersectionStreetName' CHAR(22),'IntersectionStreetType' CHAR(2),'IntersectionStreetDirection' CHAR(2),'Apartment' CHAR(5),'City2' CHAR(30),'State' CHAR(2),'VictimBusiness' CHAR(1),'Zipcode2' CHAR(9),'EndDate' CHAR(19),'ReportedDate' CHAR(19),'BeginDate' CHAR(19),'DispatchedTime' CHAR(4),'ArrivedTime' CHAR(4),'Location' CHAR(30),'ClearedTime' CHAR(4),'PrimaryOffense' CHAR(6),'SupervisorID' CHAR(11),'AssistingOfficerID' CHAR(11),'NotPublicInformation' CHAR(1),'UnitNbr' CHAR(4),'ReportingID' CHAR(11),'CallNbr' CHAR(11),'EnteredID' CHAR(11),'EnteredDate' CHAR(19),'LastChanged' CHAR(19),'AdultStatus' INT,'JuvenileStatus' INT,'Solvable' INT,'NotPublicAddressInformation' CHAR(1),'LastChangedID' CHAR(11),'ForceSupervisorReviewRequired' INT,'ForceSupervisorReviewCompeted' INT,'ForceIAUReviewCompleted' INT,'MatchCode' INT,'LocationCode' INT,'StreetNum' INT,'HouseNum' INT,'IntID' INT,'StreetNum1' INT,'StreetNum2' INT,'Street1MP' REAL,'Street2MP' REAL,'MunicNum' INT,'ZIP' INT,'X' REAL,'Y' REAL,'NumPartsRemoved' INT,'AddressTAGPrefix' CHAR(8),'AddressTAGUDI' CHAR(64),'Street' CHAR(80),'House' CHAR(12),'City' CHAR(32),'ZIPCODE' CHAR(12),'Symbol' CHAR(64),'FromDate' INT,'ToDate' INT,'Note' CHAR(100),'UCR' INT)
-*/
+ */
