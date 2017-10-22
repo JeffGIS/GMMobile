@@ -185,7 +185,7 @@
                                     tran1:_pTranLLtoView
                                     tran2:_pTranViewtoLL];
     }
-    else if (_mode == CHOROPLETH)
+    else if (_mode == CHOROPLETH || _mode == LINEGRAPH)
     {
         [CRAPI.sharedInstance showMapToolbarIndicator:YES];
         
@@ -362,7 +362,7 @@ NextPass:
                              andSize:(size * sizeFactor * dc.size)];
                         
                     }
-                    else if (_mode == CHOROPLETH)
+                    else if (_mode == CHOROPLETH || _mode == LINEGRAPH)
                     {
                         [pias DPointInArea:&BasePt[0]
                     displayCharacteristics:(DisplayCharacteristics *)dc
@@ -503,6 +503,23 @@ NextPass:
               llCorners:latlonCornerPoints
                LLBounds:platlonBounds
              viewBounds:pvbounds];
+    }
+    else if (_mode == LINEGRAPH)
+    {
+        ChartsBitmap *cb = ChartsBitmap.new;
+        cb.title = [NSString stringWithFormat:@"By Hour"];
+        for (AreaData * ai in pias.areaInfo)
+        {
+            ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+            cbd.title = ai.areaID;
+            for (int i = 0;i<24; i++)
+            {
+                DPoint * dp = [DPoint fromXY:i y:ai.hourCounts[i]];
+                [cbd.data addObject:dp];
+            }
+            [cb.dataSets addObject:cbd];
+        }
+        
     }
     else if (_mode == HOTSPOT)
     {

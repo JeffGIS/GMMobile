@@ -675,8 +675,14 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([uppercaseMode containsString:@"CHOROPLETH"])
         CRAPI.sharedInstance.crimeMode = CHOROPLETH;
     
-    else if ([uppercaseMode containsString:@"HOTSPOT"])
+    else if ([uppercaseMode containsString:@"HOTSPOT VIDEO"])
+        CRAPI.sharedInstance.crimeMode = HOTSPOTVIDEO;
+    
+   else if ([uppercaseMode containsString:@"HOTSPOT"])
         CRAPI.sharedInstance.crimeMode = HOTSPOT;
+    
+    else if ([uppercaseMode containsString:@"LINE GRAPH"])
+        CRAPI.sharedInstance.crimeMode = LINEGRAPH;
     
     [UserDefaults.defaults saveNSInteger:CRAPI.sharedInstance.crimeMode forKey:@"CrimeMode"];
     
@@ -700,6 +706,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     else if ([uppercaseMode containsString:@"CENSUS TRACT"])
         CRAPI.sharedInstance.crimeTarget = @"TRACT";
+    
+    else if ([uppercaseMode containsString:@" CITY "])
+        CRAPI.sharedInstance.crimeTarget = @"CITY";
     
     [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeTarget forKey:@"CrimeTarget"];
     
