@@ -519,7 +519,15 @@ NextPass:
             }
             [cb.dataSets addObject:cbd];
         }
+        cb.chartWidth = MNMXCORDWidth(pvbounds);
+        cb.chartHeight = MNMXCORDHeight(pvbounds);
+        cb.outputFile = [NSString stringWithFormat:@"%@/test.bmp", NSTemporaryDirectory()];
+        [cb createChartBitmap];
         
+        long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:cb.outputFile
+                                                                            error:nil].fileSize;
+        UIImage *image = [UIImage imageWithContentsOfFile:cb.outputFile];
+        cb = nil;
     }
     else if (_mode == HOTSPOT)
     {
