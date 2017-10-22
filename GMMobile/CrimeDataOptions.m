@@ -18,7 +18,7 @@
 @property (nonatomic) CGFloat rowHeight, headerHeight, margin, innerMargin, borderWidth;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) UIImageView *checkmarkView;
-@property (nonatomic, copy) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *choroplethModes, *modes;
+@property (nonatomic, copy) NSArray *legends, *modeTypes, *pinModes, *hotspotModes, *hotspotVideoModes, *choroplethModes, *linegraphModes, *modes;
 @property (nonatomic, copy) NSArray *multipleOffenseOptions, *adjustmentOptions, *currentArray, *compareOptions;
 @property (nonatomic, copy) NSString *selectedAreaType, *selectedLegend, *selectedMode;
 @property (nonatomic, copy) NSString *selectedMultipleOffenseOption, *selectedAdjustmentOption, *selectedCompareOption;
@@ -68,17 +68,23 @@
     _legends = @[@"Part 1 Offenses", @"Part 2 Offenses", @"Violent Crimes", @"Assault", @"Burglary", @"Robbery",
                  @"Motor Vehicle Theft", @"Selected Theft", @"Theft From Auto", @"Crime Index"];
     
-    _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Choropleth Map"];
+    _modeTypes = @[@"PIN Map", @"Hotspot Map", @"Hotspot Video", @"Choropleth Map", @"Line Graph"];
     _pinModes = @[@"Basic PIN Map", @"PIN Map for Month with Yearly Totals", @"PIN Map for Month with Monthly Totals"];
     
 //    _hotspotModes = @[@"Basic Hotspot Map", @"Hotspot Map for Month with Yearly Compare",
 //                      @"Hotspot Map for Month with Monthly Compare", @"Hotspot Map for Week with Weekly Compare"];
     
     _hotspotModes = @[@"Basic Hotspot Map"];
-    
+
+    _hotspotVideoModes = @[@"Basic Hotspot Video"];
+
     _choroplethModes = @[@"Choropleth Map for Precincts", @"Choropleth Map for Wards",
-                         @"Basic Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
-                        @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
+                         @"Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
+                         @"Choropleth Map For Census Tracts",@"Choropleth Map for Block Groups",@"Choropleth Map for Blocks"];
+    
+    _linegraphModes = @[@"Line Graph for City",@"Line Graph for Precincts", @"Line Graph for Wards",
+                         @"Line Graph for Sectors", @"Line Graph for Neighborhoods",
+                         @"Line Graph For Census Tracts",@"Line Graph for Block Groups",@"Line Graph for Blocks"];
     
     _multipleOffenseOptions = @[@"Most Serious Offense per Incident", @"All Offenses"];
     
@@ -86,7 +92,7 @@
                            @"Overdue as Percent of STDV of Frequency"];
     
     _compareOptions = @[@"Raw", @"Count Corrected", @"Time Corrected"];
-    _modes = @[_pinModes, _hotspotModes, _choroplethModes];
+    _modes = @[_pinModes, _hotspotModes, _hotspotVideoModes, _choroplethModes, _linegraphModes];
     _currentArray = _modeTypes;
     
     NSString *defaultOption = [UserDefaults.defaults stringForKey:@"SelectedLegend"];

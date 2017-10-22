@@ -139,6 +139,14 @@
     int controlNbr = 0;
     NSArray *timeRanges = [CRAPI.sharedInstance getTimeRanges];
     int fromTime=(int)CRAPI.sharedInstance.fromDate, toTime=(int)CRAPI.sharedInstance.toDate;
+    time_t iTime = fromTime;
+    struct tm tmtime = *localtime (&iTime);
+    int minYear = tmtime.tm_year + 1900;
+    iTime = toTime;
+    struct tm tmtime2 = *localtime (&iTime);    
+    int maxYear = tmtime2.tm_year + 1900;
+    int numYears = maxYear - minYear + 1;
+    
     int numUCRRanges=1, numTimeRanges=1;
     LPSTR offense;
     LPSTR dept;
@@ -185,6 +193,7 @@
         pias.fullBounds = *pvbounds;
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
+        pias.numYears = numYears;
         pias.compareFactor = [themes getCompareThemeFactor];
         int pointSize = ceil (crimeCirclePixelRadius);
         bd = [[BoundaryData alloc]init];
@@ -304,6 +313,17 @@ NextPass:
                 offense = (LPSTR)sqlite3_column_text(statement,3);
                 dc.dPoint = BasePt[0];
                 dc.itemBeginTime = sqlite3_column_int(statement,5);
+                time_t iTime = dc.itemBeginTime;
+                struct tm tmtime = *localtime (&iTime);
+
+                dc.year = tmtime.tm_year + 1900;
+                dc.yearIndex = dc.year - minYear;
+                dc.dayNight = (dc.sunAngle < -6.0);
+                dc.month = tmtime.tm_mon;
+                dc.dow = tmtime.tm_wday;
+                dc.hour = tmtime.tm_hour;
+                
+
                 [CRAPI.sharedInstance updateProgress:tot
                                              current:dc.itemBeginTime-fromTime
                                                range:iRange
@@ -345,7 +365,7 @@ NextPass:
                     else if (_mode == CHOROPLETH)
                     {
                         [pias DPointInArea:&BasePt[0]
-                                    atTime:dc.itemBeginTime
+                    displayCharacteristics:(DisplayCharacteristics *)dc
                                   andRefno:controlNbr
                                 whichCount:compareClass
                                      value:dc.incValue];
