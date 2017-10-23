@@ -512,6 +512,111 @@ NextPass:
             if (!isBitmapContext)
             {
                 CRAPI.sharedInstance.chartBitmaps = NSMutableArray.array;
+                
+                if (numYears > 1)
+                {
+                    ChartsBitmap *cb = ChartsBitmap.new;
+                    cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Year"];
+                    
+                    for (AreaData *ai in pias.areaInfo)
+                    {
+                        ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                        cbd.title = ai.areaID;
+                        
+                        for (int i = 0; i < numYears; i++)
+                        {
+                            DPoint *dp = [DPoint fromXY:i y:ai.yearCounts[i]];
+                            [cbd.data addObject:dp];
+                        }
+                        [cb.dataSets addObject:cbd];
+                    }
+                    [CRAPI.sharedInstance.chartBitmaps addObject:cb];
+                }
+                
+                ChartsBitmap *cbdow = ChartsBitmap.new;
+                cbdow.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Day of Week"];
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 7; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.dowCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    [cbdow.dataSets addObject:cbd];
+                }
+                [CRAPI.sharedInstance.chartBitmaps addObject:cbdow];
+                
+                ChartsBitmap *cb = ChartsBitmap.new;
+                cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Hour"];
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 24; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    [cb.dataSets addObject:cbd];
+                }
+                [CRAPI.sharedInstance.chartBitmaps addObject:cb];
+                
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                    target:CRAPI.sharedInstance
+                                                                  selector:@selector(displayChartBitmaps:)
+                                                                  userInfo:nil
+                                                                   repeats:NO];
+                               });
+            }
+            
+            else
+            {
+                ChartsBitmap *cb = ChartsBitmap.new;
+                cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Hour"];
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 24; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    
+                    [cb.dataSets addObject:cbd];
+                }
+                
+                cb.chartWidth = MNMXCORDWidth(pvbounds);
+                cb.chartHeight = MNMXCORDHeight(pvbounds);
+                cb.numVLines = 12;
+                cb.useOffset = YES;
+                cb.outputFile = CRAPI.sharedInstance.pdfImageFile;
+                
+                [cb createChartBitmap];
+                /*
+                 long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:cb.outputFile
+                 error:nil].fileSize;
+                 UIImage *image = [UIImage imageWithContentsOfFile:cb.outputFile];
+                 cb = nil;*/
+            }
+        }
+    }
+/*    {
+        if (pass)
+        {
+            if (!isBitmapContext)
+            {
+                CRAPI.sharedInstance.chartBitmaps = NSMutableArray.array;
                 ChartsBitmap *cb = ChartsBitmap.new;
                 cb.title = [NSString stringWithFormat:@"By Hour"];
                 
@@ -583,14 +688,9 @@ NextPass:
                 cb.outputFile = CRAPI.sharedInstance.pdfImageFile;
                 
                 [cb createChartBitmap];
-                /*
-                 long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:cb.outputFile
-                 error:nil].fileSize;
-                 UIImage *image = [UIImage imageWithContentsOfFile:cb.outputFile];
-                 cb = nil;*/
             }
         }
-    }
+    }*/
     
     else if (_mode == HOTSPOT)
     {
