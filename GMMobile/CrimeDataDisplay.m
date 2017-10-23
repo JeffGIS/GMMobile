@@ -535,6 +535,7 @@ NextPass:
                 
                 ChartsBitmap *cbdow = ChartsBitmap.new;
                 cbdow.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Day of Week"];
+                cbdow.format = ChartsBitmapDataFormatDayOfWeek;
                 
                 for (AreaData *ai in pias.areaInfo)
                 {
@@ -552,6 +553,7 @@ NextPass:
                 
                 ChartsBitmap *cb = ChartsBitmap.new;
                 cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Hour"];
+                cb.format = ChartsBitmapDataFormatHourOfDay;
                 
                 for (AreaData *ai in pias.areaInfo)
                 {
@@ -581,6 +583,7 @@ NextPass:
             {
                 ChartsBitmap *cb = ChartsBitmap.new;
                 cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Hour"];
+                cb.format = ChartsBitmapDataFormatHourOfDay;
                 
                 for (AreaData *ai in pias.areaInfo)
                 {
@@ -598,7 +601,7 @@ NextPass:
                 
                 cb.chartWidth = MNMXCORDWidth(pvbounds);
                 cb.chartHeight = MNMXCORDHeight(pvbounds);
-                cb.numVLines = 12;
+                cb.format = ChartsBitmapDataFormatHourOfDay;
                 cb.useOffset = YES;
                 cb.outputFile = CRAPI.sharedInstance.pdfImageFile;
                 
