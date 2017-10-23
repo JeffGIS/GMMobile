@@ -124,6 +124,7 @@
     
 }
 - (void)displayCrimePoints:(CGContextRef)context
+           contextIsBitmap:(BOOL)isBitmapContext
     displayCharacteristics:(DisplayCharacteristics *)dc
                  llCorners:(CORNERPOINTS *) latlonCornerPoints
                   LLBounds:(MNMXCORD *)platlonBounds
@@ -506,33 +507,89 @@ NextPass:
     }
     else if (_mode == LINEGRAPH)
     {
-        ChartsBitmap *cb = ChartsBitmap.new;
-        cb.title = [NSString stringWithFormat:@"By Hour"];
-        
-        for (AreaData *ai in pias.areaInfo)
+        if (pass)
         {
-            ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
-            cbd.title = ai.areaID;
-            
-            for (int i = 0; i < 24; i++)
+            if (!isBitmapContext)
             {
-                DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
-                [cbd.data addObject:dp];
+                CRAPI.sharedInstance.chartBitmaps = NSMutableArray.new;
+                ChartsBitmap *cb = ChartsBitmap.new;
+                cb.title = [NSString stringWithFormat:@"By Hour"];
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 24; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    
+                    [cb.dataSets addObject:cbd];
+                }
+                [CRAPI.sharedInstance.chartBitmaps addObject:cb];
+                ChartsBitmap *cbdow = ChartsBitmap.new;
+                cb.title = [NSString stringWithFormat:@"By Day of Week"];
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 7; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.dowCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    
+                    [cb.dataSets addObject:cbd];
+                }
+                [CRAPI.sharedInstance.chartBitmaps addObject:cbdow];
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                             target:CRAPI.sharedInstance
+                                                                           selector:@selector(displayChartBitmaps:)
+                                                                           userInfo:nil
+                                                                            repeats:NO];
+                               });
+
             }
-            
-            [cb.dataSets addObject:cbd];
+            else
+            {
+                ChartsBitmap *cb = ChartsBitmap.new;
+                cb.title = [NSString stringWithFormat:@"By Hour"];
+                
+                for (AreaData *ai in pias.areaInfo)
+                {
+                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
+                    cbd.title = ai.areaID;
+                    
+                    for (int i = 0; i < 24; i++)
+                    {
+                        DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
+                        [cbd.data addObject:dp];
+                    }
+                    
+                    [cb.dataSets addObject:cbd];
+                }
+                
+                cb.chartWidth = MNMXCORDWidth(pvbounds);
+                cb.chartHeight = MNMXCORDHeight(pvbounds);
+                cb.numVLines = 12;
+                cb.useOffset = YES;
+                cb.outputFile = CRAPI.sharedInstance.pdfImageFile;
+                
+                [cb createChartBitmap];
+                /*
+                 long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:cb.outputFile
+                 error:nil].fileSize;
+                 UIImage *image = [UIImage imageWithContentsOfFile:cb.outputFile];
+                 cb = nil;*/
+                
+            }
         }
-        
-        cb.chartWidth = MNMXCORDWidth(pvbounds);
-        cb.chartHeight = MNMXCORDHeight(pvbounds);
-        cb.numVLines = 12;
-        cb.useOffset = YES;
-        [cb createChartBitmap];
-        
-        long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:cb.outputFile
-                                                                            error:nil].fileSize;
-        UIImage *image = [UIImage imageWithContentsOfFile:cb.outputFile];
-        cb = nil;
     }
     else if (_mode == HOTSPOT)
     {

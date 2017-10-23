@@ -339,7 +339,7 @@
                         }
                         else
                         {
-                            int passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
+                            ItemProcessingPassTypes passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
                             while (passID < DonePass)
                             {
                                 if (passID == DataPass)
@@ -478,6 +478,7 @@
                                     if ([self keepGoing])
                                     {
                                         [cd displayCrimePoints:_context
+                                               contextIsBitmap:FALSE
                                         displayCharacteristics:dc
                                                      llCorners:CORNERPOINTS_view(&_latlonCornerPoints)
                                                       LLBounds:&_latlonBounds

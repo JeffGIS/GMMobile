@@ -68,6 +68,8 @@ static int pageWidthFactor = 1;
                            });
             
             NSString * tempDirectory = [NSString stringWithFormat:@"%@/BatchCrimeMaps/page%i",NSTemporaryDirectory(),pageNumber];
+            NSString * mainImageFile = [NSString stringWithFormat:@"%@/MainImage.bmp",tempDirectory];
+            CRAPI.sharedInstance.pdfImageFile = mainImageFile;
             [themes setAppThemes:tempDirectory outputFactor:0.6*pageWidthFactor];
             
             CGContextRef context = createBitmapContext(width, height, colorSpace, &bmData);
@@ -104,13 +106,15 @@ static int pageWidthFactor = 1;
                     [themes themesBeginDisplayPass:0];
                 
                 [_cd displayCrimePoints:context
+                        contextIsBitmap:TRUE
                  displayCharacteristics:dc
                               llCorners:&latlonCornerPoints
                                LLBounds:&latlonBounds
                              viewBounds:MNMXCORD_view(&viewBounds)
                                  themes:themes
                             pointInArea:nil
-                                   pass:passID++];
+                                   pass:-passID];
+                passID++;
             }
             
             if (CRAPI.sharedInstance.currentOverallBoundaryRefno &&
@@ -130,10 +134,9 @@ static int pageWidthFactor = 1;
             [themes themesEndDisplayPass:0];
             if (context)
                 CGContextRelease(context);
-            NSString *file = [NSString stringWithFormat:@"%@/map_%i.gmp", NSTemporaryDirectory(),pageNumber];
-            BOOL rtn = WriteBitmapDataToFile((LPSTR)file.UTF8String,width, height, colorSpace, bmData);
+            BOOL rtn = WriteBitmapDataToFile((LPSTR)mainImageFile.UTF8String,width, height, colorSpace, bmData);
             
-            long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:file
+            long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:mainImageFile
                                                                                 error:nil].fileSize;
            /* UIImage *image = [UIImage imageWithContentsOfFile:file];
             file = [NSString stringWithFormat:@"%@/map_%i.png", NSTemporaryDirectory(),pageNumber];
@@ -150,7 +153,7 @@ static int pageWidthFactor = 1;
             page.pageWidth = 2550;//8.5 inches X 300 DPI
             page.pageHeight = 3300;//11 inches X 300 DPI
             PDFPageImage *mainImage = PDFPageImage.new;
-            mainImage.imageFile = file;
+            mainImage.imageFile = mainImageFile;
             double mainImageWidth = 0.6;
             double imageFactor = (mainImageWidth * height) / width;
             mainImage.imageLocation = CGRectMake(60.0*pageWidthFactor, 60.0*pageWidthFactor, mainImageWidth*page.pageWidth, page.pageWidth*imageFactor);

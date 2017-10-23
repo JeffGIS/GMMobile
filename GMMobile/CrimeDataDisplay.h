@@ -28,6 +28,7 @@
 @property int minUCR, maxUCR;
 
 -(void)displayCrimePoints:(CGContextRef)context
+          contextIsBitmap:(BOOL)isBitmap
    displayCharacteristics:(DisplayCharacteristics *)dc
                 llCorners:(CORNERPOINTS *) latlonCornerPoints
                  LLBounds:(MNMXCORD *)platlonBounds
