@@ -29,6 +29,7 @@ static int pageWidthFactor = 1;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     int width = 1600*2;
     int height = 3200*2;
+    //height = width = 14400;
     int numPages = 2;
     MNMXCORD viewBounds;
     _pdfFile = [NSString stringWithFormat:@"%@/sample%i.pdf",NSTemporaryDirectory(),pageWidthFactor];
@@ -207,6 +208,8 @@ static int pageWidthFactor = 1;
     [timer invalidate];
     [_popover hide];
     pageWidthFactor++;
+    long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_pdfFile
+                                                              error:nil].fileSize;
     uploadToCloud(_pdfFile, YES);
     
 }
