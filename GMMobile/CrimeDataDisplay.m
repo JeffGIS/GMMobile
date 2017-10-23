@@ -508,20 +508,25 @@ NextPass:
     {
         ChartsBitmap *cb = ChartsBitmap.new;
         cb.title = [NSString stringWithFormat:@"By Hour"];
-        for (AreaData * ai in pias.areaInfo)
+        
+        for (AreaData *ai in pias.areaInfo)
         {
             ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
             cbd.title = ai.areaID;
-            for (int i = 0;i<24; i++)
+            
+            for (int i = 0; i < 24; i++)
             {
-                DPoint * dp = [DPoint fromXY:i y:ai.hourCounts[i]];
+                DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
                 [cbd.data addObject:dp];
             }
+            
             [cb.dataSets addObject:cbd];
         }
+        
         cb.chartWidth = MNMXCORDWidth(pvbounds);
         cb.chartHeight = MNMXCORDHeight(pvbounds);
-        cb.outputFile = [NSString stringWithFormat:@"%@/test.bmp", NSTemporaryDirectory()];
+        cb.numVLines = 12;
+        cb.useOffset = YES;
         [cb createChartBitmap];
         
         long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:cb.outputFile
