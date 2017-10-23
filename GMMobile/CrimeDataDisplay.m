@@ -619,6 +619,7 @@ NextPass:
                 CRAPI.sharedInstance.chartBitmaps = NSMutableArray.array;
                 ChartsBitmap *cb = ChartsBitmap.new;
                 cb.title = [NSString stringWithFormat:@"By Hour"];
+                cb.numVLines = 12;
                 
                 for (AreaData *ai in pias.areaInfo)
                 {
@@ -633,9 +634,11 @@ NextPass:
                     
                     [cb.dataSets addObject:cbd];
                 }
+                
                 [CRAPI.sharedInstance.chartBitmaps addObject:cb];
-                ChartsBitmap *cbdow = ChartsBitmap.new;
+                cb = ChartsBitmap.new;
                 cb.title = [NSString stringWithFormat:@"By Day of Week"];
+                cb.numVLines = 7;
                 
                 for (AreaData *ai in pias.areaInfo)
                 {
@@ -651,7 +654,8 @@ NextPass:
                     [cb.dataSets addObject:cbd];
                 }
                 
-                [CRAPI.sharedInstance.chartBitmaps addObject:cbdow];
+                [CRAPI.sharedInstance.chartBitmaps addObject:cb];
+                
                 dispatch_async(dispatch_get_main_queue(),
                                ^{
                                    [NSTimer scheduledTimerWithTimeInterval:0.1
