@@ -511,7 +511,7 @@ NextPass:
         {
             if (!isBitmapContext)
             {
-                CRAPI.sharedInstance.chartBitmaps = NSMutableArray.new;
+                CRAPI.sharedInstance.chartBitmaps = NSMutableArray.array;
                 ChartsBitmap *cb = ChartsBitmap.new;
                 cb.title = [NSString stringWithFormat:@"By Hour"];
                 
@@ -545,17 +545,18 @@ NextPass:
                     
                     [cb.dataSets addObject:cbd];
                 }
+                
                 [CRAPI.sharedInstance.chartBitmaps addObject:cbdow];
                 dispatch_async(dispatch_get_main_queue(),
                                ^{
                                    [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                                             target:CRAPI.sharedInstance
-                                                                           selector:@selector(displayChartBitmaps:)
-                                                                           userInfo:nil
-                                                                            repeats:NO];
+                                                                    target:CRAPI.sharedInstance
+                                                                  selector:@selector(displayChartBitmaps:)
+                                                                  userInfo:nil
+                                                                   repeats:NO];
                                });
-
             }
+            
             else
             {
                 ChartsBitmap *cb = ChartsBitmap.new;
@@ -587,10 +588,10 @@ NextPass:
                  error:nil].fileSize;
                  UIImage *image = [UIImage imageWithContentsOfFile:cb.outputFile];
                  cb = nil;*/
-                
             }
         }
     }
+    
     else if (_mode == HOTSPOT)
     {
         static BOOL dump=FALSE;
