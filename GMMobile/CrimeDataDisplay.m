@@ -657,7 +657,7 @@ NextPass:
                            ^{
                                [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                 target:CRAPI.sharedInstance
-                                                              selector:@selector(displayHotspotVideo:)
+                                                              selector:@selector(displayHotSpotVideo:)
                                                               userInfo:nil
                                                                repeats:NO];
                            });
