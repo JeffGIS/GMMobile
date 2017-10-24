@@ -931,7 +931,8 @@ static int ii=0;
             break;
         case ThirteenMonthTheme:
         {
-            NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate];
+            NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate
+                                                                           toTime:CRAPI.sharedInstance.toDate];
             thm.legend.title = @"Month";
             [thm.titles addObject:thm.legend.title];
             thm.numDesiredClasses = 13;

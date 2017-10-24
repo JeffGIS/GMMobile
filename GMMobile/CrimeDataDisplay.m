@@ -224,7 +224,8 @@ NextPass:
     {
         if ([CRAPI.sharedInstance.crimeCompare isEqualToString:@"Month With Yearly Compare"])
         {
-            NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate];
+            NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate
+                                                                           toTime:CRAPI.sharedInstance.toDate];
             _saveFromDate = (int)CRAPI.sharedInstance.fromDate;
             CRAPI.sharedInstance.fromDate = times[0].integerValue;
             hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
@@ -244,6 +245,17 @@ NextPass:
                               PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                    tran:_pTranLLtoView];
         }
+    }
+    else if (_mode == HOTSPOTVIDEO)
+    {
+        NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate
+                                                                       toTime:CRAPI.sharedInstance.toDate];
+        hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
+                             Height:MNMXCORDHeight(pvbounds)
+                           NumGrids:(int)times.count
+                          timeArray:times
+                          PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
+                               tran:_pTranLLtoView];
     }
     
     if (!CRAPI.sharedInstance.mapCrimeList)
@@ -377,6 +389,12 @@ NextPass:
                                 andTime:dc.itemBeginTime
                               whichGrid:compareClass];
                     }
+                    else if (_mode == HOTSPOTVIDEO)
+                    {
+                        [hs addPointAtX:viewPoint.x andY:viewPoint.y
+                                andTime:dc.itemBeginTime
+                              whichGrid:-1];
+                    }
                     else
                     {
                     }
@@ -387,7 +405,7 @@ NextPass:
             [CRAPI.sharedInstance showMapToolbarIndicator:NO];
         }
     }
-    if (_mode == HOTSPOT && iPass++ < _numPass)
+    if ((_mode == HOTSPOT || _mode == HOTSPOTVIDEO) && iPass++ < _numPass)
         goto NextPass;
     
     [CRAPI.sharedInstance updateProgress:tot current:tot range:0 numRanges:1];
@@ -611,90 +629,6 @@ NextPass:
             }
         }
     }
-/*    {
-        if (pass)
-        {
-            if (!isBitmapContext)
-            {
-                CRAPI.sharedInstance.chartBitmaps = NSMutableArray.array;
-                ChartsBitmap *cb = ChartsBitmap.new;
-                cb.title = [NSString stringWithFormat:@"By Hour"];
-                cb.numVLines = 12;
-                
-                for (AreaData *ai in pias.areaInfo)
-                {
-                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
-                    cbd.title = ai.areaID;
-                    
-                    for (int i = 0; i < 24; i++)
-                    {
-                        DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
-                        [cbd.data addObject:dp];
-                    }
-                    
-                    [cb.dataSets addObject:cbd];
-                }
-                
-                [CRAPI.sharedInstance.chartBitmaps addObject:cb];
-                cb = ChartsBitmap.new;
-                cb.title = [NSString stringWithFormat:@"By Day of Week"];
-                cb.numVLines = 7;
-                
-                for (AreaData *ai in pias.areaInfo)
-                {
-                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
-                    cbd.title = ai.areaID;
-                    
-                    for (int i = 0; i < 7; i++)
-                    {
-                        DPoint *dp = [DPoint fromXY:i y:ai.dowCounts[i]];
-                        [cbd.data addObject:dp];
-                    }
-                    
-                    [cb.dataSets addObject:cbd];
-                }
-                
-                [CRAPI.sharedInstance.chartBitmaps addObject:cb];
-                
-                dispatch_async(dispatch_get_main_queue(),
-                               ^{
-                                   [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                                    target:CRAPI.sharedInstance
-                                                                  selector:@selector(displayChartBitmaps:)
-                                                                  userInfo:nil
-                                                                   repeats:NO];
-                               });
-            }
-            
-            else
-            {
-                ChartsBitmap *cb = ChartsBitmap.new;
-                cb.title = [NSString stringWithFormat:@"By Hour"];
-                
-                for (AreaData *ai in pias.areaInfo)
-                {
-                    ChartsBitmapDataSet *cbd = ChartsBitmapDataSet.new;
-                    cbd.title = ai.areaID;
-                    
-                    for (int i = 0; i < 24; i++)
-                    {
-                        DPoint *dp = [DPoint fromXY:i y:ai.hourCounts[i]];
-                        [cbd.data addObject:dp];
-                    }
-                    
-                    [cb.dataSets addObject:cbd];
-                }
-                
-                cb.chartWidth = MNMXCORDWidth(pvbounds);
-                cb.chartHeight = MNMXCORDHeight(pvbounds);
-                cb.numVLines = 12;
-                cb.useOffset = YES;
-                cb.outputFile = CRAPI.sharedInstance.pdfImageFile;
-                
-                [cb createChartBitmap];
-            }
-        }
-    }*/
     
     else if (_mode == HOTSPOT)
     {
@@ -711,6 +645,20 @@ NextPass:
       compareFactor:pCompareFactor];
         if (dump)
             [hs dump:@"hotspottest"];
+    }
+    else if (_mode == HOTSPOTVIDEO)
+    {
+        if (pass)
+        {
+            dispatch_async(dispatch_get_main_queue(),
+                           ^{
+                               [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                target:CRAPI.sharedInstance
+                                                              selector:@selector(displayHotspotVideo:)
+                                                              userInfo:nil
+                                                               repeats:NO];
+                           });
+        }
     }
 Exit:
     [_cd close:opened];
