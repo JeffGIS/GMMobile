@@ -248,8 +248,9 @@ NextPass:
     }
     else if (_mode == HOTSPOTVIDEO)
     {
-        NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate
-                                                                       toTime:CRAPI.sharedInstance.toDate];
+        NSArray<NSNumber*> *times = [NVDateRange getArrayOfQuadWeeksSpanningTime:CRAPI.sharedInstance.fromDate
+                                                                          toTime:CRAPI.sharedInstance.toDate
+                                                                        maxTimes:50];
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
                            NumGrids:(int)times.count
