@@ -214,7 +214,8 @@ boundsPointInAreas:nil
   haveCompareTheme:[themes haveCompareTheme]];
         
         [CRAPI.sharedInstance showMapToolbarIndicator:NO];
-        [pias initTimeLine:_cd.database];
+        if (_mode == CHOROPLETH)
+            [pias initTimeLine:_cd.database];
     }
     
     if (![self continueProcessing])
