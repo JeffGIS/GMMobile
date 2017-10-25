@@ -191,6 +191,7 @@
         [CRAPI.sharedInstance showMapToolbarIndicator:YES];
         
         pias = [[PointInAreas alloc]init];
+        pias.processingID = _processingID;
         pias.fullBounds = *pvbounds;
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
@@ -544,7 +545,7 @@ NextPass:
                         
                         for (int i = 0; i < numYears; i++)
                         {
-                            DPoint *dp = [DPoint fromXY:i y:ai.yearCounts[i]];
+                            DPoint *dp = [DPoint fromXY:i+minYear y:ai.yearCounts[i]];
                             [cbd.data addObject:dp];
                         }
                         [cb.dataSets addObject:cbd];
@@ -666,6 +667,7 @@ NextPass:
     }
 Exit:
     [_cd close:opened];
+    pias = nil;
 }
 
 - (double) getTimeFactor:(Themes *)themes
