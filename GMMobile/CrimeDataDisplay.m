@@ -538,6 +538,7 @@ NextPass:
                 {
                     ChartsBitmap *cb = ChartsBitmap.new;
                     cb.title = [NSString stringWithFormat:@"Violent Crime for Precincts By Year"];
+                    cb.format = ChartsBitmapDataFormatYears;
                     
                     for (AreaData *ai in pias.areaInfo)
                     {
