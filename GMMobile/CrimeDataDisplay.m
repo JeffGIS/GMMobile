@@ -656,14 +656,16 @@ NextPass:
     
     else if (_mode == HOTSPOTVIDEO)
     {
-        if (pass)
+        if (pass && [self continueProcessing])
         {
-            CRAPI.sharedInstance.hsv = HotSpotVideo.new;
-            CRAPI.sharedInstance.hsv.width = hs.width;
-            CRAPI.sharedInstance.hsv.height = hs.height;
-            CRAPI.sharedInstance.hsv.numImages = hs.nGrids;
+            HotSpotVideo *hsv = HotSpotVideo.new;
+            hsv.width = hs.width;
+            hsv.height = hs.height;
+            hsv.numImages = hs.nGrids;
             
             NSString *tempDirectory = [NSString stringWithFormat:@"%@HotspotImages", NSTemporaryDirectory()];
+            
+            tempDirectory = [NSString stringWithFormat:@"%@/HotspotImages", UserDefaults.defaults.sharedFilePath];
             
             [NSFileManager.defaultManager createDirectoryAtPath:tempDirectory
                                     withIntermediateDirectories:YES
@@ -672,13 +674,17 @@ NextPass:
             
             for (int iGrid = 0; iGrid < hs.nGrids; iGrid++)
             {
+                if (![self continueProcessing])
+                    break;
                 NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
                 
                 file = [hs writeGrid:iGrid toFile:file];
-                [CRAPI.sharedInstance.hsv.imageFiles addObject:file];
+                [hsv.imageFiles addObject:file];
             }
-            
-            dispatch_async(dispatch_get_main_queue(),
+            if ([self continueProcessing])
+            {
+                CRAPI.sharedInstance.hsv = hsv;
+                dispatch_async(dispatch_get_main_queue(),
                            ^{
                                [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                 target:CRAPI.sharedInstance
@@ -686,6 +692,7 @@ NextPass:
                                                               userInfo:nil
                                                                repeats:NO];
                            });
+            }
         }
     }
 Exit:
