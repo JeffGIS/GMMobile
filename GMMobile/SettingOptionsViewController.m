@@ -18,6 +18,7 @@
 #import "CCodeLibrary/NVTabBarEdit.h"
 #import "CreateBatchCrimeMaps.h"
 #import "CCodeLibrary/ChartsBitmap.h"
+#import "CCodeLibrary/HotSpotVideoVC.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -379,7 +380,7 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
-                  @"Create Charts Bitmap File"];
+                  @"Create Charts Bitmap File", @"Display Current HotSpot Video"];
     
     //,@"Compress Crime Data"];//,@"Upload Crime Data"];
     
@@ -650,6 +651,21 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         
         chart.title = @"An Interesting Line Chart from GSSi";
         [chart createChartBitmap];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Display Current HotSpot Video"])
+    {
+        HotSpotVideo *hsv = HotSpotVideo.new;
+        hsv.imageFiles = [UserDefaults.defaults arrayForKey:@"HotSpotVideoImageFiles"].mutableCopy;
+        hsv.numImages = (int)hsv.imageFiles.count;
+        CRAPI.sharedInstance.hsv = hsv;
+        HotSpotVideoVC *hsvVC = HotSpotVideoVC.new;
+        hsvVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        
+        [self presentViewController:hsvVC
+                           animated:YES
+                         completion:nil];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text

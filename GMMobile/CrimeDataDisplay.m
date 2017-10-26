@@ -676,11 +676,13 @@ NextPass:
             {
                 if (![self continueProcessing])
                     break;
-                NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
                 
+                NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
                 file = [hs writeGrid:iGrid toFile:file];
                 [hsv.imageFiles addObject:file];
+                NSLog(@"Hotspot image added (%i of %i)", (iGrid + 1), hs.nGrids);
             }
+            
             if ([self continueProcessing])
             {
                 CRAPI.sharedInstance.hsv = hsv;
