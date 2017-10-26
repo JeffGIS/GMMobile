@@ -147,7 +147,7 @@
     struct tm tmtime2 = *localtime (&iTime);    
     int maxYear = tmtime2.tm_year + 1900;
     int numYears = maxYear - minYear + 1;
-    
+    NSArray<NSNumber*> *hsTimes = nil;
     int numUCRRanges=1, numTimeRanges=1;
     LPSTR offense;
     LPSTR dept;
@@ -250,13 +250,14 @@ NextPass:
     }
     else if (_mode == HOTSPOTVIDEO)
     {
-        NSArray<NSNumber*> *times = [NVDateRange getArrayOfQuadWeeksSpanningTime:(int)CRAPI.sharedInstance.fromDate
+        int maxTimeSlots = 50;
+        hsTimes = [NVDateRange getArrayOfQuadWeeksSpanningTime:(int)CRAPI.sharedInstance.fromDate
                                                                           toTime:(int)CRAPI.sharedInstance.toDate
-                                                                        maxTimes:20];
+                                                                        maxTimes:maxTimeSlots];
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
-                           NumGrids:(int)times.count
-                          timeArray:times
+                           NumGrids:(int)hsTimes.count
+                          timeArray:hsTimes
                           PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                tran:_pTranLLtoView];
     }
@@ -656,44 +657,52 @@ NextPass:
     
     else if (_mode == HOTSPOTVIDEO)
     {
-        if (pass && [self continueProcessing])
+        if ([self continueProcessing])
         {
-            HotSpotVideo *hsv = HotSpotVideo.new;
-            hsv.width = hs.width;
-            hsv.height = hs.height;
-            hsv.numImages = hs.nGrids;
-            
-            NSString *tempDirectory = [NSString stringWithFormat:@"%@HotspotImages", NSTemporaryDirectory()];
-            
-            tempDirectory = [NSString stringWithFormat:@"%@/HotspotImages", UserDefaults.defaults.sharedFilePath];
-            
-            [NSFileManager.defaultManager createDirectoryAtPath:tempDirectory
-                                    withIntermediateDirectories:YES
-                                                     attributes:nil
-                                                          error:nil];
-            
-            for (int iGrid = 0; iGrid < hs.nGrids; iGrid++)
+            if (!pass)
             {
-                if (![self continueProcessing])
-                    break;
-                
-                NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
-                file = [hs writeGrid:iGrid toFile:file];
-                [hsv.imageFiles addObject:file];
-                NSLog(@"Hotspot image added (%i of %i)", (iGrid + 1), hs.nGrids);
+                //save background image
             }
-            
-            if ([self continueProcessing])
+            else
             {
-                CRAPI.sharedInstance.hsv = hsv;
-                dispatch_async(dispatch_get_main_queue(),
-                           ^{
-                               [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                                target:CRAPI.sharedInstance
-                                                              selector:@selector(displayHotSpotVideo:)
-                                                              userInfo:nil
-                                                               repeats:NO];
-                           });
+                HotSpotVideo *hsv = HotSpotVideo.new;
+                hsv.width = hs.width;
+                hsv.height = hs.height;
+                hsv.numImages = hs.nGrids;
+                hsv.timeRanges = hsTimes.copy;
+                hsv.type = HSTypeTime;
+                NSString *tempDirectory = [NSString stringWithFormat:@"%@HotspotImages", NSTemporaryDirectory()];
+                
+                tempDirectory = [NSString stringWithFormat:@"%@/HotspotImages", UserDefaults.defaults.sharedFilePath];
+                
+                [NSFileManager.defaultManager createDirectoryAtPath:tempDirectory
+                                        withIntermediateDirectories:YES
+                                                         attributes:nil
+                                                              error:nil];
+                
+                for (int iGrid = 0; iGrid < hs.nGrids; iGrid++)
+                {
+                    if (![self continueProcessing])
+                        break;
+                    
+                    NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
+                    file = [hs writeGrid:iGrid toFile:file];
+                    [hsv.imageFiles addObject:file];
+                    NSLog(@"Hotspot image added (%i of %i)", (iGrid + 1), hs.nGrids);
+                }
+                
+                if ([self continueProcessing])
+                {
+                    CRAPI.sharedInstance.hsv = hsv;
+                    dispatch_async(dispatch_get_main_queue(),
+                                   ^{
+                                       [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                        target:CRAPI.sharedInstance
+                                                                      selector:@selector(displayHotSpotVideo:)
+                                                                      userInfo:nil
+                                                                       repeats:NO];
+                                   });
+                }
             }
         }
     }
