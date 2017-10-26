@@ -250,8 +250,8 @@ NextPass:
     }
     else if (_mode == HOTSPOTVIDEO)
     {
-        NSArray<NSNumber*> *times = [NVDateRange getArrayOfQuadWeeksSpanningTime:CRAPI.sharedInstance.fromDate
-                                                                          toTime:CRAPI.sharedInstance.toDate
+        NSArray<NSNumber*> *times = [NVDateRange getArrayOfQuadWeeksSpanningTime:(int)CRAPI.sharedInstance.fromDate
+                                                                          toTime:(int)CRAPI.sharedInstance.toDate
                                                                         maxTimes:20];
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
@@ -624,7 +624,6 @@ NextPass:
                 cb.chartWidth = MNMXCORDWidth(pvbounds);
                 cb.chartHeight = MNMXCORDHeight(pvbounds);
                 cb.format = ChartsBitmapDataFormatHourOfDay;
-                cb.useOffset = YES;
                 cb.outputFile = CRAPI.sharedInstance.pdfImageFile;
                 
                 [cb createChartBitmap];
@@ -654,6 +653,7 @@ NextPass:
         if (dump)
             [hs dump:@"hotspottest"];
     }
+    
     else if (_mode == HOTSPOTVIDEO)
     {
         if (pass)
@@ -663,19 +663,21 @@ NextPass:
             CRAPI.sharedInstance.hsv.height = hs.height;
             CRAPI.sharedInstance.hsv.numImages = hs.nGrids;
             
-            for (int iGrid = 0;iGrid < hs.nGrids;iGrid++)
+            NSString *tempDirectory = [NSString stringWithFormat:@"%@HotspotImages", NSTemporaryDirectory()];
+            
+            [NSFileManager.defaultManager createDirectoryAtPath:tempDirectory
+                                    withIntermediateDirectories:YES
+                                                     attributes:nil
+                                                          error:nil];
+            
+            for (int iGrid = 0; iGrid < hs.nGrids; iGrid++)
             {
-                NSString * tempDirectory = [NSString stringWithFormat:@"%@HotspotImages",NSTemporaryDirectory()];
-                [NSFileManager.defaultManager createDirectoryAtPath:tempDirectory
-                       withIntermediateDirectories:YES
-                                        attributes:nil
-                                             error:nil];
-
-                NSString * file = [NSString stringWithFormat:@"%@/Image%i",tempDirectory,iGrid+1];
-                file = [hs writeGrid:iGrid
-                       toFile:file];
+                NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
+                
+                file = [hs writeGrid:iGrid toFile:file];
                 [CRAPI.sharedInstance.hsv.imageFiles addObject:file];
             }
+            
             dispatch_async(dispatch_get_main_queue(),
                            ^{
                                [NSTimer scheduledTimerWithTimeInterval:0.1
