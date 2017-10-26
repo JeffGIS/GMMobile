@@ -252,7 +252,7 @@ NextPass:
     {
         NSArray<NSNumber*> *times = [NVDateRange getArrayOfQuadWeeksSpanningTime:CRAPI.sharedInstance.fromDate
                                                                           toTime:CRAPI.sharedInstance.toDate
-                                                                        maxTimes:50];
+                                                                        maxTimes:20];
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
                            NumGrids:(int)times.count
