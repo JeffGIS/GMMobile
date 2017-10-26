@@ -649,6 +649,7 @@ NextPass:
         else
             pCompareFactor = nil;
         [hs display:context
+         gridNumber:0
       compareFactor:pCompareFactor];
         if (dump)
             [hs dump:@"hotspottest"];
@@ -657,6 +658,24 @@ NextPass:
     {
         if (pass)
         {
+            CRAPI.sharedInstance.hsv = HotSpotVideo.new;
+            CRAPI.sharedInstance.hsv.width = hs.width;
+            CRAPI.sharedInstance.hsv.height = hs.height;
+            CRAPI.sharedInstance.hsv.numImages = hs.nGrids;
+            
+            for (int iGrid = 0;iGrid < hs.nGrids;iGrid++)
+            {
+                NSString * tempDirectory = [NSString stringWithFormat:@"%@HotspotImages",NSTemporaryDirectory()];
+                [NSFileManager.defaultManager createDirectoryAtPath:tempDirectory
+                       withIntermediateDirectories:YES
+                                        attributes:nil
+                                             error:nil];
+
+                NSString * file = [NSString stringWithFormat:@"%@/Image%i",tempDirectory,iGrid+1];
+                file = [hs writeGrid:iGrid
+                       toFile:file];
+                [CRAPI.sharedInstance.hsv.imageFiles addObject:file];
+            }
             dispatch_async(dispatch_get_main_queue(),
                            ^{
                                [NSTimer scheduledTimerWithTimeInterval:0.1
