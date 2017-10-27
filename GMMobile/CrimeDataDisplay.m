@@ -662,6 +662,7 @@ NextPass:
             if (!pass)
             {
                 //save background image
+
             }
             else
             {
@@ -679,7 +680,10 @@ NextPass:
                                         withIntermediateDirectories:YES
                                                          attributes:nil
                                                               error:nil];
-                
+                NSString *file = [NSString stringWithFormat:@"%@/background.png", tempDirectory];
+                if (_backgroundImage)
+                    [UIImagePNGRepresentation(_backgroundImage) writeToFile:file atomically:YES];
+
                 for (int iGrid = 0; iGrid < hs.nGrids; iGrid++)
                 {
                     if (![self continueProcessing])

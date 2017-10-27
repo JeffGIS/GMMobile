@@ -2503,7 +2503,10 @@ idleAtCameraPosition:(GMSCameraPosition *)position
         [self hideCompass];
     
     if ([self.view.subviews containsObject:_nvdv])
+    {
+        _vectorView.mapView = _mapView;
         [_nvdv setNeedsDisplay];
+    }
     
     [self updateMarkerPosition];
 }
@@ -3042,6 +3045,7 @@ haveVV:
     }
     [self allocateVectorView:NO];
     [self vectorViewSetup];
+    _vectorView.mapView = _mapView;
     [_vectorView setNeedsDisplay];
 }
 
@@ -3103,7 +3107,8 @@ haveVV:
     _vectorView.pickedItem = pi;
     
     NSLog(@"HighlightVector view start: zoom = %f", _vectorViewZoom);
-    
+ 
+    _vectorView.mapView = _mapView;
     [_vectorView setNeedsDisplay];
 }
 
@@ -3276,8 +3281,14 @@ haveVV:
                            [self createGrayscale];
                        if (reDisplay)
                        {
+                           UIGraphicsBeginImageContext(self.view.frame.size);
+                           [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
+                           _vectorView.backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
+                           UIGraphicsEndImageContext();
+
                            _vvpass = 1;
                            _vectorView.pass = 1;
+                           _vectorView.mapView = _mapView;
                            [_vectorView setNeedsDisplay];
                            _vvpass = 0;
                        }

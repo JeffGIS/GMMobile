@@ -471,6 +471,8 @@
                                     CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
                                     cd.processingID = CRAPI.sharedInstance.keepProcessing;
                                     cd.zoom = _zoom;
+                                    cd.mapView = _mapView;
+                                    cd.backgroundImage = _backgroundImage;
                                     cd.mode = CRAPI.sharedInstance.crimeMode;
                                     cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;
                                     cd.choroplethAdjustValue = ConfigurationControl.sharedInstance.adjustCrimeOption;

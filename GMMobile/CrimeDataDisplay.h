@@ -12,6 +12,7 @@
 #import "CCodeLibrary/SymbolDictionary.h"
 #import "CCodeLibrary/DispersePoint.h"
 #import "Themes.h"
+@import GoogleMaps;
 
 @interface CrimeDataDisplay : NSObject
 
@@ -26,6 +27,8 @@
 @property int processingID;
 @property CGFloat zoom;
 @property int minUCR, maxUCR;
+@property GMSMapView * mapView;
+@property UIImage * backgroundImage;
 
 -(void)displayCrimePoints:(CGContextRef)context
           contextIsBitmap:(BOOL)isBitmap

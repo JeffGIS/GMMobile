@@ -36,6 +36,8 @@
 @property int pass;
 @property BOOL redisplay;
 @property NSMutableData * pdf;
+@property GMSMapView * mapView;
+@property UIImage *backgroundImage;
 
 
 - (void) setRegion:(GMSVisibleRegion)region;
