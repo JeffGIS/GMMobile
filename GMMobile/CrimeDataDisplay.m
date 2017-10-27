@@ -804,7 +804,7 @@ Exit:
 }
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    (*_processingID)--;
+    (*_processingID)++;
     [popoverView hide];
     _mvc.popover.delegate = _savePOdelegate;
 }

@@ -23,7 +23,6 @@
 @property (nonatomic) CGColorSpaceRef colorSpace;
 @property (nonatomic) CGContextRef vectorViewContext, context;
 @property (nonatomic) NSInteger width, height;
-@property (nonatomic) dispatch_queue_t vectorQueue;
 @property (nonatomic) CGRect rect;
 @property (nonatomic) int haveVectorLayer;
 @property BoundaryData *bd;
@@ -42,7 +41,6 @@
     {
         self.opaque = YES;
         self.backgroundColor = UIColor.clearColor;
-        _vectorQueue = dispatch_queue_create("vectorQueue", NULL);
     }
     NSLog (@"VectorView init");
      return self;
@@ -249,7 +247,7 @@
         else
             _context = CGLayerGetContext(_vectorLayer);
 
-        dispatch_async(_vectorQueue, ^{
+        dispatch_async(CRAPI.sharedInstance.vectorQueue, ^{
             DisplayCharacteristics *dc = DisplayCharacteristics.new;
             _colorSpace = CGColorSpaceCreateDeviceRGB();
             _width = bounds.size.width * scale;
