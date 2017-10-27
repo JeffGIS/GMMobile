@@ -469,7 +469,7 @@
                                                                        andPass:passID])
                                 {
                                     CrimeDataDisplay *cd = [[CrimeDataDisplay alloc] init];
-                                    cd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    cd.processingID = &_displayID;
                                     cd.zoom = _zoom;
                                     cd.mapView = _mapView;
                                     cd.mvc = _mvc;

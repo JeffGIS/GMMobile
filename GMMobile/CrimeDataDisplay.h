@@ -25,7 +25,8 @@
 @property NSString * choroplethAdjustArea;
 @property LPTRANDATA pTranLLtoView;
 @property LPTRANDATA pTranViewtoLL;
-@property int processingID;
+@property int *processingID;
+@property id <GSSiPopoverViewDelegate> savePOdelegate;
 @property CGFloat zoom;
 @property int minUCR, maxUCR;
 @property GMSMapView * mapView;

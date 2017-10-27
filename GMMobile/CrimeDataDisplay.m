@@ -17,9 +17,9 @@
 
 - (BOOL)continueProcessing
 {
-    if (self.processingID <= 0)
+    if (*self.processingID <= 0)
         return YES;
-    if (self.processingID == CRAPI.sharedInstance.keepProcessing)
+    if (*self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
     
     return NO;
@@ -191,7 +191,7 @@
         [CRAPI.sharedInstance showMapToolbarIndicator:YES];
         
         pias = [[PointInAreas alloc]init];
-        pias.processingID = _processingID;
+        pias.processingID = *_processingID;
         pias.fullBounds = *pvbounds;
         pias.areaType = _choroplethTarget;
         pias.adjustValue = nil;
@@ -199,7 +199,7 @@
         pias.compareFactor = [themes getCompareThemeFactor];
         int pointSize = ceil (crimeCirclePixelRadius);
         bd = [[BoundaryData alloc]init];
-        bd.processingID = self.processingID;
+        bd.processingID = *self.processingID;
         
         MNMXCORD pvboundsPias = [pias bitmapBounds:pvbounds];
         [pias setPointSize:pointSize];
@@ -364,7 +364,7 @@ NextPass:
                 int compareClass = 0;
                 if ((!pia || [pia DPointInArea:BasePt]) &&
                     [themes setDisplayCharacteristics:dc
-                                            displayID:_processingID
+                                            displayID:*_processingID
                                          compareClass:&compareClass] != DO_NOT_DISPLAY_ITEM)
                 {
                     DPOINT viewPoint = TranDPOINTP(BasePt, _pTranLLtoView);
@@ -462,7 +462,7 @@ NextPass:
             piasAdjust.areaType = _choroplethAdjustArea;
             piasAdjust.adjustValue = [ConfigurationControl getAdjustValueString:_choroplethAdjustValue];
             bd = [[BoundaryData alloc]init];
-            bd.processingID = self.processingID;
+            bd.processingID = *self.processingID;
             
             [bd load:_choroplethAdjustArea
       toPointInAreas:piasAdjust
@@ -669,6 +669,7 @@ NextPass:
                                ^{
                                    _mvc.popover.progressView.hidden = NO;
                                    _mvc.popover.progressLabel.hidden = YES;
+                                   _savePOdelegate = _mvc.popover.delegate;
                                    _mvc.popover.delegate = self;
                                    _mvc.popover.hideAtCancel = YES;
                                    [_mvc.view bringSubviewToFront:_mvc.popover];
@@ -704,6 +705,8 @@ NextPass:
                     
                     NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
                     file = [hs writeGrid:iGrid toFile:file];
+                    if (![self continueProcessing])
+                        break;
                     [hsv.imageFiles addObject:file];
                     NSLog(@"Hotspot image added (%i of %i)", (iGrid + 1), hs.nGrids);
                     dispatch_async(dispatch_get_main_queue(),
@@ -801,7 +804,9 @@ Exit:
 }
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    self.processingID--;
+    (*_processingID)--;
+    [popoverView hide];
+    _mvc.popover.delegate = _savePOdelegate;
 }
 
 
