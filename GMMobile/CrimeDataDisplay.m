@@ -671,9 +671,8 @@ NextPass:
                                    _mvc.popover.progressLabel.hidden = YES;
                                    _mvc.popover.delegate = self;
                                    _mvc.popover.hideAtCancel = YES;
-                                   [_mvc.popover showAfter:0.1 withTitle:@"Creating Hotspot Video Files"];
                                    [_mvc.view bringSubviewToFront:_mvc.popover];
-                                   [_mvc.popover show];
+                                   [_mvc.popover showAfter:0.1 withTitle:@"Creating Hotspot Video Files"];
                                });
 
                 HotSpotVideo *hsv = HotSpotVideo.new;
@@ -691,8 +690,12 @@ NextPass:
                                                          attributes:nil
                                                               error:nil];
                 NSString *file = [NSString stringWithFormat:@"%@/background.png", tempDirectory];
+                
                 if (_backgroundImage)
+                {
                     [UIImagePNGRepresentation(_backgroundImage) writeToFile:file atomically:YES];
+                    hsv.backgroundImageFile = file;
+                }
 
                 for (int iGrid = 0; iGrid < hs.nGrids; iGrid++)
                 {
