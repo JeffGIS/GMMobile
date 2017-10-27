@@ -658,7 +658,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         HotSpotVideo *hsv = HotSpotVideo.new;
         hsv.imageFiles = [UserDefaults.defaults arrayForKey:@"HotSpotVideoImageFiles"].mutableCopy;
-        hsv.timeRanges = [UserDefaults.defaults arrayForKey:@"HotSpotVideoTimeRanges"].mutableCopy;
+        hsv.timeRanges = [UserDefaults.defaults arrayForKey:@"HotSpotVideoTimeRanges"];
         hsv.type = [UserDefaults.defaults integerForKey:@"HotSpotVideoType"];
         hsv.backgroundImageFile =  [UserDefaults.defaults stringForKey:@"HotSpotBackgroundImageFile"];
         hsv.numImages = (int)hsv.imageFiles.count;
