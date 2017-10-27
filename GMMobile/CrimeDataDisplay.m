@@ -661,11 +661,21 @@ NextPass:
         {
             if (!pass)
             {
-                //save background image
-
+ 
             }
             else
             {
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   _mvc.popover.progressView.hidden = NO;
+                                   _mvc.popover.progressLabel.hidden = YES;
+                                   _mvc.popover.delegate = self;
+                                   _mvc.popover.hideAtCancel = YES;
+                                   [_mvc.popover showAfter:0.1 withTitle:@"Creating Hotspot Video Files"];
+                                   [_mvc.view bringSubviewToFront:_mvc.popover];
+                                   [_mvc.popover show];
+                               });
+
                 HotSpotVideo *hsv = HotSpotVideo.new;
                 hsv.width = hs.width;
                 hsv.height = hs.height;
@@ -693,8 +703,17 @@ NextPass:
                     file = [hs writeGrid:iGrid toFile:file];
                     [hsv.imageFiles addObject:file];
                     NSLog(@"Hotspot image added (%i of %i)", (iGrid + 1), hs.nGrids);
+                    dispatch_async(dispatch_get_main_queue(),
+                                   ^{
+                                       [_mvc.popover updateProgress:(double)(iGrid+1)/hs.nGrids];
+                                   });
+
                 }
-                
+                dispatch_async(dispatch_get_main_queue(),
+                               ^{
+                                   [_mvc.popover hide];
+                               });
+               
                 if ([self continueProcessing])
                 {
                     CRAPI.sharedInstance.hsv = hsv;
@@ -777,9 +796,12 @@ Exit:
                                 lineWidth:dispersed ? -2 : 2];
     
 }
+- (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    self.processingID--;
+}
 
 
 @end
-
 /*CREATE TABLE OFFENSEXY (id INT PRIMARY KEY,'ControlNbr' INT,'OffenseOrder' INT,'Offense' CHAR(6),'CityCode' CHAR(2),'CaseYear' INT,'CaseNbr' CHAR(6),'ControlType' CHAR(1),'Attempt' CHAR(1),'BeginDate2' CHAR(19),'Precinct' CHAR(2),'UCRCode' CHAR(2),'NIBRSCode' CHAR(3),'CrimeCategory' CHAR(1),'CrimeClass' CHAR(1),'LastChangedID2' CHAR(11),'LastChanged2' CHAR(19),'OriginalCaseYear' INT,'OriginalCaseNbr' CHAR(6),'HouseNbr' CHAR(6),'HouseModifier' CHAR(1),'StreetName' CHAR(22),'StreetType' CHAR(2),'StreetDirection' CHAR(2),'IntersectionStreetName' CHAR(22),'IntersectionStreetType' CHAR(2),'IntersectionStreetDirection' CHAR(2),'Apartment' CHAR(5),'City2' CHAR(30),'State' CHAR(2),'VictimBusiness' CHAR(1),'Zipcode2' CHAR(9),'EndDate' CHAR(19),'ReportedDate' CHAR(19),'BeginDate' CHAR(19),'DispatchedTime' CHAR(4),'ArrivedTime' CHAR(4),'Location' CHAR(30),'ClearedTime' CHAR(4),'PrimaryOffense' CHAR(6),'SupervisorID' CHAR(11),'AssistingOfficerID' CHAR(11),'NotPublicInformation' CHAR(1),'UnitNbr' CHAR(4),'ReportingID' CHAR(11),'CallNbr' CHAR(11),'EnteredID' CHAR(11),'EnteredDate' CHAR(19),'LastChanged' CHAR(19),'AdultStatus' INT,'JuvenileStatus' INT,'Solvable' INT,'NotPublicAddressInformation' CHAR(1),'LastChangedID' CHAR(11),'ForceSupervisorReviewRequired' INT,'ForceSupervisorReviewCompeted' INT,'ForceIAUReviewCompleted' INT,'MatchCode' INT,'LocationCode' INT,'StreetNum' INT,'HouseNum' INT,'IntID' INT,'StreetNum1' INT,'StreetNum2' INT,'Street1MP' REAL,'Street2MP' REAL,'MunicNum' INT,'ZIP' INT,'X' REAL,'Y' REAL,'NumPartsRemoved' INT,'AddressTAGPrefix' CHAR(8),'AddressTAGUDI' CHAR(64),'Street' CHAR(80),'House' CHAR(12),'City' CHAR(32),'ZIPCODE' CHAR(12),'Symbol' CHAR(64),'FromDate' INT,'ToDate' INT,'Note' CHAR(100),'UCR' INT)
  */

@@ -12,9 +12,10 @@
 #import "CCodeLibrary/SymbolDictionary.h"
 #import "CCodeLibrary/DispersePoint.h"
 #import "Themes.h"
+#import "MapViewController.h"
 @import GoogleMaps;
 
-@interface CrimeDataDisplay : NSObject
+@interface CrimeDataDisplay : NSObject <GSSiPopoverViewDelegate>
 
 @property CrimeMapMode mode;
 @property int numPass;
@@ -29,6 +30,7 @@
 @property int minUCR, maxUCR;
 @property GMSMapView * mapView;
 @property UIImage * backgroundImage;
+@property MapViewController *mvc;
 
 -(void)displayCrimePoints:(CGContextRef)context
           contextIsBitmap:(BOOL)isBitmap

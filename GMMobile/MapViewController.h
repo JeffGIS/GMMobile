@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 @property (nonatomic) GMSMapView *mapView;
 @property NSUInteger fromIndex;
 @property (nonatomic, copy) NSArray<PropertyRecord *> *propArray;
-
+@property (nonatomic) GSSiPopoverView *popover;
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;
 

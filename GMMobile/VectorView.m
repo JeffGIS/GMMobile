@@ -472,6 +472,7 @@
                                     cd.processingID = CRAPI.sharedInstance.keepProcessing;
                                     cd.zoom = _zoom;
                                     cd.mapView = _mapView;
+                                    cd.mvc = _mvc;
                                     cd.backgroundImage = _backgroundImage;
                                     cd.mode = CRAPI.sharedInstance.crimeMode;
                                     cd.choroplethTarget = CRAPI.sharedInstance.crimeTarget;

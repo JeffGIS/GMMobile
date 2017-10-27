@@ -2,6 +2,7 @@
 //  GMMobile
 
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "MapViewController.h"
 @import GoogleMaps;
 
 #define DISPLAY_DATA_OPTION_NODISPLAY   0
@@ -38,6 +39,8 @@
 @property NSMutableData * pdf;
 @property GMSMapView * mapView;
 @property UIImage *backgroundImage;
+@property MapViewController *mvc;
+
 
 
 - (void) setRegion:(GMSVisibleRegion)region;

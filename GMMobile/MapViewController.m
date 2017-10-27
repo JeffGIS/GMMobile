@@ -97,7 +97,6 @@
 @property (nonatomic) MapToolbar *mapToolbar;
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) MarkerInfoWindow *infoWindow;
-@property (nonatomic) GSSiPopoverView *popover;
 @property (nonatomic, copy) NSString *selectedSewerPipe, *selectedAlleyWall, *selectedAlleySeg, *selectedCRIntPt, *selectedBA;
 @property NSInteger selectedCrime, selectedCensusBoundaryRefno, selectedBARefNo, selectedSdwkRefNo;
 @property (nonatomic, copy) NSString *selectedCensusBoundaryType, *selectedSdwk, *currentAddress;
@@ -2505,6 +2504,7 @@ idleAtCameraPosition:(GMSCameraPosition *)position
     if ([self.view.subviews containsObject:_nvdv])
     {
         _vectorView.mapView = _mapView;
+        _vectorView.mvc = self;
         [_nvdv setNeedsDisplay];
     }
     
@@ -3046,6 +3046,7 @@ haveVV:
     [self allocateVectorView:NO];
     [self vectorViewSetup];
     _vectorView.mapView = _mapView;
+    _vectorView.mvc = self;
     [_vectorView setNeedsDisplay];
 }
 
@@ -3109,6 +3110,7 @@ haveVV:
     NSLog(@"HighlightVector view start: zoom = %f", _vectorViewZoom);
  
     _vectorView.mapView = _mapView;
+    _vectorView.mvc = self;
     [_vectorView setNeedsDisplay];
 }
 
@@ -3289,6 +3291,7 @@ haveVV:
                            _vvpass = 1;
                            _vectorView.pass = 1;
                            _vectorView.mapView = _mapView;
+                           _vectorView.mvc = self;
                            [_vectorView setNeedsDisplay];
                            _vvpass = 0;
                        }
