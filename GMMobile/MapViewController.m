@@ -3284,9 +3284,11 @@ haveVV:
                        if (reDisplay)
                        {
                            UIGraphicsBeginImageContext(self.view.frame.size);
+                           _mapToolbar.hidden = YES;
                            [self.view.layer renderInContext:UIGraphicsGetCurrentContext()];
                            _vectorView.backgroundImage = UIGraphicsGetImageFromCurrentImageContext();
                            UIGraphicsEndImageContext();
+                           _mapToolbar.hidden = NO;
 
                            _vvpass = 1;
                            _vectorView.pass = 1;

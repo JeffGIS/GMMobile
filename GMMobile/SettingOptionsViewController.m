@@ -738,7 +738,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)compressCrimeData
 {
-    
     _cd = [CrimeData new];
     [_cd open];
     long long oldSize = _cd.fileSize;
