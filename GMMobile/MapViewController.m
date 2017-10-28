@@ -1483,7 +1483,8 @@
             
             else if ([subviews isKindOfClass:MapToolbar.class])
             {
-                if (!subviews.hidden)
+                MapToolbar * mtv = (MapToolbar *)subviews;
+                if (!subviews.hidden && !(mtv.orientation == MapToolbarOrientationMinimized))
                     [subviewsArray addObject:subviews];
             }
             
