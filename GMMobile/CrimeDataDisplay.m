@@ -17,7 +17,7 @@
 
 - (BOOL)continueProcessing
 {
-    if (*self.processingID <= 0)
+    if (*self.processingID == 0)
         return YES;
     if (*self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
@@ -671,9 +671,11 @@ NextPass:
                                    _mvc.popover.progressLabel.hidden = YES;
                                    _savePOdelegate = _mvc.popover.delegate;
                                    _mvc.popover.delegate = self;
-                                   _mvc.popover.hideAtCancel = YES;
+                                   _mvc.popover.hideAtCancel = NO;
+                                   _mvc.popover.title = @"Creating Hotspot Video Files";
                                    [_mvc.view bringSubviewToFront:_mvc.popover];
-                                   [_mvc.popover showAfter:0.1 withTitle:@"Creating Hotspot Video Files"];
+                                   [_mvc.popover updateProgress:0];
+                                   [_mvc.popover show];
                                });
 
                 HotSpotVideo *hsv = HotSpotVideo.new;
@@ -715,13 +717,13 @@ NextPass:
                                    });
 
                 }
-                dispatch_async(dispatch_get_main_queue(),
-                               ^{
-                                   [_mvc.popover hide];
-                               });
-               
                 if ([self continueProcessing])
                 {
+                    dispatch_async(dispatch_get_main_queue(),
+                                   ^{
+                                       [_mvc.popover hide];
+                                   });
+                    
                     CRAPI.sharedInstance.hsv = hsv;
                     dispatch_async(dispatch_get_main_queue(),
                                    ^{
@@ -804,9 +806,12 @@ Exit:
 }
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    (*_processingID)++;
-    [popoverView hide];
-    _mvc.popover.delegate = _savePOdelegate;
+    *_processingID = -1;
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       _mvc.popover.delegate = _savePOdelegate;
+                       [popoverView hide];
+                   });
 }
 
 

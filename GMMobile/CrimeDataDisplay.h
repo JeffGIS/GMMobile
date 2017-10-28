@@ -31,7 +31,7 @@
 @property int minUCR, maxUCR;
 @property GMSMapView * mapView;
 @property UIImage * backgroundImage;
-@property MapViewController *mvc;
+@property (weak)MapViewController *mvc;
 
 -(void)displayCrimePoints:(CGContextRef)context
           contextIsBitmap:(BOOL)isBitmap
