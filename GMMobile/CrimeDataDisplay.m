@@ -704,12 +704,14 @@ NextPass:
                 {
                     if (![self continueProcessing])
                         break;
-                    
-                    NSString *file = [NSString stringWithFormat:@"%@/Image%i", tempDirectory, (iGrid + 1)];
-                    file = [hs writeGrid:iGrid toFile:file];
+                  @autoreleasepool {
+
+                        NSString *file = [NSString stringWithFormat:@"%@/Image%i.png", tempDirectory, (iGrid + 1)];
+                        [hs writeGrid:iGrid toFile:file];
+                        [hsv.imageFiles addObject:file];
+                                    }
                     if (![self continueProcessing])
                         break;
-                    [hsv.imageFiles addObject:file];
                     NSLog(@"Hotspot image added (%i of %i)", (iGrid + 1), hs.nGrids);
                     dispatch_async(dispatch_get_main_queue(),
                                    ^{
