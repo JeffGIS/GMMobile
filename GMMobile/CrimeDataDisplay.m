@@ -148,6 +148,8 @@
     int maxYear = tmtime2.tm_year + 1900;
     int numYears = maxYear - minYear + 1;
     NSArray<NSNumber*> *hsTimes = nil;
+    HSVideoTypes hotspotVideoType = HSTypeTime;
+    int numHotspotGrids = 0;
     int numUCRRanges=1, numTimeRanges=1;
     LPSTR offense;
     LPSTR dept;
@@ -250,13 +252,27 @@ NextPass:
     }
     else if (_mode == HOTSPOTVIDEO)
     {
-        int maxTimeSlots = 50;
-        hsTimes = [NVDateRange getArrayOfQuadWeeksSpanningTime:(int)CRAPI.sharedInstance.fromDate
+        if ([CRAPI.sharedInstance.hotspotVideoMode containsString:@"Day of Week"])
+        {
+            hotspotVideoType = HSTypeDow;
+            numHotspotGrids = -7;
+        }
+        else if ([CRAPI.sharedInstance.hotspotVideoMode containsString:@"Hour in Day"])
+        {
+            hotspotVideoType = HSTypeHour;
+            numHotspotGrids = -24;
+        }
+        else
+        {
+            int maxTimeSlots = 50;
+            hsTimes = [NVDateRange getArrayOfQuadWeeksSpanningTime:(int)CRAPI.sharedInstance.fromDate
                                                                           toTime:(int)CRAPI.sharedInstance.toDate
                                                                         maxTimes:maxTimeSlots];
+            numHotspotGrids = (int)hsTimes.count;
+        }
         hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)
                              Height:MNMXCORDHeight(pvbounds)
-                           NumGrids:(int)hsTimes.count
+                           NumGrids:numHotspotGrids
                           timeArray:hsTimes
                           PointSize:max(MNMXCORDWidth(pvbounds),MNMXCORDHeight(pvbounds))/32
                                tran:_pTranLLtoView];
@@ -390,13 +406,13 @@ NextPass:
                     else if (_mode == HOTSPOT)
                     {
                         [hs addPointAtX:viewPoint.x andY:viewPoint.y
-                                andTime:dc.itemBeginTime
+                                andTime:dc
                               whichGrid:compareClass];
                     }
                     else if (_mode == HOTSPOTVIDEO)
                     {
                         [hs addPointAtX:viewPoint.x andY:viewPoint.y
-                                andTime:dc.itemBeginTime
+                                andTime:dc
                               whichGrid:-1];
                     }
                     else
@@ -683,7 +699,7 @@ NextPass:
                 hsv.height = hs.height;
                 hsv.numImages = hs.nGrids;
                 hsv.timeRanges = hsTimes.copy;
-                hsv.type = HSTypeTime;
+                hsv.type = hotspotVideoType;
                 NSString *tempDirectory = [NSString stringWithFormat:@"%@HotspotImages", NSTemporaryDirectory()];
                 
                 tempDirectory = [NSString stringWithFormat:@"%@/HotspotImages", UserDefaults.defaults.sharedFilePath];

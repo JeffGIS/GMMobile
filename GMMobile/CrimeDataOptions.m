@@ -76,7 +76,7 @@
     
     _hotspotModes = @[@"Basic Hotspot Map"];
 
-    _hotspotVideoModes = @[@"Basic Hotspot Video"];
+    _hotspotVideoModes = @[@"Hotspot Video by Quadweeks",@"Hotspot Video by Day of Week",@"Hotspot Video by Hour in Day"];
 
     _choroplethModes = @[@"Choropleth Map for Precincts", @"Choropleth Map for Wards",
                          @"Choropleth Map for Sectors", @"Choropleth Map for Neighborhoods",
@@ -722,6 +722,24 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         CRAPI.sharedInstance.crimeCompare = @"Month With Monthly Compare";
         [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"CrimeCompareValue"];
+    }
+    
+    else if ([uppercaseMode containsString:@"HOTSPOT VIDEO BY QUADWEEKS"])
+    {
+        CRAPI.sharedInstance.hotspotVideoMode = @"Hotspot Video by Quadweeks";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"Hotspot Video Mode"];
+    }
+    
+    else if ([uppercaseMode containsString:@"HOTSPOT VIDEO BY DAY OF WEEK"])
+    {
+        CRAPI.sharedInstance.hotspotVideoMode = @"Hotspot Video by Day of Week";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"Hotspot Video Mode"];
+    }
+    
+    else if ([uppercaseMode containsString:@"HOTSPOT VIDEO BY HOUR IN DAY"])
+    {
+        CRAPI.sharedInstance.hotspotVideoMode = @"Hotspot Video by Hour in Day";
+        [UserDefaults.defaults saveString:CRAPI.sharedInstance.crimeCompare forKey:@"Hotspot Video Mode"];
     }
     
     else
