@@ -32,6 +32,8 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 @optional
 - (void)clearVectorView;
 - (void)themeLegendDidWantMinimize;
+- (void)themeLegendWillExpand;
+- (void)themeLegendDidShrink;
 
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend;
