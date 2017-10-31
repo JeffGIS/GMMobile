@@ -3362,8 +3362,11 @@ haveVV:
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
         
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        {
             yFactor += _mapToolbar.frame.size.height;
+        }
         
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
@@ -3445,18 +3448,22 @@ haveVV:
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
-                if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                 {
-                    xOriginLandscape = yFactor;
-                    
-                    if (landscapeColumnCount == 2)
-                        xOriginLandscape = _mapViewLegendOffset;
-                    
-                    yOriginLandscape = (statusBarHeight + yFactor);
-                    landscapeColumnCount++;
+                    if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
+                    {
+                        xOriginLandscape = yFactor;
+                        
+                        if (landscapeColumnCount == 2)
+                            xOriginLandscape = _mapViewLegendOffset;
+                        
+                        yOriginLandscape = (statusBarHeight + yFactor);
+                        landscapeColumnCount++;
+                    }
                 }
                 
-                if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
+                else if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
                 {
                     xOriginPortrait = yFactor;
                     
@@ -3466,7 +3473,7 @@ haveVV:
                     yOriginPortrait = (statusBarHeight + yFactor);
                     portraitColumnCount++;
                 }
-                
+
                 CGPoint mapOrigin = CGPointZero;
                 
                 if (_legendsAreOffMap)

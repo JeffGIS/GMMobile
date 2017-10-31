@@ -70,6 +70,7 @@
 		698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */; };
 		698F95F31B8CD319007D32A5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 698F95F21B8CD319007D32A5 /* StoreKit.framework */; };
 		698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */ = {isa = PBXBuildFile; fileRef = 698F95F41B8CD633007D32A5 /* shoppingCart.png */; };
+		6991ED2F1FA9115F007306B2 /* redX.png in Resources */ = {isa = PBXBuildFile; fileRef = 6991ED2E1FA9115F007306B2 /* redX.png */; };
 		6992A88B1BE00C4900FB53F0 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6992A88A1BE00C4900FB53F0 /* libcompression.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		69985FEA1C5FC4D800FCC332 /* criminal.png in Resources */ = {isa = PBXBuildFile; fileRef = 69985FE91C5FC4D800FCC332 /* criminal.png */; };
 		699F33BC1D6232AE0074BDFD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699F33BB1D6232AE0074BDFD /* WebKit.framework */; };
@@ -348,6 +349,7 @@
 		698ED6381DF8E8C00032FEA5 /* NVMetroSettingsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVMetroSettingsVC.m; sourceTree = "<group>"; };
 		698F95F21B8CD319007D32A5 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		698F95F41B8CD633007D32A5 /* shoppingCart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shoppingCart.png; sourceTree = "<group>"; };
+		6991ED2E1FA9115F007306B2 /* redX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redX.png; sourceTree = "<group>"; };
 		6992A88A1BE00C4900FB53F0 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		69985FE91C5FC4D800FCC332 /* criminal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = criminal.png; sourceTree = "<group>"; };
 		699F33BB1D6232AE0074BDFD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -655,6 +657,7 @@
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				6991ED2E1FA9115F007306B2 /* redX.png */,
 				69D625581FA3F2B1008D6F08 /* hsvLoop.png */,
 				69D625521FA3F1F6008D6F08 /* hsvPause.png */,
 				69D625541FA3F1F6008D6F08 /* hsvPlay.png */,
@@ -1242,6 +1245,7 @@
 				69FEC8971CA9AD0F002BF231 /* whiteMapItWithX.png in Resources */,
 				A9D281891B045BAD00523B29 /* loadData.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
+				6991ED2F1FA9115F007306B2 /* redX.png in Resources */,
 				697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */,
 				69F177481D7A0C6800741C68 /* GoogleMaps.bundle in Resources */,
 				A9C086771AE2338000E79B3E /* digitize.png in Resources */,

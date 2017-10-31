@@ -22,6 +22,7 @@
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
 @property (nonatomic) UIPanGestureRecognizer *drag;
+@property (nonatomic) UIImageView *deleteView;
 
 @end
 
@@ -241,10 +242,22 @@
         }
     }
     
-    tlmo.drag = [[UIPanGestureRecognizer alloc] initWithTarget:self
+    tlmo.drag = [[UIPanGestureRecognizer alloc] initWithTarget:tlmo
                                                         action:@selector(legendDragged:)];
     
     tlmo.drag.delegate = tlmo;
+    
+    tlmo.deleteView = UIImageView.new;
+    tlmo.deleteView.translatesAutoresizingMaskIntoConstraints = NO;
+    tlmo.deleteView.contentMode = UIViewContentModeScaleToFill;
+    tlmo.deleteView.hidden = YES;
+    tlmo.deleteView.alpha = 0.5;
+    
+    tlmo.deleteView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redX"
+                                                                                           ofType:@"png"]];
+    
+    [tlmo addSubview:tlmo.deleteView];
+    [tlmo.deleteView constrainToView:tlmo leading:0.0 trailing:(-tlmo.width / 2) top:0.0 bottom:0.0];
     
     return tlmo;
 }
@@ -494,7 +507,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
             [_delegate themeLegendWasDraggedOffRightSide];
         
-        if ([_delegate themeLegendIsOffMap])
+        if (_delegate.themeLegendIsOffMap)
         {
             if (self.frame.origin.x < 0.0)
                 [_delegate themeLegendWasDraggedOffLeftSide];
@@ -524,6 +537,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
         
         [_delegate themeLegendDidChangeStatus:NO];
+        _blockLongPress = NO;
     }
     
     else
@@ -531,6 +545,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         CGPoint translation = [gesture translationInView:self.superview];
         self.center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
         [gesture setTranslation:CGPointZero inView:gesture.view];
+        _deleteView.hidden = !((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width);
     }
 }
 
