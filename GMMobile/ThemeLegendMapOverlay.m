@@ -240,8 +240,8 @@
             tlmo.stdDev2Upper = ((tlmo.stdDev2Upper - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
         }
     }
-    
-    tlmo.drag = [[UIPanGestureRecognizer alloc] initWithTarget:self
+
+    tlmo.drag = [[UIPanGestureRecognizer alloc] initWithTarget:tlmo
                                                         action:@selector(legendDragged:)];
     
     tlmo.drag.delegate = tlmo;
