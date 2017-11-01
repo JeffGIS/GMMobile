@@ -134,7 +134,7 @@
 @property (nonatomic) NVCrimeListDelegate *crimeDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
-@property BOOL continueLoad, fromLegends2X, legendArrowHidden;
+@property BOOL continueLoad, fromLegends2X;
 @property (nonatomic) GMSCameraPosition *currentPosition;
 
 @end
@@ -190,7 +190,6 @@
     _showsPanorama = _splitPlatView = _legendMinimized = _grayscaleMode = NO;
     _routeMode = @"driving";
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
-    _legendArrowHidden = YES;
     
     _legendScrollView = UIScrollView.new;
     _legendScrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -223,7 +222,6 @@
     _mapView.settings.tiltGestures = NO;
     _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:12.0];
     [self.view addSubview:_mapView];
-    
     [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
     _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
@@ -1248,7 +1246,6 @@
         [_locationManager requestLocation];
     }
 }
-
 #pragma mark - EndOfViewDidAppear
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3571,17 +3568,21 @@ haveVV:
     }
 }
 
-- (void)updateArrowVisibility:(BOOL)hidden
+- (void)updateRightArrowVisibility:(BOOL)hidden
 {
-    if (hidden != _legendArrowHidden)
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
     {
-        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
-        {
-            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-                tlmos.moveToSideScrollerView.hidden = hidden;
-        }
-        
-        _legendArrowHidden = hidden;
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.moveRightView.hidden = hidden;
+    }
+}
+
+- (void)updateLeftArrowVisibility:(BOOL)hidden
+{
+    for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.moveLeftView.hidden = hidden;
     }
 }
 

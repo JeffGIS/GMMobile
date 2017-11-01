@@ -252,10 +252,15 @@
     [tlmo.deleteView constrainToView:tlmo leading:0.0 trailing:(-tlmo.width / 2) top:0.0 bottom:0.0];
     tlmo.deleteView.contentMode = UIViewContentModeScaleToFill;
     
-    tlmo.moveToSideScrollerView = UIImageView.new;
-    [tlmo setupImageView:tlmo.moveToSideScrollerView image:@"redArrow"];
-    [tlmo.moveToSideScrollerView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
-    tlmo.moveToSideScrollerView.contentMode = UIViewContentModeScaleAspectFit;
+    tlmo.moveRightView = UIImageView.new;
+    [tlmo setupImageView:tlmo.moveRightView image:@"redArrowRight"];
+    [tlmo.moveRightView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    tlmo.moveRightView.contentMode = UIViewContentModeScaleAspectFit;
+    
+    tlmo.moveLeftView = UIImageView.new;
+    [tlmo setupImageView:tlmo.moveLeftView image:@"redArrowLeft"];
+    [tlmo.moveLeftView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    tlmo.moveLeftView.contentMode = UIViewContentModeScaleAspectFit;
     
     return tlmo;
 }
@@ -558,12 +563,21 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [gesture setTranslation:CGPointZero inView:gesture.view];
         _deleteView.hidden = !((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width);
         
-        if (!_delegate.themeLegendIsOffMap)
+        if (_delegate.themeLegendIsOffMap)
         {
-            if ([_delegate respondsToSelector:@selector(updateArrowVisibility:)])
+            if ([_delegate respondsToSelector:@selector(updateLeftArrowVisibility:)])
             {
-                [_delegate updateArrowVisibility:!((self.frame.origin.x + self.frame.size.width) >
-                                                   self.superview.frame.size.width) || !_deleteView.hidden];
+                [_delegate updateLeftArrowVisibility:((self.frame.origin.x + self.frame.size.width) >
+                                                      self.superview.frame.size.width)];
+            }
+        }
+        
+        else
+        {
+            if ([_delegate respondsToSelector:@selector(updateRightArrowVisibility:)])
+            {
+                [_delegate updateRightArrowVisibility:!((self.frame.origin.x + self.frame.size.width) >
+                                                        self.superview.frame.size.width) || !_deleteView.hidden];
             }
         }
     }
