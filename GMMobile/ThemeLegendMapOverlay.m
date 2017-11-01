@@ -17,7 +17,7 @@
 @property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons, blockLongPress;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
-@property (nonatomic) CGFloat buttonMargin, avgPctOfMax, medianPctOfMax, stdDev1Lower, stdDev1Upper, stdDev2Lower, stdDev2Upper, minSymbolWidth;
+@property (nonatomic) CGFloat avgPctOfMax, medianPctOfMax, stdDev1Lower, stdDev1Upper, stdDev2Lower, stdDev2Upper, minSymbolWidth;
 @property (nonatomic) CGPoint previousContentOffset;
 @property (nonatomic) UILongPressGestureRecognizer *longPress;
 @property (nonatomic) UITapGestureRecognizer *tap;
@@ -91,11 +91,6 @@
         return 236.0;
 }
 
-+ (CGFloat)buttonMargin
-{
-    return 1.1;
-}
-
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend
                               withTag:(NSInteger)tag
                              delegate:(id)delegate
@@ -138,6 +133,7 @@
     tlmo.previousContentOffset = CGPointZero;
     tlmo.minSymbolWidth = 1.0;
     tlmo.blockLongPress = NO;
+    tlmo.dragMargin = 10.0;
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
     {
@@ -148,7 +144,6 @@
     tlmo.rowHeight = ThemeLegendMapOverlay.rowHeight;
     tlmo.headerHeight = tlmo.legend.headerHeight;
     tlmo.width = ThemeLegendMapOverlay.width;
-    tlmo.buttonMargin = ThemeLegendMapOverlay.buttonMargin;
 
     CGFloat height = ((tlmo.legend.numCells * tlmo.rowHeight) + tlmo.headerHeight);
     tlmo.frame = CGRectMake(origin.x, origin.y, tlmo.width, height);
@@ -168,7 +163,6 @@
         tlmo.tableView.layer.borderColor = UIColor.blackColor.CGColor;
     
     tlmo.tableView.layer.borderWidth = 2.0;
-    tlmo.tableView.delaysContentTouches = NO;
     tlmo.tableView.delaysContentTouches = NO;
     tlmo.tableView.allowsSelection = NO;
     tlmo.tableView.separatorColor = UIColor.clearColor;
@@ -246,6 +240,7 @@
                                                         action:@selector(legendDragged:)];
     
     tlmo.drag.delegate = tlmo;
+    tlmo.drag.delaysTouchesBegan = YES;
     
     tlmo.deleteView = UIImageView.new;
     [tlmo setupImageView:tlmo.deleteView image:@"redX"];
@@ -467,25 +462,32 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if (_isExpanded)
         return;
     
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    UIView *superview = self.superview;
+    CGRect frame = self.frame;
+    
+    BOOL inRemovalPos = ((frame.origin.x + (frame.size.width / 2.0)) > superview.frame.size.width);
+    BOOL inLeftDraggedPos = (frame.origin.x < -_dragMargin);
+    BOOL inRightDraggedPos = ((frame.origin.x + frame.size.width) > superview.frame.size.width);
+    
     if (gesture.state == UIGestureRecognizerStateBegan)
         _blockLongPress = YES;
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
     {
-        CGPoint location = [gesture locationInView:self.superview];
+        CGPoint location = [gesture locationInView:superview];
         
         _tableView.layer.borderColor = UIColor.blackColor.CGColor;
         _tableView.layer.borderWidth = 2.0;
         
         if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
         {
-            CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
             CGFloat margin = 8.0, size = 52.0;
             
             if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
                 margin = 4.0, size = 44;
             
-            if (location.x > (self.superview.frame.size.width - (size + (margin * 2.0))) &&
+            if (location.x > (superview.frame.size.width - (size + (margin * 2.0))) &&
                 location.y < (size + statusBarHeight + (margin * 2.0)))
             {
                 if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
@@ -496,59 +498,60 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             {
                 margin = 2.0;
                 CGPoint center = self.center;
-                center.x = MAX(center.x, (self.frame.size.width * 0.5) + margin);
-                center.x = MIN(center.x, self.superview.frame.size.width - (self.frame.size.width * 0.5) - margin);
-                center.y = MAX(center.y, (self.frame.size.height * 0.5) + margin);
-                center.y = MIN(center.y, self.superview.frame.size.height - (self.frame.size.height * 0.5) - margin);
+                center.x = MAX(center.x, (frame.size.width * 0.5) + margin);
+                center.x = MIN(center.x, superview.frame.size.width - (frame.size.width * 0.5) - margin);
+                center.y = MAX(center.y, (frame.size.height * 0.5) + margin);
+                center.y = MIN(center.y, superview.frame.size.height - (frame.size.height * 0.5) - margin);
                 self.center = center;
                 
                 if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                     UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                 {
-                    _legend.landscapeMapOrigin = self.frame.origin;
+                    _legend.landscapeMapOrigin = frame.origin;
                     _legend.isDraggedLandscape = YES;
                 }
                 
                 else
                 {
-                    _legend.portraitMapOrigin = self.frame.origin;
+                    _legend.portraitMapOrigin = frame.origin;
                     _legend.isDraggedPortrait = YES;
                 }
             }
         }
         
-        else if ((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width)
+        else if (inRemovalPos)
             _legend.drawOnMap = NO;
         
-        else if ((self.frame.origin.x + self.frame.size.width) > self.superview.frame.size.width)
-            [_delegate themeLegendWasDraggedOffRightSide];
-        
-        if (_delegate.themeLegendIsOffMap)
+        else if (_delegate.themeLegendIsOffMap)
         {
-            if (self.frame.origin.x < 0.0)
+            if (inLeftDraggedPos)
                 [_delegate themeLegendWasDraggedOffLeftSide];
         }
         
         else
         {
-            CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-            
-            CGFloat yPos = MIN(MAX(self.frame.origin.y, statusBarHeight),
-                               (self.superview.frame.size.height - self.frame.size.height));
-            
-            CGPoint origin = CGPointMake(MAX(self.frame.origin.x, 0.0), yPos);
-            
-            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-            {
-                _legend.landscapeMapOrigin = origin;
-                _legend.isDraggedLandscape = YES;
-            }
+            if (inRightDraggedPos)
+                [_delegate themeLegendWasDraggedOffRightSide];
             
             else
             {
-                _legend.portraitMapOrigin = origin;
-                _legend.isDraggedPortrait = YES;
+                CGFloat yPos = MIN(MAX(frame.origin.y, statusBarHeight),
+                                   (superview.frame.size.height - frame.size.height));
+                
+                CGPoint origin = CGPointMake(MAX(frame.origin.x, 0.0), yPos);
+                
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                {
+                    _legend.landscapeMapOrigin = origin;
+                    _legend.isDraggedLandscape = YES;
+                }
+                
+                else
+                {
+                    _legend.portraitMapOrigin = origin;
+                    _legend.isDraggedPortrait = YES;
+                }
             }
         }
         
@@ -558,26 +561,28 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     else
     {
-        CGPoint translation = [gesture translationInView:self.superview];
-        self.center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
-        [gesture setTranslation:CGPointZero inView:gesture.view];
-        _deleteView.hidden = !((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width);
+        CGPoint translation = [gesture translationInView:superview];
+        
+        if (_delegate.themeLegendIsOffMap)
+            self.center = CGPointMake((self.center.x + translation.x), self.center.y);
+        
+        else
+            self.center = CGPointMake((self.center.x + translation.x), (self.center.y + translation.y));
+        
+        [gesture setTranslation:CGPointZero inView:superview];
+        _deleteView.hidden = !inRemovalPos;
         
         if (_delegate.themeLegendIsOffMap)
         {
             if ([_delegate respondsToSelector:@selector(updateLeftArrowVisibility:)])
-            {
-                [_delegate updateLeftArrowVisibility:((self.frame.origin.x + self.frame.size.width) >
-                                                      self.superview.frame.size.width)];
-            }
+                [_delegate updateLeftArrowVisibility:!inLeftDraggedPos];
         }
         
         else
         {
             if ([_delegate respondsToSelector:@selector(updateRightArrowVisibility:)])
             {
-                [_delegate updateRightArrowVisibility:!((self.frame.origin.x + self.frame.size.width) >
-                                                        self.superview.frame.size.width) || !_deleteView.hidden];
+                [_delegate updateRightArrowVisibility:!inRightDraggedPos || !_deleteView.hidden];
             }
         }
     }

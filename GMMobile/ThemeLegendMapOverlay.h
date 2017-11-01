@@ -51,6 +51,7 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 @property (nonatomic) CGFloat rowHeight, width, headerHeight;
 @property NSUInteger currentColorPalette;
 @property (nonatomic) UIImageView *moveRightView, *moveLeftView;
+@property CGFloat dragMargin;
 
 + (CGFloat)rowHeight;
 + (CGFloat)width;
