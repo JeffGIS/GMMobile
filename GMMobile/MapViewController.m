@@ -134,7 +134,7 @@
 @property (nonatomic) NVCrimeListDelegate *crimeDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
-@property BOOL continueLoad, fromLegends2X;
+@property BOOL continueLoad, fromLegends2X, legendArrowHidden;
 @property (nonatomic) GMSCameraPosition *currentPosition;
 
 @end
@@ -190,6 +190,7 @@
     _showsPanorama = _splitPlatView = _legendMinimized = _grayscaleMode = NO;
     _routeMode = @"driving";
     _mapViewLegendOffset = (ThemeLegendMapOverlay.width + 4.0);
+    _legendArrowHidden = YES;
     
     _legendScrollView = UIScrollView.new;
     _legendScrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -3567,6 +3568,20 @@ haveVV:
         [_mapToolbar adjustFrameToScrollView];
         [self updateCompassPosition:YES];
         [self vectorViewRefresh];
+    }
+}
+
+- (void)updateArrowVisibility:(BOOL)hidden
+{
+    if (hidden != _legendArrowHidden)
+    {
+        for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+        {
+            if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+                tlmos.moveToSideScrollerView.hidden = hidden;
+        }
+        
+        _legendArrowHidden = hidden;
     }
 }
 

@@ -248,18 +248,29 @@
     tlmo.drag.delegate = tlmo;
     
     tlmo.deleteView = UIImageView.new;
-    tlmo.deleteView.translatesAutoresizingMaskIntoConstraints = NO;
-    tlmo.deleteView.contentMode = UIViewContentModeScaleToFill;
-    tlmo.deleteView.hidden = YES;
-    tlmo.deleteView.alpha = 0.5;
-    
-    tlmo.deleteView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"redX"
-                                                                                           ofType:@"png"]];
-    
-    [tlmo addSubview:tlmo.deleteView];
+    [tlmo setupImageView:tlmo.deleteView image:@"redX"];
     [tlmo.deleteView constrainToView:tlmo leading:0.0 trailing:(-tlmo.width / 2) top:0.0 bottom:0.0];
+    tlmo.deleteView.contentMode = UIViewContentModeScaleToFill;
+    
+    tlmo.moveToSideScrollerView = UIImageView.new;
+    [tlmo setupImageView:tlmo.moveToSideScrollerView image:@"redArrow"];
+    [tlmo.moveToSideScrollerView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    tlmo.moveToSideScrollerView.contentMode = UIViewContentModeScaleAspectFit;
     
     return tlmo;
+}
+
+- (void)setupImageView:(UIImageView *)imageView
+                 image:(NSString *)image
+{
+    imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    imageView.hidden = YES;
+    imageView.alpha = 0.5;
+    
+    imageView.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:image
+                                                                                     ofType:@"png"]];
+    
+    [self addSubview:imageView];
 }
 
 - (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
@@ -546,6 +557,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         self.center = CGPointMake(self.center.x + translation.x, self.center.y + translation.y);
         [gesture setTranslation:CGPointZero inView:gesture.view];
         _deleteView.hidden = !((self.frame.origin.x + (self.frame.size.width / 2.0)) > self.superview.frame.size.width);
+        
+        if (!_delegate.themeLegendIsOffMap)
+        {
+            if ([_delegate respondsToSelector:@selector(updateArrowVisibility:)])
+            {
+                [_delegate updateArrowVisibility:!((self.frame.origin.x + self.frame.size.width) >
+                                                   self.superview.frame.size.width) || !_deleteView.hidden];
+            }
+        }
     }
 }
 
@@ -1114,7 +1134,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:avgView];
             [avgView constrainTopToAnchor:cell.contentView.topAnchor];
             [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - avgMask - margin + 1.0)];
+            
+            [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor
+                                      constant:(-textWidth - avgMask - margin + 1.0)];
+            
             [avgView constrainWidthToConstant:2.0];
             
             UIView *medianView = UIView.new;
@@ -1125,7 +1148,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:medianView];
             [medianView constrainTopToAnchor:cell.contentView.topAnchor];
             [medianView constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - medianMask - margin + 1.0)];
+            
+            [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor
+                                         constant:(-textWidth - medianMask - margin + 1.0)];
+            
             [medianView constrainWidthToConstant:2.0];
             
             UIView *stdDev1View = UIView.new;
@@ -1137,8 +1163,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:stdDev1View];
             [stdDev1View constrainTopToAnchor:cell.contentView.topAnchor];
             [stdDev1View constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev1Mask - margin + 1.0)];
-            [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev1Mask + 1.0)];
+            
+            [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor
+                                          constant:(-textWidth - upperStdDev1Mask - margin + 1.0)];
+            
+            [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor
+                                         constant:(margin + lowerStdDev1Mask + 1.0)];
             
             UIView *stdDev2View = UIView.new;
             stdDev2View.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1149,8 +1179,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [cell.contentView addSubview:stdDev2View];
             [stdDev2View constrainTopToAnchor:cell.contentView.topAnchor];
             [stdDev2View constrainBottomToAnchor:cell.contentView.bottomAnchor];
-            [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
-            [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor constant:(margin + lowerStdDev2Mask + 1.0)];
+            
+            [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor
+                                          constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
+            
+            [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor
+                                         constant:(margin + lowerStdDev2Mask + 1.0)];
         }
         
         else
