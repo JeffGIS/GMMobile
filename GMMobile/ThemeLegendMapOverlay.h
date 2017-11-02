@@ -34,6 +34,8 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 - (void)themeLegendDidWantMinimize;
 - (void)themeLegendWillExpand;
 - (void)themeLegendDidShrink;
+- (void)updateRightArrowVisibility:(BOOL)hidden;
+- (void)updateLeftArrowVisibility:(BOOL)hidden;
 
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend;
@@ -48,6 +50,8 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) CGFloat rowHeight, width, headerHeight;
 @property NSUInteger currentColorPalette;
+@property (nonatomic) UIImageView *moveRightView, *moveLeftView;
+@property CGFloat dragMargin;
 
 + (CGFloat)rowHeight;
 + (CGFloat)width;

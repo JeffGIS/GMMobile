@@ -21,7 +21,15 @@
         return YES;
     if (*self.processingID == CRAPI.sharedInstance.keepProcessing)
         return YES;
-    
+    if (_popoverDisplayed)
+    {
+        _popoverDisplayed = FALSE;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           _mvc.popover.delegate = _savePOdelegate;
+                           [_mvc.popover hide];
+                       });
+    }
     return NO;
 }
 - (id)init
@@ -692,6 +700,7 @@ NextPass:
                                    [_mvc.view bringSubviewToFront:_mvc.popover];
                                    [_mvc.popover updateProgress:0];
                                    [_mvc.popover show];
+                                   _popoverDisplayed = TRUE;
                                });
 
                 HotSpotVideo *hsv = HotSpotVideo.new;
@@ -740,6 +749,7 @@ NextPass:
                     dispatch_async(dispatch_get_main_queue(),
                                    ^{
                                        [_mvc.popover hide];
+                                       _popoverDisplayed = FALSE;
                                    });
                     
                     CRAPI.sharedInstance.hsv = hsv;
@@ -825,11 +835,6 @@ Exit:
 - (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     *_processingID = -1;
-    dispatch_async(dispatch_get_main_queue(),
-                   ^{
-                       _mvc.popover.delegate = _savePOdelegate;
-                       [popoverView hide];
-                   });
 }
 
 

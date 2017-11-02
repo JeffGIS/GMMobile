@@ -32,7 +32,7 @@
 @property GMSMapView * mapView;
 @property UIImage * backgroundImage;
 @property (weak)MapViewController *mvc;
-
+@property BOOL popoverDisplayed;
 -(void)displayCrimePoints:(CGContextRef)context
           contextIsBitmap:(BOOL)isBitmap
    displayCharacteristics:(DisplayCharacteristics *)dc

@@ -222,7 +222,6 @@
     _mapView.settings.tiltGestures = NO;
     _mapView.camera = [GMSCameraPosition cameraWithTarget:_target zoom:12.0];
     [self.view addSubview:_mapView];
-    
     [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:0.0];
     
     _targetView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 60.0, 60.0)];
@@ -1247,7 +1246,6 @@
         [_locationManager requestLocation];
     }
 }
-
 #pragma mark - EndOfViewDidAppear
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -3362,8 +3360,11 @@ haveVV:
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
         
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        {
             yFactor += _mapToolbar.frame.size.height;
+        }
         
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
@@ -3445,18 +3446,22 @@ haveVV:
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
-                if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
+                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                 {
-                    xOriginLandscape = yFactor;
-                    
-                    if (landscapeColumnCount == 2)
-                        xOriginLandscape = _mapViewLegendOffset;
-                    
-                    yOriginLandscape = (statusBarHeight + yFactor);
-                    landscapeColumnCount++;
+                    if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
+                    {
+                        xOriginLandscape = yFactor;
+                        
+                        if (landscapeColumnCount == 2)
+                            xOriginLandscape = _mapViewLegendOffset;
+                        
+                        yOriginLandscape = (statusBarHeight + yFactor);
+                        landscapeColumnCount++;
+                    }
                 }
                 
-                if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
+                else if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
                 {
                     xOriginPortrait = yFactor;
                     
@@ -3466,7 +3471,7 @@ haveVV:
                     yOriginPortrait = (statusBarHeight + yFactor);
                     portraitColumnCount++;
                 }
-                
+
                 CGPoint mapOrigin = CGPointZero;
                 
                 if (_legendsAreOffMap)
@@ -3560,6 +3565,24 @@ haveVV:
         [_mapToolbar adjustFrameToScrollView];
         [self updateCompassPosition:YES];
         [self vectorViewRefresh];
+    }
+}
+
+- (void)updateRightArrowVisibility:(BOOL)hidden
+{
+    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.moveRightView.hidden = hidden;
+    }
+}
+
+- (void)updateLeftArrowVisibility:(BOOL)hidden
+{
+    for (ThemeLegendMapOverlay *tlmos in _legendScrollView.subviews)
+    {
+        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
+            tlmos.moveLeftView.hidden = hidden;
     }
 }
 
