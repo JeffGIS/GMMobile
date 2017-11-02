@@ -660,10 +660,15 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         hsv.imageFiles = [UserDefaults.defaults arrayForKey:@"HotSpotVideoImageFiles"].mutableCopy;
         hsv.timeRanges = [UserDefaults.defaults arrayForKey:@"HotSpotVideoTimeRanges"];
         hsv.type = [UserDefaults.defaults integerForKey:@"HotSpotVideoType"];
+        
+        if ([UserDefaults.defaults integerForKey:@"HotSpotVideoLength"])
+            hsv.length = (int)[UserDefaults.defaults integerForKey:@"HotSpotVideoLength"];
+        
         hsv.backgroundImageFile =  [UserDefaults.defaults stringForKey:@"HotSpotBackgroundImageFile"];
         hsv.numImages = (int)hsv.imageFiles.count;
         CRAPI.sharedInstance.hsv = hsv;
         HotSpotVideoVC *hsvVC = HotSpotVideoVC.new;
+        
         hsvVC.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         
         [self presentViewController:hsvVC
