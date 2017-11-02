@@ -195,6 +195,7 @@
     _legendScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     _legendScrollView.backgroundColor = UIColor.lightGrayColor;
     _legendScrollView.alpha = 0.0;
+    _legendScrollView.clipsToBounds = NO;
     [self.view addSubview:_legendScrollView];
     [_legendScrollView constrainLeadingToAnchor:self.view.trailingAnchor constant:-_mapViewLegendOffset];
     [_legendScrollView constrainTrailingToAnchor:self.view.trailingAnchor];
