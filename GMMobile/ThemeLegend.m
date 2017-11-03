@@ -23,11 +23,12 @@
     
     if (self)
     {
-        self.showSymbolAsBarChart = YES;
-        self.title = @"";
-        self.outputFile = @"";
-        self.outputFactor = 1.0;
+        _showSymbolAsBarChart = YES;
+        _title = @"";
+        _outputFile = @"";
+        _outputFactor = 1.0;
     }
+    
     return self;
 }
 
@@ -52,8 +53,8 @@
     another.labelBkColor = [[UIColor alloc]initWithCGColor:_labelBkColor.CGColor];
     another.labelTxColor = [[UIColor alloc]initWithCGColor:_labelTxColor.CGColor];
     another.symbolDefaultColor = [[UIColor alloc]initWithCGColor:_symbolDefaultColor.CGColor];
-    another.title = [NSString stringWithString:self.title];
-    another.outputFile = [NSString stringWithString:self.outputFile];
+    another.title = [NSString stringWithString:_title];
+    another.outputFile = [NSString stringWithString:_outputFile];
     another.titles = [NSMutableArray arrayWithArray:_titles];
     another.currentTitleIndex = _currentTitleIndex;
     another.cells = NSMutableArray.array;
@@ -76,6 +77,49 @@
     return another;
 }
 
+- (void)setType:(ThemeTypes)type
+{
+    _type = type;
+    
+    CGPoint pmo = CGPointZero;
+    pmo.x = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"XpmoThemeLegend%li", (long)_type]];
+    pmo.y = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"YpmoThemeLegend%li", (long)_type]];
+    _portraitMapOrigin = pmo;
+    
+    CGPoint lmo = CGPointZero;
+    lmo.x = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"XlmoThemeLegend%li", (long)_type]];
+    lmo.y = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
+    _landscapeMapOrigin = lmo;
+    
+    if (pmo.x && pmo.y)
+        _isDraggedPortrait = YES;
+    
+    if (lmo.x && lmo.y)
+        _isDraggedLandscape = YES;
+}
+
+- (void)setPortraitMapOrigin:(CGPoint)portraitMapOrigin
+{
+    _portraitMapOrigin = portraitMapOrigin;
+    
+    [UserDefaults.defaults saveCGFloat:_portraitMapOrigin.x
+                                forKey:[NSString stringWithFormat:@"XpmoThemeLegend%li", (long)_type]];
+    
+    [UserDefaults.defaults saveCGFloat:_portraitMapOrigin.y
+                                forKey:[NSString stringWithFormat:@"YpmoThemeLegend%li", (long)_type]];
+}
+
+- (void)setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin
+{
+    _landscapeMapOrigin = landscapeMapOrigin;
+    
+    [UserDefaults.defaults saveCGFloat:_landscapeMapOrigin.x
+                                forKey:[NSString stringWithFormat:@"XlmoThemeLegend%li", (long)_type]];
+    
+    [UserDefaults.defaults saveCGFloat:_landscapeMapOrigin.y
+                                forKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
+}
+
 - (BOOL)drawOnMap
 {
     return [UserDefaults.defaults boolForKey:[NSString stringWithFormat:@"ThemeLegend%li", (long)_type]];
@@ -94,11 +138,6 @@
         _currentTitleIndex = currentTitleIndex;
         _title = (NSString *)_titles[_currentTitleIndex];
     }
-}
-
-- (void)setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin
-{
-    _landscapeMapOrigin = landscapeMapOrigin;
 }
 
 - (CGFloat)headerHeight

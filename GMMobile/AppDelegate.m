@@ -9,6 +9,7 @@
 #import "CCodeLibrary/CRAPI.h"
 #import "CCodeLibrary/NVGetODR.h"
 #import "CCodeLibrary/GSSiDefs.h"
+#import "ConfigurationControl.h"
 
 @interface AppDelegate () <NVGetODRDelegate>
 
@@ -268,8 +269,6 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     
     [UserDefaults.defaults saveInteger:CRAPI.sharedInstance.offsetForBoundsInMeters
                                 forKey:@"OffsetForBoundsInMeters"];
-    
-    NSLog(@"%d", CRAPI.sharedInstance.mapPropList);
     
     [UserDefaults.defaults saveBool:!CRAPI.sharedInstance.mapPropList
                              forKey:@"MapPropList"];
