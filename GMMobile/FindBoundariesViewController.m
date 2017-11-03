@@ -13,6 +13,7 @@
 @property (nonatomic) NVConstrainedView *polylineView, *maskBoundsView;
 @property (nonatomic) NVConstrainedSwitch *polylineSwitch, *maskBoundsSwitch;
 @property (nonatomic) NVConstrainedLabel *polylineLabel, *maskBoundsLabel;
+@property (nonatomic) UISlider *maskSlider;
 @property (nonatomic) NSMutableArray *boundaryList, *boundaryDataList;
 @property (nonatomic, copy) NSString *selectedType;
 @property (nonatomic) NSMutableDictionary *sections;
@@ -71,7 +72,7 @@
     _polylineLabel = NVConstrainedLabel.new;
     _maskBoundsLabel = NVConstrainedLabel.new;
     [self setupLabel:_polylineLabel text:@"Show\nPolyline"];
-    [self setupLabel:_maskBoundsLabel text:@"Mask\nBounds"];
+    [self setupLabel:_maskBoundsLabel text:@"Mask"];
     [_polylineView addSubview:_polylineLabel];
     [_maskBoundsView addSubview:_maskBoundsLabel];
     
@@ -111,6 +112,15 @@
                           action:@selector(maskBoundsSwitchTapped:)
                 forControlEvents:UIControlEventValueChanged];
     
+    _maskSlider = UISlider.new;
+    _maskSlider.translatesAutoresizingMaskIntoConstraints = NO;
+    [_maskSlider setValue:0.5 animated:NO];
+    [self.view addSubview:_maskSlider];
+    
+    [_maskSlider addTarget:self
+                    action:@selector(maskSliderValueChanged:)
+          forControlEvents:UIControlEventValueChanged];
+    
     [_polylineSwitch constrainWidthToConstant:_polylineSwitch.frame.size.width];
     [_maskBoundsSwitch constrainWidthToConstant:_maskBoundsSwitch.frame.size.width];
     [self setupConstraintsForOrientation:UIApplication.sharedApplication.statusBarOrientation];
@@ -123,11 +133,7 @@
 
 - (BOOL)prefersStatusBarHidden
 {
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return YES;
-    
-    else
-        return NO;
+    return YES;
 }
 
 - (void)setupView:(UIView *)view
@@ -141,7 +147,7 @@
 {
     label.text = text;
     label.numberOfLines = 2;
-    label.font = [UIFont boldSystemFontOfSize:_fontSize];
+    label.font = [UIFont boldSystemFontOfSize:(_fontSize * 0.75)];
 }
 
 - (void)setupButton:(UIButton *)button
@@ -170,10 +176,7 @@
 
 - (void)setupConstraintsForOrientation:(UIInterfaceOrientation)orientation
 {
-    CGFloat margin = 20.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 8.0;
+    CGFloat margin = 8.0;
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone && orientation == UIInterfaceOrientationPortrait)
     {
@@ -281,13 +284,17 @@
     [_polylineLabel constrainBottomToAnchor:_polylineView.bottomAnchor];
     [_polylineLabel constrainTrailingToAnchor:_polylineSwitch.leadingAnchor constant:-(margin / 2.0)];
     
-    [_maskBoundsSwitch constrainCenterYToAnchor:_maskBoundsView.centerYAnchor];
+    [_maskBoundsSwitch constrainTopToAnchor:_maskBoundsView.topAnchor constant:(margin / 2.0)];
     [_maskBoundsSwitch constrainTrailingToAnchor:_maskBoundsView.trailingAnchor constant:-(margin / 2.0)];
     
     [_maskBoundsLabel constrainLeadingToAnchor:_maskBoundsView.leadingAnchor constant:margin];
-    [_maskBoundsLabel constrainTopToAnchor:_maskBoundsView.topAnchor];
-    [_maskBoundsLabel constrainBottomToAnchor:_maskBoundsView.bottomAnchor];
+    [_maskBoundsLabel constrainTopToAnchor:_maskBoundsSwitch.topAnchor];
+    [_maskBoundsLabel constrainBottomToAnchor:_maskBoundsSwitch.bottomAnchor];
     [_maskBoundsLabel constrainTrailingToAnchor:_maskBoundsSwitch.leadingAnchor constant:-(margin / 2.0)];
+    
+    [_maskSlider constrainLeadingToAnchor:_maskBoundsView.leadingAnchor constant:margin];
+    [_maskSlider constrainTrailingToAnchor:_maskBoundsView.trailingAnchor constant:-margin];
+    [_maskSlider constrainTopToAnchor:_maskBoundsView.centerYAnchor];
 }
 
 - (void)removeAllConstraints
@@ -684,6 +691,11 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                        type:nil
                                       refno:0];
     }
+}
+
+- (void)maskSliderValueChanged:(UISlider *)slider
+{
+    
 }
 
 @end
