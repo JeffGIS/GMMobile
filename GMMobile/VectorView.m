@@ -571,7 +571,7 @@
                                     
                                     [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
                                                  ofType:@"BOUNDARY"
-                                                 asMask:CRAPI.sharedInstance.maskBoundsForBounds
+                                                 asMask:CRAPI.sharedInstance.maskTransparency
                                               inContext:_context
                                               llCorners:&_latlonCornerPoints
                                                LLBounds:&_latlonBounds
@@ -857,7 +857,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                         
                         [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
                                      ofType:@"BOUNDARY"
-                                     asMask:CRAPI.sharedInstance.maskBoundsForBounds
+                                     asMask:CRAPI.sharedInstance.maskTransparency
                                   inContext:_context
                                   llCorners:&_latlonCornerPoints
                                    LLBounds:&_latlonBounds

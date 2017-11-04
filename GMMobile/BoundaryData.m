@@ -297,7 +297,7 @@
             int numExistingPoints = numPoints;
             if (mask)
             {
-                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.85];
+                UIColor *maskColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:mask];
                 
                 CreateMask(&llpoints, &numPoints,pvbounds,FALSE);
                 [self fillUseCode:context

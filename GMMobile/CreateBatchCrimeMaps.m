@@ -126,7 +126,7 @@ static int pageWidthFactor = 1;
                 
                 [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
                              ofType:@"BOUNDARY"
-                             asMask:CRAPI.sharedInstance.maskBoundsForBounds
+                             asMask:CRAPI.sharedInstance.maskTransparency
                           inContext:context
                           llCorners:&latlonCornerPoints
                            LLBounds:&latlonBounds

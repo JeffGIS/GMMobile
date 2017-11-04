@@ -114,7 +114,7 @@
     
     _maskSlider = UISlider.new;
     _maskSlider.translatesAutoresizingMaskIntoConstraints = NO;
-    [_maskSlider setValue:0.5 animated:NO];
+    [_maskSlider setValue:CRAPI.sharedInstance.maskTransparency animated:NO];
     [self.view addSubview:_maskSlider];
     
     [_maskSlider addTarget:self
@@ -695,7 +695,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)maskSliderValueChanged:(UISlider *)slider
 {
-    
+    CRAPI.sharedInstance.maskTransparency = slider.value;
 }
 
 @end

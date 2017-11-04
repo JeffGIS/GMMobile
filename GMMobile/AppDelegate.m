@@ -60,6 +60,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     CRAPI.sharedInstance.showPolylineForBounds = ![UserDefaults.defaults boolForKey:@"ShowPolylineForBounds"];
     CRAPI.sharedInstance.maskBoundsForBounds = ![UserDefaults.defaults boolForKey:@"MaskBoundsForBounds"];
+    CRAPI.sharedInstance.maskTransparency = ![UserDefaults.defaults CGFloatForKey:@"MaskTransparency"];
     CRAPI.sharedInstance.offsetForBounds = [UserDefaults.defaults stringForKey:@"OffsetForBounds"];
     CRAPI.sharedInstance.offsetForBoundsInMeters = (int)[UserDefaults.defaults integerForKey:@"OffsetForBoundsInMeters"];
     CRAPI.sharedInstance.mapPropList = ![UserDefaults.defaults boolForKey:@"MapPropList"];
@@ -263,6 +264,9 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)err
     
     [UserDefaults.defaults saveBool:!CRAPI.sharedInstance.maskBoundsForBounds
                              forKey:@"MaskBoundsForBounds"];
+    
+    [UserDefaults.defaults saveCGFloat:CRAPI.sharedInstance.maskTransparency
+                             forKey:@"MaskTransparency"];
     
     [UserDefaults.defaults saveString:CRAPI.sharedInstance.offsetForBounds
                                forKey:@"OffsetForBounds"];
