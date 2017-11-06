@@ -45,7 +45,7 @@
 }
 - (NSInteger)numRowsInSpreadsheet
 {
-    return (_propList.availablePropertyFields.count - 2);
+    return ([PropertyList availablePropertyFields].count - 2);
 }
 
 - (NSInteger)numColumnsInSpreadsheet
@@ -61,12 +61,12 @@
 - (NSString *)headerTextForRow:(NSUInteger)row
 {
     PropertyList *proplist = _propList;
-    NSArray *list = proplist.availablePropertyFields;
+    NSArray *list = [PropertyList availablePropertyFields];
     
     if (row < list.count-1)
     {
         PropFieldType ifield = [list[row+1] integerValue];
-        NSString *fieldName = [proplist propertyFieldName:ifield];
+        NSString *fieldName = [PropertyList propertyFieldName:ifield];
         
         return [fieldName stringByReplacingOccurrencesOfString:@" ("
                                                     withString:@"\n("];
@@ -110,9 +110,10 @@
 {
     PropertyList *proplist = _propList;
     NSArray *list = proplist.getPropertyNumbers;
+    NSArray *availablePropertyFields = [PropertyList availablePropertyFields];
     PropFieldType type = (PFT_PIN + row - 1);
    
-    if (column <= list.count && row < proplist.availablePropertyFields.count)
+    if (column <= list.count && row < availablePropertyFields.count)
     {
         NSInteger propNum = [list[column - 1] integerValue];
         
@@ -139,11 +140,11 @@
         return [proplist getFieldValue:propNum
                                   type:type];
     }
-    else if (column == list.count+1 && row < proplist.availablePropertyFields.count)
+    else if (column == list.count+1 && row < availablePropertyFields.count)
     {
         return [proplist getFieldTotal:type];
     }
-    else if (column == list.count+2 && row < proplist.availablePropertyFields.count)
+    else if (column == list.count+2 && row < availablePropertyFields.count)
     {
         return [proplist getFieldAverage:type];
     }

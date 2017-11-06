@@ -283,10 +283,10 @@ NSString * GetPropListDirectory (void)
     SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
-- (NSArray*)availablePropertyFields
++ (NSArray*)availablePropertyFields
 {
     NSMutableArray *fields = [[NSMutableArray alloc]init];
-    for (int i = 1;i<PFT_END;i++)
+    for (int i = 2;i<PFT_END;i++)
     {
         NSNumber *field = [NSNumber numberWithInteger:i];
         [fields addObject:field];
@@ -294,7 +294,7 @@ NSString * GetPropListDirectory (void)
     return fields.copy;
 }
 
-- (NSString *)propertyFieldName:(PropFieldType)fieldType
++ (NSString *)propertyFieldName:(PropFieldType)fieldType
 {
     NSString *name = @"";
     
@@ -468,6 +468,16 @@ NSString * GetPropListDirectory (void)
         case PFT_PctResidential_qtrMile:
             name = @"PCT Residential (Qtr Mile)";
             break;
+        case PFT_YearBuilt:
+            name = @"Year Built";
+            break;
+        case PFT_LastSaleYear:
+            name = @"Last Sale Year";
+            break;
+        case PFT_LastSalePrice:
+            name = @"Last Sale Price";
+            break;
+            
         default:break;
     }
     
@@ -1145,7 +1155,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         [self close:opened];
         return;
     }
-    NSArray *fields = [self availablePropertyFields];
+    NSArray *fields = [PropertyList availablePropertyFields];
     NSNumber *field = fields[row];
     PropFieldType ifield = field.integerValue;
     ConfigurationControl.sharedInstance.MapitPID = PID;
