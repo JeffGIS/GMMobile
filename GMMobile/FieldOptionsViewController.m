@@ -4,19 +4,28 @@
 #import "FieldOptionsViewController.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "PropertyList.h"
+#import "FieldList.h"
 #import "CCodeLibrary/TableViewCellButton.h"
+#import "CCodeLibrary/NVPopoverTableView.h"
 #import "CCodeLibrary/NVPopoverSlider.h"
 
-@interface FieldOptionsViewController () <NVPopoverSliderDelegate>
+@interface FieldOptionsViewController () <NVPopoverSliderDelegate,NVPopoverTableViewDelegate>
 
 @property (nonatomic) CGFloat rowHeight;
 @property (nonatomic) UIImage *uncheckedBox, *checkedBox;
 @property (nonatomic) UIFont *font, *headerFont;
-@property (nonatomic) NSMutableArray *fieldNames, *fieldWeights, *fieldSelected;
+@property (nonatomic) NSMutableArray *fieldRecords;
+@property (nonatomic) NSArray *fieldlist;
+@property PropFieldType lastSelectedType;
 
 @end
 
 @implementation FieldOptionsViewController
+
+- (void)dealloc
+{
+    NSLog(@"Boundary Database dealloc");
+}
 
 - (void)viewDidLoad
 {
@@ -44,21 +53,7 @@
         _headerFont = [UIFont boldSystemFontOfSize:40.0];
     }
     
-    PropertyList *proplist = PropertyList.new;
-    NSArray *fields = [proplist availablePropertyFields];
-    
-    _fieldNames = NSMutableArray.array;
-    _fieldWeights = NSMutableArray.array;
-    _fieldSelected = NSMutableArray.array;
-    
-    for (NSNumber *field in fields)
-    {
-        NSInteger ifield = field.integerValue;
-        NSString *fieldName = [proplist propertyFieldName:ifield];
-        [_fieldNames addObject:fieldName];
-        [_fieldWeights addObject:[NSNumber numberWithInt:0]];
-        [_fieldSelected addObject:[NSNumber numberWithBool:YES]];
-    }
+    _fieldlist = [FieldList getFieldListRecords:YES];
     
     [self setupTableView];
 }
@@ -81,7 +76,7 @@
 - (NSInteger)tableView:(UITableView *)tableView
  numberOfRowsInSection:(NSInteger)section
 {
-    return _fieldNames.count;
+    return _fieldlist.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView
@@ -168,7 +163,7 @@ viewForHeaderInSection:(NSInteger)section
     else
     {
         options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Selected"]];
-        headerLabel.text = @"Data Fields";
+        headerLabel.text = [FieldList getCurrentFieldListName];
     }
     
     options.translatesAutoresizingMaskIntoConstraints = NO;
@@ -198,8 +193,30 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)listTapped:(UIButton *)button
 {
+    NSArray * fieldLists = [FieldList getFieldLists];
+    [NVPopoverTableView showPopoverTableViewInView:self.view
+                                          delegate:self
+                                             title:@"Field Selection Lists"
+                                         textArray:fieldLists
+                                     includeCancel:YES];
+    return;
+
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+    didSelectRowWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    [popoverTableView hide:YES];
     
 }
+
+- (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
+{
+    [popoverTableView hide:YES];
+}
+
+
 
 - (void)optionsTapped:(UIButton *)button
 {
@@ -229,8 +246,9 @@ viewForHeaderInSection:(NSInteger)section
         if ([labels isKindOfClass:TableViewCellLabel.class])
             [labels removeFromSuperview];
     }
-    
-    BOOL selected = [(NSNumber *)_fieldSelected[indexPath.row] boolValue];
+    FieldListRecord *flr = _fieldlist[indexPath.row];
+
+    BOOL selected = flr.sequence;
     CGFloat inset = (_rowHeight * 0.1);
     
     TableViewCellButton *checkBox = TableViewCellButton.new;
@@ -251,7 +269,7 @@ viewForHeaderInSection:(NSInteger)section
     label.translatesAutoresizingMaskIntoConstraints = NO;
     label.adjustsFontSizeToFitWidth = YES;
     label.textColor = UIColor.blackColor;
-    label.text = _fieldNames[indexPath.row];
+    label.text = flr.name;
     label.font = _font;
     
     [cell addSubview:label];
@@ -269,44 +287,45 @@ viewForHeaderInSection:(NSInteger)section
         [checkBox setImage:_checkedBox
                   forState:UIControlStateNormal];
         
-        TableViewCellButton *weight = TableViewCellButton.new;
-        weight.translatesAutoresizingMaskIntoConstraints = NO;
-        weight.backgroundColor = UserDefaults.defaults.appleGray;
-        weight.layer.cornerRadius = 4.0;
-        weight.layer.borderColor = UIColor.blackColor.CGColor;
-        weight.layer.borderWidth = 1.0;
-        weight.tag = indexPath.row;
-        weight.titleLabel.textAlignment = NSTextAlignmentCenter;
-        weight.titleLabel.font = _font;
-        
-        NSNumber *value = (NSNumber *)_fieldWeights[indexPath.row];
-        
-        [weight setTitle:[NSString stringWithFormat:@"%i", value.intValue]
-                forState:UIControlStateNormal];
-        
-        [weight setTitleColor:UIColor.blackColor
-                     forState:UIControlStateNormal];
-        
-        [weight setTitleColor:UIColor.lightGrayColor
-                     forState:UIControlStateHighlighted];
-        
-        [cell addSubview:weight];
-        
-        [weight addTarget:self
-                   action:@selector(weightTapped:)
-         forControlEvents:UIControlEventTouchUpInside];
-        
-        [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
-        [weight constrainCenterYToAnchor:cell.centerYAnchor];
-        [weight constrainHeightToConstant:(_rowHeight * 0.75)];
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            [weight constrainWidthToConstant:(_rowHeight * 0.85)];
-        
-        else
-            [weight constrainWidthToConstant:(_rowHeight * 1.15)];
-        
-        [label constrainTrailingToAnchor:weight.leadingAnchor];
+        if (flr.allowsWeight)
+        {
+            TableViewCellButton *weight = TableViewCellButton.new;
+            weight.translatesAutoresizingMaskIntoConstraints = NO;
+            weight.backgroundColor = UserDefaults.defaults.appleGray;
+            weight.layer.cornerRadius = 4.0;
+            weight.layer.borderColor = UIColor.blackColor.CGColor;
+            weight.layer.borderWidth = 1.0;
+            weight.tag = indexPath.row;
+            weight.titleLabel.textAlignment = NSTextAlignmentCenter;
+            weight.titleLabel.font = _font;
+            
+            [weight setTitle:[NSString stringWithFormat:@"%i", flr.weight]
+                    forState:UIControlStateNormal];
+            
+            [weight setTitleColor:UIColor.blackColor
+                         forState:UIControlStateNormal];
+            
+            [weight setTitleColor:UIColor.lightGrayColor
+                         forState:UIControlStateHighlighted];
+            
+            [cell addSubview:weight];
+            
+            [weight addTarget:self
+                       action:@selector(weightTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+            
+            [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
+            [weight constrainCenterYToAnchor:cell.centerYAnchor];
+            [weight constrainHeightToConstant:(_rowHeight * 0.75)];
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                [weight constrainWidthToConstant:(_rowHeight * 0.85)];
+            
+            else
+                [weight constrainWidthToConstant:(_rowHeight * 1.15)];
+            
+            [label constrainTrailingToAnchor:weight.leadingAnchor];
+        }
     }
     
     else
@@ -322,7 +341,8 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)weightTapped:(UIButton *)button
 {
-    NSString *title = [NSString stringWithFormat:@"Weight for %@", _fieldNames[button.tag]];
+    FieldListRecord *flr = _fieldlist[button.tag];
+    NSString *title = [NSString stringWithFormat:@"Weight for %@", flr.name];
     
     NVPopoverSlider *nvps = [NVPopoverSlider showPopoverSliderInView:self.view
                                                             minValue:-100.0
@@ -344,28 +364,50 @@ viewForHeaderInSection:(NSInteger)section
                   tag:(NSInteger)tag
 {
     [popoverSlider hidePopoverSliderView:YES];
-    
-    [_fieldWeights replaceObjectAtIndex:tag
-                             withObject:[NSNumber numberWithInt:(int)round(value)]];
-    
+    FieldListRecord *flr = _fieldlist[tag];
+
+    [FieldList setWeightFor:flr.type
+                         to:(int)round(value)];
+    _fieldlist = [FieldList getFieldListRecords:YES];
+
     [_tableView reloadData];
 }
 
 - (void)checkboxTapped:(UIButton *)button
 {
-    BOOL selected = [(NSNumber *)_fieldSelected[button.tag] boolValue];
+    int row = (int)button.tag;
+    FieldListRecord *flr = _fieldlist[row];
     
-    [_fieldSelected replaceObjectAtIndex:button.tag
-                              withObject:[NSNumber numberWithBool:!selected]];
-    
-    [_tableView reloadData];
+    if (flr.sequence != 1)
+    {
+        _lastSelectedType = flr.type;
+        [FieldList setSequenceFor:flr.type
+                             from:flr.sequence
+                               to:0];
+        _fieldlist = [FieldList getFieldListRecords:YES];
+        
+        [_tableView reloadData];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    int row = (int)indexPath.row;
+    FieldListRecord *flr = _fieldlist[row];
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
+    if (_lastSelectedType && row > 0 && flr.sequence > 0)
+    {
+        int fromseq = [FieldList getSequenceFor:_lastSelectedType];
+        [FieldList setSequenceFor:_lastSelectedType
+                             from:fromseq
+                               to:row+1];
+        _fieldlist = [FieldList getFieldListRecords:YES];
+        
+        [_tableView reloadData];
+    }
+
 }
 
 @end

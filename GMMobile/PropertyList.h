@@ -113,8 +113,9 @@ typedef NS_ENUM(NSInteger, PropBaseType)
                         popover:(GSSiPopoverView*)popover;
 
 - (NSArray *)getPropertyNumbers;
-- (NSArray *)availablePropertyFields;
-- (NSString *)propertyFieldName:(PropFieldType)fieldType;
++ (NSArray *)availablePropertyFields;
++ (NSString *)propertyFieldName:(PropFieldType)fieldType;
++ (BOOL)propertyAllowsWeight:(PropFieldType)fieldType;
 
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
                    forPropertyNumber:(NSInteger)propNum;
