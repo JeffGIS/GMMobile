@@ -150,7 +150,7 @@
             _maxColors =  getColorsFromTheme2(context,theme,width,height,bmData,&wantColors);
             break;
         case MBL_Parcels:
-            _areaType = @"PARCELS";
+            _areaType = @"PARCEL";
             [self createColorByIDTable];
             break;
         case MBL_CensusBlocks:

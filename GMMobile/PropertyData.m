@@ -607,6 +607,30 @@ int SQLOKpd(int sqlReturn, sqlite3 *database, int method)
     return block;
 }
 
++ (NSString *)getPIDforPolyID:(int)ID
+{
+    NSString *PID = @"";
+    PropertyData *pd = [[PropertyData alloc]init];
+    BOOL opened = [pd open];
+    NSString *query = [NSString stringWithFormat:@"SELECT [PID] FROM PARCELPOLY Where id = %i",
+                       ID];
+    
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOKpd(SQLitePrepare(pd.database, query.UTF8String, -1, &statement, 0), pd.database, 38);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        LPSTR pidc = (LPSTR)sqlite3_column_text(statement, 0);
+        PID = [NSString stringWithUTF8String:pidc];
+    }
+    
+    SQLOKpd(SQLiteFinalize(statement), pd.database, 39);
+    [pd close:opened];
+    
+    return PID;
+}
+
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID
 {

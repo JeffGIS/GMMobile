@@ -165,6 +165,8 @@ typedef struct {int nMatchingProperties;
 
 - (NSString *)getOwnerNameForPID:(NSString *)PID;
 + (NSString *)getCensusBlockForPID:(NSString *)PID;
++ (NSString *)getPIDforPolyID:(int)ID;
+
 - (NSString*)getNearestPID:(CLLocationCoordinate2D*)pt;
 
 - (void)displayParcels:(CGContextRef)context
