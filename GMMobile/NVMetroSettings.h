@@ -8,6 +8,7 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region);
 
 typedef NS_ENUM(NSInteger, CPFeatures)
 {
+    CPFNone,
     CPFParcels,
     CPFParcels_RES,
     CPFParcels_COM,

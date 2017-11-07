@@ -362,7 +362,8 @@ NSString * GetFieldListDirectory (void)
     BOOL opened = [fl open];
     if (fromsequence == 0)
     {
-        tosequence = [FieldList getMaxSequence] + 1;
+        if (tosequence == 0)
+            tosequence = [FieldList getMaxSequence] + 1;
     }
     else
     {

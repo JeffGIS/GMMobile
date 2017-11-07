@@ -317,6 +317,9 @@ CORNERPOINTS CornerPointsFromRegion (GMSVisibleRegion region)
     {
         switch (feature)
         {
+            case CPFNone:
+                [rtn addObject:stringWithID("No Feature",feature)];
+                break;
             case CPFParcels:
                 [rtn addObject:stringWithID("Parcels",feature)];
                 break;
