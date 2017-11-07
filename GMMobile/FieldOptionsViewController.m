@@ -53,7 +53,7 @@
         _headerFont = [UIFont boldSystemFontOfSize:40.0];
     }
     
-    _fieldlist = [FieldList getFieldListRecords];
+    _fieldlist = [FieldList getFieldListRecords:YES];
     
     [self setupTableView];
 }
@@ -269,7 +269,7 @@ viewForHeaderInSection:(NSInteger)section
     label.translatesAutoresizingMaskIntoConstraints = NO;
     label.adjustsFontSizeToFitWidth = YES;
     label.textColor = UIColor.blackColor;
-     label.text = flr.name;
+    label.text = flr.name;
     label.font = _font;
     
     [cell addSubview:label];
@@ -287,42 +287,45 @@ viewForHeaderInSection:(NSInteger)section
         [checkBox setImage:_checkedBox
                   forState:UIControlStateNormal];
         
-        TableViewCellButton *weight = TableViewCellButton.new;
-        weight.translatesAutoresizingMaskIntoConstraints = NO;
-        weight.backgroundColor = UserDefaults.defaults.appleGray;
-        weight.layer.cornerRadius = 4.0;
-        weight.layer.borderColor = UIColor.blackColor.CGColor;
-        weight.layer.borderWidth = 1.0;
-        weight.tag = indexPath.row;
-        weight.titleLabel.textAlignment = NSTextAlignmentCenter;
-        weight.titleLabel.font = _font;
-        
-        [weight setTitle:[NSString stringWithFormat:@"%i", flr.weight]
-                forState:UIControlStateNormal];
-        
-        [weight setTitleColor:UIColor.blackColor
-                     forState:UIControlStateNormal];
-        
-        [weight setTitleColor:UIColor.lightGrayColor
-                     forState:UIControlStateHighlighted];
-        
-        [cell addSubview:weight];
-        
-        [weight addTarget:self
-                   action:@selector(weightTapped:)
-         forControlEvents:UIControlEventTouchUpInside];
-        
-        [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
-        [weight constrainCenterYToAnchor:cell.centerYAnchor];
-        [weight constrainHeightToConstant:(_rowHeight * 0.75)];
-        
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            [weight constrainWidthToConstant:(_rowHeight * 0.85)];
-        
-        else
-            [weight constrainWidthToConstant:(_rowHeight * 1.15)];
-        
-        [label constrainTrailingToAnchor:weight.leadingAnchor];
+        if (flr.allowsWeight)
+        {
+            TableViewCellButton *weight = TableViewCellButton.new;
+            weight.translatesAutoresizingMaskIntoConstraints = NO;
+            weight.backgroundColor = UserDefaults.defaults.appleGray;
+            weight.layer.cornerRadius = 4.0;
+            weight.layer.borderColor = UIColor.blackColor.CGColor;
+            weight.layer.borderWidth = 1.0;
+            weight.tag = indexPath.row;
+            weight.titleLabel.textAlignment = NSTextAlignmentCenter;
+            weight.titleLabel.font = _font;
+            
+            [weight setTitle:[NSString stringWithFormat:@"%i", flr.weight]
+                    forState:UIControlStateNormal];
+            
+            [weight setTitleColor:UIColor.blackColor
+                         forState:UIControlStateNormal];
+            
+            [weight setTitleColor:UIColor.lightGrayColor
+                         forState:UIControlStateHighlighted];
+            
+            [cell addSubview:weight];
+            
+            [weight addTarget:self
+                       action:@selector(weightTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+            
+            [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
+            [weight constrainCenterYToAnchor:cell.centerYAnchor];
+            [weight constrainHeightToConstant:(_rowHeight * 0.75)];
+            
+            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+                [weight constrainWidthToConstant:(_rowHeight * 0.85)];
+            
+            else
+                [weight constrainWidthToConstant:(_rowHeight * 1.15)];
+            
+            [label constrainTrailingToAnchor:weight.leadingAnchor];
+        }
     }
     
     else
@@ -365,7 +368,7 @@ viewForHeaderInSection:(NSInteger)section
 
     [FieldList setWeightFor:flr.type
                          to:(int)round(value)];
-    _fieldlist = [FieldList getFieldListRecords];
+    _fieldlist = [FieldList getFieldListRecords:YES];
 
     [_tableView reloadData];
 }
@@ -381,7 +384,7 @@ viewForHeaderInSection:(NSInteger)section
         [FieldList setSequenceFor:flr.type
                              from:flr.sequence
                                to:0];
-        _fieldlist = [FieldList getFieldListRecords];
+        _fieldlist = [FieldList getFieldListRecords:YES];
         
         [_tableView reloadData];
     }
@@ -400,7 +403,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         [FieldList setSequenceFor:_lastSelectedType
                              from:fromseq
                                to:row+1];
-        _fieldlist = [FieldList getFieldListRecords];
+        _fieldlist = [FieldList getFieldListRecords:YES];
         
         [_tableView reloadData];
     }

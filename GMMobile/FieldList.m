@@ -250,7 +250,7 @@ NSString * GetFieldListDirectory (void)
     SQLOK(__FILE__,__LINE__,SQLiteExec(_database, "COMMIT", 0, 0, 0), _database);
 }
 
-+ (NSArray*)getFieldListRecords
++ (NSArray*)getFieldListRecords:(BOOL)getAll
 {
     NSMutableArray *records = [[NSMutableArray alloc]init];
     FieldList *fl = FieldList.new;
@@ -268,28 +268,32 @@ NSString * GetFieldListDirectory (void)
         
         flr.type = sqlite3_column_int(statement, 0);
         flr.name = [PropertyList propertyFieldName:flr.type];
+        flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
         flr.sequence = sqlite3_column_int(statement, 1);
         flr.weight = sqlite3_column_int(statement, 2);
         [records addObject:flr];
     }
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
     
-    query = [NSString stringWithFormat:@"SELECT FieldType, Sequence, Weight FROM FieldList WHERE Sequence = 0"];
-    
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
-    
-    while (sqlite3_step(statement) == SQLITE_ROW)
+    if (getAll)
     {
-        FieldListRecord *flr = FieldListRecord.new;
+        query = [NSString stringWithFormat:@"SELECT FieldType, Sequence, Weight FROM FieldList WHERE Sequence = 0"];
         
-        flr.type = sqlite3_column_int(statement, 0);
-        flr.name = [PropertyList propertyFieldName:flr.type];
-        flr.sequence = sqlite3_column_int(statement, 1);
-        flr.weight = sqlite3_column_int(statement, 2);
-        [records addObject:flr];
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
+        
+        while (sqlite3_step(statement) == SQLITE_ROW)
+        {
+            FieldListRecord *flr = FieldListRecord.new;
+            
+            flr.type = sqlite3_column_int(statement, 0);
+            flr.name = [PropertyList propertyFieldName:flr.type];
+            flr.allowsWeight = [PropertyList propertyAllowsWeight:flr.type];
+            flr.sequence = sqlite3_column_int(statement, 1);
+            flr.weight = sqlite3_column_int(statement, 2);
+            [records addObject:flr];
+        }
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
     }
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
-
     [fl close:opened];
     return records.copy;
 }

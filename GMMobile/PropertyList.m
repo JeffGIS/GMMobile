@@ -483,6 +483,28 @@ NSString * GetPropListDirectory (void)
     
     return name;
 }
++ (BOOL)propertyAllowsWeight:(PropFieldType)fieldType
+{
+    BOOL rtn = TRUE;
+    
+    switch (fieldType)
+    {
+        case PFT_LatLon:
+        case PFT_END:
+        case PFT_UserID:
+        case PFT_PIN:
+        case PFT_Address:
+        case PFT_Owner:
+        case PFT_TaxPayer:
+        case PFT_Links:
+            rtn = FALSE;
+            break;
+        default:
+            break;
+    }
+    
+    return rtn;
+}
 
 NSString* propertyListFieldDescription (NSInteger fieldNumber)
 {

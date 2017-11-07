@@ -3,6 +3,7 @@
 
 #import "NVSpreadsheetDelegate.h"
 #import "PropertyList.h"
+#import "FieldList.h"
 #import "Destinations.h"
 #import "MapViewController.h"
 #import "CCodeLibrary/NVTabBarEdit.h"
@@ -10,7 +11,7 @@
 @interface NVSpreadsheetDelegate ()
 
 @property (nonatomic) PropertyList *propList;
-
+@property (nonatomic) NSArray * fieldList;
 @end
 
 @implementation NVSpreadsheetDelegate
@@ -28,6 +29,8 @@
     if (_propList)
     {
         [_propList open];
+        _fieldList = [FieldList getFieldListRecords:NO];
+
         rtn = TRUE;
     }
     return rtn;
@@ -45,7 +48,9 @@
 }
 - (NSInteger)numRowsInSpreadsheet
 {
-    return ([PropertyList availablePropertyFields].count - 2);
+    return (_fieldList.count);
+    //return ([PropertyList availablePropertyFields].count - 2);
+
 }
 
 - (NSInteger)numColumnsInSpreadsheet

@@ -115,6 +115,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 - (NSArray *)getPropertyNumbers;
 + (NSArray *)availablePropertyFields;
 + (NSString *)propertyFieldName:(PropFieldType)fieldType;
++ (BOOL)propertyAllowsWeight:(PropFieldType)fieldType;
 
 - (void) getPropertyFieldValueOfType:(PropFieldType)type
                    forPropertyNumber:(NSInteger)propNum;

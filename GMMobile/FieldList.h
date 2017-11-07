@@ -15,12 +15,13 @@
 @property NSString * name;
 @property int sequence;
 @property int weight;
+@property BOOL allowsWeight;
 
 @end
 
 @interface FieldList : NSObject
 
-+ (NSArray *) getFieldListRecords;
++ (NSArray *) getFieldListRecords:(BOOL)getAll;
 + (NSArray *) getFieldLists;
 + (NSString*) getCurrentFieldListName;
 + (void) setWeightFor:(PropFieldType)type

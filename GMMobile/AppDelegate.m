@@ -47,7 +47,7 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     CRAPI.sharedInstance.defaultColors = UserDefaults.defaults.defaultColors;
     CRAPI.sharedInstance.currentGeoid = 2743000;
     CRAPI.sharedInstance.resetPropList = NO;
-    CRAPI.sharedInstance.resetFieldList = YES;
+    CRAPI.sharedInstance.resetFieldList = NO;
     CRAPI.sharedInstance.resetDestinations = NO;
     
     UIUserNotificationType nTypes =
