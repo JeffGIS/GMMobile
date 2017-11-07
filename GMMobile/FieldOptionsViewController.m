@@ -16,6 +16,7 @@
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *fieldRecords;
 @property (nonatomic) NSArray *fieldlist;
+@property PropFieldType lastSelectedType;
 
 @end
 
@@ -371,20 +372,39 @@ viewForHeaderInSection:(NSInteger)section
 
 - (void)checkboxTapped:(UIButton *)button
 {
-    FieldListRecord *flr = _fieldlist[button.tag];
+    int row = (int)button.tag;
+    FieldListRecord *flr = _fieldlist[row];
     
-    [FieldList setSequenceFor:flr.type
-                           to:-flr.sequence];
-    _fieldlist = [FieldList getFieldListRecords];
-
-    [_tableView reloadData];
+    if (flr.sequence != 1)
+    {
+        _lastSelectedType = flr.type;
+        [FieldList setSequenceFor:flr.type
+                             from:flr.sequence
+                               to:0];
+        _fieldlist = [FieldList getFieldListRecords];
+        
+        [_tableView reloadData];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    int row = (int)indexPath.row;
+    FieldListRecord *flr = _fieldlist[row];
     [tableView deselectRowAtIndexPath:indexPath
                              animated:YES];
+    if (_lastSelectedType && row > 0 && flr.sequence > 0)
+    {
+        int fromseq = [FieldList getSequenceFor:_lastSelectedType];
+        [FieldList setSequenceFor:_lastSelectedType
+                             from:fromseq
+                               to:row+1];
+        _fieldlist = [FieldList getFieldListRecords];
+        
+        [_tableView reloadData];
+    }
+
 }
 
 @end

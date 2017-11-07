@@ -326,32 +326,52 @@ NSString * GetFieldListDirectory (void)
     return rtn;
 
 }
-+ (void) setSequenceFor:(PropFieldType)type
-                     to:(int)sequence
+
++ (int) getSequenceFor:(PropFieldType)type
 {
-    int startSequence = 0;
-    int incSequence = 1;
-    
-    if (sequence == 0)
-    {
-        sequence = [FieldList getMaxSequence] + 1;
-    }
-    else if (sequence < 0)
-    {
-        startSequence = -sequence;
-        incSequence = -1;
-        sequence = 0;
-    }
+    int rtn = -1;
     FieldList *fl = FieldList.new;
-    NSString *cmd = @"";
     BOOL opened = [fl open];
+    NSString *query = [NSString stringWithFormat:@"SELECT Sequence FROM FieldList WHERE FieldType = %li",(long)type];
     
-    if (startSequence)
+    sqlite3_stmt *statement = NULL;
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(fl.database, query.UTF8String, -1, &statement, 0), fl.database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
     {
-        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence + %i WHERE Sequence > %i;",incSequence, sequence];
+        rtn = sqlite3_column_int(statement, 0);
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), fl.database);
+    
+    [fl close:opened];
+    return rtn;    
+}
+
++ (void) setSequenceFor:(PropFieldType)type
+                   from:(int)fromsequence
+                     to:(int)tosequence
+{    
+    NSString *cmd = @"";
+    FieldList *fl = FieldList.new;
+    BOOL opened = [fl open];
+    if (fromsequence == 0)
+    {
+        tosequence = [FieldList getMaxSequence] + 1;
+    }
+    else
+    {
+        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence -1 WHERE Sequence > %i;",fromsequence];
         [fl executeCmd:(LPSTR)cmd.UTF8String];
     }
-    cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = %i WHERE FieldType = %li;",sequence,(long)type];
+    if (tosequence)
+    {
+        cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = Sequence + 1 WHERE Sequence >= %i;",tosequence];
+        [fl executeCmd:(LPSTR)cmd.UTF8String];
+    }
+    
+    cmd = [NSString stringWithFormat:@"UPDATE FieldList SET Sequence = %i WHERE FieldType = %li;",tosequence,(long)type];
     [fl executeCmd:(LPSTR)cmd.UTF8String];
     [fl close:opened];
     

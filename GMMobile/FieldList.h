@@ -25,8 +25,10 @@
 + (NSString*) getCurrentFieldListName;
 + (void) setWeightFor:(PropFieldType)type
                    to:(int)weight;
++ (int) getSequenceFor:(PropFieldType)type;
 + (void) setSequenceFor:(PropFieldType)type
-                   to:(int)sequence;
+                   from:(int)fromsequence
+                     to:(int)tosequence;
 + (BOOL) renameCurrentFieldList:(NSString *)newName;
 + (BOOL) deleteCurrentFieldList;
 + (BOOL) setCurrentFieldList:(NSString *)propList;
