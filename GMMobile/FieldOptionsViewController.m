@@ -15,7 +15,7 @@
 @property (nonatomic) UIImage *uncheckedBox, *checkedBox;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *fieldRecords;
-@property (nonatomic) NSArray *fieldlist;
+@property (nonatomic, copy) NSArray *fieldlist;
 @property PropFieldType lastSelectedType;
 
 @end

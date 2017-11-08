@@ -11,7 +11,7 @@
 @interface NVSpreadsheetDelegate ()
 
 @property (nonatomic) PropertyList *propList;
-@property (nonatomic) NSArray * fieldList;
+@property (nonatomic, copy) NSArray *fieldList;
 @end
 
 @implementation NVSpreadsheetDelegate
