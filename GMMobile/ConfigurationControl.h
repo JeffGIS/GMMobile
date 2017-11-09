@@ -6,6 +6,7 @@
 #import "CCodeLibrary/DisplayCharacteristics.h"
 #import "Theme.h"
 #import "PropertyList.h"
+#import "MinnesotaGame.h"
 
 #define MAX_LAYER_NAME 32
 
@@ -80,6 +81,7 @@ NUMHardCodedLayers};
 @property LLPOINT MapitTargetCenterPoint;
 @property CGFloat MapitCirularBoundaryRadiusInMiles;
 @property MapitBaseLayer currentMapitBaseLayer;
+@property (nonatomic, nullable) MinnesotaGame *mng;
 
 + (NSString *)getAdjustValueString:(AdjustCrimeOptions)opt;
 

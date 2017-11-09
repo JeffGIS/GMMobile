@@ -139,8 +139,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                                                    identifier:HCConfigMapleGrove];
             [_appList addObject:ap];
             
-            ap = [[ApplicationObject alloc] initWithNameAndID:@"Minnesota+ App"
-                                                   identifier:HCConfigMinnesota];
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Minnesota Game App"
+                                                   identifier:HCConfigMinnesotaGame];
             [_appList addObject:ap];
         }
         
@@ -309,18 +309,18 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantHelpButton] = YES;
         configToobarSegs[HCConfigMapleGrovePDF][MapToolbarPropertyWantReturnButton] = NO;
         
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantPlat] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantDigitize] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantMapType] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantUserLocation] = YES;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantExtents] = YES;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantLegends] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantGrayscale] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantClearMarkers] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantEmailPDF] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantProgressBar] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantHelpButton] = NO;
-        configToobarSegs[HCConfigMinnesota][MapToolbarPropertyWantReturnButton] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantMapType] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantUserLocation] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantExtents] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantGrayscale] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantClearMarkers] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantEmailPDF] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantProgressBar] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantHelpButton] = NO;
+        configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantReturnButton] = NO;
         
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
@@ -399,16 +399,16 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigMapleGrove][HCLayerMapleGroveFiber] = YES;
         configLayers[HCConfigMapleGrove][HCLayerSidewalkPoints] = NO;
         
-        configLayers[HCConfigMinnesota][HCLayerAerials] = YES;
-        configLayers[HCConfigMinnesota][HCLayerParcels] = YES;
-        configLayers[HCConfigMinnesota][HCLayerSewers] = NO;
-        configLayers[HCConfigMinnesota][HCLayerPlanimetric] = NO;
-        configLayers[HCConfigMinnesota][HCLayerAlleys] = NO;
-        configLayers[HCConfigMinnesota][HCLayerCurbRamps] = NO;
-        configLayers[HCConfigMinnesota][HCLayerCrimes] = NO;
-        configLayers[HCConfigMinnesota][HCLayerMapleGroveWater] = NO;
-        configLayers[HCConfigMinnesota][HCLayerMapleGroveFiber] = NO;
-        configLayers[HCConfigMinnesota][HCLayerSidewalkPoints] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerAerials] = YES;
+        configLayers[HCConfigMinnesotaGame][HCLayerParcels] = YES;
+        configLayers[HCConfigMinnesotaGame][HCLayerSewers] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerAlleys] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerCrimes] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerMapleGroveWater] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerMapleGroveFiber] = NO;
+        configLayers[HCConfigMinnesotaGame][HCLayerSidewalkPoints] = NO;
         
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
@@ -468,6 +468,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     
     CRAPI.sharedInstance.selectBoundaryFromMapType = nil;
     CRAPI.sharedInstance.appChanged = YES;
+    CRAPI.sharedInstance.currentOverallBoundaryTable = @"BOUNDARY";
     
     switch (_currentApp)
     {
@@ -529,7 +530,12 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             CRAPI.sharedInstance.parcelTextOption = 1;
             configLayerZoom[HCConfigMapleGrove][HCLayerSewers][0] = 12;
             break;
-        default:
+        case HCConfigMinnesotaGame:
+            CRAPI.sharedInstance.currentOverallBoundaryRefno = 17;
+            CRAPI.sharedInstance.currentOverallBoundaryTable = @"STATE";
+
+            break;
+       default:
             CRAPI.sharedInstance.parcelTextOption = 0;
             break;
     }

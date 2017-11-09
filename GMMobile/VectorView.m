@@ -12,10 +12,9 @@
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
 #import "Themes.h"
+#import "MinnesotaGame.h"
 #import "CCodeLibrary/NVDateRange.h"
 #import "CCodeLibrary/SidewalkData.h"
-
-#define METERS_PER_MILE 1609.344
 
 @interface VectorView ()
 
@@ -144,6 +143,8 @@
            polyPartLen:polyPartLen
                 points:pPoints
          boundaryWidth:5];
+        if (pPoints)
+            free (pPoints);
         //[FileLister listFilesInDirectory:@"SHARED"
         //                        outputTo:@""];
    }
@@ -570,7 +571,7 @@
                                     BoundaryData *bd = [[BoundaryData alloc] init];
                                     
                                     [bd displayBoundary:CRAPI.sharedInstance.currentOverallBoundaryRefno
-                                                 ofType:@"BOUNDARY"
+                                                 ofType:CRAPI.sharedInstance.currentOverallBoundaryTable
                                                  asMask:CRAPI.sharedInstance.maskTransparency
                                               inContext:_context
                                               llCorners:&_latlonCornerPoints
@@ -579,6 +580,19 @@
                                 }
                                 
                                 if ([self keepGoing] && passID == DisplayPass &&
+                                    ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
+                                {
+                                    if (!ConfigurationControl.sharedInstance.mng)
+                                        ConfigurationControl.sharedInstance.mng = MinnesotaGame.new;
+                                    ConfigurationControl.sharedInstance.mng.parentView = _mvc.view;
+                                    
+                                    [ConfigurationControl.sharedInstance.mng displayPickedPoint:CRAPI.sharedInstance.lastPickPoint
+                                                  inContext:_context                                               llCorners:&_latlonCornerPoints
+                                                   LLBounds:&_latlonBounds
+                                                 viewBounds:&_viewBounds];
+
+                                }
+                                else if ([self keepGoing] && passID == DisplayPass &&
                                     [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
                                 {
                                     PipeTrace *pt = [[PipeTrace alloc] init];
@@ -595,6 +609,7 @@
                                     [themes themesEndDisplayPass:CRAPI.sharedInstance.keepProcessing];
                                 passID++;
                             }
+                        
                         }
                     }
                         break;

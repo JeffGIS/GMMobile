@@ -31,6 +31,8 @@
         _documentsDirectory = UserDefaults.defaults.sharedFilePath;
         _path = [NSBundle.mainBundle pathForResource:@"areapoly"
                                               ofType:@"slt"];
+        _MinnesotaPath = [NSBundle.mainBundle pathForResource:@"MinnesotaData"
+                                              ofType:@"slt"];
         _landusePath = [NSString stringWithFormat:@"%@/landuse.slt",UserDefaults.defaults.sharedFilePath];
         _propfileName =  @"PropertyData.slt";
         _proppath = [NSString stringWithFormat:@"%@/%@", _documentsDirectory, _propfileName];
@@ -76,7 +78,13 @@
                                                                                   error:nil].fileSize;
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
             st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
-
+            
+            if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame)
+            {
+                attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS MINNESOTA",_MinnesotaPath];
+                st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
+            }
+            
         }
         _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
                                                                               error:nil].fileSize;
@@ -311,6 +319,8 @@
             if (CRAPI.sharedInstance.showPolylineForBounds)
             {
                 UIColor *boundaryColor = [UIColor colorWithRed:0.75 green:0 blue:0.25 alpha:0.80];
+                if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame)
+                    boundaryColor = [UIColor colorWithRed:0 green:0.5 blue:0 alpha:1];
                 [self drawBoundary:context
                            nPoints:numExistingPoints
                             nLoops:numLoops
@@ -476,6 +486,8 @@
     }
     else if ([areaType isEqualToString:@"PARCEL"])
         table = @"PARCELPOLY";
+    else if ([areaType isEqualToString:@"STATE"])
+        table = @"MINNESOTA.STATE";
     return table;
 }
 
@@ -612,6 +624,63 @@
     
     return llpoints;
 }
+
+- (LPDPOINT)getPolygonPointsForGameBoundary:(int)refno
+                                    inTable:(NSString *)table
+                                  numPoints:(int *)numPoints
+                                   numLoops:(int *)numLoops
+                                polyPartLen:(int **)polyPartLen
+{
+    DPOINT basePoint = {0};
+    LPDPOINT llpoints = NULL;
+    sqlite3_stmt *statement = NULL;
+    if (polyPartLen)
+        *polyPartLen = 0;
+    BOOL opened = [self open];
+    
+    NSString *query = [NSString stringWithFormat:@"SELECT BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points, id FROM MINNESOTA.%@ WHERE id=%i", table, refno];
+    
+    SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, 0), _database);
+    
+    if (sqlite3_step(statement) == SQLITE_ROW)
+    {
+        basePoint.x = sqlite3_column_double(statement, 0);
+        basePoint.y = sqlite3_column_double(statement, 1);
+        *numPoints = sqlite3_column_int(statement, 2);
+        *numLoops = sqlite3_column_int(statement, 3);
+        if (*numLoops > 1 && polyPartLen)
+        {
+            *polyPartLen = malloc (*numLoops * sizeof (int));
+            memcpy (*polyPartLen,(int *)sqlite3_column_blob(statement,4),*numLoops * sizeof(int));
+        }
+        LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement, 5);
+        llpoints = malloc(abs(*numPoints) * sizeof(DPOINT) + 4);
+        
+        if (*numPoints < 0)
+        {
+            *numPoints = -*numPoints;
+            LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+            
+            for (int i = 0; i < *numPoints; i++)
+            {
+                llpoints[i].x = (basePoint.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                llpoints[i].y = (basePoint.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+            }
+        }
+        
+        else for (int i = 0; i < *numPoints; i++)
+        {
+            llpoints[i].x = (basePoint.x + offsetPoints[i].x / COORDINATE_FACTOR);
+            llpoints[i].y = (basePoint.y + offsetPoints[i].y / COORDINATE_FACTOR);
+        }
+    }
+    
+    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
+    [self close:opened];
+    
+    return llpoints;
+}
+
 
 -(void) displayLandUse:(CGContextRef)context
              llCorners:(CORNERPOINTS *) latlonCornerPoints

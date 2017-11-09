@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, TextFromOption)
 @property (nonatomic, copy) NSString *propfileName;
 @property (nonatomic, copy) NSString *path;
 @property (nonatomic, copy) NSString *landusePath;
+@property (nonatomic, copy) NSString *MinnesotaPath;
 @property (nonatomic, copy) NSString *proppath;
 @property NSInteger fileSize;
 @property (nonatomic) int datasetVersion;
@@ -86,6 +87,13 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                               numPoints:(int *)numPoints
                                numLoops:(int *)numLoops
                             polyPartLen:(int **)polyPartLen;
+
+- (LPDPOINT)getPolygonPointsForGameBoundary:(int)refno
+                                    inTable:(NSString *)table
+                                  numPoints:(int *)numPoints
+                                   numLoops:(int *)numLoops
+                                polyPartLen:(int **)polyPartLen;
+
 - (int)       load:(NSString*)areaType
     toPointInAreas:(PointInAreas*)pias
 boundsPointInAreas:(PointInAreas*)pias

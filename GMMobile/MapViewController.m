@@ -517,7 +517,8 @@
                                                 andPass:-1])
             _mapView.mapType = kGMSTypeHybrid;
     }
-
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
+        _mapView.mapType = kGMSTypeNone;
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID || CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner || CRAPI.sharedInstance.GMMSetting == GMMSettingMultipleProps)
     {
@@ -1424,7 +1425,7 @@
     [self stopTrackingUserLocation];
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
-    NSString *boundaryType = @"BOUNDARY";
+    NSString *boundaryType = CRAPI.sharedInstance.currentOverallBoundaryTable;
     CGFloat mapAdj = 0.0;
     _keepZoomExtents = YES;
     
@@ -1552,6 +1553,8 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
     LLPOINT llpickPt = {0};
     llpickPt.lat = coordinate.latitude;
     llpickPt.lon = coordinate.longitude;
+    CRAPI.sharedInstance.lastPickPoint = llpickPt;
+    
     NSMutableArray *highlightList = NSMutableArray.array;
     
     if (_inDigitizationMode)
@@ -1683,6 +1686,13 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
                 [sdwkd pickSdwkPoint:llpickPt highlightList:highlightList];
             }
             break;}
+        case HCConfigMinnesotaGame:{
+            PropertyData *propData = PropertyData.new;
+            propData.zoom = _mapView.camera.zoom;
+            [propData pickParcel:&llpickPt highlightList:highlightList];
+            break;
+
+        }
         default:break;
     }
     
@@ -3077,6 +3087,8 @@ haveVV:
         else
             _mapView.mapType = kGMSTypeNormal;
     }
+    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
+        _mapView.mapType = kGMSTypeNone;
 }
 
 - (void)highlightVectorView:(PickedItem *)pi

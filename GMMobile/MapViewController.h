@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 @property CLLocationCoordinate2D spreadsheetCoords;
 @property (nonatomic) GMSMapView *mapView;
 @property NSUInteger fromIndex;
-@property (nonatomic, copy) NSArray<PropertyRecord *> *propArray;
+@property (nonatomic, copy) NSArray *propArray;
 @property (nonatomic) GSSiPopoverView *popover;
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;

@@ -202,6 +202,8 @@
 		EB178F061C4FE4BA00B194AD /* UserLayerDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */; };
 		EB178F091C4FEAE500B194AD /* ShapeFileDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */; };
 		EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3268541B19146400A7D40A /* NVDataLoader.m */; };
+		EB38AF421FB3AF2F00E5DD93 /* MinnesotaData.slt in Resources */ = {isa = PBXBuildFile; fileRef = EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */; };
+		EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */ = {isa = PBXBuildFile; fileRef = EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */; };
 		EB398F071ABC61C40043875E /* landusecodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F061ABC61C40043875E /* landusecodes.txt */; };
 		EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB398F091ABC94240043875E /* PlatProfileView.m */; };
 		EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F0D1AC04B530043875E /* censusdatadef.txt */; };
@@ -518,6 +520,9 @@
 		EB178F081C4FEAE500B194AD /* ShapeFileDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ShapeFileDisplay.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		EB3268531B19146400A7D40A /* NVDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVDataLoader.h; sourceTree = "<group>"; };
 		EB3268541B19146400A7D40A /* NVDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = NVDataLoader.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */ = {isa = PBXFileReference; lastKnownFileType = file; path = MinnesotaData.slt; sourceTree = "<group>"; };
+		EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MinnesotaGame.h; sourceTree = "<group>"; };
+		EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MinnesotaGame.m; sourceTree = "<group>"; };
 		EB398F061ABC61C40043875E /* landusecodes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = landusecodes.txt; sourceTree = "<group>"; };
 		EB398F081ABC94240043875E /* PlatProfileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlatProfileView.h; sourceTree = "<group>"; };
 		EB398F091ABC94240043875E /* PlatProfileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlatProfileView.m; sourceTree = "<group>"; };
@@ -868,6 +873,8 @@
 				EB178F051C4FE4BA00B194AD /* UserLayerDisplay.m */,
 				A97860EC1A7FDAD60019FE37 /* VectorView.h */,
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
+				EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */,
+				EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -962,6 +969,7 @@
 		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
 			isa = PBXGroup;
 			children = (
+				EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */,
 				BBCDF7EB1E513B2800156827 /* areapoly.slt */,
 				BBCDF7EC1E513B2800156827 /* censusdata.slt */,
 				69D2C7EF1E5209CC0040FCF9 /* landuse.slt */,
@@ -1219,6 +1227,7 @@
 				A9B6F3491AE46DC3003FD71E /* checkmark.png in Resources */,
 				A9BB3E1B1B1FA7A3003E1BAF /* blackCrosshairs.png in Resources */,
 				A9C78BC41A7A8E590094562B /* zoom.png in Resources */,
+				EB38AF421FB3AF2F00E5DD93 /* MinnesotaData.slt in Resources */,
 				A97DFB741AAE5E6E00F225DD /* compass.png in Resources */,
 				A95EC7E31B224BFC0031B903 /* downloadCloud.png in Resources */,
 				694D99F91FAA396A0023FD37 /* redArrowLeft.png in Resources */,
@@ -1372,6 +1381,7 @@
 				EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */,
 				EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */,
 				EBFC2A3A1BEA5FBF00E0C1B3 /* ThemeLegendCell.m in Sources */,
+				EB38AF451FB4A6E000E5DD93 /* MinnesotaGame.m in Sources */,
 				69B46EFC1BC2140E00BB7724 /* DestinationsViewController.m in Sources */,
 				698ED6391DF8E8C00032FEA5 /* NVMetroSettingsVC.m in Sources */,
 				EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */,
