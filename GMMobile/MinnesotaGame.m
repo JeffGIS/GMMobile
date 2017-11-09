@@ -162,13 +162,16 @@
 
 - (BOOL) nextItem:(NSTimer *)timer
 {
-    NSArray * choices=@[@"Lake1",@"Lake2"];
+    NSArray *choices = @[@"Lake1", @"Lake2"];
     
-    [NVPopoverTableView showPopoverTableViewInView:_parentView
-                                      delegate:self
-                                         title:@"Choose One\nof the\nFollowing Cities"
-                                     textArray:choices
-                                 includeCancel:NO];
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [NVPopoverTableView showPopoverTableViewInView:_parentView
+                                                             delegate:self
+                                                                title:@"Choose One\nof the\nFollowing Cities"
+                                                            textArray:choices
+                                                        includeCancel:NO];
+                   });
     
     return FALSE;
 }
