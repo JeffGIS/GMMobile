@@ -11,6 +11,64 @@
 
 @implementation MinnesotaGame
 
+- (id)init
+{
+    self = [super init];
+    
+    if (self)
+    {
+    }
+    
+    return self;
+}
+
+- (void) createHeaderLabel
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       CGRect rect = _parentView.frame;
+                       rect.origin.x += 5;
+                       rect.origin.y += 5;
+                       rect.size.height = 90;
+                       rect.size.width -= 10;
+                       UILabel *label = [[UILabel alloc] initWithFrame:rect];
+                       label.backgroundColor = [UIColor blueColor];
+                       label.textAlignment = NSTextAlignmentCenter;
+                       label.textColor = [UIColor whiteColor];
+                       label.numberOfLines = 0;
+                       label.lineBreakMode = UILineBreakModeWordWrap;
+                       label.font = [UIFont boldSystemFontOfSize:32.0];
+                       label.text = @"Locate Lake Minnetonka";
+                       [_parentView addSubview:label];
+                       [_parentView bringSubviewToFront:label];
+                       _headerLabel = label;
+                   });
+}
+
+- (void) createDistanceLabel
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       CGRect rect = _parentView.frame;
+                       rect.origin.x = rect.origin.x + rect.size.width * 0.7;
+                       rect.origin.y = rect.origin.y + rect.size.height /  2;
+                       rect.size.height = 90;
+                       rect.size.width *= 0.3;
+                       rect.size.width -= 5;
+                       UILabel *label = [[UILabel alloc] initWithFrame:rect];
+                       label.backgroundColor = [UIColor yellowColor];
+                       label.textAlignment = NSTextAlignmentCenter;
+                       label.textColor = [UIColor blackColor];
+                       label.numberOfLines = 0;
+                       label.lineBreakMode = UILineBreakModeWordWrap;
+                       label.font = [UIFont boldSystemFontOfSize:32.0];
+                       label.text = @"500 miles";
+                       [_parentView addSubview:label];
+                       [_parentView bringSubviewToFront:label];
+                       _distanceLabel = label;
+                   });
+}
+
 - (void)dealloc
 {
     CloseTRANS2P(&_pTranLLtoView);
@@ -33,12 +91,28 @@
                 LLBounds:(MNMXCORD *)platlonBounds
               viewBounds:(MNMXCORD *)pvbounds
 {
-    if (pt.lat <= 0)
+    if (!_headerLabel)
+        [self createHeaderLabel];
+    if (!_distanceLabel)
+        [self createDistanceLabel];
+    if (!_attempts++)
     {
-        [self nextItem:nil];
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           
+                           _timer = [NSTimer scheduledTimerWithTimeInterval:3
+                                                                     target:self
+                                                                   selector:@selector(nextItem:)
+                                                                   userInfo:nil
+                                                                    repeats:NO];
+                           
+                       });
         return;
     }
-    _attempts++;
+    if (_attempts > 5)
+        return;
+    if (pt.lat < 0)
+        return;
     DPOINT BasePt;
     CGColorRef color = UIColor.redColor.CGColor;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
@@ -65,18 +139,23 @@
                                                  numPoints:&numPoints
                                                   numLoops:&numLoops
                                                polyPartLen:&polyPartLen];
+    if (!pPoints)
+        return;
     BOOL inArea = POINT_IN_AREAD(BasePt, numPoints, pPoints, 1, 0, 0, 0);
     
+    if (inArea)
+        minDist = 0;
     for (int i = 0;i < numPoints; i++)
     {
         double d = ArcDistance(BasePt, pPoints[i]);
         minDist = min (d, minDist);
         pPoints[i] = TranDPOINTP(&pPoints[i], _pTranLLtoView);
     }
-
-    minDist = minDist / METERS_PER_MILE;
     
-    if (_attempts > 2)
+    _distance = max (0,minDist / METERS_PER_MILE);
+    [self hideViews];
+    [self bringViewsToFront];
+    if (_attempts > 4 || _distance < 1)
     {
         UIColor *boundaryColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
         UIColor *fillColor = [UIColor colorWithRed:0 green:0 blue:0.75 alpha:0.5];
@@ -98,10 +177,35 @@
                                                  repeats:NO];
 
                        });
-
-    }
+   }
  }
 
+-(void) bringViewsToFront
+{
+    if (!_wantViews)
+        return;
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       if (_distance >= 0)
+                           _distanceLabel.text = [NSString stringWithFormat:@"%.0f miles",_distance];
+                       else
+                           _distanceLabel.text = @"";
+                       [_headerLabel setHidden:NO];
+                       [_distanceLabel setHidden:NO];
+                       [_parentView bringSubviewToFront:_headerLabel];
+                       [_parentView bringSubviewToFront:_distanceLabel];
+                   });
+
+}
+-(void) hideViews
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_headerLabel setHidden:YES];
+                       [_distanceLabel setHidden:YES];
+                   });
+
+}
 - (void)drawBoundary:(CGContextRef)context
              nPoints:(int)np
               nLoops:(int)nLoops
@@ -163,7 +267,10 @@
 - (BOOL) nextItem:(NSTimer *)timer
 {
     NSArray * choices=@[@"Lake1",@"Lake2"];
-    
+    [self hideViews];
+    _wantViews = NO;
+    LLPOINT p = {-1,-1};
+    CRAPI.sharedInstance.lastPickPoint = p;
     [NVPopoverTableView showPopoverTableViewInView:_parentView
                                       delegate:self
                                          title:@"Choose One\nof the\nFollowing Cities"
@@ -182,7 +289,22 @@
 
     if (index)
         _refno = 1060;
-    _attempts = 0;
-        
+    _attempts = 1;
+    _distance = -1;
+    _wantViews = YES;
+    _headerLabel.text = [NSString stringWithFormat:@"Lake %i",index+1];
+    _distanceLabel.text = @"Start";
+    [self bringViewsToFront];
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       
+                       _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                 target:self.mvc
+                                                               selector:@selector(extentZoom2:)
+                                                               userInfo:nil
+                                                                repeats:NO];
+                       
+                   });
+
 }
 @end

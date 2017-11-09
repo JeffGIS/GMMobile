@@ -585,7 +585,8 @@
                                     if (!ConfigurationControl.sharedInstance.mng)
                                         ConfigurationControl.sharedInstance.mng = MinnesotaGame.new;
                                     ConfigurationControl.sharedInstance.mng.parentView = _mvc.view;
-                                    
+                                    ConfigurationControl.sharedInstance.mng.mvc = _mvc;
+
                                     [ConfigurationControl.sharedInstance.mng displayPickedPoint:CRAPI.sharedInstance.lastPickPoint
                                                   inContext:_context                                               llCorners:&_latlonCornerPoints
                                                    LLBounds:&_latlonBounds

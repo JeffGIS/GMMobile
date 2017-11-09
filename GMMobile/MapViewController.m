@@ -1420,8 +1420,19 @@
     [self performSelector:@selector(extentZoom) withObject:nil afterDelay:0.5];
 }
 
+- (void)extentZoom2:(NSTimer *)timer
+{
+    [self clearVectorView];
+    _northeast.latitude -= 1;
+    GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:_northeast
+                                                                            coordinate:_southwest];
+    
+    [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:_inset]];
+    [self extentZoom];
+}
 - (void)extentZoom
 {
+
     [self stopTrackingUserLocation];
     MNMXCORD bounds={0};
     int boundaryRefno = 0;
@@ -1469,8 +1480,8 @@
     
     if (BoundsWidth(&bounds) > 0)
     {
-        CLLocationCoordinate2D northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
-        CLLocationCoordinate2D southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
+        _northeast = CLLocationCoordinate2DMake(bounds.ymx, bounds.xmx);
+        _southwest = CLLocationCoordinate2DMake(bounds.ymn, bounds.xmn);
         
         NSMutableArray *subviewsArray = NSMutableArray.array;
         
@@ -1507,15 +1518,15 @@
         
         [[self.view viewWithTag:999] removeFromSuperview];
         
-        GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:northeast
-                                                                                coordinate:southwest];
+        GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:_northeast
+                                                                                coordinate:_southwest];
         
-        UIEdgeInsets inset = UIEdgeInsetsMake((CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 5.0),
+        _inset = UIEdgeInsetsMake((CGRectGetMinY(targetFrame) - CGRectGetMinY(_mapView.frame) + 5.0),
                                               (CGRectGetMinX(targetFrame) - CGRectGetMinX(_mapView.frame) + 5.0),
                                               (CGRectGetMaxY(_mapView.frame) - CGRectGetMaxY(targetFrame)  + 5.0 + mapAdj),
                                               (CGRectGetMaxX(_mapView.frame) - CGRectGetMaxX(targetFrame) + 5.0));
         
-        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:inset]];
+        [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:_inset]];
     }
     
     else
@@ -3245,6 +3256,9 @@ haveVV:
                                [tlmo displayRandomColorAlertInView:self.view];
                                _displayRandomColorAlert = NO;
                            }
+                           
+                           if (ConfigurationControl.sharedInstance.mng)
+                               [ConfigurationControl.sharedInstance.mng bringViewsToFront];
                        }
                        
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||

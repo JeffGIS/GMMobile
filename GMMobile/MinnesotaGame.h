@@ -10,6 +10,7 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import "CCodeLibrary/NVPopoverTableView.h"
 
+
 @interface MinnesotaGame : NSObject<NVPopoverTableViewDelegate>
 
 @property LPTRANDATA pTranLLtoView;
@@ -18,11 +19,18 @@
 @property int attempts;
 @property (nonatomic, weak) UIView *parentView;
 @property NSTimer * timer;
+@property UILabel * headerLabel;
+@property UILabel * distanceLabel;
+@property UILabel * timerLabel;
+@property double distance;
+@property BOOL wantViews;
+@property UIViewController * mvc;
 
 - (void)displayPickedPoint:(LLPOINT)pt
                  inContext:(CGContextRef)context
                  llCorners:(CORNERPOINTS *)latlonCornerPoints
                   LLBounds:(MNMXCORD *)platlonBounds
                 viewBounds:(MNMXCORD *)pvbounds;
+-(void) bringViewsToFront;
 
 @end

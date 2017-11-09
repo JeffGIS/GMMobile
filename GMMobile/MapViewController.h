@@ -22,6 +22,10 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 @property NSUInteger fromIndex;
 @property (nonatomic, copy) NSArray *propArray;
 @property (nonatomic) GSSiPopoverView *popover;
+@property CLLocationCoordinate2D northeast;
+@property CLLocationCoordinate2D southwest;
+@property UIEdgeInsets inset;
+
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;
 
