@@ -116,7 +116,10 @@
     PropertyList *proplist = _propList;
     NSArray *list = proplist.getPropertyNumbers;
     NSArray *availablePropertyFields = [PropertyList availablePropertyFields];
-    FieldListRecord *flr = _fieldList[row];
+    FieldListRecord *flr = nil;
+    
+    if (row < _fieldList.count)
+        flr = _fieldList[row];
     
     PropFieldType type = flr.type;//(PFT_PIN + row - 1);
    
