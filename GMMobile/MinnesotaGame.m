@@ -185,7 +185,7 @@ static int groupCount[4]={87,500,84,250};
     if (inArea)
     {
         minDist = 0;
-        _minPoint = BasePt;
+        _minPoint = _bestGuessPoint = BasePt;
     }
     for (int i = 0;i < numPoints; i++)
     {
@@ -199,7 +199,11 @@ static int groupCount[4]={87,500,84,250};
     }
     
     _distance = max (0,minDist / METERS_PER_MILE);
-    _bestGuess = min (_bestGuess,(int)_distance);
+    if (_distance < _bestGuess)
+    {
+        _bestGuessPoint = BasePt;
+        _bestGuess = _distance;
+    }
     [self hideViews];
     [self bringViewsToFront];
     if (_attempts > 4 || _distance < 1)
@@ -221,6 +225,14 @@ static int groupCount[4]={87,500,84,250};
                                   usingSymbol:Star2Sym
                                          Size:50*UIScreen.mainScreen.scale
                                     fillColor:starColor
+                                    lineColor:blackColor
+                                    lineWidth:1*UIScreen.mainScreen.scale];
+        viewPoint = TranDPOINTP(&_bestGuessPoint, _pTranLLtoView);
+        [SymbolDictionary drawPointWithSymbol:context
+                                           at:&viewPoint
+                                  usingSymbol:CircleSym
+                                         Size:20*UIScreen.mainScreen.scale
+                                    fillColor:blackColor
                                     lineColor:blackColor
                                     lineWidth:1*UIScreen.mainScreen.scale];
 

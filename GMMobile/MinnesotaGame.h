@@ -33,6 +33,7 @@
 @property int totDistance;
 @property int bestGuess;
 @property DPOINT minPoint;
+@property DPOINT bestGuessPoint;
 @property BOOL wantViews;
 @property NSArray * choices;
 @property NSString * itemType;
