@@ -17,6 +17,11 @@
     
     if (self)
     {
+        arc4random_uniform(100);
+        self.gameDuration = 15;
+        self.delayBetweenItems = 2;
+        self.totalItems = 4 * 4;
+        self.maxDistance = 450;
     }
     
     return self;
@@ -45,6 +50,29 @@
                    });
 }
 
+- (void) createTimerLabel
+{
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       CGRect rect = _parentView.frame;
+                       rect.origin.x += rect.size.width * 0.65;
+                       rect.origin.y += 95 * 1.25;
+                       rect.size.height = 90 * 1.5;
+                       rect.size.width *= 0.3;
+                       UILabel *label = [[UILabel alloc] initWithFrame:rect];
+                       label.backgroundColor = [UIColor yellowColor];
+                       label.textAlignment = NSTextAlignmentCenter;
+                       label.textColor = [UIColor blackColor];
+                       label.numberOfLines = 0;
+                       label.lineBreakMode = UILineBreakModeWordWrap;
+                       label.font = [UIFont boldSystemFontOfSize:32.0];
+                       label.text = @"Seconds Remaining\n200";
+                       [_parentView addSubview:label];
+                       [_parentView bringSubviewToFront:label];
+                       _timerLabel = label;
+                   });
+}
+
 - (void) createDistanceLabel
 {
     dispatch_async(dispatch_get_main_queue(),
@@ -62,7 +90,7 @@
                        label.numberOfLines = 0;
                        label.lineBreakMode = UILineBreakModeWordWrap;
                        label.font = [UIFont boldSystemFontOfSize:32.0];
-                       label.text = @"500 miles";
+                       label.text = @"";
                        [_parentView addSubview:label];
                        [_parentView bringSubviewToFront:label];
                        _distanceLabel = label;
@@ -95,6 +123,8 @@
         [self createHeaderLabel];
     if (!_distanceLabel)
         [self createDistanceLabel];
+    if (!_timerLabel)
+        [self createTimerLabel];
     if (!_attempts++)
     {
         dispatch_async(dispatch_get_main_queue(),
@@ -157,6 +187,8 @@
     [self bringViewsToFront];
     if (_attempts > 4 || _distance < 1)
     {
+        _totDistance += _distance;
+        _itemsCompleted++;
         UIColor *boundaryColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
         UIColor *fillColor = [UIColor colorWithRed:0 green:0 blue:0.75 alpha:0.5];
         [self drawBoundary:context
@@ -170,7 +202,7 @@
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            
-        _timer = [NSTimer scheduledTimerWithTimeInterval:3
+        _timer = [NSTimer scheduledTimerWithTimeInterval:_delayBetweenItems
                                                   target:self
                                                 selector:@selector(nextItem:)
                                                 userInfo:nil
@@ -180,6 +212,35 @@
    }
  }
 
+- (void) displayGameTimer:(NSTimer *)timer
+{
+    int timeRemaining = _endTime - [NSDate timeIntervalSinceReferenceDate];
+    if (timeRemaining > 0)
+    {
+        _timerLabel.text = [NSString stringWithFormat:@"Seconds Remaining\n%i",timeRemaining];
+        [self bringViewsToFront];
+     }
+    else
+    {
+        [timer invalidate];
+        _wantViews = NO;
+        _gameTimer = nil;
+        [self hideViews];
+        if (_timer)
+        {
+            [_timer invalidate];
+            _timer = nil;
+        }
+        [_poTableView hide:YES];
+        _popoverView = [[GSSiPopoverView alloc] initWithView:_mvc.view];
+        _popoverView.delegate = self;
+        _popoverView.progressView.hidden = YES;
+        _popoverView.progressLabel.hidden = YES;
+        _popoverView.cancelButtonTitle = @" Start Next Game ";
+        [_popoverView showAfter:0.1
+                      withTitle:[NSString stringWithFormat:@"Done\nItems Completed:%i\nScore:%i",_itemsCompleted,_totDistance+(_totalItems - _itemsCompleted)*_maxDistance]];
+    }
+}
 -(void) bringViewsToFront
 {
     if (!_wantViews)
@@ -192,8 +253,10 @@
                            _distanceLabel.text = @"";
                        [_headerLabel setHidden:NO];
                        [_distanceLabel setHidden:NO];
+                       [_timerLabel setHidden:NO];
                        [_parentView bringSubviewToFront:_headerLabel];
                        [_parentView bringSubviewToFront:_distanceLabel];
+                       [_parentView bringSubviewToFront:_timerLabel];
                    });
 
 }
@@ -203,6 +266,7 @@
                    ^{
                        [_headerLabel setHidden:YES];
                        [_distanceLabel setHidden:YES];
+                       [_timerLabel setHidden:YES];
                    });
 
 }
@@ -266,23 +330,17 @@
 
 - (BOOL) nextItem:(NSTimer *)timer
 {
-    NSArray * choices=@[@"Lake1",@"Lake2"];
+    _choices=@[@"Lake1",@"Lake2"];
     [self hideViews];
     _wantViews = NO;
     LLPOINT p = {-1,-1};
     CRAPI.sharedInstance.lastPickPoint = p;
-    [NVPopoverTableView showPopoverTableViewInView:_parentView
-                                      delegate:self
-                                         title:@"Choose One\nof the\nFollowing Cities"
-                                     textArray:choices
-                                 includeCancel:NO];
-     
     dispatch_async(dispatch_get_main_queue(),
                    ^{
-                       [NVPopoverTableView showPopoverTableViewInView:_parentView
+                       _poTableView = [NVPopoverTableView showPopoverTableViewInView:_parentView
                                                              delegate:self
                                                                 title:@"Choose One\nof the\nFollowing Cities"
-                                                            textArray:choices
+                                                            textArray:_choices
                                                         includeCancel:NO];
                    });
     
@@ -293,7 +351,6 @@
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    [popoverTableView hide:YES];
     _refno = 1084;
 
     if (index)
@@ -304,9 +361,29 @@
     _headerLabel.text = [NSString stringWithFormat:@"Lake %i",index+1];
     _distanceLabel.text = @"Start";
     [self bringViewsToFront];
+    if (!_gameTimer)
+    {
+        _totDistance = 0;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           _itemsCompleted = 0;
+                           
+                           _endTime = [NSDate timeIntervalSinceReferenceDate] + _gameDuration;
+                           
+                           _gameTimer = [NSTimer scheduledTimerWithTimeInterval:1
+                                                                         target:self
+                                                                       selector:@selector(displayGameTimer:)
+                                                                       userInfo:nil
+                                                                        repeats:YES];
+                           
+                       });
+        
+    }
+
     dispatch_async(dispatch_get_main_queue(),
                    ^{
-                       
+                       [popoverTableView hide:YES];
+
                        _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                  target:self.mvc
                                                                selector:@selector(extentZoom2:)
@@ -315,5 +392,10 @@
                        
                    });
 
+}
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    [popoverView hide];
+    [self nextItem:nil];
 }
 @end
