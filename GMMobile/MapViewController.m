@@ -130,8 +130,6 @@
 @property BOOL splitPlatView, legendMinimized, keepZoomExtents, grayscaleMode;
 @property int splitPlatDirection, vvpass, currentFile;
 @property NVMarkerStyle markerStyle;
-@property (nonatomic) NVSpreadsheetDelegate *ssDelegate;
-@property (nonatomic) NVCrimeListDelegate *crimeDelegate;
 @property (nonatomic) NVSpreadsheetVC *nvssvc;
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 @property BOOL continueLoad, fromLegends2X;
@@ -156,8 +154,6 @@
     self.tabBarController.delegate = self;
     _nvssvc = NVSpreadsheetVC.new;
     _nvssvc.restorationIdentifier = @"NVSpreadsheet";
-    _ssDelegate = NVSpreadsheetDelegate.new;
-    _crimeDelegate = NVCrimeListDelegate.new;
     
     _nvssvc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"spreadsheetIcon"
                                                                                               ofType:@"png"]];
@@ -459,15 +455,18 @@
         }
         
         CRAPI.sharedInstance.appChanged = NO;
+        CRAPI.sharedInstance.spreadsheetDelegate = nil;
         
         switch (ConfigurationControl.sharedInstance.currentApp)
         {
             case HCConfigMetroProp:
-                _nvssvc.delegate = _ssDelegate;
+                CRAPI.sharedInstance.spreadsheetDelegate = NVSpreadsheetDelegate.new;
+                _nvssvc.delegate = CRAPI.sharedInstance.spreadsheetDelegate;
                 _nvssvc.tabBarItem.title = @"Property List";
                 break;
             case HCConfigCrimes:
-                _nvssvc.delegate = _crimeDelegate;
+                CRAPI.sharedInstance.spreadsheetDelegate = NVCrimeListDelegate.new;
+                _nvssvc.delegate = CRAPI.sharedInstance.spreadsheetDelegate;
                 _nvssvc.tabBarItem.title = @"Crime List";
                 break;
             default:break;

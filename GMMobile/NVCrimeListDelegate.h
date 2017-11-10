@@ -1,8 +1,8 @@
 //  NVCrimeListDelegate.h
 //  NVMobile
 
-#import "CCodeLibrary/NVSpreadsheetVC.h"
+#import "CCodeLibrary/SSDelegate.h"
 
-@interface NVCrimeListDelegate : NSObject <NVSpreadsheetVCDelegate>
+@interface NVCrimeListDelegate : SSDelegate
 
 @end
