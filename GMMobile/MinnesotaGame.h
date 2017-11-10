@@ -31,6 +31,8 @@
 @property UILabel * timerLabel;
 @property double distance;
 @property int totDistance;
+@property int bestGuess;
+@property DPOINT minPoint;
 @property BOOL wantViews;
 @property NSArray * choices;
 @property NSString * itemType;

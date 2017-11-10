@@ -344,7 +344,7 @@
               points:(LPDPOINT)pPoints
            withColor:(CGColorRef)color
 {
-    CGContextSetLineWidth(context, 5*UIScreen.mainScreen.scale);
+    CGContextSetLineWidth(context, CRAPI.sharedInstance.boundaryBorderWidth*UIScreen.mainScreen.scale);
     
     if (nLoops > 1)
     {

@@ -1419,16 +1419,6 @@
     [self performSelector:@selector(extentZoom) withObject:nil afterDelay:0.5];
 }
 
-- (void)extentZoom2:(NSTimer *)timer
-{
-    [self clearVectorView];
-    _northeast.latitude -= 1;
-    GMSCoordinateBounds *coordBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:_northeast
-                                                                            coordinate:_southwest];
-    
-    [_mapView moveCamera:[GMSCameraUpdate fitBounds:coordBounds withEdgeInsets:_inset]];
-    [self extentZoom];
-}
 - (void)extentZoom
 {
 

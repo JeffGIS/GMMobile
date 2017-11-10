@@ -27,6 +27,8 @@ static int groupCount[4]={87,500,84,250};
         _groupNames = @[@"Counties",@"Cities",@"State Parks",@"Lakes"];
         _groupName = @[@"County",@"City",@"State Park",@"Lake"];
         self.gameDuration = 60 * self.numGroups;
+        CRAPI.sharedInstance.maskTransparency = 0;
+        CRAPI.sharedInstance.boundaryBorderWidth = 2;
     }
     
     return self;
@@ -89,7 +91,7 @@ static int groupCount[4]={87,500,84,250};
                        rect.size.width *= 0.3;
                        rect.size.width -= 5;
                        UILabel *label = [[UILabel alloc] initWithFrame:rect];
-                       label.backgroundColor = [UIColor yellowColor];
+                       label.backgroundColor = [UIColor clearColor];
                        label.textAlignment = NSTextAlignmentCenter;
                        label.textColor = [UIColor blackColor];
                        label.numberOfLines = 0;
@@ -149,7 +151,9 @@ static int groupCount[4]={87,500,84,250};
     if (pt.lat < 0)
         return;
     DPOINT BasePt;
-    CGColorRef color = UIColor.redColor.CGColor;
+    CGColorRef pointColor = UIColor.redColor.CGColor;
+    CGColorRef starColor = UIColor.orangeColor.CGColor;
+    CGColorRef blackColor = UIColor.blackColor.CGColor;
     [self setTrans:latlonCornerPoints viewBounds:pvbounds];
     
     BasePt.x = pt.lon;
@@ -158,10 +162,10 @@ static int groupCount[4]={87,500,84,250};
     [SymbolDictionary drawPointWithSymbol:context
                                        at:&viewPoint
                               usingSymbol:CircleSym
-                                     Size:30
-                                fillColor:color
-                                lineColor:0
-                                lineWidth:0];
+                                     Size:20*UIScreen.mainScreen.scale
+                                fillColor:pointColor
+                                lineColor:blackColor
+                                lineWidth:1*UIScreen.mainScreen.scale];
 
     BoundaryData * bd = BoundaryData.new;
     int numPoints, numLoops;
@@ -179,20 +183,28 @@ static int groupCount[4]={87,500,84,250};
     BOOL inArea = POINT_IN_AREAD(BasePt, numPoints, pPoints, 1, 0, 0, 0);
     
     if (inArea)
+    {
         minDist = 0;
+        _minPoint = BasePt;
+    }
     for (int i = 0;i < numPoints; i++)
     {
         double d = ArcDistance(BasePt, pPoints[i]);
-        minDist = min (d, minDist);
+        if (d < minDist)
+        {
+            minDist = d;
+            _minPoint = pPoints[i];
+        }
         pPoints[i] = TranDPOINTP(&pPoints[i], _pTranLLtoView);
     }
     
     _distance = max (0,minDist / METERS_PER_MILE);
+    _bestGuess = min (_bestGuess,(int)_distance);
     [self hideViews];
     [self bringViewsToFront];
     if (_attempts > 4 || _distance < 1)
     {
-        _totDistance += _distance;
+        _totDistance += _bestGuess;
         _itemsCompleted++;
         UIColor *boundaryColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5];
         UIColor *fillColor = [UIColor colorWithRed:0 green:0 blue:0.75 alpha:0.5];
@@ -203,7 +215,15 @@ static int groupCount[4]={87,500,84,250};
                     points:pPoints
                  withColor:boundaryColor.CGColor
              withFillColor:fillColor.CGColor];
-        
+        DPOINT viewPoint = TranDPOINTP(&_minPoint, _pTranLLtoView);
+        [SymbolDictionary drawPointWithSymbol:context
+                                           at:&viewPoint
+                                  usingSymbol:Star2Sym
+                                         Size:50*UIScreen.mainScreen.scale
+                                    fillColor:starColor
+                                    lineColor:blackColor
+                                    lineWidth:1*UIScreen.mainScreen.scale];
+
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            
@@ -283,7 +303,7 @@ static int groupCount[4]={87,500,84,250};
            withColor:(CGColorRef)color
            withFillColor:(CGColorRef)fillColor
 {
-    CGContextSetLineWidth(context, 4*UIScreen.mainScreen.scale);
+    CGContextSetLineWidth(context, 2*UIScreen.mainScreen.scale);
     
     if (nLoops > 1)
     {
@@ -328,7 +348,7 @@ static int groupCount[4]={87,500,84,250};
         {
             CGContextSetStrokeColorWithColor(context,color);
             CGContextSetFillColorWithColor(context,fillColor);
-            CGContextDrawPath(context, kCGPathEOFillStroke);
+            CGContextDrawPath(context, kCGPathEOFill);
         }
     }
 }
@@ -361,6 +381,7 @@ static int groupCount[4]={87,500,84,250};
                                                       ofType:@"TXT"];
     NSString * fileContents = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil];
     NSArray * fileItems = [fileContents componentsSeparatedByString:@"\n"];
+    index++;
     if (index < fileItems.count)
     {
         int inc = 0;
@@ -457,6 +478,7 @@ static int groupCount[4]={87,500,84,250};
     _refno = (int)crefno.integerValue;
     _attempts = 1;
     _distance = -1;
+    _bestGuess = 500;
     _wantViews = YES;
     _headerLabel.text = [NSString stringWithFormat:@"Locate %@:%@",type,name];
     _distanceLabel.text = @"Start";
@@ -483,10 +505,10 @@ static int groupCount[4]={87,500,84,250};
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        [popoverTableView hide:YES];
-
+                       
                        _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                  target:self.mvc
-                                                               selector:@selector(extentZoom2:)
+                                                               selector:@selector(vectorViewRefresh)
                                                                userInfo:nil
                                                                 repeats:NO];
                        

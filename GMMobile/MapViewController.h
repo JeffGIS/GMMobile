@@ -28,5 +28,6 @@ typedef NS_ENUM(NSInteger, NVMarkerStyle)
 
 - (void)refreshVectorView:(GMSVisibleRegion)region
                    atZoom:(CGFloat)zoom;
+- (void)vectorViewRefresh;
 
 @end
