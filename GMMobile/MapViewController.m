@@ -432,6 +432,16 @@
         }
     }
     
+    else if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionmngame"])
+    {
+        if (_firstTimeAppear)
+        {
+            [ConfigurationControl.sharedInstance setApp:HCConfigMinnesotaGame];
+            self.tabBarController.tabBar.hidden = YES;
+            [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+        }
+    }
+    
     else if (!_fromSpreadsheet)
     {
         HardCodedConfigs config = [UserDefaults.defaults integerForKey:@"CurrentConfig"];
@@ -517,7 +527,20 @@
             _mapView.mapType = kGMSTypeHybrid;
     }
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
+    {
         _mapView.mapType = kGMSTypeNone;
+        _mapView.settings.scrollGestures = NO;
+        _mapView.settings.zoomGestures = NO;
+        _mapView.settings.rotateGestures = NO;
+    }
+    
+    else
+    {
+        _mapView.settings.scrollGestures = YES;
+        _mapView.settings.zoomGestures = YES;
+        _mapView.settings.rotateGestures = YES;
+    }
+    
     if (CRAPI.sharedInstance.GMMSetting == GMMSettingPID || CRAPI.sharedInstance.GMMSetting == GMMSettingAddress ||
         CRAPI.sharedInstance.GMMSetting == GMMSettingPropOwner || CRAPI.sharedInstance.GMMSetting == GMMSettingMultipleProps)
     {
@@ -1243,7 +1266,7 @@
         if ([NSBundle.mainBundle.bundleIdentifier isEqualToString:@"com.gssi.newvisionsidewalk"])
             [NVTabBarEdit tabBarController:self.tabBarController removeViewControllerWithID:@"ApplicationsVC"];
         
-        _mapView.mapType = _mapView.mapType = kGMSTypeHybrid;
+        _mapView.mapType = kGMSTypeHybrid;
         [_locationManager requestLocation];
     }
 }
@@ -1690,9 +1713,7 @@ didTapAtCoordinate:(CLLocationCoordinate2D)coordinate
             PropertyData *propData = PropertyData.new;
             propData.zoom = _mapView.camera.zoom;
             [propData pickParcel:&llpickPt highlightList:highlightList];
-            break;
-
-        }
+            break;}
         default:break;
     }
     
@@ -3087,6 +3108,7 @@ haveVV:
         else
             _mapView.mapType = kGMSTypeNormal;
     }
+    
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMinnesotaGame)
         _mapView.mapType = kGMSTypeNone;
 }
