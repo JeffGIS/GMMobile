@@ -11,17 +11,22 @@
 
 @implementation MinnesotaGame
 
+static int groupCount[4]={87,500,84,250};
+
 - (id)init
 {
     self = [super init];
     
     if (self)
     {
-        arc4random_uniform(100);
-        self.gameDuration = 15;
-        self.delayBetweenItems = 2;
-        self.totalItems = 4 * 4;
+        self.delayBetweenItems = 1.5;
         self.maxDistance = 450;
+        self.numPerGroup = 4;
+        self.numGroups = 3;
+        self.totalItems = self.numPerGroup * self.numGroups;
+        _groupNames = @[@"Counties",@"Cities",@"State Parks",@"Lakes"];
+        _groupName = @[@"County",@"City",@"State Park",@"Lake"];
+        self.gameDuration = 60 * self.numGroups;
     }
     
     return self;
@@ -130,7 +135,7 @@
         dispatch_async(dispatch_get_main_queue(),
                        ^{
                            
-                           _timer = [NSTimer scheduledTimerWithTimeInterval:3
+                           _timer = [NSTimer scheduledTimerWithTimeInterval:_delayBetweenItems
                                                                      target:self
                                                                    selector:@selector(nextItem:)
                                                                    userInfo:nil
@@ -165,7 +170,7 @@
     double minDist = DBL_MAX;
     
     LPDPOINT pPoints = [bd getPolygonPointsForGameBoundary:_refno
-                                                   inTable:@"COUNTIES"
+                                                   inTable:_areaType
                                                  numPoints:&numPoints
                                                   numLoops:&numLoops
                                                polyPartLen:&polyPartLen];
@@ -278,7 +283,7 @@
            withColor:(CGColorRef)color
            withFillColor:(CGColorRef)fillColor
 {
-    CGContextSetLineWidth(context, 5*UIScreen.mainScreen.scale);
+    CGContextSetLineWidth(context, 4*UIScreen.mainScreen.scale);
     
     if (nLoops > 1)
     {
@@ -328,9 +333,100 @@
     }
 }
 
+- (int) refnoInGroup:(int)group
+               index:(int)index
+{
+    int ref = -1;
+    NSString * fileName = @"";
+    switch (group)
+    {
+        case 0:
+            fileName = @"Counties";
+            _areaType = @"COUNTIES";
+            break;
+        case 1:
+            fileName = @"TOP500Cities";
+            _areaType = @"CITIES";
+           break;
+        case 2:
+            fileName = @"PARKS";
+            _areaType = @"PARKS";
+            break;
+        case 3:
+            fileName = @"Lakes";
+            _areaType = @"LAKES";
+            break;
+    }
+    NSString * file = [NSBundle.mainBundle pathForResource:fileName
+                                                      ofType:@"TXT"];
+    NSString * fileContents = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil];
+    NSArray * fileItems = [fileContents componentsSeparatedByString:@"\n"];
+    if (index < fileItems.count)
+    {
+        int inc = 0;
+        if (group == 1)
+            inc = 1;
+        NSString *item = fileItems[index];
+        NSArray <NSString*> *txt = [item componentsSeparatedByString:@"\t"];
+        ref = (int)txt[0+inc].integerValue;
+        _itemDescription = txt[1+inc];
+    }
+    return ref;
+}
+
+- (BOOL) inUsedChoices:(int)refno
+{
+    BOOL rtn = FALSE;
+    for (NSNumber * nm in _usedChoices)
+    {
+        if (nm.integerValue == refno)
+            return TRUE;
+    }
+    NSNumber *nm = [NSNumber numberWithInteger:refno];
+    [_usedChoices addObject:nm];
+    return rtn;
+}
+
+-(NSArray *) nextChoices:(BOOL)newGame
+{
+    NSMutableArray * choices = NSMutableArray.new;
+    if (newGame)
+    {
+        arc4random_stir ();
+        _usedChoices = NSMutableArray.new;
+        _itemCount = 0;
+    }
+    _group = _itemCount++ / _numPerGroup;
+    if (_group >= _numGroups)
+        return nil;
+    _itemType = _groupNames[_group];
+    int iChoice = 0;
+    while (iChoice < _numPerGroup)
+    {
+        int refno = [self refnoInGroup:_group
+                                 index:arc4random_uniform(groupCount[_group])];
+        while ([self inUsedChoices:refno])
+        {
+            refno = [self refnoInGroup:_group
+                                 index:arc4random_uniform(groupCount[_group])];
+        }
+        NSString * choice = [NSString stringWithFormat:@"%@\x03%i",_itemDescription,refno];
+        [choices addObject:choice];
+        iChoice++;
+    }
+    return choices;
+}
 - (BOOL) nextItem:(NSTimer *)timer
 {
-    _choices=@[@"Lake1",@"Lake2"];
+    BOOL newGame = TRUE;
+    if (_gameTimer)
+        newGame = FALSE;
+    _choices=[self nextChoices:newGame];
+    if (!_choices)
+    {
+        _endTime = [NSDate timeIntervalSinceReferenceDate];
+        return FALSE;
+    }
     [self hideViews];
     _wantViews = NO;
     LLPOINT p = {-1,-1};
@@ -339,7 +435,7 @@
                    ^{
                        _poTableView = [NVPopoverTableView showPopoverTableViewInView:_parentView
                                                              delegate:self
-                                                                title:@"Choose One\nof the\nFollowing Cities"
+                                                                title:[NSString stringWithFormat:@"Choose One\nof the\nFollowing %@",_itemType]
                                                             textArray:_choices
                                                         includeCancel:NO];
                    });
@@ -353,12 +449,16 @@
 {
     _refno = 1084;
 
-    if (index)
-        _refno = 1060;
+    NSString * choice = _choices[index];
+    
+    NSString * crefno = textAfter(choice, @"\x03");
+    NSString * name = textBefore(choice, @"\x03");
+    NSString * type = _groupName[_group];
+    _refno = (int)crefno.integerValue;
     _attempts = 1;
     _distance = -1;
     _wantViews = YES;
-    _headerLabel.text = [NSString stringWithFormat:@"Lake %i",index+1];
+    _headerLabel.text = [NSString stringWithFormat:@"Locate %@:%@",type,name];
     _distanceLabel.text = @"Start";
     [self bringViewsToFront];
     if (!_gameTimer)

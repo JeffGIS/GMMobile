@@ -18,6 +18,8 @@
 @property float delayBetweenItems;
 @property int itemsCompleted, totalItems, maxDistance;
 @property int refno;
+@property int group;
+@property NSString *areaType;
 @property int attempts;
 @property int gameDuration;
 @property (nonatomic, weak) UIView *parentView;
@@ -31,6 +33,13 @@
 @property int totDistance;
 @property BOOL wantViews;
 @property NSArray * choices;
+@property NSString * itemType;
+@property int itemCount;
+@property NSString * itemDescription;
+@property int numGroups, numPerGroup;
+@property NSMutableArray *usedChoices;
+@property NSArray * groupNames;
+@property NSArray * groupName;
 @property UIViewController * mvc;
 @property NVPopoverTableView *poTableView;
 @property GSSiPopoverView *popoverView;

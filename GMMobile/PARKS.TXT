@@ -1,0 +1,85 @@
+INT_REFNO	UDI
+2000	La Salle Lake
+2001	Lake Maria
+2002	Itasca
+2003	William O'Brien
+2004	McCarthy Beach
+2005	Great River Bluffs
+2006	Camden
+2007	Maplewood
+2008	Myre-Big Island
+2009	Sibley
+2010	Lac qui Parle
+2011	Lake Vermilion-Soudan Underground Mine
+2012	Tettegouche
+2013	Split Rock Lighthouse
+2014	Blue Mounds
+2015	Devils Track Falls
+2016	Wild River
+2017	Flandrau
+2018	Garden Island
+2019	Scenic
+2020	Moose Lake
+2021	Big Bog
+2022	Bear Head Lake
+2023	Zippel Bay
+2024	Caribou Falls
+2025	Rice Lake
+2026	Glacial Lakes
+2027	Interstate
+2028	Temperance River
+2029	Inspiration Peak
+2030	Old Mill
+2031	Crow Wing
+2032	Afton
+2033	Lake Shetek
+2034	Kilen Woods
+2035	Buffalo River
+2036	Fort Snelling
+2037	Monson Lake
+2038	Cuyuna Country
+2039	Saint Croix Boom Site
+2040	Saint Croix Islands
+2041	Kodonce River
+2042	Flood Bay
+2043	Gooseberry Falls
+2044	Hill Annex Mine
+2045	Minnesota Valley
+2046	Mille Lacs Kathio
+2047	Banning
+2048	Iron Range Off-Highway Vehicle
+2049	Greenleaf Lake
+2050	John A. Latsch
+2051	Franz Jevne
+2052	Lake Carlos
+2053	Whitewater
+2054	Minneopa
+2055	Fort Ridgely
+2056	Frontenac
+2057	Jay Cooke
+2058	Split Rock Creek
+2059	Schoolcraft
+2060	Lake Bronson
+2061	Nerstrand Big Woods
+2062	Forestville/Mystery Cave
+2063	Charles A. Lindbergh
+2064	Beaver Creek Valley
+2065	Joseph R. Brown
+2066	Carley
+2067	Red River
+2068	George H. Crosby-Manitou
+2069	Grand Portage
+2070	Big Stone Lake
+2071	Glendalough
+2072	Judge C. R. Magney
+2073	Hayes Lake
+2074	Lake Bemidji
+2075	Ray Berglund
+2076	Cascade River
+2077	Savanna Portage
+2078	Lake Louise
+2079	Father Hennepin
+2080	Sam Brown Memorial
+2081	Sakatah Lake
+2082	St. Croix
+2083	Upper Sioux Agency

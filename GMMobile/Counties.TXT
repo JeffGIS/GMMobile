@@ -1,0 +1,88 @@
+INT_REFNO	UDI
+1000	Aitkin
+1001	Anoka
+1002	Becker
+1003	Beltrami
+1004	Benton
+1005	Big Stone
+1006	Blue Earth
+1007	Brown
+1008	Carlton
+1009	Carver
+1010	Cass
+1011	Chippewa
+1012	Chisago
+1013	Clay
+1014	Clearwater
+1015	Cook
+1016	Cottonwood
+1017	Crow Wing
+1018	Dakota
+1019	Dodge
+1020	Douglas
+1021	Faribault
+1022	Fillmore
+1023	Freeborn
+1024	Goodhue
+1025	Grant
+1026	Hennepin
+1027	Houston
+1028	Hubbard
+1029	Isanti
+1030	Itasca
+1031	Jackson
+1032	Kanabec
+1033	Kandiyohi
+1034	Kittson
+1035	Koochiching
+1036	Lac qui Parle
+1037	Lake
+1038	Lake of the Woods
+1039	Le Sueur
+1040	Lincoln
+1041	Lyon
+1042	McLeod
+1043	Mahnomen
+1044	Marshall
+1045	Martin
+1046	Meeker
+1047	Mille Lacs
+1048	Morrison
+1049	Mower
+1050	Murray
+1051	Nicollet
+1052	Nobles
+1053	Norman
+1054	Olmsted
+1055	Otter Tail
+1056	Pennington
+1057	Pine
+1058	Pipestone
+1059	Polk
+1060	Pope
+1061	Ramsey
+1062	Red Lake
+1063	Redwood
+1064	Renville
+1065	Rice
+1066	Rock
+1067	Roseau
+1068	St. Louis
+1069	Scott
+1070	Sherburne
+1071	Sibley
+1072	Stearns
+1073	Steele
+1074	Stevens
+1075	Swift
+1076	Todd
+1077	Traverse
+1078	Wabasha
+1079	Wadena
+1080	Waseca
+1081	Washington
+1082	Watonwan
+1083	Wilkin
+1084	Winona
+1085	Wright
+1086	Yellow Medicine

@@ -208,6 +208,9 @@
 		EB398F0A1ABC94240043875E /* PlatProfileView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB398F091ABC94240043875E /* PlatProfileView.m */; };
 		EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */ = {isa = PBXBuildFile; fileRef = EB398F0D1AC04B530043875E /* censusdatadef.txt */; };
 		EB4A18C21AA89DE100B8B162 /* PipeTrace.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A18C11AA89DE100B8B162 /* PipeTrace.m */; };
+		EB4A58191FB5E5BE00B8B613 /* Counties.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58161FB5E5BD00B8B613 /* Counties.TXT */; };
+		EB4A581A1FB5E5BE00B8B613 /* TOP500Cities.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58171FB5E5BD00B8B613 /* TOP500Cities.TXT */; };
+		EB4A581B1FB5E5BE00B8B613 /* PARKS.TXT in Resources */ = {isa = PBXBuildFile; fileRef = EB4A58181FB5E5BE00B8B613 /* PARKS.TXT */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
 		EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
@@ -529,6 +532,9 @@
 		EB398F0D1AC04B530043875E /* censusdatadef.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = censusdatadef.txt; sourceTree = "<group>"; };
 		EB4A18C01AA89DE100B8B162 /* PipeTrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeTrace.h; sourceTree = "<group>"; };
 		EB4A18C11AA89DE100B8B162 /* PipeTrace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PipeTrace.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		EB4A58161FB5E5BD00B8B613 /* Counties.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Counties.TXT; sourceTree = "<group>"; };
+		EB4A58171FB5E5BD00B8B613 /* TOP500Cities.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TOP500Cities.TXT; sourceTree = "<group>"; };
+		EB4A58181FB5E5BE00B8B613 /* PARKS.TXT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PARKS.TXT; sourceTree = "<group>"; };
 		EB4F25831A757F2000761FD5 /* FindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindViewController.h; sourceTree = "<group>"; };
 		EB4F25841A757F2000761FD5 /* FindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindViewController.m; sourceTree = "<group>"; };
 		EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPIDViewController.h; sourceTree = "<group>"; };
@@ -969,12 +975,23 @@
 		BBCDF7DF1E50AE4200156827 /* DataBases */ = {
 			isa = PBXGroup;
 			children = (
-				EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */,
+				EB4A58131FB5E55900B8B613 /* MinnesotaGameData */,
 				BBCDF7EB1E513B2800156827 /* areapoly.slt */,
 				BBCDF7EC1E513B2800156827 /* censusdata.slt */,
 				69D2C7EF1E5209CC0040FCF9 /* landuse.slt */,
 			);
 			name = DataBases;
+			sourceTree = "<group>";
+		};
+		EB4A58131FB5E55900B8B613 /* MinnesotaGameData */ = {
+			isa = PBXGroup;
+			children = (
+				EB4A58161FB5E5BD00B8B613 /* Counties.TXT */,
+				EB4A58181FB5E5BE00B8B613 /* PARKS.TXT */,
+				EB4A58171FB5E5BD00B8B613 /* TOP500Cities.TXT */,
+				EB38AF3F1FB3AF2F00E5DD93 /* MinnesotaData.slt */,
+			);
+			name = MinnesotaGameData;
 			sourceTree = "<group>";
 		};
 		EB5521C01A61B6A8008CE2D1 = {
@@ -1261,10 +1278,12 @@
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
 				69E62D501BBF276B0018390B /* fieldOptions.png in Resources */,
+				EB4A58191FB5E5BE00B8B613 /* Counties.TXT in Resources */,
 				A91F36971AE97A2D00602BCE /* metalSliderLeft.png in Resources */,
 				EB398F0E1AC04B530043875E /* censusdatadef.txt in Resources */,
 				69FEC8971CA9AD0F002BF231 /* whiteMapItWithX.png in Resources */,
 				A9D281891B045BAD00523B29 /* loadData.png in Resources */,
+				EB4A581A1FB5E5BE00B8B613 /* TOP500Cities.TXT in Resources */,
 				694D99F81FAA396A0023FD37 /* redArrowRight.png in Resources */,
 				A9CBF2111A8156C7006AC88E /* list.png in Resources */,
 				6991ED2F1FA9115F007306B2 /* redX.png in Resources */,
@@ -1317,6 +1336,7 @@
 				694FB1EF1C58846F005410F6 /* Localizable.strings in Resources */,
 				BB8B969C1E8568CA00B6A9F7 /* Part2-2.png in Resources */,
 				BB8B969B1E8568CA00B6A9F7 /* Burglary.png in Resources */,
+				EB4A581B1FB5E5BE00B8B613 /* PARKS.TXT in Resources */,
 				1F5ADD561CB95D27002D7BED /* PropListField_default.pdf in Resources */,
 				A9EC20601AB738EE004D38FA /* marker.png in Resources */,
 				A91F369A1AE97B0500602BCE /* redSliderThumb.png in Resources */,
