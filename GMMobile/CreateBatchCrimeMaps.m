@@ -24,6 +24,7 @@ static int pageWidthFactor = 1;
              popover:(GSSiPopoverView *)popover
 {
     _popover = popover;
+    int int0 = 0;
     DisplayCharacteristics *dc = DisplayCharacteristics.new;
     void *bmData = NULL;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
@@ -88,7 +89,7 @@ static int pageWidthFactor = 1;
             CGContextFillRect (context,colorRect);
             
             _cd = [[CrimeDataDisplay alloc] init];
-            _cd.processingID = 0;
+            _cd.processingID = &int0;
             _cd.zoom = 0;
             _cd.mode = PINMAP;
             if (pageNumber)
@@ -183,7 +184,7 @@ static int pageWidthFactor = 1;
             [page.PDFPageTextBlocks addObject:tb];
             [_pageArray addObject:page];
         }
-        if (!_cd.processingID)
+        if (!*_cd.processingID)
         {
             dispatch_async(dispatch_get_main_queue(),
                            ^{
@@ -216,7 +217,7 @@ static int pageWidthFactor = 1;
 
 - (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
-    _cd.processingID = 1;
+    *_cd.processingID = 1;
 }
 
 @end
