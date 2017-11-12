@@ -11,7 +11,7 @@
 
 @implementation MinnesotaGame
 
-static int groupCount[4]={87,500,84,250};
+static int groupCount[4]={87,500,84,200};
 
 - (id)init
 {
@@ -22,13 +22,14 @@ static int groupCount[4]={87,500,84,250};
         self.delayBetweenItems = 1.5;
         self.maxDistance = 450;
         self.numPerGroup = 4;
-        self.numGroups = 3;
+        self.numChoicesPerItem = 4;
+        self.numGroups = 4;
         self.totalItems = self.numPerGroup * self.numGroups;
         _groupNames = @[@"Counties",@"Cities",@"State Parks",@"Lakes"];
         _groupName = @[@"County",@"City",@"State Park",@"Lake"];
         self.gameDuration = 60 * self.numGroups;
         CRAPI.sharedInstance.maskTransparency = 0;
-        CRAPI.sharedInstance.boundaryBorderWidth = 2;
+        CRAPI.sharedInstance.boundaryBorderWidth = 3;
     }
     
     return self;
@@ -39,18 +40,20 @@ static int groupCount[4]={87,500,84,250};
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        CGRect rect = _parentView.frame;
-                       rect.origin.x += 5;
+                       rect.origin.x += 86;
                        rect.origin.y += 20;
                        rect.size.height = 90;
-                       rect.size.width -= 10;
+                       rect.size.width -= 86*2;
                        UILabel *label = [[UILabel alloc] initWithFrame:rect];
-                       label.backgroundColor = [UIColor blueColor];
+                       label.backgroundColor = [UIColor clearColor];
                        label.textAlignment = NSTextAlignmentCenter;
-                       label.textColor = [UIColor whiteColor];
+                       label.textColor = [UIColor brownColor];
                        label.numberOfLines = 0;
                        label.lineBreakMode = NSLineBreakByWordWrapping;
-                       label.font = [UIFont boldSystemFontOfSize:32.0];
-                       label.text = @"Locate Lake Minnetonka";
+                       label.font = [UIFont systemFontOfSize:36.0];
+                      // label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
+
+                       label.text = @"Pick a County to Start";
                        [_parentView addSubview:label];
                        [_parentView bringSubviewToFront:label];
                        _headerLabel = label;
@@ -61,22 +64,43 @@ static int groupCount[4]={87,500,84,250};
 {
     dispatch_async(dispatch_get_main_queue(),
                    ^{
+                       NSString * hourglassFile = [NSBundle.mainBundle pathForResource:@"hourglass1"
+                                                                       ofType:@"png"];
+
                        CGRect rect = _parentView.frame;
-                       rect.origin.x += rect.size.width * 0.65;
-                       rect.origin.y += 95 * 1.25;
-                       rect.size.height = 90 * 1.5;
-                       rect.size.width *= 0.3;
+                       rect.origin.x = rect.origin.x + rect.size.width - 86;
+                       rect.origin.y = 20;
+                       rect.size.height = 161;
+                       rect.size.width = 86;
+                       UIImageView *hourglass = [[UIImageView alloc]initWithFrame:rect];
+                       NSMutableArray *imageArray = NSMutableArray.new;
+                       [imageArray addObject:[UIImage imageWithContentsOfFile:hourglassFile]];
+                       hourglassFile = [NSBundle.mainBundle pathForResource:@"hourglass2"
+                                                                     ofType:@"png"];
+                       [imageArray addObject:[UIImage imageWithContentsOfFile:hourglassFile]];
+                       hourglassFile = [NSBundle.mainBundle pathForResource:@"hourglass3"
+                                                                     ofType:@"png"];
+                       [imageArray addObject:[UIImage imageWithContentsOfFile:hourglassFile]];
+                       hourglassFile = [NSBundle.mainBundle pathForResource:@"hourglass4"
+                                                                     ofType:@"png"];
+                       [imageArray addObject:[UIImage imageWithContentsOfFile:hourglassFile]];
+                       hourglass.animationImages = imageArray;
+                       rect.origin.y += rect.size.height;
+                       rect.size.height = 40;
                        UILabel *label = [[UILabel alloc] initWithFrame:rect];
-                       label.backgroundColor = [UIColor yellowColor];
+                       label.backgroundColor = [UIColor clearColor];
                        label.textAlignment = NSTextAlignmentCenter;
                        label.textColor = [UIColor blackColor];
                        label.numberOfLines = 0;
-                       label.lineBreakMode = NSLineBreakByWordWrapping;
-                       label.font = [UIFont boldSystemFontOfSize:32.0];
-                       label.text = @"Seconds Remaining\n200";
+                       label.font = [UIFont boldSystemFontOfSize:28.0];
+                       label.font = [UIFont monospacedDigitSystemFontOfSize:28 weight:UIFontWeightBlack];
+                       label.text = @"";
                        [_parentView addSubview:label];
                        [_parentView bringSubviewToFront:label];
+                       [_parentView addSubview:hourglass];
+                       [_parentView bringSubviewToFront:hourglass];
                        _timerLabel = label;
+                       _hourglassImage = hourglass;
                    });
 }
 
@@ -85,8 +109,8 @@ static int groupCount[4]={87,500,84,250};
     dispatch_async(dispatch_get_main_queue(),
                    ^{
                        CGRect rect = _parentView.frame;
-                       rect.origin.x = rect.origin.x + rect.size.width * 0.7;
-                       rect.origin.y = rect.origin.y + rect.size.height /  2;
+                       rect.origin.x = rect.origin.x + rect.size.width * 0.68;
+                       rect.origin.y = rect.origin.y + rect.size.height* 0.7;
                        rect.size.height = 90;
                        rect.size.width *= 0.3;
                        rect.size.width -= 5;
@@ -96,11 +120,22 @@ static int groupCount[4]={87,500,84,250};
                        label.textColor = [UIColor blackColor];
                        label.numberOfLines = 0;
                        label.lineBreakMode = NSLineBreakByWordWrapping;
-                       label.font = [UIFont boldSystemFontOfSize:32.0];
+                       label.font = [UIFont systemFontOfSize:32.0];
                        label.text = @"";
                        [_parentView addSubview:label];
                        [_parentView bringSubviewToFront:label];
                        _distanceLabel = label;
+                       rect = _parentView.frame;
+                       rect.origin.x = rect.origin.x + rect.size.width * 0.68;
+                       rect.origin.y = rect.origin.y + rect.size.height* 0.52;
+                       rect.size.height = 90*2;
+                       rect.size.width = (rect.size.height * 420)/340.0;
+                       UIImageView *happySad = [[UIImageView alloc]initWithFrame:rect];
+                       happySad.layer.borderColor = [UIColor brownColor].CGColor;
+                       happySad.layer.borderWidth = 5;
+                       _happySadImage = happySad;
+                       [_parentView addSubview:_happySadImage];
+                       [_parentView bringSubviewToFront:_happySadImage];
                    });
 }
 
@@ -205,7 +240,9 @@ static int groupCount[4]={87,500,84,250};
         _bestGuess = _distance;
     }
     [self hideViews];
-    [self bringViewsToFront];
+    [self loadHappySadImage:_distance];
+
+    [self bringViewsToFront:NO];
     if (_attempts > 4 || _distance < 1)
     {
         _totDistance += _bestGuess;
@@ -247,6 +284,8 @@ static int groupCount[4]={87,500,84,250};
 
                        });
    }
+   if (pPoints)
+       free (pPoints);
  }
 
 - (void) displayGameTimer:(NSTimer *)timer
@@ -254,12 +293,16 @@ static int groupCount[4]={87,500,84,250};
     int timeRemaining = _endTime - [NSDate timeIntervalSinceReferenceDate];
     if (timeRemaining > 0)
     {
-        _timerLabel.text = [NSString stringWithFormat:@"Seconds Remaining\n%i",timeRemaining];
-        [self bringViewsToFront];
+        int minutes = timeRemaining / 60;
+        int seconds = timeRemaining % 60;
+        _timerLabel.text = [NSString stringWithFormat:@"%i:%.2i",minutes,seconds];
+        [self bringViewsToFront:YES];
      }
     else
     {
         [timer invalidate];
+        [_hourglassImage stopAnimating];
+
         _wantViews = NO;
         _gameTimer = nil;
         [self hideViews];
@@ -278,22 +321,70 @@ static int groupCount[4]={87,500,84,250};
                       withTitle:[NSString stringWithFormat:@"Done\nItems Completed:%i\nScore:%i",_itemsCompleted,_totDistance+(_totalItems - _itemsCompleted)*_maxDistance]];
     }
 }
--(void) bringViewsToFront
+- (void) loadHappySadImage:(int) distance
+{
+    static int lasti = 0;
+    static int lastd = 0;
+    
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+
+    if (distance < 0)
+        _happySadImage.image = nil;
+    else{
+        int idist = 8;
+        if (distance > 1)
+        {
+            idist = distance / 50 + 1;
+            idist = 8 - idist;
+            if (idist == lasti)
+            {
+                if (lastd < distance)
+                    idist--;
+                else
+                    idist++;
+            }
+            idist = max (1,min (7,idist));
+            
+        }
+        NSString *file = [NSBundle.mainBundle pathForResource:[NSString stringWithFormat:@"happy%i",idist]
+                                                       ofType:@"png"];
+        _happySadImage.image = [UIImage imageWithContentsOfFile:file];
+        lasti = idist;
+        lastd = distance;
+    }
+                   });
+}
+-(void) bringViewsToFront:(BOOL)fromTimer
 {
     if (!_wantViews)
         return;
     dispatch_async(dispatch_get_main_queue(),
                    ^{
-                       if (_distance >= 0)
-                           _distanceLabel.text = [NSString stringWithFormat:@"%.0f miles",_distance];
-                       else
-                           _distanceLabel.text = @"";
+                       if (!fromTimer)
+                       {
+                           if (_distance > 0)
+                           {
+                               _distanceLabel.text = [NSString stringWithFormat:@"You missed by\n%.0f miles",_distance];
+                           }
+                           else if (_distance == 0)
+                           {
+                               _distanceLabel.text = @"YOU GOT IT!";
+                           }
+                           else
+                           {
+                               _distanceLabel.text = @"";
+                           }
+                       }
                        [_headerLabel setHidden:NO];
                        [_distanceLabel setHidden:NO];
                        [_timerLabel setHidden:NO];
+                       [_hourglassImage setHidden:NO];
                        [_parentView bringSubviewToFront:_headerLabel];
                        [_parentView bringSubviewToFront:_distanceLabel];
                        [_parentView bringSubviewToFront:_timerLabel];
+                       [_parentView bringSubviewToFront:_hourglassImage];
+                       [_parentView bringSubviewToFront:_happySadImage];
                    });
 
 }
@@ -304,6 +395,7 @@ static int groupCount[4]={87,500,84,250};
                        [_headerLabel setHidden:YES];
                        [_distanceLabel setHidden:YES];
                        [_timerLabel setHidden:YES];
+                       //[_hourglassImage setHidden:YES];
                    });
 
 }
@@ -317,7 +409,7 @@ static int groupCount[4]={87,500,84,250};
 {
     CGContextSetLineWidth(context, 2*UIScreen.mainScreen.scale);
     
-    if (nLoops > 1)
+    if (nLoops < 0)
     {
         int ip = 0;
         int ii;
@@ -385,8 +477,8 @@ static int groupCount[4]={87,500,84,250};
             _areaType = @"PARKS";
             break;
         case 3:
-            fileName = @"Lakes";
-            _areaType = @"LAKES";
+            fileName = @"Top200Lakes";
+            _areaType = @"WATERAREA";
             break;
     }
     NSString * file = [NSBundle.mainBundle pathForResource:fileName
@@ -401,8 +493,16 @@ static int groupCount[4]={87,500,84,250};
             inc = 1;
         NSString *item = fileItems[index];
         NSArray <NSString*> *txt = [item componentsSeparatedByString:@"\t"];
-        ref = (int)txt[0+inc].integerValue;
-        _itemDescription = txt[1+inc];
+        if (group == 3)
+        {
+            ref = (int)txt[1].integerValue;
+            _itemDescription = txt[0];
+        }
+        else
+        {
+            ref = (int)txt[0+inc].integerValue;
+            _itemDescription = txt[1+inc];
+        }
     }
     return ref;
 }
@@ -434,7 +534,7 @@ static int groupCount[4]={87,500,84,250};
         return nil;
     _itemType = _groupNames[_group];
     int iChoice = 0;
-    while (iChoice < _numPerGroup)
+    while (iChoice < _numChoicesPerItem)
     {
         int refno = [self refnoInGroup:_group
                                  index:arc4random_uniform(groupCount[_group])];
@@ -490,11 +590,13 @@ static int groupCount[4]={87,500,84,250};
     _refno = (int)crefno.integerValue;
     _attempts = 1;
     _distance = -1;
+    [self loadHappySadImage:_distance];
+
     _bestGuess = 500;
     _wantViews = YES;
-    _headerLabel.text = [NSString stringWithFormat:@"Locate %@:%@",type,name];
+    _headerLabel.text = [NSString stringWithFormat:@"Locate %@\n%@",type,name];
     _distanceLabel.text = @"Start";
-    [self bringViewsToFront];
+    [self bringViewsToFront:NO];
     if (!_gameTimer)
     {
         _totDistance = 0;
@@ -503,7 +605,8 @@ static int groupCount[4]={87,500,84,250};
                            _itemsCompleted = 0;
                            
                            _endTime = [NSDate timeIntervalSinceReferenceDate] + _gameDuration;
-                           
+                           _hourglassImage.animationDuration = _gameDuration;
+                           [_hourglassImage startAnimating];
                            _gameTimer = [NSTimer scheduledTimerWithTimeInterval:1
                                                                          target:self
                                                                        selector:@selector(displayGameTimer:)

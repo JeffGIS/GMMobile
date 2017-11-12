@@ -3269,7 +3269,7 @@ haveVV:
                            }
                            
                            if (ConfigurationControl.sharedInstance.mng)
-                               [ConfigurationControl.sharedInstance.mng bringViewsToFront];
+                               [ConfigurationControl.sharedInstance.mng bringViewsToFront:NO];
                        }
                        
                        if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||

@@ -29,6 +29,8 @@
 @property UILabel * headerLabel;
 @property UILabel * distanceLabel;
 @property UILabel * timerLabel;
+@property UIImageView * hourglassImage;
+@property UIImageView * happySadImage;
 @property double distance;
 @property int totDistance;
 @property int bestGuess;
@@ -39,7 +41,7 @@
 @property NSString * itemType;
 @property int itemCount;
 @property NSString * itemDescription;
-@property int numGroups, numPerGroup;
+@property int numGroups, numPerGroup, numChoicesPerItem;
 @property NSMutableArray *usedChoices;
 @property NSArray * groupNames;
 @property NSArray * groupName;
@@ -52,6 +54,6 @@
                  llCorners:(CORNERPOINTS *)latlonCornerPoints
                   LLBounds:(MNMXCORD *)platlonBounds
                 viewBounds:(MNMXCORD *)pvbounds;
--(void) bringViewsToFront;
+-(void) bringViewsToFront:(BOOL)fromTimer;
 
 @end

@@ -81,13 +81,13 @@
             
             if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame)
             {
+                _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_MinnesotaPath
+                                                                                      error:nil].fileSize;
                 attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS MINNESOTA",_MinnesotaPath];
                 st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             }
             
         }
-        _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_path
-                                                                              error:nil].fileSize;
         rtn = TRUE;
     }
     return rtn;
