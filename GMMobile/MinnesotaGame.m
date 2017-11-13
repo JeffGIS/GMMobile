@@ -11,7 +11,7 @@
 
 @implementation MinnesotaGame
 
-static int groupCount[4]={87,500,84,200};
+static int groupCount[4]={87,500,84,193};
 
 - (id)init
 {
@@ -19,9 +19,9 @@ static int groupCount[4]={87,500,84,200};
     
     if (self)
     {
-        self.delayBetweenItems = 1.5;
+        self.delayBetweenItems = 2.0;
         self.maxDistance = 450;
-        self.numPerGroup = 4;
+        self.numPerGroup = 5;
         self.numChoicesPerItem = 4;
         self.numGroups = 4;
         self.totalItems = self.numPerGroup * self.numGroups;
@@ -363,11 +363,11 @@ static int groupCount[4]={87,500,84,200};
                    ^{
                        if (!fromTimer)
                        {
-                           if (_distance > 0)
+                           if (_distance > 1)
                            {
                                _distanceLabel.text = [NSString stringWithFormat:@"You missed by\n%.0f miles",_distance];
                            }
-                           else if (_distance == 0)
+                           else if (_distance >= 0)
                            {
                                _distanceLabel.text = @"YOU GOT IT!";
                            }
@@ -607,6 +607,7 @@ static int groupCount[4]={87,500,84,200};
                            _endTime = [NSDate timeIntervalSinceReferenceDate] + _gameDuration;
                            _hourglassImage.animationDuration = _gameDuration;
                            [_hourglassImage startAnimating];
+                           [self displayGameTimer:nil];
                            _gameTimer = [NSTimer scheduledTimerWithTimeInterval:1
                                                                          target:self
                                                                        selector:@selector(displayGameTimer:)
