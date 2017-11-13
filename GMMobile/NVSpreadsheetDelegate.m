@@ -65,8 +65,7 @@
 
 - (NSString *)headerTextForRow:(NSUInteger)row
 {
-    PropertyList *proplist = _propList;
-    NSArray *list = _fieldList;//[PropertyList availablePropertyFields];
+    NSArray *list = _fieldList;
     
     if (row < list.count)
     {
@@ -317,6 +316,16 @@
           toList:(NSString *)listName
 {
     
+}
+
+- (void)setCurrentFieldList:(NSString *)fieldList
+{
+    [FieldList setCurrentFieldList:fieldList];
+}
+
+- (void)setCurrentPropList:(NSString *)propList
+{
+    [PropertyList setCurrentPropertyList:propList];
 }
 
 @end
