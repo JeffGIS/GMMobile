@@ -6,8 +6,6 @@
 #import "CCodeLibrary/CCodeLibrary.h"
 #import <MapKit/MapKit.h>
 
-#define METERS_PER_MILE 1609.344
-
 @interface Destination : NSObject
 
 @property NSInteger frequency, destinationID, groupID, timeDepart, timeReturn;

@@ -238,8 +238,8 @@ NextPass:
     {
         if ([CRAPI.sharedInstance.crimeCompare isEqualToString:@"Month With Yearly Compare"])
         {
-            NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:CRAPI.sharedInstance.fromDate
-                                                                           toTime:CRAPI.sharedInstance.toDate];
+            NSArray<NSNumber*> *times = [NVDateRange getArrayOfMonthsSpanningTime:(int)CRAPI.sharedInstance.fromDate
+                                                                           toTime:(int)CRAPI.sharedInstance.toDate];
             _saveFromDate = (int)CRAPI.sharedInstance.fromDate;
             CRAPI.sharedInstance.fromDate = times[0].integerValue;
             hs = [HotSpot initWithWidth:MNMXCORDWidth(pvbounds)

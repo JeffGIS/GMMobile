@@ -9,14 +9,17 @@
 #import "CCodeLibrary/NVPopoverTableView.h"
 #import "CCodeLibrary/NVPopoverSlider.h"
 
-@interface FieldOptionsViewController () <NVPopoverSliderDelegate,NVPopoverTableViewDelegate>
+@interface FieldOptionsViewController () <NVPopoverSliderDelegate,NVPopoverTableViewDelegate,UITextFieldDelegate>
 
-@property (nonatomic) CGFloat rowHeight;
+@property CGFloat rowHeight;
 @property (nonatomic) UIImage *uncheckedBox, *checkedBox;
 @property (nonatomic) UIFont *font, *headerFont;
 @property (nonatomic) NSMutableArray *fieldRecords;
 @property (nonatomic, copy) NSArray *fieldlist;
 @property PropFieldType lastSelectedType;
+@property (nonatomic) UITextField *titleTextField;
+@property (nonatomic) UISegmentedControl *options;
+@property (nonatomic) UIButton *trash, *plus, *list;
 
 @end
 
@@ -55,6 +58,74 @@
     
     _fieldlist = [FieldList getFieldListRecords:YES];
     
+    CGFloat imageInset = (_rowHeight / 8.0);
+    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(imageInset, imageInset, imageInset, imageInset);
+    
+    _trash = [UIButton buttonWithType:UIButtonTypeCustom];
+    _trash.translatesAutoresizingMaskIntoConstraints = NO;
+    _trash.imageEdgeInsets = edgeInsets;
+    
+    [_trash setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteTrashCan"
+                                                                                    ofType:@"png"]]
+            forState:UIControlStateNormal];
+    
+    [_trash addTarget:self
+               action:@selector(trashTapped:)
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    _plus = [UIButton buttonWithType:UIButtonTypeCustom];
+    _plus.translatesAutoresizingMaskIntoConstraints = NO;
+    _plus.imageEdgeInsets = edgeInsets;
+    
+    [_plus setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whitePlus"
+                                                                                   ofType:@"png"]]
+           forState:UIControlStateNormal];
+    
+    [_plus addTarget:self
+              action:@selector(plusTapped:)
+    forControlEvents:UIControlEventTouchUpInside];
+    
+    _list = [UIButton buttonWithType:UIButtonTypeCustom];
+    _list.translatesAutoresizingMaskIntoConstraints = NO;
+    _list.imageEdgeInsets = edgeInsets;
+    
+    [_list setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteList"
+                                                                                   ofType:@"png"]]
+           forState:UIControlStateNormal];
+    
+    [_list addTarget:self
+              action:@selector(listTapped:)
+    forControlEvents:UIControlEventTouchUpInside];
+    
+    _titleTextField = UITextField.new;
+    _titleTextField.translatesAutoresizingMaskIntoConstraints = NO;
+    _titleTextField.delegate = self;
+    _titleTextField.textAlignment = NSTextAlignmentCenter;
+    _titleTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    _titleTextField.textColor = UIColor.whiteColor;
+    _titleTextField.adjustsFontSizeToFitWidth = YES;
+    _titleTextField.tintColor = UIColor.lightGrayColor;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _titleTextField.font = [UIFont boldSystemFontOfSize:20];
+    
+    else
+        _titleTextField.font = [UIFont boldSystemFontOfSize:30];
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+        _options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Sel"]];
+    
+    else
+        _options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Selected"]];
+    
+    _options.translatesAutoresizingMaskIntoConstraints = NO;
+    _options.tintColor = UIColor.whiteColor;
+    _options.selectedSegmentIndex = 0;
+    
+    [_options addTarget:self
+                 action:@selector(optionsTapped:)
+       forControlEvents:UIControlEventValueChanged];
+    
     [self setupTableView];
 }
 
@@ -82,141 +153,136 @@
 - (UIView *)tableView:(UITableView *)tableView
 viewForHeaderInSection:(NSInteger)section
 {
-    UILabel *headerLabel = UILabel.new;
-    headerLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    headerLabel.font = _headerFont;
-    headerLabel.textColor = UIColor.whiteColor;
-    headerLabel.textAlignment = NSTextAlignmentCenter;
-    
     UIView *headerView = [[UIView alloc] initWithFrame:
                           CGRectMake(0.0, 0.0, tableView.frame.size.width, _rowHeight)];
     
-    [headerView addSubview:headerLabel];
-    [headerLabel constrainToView:headerView leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     headerView.backgroundColor = UIColor.blackColor;
     
-    CGFloat imageInset = (_rowHeight / 8.0);
-    UIEdgeInsets edgeInsets = UIEdgeInsetsMake(imageInset, imageInset, imageInset, imageInset);
-    
-    UIButton *trash = [UIButton buttonWithType:UIButtonTypeCustom];
-    trash.translatesAutoresizingMaskIntoConstraints = NO;
-    trash.imageEdgeInsets = edgeInsets;
-    
-    [trash setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteTrashCan"
-                                                                                   ofType:@"png"]]
-           forState:UIControlStateNormal];
-    
-    [trash addTarget:self
-              action:@selector(trashTapped:)
-    forControlEvents:UIControlEventTouchUpInside];
-    
-    [headerView addSubview:trash];
-    [trash constrainLeadingToAnchor:headerView.leadingAnchor];
-    [trash constrainTopToAnchor:headerView.topAnchor];
-    [trash constrainBottomToAnchor:headerView.bottomAnchor];
-    [trash constrainWidthToConstant:_rowHeight];
-    
-    UIButton *plus = [UIButton buttonWithType:UIButtonTypeCustom];
-    plus.translatesAutoresizingMaskIntoConstraints = NO;
-    plus.imageEdgeInsets = edgeInsets;
-    
-    [plus setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whitePlus"
-                                                                                  ofType:@"png"]]
-          forState:UIControlStateNormal];
-    
-    [plus addTarget:self
-             action:@selector(plusTapped:)
-   forControlEvents:UIControlEventTouchUpInside];
-    
-    [headerView addSubview:plus];
-    [plus constrainTrailingToAnchor:headerView.trailingAnchor];
-    [plus constrainTopToAnchor:headerView.topAnchor];
-    [plus constrainBottomToAnchor:headerView.bottomAnchor];
-    [plus constrainWidthToConstant:_rowHeight];
-    
-    UIButton *list = [UIButton buttonWithType:UIButtonTypeCustom];
-    list.translatesAutoresizingMaskIntoConstraints = NO;
-    list.imageEdgeInsets = edgeInsets;
-    
-    [list setImage:[UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"whiteList"
-                                                                                  ofType:@"png"]]
-          forState:UIControlStateNormal];
-    
-    [list addTarget:self
-             action:@selector(listTapped:)
-   forControlEvents:UIControlEventTouchUpInside];
-    
-    [headerView addSubview:list];
-    [list constrainTrailingToAnchor:plus.leadingAnchor];
-    [list constrainTopToAnchor:headerView.topAnchor];
-    [list constrainBottomToAnchor:headerView.bottomAnchor];
-    [list constrainWidthToConstant:_rowHeight];
-    
-    UISegmentedControl *options = nil;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    if (![headerView.subviews containsObject:_trash])
     {
-        options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Sel"]];
-        headerLabel.text = @"Fields";
+        [headerView addSubview:_trash];
+        [_trash constrainLeadingToAnchor:headerView.leadingAnchor];
+        [_trash constrainTopToAnchor:headerView.topAnchor];
+        [_trash constrainBottomToAnchor:headerView.bottomAnchor];
+        [_trash constrainWidthToConstant:_rowHeight];
     }
     
-    else
+    if (![headerView.subviews containsObject:_plus])
     {
-        options = [[UISegmentedControl alloc] initWithItems:@[@"All", @"Selected"]];
-        headerLabel.text = [FieldList getCurrentFieldListName];
+        [headerView addSubview:_plus];
+        [_plus constrainTrailingToAnchor:headerView.trailingAnchor];
+        [_plus constrainTopToAnchor:headerView.topAnchor];
+        [_plus constrainBottomToAnchor:headerView.bottomAnchor];
+        [_plus constrainWidthToConstant:_rowHeight];
     }
     
-    options.translatesAutoresizingMaskIntoConstraints = NO;
-    options.tintColor = UIColor.whiteColor;
-    options.selectedSegmentIndex = 0;
+    if (![headerView.subviews containsObject:_list])
+    {
+        [headerView addSubview:_list];
+        [_list constrainTrailingToAnchor:_plus.leadingAnchor];
+        [_list constrainTopToAnchor:headerView.topAnchor];
+        [_list constrainBottomToAnchor:headerView.bottomAnchor];
+        [_list constrainWidthToConstant:_rowHeight];
+    }
     
-    [options addTarget:self
-                action:@selector(optionsTapped:)
-      forControlEvents:UIControlEventValueChanged];
+    if (![headerView.subviews containsObject:_options])
+    {
+        [headerView addSubview:_options];
+        [_options constrainLeadingToAnchor:_trash.trailingAnchor];
+        [_options constrainCenterYToAnchor:headerView.centerYAnchor];
+        [_options constrainWidthToConstant:(_rowHeight * 3.0)];
+        [_options constrainHeightToConstant:(_rowHeight * 0.6)];
+    }
     
-    [headerView addSubview:options];
-    [options constrainLeadingToAnchor:trash.trailingAnchor];
-    [options constrainCenterYToAnchor:headerView.centerYAnchor];
+    if (![headerView.subviews containsObject:_titleTextField])
+    {
+        [headerView addSubview:_titleTextField];
+        [_titleTextField constrainLeadingToAnchor:_options.trailingAnchor];
+        [_titleTextField constrainTrailingToAnchor:_list.leadingAnchor];
+        [_titleTextField constrainTopToAnchor:headerView.topAnchor];
+        [_titleTextField constrainBottomToAnchor:headerView.bottomAnchor];
+    }
+    
+    _titleTextField.text = FieldList.getCurrentFieldListName;
     
     return headerView;
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return NO;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (![textField.text isEqualToString:FieldList.getCurrentFieldListName])
+        [FieldList renameCurrentFieldList:textField.text];
+    
+    [_tableView reloadData];
+}
+
 - (void)trashTapped:(UIButton *)button
 {
+    NSString *title = [NSString stringWithFormat:@"Are you sure you want to delete %@?",
+                       FieldList.getCurrentFieldListName];
     
+    NVAlertView *alert = [NVAlertView showLargeAlertViewinView:self.view
+                                                      delegate:self
+                                                         title:title
+                                               buttonTextArray:@[@"YES", @"NO"]
+                                              destructiveIndex:1];
+    
+    alert.identifier = @"FieldListDeletePrompt";
+}
+
+- (void)alertView:(NVAlertView *)alertView
+didTapButtonAtIndex:(NSInteger)buttonIndex
+{
+    if ([alertView.identifier isEqualToString:@"FieldListDeletePrompt"])
+    {
+        if (buttonIndex == 0)
+        {
+            [FieldList deleteCurrentFieldList];
+            _fieldlist = [FieldList getFieldListRecords:YES];
+            [_tableView reloadData];
+        }
+    }
+    
+    [alertView hideLargeAlertView:YES];
 }
 
 - (void)plusTapped:(UIButton *)button
 {
-    
+    [FieldList createNewFieldList];
+    _fieldlist = [FieldList getFieldListRecords:YES];
+    [_tableView reloadData];
 }
 
 - (void)listTapped:(UIButton *)button
 {
-    NSArray * fieldLists = [FieldList getFieldLists];
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
                                              title:@"Field Selection Lists"
-                                         textArray:fieldLists
+                                         textArray:FieldList.getFieldLists
                                      includeCancel:YES];
-    return;
-
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    [popoverTableView hide:YES];
+    [FieldList setCurrentFieldList:text];
+    _fieldlist = [FieldList getFieldListRecords:YES];
+    [_tableView reloadData];
     
+    [popoverTableView hide:YES];
 }
 
 - (void)popoverTableViewDidCancel:(NVPopoverTableView *)popoverTableView
 {
     [popoverTableView hide:YES];
 }
-
-
 
 - (void)optionsTapped:(UIButton *)button
 {

@@ -1439,7 +1439,7 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
         double percentOfCircle = sqlite3_column_double(statement, i++);
         if ([areaType isEqualToString:@"PARCEL"])
         {
-            NSString * PID = [PropertyData getPIDforPolyID:areaID.integerValue];
+            NSString *PID = [PropertyData getPIDforPolyID:(int)areaID.integerValue];
             areaID = PID;
         }
         NSString * line = [NSString stringWithFormat:@"%@:%@ %i %f %f",areaType,areaID,iDist,sqrMetersInCircle,percentOfCircle];

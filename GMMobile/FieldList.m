@@ -48,7 +48,7 @@ NSString * GetFieldListDirectory (void)
     return array;
 }
 
-+ (void) createNewFieldList
++ (void)createNewFieldList
 {
     NSString *baseName = @"FieldList";
     
@@ -65,7 +65,6 @@ NSString * GetFieldListDirectory (void)
     
     [UserDefaults.defaults saveString:newName
                                forKey:@"CurrentFieldList"];
-    
 }
 
 + (NSString*) getCurrentFieldListName
@@ -96,19 +95,21 @@ NSString * GetFieldListDirectory (void)
     return TRUE;
 }
 
-+ (BOOL) deleteCurrentFieldList
++ (BOOL)deleteCurrentFieldList
 {
-    
-    FieldList *fl = [[FieldList alloc]init];
+    FieldList *fl = FieldList.new;
     NSString *currentFile = fl.path;
     NSError *error = nil;
     [fl close:YES];
+    
     if (![NSFileManager.defaultManager removeItemAtPath:currentFile error:&error])
     {
         NSLog(@"%@ file removal error", currentFile);
         return FALSE;
     }
+    
     NSArray *lists = [FieldList getFieldLists];
+    
     if (lists.count)
         [UserDefaults.defaults saveString:lists[0]
                                    forKey:@"CurrentFieldList"];
