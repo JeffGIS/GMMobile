@@ -955,7 +955,7 @@
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
-        if (_legendsAreOffMap)
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet && _legendsAreOffMap)
         {
             [self themeLegendWasDraggedOffLeftSide];
             _legendsAreOffMap = YES;
@@ -1166,7 +1166,8 @@
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
-        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
+        ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         NSMutableArray *legends = ConfigurationControl.sharedInstance.legendList;
         BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
@@ -1196,8 +1197,7 @@
                         legendsAreAlreadyDrawn = YES;
                 }
                 
-                if (!legendsAreAlreadyDrawn &&
-                    ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+                if (!legendsAreAlreadyDrawn)
                 {
                     [self themeLegendWasDraggedOffRightSide];
                     return;
@@ -3042,7 +3042,6 @@ haveVV:
 
 - (void)startVectorView:(NSTimer *)timer
 {
-    
     if (CRAPI.sharedInstance.becameActive &&
         !CRAPI.sharedInstance.inDataUpdate &&
         ![UserDefaults.defaults boolForKey:@"NoAutoUpdate"] &&
@@ -3333,8 +3332,8 @@ haveVV:
 
 - (void)updateLegendPositions
 {
-    if (_legendMinimized)
-        return;
+    /*if (_legendMinimized)
+        return;*/
     
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
@@ -3398,8 +3397,8 @@ haveVV:
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
         
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
-            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet /*||
+            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp*/)
         {
             yFactor += _mapToolbar.frame.size.height;
         }
@@ -3412,8 +3411,10 @@ haveVV:
         
         for (ThemeLegend *tls in legends)
         {
-            if (tls.drawOnMap || ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
+            if (tls.drawOnMap || ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet || ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+            {
                 legendExistsToDraw = YES;
+            }
         }
         
         if (!legendExistsToDraw)
@@ -3435,8 +3436,7 @@ haveVV:
                         legendsAreAlreadyDrawn = YES;
                 }
                 
-                if (!legendsAreAlreadyDrawn &&
-                    ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes)
+                if (!legendsAreAlreadyDrawn)
                 {
                     [self themeLegendWasDraggedOffRightSide];
                     return;
@@ -3553,8 +3553,8 @@ haveVV:
                                                                        atOrigin:mapOrigin
                                                                     hideButtons:NO];
                 
-                if (CRAPI.sharedInstance.currentApp != HCConfigCrimes)
-                    [tlmo disableSelect];
+                /*if (CRAPI.sharedInstance.currentApp != HCConfigCrimes)
+                    [tlmo disableSelect];*/
                 
                 if (tlmo)
                 {
@@ -3577,7 +3577,7 @@ haveVV:
 
 - (void)themeLegendWasDraggedOffRightSide
 {
-    if (!_legendsAreOffMap && ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
+    if (!_legendsAreOffMap)
     {
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         _legendScrollView.alpha = 1.0;
@@ -3628,7 +3628,7 @@ haveVV:
 {
     return _legendsAreOffMap;
 }
-
+/*
 - (void)themeLegendDidWantMinimize
 {
     _legendMinimized = YES;
@@ -3671,7 +3671,7 @@ haveVV:
     _legendMinimized = NO;
     [self updateLegendPositions];
 }
-
+*/
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend
 {
