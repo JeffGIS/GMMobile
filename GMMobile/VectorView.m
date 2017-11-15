@@ -163,9 +163,10 @@ void checkLLBounds (MNMXCORD * bounds)
 {
     if (!_displayID)
         return YES;
-    BOOL rtn = (CRAPI.sharedInstance.keepProcessing == _displayID);
-    checkLLBounds(&_latlonBounds);
-    return rtn;
+    if (CRAPI.sharedInstance.keepProcessing == _displayID)
+        return TRUE;
+    //checkLLBounds(&_latlonBounds);
+    return FALSE;
 }
 
 - (void) vectorViewToPDF
@@ -304,9 +305,8 @@ void checkLLBounds (MNMXCORD * bounds)
                 }
             }
             
-            else if ([self keepGoing])
+            else if ([self keepGoing] && [self doNVMetroDisplay:dc])
             {
-                [self doNVMetroDisplay:dc];
             }
             
             else
