@@ -707,7 +707,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     switch (CRAPI.sharedInstance.project)
     {
         case PROJECT_METROGIS:
-            query = [NSString stringWithFormat:@"SELECT COUNT(*) FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
+            query = [NSString stringWithFormat:@"SELECT LANDUSEDB.LANDUSE.id FROM LANDUSEDB.LANDUSE,LANDUSEDB.LANDUSE_index WHERE LANDUSEDB.LANDUSE.id=LANDUSEDB.LANDUSE_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             _totRecords = [self getQueryCount:query];
             [CRAPI.sharedInstance updateProgress:-1
@@ -916,8 +916,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
 
     SQLOK(__FILE__,__LINE__,SQLitePrepare(_database, query.UTF8String, -1, &statement, NULL), _database);
     
-    if (sqlite3_step(statement) == SQLITE_ROW)
-        count = sqlite3_column_int64(statement, 0);
+    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+        count++;
     
     SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), _database);
     CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
@@ -1214,7 +1214,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         [self createSortedValuesTable];
         if (isParcel)
         {
-            query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id FROM %@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             _totRecords = [self getQueryCount:query];
             
@@ -1261,7 +1261,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
         }
         else
         {
-            query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+            query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                      platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
             _totRecords = [self getQueryCount:query];
             query = [NSString stringWithFormat:@"SELECT %@.id,%@, LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,HHTOTAL,minX,maxX,minY,maxY FROM %@,%@_index,%@,COMPUTEDCENSUSFIELDS.ADDEDFIELDS  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@ AND COMPUTEDCENSUSFIELDS.ADDEDFIELDS.GEOG_UNIT = %@.%@",polyTable,field,polyTable,polyTable,dataTable,polyTable,polyTable,
@@ -1279,7 +1279,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
                                        numRanges:1];
             if (isParcel)
             {
-                query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 _totRecords = [self getQueryCount:query];
                 query = [NSString stringWithFormat:@"SELECT %@.id,ACRES_DEED,ACRES_POLY,PROPINFO.PIN,GENUSECODE,HOMESTEAD,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@ WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.PIN = %@.PID",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
@@ -1288,7 +1288,7 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             else
             {
                 
-                query = [NSString stringWithFormat:@"SELECT COUNT(%@.id) FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
+                query = [NSString stringWithFormat:@"SELECT %@.id FROM %@,%@_index  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f",polyTable,polyTable,polyTable,polyTable,polyTable,
                          platlonBounds->xmn, platlonBounds->xmx, platlonBounds->ymn, platlonBounds->ymx];
                 _totRecords = [self getQueryCount:query];
                 query = [NSString stringWithFormat:@"SELECT %@.id,LANDAREA,LANDAREA,WATERAREA,POPTOTAL,HUTOTAL,HHTOTAL,BasePointX,BasePointY,NumPoints,NumLoops,PolyPartLen,Points FROM %@,%@_index,%@  WHERE %@.id=%@_index.id AND maxX>=%f AND minX<=%f AND maxY>=%f AND minY<=%f AND %@.GEOG_UNIT = %@.%@",polyTable,polyTable,polyTable,dataTable,polyTable,polyTable,
@@ -1319,292 +1319,294 @@ NSString * formatValueText (long long ival,double factor,int ndecimals)
             }
         }
     }
-    CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
-    SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
-    _currentRec = 0;
-    Bool plOpened = FALSE;
-    PropertyList *pl = nil;
-    if (NVMetroSettings.sharedInstance.propertyListDisplayType == PLD_Areas)
+    if  ([self continueProcessing])
     {
-        pl = PropertyList.new;
-        plOpened = [pl open];
-    }
-    while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
-    {
-        if (!_currentRec)
-            CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
-        int i = 0;
-        MNMXCORD bounds;
-        long long ID = sqlite3_column_int64(statement,i++);
-        dc.refno = ID;
-        double dataValue = 0;
-        NSArray * tempArray = [field componentsSeparatedByString:@","];
-        for (int ival = 0;ival < tempArray.count;ival++)
+        CRAPI.sharedInstance.mapToolbar.showIndicator = YES;
+        SQLOK(__FILE__,__LINE__,SQLitePrepare(self.database, query.UTF8String, -1, &statement, 0), self.database);
+        _currentRec = 0;
+        Bool plOpened = FALSE;
+        PropertyList *pl = nil;
+        if (NVMetroSettings.sharedInstance.propertyListDisplayType == PLD_Areas)
         {
-            double v = 0;
-            LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
-            if (!strcmp (type,"CHAR(1)"))
+            pl = PropertyList.new;
+            plOpened = [pl open];
+        }
+        while ([self continueProcessing] && sqlite3_step(statement) == SQLITE_ROW)
+        {
+            if (!_currentRec)
+                CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
+            int i = 0;
+            MNMXCORD bounds;
+            long long ID = sqlite3_column_int64(statement,i++);
+            dc.refno = ID;
+            double dataValue = 0;
+            NSArray * tempArray = [field componentsSeparatedByString:@","];
+            for (int ival = 0;ival < tempArray.count;ival++)
             {
-                LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
-                if (atob (cval))
-                    v = 1;
+                double v = 0;
+                LPSTR type = (LPSTR)sqlite3_column_decltype(statement,i);
+                if (!strcmp (type,"CHAR(1)"))
+                {
+                    LPSTR cval = (LPSTR)sqlite3_column_text(statement,i++);
+                    if (atob (cval))
+                        v = 1;
+                }
+                else if (!strcmp (type,"INT"))
+                {
+                    v = sqlite3_column_int(statement,i++);
+                }
+                else
+                {
+                    v = sqlite3_column_double(statement,i++);
+                    valuesAreInteger = FALSE;
+                }
+                dataValue += v;
             }
-            else if (!strcmp (type,"INT"))
+            double landArea = sqlite3_column_double(statement,i++);
+            if (isParcel)
             {
-                v = sqlite3_column_int(statement,i++);
+                if (landArea < max (minDisplayAreaInAcres,MIN_PARCEL_ACRES))
+                    goto SkipRecord;
+                LPSTR pin = (LPSTR)sqlite3_column_text(statement,i++);
+                NSString * PIN = [NSString stringWithUTF8String:pin];
+                if (pl && ![pl parcelInPropertyList:PIN])
+                    goto SkipRecord;
+                genUseCode = sqlite3_column_int(statement,i++);
+                LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,i++);
+                if (field.length > 0 && NVMetroSettings.sharedInstance.overUnder)
+                {
+                    if (genUseCode != wantGenUseCode)
+                        goto SkipRecord;
+                    //if (*homeStead != wantHomeStead)
+                    //    goto SkipRecord;
+                }
+                if (![NVMetroSettings.sharedInstance wantUseCode:genUseCode])
+                    goto SkipRecord;
             }
             else
             {
-                v = sqlite3_column_double(statement,i++);
-                valuesAreInteger = FALSE;
+                waterArea = sqlite3_column_double(statement,i++);
+                totalPop = sqlite3_column_double(statement,i++);
+                totalHousingUnits = sqlite3_column_double(statement,i++);
+                totalHouseholds = sqlite3_column_double(statement,i++);
             }
-            dataValue += v;
-        }
-        double landArea = sqlite3_column_double(statement,i++);
-        if (isParcel)
-        {
-            if (landArea < max (minDisplayAreaInAcres,MIN_PARCEL_ACRES))
+            area = landArea;
+            if (!area)
                 goto SkipRecord;
-            LPSTR pin = (LPSTR)sqlite3_column_text(statement,i++);
-            NSString * PIN = [NSString stringWithUTF8String:pin];
-            if (pl && ![pl parcelInPropertyList:PIN])
+            if (!dataValue && NVMetroSettings.sharedInstance.skipZero)
                 goto SkipRecord;
-            genUseCode = sqlite3_column_int(statement,i++);
-            LPSTR homeStead = (LPSTR)sqlite3_column_text(statement,i++);
-            if (field.length > 0 && NVMetroSettings.sharedInstance.overUnder)
+            area *= areaFactor;
+            dataValue *= factor;
+            switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
             {
-                if (genUseCode != wantGenUseCode)
-                    goto SkipRecord;
-                //if (*homeStead != wantHomeStead)
-                //    goto SkipRecord;
+                case CPAdjustCount:
+                case CPAdjustRawCounts:
+                    break;
+                case CPAdjustCountPerAcre:
+                case CPAdjustCountPerSQMile:
+                    dataValue /= area;
+                    break;
+                case CPAdjustPctOfTotalPop:
+                    if (!totalPop)
+                        goto SkipRecord;
+                    dataValue /= totalPop;
+                    break;
+                case CPAdjustCountPerHousingUnit:
+                case CPAdjustPctOfTotalHousingUnits:
+                    if (!totalHousingUnits)
+                        goto SkipRecord;
+                    dataValue /= totalHousingUnits;
+                    break;
+                case CPAdjustCountPerHousehold:
+                case CPAdjustPctOfTotalHouseholds:
+                    if (!totalHouseholds)
+                        goto SkipRecord;
+                    dataValue /= totalHouseholds;
+                case CPAdjustThousandsOfDollars:
+                    break;
             }
-            if (![NVMetroSettings.sharedInstance wantUseCode:genUseCode])
-                goto SkipRecord;
-        }
-        else
-        {
-            waterArea = sqlite3_column_double(statement,i++);
-            totalPop = sqlite3_column_double(statement,i++);
-            totalHousingUnits = sqlite3_column_double(statement,i++);
-            totalHouseholds = sqlite3_column_double(statement,i++);
-        }
-        area = landArea;
-        if (!area)
-            goto SkipRecord;
-        if (!dataValue && NVMetroSettings.sharedInstance.skipZero)
-            goto SkipRecord;
-        area *= areaFactor;
-        dataValue *= factor;
-        switch (NVMetroSettings.sharedInstance.currentAdjustmentValue)
-        {
-            case CPAdjustCount:
-            case CPAdjustRawCounts:
-                break;
-            case CPAdjustCountPerAcre:
-            case CPAdjustCountPerSQMile:
-                dataValue /= area;
-                break;
-            case CPAdjustPctOfTotalPop:
-                if (!totalPop)
-                    goto SkipRecord;
-                dataValue /= totalPop;
-                break;
-            case CPAdjustCountPerHousingUnit:
-            case CPAdjustPctOfTotalHousingUnits:
-                if (!totalHousingUnits)
-                    goto SkipRecord;
-                dataValue /= totalHousingUnits;
-                break;
-            case CPAdjustCountPerHousehold:
-            case CPAdjustPctOfTotalHouseholds:
-                if (!totalHouseholds)
-                    goto SkipRecord;
-                dataValue /= totalHouseholds;
-            case CPAdjustThousandsOfDollars:
-                 break;
-        }
-        NVMetroSettings.sharedInstance.valueMultiplier = factor;
-        NVMetroSettings.sharedInstance.roundTo = nDecimals;
-
-        if (_pass == DataPass)
-        {
-            BOOL haveInPoint = TRUE;
-            DPOINT points[4];
-            bounds.xmn = sqlite3_column_double(statement,i++);
-            bounds.xmx = sqlite3_column_double(statement,i++);
-            bounds.ymn = sqlite3_column_double(statement,i++);
-            bounds.ymx = sqlite3_column_double(statement,i++);
+            NVMetroSettings.sharedInstance.valueMultiplier = factor;
+            NVMetroSettings.sharedInstance.roundTo = nDecimals;
             
-            
-            if (pia)
+            if (_pass == DataPass)
             {
-                haveInPoint = FALSE;
-                BoundsToPoints (&bounds, points,0);
-                for (int ip = 0;ip < 4; ip++)
+                BOOL haveInPoint = TRUE;
+                DPOINT points[4];
+                bounds.xmn = sqlite3_column_double(statement,i++);
+                bounds.xmx = sqlite3_column_double(statement,i++);
+                bounds.ymn = sqlite3_column_double(statement,i++);
+                bounds.ymx = sqlite3_column_double(statement,i++);
+                
+                
+                if (pia)
                 {
-                    if ([pia DPointInArea:&points[ip]] == 1)
+                    haveInPoint = FALSE;
+                    BoundsToPoints (&bounds, points,0);
+                    for (int ip = 0;ip < 4; ip++)
                     {
-                        haveInPoint = TRUE;
-                        break;
+                        if ([pia DPointInArea:&points[ip]] == 1)
+                        {
+                            haveInPoint = TRUE;
+                            break;
+                        }
                     }
                 }
+                if (!haveInPoint)
+                    goto SkipRecord;
+                else
+                {
+                    [self addToSortedValues:IDNINT64(dataValue) id:ID];
+                    minValue = min (minValue,dataValue);
+                    maxValue = max (maxValue,dataValue);
+                    numValues++;
+                }
             }
-            if (!haveInPoint)
-                goto SkipRecord;
+            
             else
             {
-                [self addToSortedValues:IDNINT64(dataValue) id:ID];
-                minValue = min (minValue,dataValue);
-                maxValue = max (maxValue,dataValue);
-                numValues++;
-            }
-        }
-        
-        else
-        {
-            BasePt.x = sqlite3_column_double(statement,i++);
-            BasePt.y = sqlite3_column_double(statement,i++);
-            numPoints = sqlite3_column_int(statement,i++);
-            numLoops = sqlite3_column_int(statement,i++);
-            int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
-            LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
-            LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
-            //keyval = sqlite3_column_int64(statement,6);
-            
-            if (numPoints < 0)
-            {
-                numPoints = -numPoints;
-                LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                BasePt.x = sqlite3_column_double(statement,i++);
+                BasePt.y = sqlite3_column_double(statement,i++);
+                numPoints = sqlite3_column_int(statement,i++);
+                numLoops = sqlite3_column_int(statement,i++);
+                int *polyPartLen = (int *)sqlite3_column_blob(statement,i++);
+                LPIPOINT offsetPoints = (LPIPOINT)sqlite3_column_blob(statement,i++);
+                LPDPOINT llpoints = malloc(abs(numPoints) * sizeof(DPOINT) + 4);
+                //keyval = sqlite3_column_int64(statement,6);
                 
-                for (int i = 0; i < numPoints; i++)
+                if (numPoints < 0)
                 {
-                    llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
-                    llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                    numPoints = -numPoints;
+                    LPSPOINT offsetPoints16 = (LPSPOINT)offsetPoints;
+                    
+                    for (int i = 0; i < numPoints; i++)
+                    {
+                        llpoints[i].x = (BasePt.x + offsetPoints16[i].x / COORDINATE_FACTOR);
+                        llpoints[i].y = (BasePt.y + offsetPoints16[i].y / COORDINATE_FACTOR);
+                        llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
+                    }
+                }
+                
+                else for (int i = 0; i < numPoints; i++)
+                {
+                    llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
+                    llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
                     llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
                 }
-            }
-            
-            else for (int i = 0; i < numPoints; i++)
-            {
-                llpoints[i].x = (BasePt.x + offsetPoints[i].x / COORDINATE_FACTOR);
-                llpoints[i].y = (BasePt.y + offsetPoints[i].y / COORDINATE_FACTOR);
-                llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
-            }
-            dc.iValue = IDNINT64(dataValue);
-            if ([themes containsColorByRefTheme])
-            {
-                [themes setDisplayCharacteristics:dc
-                                        displayID:_processingID
-                                     compareClass:nil];
-                [self fillUseCode:context
-                          nPoints:numPoints
-                           points:llpoints
-                        withColor:dc.fillColor.CGColor
-                        lineColor:nil
-                        lineWidth:0];
-            }
-            else if (!field.length)
-                [self drawUseCode:context
-                          nPoints:numPoints
-                           nLoops:numLoops
-                          partLen:polyPartLen
-                           points:llpoints
-                        withColor:UIColor.redColor.CGColor
-                         andWidth:3];
-            else if ([themes setDisplayCharacteristics:dc
-                                             displayID:_processingID
-                                          compareClass:nil] != DO_NOT_DISPLAY_ITEM)
-            {
-                float lineWidth = 0;
-                float alpha = 1;
-                UIColor *lineColor = nil;
-                switch (NVMetroSettings.sharedInstance.areaOutlineType)
+                dc.iValue = IDNINT64(dataValue);
+                if ([themes containsColorByRefTheme])
                 {
-                    case AreaOutlineNone:
-                    break;
-                    case AreaOutlineLight:
-                    lineWidth = 0.5;
-                    lineColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25];
-                    break;
-                    case AreaOutlineDark:
-                    lineWidth = 1;
-                    lineColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
-                    break;
+                    [themes setDisplayCharacteristics:dc
+                                            displayID:_processingID
+                                         compareClass:nil];
+                    [self fillUseCode:context
+                              nPoints:numPoints
+                               points:llpoints
+                            withColor:dc.fillColor.CGColor
+                            lineColor:nil
+                            lineWidth:0];
+                }
+                else if (!field.length)
+                    [self drawUseCode:context
+                              nPoints:numPoints
+                               nLoops:numLoops
+                              partLen:polyPartLen
+                               points:llpoints
+                            withColor:UIColor.redColor.CGColor
+                             andWidth:3];
+                else if ([themes setDisplayCharacteristics:dc
+                                                 displayID:_processingID
+                                              compareClass:nil] != DO_NOT_DISPLAY_ITEM)
+                {
+                    float lineWidth = 0;
+                    float alpha = 1;
+                    UIColor *lineColor = nil;
+                    switch (NVMetroSettings.sharedInstance.areaOutlineType)
+                    {
+                        case AreaOutlineNone:
+                            break;
+                        case AreaOutlineLight:
+                            lineWidth = 0.5;
+                            lineColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.25];
+                            break;
+                        case AreaOutlineDark:
+                            lineWidth = 1;
+                            lineColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1];
+                            break;
+                            
+                    }
+                    [self fillUseCode:context
+                              nPoints:numPoints
+                               points:llpoints
+                            withColor:dc.fillColor.CGColor
+                            lineColor:lineColor.CGColor
+                            lineWidth:lineWidth];
+                    if (NVMetroSettings.sharedInstance.currentTextOption.numTextFields < 0)
+                    {
+                        NSString * text = formatValueText (dc.iValue,factor,nDecimals);
+                        UIColor *textColor = UIColor.redColor;
+                        [NVTextDrawing drawText:text
+                                      inContext:context
+                                  withinPolygon:llpoints
+                                  withNumPoints:numPoints
+                                    andNumLoops:numLoops
+                                        loopLen:polyPartLen
+                                   withinBounds:pvbounds
+                                       fontSize:fontSize
+                                    minFontSize:minFontSize
+                                      textColor:textColor
+                                   processingID:_processingID];
+                    }
                     
                 }
-                [self fillUseCode:context
-                          nPoints:numPoints
-                           points:llpoints
-                        withColor:dc.fillColor.CGColor
-                        lineColor:lineColor.CGColor
-                        lineWidth:lineWidth];
-                if (NVMetroSettings.sharedInstance.currentTextOption.numTextFields < 0)
-                {
-                    NSString * text = formatValueText (dc.iValue,factor,nDecimals);
-                    UIColor *textColor = UIColor.redColor;
-                    [NVTextDrawing drawText:text
-                                  inContext:context
-                              withinPolygon:llpoints
-                              withNumPoints:numPoints
-                                andNumLoops:numLoops
-                                    loopLen:polyPartLen
-                               withinBounds:pvbounds
-                                   fontSize:fontSize
-                                minFontSize:minFontSize
-                                  textColor:textColor
-                               processingID:_processingID];
-                }
-
+                else
+                    ii=1;
+                free (llpoints);
             }
-            else
-                ii=1;
-            free (llpoints);
+        SkipRecord:
+            [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
+                                         current:(NSInteger)++_currentRec
+                                           range:_iPass
+                                       numRanges:_numPass];
+            
         }
-    SkipRecord:
-        [CRAPI.sharedInstance updateProgress:(NSInteger)_totRecords
-                                     current:(NSInteger)++_currentRec
-                                       range:_iPass
-                                   numRanges:_numPass];
+        if (pl)
+            [pl close:plOpened];
+        CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
         
-    }
-    if (pl)
-        [pl close:plOpened];
-    CRAPI.sharedInstance.mapToolbar.showIndicator = NO;
-    
-    SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
-    //svc = [self getCountOfSortedValues];
-    if (_pass == DataPass)
-    {
-        Theme * thm = themes.themeList[0];
-        int maxClasses = 10;
-        if (valuesAreInteger)
+        SQLOK(__FILE__,__LINE__,SQLiteFinalize(statement), self.database);
+        //svc = [self getCountOfSortedValues];
+        if (_pass == DataPass)
         {
-            maxClasses = min (maxClasses,maxValue - minValue + 1);
+            Theme * thm = themes.themeList[0];
+            int maxClasses = 10;
+            if (valuesAreInteger)
+            {
+                maxClasses = min (maxClasses,maxValue - minValue + 1);
+            }
+            long long maxValID = [self getClassBounds:numValues
+                                           maxClasses:maxClasses
+                                             minValue:minValue
+                                             maxValue:maxValue
+                                               factor:factor
+                                                theme:thm];
+            [themes setAppThemes:nil
+                    outputFactor:1];
+            thm = themes.themeList[0];
+            thm.numDecimals = nDecimals;
+            if (isParcel)
+                thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:@"PARCEL"];
+            else
+                thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
         }
-        long long maxValID = [self getClassBounds:numValues
-                  maxClasses:maxClasses
-                    minValue:minValue
-                    maxValue:maxValue
-                                           factor:factor
-                       theme:thm];
-        [themes setAppThemes:nil
-                outputFactor:1];
-        thm = themes.themeList[0];
-        thm.numDecimals = nDecimals;
-        if (isParcel)
-            thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:@"PARCEL"];
-        else
-            thm.maxValBounds = [self getBoundaryAreaBounds:maxValID ofType:type];
+        else if ([self continueProcessing])
+        {
+            [CRAPI.sharedInstance updateProgress:(int)_totRecords
+                                         current:(int)_totRecords
+                                           range:_iPass
+                                       numRanges:_numPass];
+        }
+        _iPass++;
     }
-    else if ([self continueProcessing])
-    {
-        [CRAPI.sharedInstance updateProgress:(int)_totRecords
-                                     current:(int)_totRecords
-                                       range:_iPass
-                                   numRanges:_numPass];
-    }
-    _iPass++;
-    
     [self close:opened];
 }
 
@@ -1698,7 +1700,7 @@ NextPass:
                             haveOutPoint++;
                     }
                 }
-
+                
                 llpoints[i] = TranDPOINTP(&llpoints[i], _pTranLLtoView);
             }
         }
@@ -1770,7 +1772,7 @@ NextPass:
     int numLoops;
     NSString * key = areaType;
     NSString * table = [NSString stringWithFormat:@"CENSUS%@POLY",key];
-
+    
     BOOL opened = [self open];
     
     CloseTRANS2P(&_pTranLLtoView);
