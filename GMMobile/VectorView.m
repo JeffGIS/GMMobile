@@ -16,6 +16,8 @@
 #import "CCodeLibrary/NVDateRange.h"
 #import "CCodeLibrary/SidewalkData.h"
 
+static int ii=0;
+
 @interface VectorView ()
 
 @property (nonatomic) LPBYTE bitmapData;
@@ -150,12 +152,21 @@
    }
 
 }
+void checkLLBounds (MNMXCORD * bounds)
+{
+   static BOOL stop = FALSE;
+   if (stop && bounds->ymn < 45 && bounds->ymx > 45)
+        ii=1;
+   return;
+}
 - (BOOL) keepGoing
 {
-    if (!self.displayID)
+    if (!_displayID)
         return YES;
-    BOOL rtn = CRAPI.sharedInstance.keepProcessing == self.displayID;
-    return rtn;
+    if (CRAPI.sharedInstance.keepProcessing == _displayID)
+        return TRUE;
+    //checkLLBounds(&_latlonBounds);
+    return FALSE;
 }
 
 - (void) vectorViewToPDF
@@ -166,9 +177,9 @@
     UIGraphicsBeginPDFPage();//WithInfo(bnds,nil);
     _vectorViewContext = UIGraphicsGetCurrentContext();
     int scale = 1;
+    _displayID = 0;
     [self processVectorView:bnds
-                      scale:scale
-                  displayID:0];
+                      scale:scale];
 }
 
 - (void)drawRect:(CGRect)rect
@@ -181,7 +192,7 @@
     
     if (CRAPI.sharedInstance.keepProcessing < 0)
         return;
-    if (self.displayID < 0)
+    if (_displayID < 0)
         return;
   
     int printFactor = 1;
@@ -210,19 +221,16 @@
     if (CRAPI.sharedInstance.keepProcessing > 0)
         CRAPI.sharedInstance.keepProcessing++;
     
-    self.displayID = CRAPI.sharedInstance.keepProcessing;
+    _displayID = CRAPI.sharedInstance.keepProcessing;
     
     CGRect bnds = self.bounds;
     [self processVectorView:bnds
-                      scale:scale
-                  displayID:CRAPI.sharedInstance.keepProcessing];
+                      scale:scale];
 }
 
 - (void) processVectorView:(CGRect) bounds
                      scale:(int) scale
-                 displayID:(int) displayID
 {
-    self.displayID = displayID;
     _viewBounds.xmn = (bounds.origin.x * scale);
     _viewBounds.xmx = ((bounds.origin.x + bounds.size.width) * scale);
     _viewBounds.ymx = ((bounds.origin.y + bounds.size.height) * scale);
@@ -270,7 +278,7 @@
                 if (ConfigurationControl.sharedInstance.currentApp == HCConfigSewers)
                 {
                     SewerData *sd = [[SewerData alloc] init];
-                    sd.processingID = CRAPI.sharedInstance.keepProcessing;
+                    sd.processingID = _displayID;
                     sd.zoom = _zoom;
                     
                     [sd displayPlats:_context
@@ -282,7 +290,7 @@
                 else if (ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
                 {
                     UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
-                    ud.processingID = CRAPI.sharedInstance.keepProcessing;
+                    ud.processingID = _displayID;
                     ud.zoom = _zoom;
                     if ([self keepGoing])
                     {
@@ -297,15 +305,14 @@
                 }
             }
             
-            else if ([self doNVMetroDisplay:dc])
+            else if ([self keepGoing] && [self doNVMetroDisplay:dc])
             {
-                
             }
             
             else
             {
                 Themes * themes = [[Themes alloc]init];
-                themes.displayID = CRAPI.sharedInstance.keepProcessing;
+                themes.displayID = _displayID;
                 
                 [themes setAppThemes:nil
                         outputFactor:1];
@@ -316,7 +323,7 @@
                         if (CRAPI.sharedInstance.selectBoundaryFromMapType)
                         {
                             BoundaryData *bd = [[BoundaryData alloc] init];
-                            bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                            bd.processingID = _displayID;
                             bd.zoom = _zoom;
                             
                             [bd display:_context
@@ -338,7 +345,7 @@
                         }
                         else
                         {
-                            ItemProcessingPassTypes passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
+                            ItemProcessingPassTypes passID = [themes themesNeedDataPass:_displayID];
                             while (passID < DonePass)
                             {
                                 if (passID == DataPass)
@@ -352,7 +359,7 @@
                                 {
                                     PropertyData *pd = [[PropertyData alloc] init];
                                     
-                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.processingID = _displayID;
                                     
                                     [pd displayParcels:_context
                                              llCorners:&_latlonCornerPoints
@@ -371,7 +378,7 @@
                                                                        andPass:passID])
                                 {
                                     PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.processingID = _displayID;
                                     pd.zoom = _zoom;
                                     
                                     if ([self keepGoing])
@@ -405,7 +412,7 @@
                                                                        andPass:passID])
                                 {
                                     PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.processingID = _displayID;
                                     pd.zoom = _zoom;
                                     
                                     if ([self keepGoing])
@@ -431,7 +438,7 @@
                                                                        andPass:passID])
                                 {
                                     SidewalkData *sdwkd = SidewalkData.new;
-                                    sdwkd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    sdwkd.processingID = _displayID;
                                     sdwkd.zoom = _zoom;
                                     
                                     if ([self keepGoing])
@@ -449,7 +456,7 @@
                                                                        andPass:passID])
                                 {
                                     PlanimetricData *pd = [[PlanimetricData alloc] init];
-                                    pd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pd.processingID = _displayID;
                                     pd.zoom = _zoom;
                                     
                                     if ([self keepGoing])
@@ -500,7 +507,7 @@
                                                                        andPass:passID])
                                 {
                                     SewerData *sd = [[SewerData alloc] init];
-                                    sd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    sd.processingID = _displayID;
                                     sd.zoom = _zoom;
                                     
                                     [sd displayStormLine:_context
@@ -525,7 +532,7 @@
                                     ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove)
                                 {
                                     UserLayerDisplay *ud = [[UserLayerDisplay alloc] init];
-                                    ud.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    ud.processingID = _displayID;
                                     ud.zoom = _zoom;
                                     ud.passID = passID;
                                     if ([self keepGoing])
@@ -544,7 +551,7 @@
                                 /* if ([self keepGoing])
                                  {
                                  BoundaryData *bd = [[BoundaryData alloc] init];
-                                 bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                 bd.processingID = _displayID;
                                  bd.zoom = _zoom;
                                  [bd displayLandUse:_context
                                  llCorners:&_latlonCornerPoints
@@ -555,7 +562,7 @@
                                  if ([self keepGoing])
                                  {
                                  BoundaryData *bd = [[BoundaryData alloc] init];
-                                 bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                 bd.processingID = _displayID;
                                  bd.zoom = _zoom;
                                  [bd displayCensusAreas:_context
                                  type:@"TRACT"
@@ -597,7 +604,7 @@
                                     [ConfigurationControl.sharedInstance layerInConfig:HCLayerSewers])
                                 {
                                     PipeTrace *pt = [[PipeTrace alloc] init];
-                                    pt.processingID = CRAPI.sharedInstance.keepProcessing;
+                                    pt.processingID = _displayID;
                                     
                                     [pt displayPipeTrace:_context
                                                llCorners:&_latlonCornerPoints
@@ -622,7 +629,7 @@
                             case StormMain:
                             {
                                 SewerData *sd = [[SewerData alloc] init];
-                                sd.processingID = CRAPI.sharedInstance.keepProcessing;
+                                sd.processingID = _displayID;
                                 sd.zoom = _zoom;
                                 
                                 [sd highlightStormLine:_context
@@ -646,7 +653,7 @@
                         break;
                 }
             }
-            if (!self.displayID)
+            if (!_displayID)
             {
                 UIGraphicsEndPDFContext();
                 
@@ -701,7 +708,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     if ([self keepGoing])
     {
         BoundaryData *bd = [[BoundaryData alloc] init];
-        bd.processingID = self.displayID;
+        bd.processingID = _displayID;
         bd.zoom = _zoom;
         [bd displayLandUse:_context
                  llCorners:&_latlonCornerPoints
@@ -725,7 +732,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
         return FALSE;
     
     Themes * themes = [[Themes alloc]init];
-    themes.displayID = CRAPI.sharedInstance.keepProcessing;
+    themes.displayID = _displayID;
     [themes setAppThemes:nil
             outputFactor:1];
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
@@ -770,8 +777,8 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     {
         case DISPLAY_DATA_OPTION_DISPLAY:
         {
-            ItemProcessingPassTypes passID = [themes themesNeedDataPass:CRAPI.sharedInstance.keepProcessing];
-            while (passID < DonePass)
+            ItemProcessingPassTypes passID = [themes themesNeedDataPass:_displayID];
+            while ([self keepGoing] && passID < DonePass)
             {
                 if (passID == DataPass)
                     [themes themesBeginDataPass:CRAPI.sharedInstance.keepProcessing];
@@ -784,7 +791,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                     case CPFLandUse:
                     {
                         BoundaryData *bd = [[BoundaryData alloc] init];
-                        bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        bd.processingID = _displayID;
                         bd.zoom = _zoom;
                         bd.numPass = 2;
                         [bd displayLandUse:_context
@@ -829,7 +836,7 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                             [_bd open];
                         }
                         _bd.pass = passID;
-                        _bd.processingID = CRAPI.sharedInstance.keepProcessing;
+                        _bd.processingID = _displayID;
                         _bd.zoom = _zoom;
                         [_bd displayCensusAreas:_context
                                           type:CenType
