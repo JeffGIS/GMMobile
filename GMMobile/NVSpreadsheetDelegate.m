@@ -181,12 +181,16 @@
 
 - (BOOL)spreadsheetCanEditRowHeaderTextAtIndex:(NSInteger)index
 {
-    return YES;
+    return NO;
 }
 
 - (BOOL)spreadsheetCanEditColumnHeaderTextAtIndex:(NSInteger)index
 {
-    return YES;
+    if (index > _propList.getPropertyNumbers.count)
+        return NO;
+    
+    else
+        return YES;
 }
 
 - (NSArray *)spreadsheetDidGetLists

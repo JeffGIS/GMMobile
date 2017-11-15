@@ -31,7 +31,7 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 
 @optional
 - (void)clearVectorView;
-- (void)themeLegendDidWantMinimize;
+//- (void)themeLegendDidWantMinimize;
 - (void)themeLegendWillExpand;
 - (void)themeLegendDidShrink;
 - (void)updateRightArrowVisibility:(BOOL)hidden;
@@ -55,7 +55,6 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 
 + (CGFloat)rowHeight;
 + (CGFloat)width;
-+ (CGFloat)buttonMargin;
 + (UIFont *)headerFont;
 
 + (ThemeLegendMapOverlay *)drawLegend:(ThemeLegend *)legend

@@ -231,11 +231,6 @@
     return prfx;
 }
 
-- (BOOL)spreadsheetCanEditColumnHeaderTextAtIndex:(NSInteger)index
-{
-    return YES;
-}
-
 - (NSArray *)spreadsheetDidGetLists
 {
     [_crimeList close:YES];

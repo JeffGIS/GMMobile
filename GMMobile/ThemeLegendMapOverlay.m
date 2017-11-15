@@ -75,7 +75,7 @@
 
 + (CGFloat)width
 {
-    if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+    /*if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
     {
         if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
             return 160.0;
@@ -84,7 +84,8 @@
             return 292.0;
     }
     
-    else if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    else*/
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         return 118.0;
     
     else
@@ -241,11 +242,14 @@
     tlmo.drag.delegate = tlmo;
     tlmo.drag.delaysTouchesBegan = YES;
     
-    tlmo.deleteView = UIImageView.new;
-    [tlmo setupImageView:tlmo.deleteView image:@"redX"];
-    [tlmo.deleteView constrainToView:tlmo leading:0.0 trailing:(-tlmo.width / 2) top:0.0 bottom:0.0];
-    tlmo.deleteView.contentMode = UIViewContentModeScaleToFill;
-    
+    if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
+    {
+        tlmo.deleteView = UIImageView.new;
+        [tlmo setupImageView:tlmo.deleteView image:@"redX"];
+        [tlmo.deleteView constrainToView:tlmo leading:0.0 trailing:(-tlmo.width / 2) top:0.0 bottom:0.0];
+        tlmo.deleteView.contentMode = UIViewContentModeScaleToFill;
+    }
+
     tlmo.moveRightView = UIImageView.new;
     [tlmo setupImageView:tlmo.moveRightView image:@"redArrowRight"];
     [tlmo.moveRightView constrainToView:tlmo leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
@@ -479,7 +483,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         _tableView.layer.borderColor = UIColor.blackColor.CGColor;
         _tableView.layer.borderWidth = 2.0;
         
-        if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+        /*if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
         {
             CGFloat margin = 8.0, size = 52.0;
             
@@ -518,7 +522,17 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             }
         }
         
-        else if (inRemovalPos)
+        else*/
+        
+        if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
+        {
+            if (_legend.drawOnMap)
+                inRightDraggedPos = (inRightDraggedPos || inRemovalPos);
+            
+            inRemovalPos = NO;
+        }
+        
+        if (inRemovalPos)
             _legend.drawOnMap = NO;
         
         else if (_delegate.themeLegendIsOffMap)
@@ -561,6 +575,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     else
     {
         CGPoint translation = [gesture translationInView:superview];
+        BOOL deleteHidden = YES;
         
         if (_delegate.themeLegendIsOffMap)
             self.center = CGPointMake((self.center.x + translation.x), self.center.y);
@@ -569,7 +584,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             self.center = CGPointMake((self.center.x + translation.x), (self.center.y + translation.y));
         
         [gesture setTranslation:CGPointZero inView:superview];
-        _deleteView.hidden = !inRemovalPos;
+        
+        if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
+            deleteHidden = _deleteView.hidden = !inRemovalPos;
         
         if (_delegate.themeLegendIsOffMap)
         {
@@ -580,9 +597,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         else
         {
             if ([_delegate respondsToSelector:@selector(updateRightArrowVisibility:)])
-            {
-                [_delegate updateRightArrowVisibility:!inRightDraggedPos || !_deleteView.hidden];
-            }
+                [_delegate updateRightArrowVisibility:!inRightDraggedPos || !deleteHidden];
         }
     }
 }
