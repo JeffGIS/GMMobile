@@ -9,7 +9,6 @@
 #import "NVMetroSettings.h"
 #import "CCodeLibrary/SQLiteLib.h"
 #import "CCodeLibrary/MathUtil.h"
-#import "GetSlowValues.h"
 
 //#define CURRENT_VERSION 28
 
@@ -1382,24 +1381,28 @@ NSString* propertyListFieldDescription (NSInteger fieldNumber)
     [self executeCmd:(LPSTR)cmd.UTF8String];
     rtn = YES;
     
-    /*dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
+    dispatch_queue_t getSlowValueQue = dispatch_queue_create("getSlowValuesQueue",NULL);
      
      dispatch_async(getSlowValueQue,
-     ^{*/
+     ^{
     GetSlowValues *sv = [[GetSlowValues alloc]init];
     [sv computeSlowValues:PropNum
                      dbid:dbid
-             propertyList:self
+                 delegate:self
                   popover:_popover
              aroundLatLon:pidPoint
                    useDesc:(LPSTR)usedesc.UTF8String];
-    //  });
+      });
     
-    [self close:opened];
+    //[self close:opened];
     return rtn;
 }
 
-
+- (BOOL)executePropListCommand:(NSString *)cmd
+{
+    BOOL rtn = [self executeCmd:(LPSTR)cmd.UTF8String];
+    return rtn;
+}
 - (void)getSlowValuesDidComplete:(int)propNum
                           values:(SlowValues *)vals
 {

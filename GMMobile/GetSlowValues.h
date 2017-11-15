@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
-#import "PropertyList.h"
 
 
 @interface SlowValues : NSObject
@@ -32,21 +31,20 @@
 
 - (void)getSlowValuesDidComplete:(int)propNum
                           values:(SlowValues *)vals;
-
+- (BOOL)executePropListCommand:(NSString*)cmd;
 @end
 
-@interface GetSlowValues : NSObject
+@interface GetSlowValues : NSObject<GSSiPopoverViewDelegate>
 @property (nonatomic, weak) id <GetSlowValuesDelegate> delegate;
 @property (nonatomic) GSSiPopoverView *popover;
 //@property BoundaryData *bd;
 @property int maxColors;
 @property CGContextRef colorConversionContext;
 @property void * colorConversionBmData;
-@property PropertyList * propList;
 
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
-             propertyList:(PropertyList *)plist
+                 delegate:(id)delegate
                   popover:(GSSiPopoverView*)popover
              aroundLatLon:(LLPOINT)latlon
                   useDesc:(LPSTR) usedescIN;

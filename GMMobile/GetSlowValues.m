@@ -30,19 +30,28 @@
 @implementation GetSlowValues
 - (void)computeSlowValues:(int)propNum
                      dbid:(int)dbid
-             propertyList:(PropertyList *)plist
+                 delegate:(id)delegate
                   popover:(GSSiPopoverView*)popover
                 aroundLatLon:(LLPOINT)latlon
                      useDesc:(LPSTR) usedescIN
 {
     double OneMile = 5280 * FTM;
     double radius[4] = {OneMile / 8,OneMile / 4,OneMile / 2,OneMile};
-    _propList = plist;
+    _delegate = delegate;
     _propNum = propNum;
     SlowValues * slowVals = [[SlowValues alloc]init];
     _popover = popover;
-    _popover.title = @"Computing Values From Map";
-    for (int idist = 0; idist < 3; idist++)
+    _popover.delegate = self;
+    _popover.progressView.hidden = NO;
+    _popover.progressLabel.hidden = YES;
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_popover showAfter:0.1
+                                 withTitle:@"Computing RiteHome Values"];
+                   });
+    float totComputes = 5 * 2 + 1;
+    float nComputes = 0;
+    for (int idist = 0; idist < 2; idist++)
     {
         [self computeValuesFromMap:slowVals
                            popover:popover
@@ -51,7 +60,11 @@
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_LandUse];
-        
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
         [self computeValuesFromMap:slowVals
                            popover:popover
                       aroundLatLon:latlon
@@ -59,13 +72,23 @@
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusTracts];
-        [self computeValuesFromMap:slowVals
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+       [self computeValuesFromMap:slowVals
                            popover:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusBlockGroups];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
         [self computeValuesFromMap:slowVals
                            popover:popover
                       aroundLatLon:latlon
@@ -73,21 +96,36 @@
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_CensusBlocks];
-        [self computeValuesFromMap:slowVals
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
+       [self computeValuesFromMap:slowVals
                            popover:popover
                       aroundLatLon:latlon
                         withRadius:radius[idist]
                         distanceID:idist
                            useDesc:usedescIN
                          baseLayer:MBL_Parcels];
+        nComputes++;
+        dispatch_async(dispatch_get_main_queue(),
+                       ^{
+                           [_popover updateProgress:nComputes/totComputes];
+                       });
     }
     
     //add routes from property to destinations
     Destinations *dests = [[Destinations alloc]init];
     [dests addRoutesForProperty:propNum];
-    
-    //if (_delegate)
-    //    [_delegate getSlowValuesDidComplete:propNum values:slowVals];
+    nComputes++;
+    dispatch_async(dispatch_get_main_queue(),
+                   ^{
+                       [_popover updateProgress:nComputes/totComputes];
+                       [_popover hide];
+                  });
+    if (_delegate)
+        [_delegate getSlowValuesDidComplete:propNum values:slowVals];
 
 }
 
@@ -269,7 +307,7 @@ displayCharacteristics:dc
             double squareMetersInRadius = pct * _squareMetersInRect;
             totPct += pct;
             NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,'%@','%@',%i,%f,%f);",_propNum,_areaType,areaID,idist+1,squareMetersInRadius,pct];
-            [_propList executeCmd:(LPSTR)cmd.UTF8String];
+            [_delegate executePropListCommand:cmd];
         }
     }
     else
@@ -464,7 +502,7 @@ int getColorsFromTheme2(CGContextRef context,Theme* theme,int width,int height,v
             double pct = (double)pixels / _totPixelsInCircle;
             double squareMetersInRadius = pixels * _squareMetersPerPixel;
             NSString * cmd = [NSString stringWithFormat:@"INSERT INTO AreasWithinDistance VALUES (%i,'%@',%u,%i,%f,%f);",_propNum,_areaType,fileAndID,_iDist+1,squareMetersInRadius,pct];
-            [_propList executeCmd:(LPSTR)cmd.UTF8String];
+            [_delegate executePropListCommand:cmd];
         }
     }
     
@@ -547,7 +585,10 @@ displayCharacteristics:(DisplayCharacteristics *)dc
             break;
     }
 }
-
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+{
+    [_popover hide];
+}
 
 //[PropertyList getRadiusForField:ifield];
 @end

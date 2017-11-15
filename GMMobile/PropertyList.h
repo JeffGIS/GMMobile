@@ -3,6 +3,7 @@
 
 #import <Foundation/Foundation.h>
 #import "CCodeLibrary/CCodeLibrary.h"
+#import "GetSlowValues.h"
 
 typedef NS_ENUM(NSInteger, PropFieldType)
 {
@@ -89,7 +90,7 @@ typedef NS_ENUM(NSInteger, PropBaseType)
 
 @end
 
-@interface PropertyList : NSObject <GSSiPopoverViewDelegate>
+@interface PropertyList : NSObject <GSSiPopoverViewDelegate,GetSlowValuesDelegate>
 @property (nonatomic, weak) id <PropertyListDelegate> delegate;
 @property NSString* propListDir;
 @property (nonatomic) GSSiPopoverView *popover;
