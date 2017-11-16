@@ -352,16 +352,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             weight.layer.borderWidth = 1.0;
             weight.tag = indexPath.row;
             weight.titleLabel.textAlignment = NSTextAlignmentCenter;
-            weight.titleLabel.font = _font;
+            weight.titleLabel.font = _detailFont;
             
             [weight setTitle:[NSString stringWithFormat:@"%i", flr.weight]
                     forState:UIControlStateNormal];
             
-            [weight setTitleColor:UIColor.blackColor
-                         forState:UIControlStateNormal];
-            
-            [weight setTitleColor:UIColor.lightGrayColor
-                         forState:UIControlStateHighlighted];
+            [weight setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+            [weight setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
             
             [cell addSubview:weight];
             
@@ -372,12 +369,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
             [weight constrainCenterYToAnchor:cell.centerYAnchor];
             [weight constrainHeightToConstant:(_rowHeight * 0.75)];
-            
-            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-                [weight constrainWidthToConstant:(_rowHeight * 0.85)];
-            
-            else
-                [weight constrainWidthToConstant:(_rowHeight * 1.15)];
         }
     }
     
