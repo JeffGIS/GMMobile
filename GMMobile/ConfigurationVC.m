@@ -186,6 +186,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
             optionsList = [NVMetroSettings.sharedInstance textValuesForFeature:CPFParcels];
             //NVMetroSettings.sharedInstance.currentTextOption = optionsList[2];
             [NVMetroSettings.sharedInstance currentTextSelection:2];
+            //NVMetroSettings.sharedInstance.currentAdjustmentValue = CPAdjustThousandsOfDollars;
 
             break;
         case 2://Last Sale Text\nColoring by Last Sale Price
