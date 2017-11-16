@@ -13,7 +13,7 @@
 
 @property CGFloat rowHeight;
 @property (nonatomic) UIImage *uncheckedBox, *checkedBox;
-@property (nonatomic) UIFont *font, *headerFont;
+@property (nonatomic) UIFont *font, *headerFont, *detailFont;
 @property (nonatomic) NSMutableArray *fieldRecords;
 @property (nonatomic, copy) NSArray *fieldlist;
 @property PropFieldType lastSelectedType;
@@ -46,6 +46,7 @@
     {
         _rowHeight = 48.0;
         _font = [UIFont boldSystemFontOfSize:16.0];
+        _detailFont = [UIFont boldSystemFontOfSize:12.0];
         _headerFont = [UIFont boldSystemFontOfSize:24.0];
     }
     
@@ -53,6 +54,7 @@
     {
         _rowHeight = 64.0;
         _font = [UIFont boldSystemFontOfSize:26.0];
+        _detailFont = [UIFont boldSystemFontOfSize:20.0];
         _headerFont = [UIFont boldSystemFontOfSize:40.0];
     }
     
@@ -297,7 +299,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (!cell)
     {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                       reuseIdentifier:@"Cell"];
     }
     
@@ -307,11 +309,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [buttons removeFromSuperview];
     }
     
-    for (TableViewCellLabel *labels in cell.subviews)
-    {
-        if ([labels isKindOfClass:TableViewCellLabel.class])
-            [labels removeFromSuperview];
-    }
     FieldListRecord *flr = _fieldlist[indexPath.row];
 
     BOOL selected = flr.sequence;
@@ -331,27 +328,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     [checkBox constrainHeightToConstant:_rowHeight];
     [checkBox constrainWidthToConstant:_rowHeight];
     
-    TableViewCellLabel *label = TableViewCellLabel.new;
-    label.translatesAutoresizingMaskIntoConstraints = NO;
-    label.adjustsFontSizeToFitWidth = YES;
-    label.textColor = UIColor.blackColor;
-    label.text = flr.name;
-    label.font = _font;
+    cell.textLabel.text = textBeforeParentheses(flr.name);
+    cell.textLabel.font = _font;
+    cell.textLabel.textColor = UIColor.blackColor;
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
     
-    [cell addSubview:label];
-    [label constrainTopToAnchor:cell.topAnchor];
-    [label constrainBottomToAnchor:cell.bottomAnchor];
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        [label constrainLeadingToAnchor:cell.leadingAnchor constant:inset];
-    
-    else
-        [label constrainLeadingToAnchor:cell.leadingAnchor constant:(inset * 2.0)];
+    cell.detailTextLabel.text = textInsideParentheses(flr.name).uppercaseString;
+    cell.detailTextLabel.font = _detailFont;
+    cell.detailTextLabel.textColor = UIColor.blackColor;
+    cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
     
     if (selected)
     {
-        [checkBox setImage:_checkedBox
-                  forState:UIControlStateNormal];
+        [checkBox setImage:_checkedBox forState:UIControlStateNormal];
         
         if (flr.allowsWeight)
         {
@@ -363,16 +352,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             weight.layer.borderWidth = 1.0;
             weight.tag = indexPath.row;
             weight.titleLabel.textAlignment = NSTextAlignmentCenter;
-            weight.titleLabel.font = _font;
+            weight.titleLabel.font = _detailFont;
             
             [weight setTitle:[NSString stringWithFormat:@"%i", flr.weight]
                     forState:UIControlStateNormal];
             
-            [weight setTitleColor:UIColor.blackColor
-                         forState:UIControlStateNormal];
-            
-            [weight setTitleColor:UIColor.lightGrayColor
-                         forState:UIControlStateHighlighted];
+            [weight setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+            [weight setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
             
             [cell addSubview:weight];
             
@@ -383,24 +369,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             [weight constrainTrailingToAnchor:checkBox.leadingAnchor];
             [weight constrainCenterYToAnchor:cell.centerYAnchor];
             [weight constrainHeightToConstant:(_rowHeight * 0.75)];
-            
-            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-                [weight constrainWidthToConstant:(_rowHeight * 0.85)];
-            
-            else
-                [weight constrainWidthToConstant:(_rowHeight * 1.15)];
-            
-            [label constrainTrailingToAnchor:weight.leadingAnchor];
         }
     }
     
     else
-    {
-        [checkBox setImage:_uncheckedBox
-                  forState:UIControlStateNormal];
-        
-        [label constrainTrailingToAnchor:checkBox.leadingAnchor];
-    }
+        [checkBox setImage:_uncheckedBox forState:UIControlStateNormal];
     
     return cell;
 }

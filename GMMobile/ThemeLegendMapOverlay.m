@@ -617,18 +617,23 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         superview = self.superview.superview;
     
     NSMutableArray *textArray = NSMutableArray.array;
+    NSMutableArray *idArray = NSMutableArray.array;
+    
     [textArray addObject:@"Cancel"];
+    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
     
     switch (_legend.selectionMode)
     {
         case SEL_MODE_SELECT:
-            [textArray addObject:@"Switch to Compare Mode"];
+            [textArray addObject:@"Switch to\nCompare Mode"];
             break;
         case SEL_MODE_COMPARE:
-            [textArray addObject:@"Switch to Selection Mode"];
+            [textArray addObject:@"Switch to\nSelection Mode"];
             break;
         default:break;
     }
+    
+    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
     
     if (!_legend.usePointSymbols)
     {
@@ -637,18 +642,25 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
         else
             [textArray addObject:@"Enable Stats Overlay"];
+        
+        [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
+        
+        if (CRAPI.sharedInstance.barChartOnly)
+            [textArray addObject:@"Show Legend Text"];
+        
+        else
+            [textArray addObject:@"Hide Legend Text"];
+        
+        [idArray addObject:[NSNumber numberWithInteger:TLTBarChartOnly]];
     }
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
-    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
-    [textArray addObject:@"Zoom to Item With\nMaximum Value"];
-    
-    NSMutableArray *idArray = NSMutableArray.array;
-    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
-    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
-    [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
     [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
+    
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
     [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
+    
+    [textArray addObject:@"Zoom to Item With\nMaximum Value"];
     [idArray addObject:[NSNumber numberWithInteger:TLTZoomToMax]];
     
     if (_legend.titles.count > 1)
@@ -663,7 +675,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                 _legend.title]
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
-    alert.buttonIdentifiers = idArray;
+    alert.buttonIdentifiers = idArray.copy;
     alert.identifier = @"TopLevelAlert";
     
     if (_isExpanded)
@@ -714,6 +726,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     break;
                 case TLTOverlay:
                     _legend.hasOverlay = !_legend.hasOverlay;
+                    [_delegate themeLegendDidChangeStatus:YES];
+                    break;
+                case TLTBarChartOnly:
+                    CRAPI.sharedInstance.barChartOnly = !CRAPI.sharedInstance.barChartOnly;
                     [_delegate themeLegendDidChangeStatus:YES];
                     break;
                 case TLTApplyExistingColors:
@@ -1010,7 +1026,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                       reuseIdentifier:cellID];
     }
     
-    for (UIView *views in cell.contentView.subviews)
+    for (UIView *views in cell.subviews)
     {
         if (views.tag == 666 || views.tag == 777 || views.tag == 888 || views.tag == 999 ||
             views.tag == 998 || views.tag == 997 || views.tag == 996)
@@ -1018,11 +1034,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     }
     
     ThemeLegendCell *tlc = (ThemeLegendCell *)_legend.cells[row];
-    
     NSMutableString *text = tlc.label.mutableCopy;
     CGFloat margin = 4.0;
     
-    if (_legend.appendClassCount)
+    if (!CRAPI.sharedInstance.barChartOnly && _legend.appendClassCount)
     {
         NSMutableString *countString = NSMutableString.string;
         
@@ -1067,6 +1082,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     else
         cell.backgroundColor = UIColor.lightGrayColor;
     
+    cell.textLabel.backgroundColor = UIColor.clearColor;
+    
     UILabel *textLabel = UILabel.new;
     textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     textLabel.textColor = UIColor.blackColor;
@@ -1083,11 +1100,6 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     textLabel.backgroundColor = UIColor.clearColor;
     textLabel.numberOfLines = 1;
     textLabel.tag = 888;
-    
-    cell.textLabel.backgroundColor = UIColor.clearColor;
-    cell.contentView.backgroundColor = UIColor.clearColor;
-    cell.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [cell.contentView constrainToView:cell leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
     
     NSDictionary *attributes = @{NSFontAttributeName:textLabel.font};
     
@@ -1115,15 +1127,19 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             imageView.image = imageFromSymbol(tlc.symbol, imageSize, _legend.symbolDefaultColor);
         
-        [cell.contentView addSubview:imageView];
+        [cell addSubview:imageView];
         
-        [imageView constrainToView:cell.contentView leading:margin trailing:(-textWidth - margin)
+        [imageView constrainToView:cell leading:margin trailing:(-textWidth - margin)
                                top:(_rowHeight * 0.15) bottom:(-_rowHeight * 0.15)];
     }
     
     else
     {
         textWidth = MIN(textWidth, (tableView.frame.size.width * 0.85));
+        
+        if (CRAPI.sharedInstance.barChartOnly)
+            textWidth = 0.0;
+        
         textOriginX = (tableView.frame.size.width - textWidth);
         
         if (!_legend.showSymbolAsBarChart)
@@ -1141,14 +1157,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         else
             barView.backgroundColor = _legend.symbolDefaultColor;
         
-        [cell.contentView addSubview:barView];
+        [cell addSubview:barView];
         
         if (_legend.hasOverlay)
         {
             CGFloat newSymbolWidth = ((tlc.symbolWidth - _minSymbolWidth) / (1.0 - _minSymbolWidth));
             CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - newSymbolWidth));
             
-            [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+            [barView constrainToView:cell leading:margin trailing:(-textWidth - barMask - margin)
                                  top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
             
             CGFloat mask = ((tableView.frame.size.width - textWidth) - (margin * 2.0));
@@ -1164,11 +1180,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             avgView.backgroundColor = UIColor.redColor;
             avgView.tag = 999;
             
-            [cell.contentView addSubview:avgView];
-            [avgView constrainTopToAnchor:cell.contentView.topAnchor];
-            [avgView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [cell addSubview:avgView];
+            [avgView constrainTopToAnchor:cell.topAnchor];
+            [avgView constrainBottomToAnchor:cell.bottomAnchor];
             
-            [avgView constrainTrailingToAnchor:cell.contentView.trailingAnchor
+            [avgView constrainTrailingToAnchor:cell.trailingAnchor
                                       constant:(-textWidth - avgMask - margin + 1.0)];
             
             [avgView constrainWidthToConstant:2.0];
@@ -1178,11 +1194,11 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             medianView.backgroundColor = UIColor.blueColor;
             medianView.tag = 998;
             
-            [cell.contentView addSubview:medianView];
-            [medianView constrainTopToAnchor:cell.contentView.topAnchor];
-            [medianView constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [cell addSubview:medianView];
+            [medianView constrainTopToAnchor:cell.topAnchor];
+            [medianView constrainBottomToAnchor:cell.bottomAnchor];
             
-            [medianView constrainTrailingToAnchor:cell.contentView.trailingAnchor
+            [medianView constrainTrailingToAnchor:cell.trailingAnchor
                                          constant:(-textWidth - medianMask - margin + 1.0)];
             
             [medianView constrainWidthToConstant:2.0];
@@ -1193,14 +1209,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             stdDev1View.alpha = 0.05;
             stdDev1View.tag = 997;
             
-            [cell.contentView addSubview:stdDev1View];
-            [stdDev1View constrainTopToAnchor:cell.contentView.topAnchor];
-            [stdDev1View constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [cell addSubview:stdDev1View];
+            [stdDev1View constrainTopToAnchor:cell.topAnchor];
+            [stdDev1View constrainBottomToAnchor:cell.bottomAnchor];
             
-            [stdDev1View constrainTrailingToAnchor:cell.contentView.trailingAnchor
+            [stdDev1View constrainTrailingToAnchor:cell.trailingAnchor
                                           constant:(-textWidth - upperStdDev1Mask - margin + 1.0)];
             
-            [stdDev1View constrainLeadingToAnchor:cell.contentView.leadingAnchor
+            [stdDev1View constrainLeadingToAnchor:cell.leadingAnchor
                                          constant:(margin + lowerStdDev1Mask + 1.0)];
             
             UIView *stdDev2View = UIView.new;
@@ -1209,14 +1225,14 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             stdDev2View.alpha = 0.05;
             stdDev2View.tag = 996;
             
-            [cell.contentView addSubview:stdDev2View];
-            [stdDev2View constrainTopToAnchor:cell.contentView.topAnchor];
-            [stdDev2View constrainBottomToAnchor:cell.contentView.bottomAnchor];
+            [cell addSubview:stdDev2View];
+            [stdDev2View constrainTopToAnchor:cell.topAnchor];
+            [stdDev2View constrainBottomToAnchor:cell.bottomAnchor];
             
-            [stdDev2View constrainTrailingToAnchor:cell.contentView.trailingAnchor
+            [stdDev2View constrainTrailingToAnchor:cell.trailingAnchor
                                           constant:(-textWidth - upperStdDev2Mask - margin + 1.0)];
             
-            [stdDev2View constrainLeadingToAnchor:cell.contentView.leadingAnchor
+            [stdDev2View constrainLeadingToAnchor:cell.leadingAnchor
                                          constant:(margin + lowerStdDev2Mask + 1.0)];
         }
         
@@ -1224,13 +1240,16 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
         {
             CGFloat barMask = (((tableView.frame.size.width - textWidth) - (margin * 2.0)) * (1 - tlc.symbolWidth));
             
-            [barView constrainToView:cell.contentView leading:margin trailing:(-textWidth - barMask - margin)
+            [barView constrainToView:cell leading:margin trailing:(-textWidth - barMask - margin)
                                  top:(tableView.rowHeight * 0.15) bottom:(-tableView.rowHeight * 0.15)];
         }
     }
     
-    [cell.contentView addSubview:textLabel];
-    [textLabel constrainToView:cell.contentView leading:textOriginX trailing:0.0 top:0.0 bottom:0.0];
+    if (!CRAPI.sharedInstance.barChartOnly)
+    {
+        [cell addSubview:textLabel];
+        [textLabel constrainToView:cell leading:textOriginX trailing:0.0 top:0.0 bottom:0.0];
+    }
     
     return cell;
 }
