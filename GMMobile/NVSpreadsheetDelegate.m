@@ -257,11 +257,13 @@
                             from:(NVSpreadsheetVC *)fromVC
                  tabBarController:(UITabBarController *)tabBarController
 {
-    PropertyList *proplist = [[PropertyList alloc] init];
+    PropertyList *proplist = PropertyList.new;
     int propNum = (int)column;
+    
     if (row == -1)
     {
-        NSArray * areaRecs = [proplist getAreaRecords:propNum];
+        NSArray *areaRecs = [proplist getAreaRecords:propNum];
+        
         [NVPopoverTableView showPopoverTableViewInView:fromVC.view
                            delegate:self
                               title:@"Area Records"
@@ -269,10 +271,9 @@
                       includeCancel:YES];
         return;
     }
-    LLPOINT llpoint = [proplist getPropertyLatLon:column];
     
-    [proplist setZoomValues:column
-                     forRow:row];
+    LLPOINT llpoint = [proplist getPropertyLatLon:column];
+    [proplist setZoomValues:column forRow:row];
     
     CLLocationCoordinate2D ssCoords = CLLocationCoordinate2DMake(llpoint.lat, llpoint.lon);
     NSUInteger index = 0;
