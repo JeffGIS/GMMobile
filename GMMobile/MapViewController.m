@@ -677,11 +677,9 @@
         if (!CRAPI.sharedInstance.justZoom)
         {
             [ConfigurationControl.sharedInstance setApp:HCConfigFromSpreadsheet];
-            
             self.tabBarController.tabBar.hidden = YES;
             [_mapView constrainToView:self.view leading:0.0 trailing:0.0 top:statusBarHeight bottom:_tabBarHeight];
             _mapView.userInteractionEnabled = NO;
-            [self setMapType];
             _compass.hidden = YES;
             [self hideMarkersAndInfoWindows:NO];
         }
@@ -689,9 +687,14 @@
         else
         {
             [self zoomToBounds:NVMetroSettings.sharedInstance.savedVisibleBounds];
+            [self showMarkersAndInfoWindows:NO];
             CRAPI.sharedInstance.justZoom = NO;
+            _mapView.userInteractionEnabled = YES;
+            _compass.hidden = NO;
             _fromSpreadsheet = NO;
         }
+        
+        [self setMapType];
     }
     
     else
@@ -955,11 +958,11 @@
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet)
     {
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet && _legendsAreOffMap)
+        /*if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet && _legendsAreOffMap)
         {
             [self themeLegendWasDraggedOffLeftSide];
             _legendsAreOffMap = YES;
-        }
+        }*/
         
         NVMetroSettingsVC *nvmsvc = NVMetroSettingsVC.new;
         nvmsvc.restorationIdentifier = @"NVMetroSettingsVC";
@@ -1174,8 +1177,10 @@
         
         for (ThemeLegend *tls in legends)
         {
-            if (tls.drawOnMap)
+            if (tls.drawOnMap || ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet || ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
+            {
                 legendExistsToDraw = YES;
+            }
         }
         
         if (!legendExistsToDraw)
@@ -3397,11 +3402,11 @@ haveVV:
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
         
-        if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet /*||
-            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp*/)
+        /*if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
+            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
         {
             yFactor += _mapToolbar.frame.size.height;
-        }
+        }*/
         
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
