@@ -617,18 +617,23 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         superview = self.superview.superview;
     
     NSMutableArray *textArray = NSMutableArray.array;
+    NSMutableArray *idArray = NSMutableArray.array;
+    
     [textArray addObject:@"Cancel"];
+    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
     
     switch (_legend.selectionMode)
     {
         case SEL_MODE_SELECT:
-            [textArray addObject:@"Switch to Compare Mode"];
+            [textArray addObject:@"Switch to\nCompare Mode"];
             break;
         case SEL_MODE_COMPARE:
-            [textArray addObject:@"Switch to Selection Mode"];
+            [textArray addObject:@"Switch to\nSelection Mode"];
             break;
         default:break;
     }
+    
+    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
     
     if (!_legend.usePointSymbols)
     {
@@ -637,18 +642,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         
         else
             [textArray addObject:@"Enable Stats Overlay"];
+        
+        [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
+        
+        [textArray addObject:@"Display Bar Chart Only"];
+        [idArray addObject:[NSNumber numberWithInteger:TLTBarChartOnly]];
     }
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
-    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
-    [textArray addObject:@"Zoom to Item With\nMaximum Value"];
-    
-    NSMutableArray *idArray = NSMutableArray.array;
-    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
-    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
-    [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
     [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
+    
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
     [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
+    
+    [textArray addObject:@"Zoom to Item With\nMaximum Value"];
     [idArray addObject:[NSNumber numberWithInteger:TLTZoomToMax]];
     
     if (_legend.titles.count > 1)
@@ -663,7 +670,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                                                                 _legend.title]
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
-    alert.buttonIdentifiers = idArray;
+    alert.buttonIdentifiers = idArray.copy;
     alert.identifier = @"TopLevelAlert";
     
     if (_isExpanded)
@@ -715,6 +722,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case TLTOverlay:
                     _legend.hasOverlay = !_legend.hasOverlay;
                     [_delegate themeLegendDidChangeStatus:YES];
+                    break;
+                case TLTBarChartOnly:
+                    CRAPI.sharedInstance.barChartOnly = !CRAPI.sharedInstance.barChartOnly;
                     break;
                 case TLTApplyExistingColors:
                     break;

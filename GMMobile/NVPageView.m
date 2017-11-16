@@ -500,18 +500,23 @@ viewForHeaderInSection:(NSInteger)section
                      }];
     
     NSMutableArray *textArray = NSMutableArray.array;
+    NSMutableArray *idArray = NSMutableArray.array;
+    
     [textArray addObject:@"Cancel"];
+    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
     
     switch (tl.selectionMode)
     {
         case SEL_MODE_SELECT:
-            [textArray addObject:@"Switch to Compare Mode"];
+            [textArray addObject:@"Switch to\nCompare Mode"];
             break;
         case SEL_MODE_COMPARE:
-            [textArray addObject:@"Switch to Selection Mode"];
+            [textArray addObject:@"Switch to\nSelection Mode"];
             break;
         default:break;
     }
+    
+    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
     
     if (!tl.usePointSymbols)
     {
@@ -520,16 +525,17 @@ viewForHeaderInSection:(NSInteger)section
         
         else
             [textArray addObject:@"Enable Stats Overlay"];
+        
+        [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
+        
+        [textArray addObject:@"Display Bar Chart Only"];
+        [idArray addObject:[NSNumber numberWithInteger:TLTBarChartOnly]];
     }
     
     [textArray addObject:@"Color Symbols\nUsing Exising Colors\nFor This Legend"];
-    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
-    
-    NSMutableArray *idArray = NSMutableArray.array;
-    [idArray addObject:[NSNumber numberWithInteger:TLTCancel]];
-    [idArray addObject:[NSNumber numberWithInteger:TLTSwitchMode]];
-    [idArray addObject:[NSNumber numberWithInteger:TLTOverlay]];
     [idArray addObject:[NSNumber numberWithInteger:TLTApplyExistingColors]];
+    
+    [textArray addObject:@"Color Symbols\nBy Selecting Colors\nFor This Legend"];
     [idArray addObject:[NSNumber numberWithInteger:TLTSelectColors]];
     
     if (tl.titles.count > 1)
@@ -545,7 +551,7 @@ viewForHeaderInSection:(NSInteger)section
                                                buttonTextArray:textArray
                                               destructiveIndex:1];
     
-    alert.buttonIdentifiers = idArray;
+    alert.buttonIdentifiers = idArray.copy;
     alert.identifier = @"TopLevelAlert";
     alert.tag = button.tag;
     [_controller disablePaging];
@@ -580,6 +586,9 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                 case TLTOverlay:
                     tl.hasOverlay = !tl.hasOverlay;
                     [self reloadTableViews];
+                    break;
+                case TLTBarChartOnly:
+                    CRAPI.sharedInstance.barChartOnly = !CRAPI.sharedInstance.barChartOnly;
                     break;
                 case TLTSelectColors:{
                     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:alertView.superview
