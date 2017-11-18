@@ -166,7 +166,7 @@ NSString * GetFieldListDirectory (void)
         [self createTables];
         
     }
-    NSLog(@"Init property list %@", _fileName);
+    //NSLog(@"Init field list %@", _fileName);
     
     return self;
 }
@@ -174,7 +174,7 @@ NSString * GetFieldListDirectory (void)
 - (void)dealloc
 {
     [self close:YES];
-    NSLog(@"FieldList Database dealloc");
+    //NSLog(@"FieldList Database dealloc");
 }
 - (BOOL)open
 {
@@ -191,7 +191,7 @@ NSString * GetFieldListDirectory (void)
         _fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:_path error:nil].fileSize;
         if (!_fileSize)
             [self initializeList];
-        NSLog(@"Fieldlist open");
+        //NSLog(@"Fieldlist open");
        rtn = YES;
     }
     
@@ -202,7 +202,7 @@ NSString * GetFieldListDirectory (void)
 {
     if (opened && _isOpen)
     {
-        NSLog(@"FieldList Database close");
+        //NSLog(@"FieldList Database close");
         SQLOK(__FILE__,__LINE__,sqlite3_close(_database),_database);
         _isOpen = NO;
         _dbIsOpen--;

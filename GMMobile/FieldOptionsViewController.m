@@ -15,7 +15,7 @@
 @property (nonatomic) UIImage *uncheckedBox, *checkedBox;
 @property (nonatomic) UIFont *font, *headerFont, *detailFont;
 @property (nonatomic) NSMutableArray *fieldRecords;
-@property (nonatomic, copy) NSArray *fieldlist;
+@property (nonatomic, copy) NSArray<FieldListRecord *> *fieldlist;
 @property PropFieldType lastSelectedType;
 @property (nonatomic) UITextField *titleTextField;
 @property (nonatomic) UISegmentedControl *options;
@@ -256,28 +256,58 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)plusTapped:(UIButton *)button
 {
-    [FieldList createNewFieldList];
-    _fieldlist = [FieldList getFieldListRecords:YES];
-    [_tableView reloadData];
+    NSMutableArray *fieldLists = FieldList.getFieldLists.mutableCopy;
+    [fieldLists insertObject:@"Create from Empty Field List" atIndex:0];
+    
+    NVPopoverTableView *nvptv =
+    [NVPopoverTableView showPopoverTableViewInView:self.view
+                                          delegate:self
+                                             title:@"Select Field List and Copy as New List"
+                                         textArray:fieldLists.copy
+                                     includeCancel:YES];
+    
+    nvptv.identifier = @"CopyToNewList";
 }
 
 - (void)listTapped:(UIButton *)button
 {
+    NVPopoverTableView *nvptv =
     [NVPopoverTableView showPopoverTableViewInView:self.view
                                           delegate:self
-                                             title:@"Field Selection Lists"
+                                             title:@"Select Field List"
                                          textArray:FieldList.getFieldLists
                                      includeCancel:YES];
+    
+    nvptv.identifier = @"SelectFromList";
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    [FieldList setCurrentFieldList:text];
+    if ([popoverTableView.identifier isEqualToString:@"CopyToNewList"])
+    {
+        [FieldList createNewFieldList];
+        
+        if (index)
+        {
+            for (FieldListRecord *flr in _fieldlist)
+            {
+                if (flr.sequence > 1)
+                {
+                    [FieldList setSequenceFor:flr.type
+                                         from:0
+                                           to:flr.sequence];
+                }
+            }
+        }
+    }
+    
+    else if ([popoverTableView.identifier isEqualToString:@"SelectFromList"])
+        [FieldList setCurrentFieldList:text];
+    
     _fieldlist = [FieldList getFieldListRecords:YES];
     [_tableView reloadData];
-    
     [popoverTableView hide:YES];
 }
 
@@ -407,8 +437,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
     [FieldList setWeightFor:flr.type
                          to:(int)round(value)];
+    
     _fieldlist = [FieldList getFieldListRecords:YES];
-
     [_tableView reloadData];
 }
 
@@ -420,11 +450,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     if (flr.sequence != 1)
     {
         _lastSelectedType = flr.type;
+        
         [FieldList setSequenceFor:flr.type
                              from:flr.sequence
                                to:0];
-        _fieldlist = [FieldList getFieldListRecords:YES];
         
+        _fieldlist = [FieldList getFieldListRecords:YES];
         [_tableView reloadData];
     }
 }
@@ -432,21 +463,21 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    int row = (int)indexPath.row;
+    /*int row = (int)indexPath.row;
     FieldListRecord *flr = _fieldlist[row];
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     if (_lastSelectedType && row > 0 && flr.sequence > 0)
     {
         int fromseq = [FieldList getSequenceFor:_lastSelectedType];
+        
         [FieldList setSequenceFor:_lastSelectedType
                              from:fromseq
                                to:row+1];
-        _fieldlist = [FieldList getFieldListRecords:YES];
         
+        _fieldlist = [FieldList getFieldListRecords:YES];
         [_tableView reloadData];
-    }
-
+    }*/
 }
 
 @end
