@@ -95,6 +95,7 @@ NUMHardCodedLayers};
 - (BOOL)layerInConfig:(HardCodedLayers)layerID;
 - (BOOL)haveUserAerials;
 - (BOOL)useMapTypeControl;
+- (void)resetLegendPositions;
 
 - (void)setLayer:(HardCodedLayers)layerID
        andSymbol:(int)symbol

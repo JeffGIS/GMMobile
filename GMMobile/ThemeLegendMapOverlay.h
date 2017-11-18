@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
     TLTSelectColors,
     TLTTitles,
     TLTZoomToMax,
+    TLTResetPositions,
     TLTCount
 };
 
@@ -32,11 +33,11 @@ typedef NS_ENUM(NSInteger, ThemeLegendTitleOptions)
 
 @optional
 - (void)clearVectorView;
-//- (void)themeLegendDidWantMinimize;
 - (void)themeLegendWillExpand;
 - (void)themeLegendDidShrink;
 - (void)updateRightArrowVisibility:(BOOL)hidden;
 - (void)updateLeftArrowVisibility:(BOOL)hidden;
+- (void)themeLegendDidWantResetPositions;
 
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend;
