@@ -551,6 +551,15 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
     return rtn;
 }
 
+- (void)resetLegendPositions
+{
+    for (ThemeLegend *legend in _legendList)
+    {
+        legend.isDraggedPortrait = NO;
+        legend.isDraggedLandscape = NO;
+    }
+}
+
 - (NSString *)getLayerName:(int)layerID
 {
     NSString *name = [NSString stringWithUTF8String:layerName[layerID]];

@@ -75,16 +75,6 @@
 
 + (CGFloat)width
 {
-    /*if (ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
-    {
-        if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-            return 160.0;
-        
-        else
-            return 292.0;
-    }
-    
-    else*/
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         return 118.0;
     
@@ -478,51 +468,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
     {
-        CGPoint location = [gesture locationInView:superview];
-        
         _tableView.layer.borderColor = UIColor.blackColor.CGColor;
         _tableView.layer.borderWidth = 2.0;
-        
-        /*if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
-        {
-            CGFloat margin = 8.0, size = 52.0;
-            
-            if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-                margin = 4.0, size = 44;
-            
-            if (location.x > (superview.frame.size.width - (size + (margin * 2.0))) &&
-                location.y < (size + statusBarHeight + (margin * 2.0)))
-            {
-                if ([_delegate respondsToSelector:@selector(themeLegendDidWantMinimize)])
-                    [_delegate themeLegendDidWantMinimize];
-            }
-            
-            else
-            {
-                margin = 2.0;
-                CGPoint center = self.center;
-                center.x = MAX(center.x, (frame.size.width * 0.5) + margin);
-                center.x = MIN(center.x, superview.frame.size.width - (frame.size.width * 0.5) - margin);
-                center.y = MAX(center.y, (frame.size.height * 0.5) + margin);
-                center.y = MIN(center.y, superview.frame.size.height - (frame.size.height * 0.5) - margin);
-                self.center = center;
-                
-                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
-                {
-                    _legend.landscapeMapOrigin = frame.origin;
-                    _legend.isDraggedLandscape = YES;
-                }
-                
-                else
-                {
-                    _legend.portraitMapOrigin = frame.origin;
-                    _legend.isDraggedPortrait = YES;
-                }
-            }
-        }
-        
-        else*/
         
         if (CRAPI.sharedInstance.currentApp == HCConfigMetroProp)
         {
@@ -669,6 +616,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         [idArray addObject:[NSNumber numberWithInteger:TLTTitles]];
     }
     
+    [textArray addObject:@"Reset Legend Positions"];
+    [idArray addObject:[NSNumber numberWithInteger:TLTResetPositions]];
+    
     NVAlertView *alert = [NVAlertView showLargeAlertViewinView:superview
                                                       delegate:self
                                                          title:[NSString stringWithFormat:@"Legend Options for\n%@",
@@ -762,6 +712,10 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                     if ([_delegate respondsToSelector:@selector(zoomToBounds:)])
                         [_delegate zoomToBounds:bnds];
                     break;}
+                case TLTResetPositions:
+                    if ([_delegate respondsToSelector:@selector(themeLegendDidWantResetPositions)])
+                        [_delegate themeLegendDidWantResetPositions];
+                    break;
             }
             
             [alertView hideLargeAlertView:YES];

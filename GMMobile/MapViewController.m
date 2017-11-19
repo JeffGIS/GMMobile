@@ -3337,9 +3337,6 @@ haveVV:
 
 - (void)updateLegendPositions
 {
-    /*if (_legendMinimized)
-        return;*/
-    
     if (ConfigurationControl.sharedInstance.currentApp == HCConfigCrimes ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigCurbRamps ||
         ConfigurationControl.sharedInstance.currentApp == HCConfigMapleGrove ||
@@ -3402,15 +3399,9 @@ haveVV:
         CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
         CGFloat yFactor = 2.0;
         
-        /*if (ConfigurationControl.sharedInstance.currentApp == HCConfigFromSpreadsheet ||
-            ConfigurationControl.sharedInstance.currentApp == HCConfigMetroProp)
-        {
-            yFactor += _mapToolbar.frame.size.height;
-        }*/
-        
         CGFloat yOriginPortrait = (statusBarHeight + yFactor);
         CGFloat yOriginLandscape = yOriginPortrait;
-        NSUInteger portraitColumnCount = 1, landscapeColumnCount = portraitColumnCount;
+        NSUInteger portraitColumnCount = 1, landscapeColumnCount = 1;
         UIView *inView = self.view;
         BOOL legendExistsToDraw = NO, legendsAreAlreadyDrawn = NO;
         
@@ -3504,15 +3495,18 @@ haveVV:
                     }
                 }
                 
-                else if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
+                else
                 {
-                    xOriginPortrait = yFactor;
-                    
-                    if (portraitColumnCount == 2)
-                        xOriginPortrait = _mapViewLegendOffset;
-                    
-                    yOriginPortrait = (statusBarHeight + yFactor);
-                    portraitColumnCount++;
+                    if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
+                    {
+                        xOriginPortrait = yFactor;
+                        
+                        if (portraitColumnCount == 2)
+                            xOriginPortrait = _mapViewLegendOffset;
+                        
+                        yOriginPortrait = (statusBarHeight + yFactor);
+                        portraitColumnCount++;
+                    }
                 }
 
                 CGPoint mapOrigin = CGPointZero;
@@ -3535,20 +3529,22 @@ haveVV:
                 
                 else
                 {
-                    if (!tl.isDraggedPortrait)
-                        tl.portraitMapOrigin = CGPointMake(xOriginPortrait, yOriginPortrait);
-                    
-                    if (!tl.isDraggedLandscape)
-                        tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
-                    
                     if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                         UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                     {
+                        if (!tl.isDraggedLandscape)
+                            tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
+                        
                         mapOrigin = tl.landscapeMapOrigin;
                     }
                     
                     else
+                    {
+                        if (!tl.isDraggedPortrait)
+                            tl.portraitMapOrigin = CGPointMake(xOriginPortrait, yOriginPortrait);
+                        
                         mapOrigin = tl.portraitMapOrigin;
+                    }
                 }
                 
                 ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
@@ -3557,9 +3553,6 @@ haveVV:
                                                                          inView:inView
                                                                        atOrigin:mapOrigin
                                                                     hideButtons:NO];
-                
-                /*if (CRAPI.sharedInstance.currentApp != HCConfigCrimes)
-                    [tlmo disableSelect];*/
                 
                 if (tlmo)
                 {
@@ -3633,50 +3626,7 @@ haveVV:
 {
     return _legendsAreOffMap;
 }
-/*
-- (void)themeLegendDidWantMinimize
-{
-    _legendMinimized = YES;
-    
-    for (ThemeLegendMapOverlay *tlmos in self.view.subviews)
-    {
-        if ([tlmos isKindOfClass:ThemeLegendMapOverlay.class])
-            [tlmos removeFromSuperview];
-    }
-    
-    CGFloat margin = 8.0;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        margin = 4.0;
-    
-    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    
-    UIButton *minimizeLegend = [UIButton buttonWithType:UIButtonTypeCustom];
-    minimizeLegend.tag = 99999;
-    minimizeLegend.backgroundColor = _mapToolbar.backgroundColor;
-    minimizeLegend.layer.cornerRadius = 10.0;
-    minimizeLegend.layer.borderColor = _mapToolbar.layer.borderColor;
-    minimizeLegend.layer.borderWidth = _mapToolbar.layer.borderWidth;
-    minimizeLegend.titleLabel.font = [UIFont boldSystemFontOfSize:24.0];
-    minimizeLegend.titleLabel.adjustsFontSizeToFitWidth = YES;
-    [minimizeLegend setTitle:@"L" forState:UIControlStateNormal];
-    [minimizeLegend setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
-    [minimizeLegend setTitleColor:UIColor.darkGrayColor forState:UIControlStateHighlighted];
-    
-    minimizeLegend.frame = CGRectMake((self.view.frame.size.width - _compassSize - margin),
-                                      statusBarHeight + margin, _compassSize, _compassSize);
-    
-    [minimizeLegend addTarget:self action:@selector(unminimizeLegend:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:minimizeLegend];
-}
 
-- (void)unminimizeLegend:(UIButton *)button
-{
-    [button removeFromSuperview];
-    _legendMinimized = NO;
-    [self updateLegendPositions];
-}
-*/
 - (void)randomColorsSelectedWithOption:(NVColorOption)option
                         forThemeLegend:(ThemeLegendMapOverlay *)legend
 {
@@ -7159,6 +7109,12 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 - (void)themeLegendDidShrink
 {
     [_mapView moveCamera:[GMSCameraUpdate setCamera:_currentPosition]];
+}
+
+- (void)themeLegendDidWantResetPositions
+{
+    [ConfigurationControl.sharedInstance resetLegendPositions];
+    [self updateLegendPositions];
 }
 
 @end
