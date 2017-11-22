@@ -555,6 +555,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
 {
     for (ThemeLegend *legend in _legendList)
     {
+        legend.landscapeMapOrigin = CGPointZero;
+        legend.portraitMapOrigin = CGPointZero;
         legend.isDraggedPortrait = NO;
         legend.isDraggedLandscape = NO;
     }

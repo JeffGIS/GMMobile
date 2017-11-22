@@ -58,8 +58,9 @@
     another.titles = [NSMutableArray arrayWithArray:_titles];
     another.currentTitleIndex = _currentTitleIndex;
     another.cells = NSMutableArray.array;
-    another.portraitMapOrigin = _portraitMapOrigin;
-    another.landscapeMapOrigin = _landscapeMapOrigin;
+    another.type = _type;
+    another.portraitMapOrigin = self.portraitMapOrigin;
+    another.landscapeMapOrigin = self.landscapeMapOrigin;
     another.isDraggedLandscape = _isDraggedLandscape;
     another.isDraggedPortrait = _isDraggedPortrait;
     another.type = _type;
@@ -77,47 +78,51 @@
     return another;
 }
 
-- (void)setType:(ThemeTypes)type
+- (CGPoint)portraitMapOrigin
 {
-    _type = type;
-    
     CGPoint pmo = CGPointZero;
     pmo.x = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"XpmoThemeLegend%li", (long)_type]];
     pmo.y = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"YpmoThemeLegend%li", (long)_type]];
-    _portraitMapOrigin = pmo;
-    
-    CGPoint lmo = CGPointZero;
-    lmo.x = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"XlmoThemeLegend%li", (long)_type]];
-    lmo.y = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
-    _landscapeMapOrigin = lmo;
     
     if (pmo.x && pmo.y)
         _isDraggedPortrait = YES;
     
+    return pmo;
+}
+
+- (CGPoint)landscapeMapOrigin
+{
+    CGPoint lmo = CGPointZero;
+    lmo.x = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"XlmoThemeLegend%li", (long)_type]];
+    lmo.y = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
+    
+    NSLog(@"GET type:%li, lmo:(%f,%f)", _type, lmo.x, lmo.y);
+    
     if (lmo.x && lmo.y)
         _isDraggedLandscape = YES;
+    
+    return lmo;
 }
 
 - (void)setPortraitMapOrigin:(CGPoint)portraitMapOrigin
 {
-    _portraitMapOrigin = portraitMapOrigin;
-    
-    [UserDefaults.defaults saveCGFloat:_portraitMapOrigin.x
+    [UserDefaults.defaults saveCGFloat:portraitMapOrigin.x
                                 forKey:[NSString stringWithFormat:@"XpmoThemeLegend%li", (long)_type]];
     
-    [UserDefaults.defaults saveCGFloat:_portraitMapOrigin.y
+    [UserDefaults.defaults saveCGFloat:portraitMapOrigin.y
                                 forKey:[NSString stringWithFormat:@"YpmoThemeLegend%li", (long)_type]];
 }
 
 - (void)setLandscapeMapOrigin:(CGPoint)landscapeMapOrigin
 {
-    _landscapeMapOrigin = landscapeMapOrigin;
-    
-    [UserDefaults.defaults saveCGFloat:_landscapeMapOrigin.x
+    [UserDefaults.defaults saveCGFloat:landscapeMapOrigin.x
                                 forKey:[NSString stringWithFormat:@"XlmoThemeLegend%li", (long)_type]];
     
-    [UserDefaults.defaults saveCGFloat:_landscapeMapOrigin.y
+    [UserDefaults.defaults saveCGFloat:landscapeMapOrigin.y
                                 forKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
+    
+    NSLog(@"SET type:%li, lmo:(%f,%f)", _type, landscapeMapOrigin.x, landscapeMapOrigin.y);
+    
 }
 
 - (BOOL)drawOnMap

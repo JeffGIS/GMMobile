@@ -14,7 +14,7 @@
 @property (nonatomic) UITabBar *tabBar;
 @property (nonatomic) CGRect previousFrame, previousScrollFrame;
 @property (nonatomic) NSMutableArray *dragSelectedCells;
-@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons, blockLongPress;
+@property BOOL dragSelectActive, preventRefresh, firstTimeDrag, hideButtons;
 @property NSUInteger currentRow;
 @property (nonatomic) UIButton *titleButton;
 @property (nonatomic) CGFloat avgPctOfMax, medianPctOfMax, stdDev1Lower, stdDev1Upper, stdDev2Lower, stdDev2Upper, minSymbolWidth;
@@ -40,19 +40,19 @@
 + (UIFont *)headerFont
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return [UIFont systemFontOfSize:11.0];
+        return [UIFont systemFontOfSize:14.0];
     
     else
-        return [UIFont systemFontOfSize:18.0];
+        return [UIFont systemFontOfSize:24.0];
 }
 
 + (UIFont *)expandedHeaderFont
 {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-        return [UIFont systemFontOfSize:16.0];
+        return [UIFont systemFontOfSize:18.0];
     
     else
-        return [UIFont systemFontOfSize:32.0];
+        return [UIFont systemFontOfSize:36.0];
 }
 
 + (UIFont *)expandedFont
@@ -123,7 +123,6 @@
     tlmo.currentRow = tlmo.currentColorPalette = 0;
     tlmo.previousContentOffset = CGPointZero;
     tlmo.minSymbolWidth = 1.0;
-    tlmo.blockLongPress = NO;
     tlmo.dragMargin = 10.0;
     
     for (ThemeLegendCell *cells in tlmo.legend.cells)
@@ -162,6 +161,7 @@
     
     tlmo.longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:tlmo
                                                                    action:@selector(tlmoLongPressed:)];
+    tlmo.longPress.delegate = tlmo;
     [tlmo.tableView addGestureRecognizer:tlmo.longPress];
     
     UIPinchGestureRecognizer *pgr = [[UIPinchGestureRecognizer alloc] initWithTarget:tlmo
@@ -226,11 +226,11 @@
             tlmo.stdDev2Upper = ((tlmo.stdDev2Upper - tlmo.minSymbolWidth) / (1.0 - tlmo.minSymbolWidth));
         }
     }
+    
     tlmo.drag = [[UIPanGestureRecognizer alloc] initWithTarget:tlmo
                                                         action:@selector(legendDragged:)];
     
     tlmo.drag.delegate = tlmo;
-    tlmo.drag.delaysTouchesBegan = YES;
     
     if (ConfigurationControl.sharedInstance.currentApp != HCConfigMetroProp)
     {
@@ -268,9 +268,6 @@
 
 - (void)tlmoLongPressed:(UILongPressGestureRecognizer *)gesture
 {
-    if (_blockLongPress)
-        return;
-    
     UITableView *tv = (UITableView *)gesture.view;
     CGPoint point = [gesture locationInView:tv];
     
@@ -464,7 +461,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     BOOL inRightDraggedPos = ((frame.origin.x + frame.size.width) > superview.frame.size.width);
     
     if (gesture.state == UIGestureRecognizerStateBegan)
-        _blockLongPress = YES;
+    {
+        _tableView.layer.borderColor = UIColor.redColor.CGColor;
+        _tableView.layer.borderWidth = 6.0;
+    }
     
     else if (gesture.state == UIGestureRecognizerStateEnded)
     {
@@ -516,7 +516,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
         
         [_delegate themeLegendDidChangeStatus:NO];
-        _blockLongPress = NO;
     }
     
     else
@@ -1281,8 +1280,15 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    if (_isExpanded && (gestureRecognizer == _drag))
-        return NO;
+    if (gestureRecognizer == _longPress)
+    {
+        UITableView *tv = (UITableView *)gestureRecognizer.view;
+        CGPoint point = [gestureRecognizer locationInView:tv];
+        return (point.y > _headerHeight);
+    }
+    
+    else if (gestureRecognizer == _drag)
+        return !_isExpanded;
     
     else
         return YES;

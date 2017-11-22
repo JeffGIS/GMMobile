@@ -14,7 +14,7 @@
 
 @interface ThemeLegend : NSObject
 
-@property (nonatomic) ThemeTypes type;      // legend type
+@property ThemeTypes type;      // legend type
 @property int numCells;         // number of desired cells. Actual number in cells
                                 // array may differ
 @property int numColumns;
