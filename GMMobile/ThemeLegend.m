@@ -96,8 +96,6 @@
     lmo.x = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"XlmoThemeLegend%li", (long)_type]];
     lmo.y = [UserDefaults.defaults CGFloatForKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
     
-    NSLog(@"GET type:%li, lmo:(%f,%f)", _type, lmo.x, lmo.y);
-    
     if (lmo.x && lmo.y)
         _isDraggedLandscape = YES;
     
@@ -120,9 +118,6 @@
     
     [UserDefaults.defaults saveCGFloat:landscapeMapOrigin.y
                                 forKey:[NSString stringWithFormat:@"YlmoThemeLegend%li", (long)_type]];
-    
-    NSLog(@"SET type:%li, lmo:(%f,%f)", _type, landscapeMapOrigin.x, landscapeMapOrigin.y);
-    
 }
 
 - (BOOL)drawOnMap
@@ -346,10 +341,7 @@
                                   (barAreaWidth * _cells[i].symbolWidth), (rowHeight * 0.7));
                 
                 if (_useClassColors)
-                {
                     CGContextSetFillColorWithColor(context, _cells[i].symbolColor.CGColor);
-                    NSLog(@"%@", _cells[i].symbolColor.description);
-                }
                 
                 else
                     CGContextSetFillColorWithColor(context, _symbolDefaultColor.CGColor);
