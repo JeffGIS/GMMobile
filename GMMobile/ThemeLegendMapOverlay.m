@@ -409,6 +409,10 @@ viewForHeaderInSection:(NSInteger)section
                 [_titleButton addTarget:self
                                  action:@selector(showLegendOptions:)
                        forControlEvents:UIControlEventTouchUpInside];
+                
+                [_titleButton addTarget:self
+                                 action:@selector(headerTouched:)
+                       forControlEvents:UIControlEventTouchDown];
             }
             
             else
@@ -550,6 +554,9 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)showLegendOptions:(UIButton *)button
 {
+    _tableView.layer.borderColor = UIColor.blackColor.CGColor;
+    _tableView.layer.borderWidth = 2.0;
+    
     _tabBar.userInteractionEnabled = NO;
     
     [UIView animateWithDuration:0.25
@@ -1292,6 +1299,12 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     else
         return YES;
+}
+
+- (void)headerTouched:(UIButton *)button
+{
+    _tableView.layer.borderColor = UIColor.redColor.CGColor;
+    _tableView.layer.borderWidth = 6.0;
 }
 
 @end
