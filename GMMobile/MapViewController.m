@@ -3480,33 +3480,26 @@ haveVV:
             {
                 CGFloat legendHeight = ((rowHeight * (tl.numCells + 1)) + yFactor);
                 
-                if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
-                    UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
                 {
-                    if (((yOriginLandscape + legendHeight) > (portraitWidth - 55.0)) && !_legendsAreOffMap)
-                    {
-                        xOriginLandscape = yFactor;
-                        
-                        if (landscapeColumnCount == 2)
-                            xOriginLandscape = _mapViewLegendOffset;
-                        
-                        yOriginLandscape = (statusBarHeight + yFactor);
-                        landscapeColumnCount++;
-                    }
+                    xOriginLandscape = yFactor;
+                    
+                    if (landscapeColumnCount == 2)
+                        xOriginLandscape = _mapViewLegendOffset;
+                    
+                    yOriginLandscape = (statusBarHeight + yFactor);
+                    landscapeColumnCount++;
                 }
                 
-                else
+                if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
                 {
-                    if (((yOriginPortrait + legendHeight) > (landscapeWidth - 55.0)) && !_legendsAreOffMap)
-                    {
-                        xOriginPortrait = yFactor;
-                        
-                        if (portraitColumnCount == 2)
-                            xOriginPortrait = _mapViewLegendOffset;
-                        
-                        yOriginPortrait = (statusBarHeight + yFactor);
-                        portraitColumnCount++;
-                    }
+                    xOriginPortrait = yFactor;
+                    
+                    if (portraitColumnCount == 2)
+                        xOriginPortrait = _mapViewLegendOffset;
+                    
+                    yOriginPortrait = (statusBarHeight + yFactor);
+                    portraitColumnCount++;
                 }
 
                 CGPoint mapOrigin = CGPointZero;
@@ -3529,22 +3522,20 @@ haveVV:
                 
                 else
                 {
+                    if (!tl.isDraggedLandscape)
+                        tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
+                    
+                    if (!tl.isDraggedPortrait)
+                        tl.portraitMapOrigin = CGPointMake(xOriginPortrait, yOriginPortrait);
+                    
                     if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                         UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
                     {
-                        if (!tl.isDraggedLandscape)
-                            tl.landscapeMapOrigin = CGPointMake(xOriginLandscape, yOriginLandscape);
-                        
                         mapOrigin = tl.landscapeMapOrigin;
                     }
                     
                     else
-                    {
-                        if (!tl.isDraggedPortrait)
-                            tl.portraitMapOrigin = CGPointMake(xOriginPortrait, yOriginPortrait);
-                        
                         mapOrigin = tl.portraitMapOrigin;
-                    }
                 }
                 
                 ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
@@ -3558,6 +3549,18 @@ haveVV:
                 {
                     yOriginPortrait += (tlmo.frame.size.height + yFactor);
                     yOriginLandscape += (tlmo.frame.size.height + yFactor);
+                    
+                    if (!_legendsAreOffMap)
+                    {
+                        if (!CGRectContainsRect(inView.frame, tlmo.frame))
+                        {
+                            NSString *text = [NSString stringWithFormat:
+                                              @"Legend (Type=%li) is NOT in its container view!\n"
+                                              "Origin=(%f,%f)", tl.type, mapOrigin.x, mapOrigin.y];
+                            
+                            showAlert(text);
+                        }
+                    }
                 }
             }
         }
