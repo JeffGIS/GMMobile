@@ -150,6 +150,10 @@ Top:
             sel = @selector(loadMapleGrove:);
             break;
             
+        case GetDatabaseSettingHunting:
+            sel = @selector(loadHunting:);
+            break;
+            
         case GetDatabaseSettingCrimes:
             sel = @selector(loadCrimeData:);
             break;
@@ -260,12 +264,30 @@ Top:
             NSString *fileName = @"swPressurePipe.shp";
             NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
             NSString *outputDirectory = [NSString stringWithFormat:@"%@/MapleGrove", documentsDirectory];
-
+            
             NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
             ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
             if (sfd)
                 rtn = YES;
-
+            
+        }
+            break;
+            
+        case GetDatabaseSettingHunting:
+        {
+            NSString *fileName = @"Carlton_County.shp";
+            NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
+            NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
+            
+            NSString *shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
+            int fileSize = (int)[NSFileManager.defaultManager attributesOfItemAtPath:shapeFile
+                                                                       error:nil].fileSize;
+            if (fileSize > 0)
+                rtn = YES;
+            ShapeFileDisplay *sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
+            if (sfd)
+                rtn = YES;
+            
         }
             break;
             

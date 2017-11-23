@@ -224,6 +224,7 @@
 		EB4A58331FB89A7B00B8B613 /* happy7.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582B1FB89A7A00B8B613 /* happy7.png */; };
 		EB4A58341FB89A7B00B8B613 /* happy3.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582C1FB89A7B00B8B613 /* happy3.png */; };
 		EB4A58351FB89A7B00B8B613 /* happy4.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4A582D1FB89A7B00B8B613 /* happy4.png */; };
+		EB4A58381FC754E200B8B613 /* HuntingDataDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */; };
 		EB4F25851A757F2000761FD5 /* FindViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25841A757F2000761FD5 /* FindViewController.m */; };
 		EB4F25881A7580FD00761FD5 /* FindPIDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4F25871A7580FD00761FD5 /* FindPIDViewController.m */; };
 		EB5521CF1A61B6A8008CE2D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5521CE1A61B6A8008CE2D1 /* main.m */; };
@@ -561,6 +562,8 @@
 		EB4A582B1FB89A7A00B8B613 /* happy7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy7.png; sourceTree = "<group>"; };
 		EB4A582C1FB89A7B00B8B613 /* happy3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy3.png; sourceTree = "<group>"; };
 		EB4A582D1FB89A7B00B8B613 /* happy4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = happy4.png; sourceTree = "<group>"; };
+		EB4A58361FC754E200B8B613 /* HuntingDataDisplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HuntingDataDisplay.h; sourceTree = "<group>"; };
+		EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HuntingDataDisplay.m; sourceTree = "<group>"; };
 		EB4F25831A757F2000761FD5 /* FindViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindViewController.h; sourceTree = "<group>"; };
 		EB4F25841A757F2000761FD5 /* FindViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindViewController.m; sourceTree = "<group>"; };
 		EB4F25861A7580FD00761FD5 /* FindPIDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindPIDViewController.h; sourceTree = "<group>"; };
@@ -907,6 +910,8 @@
 				A97860ED1A7FDAD60019FE37 /* VectorView.m */,
 				EB38AF431FB4A6E000E5DD93 /* MinnesotaGame.h */,
 				EB38AF441FB4A6E000E5DD93 /* MinnesotaGame.m */,
+				EB4A58361FC754E200B8B613 /* HuntingDataDisplay.h */,
+				EB4A58371FC754E200B8B613 /* HuntingDataDisplay.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -1466,6 +1471,7 @@
 				EB3268551B19146400A7D40A /* NVDataLoader.m in Sources */,
 				69366E001C542A4B00E79AA7 /* NVPageView.m in Sources */,
 				6925E5F21BCE156E005E5D5A /* CrimeDataOptions.m in Sources */,
+				EB4A58381FC754E200B8B613 /* HuntingDataDisplay.m in Sources */,
 				EB5522751A752A7F008CE2D1 /* SettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

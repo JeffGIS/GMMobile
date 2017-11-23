@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, HardCodedLayers)
     HCLayerCrimes,
     HCLayerMapleGroveWater,
     HCLayerMapleGroveFiber,
+    HCLayerHunting,
     HCLayerSidewalkPoints,
 NUMHardCodedLayers};
 

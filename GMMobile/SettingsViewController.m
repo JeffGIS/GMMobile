@@ -168,6 +168,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
             case GetDatabaseSettingCensus:
             case GetDatabaseSettingCrimes:
             case GetDatabaseSettingMapleGrove:
+            case GetDatabaseSettingHunting:
             case GetDatabaseSettingNVMetro:
             {
                 dispatch_queue_t overallQueue = dispatch_queue_create("overallQueue",NULL);
@@ -180,6 +181,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                    toDirectory = CRAPI.sharedInstance.sharedFilePath;
                                    if (dataType == GetDatabaseSettingMapleGrove)
                                        toDirectory = [toDirectory stringByAppendingString:@"/MapleGrove"];
+                                   if (dataType == GetDatabaseSettingHunting)
+                                       toDirectory = [toDirectory stringByAppendingString:@"/Hunting"];
                                    if (dataType == GetDatabaseSettingCrimes)
                                    {
                                        CrimeData * cd = [[CrimeData alloc] init];
@@ -237,6 +240,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                _popover.title = @"Load Crime Tables";
                                            }
                                                break;*/
+                                           case GetDatabaseSettingHunting:
                                            case GetDatabaseSettingMapleGrove:
                                            {
                                                dispatch_async(dispatch_get_main_queue(),
@@ -302,7 +306,8 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                break;
                                        }
                                        
-                                       if (dataType != GetDatabaseSettingMapleGrove)
+                                       if (dataType != GetDatabaseSettingMapleGrove &&
+                                           dataType != GetDatabaseSettingHunting)
                                        {
                                        FILE *fid = fopen(file.UTF8String, "rb");
                                        if (fid)
@@ -776,7 +781,33 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.useTestServer = USE_TEST_SERVER;
     
     [_popover showAfter:0.5
-              withTitle:@"Get Shape Files"];
+              withTitle:@"Get Maple Grove Shape Files"];
+    
+    [pull getFile:fileName
+    fromDirectory:@"NVMobile"
+           toFile:fileName
+      toDirectory:outputDirectory
+    refreshOption:FTPDataPullRefreshOptionCheckFileSize];
+}
+
+- (IBAction)loadHunting:(id)sender
+{
+    NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
+    NSString *fileName = @"HuntingFilesT.gcf";
+    NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
+    [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+    
+    FTPDataPull *pull = FTPDataPull.pull;
+    pull.delegate = self;
+    pull.popover = _popover;
+    pull.dataType = GetDatabaseSettingHunting;
+    pull.useTestServer = USE_TEST_SERVER;
+    
+    [_popover showAfter:0.5
+              withTitle:@"Get Hunting Shape Files"];
     
     [pull getFile:fileName
     fromDirectory:@"NVMobile"

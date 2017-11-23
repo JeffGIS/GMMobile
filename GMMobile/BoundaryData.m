@@ -79,7 +79,8 @@
             attachCmd = [NSString stringWithFormat:@"ATTACH DATABASE '%@' AS LANDUSEDB",_landusePath];
             st = [self executeCmd:(LPSTR)attachCmd.UTF8String];
             
-            if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame)
+            if (CRAPI.sharedInstance.currentApp == HCConfigMinnesotaGame ||
+                CRAPI.sharedInstance.currentApp == HCConfigHunting)
             {
                 _fileSize = (NSInteger)[NSFileManager.defaultManager attributesOfItemAtPath:_MinnesotaPath
                                                                                       error:nil].fileSize;

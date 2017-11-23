@@ -37,6 +37,20 @@
     return self;
 }
 
+BOOL ReadNVP (LPSTR file,LPSTR nvp)
+{
+    BOOL rtn = FALSE;
+    NSString * shpFile = [NSString stringWithUTF8String:file];
+    shpFile = [shpFile stringByDeletingPathExtension];
+    shpFile = [shpFile stringByAppendingString:@".nvp"];
+    NSString * contents = [NSString stringWithContentsOfFile:shpFile encoding:NSUTF8StringEncoding error:nil];
+    if (contents.length)
+    {
+        rtn = TRUE;
+        strcpy (nvp,contents.UTF8String);
+    }
+    return rtn;
+}
 + (ShapeFileDisplay *)createWithFile:(const char*)shapeFile
 {
     char outFile[MAX_PATH];
@@ -62,6 +76,8 @@ Top:
 /*    if (first)
         hSHP = NULL;
     else*/
+    //[NSFileManager.defaultManager removeItemAtPath:[NSString stringWithUTF8String:outFile]
+    //                                         error:nil];
         hSHP = SHPOpen( outFile, "rb" );
     if( hSHP != NULL )
     {
@@ -84,10 +100,14 @@ Top:
         //char inprj_utm[] = {"-i=proj=utm zone=15 units=m datum=NAD83 no_defs" };//+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs
         char inprj_utm[] = {"+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs"};
         char inprj_hc[] = {"+proj=lcc +lat_1=45.13333333 +lat_2=44.88333333 +lat_0=44.79111111 +lon_0=-93.38333333 +x_0=152400.3048006096 +y_0=30480.06096012192 +a=6378418.941 +b=6357033.31 +units=us-ft +no_defs"};
+        LPSTR nvp = malloc (4096);
         char outprj[] = "+proj=latlong +datum=WGS84";
         args[1] = (char *)shapeFile;
         args[2] = outFile;
-        args[3] = inprj_utm;
+        if (ReadNVP (shapeFile,nvp))
+            args[3] = nvp;
+        else
+            args[3] = inprj_utm;
         if (strstr (shapeFile,"Fiber"))
             args[3] = inprj_hc;
         
@@ -97,7 +117,11 @@ Top:
                                                  attributes:nil
                                                       error:nil];
         if (TransformSHP (5,args))
+        {
+            free (nvp);
             goto Top;
+        }
+        free (nvp);
    }
    return sfd;
 }

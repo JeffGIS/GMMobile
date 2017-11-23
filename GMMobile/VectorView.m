@@ -9,6 +9,7 @@
 #import "PipeTrace.h"
 #import "CrimeDataDisplay.h"
 #import "UserLayerDisplay.h"
+#import "HuntingDataDisplay.h"
 #import "ConfigurationControl.h"
 #import "NVMetroSettings.h"
 #import "Themes.h"
@@ -128,10 +129,13 @@ static int ii=0;
         MNMXCORD bounds = [boundData getBoundaryAreaBounds:
                            CRAPI.sharedInstance.currentOverallBoundaryRefno
                                                     ofType:@"BOUNDARY"];
-        _latlonBounds.xmn = max (_latlonBounds.xmn,bounds.xmn);
-        _latlonBounds.ymn = max (_latlonBounds.ymn,bounds.ymn);
-        _latlonBounds.xmx = min (_latlonBounds.xmx,bounds.xmx);
-        _latlonBounds.ymx = min (_latlonBounds.ymx,bounds.ymx);
+        if (bounds.xmn)
+        {
+            _latlonBounds.xmn = max (_latlonBounds.xmn,bounds.xmn);
+            _latlonBounds.ymn = max (_latlonBounds.ymn,bounds.ymn);
+            _latlonBounds.xmx = min (_latlonBounds.xmx,bounds.xmx);
+            _latlonBounds.ymx = min (_latlonBounds.ymx,bounds.ymx);
+        }
         _pia = [[PointInArea alloc] init];
         _pia.maxDimension = 1024;
         
@@ -547,7 +551,26 @@ void checkLLBounds (MNMXCORD * bounds)
                                     }
                                 }
                                 
+                                if ([self keepGoing] &&
+                                    ConfigurationControl.sharedInstance.currentApp == HCConfigHunting)
+                                {
+                                    HuntingDataDisplay *ud = [[HuntingDataDisplay alloc] init];
+                                    ud.processingID = _displayID;
+                                    ud.zoom = _zoom;
+                                    ud.passID = passID;
+                                    if ([self keepGoing])
+                                    {
+                                        [ud displayLayers:_context
+                                   displayCharacteristics:dc
+                                                llCorners:&_latlonCornerPoints
+                                                 LLBounds:&_latlonBounds
+                                               viewBounds:&_viewBounds
+                                                   themes:themes
+                                              pointInArea:_pia];
+                                    }
+                                }
                                 
+
                                 /* if ([self keepGoing])
                                  {
                                  BoundaryData *bd = [[BoundaryData alloc] init];

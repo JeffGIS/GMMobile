@@ -142,6 +142,10 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             ap = [[ApplicationObject alloc] initWithNameAndID:@"Minnesota Game App"
                                                    identifier:HCConfigMinnesotaGame];
             [_appList addObject:ap];
+
+            ap = [[ApplicationObject alloc] initWithNameAndID:@"Minnesota Hunting App"
+                                                   identifier:HCConfigHunting];
+            [_appList addObject:ap];
         }
         
         _currentApp = -1;
@@ -156,6 +160,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         strcpy(layerName[HCLayerMapleGroveWater], "Water");
         strcpy(layerName[HCLayerMapleGroveFiber], "Fiber");
         strcpy(layerName[HCLayerSidewalkPoints], "Sidewalk Points");
+        strcpy(layerName[HCLayerHunting], "Hunting Data");
 
         layerDefaultZoom[HCLayerAerials] = 12;
         layerDefaultZoom[HCLayerParcels] = 16;
@@ -167,7 +172,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         layerDefaultZoom[HCLayerMapleGroveFiber] = 11;
         layerDefaultZoom[HCLayerMapleGroveWater] = 11;
         layerDefaultZoom[HCLayerSidewalkPoints] = 14;
-        
+        layerDefaultZoom[HCLayerHunting] = 11;
+
         layerHasSymbols[HCLayerAerials] = NO;
         layerHasSymbols[HCLayerParcels] = NO;
         layerHasSymbols[HCLayerSewers] = YES;
@@ -177,7 +183,8 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         layerHasSymbols[HCLayerMapleGroveWater] = NO;
         layerHasSymbols[HCLayerMapleGroveFiber] = NO;
         layerHasSymbols[HCLayerSidewalkPoints] = YES;
-        
+        layerHasSymbols[HCLayerHunting] = NO;
+
         //setup toolbar properties
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantPlat] = YES;
         configToobarSegs[HCConfigSewers][MapToolbarPropertyWantDigitize] = NO;
@@ -322,6 +329,19 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantHelpButton] = NO;
         configToobarSegs[HCConfigMinnesotaGame][MapToolbarPropertyWantReturnButton] = NO;
         
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantPlat] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantDigitize] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantMapType] = YES;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantUserLocation] = YES;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantExtents] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantLegends] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantGrayscale] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantClearMarkers] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantEmailPDF] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantProgressBar] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantHelpButton] = NO;
+        configToobarSegs[HCConfigHunting][MapToolbarPropertyWantReturnButton] = NO;
+        
         //setup layers
         configLayers[HCConfigSewers][HCLayerAerials] = YES;
         configLayers[HCConfigSewers][HCLayerParcels] = YES;
@@ -330,7 +350,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigSewers][HCLayerAlleys] = NO;
         configLayers[HCConfigSewers][HCLayerCurbRamps] = NO;
         configLayers[HCConfigSewers][HCLayerSidewalkPoints] = NO;
-        
+
         configLayers[HCConfigAlleyWalls][HCLayerAerials] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerParcels] = YES;
         configLayers[HCConfigAlleyWalls][HCLayerSewers] = NO;
@@ -410,6 +430,18 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
         configLayers[HCConfigMinnesotaGame][HCLayerMapleGroveFiber] = NO;
         configLayers[HCConfigMinnesotaGame][HCLayerSidewalkPoints] = NO;
         
+        configLayers[HCConfigHunting][HCLayerAerials] = YES;
+        configLayers[HCConfigHunting][HCLayerParcels] = YES;
+        configLayers[HCConfigHunting][HCLayerSewers] = NO;
+        configLayers[HCConfigHunting][HCLayerPlanimetric] = NO;
+        configLayers[HCConfigHunting][HCLayerAlleys] = NO;
+        configLayers[HCConfigHunting][HCLayerCurbRamps] = NO;
+        configLayers[HCConfigHunting][HCLayerCrimes] = NO;
+        configLayers[HCConfigHunting][HCLayerMapleGroveWater] = NO;
+        configLayers[HCConfigHunting][HCLayerMapleGroveFiber] = NO;
+        configLayers[HCConfigHunting][HCLayerSidewalkPoints] = NO;
+        configLayers[HCConfigHunting][HCLayerHunting] = YES;
+
         for (int config = 0; config < NUMHardCodedConfigs; config++)
         {
             for (int layer = 0; layer < NUMHardCodedLayers; layer++)
@@ -530,6 +562,7 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
             CRAPI.sharedInstance.parcelTextOption = 1;
             configLayerZoom[HCConfigMapleGrove][HCLayerSewers][0] = 12;
             break;
+        case HCConfigHunting:
         case HCConfigMinnesotaGame:
             CRAPI.sharedInstance.currentOverallBoundaryRefno = 17;
             CRAPI.sharedInstance.currentOverallBoundaryTable = @"STATE";
@@ -608,6 +641,9 @@ static CGFloat configLayerZoom[NUMHardCodedConfigs][NUMHardCodedLayers][MAX_SYMB
                         break;
                     case HCLayerMapleGroveFiber:
                         [list addObject:[NSNumber numberWithInt:GetDatabaseSettingMapleGrove]];
+                        break;
+                    case HCLayerHunting:
+                        [list addObject:[NSNumber numberWithInt:GetDatabaseSettingHunting]];
                         break;
                 }
             }
