@@ -128,6 +128,10 @@
             thm = [self createTheme:MGVWaterMeterTheme];
             [_themeList addObject:thm];
             break;
+        case HCConfigHunting:
+            thm = [self createTheme:PublicHuntingLandsTheme];
+            [_themeList addObject:thm];
+            break;
         case HCConfigMetroProp:
             if ([NVMetroSettings.sharedInstance currentValueFields].length < 1)
                 break;

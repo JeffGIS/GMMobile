@@ -275,7 +275,7 @@ Top:
             
         case GetDatabaseSettingHunting:
         {
-            NSString *fileName = @"Carlton_County.shp";
+            NSString *fileName = @"Ownership.shp";
             NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
             NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
             

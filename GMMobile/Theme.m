@@ -1312,6 +1312,32 @@ static int ii=0;
             class.size = 1;
             [thm.classes addObject:class];
             break;
+        case PublicHuntingLandsTheme:
+            thm.setColor = YES;
+            thm.legend.title = @"Public Lands";
+            [thm.titles addObject:thm.legend.title];
+            thm.numDesiredClasses = 5;
+            class = [ThemeClass createWithTitle:@"USA   "];
+            class.color = [UIColor colorWithRed:0 green:0.6 blue:0 alpha:0.8];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"DNR   "];
+            class.color = [UIColor colorWithRed:0 green:1 blue:0 alpha:0.8];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"County"];
+            class.color = [UIColor colorWithRed:0.5 green:1 blue:0.5 alpha:0.8];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Paper "];
+            class.color = [UIColor yellowColor];
+            class.size = 1;
+            [thm.classes addObject:class];
+            class = [ThemeClass createWithTitle:@"Not   "];
+            class.color = [UIColor colorWithRed:0.5 green:0 blue:0.5 alpha:0.5];
+            class.size = 1;
+            [thm.classes addObject:class];
+            break;
         default:
             break;
     }
@@ -1943,6 +1969,50 @@ int getThemeOpt(ThemeTypes type)
                     }
                     val++;
                 }
+                break;
+                
+            case PublicHuntingLandsTheme:
+                switch (dc.elementType)
+            {
+                default:
+                    goto DisplayExit;
+                    break;
+                case ParcelBoundary:
+                {
+                    val = 0;
+                    for (ThemeClass * cls in _classes)
+                    {
+                        NSString * classType = truncateString ([cls.title uppercaseString]);
+                        NSString * recordType = [dc.string2 uppercaseString];
+                        if ([classType containsString:@"OTHER"] || [recordType containsString:classType])
+                        {
+                            if ([self incrementCount:val
+                                                  by:1
+                                                  dc:dc
+                                            testPass:test])
+                                rtn = DISPLAY_ITEM;
+                            break;
+                        }
+                        val++;
+                    }
+                }
+                    break;
+                case Ownership:
+                {
+                    val = 4;
+                    NSString * recordType = [dc.string2 uppercaseString];
+                    if ([recordType containsString:@"STATE"]) val = 1;
+                    else if ([recordType containsString:@"COUNTY"]) val = 2;
+                    else if ([recordType containsString:@"FEDERAL"]) val = 0;
+                    if ([self incrementCount:val
+                                          by:1
+                                          dc:dc
+                                    testPass:test])
+                        rtn = DISPLAY_ITEM;
+                }
+                    break;
+
+            }
                 break;
                 
             default:

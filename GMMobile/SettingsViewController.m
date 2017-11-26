@@ -793,7 +793,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 - (IBAction)loadHunting:(id)sender
 {
     NSString *documentsDirectory = UserDefaults.defaults.sharedFilePath;
-    NSString *fileName = @"HuntingFilesT.gcf";
+    NSString *fileName = @"HuntingFiles.gcf";
     NSString *outputDirectory = [NSString stringWithFormat:@"%@/Hunting", documentsDirectory];
     [NSFileManager.defaultManager createDirectoryAtPath:outputDirectory
                             withIntermediateDirectories:YES
@@ -804,13 +804,13 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     pull.delegate = self;
     pull.popover = _popover;
     pull.dataType = GetDatabaseSettingHunting;
-    pull.useTestServer = USE_TEST_SERVER;
+    pull.useTestServer = TRUE;//USE_TEST_SERVER;
     
     [_popover showAfter:0.5
               withTitle:@"Get Hunting Shape Files"];
     
     [pull getFile:fileName
-    fromDirectory:@"NVMobile"
+    fromDirectory:@"Hunting"
            toFile:fileName
       toDirectory:outputDirectory
     refreshOption:FTPDataPullRefreshOptionCheckFileSize];

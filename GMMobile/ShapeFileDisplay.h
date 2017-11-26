@@ -25,6 +25,9 @@
 @property NSString * filePath;
 @property NSString * documentsDirectory;
 @property sqlite3 *database;
+@property BOOL isOpen;
+@property int fileSize;
+@property NSString * indexName;
 @property DisplayCharacteristics * dc;
 
 + (ShapeFileDisplay *)createWithFile:(const char*)shapeFile;

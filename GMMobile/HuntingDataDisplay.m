@@ -26,10 +26,14 @@ displayCharacteristics:(DisplayCharacteristics *)dc
     NSString *fileName;
     NSString *shapeFile;
     
-    //if (CRAPI.sharedInstance.showPlats)
+    if ([ConfigurationControl.sharedInstance layer:HCLayerHunting
+                                     visibleAtZoom:_zoom
+                                           andPass:_passID])
     {
         fileName = @"Carlton_County.shp";
-        dc.elementType = PDFBounds;
+        fileName = @"Ownership.shp";
+        dc.elementType = ParcelBoundary;
+        dc.elementType = Ownership;
         shapeFile = [NSString stringWithFormat:@"%@/%@", outputDirectory,fileName];
         sfd = [ShapeFileDisplay createWithFile:shapeFile.UTF8String];
         if (sfd)
