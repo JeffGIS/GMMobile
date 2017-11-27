@@ -1150,7 +1150,7 @@
         nvpc.tabBarItem.image = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"fieldOptions"
                                                                                                ofType:@"png"]];
         
-        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:nvpc atIndex:2];
+        [NVTabBarEdit tabBarController:self.tabBarController insertViewController:nvpc atIndex:1];
         UIViewController *crimeOptionsVC = [storyboard instantiateViewControllerWithIdentifier:@"CrimeDataOptionsVC"];
         [NVTabBarEdit tabBarController:self.tabBarController insertViewController:crimeOptionsVC atIndex:1];
         
@@ -3536,6 +3536,22 @@ haveVV:
                     
                     else
                         mapOrigin = tl.portraitMapOrigin;
+                    
+                    if ((mapOrigin.x < yFactor) || (mapOrigin.y < (yFactor + statusBarHeight)) ||
+                        (mapOrigin.x > (inView.frame.size.width - tlmoWidth)) ||
+                        (mapOrigin.y > (inView.frame.size.height - legendHeight)))
+                        {
+                            NSLog(@"Legend (type=%li, origin=%f,%f) was not fully contained in its superview. Its frame was adjusted accordingly.", tl.type, mapOrigin.x, mapOrigin.y);
+                            
+                            mapOrigin.x = MAX(yFactor, mapOrigin.x);
+                            mapOrigin.y = MAX((yFactor + statusBarHeight), mapOrigin.y);
+                            
+                            mapOrigin.x = MIN((inView.frame.size.width - tlmoWidth),
+                                              mapOrigin.x);
+                            
+                            mapOrigin.y = MIN((inView.frame.size.height - legendHeight),
+                                              mapOrigin.y);
+                        }
                 }
                 
                 ThemeLegendMapOverlay *tlmo = [ThemeLegendMapOverlay drawLegend:tl
@@ -3549,18 +3565,6 @@ haveVV:
                 {
                     yOriginPortrait += (tlmo.frame.size.height + yFactor);
                     yOriginLandscape += (tlmo.frame.size.height + yFactor);
-                    
-                    if (!_legendsAreOffMap)
-                    {
-                        if (!CGRectContainsRect(inView.frame, tlmo.frame))
-                        {
-                            NSString *text = [NSString stringWithFormat:
-                                              @"Legend (Type=%li) is NOT in its container view!\n"
-                                              "Origin=(%f,%f)", tl.type, mapOrigin.x, mapOrigin.y];
-                            
-                            showAlert(text);
-                        }
-                    }
                 }
             }
         }
