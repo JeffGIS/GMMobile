@@ -459,6 +459,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
     UIView *superview = self.superview;
     CGRect frame = self.frame;
+    CGFloat margin = 2.0;
     
     BOOL inRemovalPos = ((frame.origin.x + (frame.size.width / 2.0)) > superview.frame.size.width);
     BOOL inLeftDraggedPos = (frame.origin.x < -_dragMargin);
@@ -499,10 +500,10 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             
             else
             {
-                CGFloat yPos = MIN(MAX(frame.origin.y, statusBarHeight),
-                                   (superview.frame.size.height - frame.size.height));
+                CGFloat yPos = MIN(MAX(frame.origin.y, (statusBarHeight + margin)),
+                                   (superview.frame.size.height - frame.size.height - margin));
                 
-                CGPoint origin = CGPointMake(MAX(frame.origin.x, 0.0), yPos);
+                CGPoint origin = CGPointMake(MAX(frame.origin.x, margin), yPos);
                 
                 if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
                     UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)

@@ -3551,6 +3551,15 @@ haveVV:
                             
                             mapOrigin.y = MIN((inView.frame.size.height - legendHeight),
                                               mapOrigin.y);
+                            
+                            if (UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeLeft ||
+                                UIApplication.sharedApplication.statusBarOrientation == UIDeviceOrientationLandscapeRight)
+                            {
+                                tl.landscapeMapOrigin = mapOrigin;
+                            }
+                            
+                            else
+                                tl.portraitMapOrigin = mapOrigin;
                         }
                 }
                 
