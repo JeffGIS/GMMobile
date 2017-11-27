@@ -657,41 +657,43 @@ displayCharacteristics:(DisplayCharacteristics *)dc
                                 [self fillArea:context nPoints:np
                                         points:llpoints
                                      withColor:color];
-                                NSString * text = _dc.string2;
-                                if (text.length)
+                                if (_zoom > 13)
                                 {
-                                    UIColor *textColor = UIColor.redColor;
-                                    CGFloat fontSize = 32.0 * screenScale;
-                                    //LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
-                                    
-                                    CGFloat minFontSize = fontSize / 3;
-                                    //if (nTextFields < 2)
-                                    //    minFontSize = 6 * screenScale;
-                                    for (int iloop = 0;iloop < psCShape->nParts;iloop++)
+                                    NSString * text = _dc.string2;
+                                    if (text.length)
                                     {
-                                        int istartLoop = psCShape->panPartStart[iloop] + iloop;
-                                        int npInLoop;
-                                        if (iloop+1 < psCShape->nParts)
-                                            npInLoop = psCShape->panPartStart[iloop+1] - psCShape->panPartStart[iloop];
-                                        else
-                                            npInLoop = psCShape->nVertices - psCShape->panPartStart[iloop];
-                                        if (ShowTextInLoop (&llpoints[istartLoop],npInLoop,pvbounds))
+                                        UIColor *textColor = UIColor.redColor;
+                                        CGFloat fontSize = 32.0 * screenScale;
+                                        //LPSTR pTextValue[MAX_NVM_TEXT_FIELDS];
+                                        
+                                        CGFloat minFontSize = fontSize / 3;
+                                        //if (nTextFields < 2)
+                                        //    minFontSize = 6 * screenScale;
+                                        for (int iloop = 0;iloop < psCShape->nParts;iloop++)
                                         {
-                                            BOOL st = [NVTextDrawing drawText:text
-                                                            inContext:context
-                                                        withinPolygon:&llpoints[istartLoop]
-                                                        withNumPoints:npInLoop
-                                                          andNumLoops:1
-                                                              loopLen:psCShape->panPartStart
-                                                         withinBounds:pvbounds
-                                                             fontSize:fontSize
-                                                          minFontSize:minFontSize
-                                                            textColor:textColor
-                                                         processingID:_processingID];
+                                            int istartLoop = psCShape->panPartStart[iloop] + iloop;
+                                            int npInLoop;
+                                            if (iloop+1 < psCShape->nParts)
+                                                npInLoop = psCShape->panPartStart[iloop+1] - psCShape->panPartStart[iloop];
+                                            else
+                                                npInLoop = psCShape->nVertices - psCShape->panPartStart[iloop];
+                                            if (ShowTextInLoop (&llpoints[istartLoop],npInLoop,pvbounds))
+                                            {
+                                                BOOL st = [NVTextDrawing drawText:text
+                                                                        inContext:context
+                                                                    withinPolygon:&llpoints[istartLoop]
+                                                                    withNumPoints:npInLoop
+                                                                      andNumLoops:1
+                                                                          loopLen:psCShape->panPartStart
+                                                                     withinBounds:pvbounds
+                                                                         fontSize:fontSize
+                                                                      minFontSize:minFontSize
+                                                                        textColor:textColor
+                                                                     processingID:_processingID];
+                                            }
                                         }
                                     }
                                 }
-                                
                                 free (llpoints);
                             }
                             else
