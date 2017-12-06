@@ -3,6 +3,7 @@
 
 #import "AppDelegate.h"
 @import GoogleMaps;
+@import AVFoundation;
 #import "CCodeLibrary/NVDateRange.h"
 #import "CCodeLibrary/UserDefaults.h"
 #import "CCodeLibrary/SharedDefaults.h"
@@ -102,6 +103,12 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                                  delegate:self];
         }
     }
+    
+    NSError *error = nil;
+    [AVAudioSession.sharedInstance setCategory:AVAudioSessionCategoryPlayback error:&error];
+    
+    if (error)
+        NSLog(@"AVAudioSession set category ERROR: %@", error.localizedDescription);
     
     return YES;
 }
