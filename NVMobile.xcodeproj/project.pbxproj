@@ -61,6 +61,7 @@
 		695F86101F7C48A9002018D8 /* config.png in Resources */ = {isa = PBXBuildFile; fileRef = 695F860F1F7C4895002018D8 /* config.png */; };
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
+		696DDDF71FD752A1008F4CBD /* NVCrimeList.txt in Resources */ = {isa = PBXBuildFile; fileRef = 696DDDF41FD752A0008F4CBD /* NVCrimeList.txt */; };
 		697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */; };
 		697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */; };
 		697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */; };
@@ -359,6 +360,7 @@
 		695F860F1F7C4895002018D8 /* config.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = config.png; sourceTree = "<group>"; };
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
+		696DDDF41FD752A0008F4CBD /* NVCrimeList.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NVCrimeList.txt; sourceTree = "<group>"; };
 		697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueInfoMarker.png; sourceTree = "<group>"; };
 		697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenInfoMarker.png; sourceTree = "<group>"; };
 		697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeInfoMarker.png; sourceTree = "<group>"; };
@@ -695,6 +697,7 @@
 		6976D00A1D4FD291006098FA /* HelpFiles */ = {
 			isa = PBXGroup;
 			children = (
+				696DDDF41FD752A0008F4CBD /* NVCrimeList.txt */,
 				69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */,
 				6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */,
 			);
@@ -1277,6 +1280,7 @@
 				EB5521DB1A61B6A8008CE2D1 /* Main.storyboard in Resources */,
 				69DA47891C74CEFC0042E47F /* singleArrowForward.png in Resources */,
 				692C94361BFCDE9F004D97A1 /* dragIcon.png in Resources */,
+				696DDDF71FD752A1008F4CBD /* NVCrimeList.txt in Resources */,
 				69F5B2281BC5A56600119212 /* editOptions.png in Resources */,
 				69352E511C1A7D57009A486B /* grayscale.png in Resources */,
 				BB8B969D1E8568CA00B6A9F7 /* Part2-1.png in Resources */,

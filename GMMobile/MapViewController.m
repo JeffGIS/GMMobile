@@ -49,6 +49,7 @@
 #import "CCodeLibrary/NVAlertView.h"
 #import "ThemeLegendMapOverlay.h"
 #import "CCodeLibrary/FTPDirectoryList.h"
+#import "CCodeLibrary/YTPlayerView.h"
 
 #define MAX_VECTORVIEWS 8
 
@@ -70,9 +71,9 @@
     UITabBarControllerDelegate,UIGestureRecognizerDelegate,NVPanoramaViewDelegate,NVGeocoderDelegate,
     GMSMapViewDelegate,UIGestureRecognizerDelegate,UITableViewDataSource,UITableViewDelegate,
     NVAlertViewDelegate,MapToolbarDelegate,VectorViewDelegate,CLLocationManagerDelegate,MarkerInfoWindowDelegate,
-    PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,
-    NVLegendViewDelegate,NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,
-    ThemeLegendMapOverlayDelegate,CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate>
+    PipeTraceDelegate,MarkerButtonDelegate,PlatImageViewDelegate,GSSiNotesViewDelegate,NVLegendViewDelegate,
+    NVTwoTextAlertDelegate,NVDataLoaderDelegate,NSURLConnectionDataDelegate,ThemeLegendMapOverlayDelegate,
+    CrimeDataDelegate,GSSiPopoverViewDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate>
 
 @property (nonatomic) MGVPlatData *mgvData;
 @property (nonatomic) CLLocationCoordinate2D target, selectedPIDCoords, currentLocation;
@@ -134,6 +135,8 @@
 @property (nonatomic) UITapGestureRecognizer *zoomExtentsGesture;
 @property BOOL continueLoad, fromLegends2X;
 @property (nonatomic) GMSCameraPosition *currentPosition;
+@property (nonatomic) YTPlayerView *youTubePlayer;
+@property (nonatomic) UIButton *ytReturnButton;
 
 @end
 
@@ -4627,13 +4630,15 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
                                       });
                    });
 }
-- (void) GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
+
+- (void)GSSiPopoverViewdidCancel:(GSSiPopoverView *)popoverView
 {
     if (_continueLoad)
         _continueLoad = NO;
     else
         [popoverView hide];
 }
+
 - (void)displayCensusDataChart
 {
     ChartsViewController *pieChartVC = [ChartsViewController chartViewWithType:ChartsViewTypeCensusDataPie];
@@ -5890,12 +5895,49 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 
 - (void)mapToolbarDidSelectHelpButton
 {
-    NSString *filePath = [NSBundle.mainBundle pathForResource:@"DOES_NOT_EXIST" ofType:@"pdf"];
+    NSMutableString *helpList = NSMutableString.string;
+    NSString *appName = @"";
+    [helpList appendString:@"List"];
     
-    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
-                                    showFileAtPath:filePath
-                                          delegate:nil];
-#pragma unused(nvwv)
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigCrimes:
+            appName = @"NVCrime";
+            break;
+        default:break;
+    }
+    
+    [helpList insertString:appName atIndex:0];
+    
+    if (helpList && ![helpList isEqualToString:@"List"])
+    {
+        NSString *filePath = [NSBundle.mainBundle pathForResource:helpList
+                                                           ofType:@"txt"];
+        
+        NSURL *url = [NSURL fileURLWithPath:filePath];
+        NSError *error = nil;
+        
+        NSString *helpText = [NSString stringWithContentsOfURL:url
+                                                      encoding:NSUTF8StringEncoding
+                                                         error:&error];
+        
+        if (helpText)
+        {
+            NSArray *helpTopics = [helpText componentsSeparatedByString:@"\n"];
+            
+            NVPopoverTableView *nvptv =
+            [NVPopoverTableView showPopoverTableViewInView:self.view
+                                                  delegate:self
+                                                     title:[NSString stringWithFormat:@"Help Topics for %@", appName]
+                                                 textArray:helpTopics
+                                             includeCancel:YES];
+            
+            nvptv.identifier = @"HelpList";
+        }
+        
+        else
+            NSLog(@"Help List ERROR: %@", error.localizedDescription);
+    }
 }
 
 - (void)mapToolbarDidSelectDigitize
@@ -6433,29 +6475,86 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    [popoverTableView hide:YES];
-    
-    if ([text isEqualToString:@"View Overall Property Report"])
+    if ([popoverTableView.identifier isEqualToString:@"HelpList"])
     {
+        self.tabBarController.tabBar.hidden = YES;
+        [self clearVectorView];
         
-    }
-    
-    else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
-    {
+        for (UIView *subviews in self.view.subviews)
+            subviews.hidden = YES;
         
+        NSString *videoID = textAfter(text, @"watch?v=");
+        _youTubePlayer = YTPlayerView.new;
+        _youTubePlayer.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.view addSubview:_youTubePlayer];
+        [_youTubePlayer constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+        
+        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+        _ytReturnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _ytReturnButton.translatesAutoresizingMaskIntoConstraints = NO;
+        _ytReturnButton.backgroundColor = UIColor.clearColor;
+        [_ytReturnButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+        [_ytReturnButton setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
+        [_ytReturnButton setTitle:@"< Return" forState:UIControlStateNormal];
+        _ytReturnButton.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+        
+        [_ytReturnButton addTarget:self
+                            action:@selector(returnFromYTPlayer:)
+                  forControlEvents:UIControlEventTouchUpInside];
+        
+        [self.view addSubview:_ytReturnButton];
+        [_ytReturnButton constrainTopToAnchor:self.view.topAnchor constant:statusBarHeight];
+        [_ytReturnButton constrainCenterXToAnchor:self.view.centerXAnchor];
+        
+        if (![_youTubePlayer loadWithVideoId:videoID])
+        {
+            NSLog(@"YTPlayerView Load ERROR");
+            [self returnFromYTPlayer:nil];
+        }
     }
     
     else
     {
-        PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index - 2];
-        _infoWindow.linkedPID = YES;
-        _infoWindow.optionsTitle = ped.PIN;
+        if ([text isEqualToString:@"View Overall Property Report"])
+        {
+            
+        }
         
-        [self markerInfoWindowDidSelectOptions:ped.PIN
-                                         refno:0
-                                        coords:_selectedPIDCoords
-                                          type:MarkerInfoWindowTypePID];
+        else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
+        {
+            
+        }
+        
+        else
+        {
+            PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index - 2];
+            _infoWindow.linkedPID = YES;
+            _infoWindow.optionsTitle = ped.PIN;
+            
+            [self markerInfoWindowDidSelectOptions:ped.PIN
+                                             refno:0
+                                            coords:_selectedPIDCoords
+                                              type:MarkerInfoWindowTypePID];
+        }
     }
+    
+    [popoverTableView hide:YES];
+}
+
+- (void)returnFromYTPlayer:(UIButton *)button
+{
+    [_ytReturnButton removeFromSuperview];
+    [_youTubePlayer stopVideo];
+    [_youTubePlayer removeFromSuperview];
+    self.tabBarController.tabBar.hidden = NO;
+    
+    for (UIView *subviews in self.view.subviews)
+    {
+        if (![subviews isKindOfClass:GSSiPopoverView.class] && subviews != _tableView)
+            subviews.hidden = NO;
+    }
+
+    [self vectorViewRefresh];
 }
 
 - (void)markerInfoWindowDidSelectOptions:(NSString *)title
@@ -7106,7 +7205,11 @@ BOOL CLLocationCoordinateEqual(CLLocationCoordinate2D coordinate1, CLLocationCoo
 
 - (void)vectorViewRefresh
 {
-    [self refreshVectorView:_mapView.projection.visibleRegion atZoom:_mapView.camera.zoom];
+    if (![self.view.subviews containsObject:_youTubePlayer])
+    {
+        [self refreshVectorView:_mapView.projection.visibleRegion
+                         atZoom:_mapView.camera.zoom];
+    }
 }
 
 - (void)geocoderDidReturnAddresses:(NSArray<GMSAddress *> *)addresses
