@@ -104,6 +104,9 @@
 		69DB8ADE1BE3D86F009372AC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADD1BE3D86F009372AC /* libsqlite3.tbd */; };
 		69DB8AE01BE3D8CF009372AC /* libCCodeLibrary.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DB8ADF1BE3D8CF009372AC /* libCCodeLibrary.a */; };
 		69E0BB831DBE522A003555DD /* NVSpreadsheetDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */; };
+		69E2E7E11FD8628000050D10 /* ytIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E2E7E01FD8628000050D10 /* ytIcon.png */; };
+		69E2E7E31FD864E800050D10 /* pdfIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E2E7E21FD864E800050D10 /* pdfIcon.png */; };
+		69E2E7E61FD86E6300050D10 /* NVCrimeIntro.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 69E2E7E51FD86E6300050D10 /* NVCrimeIntro.pdf */; };
 		69E62D4B1BBF073F0018390B /* diagonalArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4A1BBF073F0018390B /* diagonalArrow.png */; };
 		69E62D4E1BBF25EF0018390B /* FieldOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */; };
 		69E62D501BBF276B0018390B /* fieldOptions.png in Resources */ = {isa = PBXBuildFile; fileRef = 69E62D4F1BBF276B0018390B /* fieldOptions.png */; };
@@ -415,6 +418,9 @@
 		69DFE3A01BD0AE0E0006D4C9 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		69E0BB811DBE522A003555DD /* NVSpreadsheetDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NVSpreadsheetDelegate.h; sourceTree = "<group>"; };
 		69E0BB821DBE522A003555DD /* NVSpreadsheetDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NVSpreadsheetDelegate.m; sourceTree = "<group>"; };
+		69E2E7E01FD8628000050D10 /* ytIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ytIcon.png; sourceTree = "<group>"; };
+		69E2E7E21FD864E800050D10 /* pdfIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pdfIcon.png; sourceTree = "<group>"; };
+		69E2E7E51FD86E6300050D10 /* NVCrimeIntro.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = NVCrimeIntro.pdf; sourceTree = "<group>"; };
 		69E62D4A1BBF073F0018390B /* diagonalArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = diagonalArrow.png; sourceTree = "<group>"; };
 		69E62D4C1BBF25EF0018390B /* FieldOptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FieldOptionsViewController.h; sourceTree = "<group>"; };
 		69E62D4D1BBF25EF0018390B /* FieldOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FieldOptionsViewController.m; sourceTree = "<group>"; };
@@ -698,15 +704,26 @@
 			isa = PBXGroup;
 			children = (
 				696DDDF41FD752A0008F4CBD /* NVCrimeList.txt */,
+				69E2E7E41FD86E4900050D10 /* NVCrime */,
 				69C0F8651D517C8300217F28 /* NVCRISHelp_SlopeVC.pdf */,
 				6976D00D1D4FD457006098FA /* NVCRISHelp_Calibration.pdf */,
 			);
 			name = HelpFiles;
 			sourceTree = "<group>";
 		};
+		69E2E7E41FD86E4900050D10 /* NVCrime */ = {
+			isa = PBXGroup;
+			children = (
+				69E2E7E51FD86E6300050D10 /* NVCrimeIntro.pdf */,
+			);
+			name = NVCrime;
+			sourceTree = "<group>";
+		};
 		A90506341A75DCE300288850 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				69E2E7E21FD864E800050D10 /* pdfIcon.png */,
+				69E2E7E01FD8628000050D10 /* ytIcon.png */,
 				694D99F71FAA396A0023FD37 /* redArrowLeft.png */,
 				694D99F61FAA396A0023FD37 /* redArrowRight.png */,
 				6991ED2E1FA9115F007306B2 /* redX.png */,
@@ -1351,15 +1368,18 @@
 				BB8B969F1E8568CA00B6A9F7 /* Legends.png in Resources */,
 				69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */,
 				69FDA4361EE7838A00BA9735 /* glossary.png in Resources */,
+				69E2E7E11FD8628000050D10 /* ytIcon.png in Resources */,
 				694F00761C1B2A000074AF72 /* emailIcon.png in Resources */,
 				698C20CB1DCBC46B00F800C3 /* dismissKeyboard.png in Resources */,
 				EB4A58241FB7555400B8B613 /* hourglass2.png in Resources */,
 				EB4A58231FB7555400B8B613 /* hourglass4.png in Resources */,
 				EB4A58321FB89A7B00B8B613 /* happy6.png in Resources */,
 				EB4A582F1FB89A7B00B8B613 /* happy5.png in Resources */,
+				69E2E7E31FD864E800050D10 /* pdfIcon.png in Resources */,
 				69D625571FA3F1F6008D6F08 /* hsvPlay.png in Resources */,
 				69F1774A1D7A0C9400741C68 /* GooglePlacePicker.bundle in Resources */,
 				EB4A58351FB89A7B00B8B613 /* happy4.png in Resources */,
+				69E2E7E61FD86E6300050D10 /* NVCrimeIntro.pdf in Resources */,
 				EB398F071ABC61C40043875E /* landusecodes.txt in Resources */,
 				69DA478B1C74CEFC0042E47F /* doubleArrowReverse.png in Resources */,
 				6948ED341EC50D7A00809632 /* NVMobileIcon1024.png in Resources */,

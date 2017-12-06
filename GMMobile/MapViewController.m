@@ -4713,6 +4713,7 @@ DPOINT PercentPoint (DPOINT p,double w,double h)
 - (void)webViewDidReturn:(NVWebView *)webView
 {
     [webView hide:YES];
+    self.tabBarController.tabBar.hidden = NO;
     [self vectorViewRefresh];
 }
 
@@ -5911,7 +5912,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     if (helpList && ![helpList isEqualToString:@"List"])
     {
-        NSString *filePath = [NSBundle.mainBundle pathForResource:helpList
+        NSString *filePath = [NSBundle.mainBundle pathForResource:helpList.copy
                                                            ofType:@"txt"];
         
         NSURL *url = [NSURL fileURLWithPath:filePath];
@@ -5932,7 +5933,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
                                                  textArray:helpTopics
                                              includeCancel:YES];
             
-            nvptv.identifier = @"HelpList";
+            nvptv.parseTextToButtons = YES;
         }
         
         else
@@ -6472,70 +6473,100 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
 }
 
 - (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+didSelectYTButtonWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    self.tabBarController.tabBar.hidden = YES;
+    [self clearVectorView];
+    
+    for (UIView *subviews in self.view.subviews)
+        subviews.hidden = YES;
+    
+    _youTubePlayer = YTPlayerView.new;
+    _youTubePlayer.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_youTubePlayer];
+    [_youTubePlayer constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
+    
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    _ytReturnButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _ytReturnButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _ytReturnButton.backgroundColor = UIColor.clearColor;
+    [_ytReturnButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+    [_ytReturnButton setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
+    [_ytReturnButton setTitle:@"< Return" forState:UIControlStateNormal];
+    _ytReturnButton.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
+    
+    [_ytReturnButton addTarget:self
+                        action:@selector(returnFromYTPlayer:)
+              forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:_ytReturnButton];
+    [_ytReturnButton constrainTopToAnchor:self.view.topAnchor constant:statusBarHeight];
+    [_ytReturnButton constrainCenterXToAnchor:self.view.centerXAnchor];
+    
+    if (![_youTubePlayer loadWithVideoId:text])
+    {
+        NSLog(@"YTPlayerView Load ERROR");
+        [self returnFromYTPlayer:nil];
+    }
+    
+    [popoverTableView hide:YES];
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
+didSelectPDFButtonWithText:(NSString *)text
+                 atIndex:(NSInteger)index
+{
+    NSMutableString *fileName = NSMutableString.string;
+    NSString *appName = @"";
+    [fileName appendString:text];
+    
+    switch (ConfigurationControl.sharedInstance.currentApp)
+    {
+        case HCConfigCrimes:
+            appName = @"NVCrime";
+            break;
+        default:break;
+    }
+    
+    [fileName insertString:appName atIndex:0];
+    
+    NSString *filePath = [NSBundle.mainBundle pathForResource:fileName.copy
+                                                       ofType:@"pdf"];
+    
+    NVWebView *nvwv = [NVWebView showWebViewInView:self.view
+                                    showFileAtPath:filePath
+                                          delegate:self];
+#pragma unused(nvwv)
+    
+    self.tabBarController.tabBar.hidden = YES;
+    [popoverTableView hide:YES];
+}
+
+- (void)popoverTableView:(NVPopoverTableView *)popoverTableView
     didSelectRowWithText:(NSString *)text
                  atIndex:(NSInteger)index
 {
-    if ([popoverTableView.identifier isEqualToString:@"HelpList"])
+    if ([text isEqualToString:@"View Overall Property Report"])
     {
-        self.tabBarController.tabBar.hidden = YES;
-        [self clearVectorView];
         
-        for (UIView *subviews in self.view.subviews)
-            subviews.hidden = YES;
+    }
+    
+    else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
+    {
         
-        NSString *videoID = textAfter(text, @"watch?v=");
-        _youTubePlayer = YTPlayerView.new;
-        _youTubePlayer.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.view addSubview:_youTubePlayer];
-        [_youTubePlayer constrainToView:self.view leading:0.0 trailing:0.0 top:0.0 bottom:0.0];
-        
-        CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-        _ytReturnButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _ytReturnButton.translatesAutoresizingMaskIntoConstraints = NO;
-        _ytReturnButton.backgroundColor = UIColor.clearColor;
-        [_ytReturnButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
-        [_ytReturnButton setTitleColor:UIColor.lightGrayColor forState:UIControlStateHighlighted];
-        [_ytReturnButton setTitle:@"< Return" forState:UIControlStateNormal];
-        _ytReturnButton.titleLabel.font = [UIFont boldSystemFontOfSize:32.0];
-        
-        [_ytReturnButton addTarget:self
-                            action:@selector(returnFromYTPlayer:)
-                  forControlEvents:UIControlEventTouchUpInside];
-        
-        [self.view addSubview:_ytReturnButton];
-        [_ytReturnButton constrainTopToAnchor:self.view.topAnchor constant:statusBarHeight];
-        [_ytReturnButton constrainCenterXToAnchor:self.view.centerXAnchor];
-        
-        if (![_youTubePlayer loadWithVideoId:videoID])
-        {
-            NSLog(@"YTPlayerView Load ERROR");
-            [self returnFromYTPlayer:nil];
-        }
     }
     
     else
     {
-        if ([text isEqualToString:@"View Overall Property Report"])
-        {
-            
-        }
+        PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index - 2];
+        _infoWindow.linkedPID = YES;
+        _infoWindow.optionsTitle = ped.PIN;
         
-        else if ([text isEqualToString:@"Add All Units to Spreadsheet"])
-        {
-            
-        }
-        
-        else
-        {
-            PropertyDataExtract *ped = (PropertyDataExtract *)_linkedList[index - 2];
-            _infoWindow.linkedPID = YES;
-            _infoWindow.optionsTitle = ped.PIN;
-            
-            [self markerInfoWindowDidSelectOptions:ped.PIN
-                                             refno:0
-                                            coords:_selectedPIDCoords
-                                              type:MarkerInfoWindowTypePID];
-        }
+        [self markerInfoWindowDidSelectOptions:ped.PIN
+                                         refno:0
+                                        coords:_selectedPIDCoords
+                                          type:MarkerInfoWindowTypePID];
     }
     
     [popoverTableView hide:YES];
@@ -6550,7 +6581,7 @@ didTapButtonAtIndex:(NSInteger)buttonIndex
     
     for (UIView *subviews in self.view.subviews)
     {
-        if (![subviews isKindOfClass:GSSiPopoverView.class] && subviews != _tableView)
+        if (![subviews isKindOfClass:GSSiPopoverView.class] && subviews != _tableView && subviews != _myLocationMarker)
             subviews.hidden = NO;
     }
 
