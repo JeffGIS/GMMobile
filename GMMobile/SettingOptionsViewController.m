@@ -19,6 +19,7 @@
 #import "CreateBatchCrimeMaps.h"
 #import "CCodeLibrary/ChartsBitmap.h"
 #import "CCodeLibrary/HotSpotVideoVC.h"
+#import "CCodeLibrary/CRAPI.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -356,19 +357,22 @@ EAGLContext *CreateBestEAGLContext()
     
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
     {
-        _tableView.rowHeight = 48.0;
+        _tableView.rowHeight = 38.0;
         margin = 8.0;
     }
     
     else
     {
-        _tableView.rowHeight = 72.0;
+        _tableView.rowHeight = 64.0;
         margin = 20.0;
     }
     
-     [_tableView constrainToView:self.view leading:margin trailing:-margin top:statusBarHeight bottom:-_versionLabel.frame.size.height];
+     [_tableView constrainToView:self.view
+                         leading:margin
+                        trailing:-margin top:statusBarHeight
+                          bottom:-_versionLabel.frame.size.height];
+    
     _popoverView = [[GSSiPopoverView alloc] initWithView:self.view];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -380,7 +384,8 @@ EAGLContext *CreateBestEAGLContext()
     
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
-                  @"Create Charts Bitmap File", @"Display Current HotSpot Video"];
+                  @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Start Advertising Peer",
+                  @"Stop Advertising Peer", @"Start Browsing for Peers", @"Stop Browsing for Peers"];
     
     //,@"Compress Crime Data"];//,@"Upload Crime Data"];
     
@@ -716,6 +721,30 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                                     title:@"Enter Email Addresses Separated by Commas"
                                                                      text:recipientsString];
 #pragma unused(nvtva)
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Start Advertising Peer"])
+    {
+        [CRAPI.sharedInstance.peerConnect startAdvertising];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Stop Advertising Peer"])
+    {
+        [CRAPI.sharedInstance.peerConnect stopAdvertising];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Start Browsing for Peers"])
+    {
+        [CRAPI.sharedInstance.peerConnect startBrowsing];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Stop Browsing for Peers"])
+    {
+        [CRAPI.sharedInstance.peerConnect stopBrowsing];
     }
 }
 
