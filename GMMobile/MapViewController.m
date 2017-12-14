@@ -50,6 +50,8 @@
 #import "ThemeLegendMapOverlay.h"
 #import "CCodeLibrary/FTPDirectoryList.h"
 #import "CCodeLibrary/YTPlayerView.h"
+#import "CCodeLibrary/RHRecorder.h"
+#import "CCodeLibrary/RHPlayer.h"
 
 #define MAX_VECTORVIEWS 8
 

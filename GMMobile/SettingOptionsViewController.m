@@ -20,6 +20,8 @@
 #import "CCodeLibrary/ChartsBitmap.h"
 #import "CCodeLibrary/HotSpotVideoVC.h"
 #import "CCodeLibrary/CRAPI.h"
+#import "CCodeLibrary/RHRecorder.h"
+#import "CCodeLibrary/RHPlayer.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -50,6 +52,92 @@
 @end
 
 @implementation SettingOptionsViewController
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = UserDefaults.defaults.appleGray;
+    
+    UIImage *autoUpload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"autoUpload"
+                                                                                         ofType:@"png"]];
+    
+    UIImage *loadData = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"loadData"
+                                                                                       ofType:@"png"]];
+    
+    UIImage *upload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"upload"
+                                                                                     ofType:@"png"]];
+    
+    UIImage *update = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"update"
+                                                                                     ofType:@"png"]];
+    
+    UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
+                                                                                        ofType:@"png"]];
+    
+    UIImage *version = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"versionHistory"
+                                                                                      ofType:@"png"]];
+    
+    UIImage *glossary = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"glossary"
+                                                                                       ofType:@"png"]];
+    
+    /*UIImage *trackLocation = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"trackLocation"
+     ofType:@"png"]];*/
+    
+    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, version, glossary, nil];
+    CGFloat margin = 0.0;
+    
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    _tableView.bounces = NO;
+    _tableView.delaysContentTouches = NO;
+    _tableView.layer.cornerRadius = 10.0;
+    _totalPages = _numElements = _currentElement = 0;
+    
+    _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
+    _versionLabel.adjustsFontSizeToFitWidth = YES;
+    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+    {
+        _tableView.rowHeight = 38.0;
+        margin = 8.0;
+    }
+    
+    else
+    {
+        _tableView.rowHeight = 64.0;
+        margin = 20.0;
+    }
+    
+    [_tableView constrainToView:self.view
+                        leading:margin
+                       trailing:-margin top:statusBarHeight
+                         bottom:-_versionLabel.frame.size.height];
+    
+    _popoverView = [[GSSiPopoverView alloc] initWithView:self.view];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    /*removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages, @"Test Keyboard",
+     @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location",
+     @"Set Default Email Recipients, @"Compress Crime Data"];//,@"Upload Crime Data"*/
+    
+    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
+                  @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
+                  @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Show RiteHome Recorder",
+                  @"Show RiteHome Player"];
+    
+    [_tableView reloadData];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
 
 - (void)setupHotspotTest
 {
@@ -308,93 +396,6 @@ EAGLContext *CreateBestEAGLContext()
         [_hotspotView removeFromSuperview];
     
     self.tabBarController.tabBar.hidden = NO;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    self.view.backgroundColor = UserDefaults.defaults.appleGray;
-    
-    UIImage *autoUpload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"autoUpload"
-                                                                                         ofType:@"png"]];
-    
-    UIImage *loadData = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"loadData"
-                                                                                       ofType:@"png"]];
-    
-    UIImage *upload = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"upload"
-                                                                                     ofType:@"png"]];
-    
-    UIImage *update = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"update"
-                                                                                     ofType:@"png"]];
-    
-    UIImage *calibrate = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"calibrate"
-                                                                                        ofType:@"png"]];
-    
-    UIImage *version = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"versionHistory"
-                                                                                      ofType:@"png"]];
-    
-    UIImage *glossary = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"glossary"
-                                                                                       ofType:@"png"]];
-    
-    /*UIImage *trackLocation = [UIImage imageWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"trackLocation"
-                                                                                            ofType:@"png"]];*/
-    
-    _images = [NSArray arrayWithObjects:autoUpload, upload, loadData, update, calibrate, version, glossary, nil];
-    CGFloat margin = 0.0;
-    
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.bounces = NO;
-    _tableView.delaysContentTouches = NO;
-    _tableView.layer.cornerRadius = 10.0;
-    _totalPages = _numElements = _currentElement = 0;
-    
-    _versionLabel.text = [NSString stringWithFormat:@"NVMobile Version %@", UIApplication.appVersionBuild];
-    _versionLabel.adjustsFontSizeToFitWidth = YES;
-    CGFloat statusBarHeight = [self statusBarHeight:UIApplication.sharedApplication.statusBarOrientation];
-    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
-    {
-        _tableView.rowHeight = 38.0;
-        margin = 8.0;
-    }
-    
-    else
-    {
-        _tableView.rowHeight = 64.0;
-        margin = 20.0;
-    }
-    
-     [_tableView constrainToView:self.view
-                         leading:margin
-                        trailing:-margin top:statusBarHeight
-                          bottom:-_versionLabel.frame.size.height];
-    
-    _popoverView = [[GSSiPopoverView alloc] initWithView:self.view];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    /*removed: @"Access Contacts", @"Draw hotspottest.bin", @"Compute PDF Pages, @"Test Keyboard",
-     @"Test Calendar Interface", @"Watch TestDrive Training Video, @"Track Location", @"Set Default Email Recipients"*/
-    
-    _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
-                  @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
-                  @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Start Advertising Peer",
-                  @"Stop Advertising Peer", @"Start Browsing for Peers", @"Stop Browsing for Peers"];
-    
-    //,@"Compress Crime Data"];//,@"Upload Crime Data"];
-    
-    [_tableView reloadData];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -724,27 +725,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Start Advertising Peer"])
+              isEqualToString:@"Show RiteHome Recorder"])
     {
-        [CRAPI.sharedInstance.peerConnect startAdvertising];
+        RHRecorder *recorder = RHRecorder.new;
+        [self presentViewController:recorder animated:NO completion:nil];
     }
     
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Stop Advertising Peer"])
+              isEqualToString:@"Show RiteHome Player"])
     {
-        [CRAPI.sharedInstance.peerConnect stopAdvertising];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Start Browsing for Peers"])
-    {
-        [CRAPI.sharedInstance.peerConnect startBrowsing];
-    }
-    
-    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
-              isEqualToString:@"Stop Browsing for Peers"])
-    {
-        [CRAPI.sharedInstance.peerConnect stopBrowsing];
+        RHPlayer *player = RHPlayer.new;
+        [self presentViewController:player animated:NO completion:nil];
     }
 }
 

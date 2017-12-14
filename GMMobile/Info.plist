@@ -49,7 +49,9 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Take photos for field survey</string>
+	<string>Create user initiated video content</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Create user initiated audio content</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Get contacts for email</string>
 	<key>NSLocationAlwaysUsageDescription</key>
