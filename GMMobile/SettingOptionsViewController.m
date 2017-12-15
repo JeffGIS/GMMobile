@@ -129,7 +129,7 @@
     _contents = @[@"Auto Update", @"Synchronize", @"Load Data", @"Update Data", @"Calibrate Device",
                   @"See Version History", @"See Glossary of Terms", @"Create Background Crime Maps",
                   @"Create Charts Bitmap File", @"Display Current HotSpot Video", @"Show RiteHome Recorder",
-                  @"Show RiteHome Player"];
+                  @"Show RiteHome Player", @"Realtor.com Property Search"];
     
     [_tableView reloadData];
 }
@@ -736,6 +736,40 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     {
         RHPlayer *player = RHPlayer.new;
         [self presentViewController:player animated:NO completion:nil];
+    }
+    
+    else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
+              isEqualToString:@"Realtor.com Property Search"])
+    {
+        NSString *urlString = @"https://www.realtor.com/realestateandhomes-search/55343?pgsz=50";
+        NSURL *url = [[NSURL alloc] initWithString:urlString];
+        NSURLSession *session = NSURLSession.sharedSession;
+        
+        [[session dataTaskWithURL:url
+                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                    NSString *htmlString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                    NSString *separator = @"js-record-user-activity";
+                    htmlString = textAfter(htmlString, separator);
+                    NSArray *htmlArray = [htmlString componentsSeparatedByString:separator];
+                    
+                    for (NSString *item in htmlArray)
+                    {
+                        NSString *address = textAfter(item, @"streetAddress");
+                        address = textBefore(textAfter(address, @">"), @"</");
+                        NSString *city = textAfter(item, @"addressLocality");
+                        city = textBefore(textAfter(city, @">"), @"</");
+                        NSString *state = textAfter(item, @"addressRegion");
+                        state = textBefore(textAfter(state, @">"), @"</");
+                        NSString *zip = textAfter(item, @"postalCode");
+                        zip = textBefore(textAfter(zip, @">"), @"</");
+                        NSString *coordinates = textAfter(item, @"GeoCoordinates");
+                        coordinates = textAfter(coordinates, @"content=\"");
+                        NSString *latitude = textBefore(coordinates, @"\"");
+                        coordinates = textAfter(coordinates, @"content=\"");
+                        NSString *longitude = textBefore(coordinates, @"\"");
+                        NSLog(@"%@, %@, %@ %@ (%@,%@)", address, city, state, zip, latitude, longitude);
+                    }
+                }] resume];
     }
 }
 
