@@ -41,11 +41,12 @@
 @property (nonatomic) CGFloat rotation;
 @property (nonatomic) UIImageView *hotspotView;
 @property (nonatomic) vec3 *vecGrid;
-@property (nonatomic) int len, totalPages, numElements, currentElement;
+@property (nonatomic) int len, totalPages, numElements, currentElement, zip, numZips, numListings;
 @property (nonatomic) CrimeData *cd;
 @property (nonatomic) NVTextAlert *textAlert;
 @property (nonatomic) NVKeyboard *keyboard;
 @property (nonatomic) GSSiPopoverView *popoverView;
+@property (nonatomic, copy) NSArray<NSString *> *zips;
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLabel;
@@ -742,18 +743,43 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Realtor.com Property Search"])
     {
-        RHSearch *search = [RHSearch searchWithDelegate:self];
-        [search getItemsForZip:55343];
+        NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
+        
+        NSString *text = [NSString stringWithContentsOfFile:filePath
+                                                   encoding:NSUTF8StringEncoding
+                                                      error:nil];
+        
+        _zips = [text componentsSeparatedByString:@"\n"];
+        [self searchPropsForZip];
     }
 }
 
-- (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
+- (void)searchPropsForZip
 {
-    for (RHSearchItem *item in items)
-    {
-        NSLog(@"%@, %@, %@ %@ (%f,%f)",
-              item.address, item.city, item.state, item.zip, item.coordinate.latitude, item.coordinate.longitude);
-    }
+    RHSearch *search = [RHSearch searchWithDelegate:self];
+    _zip = _zips[_numZips++].intValue;
+    [search getItemsForZip:_zip];
+}
+
+- (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
+                      forZip:(int)zip
+{
+    _numListings += items.count;
+    
+    NSLog(@"%i returned %li items", zip, items.count);
+    NSLog(@"%i listings found in %i zips so far", _numListings, _numZips);
+    
+    _zip++;
+    
+    if (_numZips < _zips.count)
+        [self searchPropsForZip];
+}
+
+- (void)searchDidReceiveError:(NSString *)error
+                       forZip:(int)zip
+{
+    NSLog(@"Search for zip %i received ERROR: %@", zip, error);
+    [self searchPropsForZip];
 }
 
 - (void)uploadCrimeData

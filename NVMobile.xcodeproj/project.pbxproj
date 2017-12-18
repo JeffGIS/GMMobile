@@ -62,6 +62,7 @@
 		69674A281BFBBB30001C5C0B /* resizeIn.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A261BFBBB30001C5C0B /* resizeIn.png */; };
 		69674A291BFBBB30001C5C0B /* resizeOut.png in Resources */ = {isa = PBXBuildFile; fileRef = 69674A271BFBBB30001C5C0B /* resizeOut.png */; };
 		696DDDF71FD752A1008F4CBD /* NVCrimeList.txt in Resources */ = {isa = PBXBuildFile; fileRef = 696DDDF41FD752A0008F4CBD /* NVCrimeList.txt */; };
+		696FA9841FE842A600E727DE /* zipcodes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 696FA9831FE842A500E727DE /* zipcodes.txt */; };
 		697560CF1CB1DC77006EEA14 /* blueInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */; };
 		697560D01CB1DC77006EEA14 /* greenInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */; };
 		697560D11CB1DC77006EEA14 /* orangeInfoMarker.png in Resources */ = {isa = PBXBuildFile; fileRef = 697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */; };
@@ -366,6 +367,7 @@
 		69674A261BFBBB30001C5C0B /* resizeIn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeIn.png; sourceTree = "<group>"; };
 		69674A271BFBBB30001C5C0B /* resizeOut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = resizeOut.png; sourceTree = "<group>"; };
 		696DDDF41FD752A0008F4CBD /* NVCrimeList.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NVCrimeList.txt; sourceTree = "<group>"; };
+		696FA9831FE842A500E727DE /* zipcodes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zipcodes.txt; sourceTree = "<group>"; };
 		697560CC1CB1DC77006EEA14 /* blueInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueInfoMarker.png; sourceTree = "<group>"; };
 		697560CD1CB1DC77006EEA14 /* greenInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greenInfoMarker.png; sourceTree = "<group>"; };
 		697560CE1CB1DC77006EEA14 /* orangeInfoMarker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangeInfoMarker.png; sourceTree = "<group>"; };
@@ -1098,6 +1100,7 @@
 		EB5521CC1A61B6A8008CE2D1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				696FA9831FE842A500E727DE /* zipcodes.txt */,
 				69D7939A1F84A28400556F73 /* NVMobile_VersionHistory.pdf */,
 				BB8B96891E85684D00B6A9F7 /* MPD */,
 				BBCDF7DF1E50AE4200156827 /* DataBases */,
@@ -1348,6 +1351,7 @@
 				698F95F51B8CD633007D32A5 /* shoppingCart.png in Resources */,
 				69F5B2261BC5A3BC00119212 /* editText.png in Resources */,
 				69E7FCAC1D81D9A300171E44 /* metalSliderLeftPhone.png in Resources */,
+				696FA9841FE842A600E727DE /* zipcodes.txt in Resources */,
 				A98A57AE1B20AFBE00906FBC /* calibrate.png in Resources */,
 				69483EF61EC5080E00F5C09A /* Images.xcassets in Resources */,
 				A9D2818A1B045BAD00523B29 /* upload.png in Resources */,
