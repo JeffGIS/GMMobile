@@ -26,7 +26,7 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate,GSSiPopoverViewDelegate>
+@interface SettingOptionsViewController () <GLKViewDelegate,NVSynchronizeDelegate,FTPDirectoryListDelegate,FTPDataPullDelegate, NVCalibrationControllerDelegate,UITableViewDataSource,UITableViewDelegate,NVTextAlertDelegate,NVAlertViewDelegate,FTPDataPushDelegate,NVTextViewAlertDelegate,GSSiPopoverViewDelegate,RHSearchDelegate>
 
 @property (nonatomic, copy) NSArray *contents, *images, *elements;
 @property (nonatomic) NVContactPicker *nvcp;
@@ -742,8 +742,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Realtor.com Property Search"])
     {
-        RHSearch *search = RHSearch.new;
+        RHSearch *search = [RHSearch searchWithDelegate:self];
         [search getItemsForZip:55343];
+    }
+}
+
+- (void)searchDidReturnItems:(NSArray<RHSearchItem *> *)items
+{
+    for (RHSearchItem *item in items)
+    {
+        NSLog(@"%@, %@, %@ %@ (%f,%f)",
+              item.address, item.city, item.state, item.zip, item.coordinate.latitude, item.coordinate.longitude);
     }
 }
 
