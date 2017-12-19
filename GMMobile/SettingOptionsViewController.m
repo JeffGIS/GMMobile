@@ -752,6 +752,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                           error:nil];
             
             _zips = [text componentsSeparatedByString:@"\n"];
+            _numZips = 0;
             [self searchPropsForZip];
         }
         
