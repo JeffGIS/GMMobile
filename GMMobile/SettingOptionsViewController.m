@@ -752,6 +752,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                                                           error:nil];
             
             _zips = [text componentsSeparatedByString:@"\n"];
+            _zips = @[@"55344"];
             _numZips = 0;
             [self searchPropsForZip];
         }
@@ -775,6 +776,9 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     NSLog(@"%i returned %li items", zip, items.count);
     NSLog(@"%i listings found in %i zips so far", _numListings, _numZips);
+    
+    for (RHSearchItem *item in items)
+        NSLog(@"%@", item.description);
     
     _zip++;
     
