@@ -743,14 +743,20 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     else if ([[tableView cellForRowAtIndexPath:indexPath].textLabel.text
               isEqualToString:@"Realtor.com Property Search"])
     {
-        NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
+        if (hasNetwork())
+        {
+            NSString *filePath = [NSBundle.mainBundle pathForResource:@"zipcodes" ofType:@"txt"];
+            
+            NSString *text = [NSString stringWithContentsOfFile:filePath
+                                                       encoding:NSUTF8StringEncoding
+                                                          error:nil];
+            
+            _zips = [text componentsSeparatedByString:@"\n"];
+            [self searchPropsForZip];
+        }
         
-        NSString *text = [NSString stringWithContentsOfFile:filePath
-                                                   encoding:NSUTF8StringEncoding
-                                                      error:nil];
-        
-        _zips = [text componentsSeparatedByString:@"\n"];
-        [self searchPropsForZip];
+        else
+            showAlert(@"RHSearch ERROR: Network required.");
     }
 }
 
@@ -779,7 +785,6 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
                        forZip:(int)zip
 {
     NSLog(@"Search for zip %i received ERROR: %@", zip, error);
-    [self searchPropsForZip];
 }
 
 - (void)uploadCrimeData
