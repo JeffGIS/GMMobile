@@ -778,7 +778,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     NSLog(@"%i listings found in %i zips so far", _numListings, _numZips);
     
     for (RHSearchItem *item in items)
-        NSLog(@"%@", item.description);
+        NSLog(@"%@", item);
     
     _zip++;
     
